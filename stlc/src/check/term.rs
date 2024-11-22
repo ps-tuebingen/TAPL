@@ -1,8 +1,8 @@
-use super::{Check, TypingEnv};
+use super::{errors::Error, Check, TypingEnv};
 use crate::{terms::syntax::Term, types::Type};
 
 impl Check for Term {
-    fn check(&self, env: &mut TypingEnv) -> Option<Type> {
+    fn check(&self, env: &mut TypingEnv) -> Result<Type, Error> {
         match self {
             Term::Var(v) => v.check(env),
             Term::Lambda(lam) => lam.check(env),

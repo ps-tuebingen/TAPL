@@ -1,18 +1,18 @@
-use super::{Check, TypingEnv};
+use super::{errors::Error, Check, TypingEnv};
 use crate::{
     terms::syntax::{Nothing, Something},
     types::Type,
 };
 
 impl Check for Nothing {
-    fn check(&self, _: &mut TypingEnv) -> Option<Type> {
-        Some(self.inner_type.clone())
+    fn check(&self, _: &mut TypingEnv) -> Result<Type, Error> {
+        Ok(self.inner_type.clone())
     }
 }
 
 impl Check for Something {
-    fn check(&self, env: &mut TypingEnv) -> Option<Type> {
+    fn check(&self, env: &mut TypingEnv) -> Result<Type, Error> {
         let ty = self.term.check(env)?;
-        Some(Type::Optional(Box::new(ty)))
+        Ok(Type::Optional(Box::new(ty)))
     }
 }

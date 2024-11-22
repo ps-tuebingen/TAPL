@@ -1,35 +1,41 @@
-use super::{Check, TypingEnv};
+use super::{errors::Error, Check, TypingEnv};
 use crate::{
     terms::syntax::{False, If, True},
     types::Type,
 };
 
 impl Check for True {
-    fn check(&self, _: &mut TypingEnv) -> Option<Type> {
-        Some(Type::Bool)
+    fn check(&self, _: &mut TypingEnv) -> Result<Type, Error> {
+        Ok(Type::Bool)
     }
 }
 
 impl Check for False {
-    fn check(&self, _: &mut TypingEnv) -> Option<Type> {
-        Some(Type::Bool)
+    fn check(&self, _: &mut TypingEnv) -> Result<Type, Error> {
+        Ok(Type::Bool)
     }
 }
 
 impl Check for If {
-    fn check(&self, env: &mut TypingEnv) -> Option<Type> {
-        if let Some(Type::Bool) = self.ifc.check_local(env) {
-            Some(())
+    fn check(&self, env: &mut TypingEnv) -> Result<Type, Error> {
+        let ifc_ty = self.ifc.check_local(env)?;
+        if let Type::Bool = ifc_ty {
+            Ok(())
         } else {
-            None
+            Err(Error::UnexpectedType {
+                ty: ifc_ty,
+                term: (*self.ifc).clone(),
+            })
         }?;
 
         let then_ty = self.thenc.check_local(env)?;
         let else_ty = self.elsec.check(env)?;
         if then_ty == else_ty {
-            Some(then_ty)
+            Ok(then_ty)
         } else {
-            None
+            Err(Error::TypeMismatch {
+                types: vec![then_ty, else_ty],
+            })
         }
     }
 }

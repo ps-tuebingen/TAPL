@@ -3,6 +3,7 @@ use std::collections::HashMap;
 
 pub mod ascribe;
 pub mod bool;
+pub mod errors;
 pub mod fix;
 pub mod lambda;
 pub mod let_exp;
@@ -16,13 +17,15 @@ pub mod tup;
 pub mod unit;
 pub mod variant;
 
+use errors::Error;
+
 pub struct TypingEnv {
     pub used_vars: HashMap<Var, Type>,
 }
 
 pub trait Check {
-    fn check(&self, env: &mut TypingEnv) -> Option<Type>;
-    fn check_local(&self, env: &TypingEnv) -> Option<Type> {
+    fn check(&self, env: &mut TypingEnv) -> Result<Type, Error>;
+    fn check_local(&self, env: &TypingEnv) -> Result<Type, Error> {
         let mut new_env = TypingEnv {
             used_vars: env.used_vars.clone(),
         };
@@ -31,7 +34,10 @@ pub trait Check {
 }
 
 impl Check for Var {
-    fn check(&self, env: &mut TypingEnv) -> Option<Type> {
-        env.used_vars.get(self).cloned()
+    fn check(&self, env: &mut TypingEnv) -> Result<Type, Error> {
+        env.used_vars
+            .get(self)
+            .cloned()
+            .ok_or(Error::UnboundVariable { var: self.clone() })
     }
 }
