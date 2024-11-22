@@ -1,13 +1,16 @@
 use super::Subst;
 use crate::{
-    terms::syntax::{App, Lambda, Term},
+    terms::{
+        free_vars::FreeVars,
+        syntax::{App, Lambda, Term},
+    },
     Var,
 };
 
 impl Subst for Lambda {
     type Target = Lambda;
     fn subst(self, var: Var, term: Term) -> Self::Target {
-        if var == self.var {
+        if var == self.var || self.free_vars().contains(&var) {
             self
         } else {
             Lambda {
