@@ -7,8 +7,9 @@ use crate::{
     Var,
 };
 use std::collections::HashMap;
+use std::fmt;
 
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub enum Value {
     Lambda {
         var: Var,
@@ -118,5 +119,11 @@ impl From<Value> for Term {
             }
             .into(),
         }
+    }
+}
+
+impl fmt::Display for Value {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        <Value as Into<Term>>::into(self.clone()).fmt(f)
     }
 }

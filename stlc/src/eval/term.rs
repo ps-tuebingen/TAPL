@@ -1,8 +1,8 @@
-use super::{Eval, Value};
+use super::{errors::Error, Eval, Value};
 use crate::terms::syntax::Term;
 
 impl Eval for Term {
-    fn eval(self) -> Option<Value> {
+    fn eval(self) -> Result<Value, Error> {
         match self {
             Term::Var(v) => v.eval(),
             Term::Lambda(lam) => lam.eval(),
