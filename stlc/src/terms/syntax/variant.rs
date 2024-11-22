@@ -1,18 +1,18 @@
 use super::Term;
-use crate::{types::Type, Var};
+use crate::{types::Type, Label};
 use std::fmt;
 
 #[derive(Debug, Clone)]
 pub struct Variant {
-    pub label: Var,
+    pub label: Label,
     pub term: Box<Term>,
     pub ty: Type,
 }
 
 #[derive(Debug, Clone)]
 pub struct VariantPattern {
-    pub label: Var,
-    pub bound_var: Var,
+    pub label: Label,
+    pub bound_var: Label,
     pub rhs: Box<Term>,
 }
 

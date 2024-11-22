@@ -1,17 +1,17 @@
 use super::Term;
-use crate::Var;
+use crate::Label;
 use std::collections::HashMap;
 use std::fmt;
 
 #[derive(Debug, Clone)]
 pub struct Record {
-    pub records: HashMap<Var, Term>,
+    pub records: HashMap<Label, Term>,
 }
 
 #[derive(Debug, Clone)]
 pub struct RecordProj {
     pub record: Box<Term>,
-    pub label: Var,
+    pub label: Label,
 }
 
 impl From<Record> for Term {
