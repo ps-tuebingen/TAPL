@@ -1,0 +1,8 @@
+[workspace]
+members = [
+    "app",
+    "stlc"
+]
+
+resolver = "2"
+default-members = ["app"]
