@@ -18,13 +18,13 @@ pub mod variant;
 
 pub trait Subst {
     type Target;
-    fn subst(self, var: Var, term: Term) -> Self::Target;
+    fn subst(self, var: &Var, term: Term) -> Self::Target;
 }
 
 impl Subst for Var {
     type Target = Term;
-    fn subst(self, var: Var, term: Term) -> Self::Target {
-        if self == var {
+    fn subst(self, var: &Var, term: Term) -> Self::Target {
+        if &self == var {
             term
         } else {
             self.into()
@@ -34,7 +34,7 @@ impl Subst for Var {
 
 impl<T: Subst> Subst for Box<T> {
     type Target = Box<T::Target>;
-    fn subst(self, var: Var, term: Term) -> Self::Target {
+    fn subst(self, var: &Var, term: Term) -> Self::Target {
         Box::new((*self).subst(var, term))
     }
 }
@@ -45,14 +45,14 @@ mod subst_tests {
 
     #[test]
     fn subst_var() {
-        let result = "x".to_owned().subst("x".to_owned(), "y".to_owned().into());
+        let result = "x".to_owned().subst(&"x".to_owned(), "y".to_owned().into());
         let expected = "y".to_owned().into();
         assert_eq!(result, expected)
     }
 
     #[test]
     fn no_subst_var() {
-        let result = "x".to_owned().subst("y".to_owned(), "z".to_owned().into());
+        let result = "x".to_owned().subst(&"y".to_owned(), "z".to_owned().into());
         let expected = "x".to_owned().into();
         assert_eq!(result, expected)
     }

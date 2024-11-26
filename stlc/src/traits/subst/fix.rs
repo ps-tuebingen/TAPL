@@ -6,7 +6,7 @@ use crate::{
 
 impl Subst for Fix {
     type Target = Fix;
-    fn subst(self, var: Var, term: Term) -> Self::Target {
+    fn subst(self, var: &Var, term: Term) -> Self::Target {
         Fix {
             term: self.term.subst(var, term),
         }
@@ -22,7 +22,7 @@ mod fix_tests {
         let result = Fix {
             term: Box::new("x".to_owned().into()),
         }
-        .subst("x".to_owned(), "y".to_owned().into());
+        .subst(&"x".to_owned(), "y".to_owned().into());
         let expected = Fix {
             term: Box::new("y".to_owned().into()),
         };

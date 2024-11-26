@@ -6,24 +6,24 @@ use crate::{
 
 impl Subst for True {
     type Target = True;
-    fn subst(self, _: Var, _: Term) -> Self::Target {
+    fn subst(self, _: &Var, _: Term) -> Self::Target {
         self
     }
 }
 
 impl Subst for False {
     type Target = False;
-    fn subst(self, _: Var, _: Term) -> Self::Target {
+    fn subst(self, _: &Var, _: Term) -> Self::Target {
         self
     }
 }
 
 impl Subst for If {
     type Target = If;
-    fn subst(self, var: Var, term: Term) -> Self::Target {
+    fn subst(self, var: &Var, term: Term) -> Self::Target {
         If {
-            ifc: self.ifc.subst(var.clone(), term.clone()),
-            thenc: self.thenc.subst(var.clone(), term.clone()),
+            ifc: self.ifc.subst(var, term.clone()),
+            thenc: self.thenc.subst(var, term.clone()),
             elsec: self.elsec.subst(var, term),
         }
     }
@@ -35,14 +35,14 @@ mod bool_tests {
 
     #[test]
     fn subst_true() {
-        let result = True.subst("x".to_owned(), "y".to_owned().into());
+        let result = True.subst(&"x".to_owned(), "y".to_owned().into());
         let expected = True;
         assert_eq!(result, expected)
     }
 
     #[test]
     fn subst_false() {
-        let result = False.subst("x".to_owned(), "y".to_owned().into());
+        let result = False.subst(&"x".to_owned(), "y".to_owned().into());
         let expected = False;
         assert_eq!(result, expected)
     }
@@ -54,7 +54,7 @@ mod bool_tests {
             thenc: Box::new("y".to_owned().into()),
             elsec: Box::new("x".to_owned().into()),
         }
-        .subst("x".to_owned(), "y".to_owned().into());
+        .subst(&"x".to_owned(), "y".to_owned().into());
         let expected = If {
             ifc: Box::new("y".to_owned().into()),
             thenc: Box::new("y".to_owned().into()),

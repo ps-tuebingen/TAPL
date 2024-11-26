@@ -31,11 +31,11 @@ impl Eval for SumCase {
             Value::Left {
                 left_term: val,
                 right_ty: _,
-            } => self.left_term.subst(self.left_var, (*val).into()).eval(),
+            } => self.left_term.subst(&self.left_var, (*val).into()).eval(),
             Value::Right {
                 right_term: val,
                 left_ty: _,
-            } => self.right_term.subst(self.right_var, (*val).into()).eval(),
+            } => self.right_term.subst(&self.right_var, (*val).into()).eval(),
             _ => Err(Error::BadValue { val: bound_val }),
         }
     }

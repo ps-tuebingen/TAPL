@@ -6,12 +6,12 @@ use crate::{
 
 impl Subst for Tup {
     type Target = Tup;
-    fn subst(self, var: Var, term: Term) -> Self::Target {
+    fn subst(self, var: &Var, term: Term) -> Self::Target {
         Tup {
             terms: self
                 .terms
                 .into_iter()
-                .map(|t| t.subst(var.clone(), term.clone()))
+                .map(|t| t.subst(&var, term.clone()))
                 .collect(),
         }
     }
@@ -19,7 +19,7 @@ impl Subst for Tup {
 
 impl Subst for Proj {
     type Target = Proj;
-    fn subst(self, var: Var, term: Term) -> Self::Target {
+    fn subst(self, var: &Var, term: Term) -> Self::Target {
         Proj {
             tup: self.tup.subst(var, term),
             ind: self.ind,
@@ -36,7 +36,7 @@ mod tuple_test {
         let result = Tup {
             terms: vec!["x".to_owned().into(), "y".to_owned().into()],
         }
-        .subst("x".to_owned(), "y".to_owned().into());
+        .subst(&"x".to_owned(), "y".to_owned().into());
         let expected = Tup {
             terms: vec!["y".to_owned().into(), "y".to_owned().into()],
         };
@@ -49,7 +49,7 @@ mod tuple_test {
             tup: Box::new("x".to_owned().into()),
             ind: 0,
         }
-        .subst("x".to_owned(), "y".to_owned().into());
+        .subst(&"x".to_owned(), "y".to_owned().into());
         let expected = Proj {
             tup: Box::new("y".to_owned().into()),
             ind: 0,

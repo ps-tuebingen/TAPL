@@ -38,6 +38,6 @@ impl Eval for VariantCase {
                  }| *label == lb,
             )
             .ok_or(Error::MissingPattern { label: lb })?;
-        rhs.subst(bound_var, (*val).into()).eval()
+        rhs.subst(&bound_var, (*val).into()).eval()
     }
 }

@@ -23,7 +23,7 @@ impl Eval for App {
                 annot: _,
                 body,
             } => {
-                let body_subst = body.subst(var, *self.arg);
+                let body_subst = body.subst(&var, *self.arg);
                 body_subst.eval()
             }
             _ => Err(Error::BadValue { val: val1 }),

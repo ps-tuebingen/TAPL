@@ -26,11 +26,10 @@ impl FreeVars for Var {
     }
 }
 
-pub fn fresh_var<T: FreeVars>(t: &T) -> Var {
+pub fn fresh_var(used_vars: &HashSet<Var>) -> Var {
     let prefix = "x".to_owned();
     let mut num = 0;
-    let vars = t.free_vars();
-    while vars.contains(&(prefix.clone() + &num.to_string())) {
+    while used_vars.contains(&(prefix.clone() + &num.to_string())) {
         num += 1
     }
     prefix + &num.to_string()

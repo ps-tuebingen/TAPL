@@ -3,7 +3,7 @@ use crate::{syntax::Term, Var};
 
 impl Subst for Term {
     type Target = Term;
-    fn subst(self, var: Var, term: Term) -> Self::Target {
+    fn subst(self, var: &Var, term: Term) -> Self::Target {
         match self {
             Term::Var(v) => v.subst(var, term),
             Term::Lambda(lam) => lam.subst(var, term).into(),

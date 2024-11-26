@@ -1,31 +1,32 @@
 use super::Subst;
 use crate::{
     syntax::{App, Lambda, Term},
-    traits::free_vars::FreeVars,
+    traits::free_vars::{fresh_var, FreeVars},
     Var,
 };
 
 impl Subst for Lambda {
     type Target = Lambda;
-    fn subst(self, var: Var, term: Term) -> Self::Target {
-        println!("{:?}", self.free_vars());
-        if var == self.var {
-            self
-        } else {
-            Lambda {
-                var: self.var,
-                annot: self.annot,
-                body: self.body.subst(var, term),
-            }
+    fn subst(self, var: &Var, term: Term) -> Self::Target {
+        let mut free_v = self.free_vars();
+        free_v.insert(var.clone());
+        free_v.insert(self.var.clone());
+        let new_v = fresh_var(&free_v);
+        let term_subst = self.body.subst(&self.var, new_v.clone().into());
+
+        Lambda {
+            var: new_v,
+            annot: self.annot,
+            body: term_subst.subst(var, term),
         }
     }
 }
 
 impl Subst for App {
     type Target = App;
-    fn subst(self, var: Var, term: Term) -> Self::Target {
+    fn subst(self, var: &Var, term: Term) -> Self::Target {
         App {
-            fun: self.fun.subst(var.clone(), term.clone()),
+            fun: self.fun.subst(var, term.clone()),
             arg: self.arg.subst(var, term),
         }
     }
@@ -43,9 +44,9 @@ mod lambda_tests {
             annot: Type::Bool,
             body: Box::new("x".to_owned().into()),
         }
-        .subst("x".to_owned(), "y".to_owned().into());
+        .subst(&"x".to_owned(), "y".to_owned().into());
         let expected = Lambda {
-            var: "y".to_owned(),
+            var: "x0".to_owned(),
             annot: Type::Bool,
             body: Box::new("y".to_owned().into()),
         };
@@ -59,11 +60,11 @@ mod lambda_tests {
             annot: Type::Bool,
             body: Box::new("x".to_owned().into()),
         }
-        .subst("x".to_owned(), "y".to_owned().into());
+        .subst(&"x".to_owned(), "y".to_owned().into());
         let expected = Lambda {
-            var: "x".to_owned(),
+            var: "x0".to_owned(),
             annot: Type::Bool,
-            body: Box::new("x".to_owned().into()),
+            body: Box::new("x0".to_owned().into()),
         };
         assert_eq!(result, expected)
     }
@@ -74,7 +75,7 @@ mod lambda_tests {
             fun: Box::new("x".to_owned().into()),
             arg: Box::new("x".to_owned().into()),
         }
-        .subst("x".to_owned(), "y".to_owned().into());
+        .subst(&"x".to_owned(), "y".to_owned().into());
         let expected = App {
             fun: Box::new("y".to_owned().into()),
             arg: Box::new("y".to_owned().into()),

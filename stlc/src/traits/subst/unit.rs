@@ -6,7 +6,7 @@ use crate::{
 
 impl Subst for Unit {
     type Target = Unit;
-    fn subst(self, _: Var, _: Term) -> Self::Target {
+    fn subst(self, _: &Var, _: Term) -> Self::Target {
         self
     }
 }
@@ -16,7 +16,7 @@ mod unit_tests {
     use super::{Subst, Unit};
     #[test]
     fn subst_unit() {
-        let result = Unit {}.subst("x".to_owned(), "y".to_owned().into());
+        let result = Unit {}.subst(&"x".to_owned(), "y".to_owned().into());
         let expected = Unit {};
         assert_eq!(result, expected)
     }

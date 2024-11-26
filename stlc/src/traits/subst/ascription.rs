@@ -6,7 +6,7 @@ use crate::{
 
 impl Subst for Ascribe {
     type Target = Ascribe;
-    fn subst(self, var: Var, term: Term) -> Self::Target {
+    fn subst(self, var: &Var, term: Term) -> Self::Target {
         Ascribe {
             ty: self.ty,
             term: self.term.subst(var, term),
@@ -25,7 +25,7 @@ mod ascribe_tests {
             term: Box::new("x".to_owned().into()),
             ty: Type::Bool,
         }
-        .subst("x".to_owned(), "y".to_owned().into());
+        .subst(&"x".to_owned(), "y".to_owned().into());
         let expected = Ascribe {
             term: Box::new("y".to_owned().into()),
             ty: Type::Bool,

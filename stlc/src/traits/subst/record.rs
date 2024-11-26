@@ -6,12 +6,12 @@ use crate::{
 
 impl Subst for Record {
     type Target = Record;
-    fn subst(self, var: Var, term: Term) -> Self::Target {
+    fn subst(self, var: &Var, term: Term) -> Self::Target {
         Record {
             records: self
                 .records
                 .into_iter()
-                .map(|(label, t)| (label, t.subst(var.clone(), term.clone())))
+                .map(|(label, t)| (label, t.subst(var, term.clone())))
                 .collect(),
         }
     }
@@ -19,7 +19,7 @@ impl Subst for Record {
 
 impl Subst for RecordProj {
     type Target = RecordProj;
-    fn subst(self, var: Var, term: Term) -> Self::Target {
+    fn subst(self, var: &Var, term: Term) -> Self::Target {
         RecordProj {
             record: self.record.subst(var, term),
             label: self.label,
@@ -37,7 +37,7 @@ mod record_tests {
         let result = Record {
             records: HashMap::from([("x".to_owned(), "x".to_owned().into())]),
         }
-        .subst("x".to_owned(), "y".to_owned().into());
+        .subst(&"x".to_owned(), "y".to_owned().into());
         let expected = Record {
             records: HashMap::from([("x".to_owned(), "y".to_owned().into())]),
         };
@@ -50,7 +50,7 @@ mod record_tests {
             label: "x".to_owned(),
             record: Box::new("x".to_owned().into()),
         }
-        .subst("x".to_owned(), "y".to_owned().into());
+        .subst(&"x".to_owned(), "y".to_owned().into());
         let expected = RecordProj {
             label: "x".to_owned(),
             record: Box::new("y".to_owned().into()),
