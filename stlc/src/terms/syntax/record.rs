@@ -3,12 +3,12 @@ use crate::Label;
 use std::collections::HashMap;
 use std::fmt;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Record {
     pub records: HashMap<Label, Term>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct RecordProj {
     pub record: Box<Term>,
     pub label: Label,

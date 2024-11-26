@@ -2,31 +2,31 @@ use super::Term;
 use crate::types::Type;
 use std::fmt;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Nil {
     pub inner_type: Type,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Cons {
     pub inner_type: Type,
     pub fst: Box<Term>,
     pub rst: Box<Term>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct IsNil {
     pub inner_type: Type,
     pub list: Box<Term>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Head {
     pub inner_type: Type,
     pub list: Box<Term>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Tail {
     pub inner_type: Type,
     pub list: Box<Term>,

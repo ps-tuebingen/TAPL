@@ -1,12 +1,12 @@
 use super::Term;
 use std::fmt;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Tup {
     pub terms: Vec<Term>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Proj {
     pub tup: Box<Term>,
     pub ind: usize,

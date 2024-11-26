@@ -2,14 +2,14 @@ use super::Term;
 use crate::{types::Type, Var};
 use std::fmt;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Lambda {
     pub var: Var,
     pub annot: Type,
     pub body: Box<Term>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct App {
     pub fun: Box<Term>,
     pub arg: Box<Term>,

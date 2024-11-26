@@ -29,7 +29,7 @@ pub use tuple::{Proj, Tup};
 pub use unit::Unit;
 pub use variant::{Variant, VariantCase, VariantPattern};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Term {
     Var(Var),
     Lambda(Lambda),

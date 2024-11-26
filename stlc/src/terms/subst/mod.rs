@@ -38,3 +38,22 @@ impl<T: Subst> Subst for Box<T> {
         Box::new((*self).subst(var, term))
     }
 }
+
+#[cfg(test)]
+mod subst_tests {
+    use super::Subst;
+
+    #[test]
+    fn subst_var() {
+        let result = "x".to_owned().subst("x".to_owned(), "y".to_owned().into());
+        let expected = "y".to_owned().into();
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn no_subst_var() {
+        let result = "x".to_owned().subst("y".to_owned(), "z".to_owned().into());
+        let expected = "x".to_owned().into();
+        assert_eq!(result, expected)
+    }
+}

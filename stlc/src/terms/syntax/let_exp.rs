@@ -2,7 +2,7 @@ use super::Term;
 use crate::Var;
 use std::fmt;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Let {
     pub var: Var,
     pub bound_term: Box<Term>,

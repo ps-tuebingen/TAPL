@@ -45,3 +45,62 @@ impl Subst for VariantPattern {
         }
     }
 }
+
+#[cfg(test)]
+mod variant_tests {
+    use super::{Subst, Variant, VariantCase, VariantPattern};
+    use crate::types::Type;
+    use std::collections::HashMap;
+
+    #[test]
+    fn subst_var() {
+        let result = Variant {
+            label: "x".to_owned(),
+            term: Box::new("x".to_owned().into()),
+            ty: Type::Variant(HashMap::from([("x".to_owned(), Type::Bool)])),
+        }
+        .subst("x".to_owned(), "y".to_owned().into());
+        let expected = Variant {
+            label: "x".to_owned(),
+            term: Box::new("y".to_owned().into()),
+            ty: Type::Variant(HashMap::from([("x".to_owned(), Type::Bool)])),
+        };
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn subst_case() {
+        let result = VariantCase {
+            cases: vec![
+                VariantPattern {
+                    bound_var: "x".to_owned(),
+                    label: "x".to_owned(),
+                    rhs: Box::new("x".to_owned().into()),
+                },
+                VariantPattern {
+                    bound_var: "y".to_owned(),
+                    label: "y".to_owned(),
+                    rhs: Box::new("x".to_owned().into()),
+                },
+            ],
+            bound_term: Box::new("x".to_owned().into()),
+        }
+        .subst("x".to_owned(), "y".to_owned().into());
+        let expected = VariantCase {
+            cases: vec![
+                VariantPattern {
+                    bound_var: "x".to_owned(),
+                    label: "x".to_owned(),
+                    rhs: Box::new("x".to_owned().into()),
+                },
+                VariantPattern {
+                    bound_var: "y".to_owned(),
+                    label: "y".to_owned(),
+                    rhs: Box::new("y".to_owned().into()),
+                },
+            ],
+            bound_term: Box::new("y".to_owned().into()),
+        };
+        assert_eq!(result, expected)
+    }
+}

@@ -2,7 +2,7 @@ use super::Term;
 use crate::types::Type;
 use std::fmt;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Ascribe {
     pub term: Box<Term>,
     pub ty: Type,

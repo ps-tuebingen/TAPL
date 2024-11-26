@@ -1,7 +1,7 @@
 use super::Term;
 use std::fmt;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Unit;
 
 impl From<Unit> for Term {

@@ -1,18 +1,18 @@
 use super::Term;
 use std::fmt;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Pair {
     pub fst: Box<Term>,
     pub snd: Box<Term>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Proj1 {
     pub pair: Box<Term>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Proj2 {
     pub pair: Box<Term>,
 }

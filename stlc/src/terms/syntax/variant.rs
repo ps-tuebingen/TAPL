@@ -2,21 +2,21 @@ use super::Term;
 use crate::{types::Type, Label};
 use std::fmt;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Variant {
     pub label: Label,
     pub term: Box<Term>,
     pub ty: Type,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct VariantPattern {
     pub label: Label,
     pub bound_var: Label,
     pub rhs: Box<Term>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct VariantCase {
     pub bound_term: Box<Term>,
     pub cases: Vec<VariantPattern>,

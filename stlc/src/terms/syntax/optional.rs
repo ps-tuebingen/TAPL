@@ -2,12 +2,12 @@ use super::Term;
 use crate::types::Type;
 use std::fmt;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Nothing {
     pub inner_type: Type,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Something {
     pub term: Box<Term>,
 }

@@ -46,3 +46,57 @@ impl Subst for SumCase {
         }
     }
 }
+
+#[cfg(test)]
+mod sum_tests {
+    use super::{Left, Right, Subst, SumCase};
+    use crate::types::Type;
+
+    #[test]
+    fn subst_left() {
+        let result = Left {
+            left_term: Box::new("x".to_owned().into()),
+            right_ty: Type::Bool,
+        }
+        .subst("x".to_owned(), "y".to_owned().into());
+        let expected = Left {
+            left_term: Box::new("y".to_owned().into()),
+            right_ty: Type::Bool,
+        };
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn subst_right() {
+        let result = Right {
+            right_term: Box::new("x".to_owned().into()),
+            left_ty: Type::Bool,
+        }
+        .subst("x".to_owned(), "y".to_owned().into());
+        let expected = Right {
+            right_term: Box::new("y".to_owned().into()),
+            left_ty: Type::Bool,
+        };
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn subst_sumcase() {
+        let result = SumCase {
+            bound_term: Box::new("x".to_owned().into()),
+            left_var: "x".to_owned(),
+            left_term: Box::new("x".to_owned().into()),
+            right_var: "y".to_owned(),
+            right_term: Box::new("x".to_owned().into()),
+        }
+        .subst("x".to_owned(), "y".to_owned().into());
+        let expected = SumCase {
+            bound_term: Box::new("y".to_owned().into()),
+            left_var: "x".to_owned(),
+            left_term: Box::new("x".to_owned().into()),
+            right_var: "y".to_owned().into(),
+            right_term: Box::new("y".to_owned().into()),
+        };
+        assert_eq!(result, expected)
+    }
+}

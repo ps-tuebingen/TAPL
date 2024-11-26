@@ -10,3 +10,14 @@ impl Subst for Unit {
         self
     }
 }
+
+#[cfg(test)]
+mod unit_tests {
+    use super::{Subst, Unit};
+    #[test]
+    fn subst_unit() {
+        let result = Unit {}.subst("x".to_owned(), "y".to_owned().into());
+        let expected = Unit {};
+        assert_eq!(result, expected)
+    }
+}

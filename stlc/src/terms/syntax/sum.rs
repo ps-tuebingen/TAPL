@@ -2,19 +2,19 @@ use super::Term;
 use crate::{types::Type, Var};
 use std::fmt;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Left {
     pub left_term: Box<Term>,
     pub right_ty: Type,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Right {
     pub right_term: Box<Term>,
     pub left_ty: Type,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SumCase {
     pub bound_term: Box<Term>,
     pub left_var: Var,

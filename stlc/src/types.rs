@@ -2,7 +2,7 @@ use super::Var;
 use std::collections::HashMap;
 use std::fmt;
 
-#[derive(PartialEq, Clone, Debug)]
+#[derive(PartialEq, Eq, Clone, Debug)]
 pub enum Type {
     Unit,
     Fun(Box<Type>, Box<Type>),
