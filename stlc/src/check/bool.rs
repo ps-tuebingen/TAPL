@@ -1,6 +1,6 @@
 use super::{errors::Error, Check, TypingEnv};
 use crate::{
-    terms::syntax::{False, If, True},
+    syntax::{False, If, True},
     types::Type,
 };
 

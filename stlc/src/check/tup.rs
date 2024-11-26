@@ -1,6 +1,6 @@
 use super::{errors::Error, Check, TypingEnv};
 use crate::{
-    terms::syntax::{Proj, Tup},
+    syntax::{Proj, Tup},
     types::Type,
 };
 

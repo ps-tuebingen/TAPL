@@ -1,6 +1,6 @@
 use super::{errors::Error, Check, TypingEnv};
 use crate::{
-    terms::syntax::{Left, Right, SumCase},
+    syntax::{Left, Right, SumCase},
     types::Type,
 };
 

@@ -1,7 +1,7 @@
 use super::{errors::Error, Eval, Value};
-use crate::terms::{
-    subst::Subst,
+use crate::{
     syntax::{App, Lambda},
+    traits::subst::Subst,
 };
 
 impl Eval for Lambda {

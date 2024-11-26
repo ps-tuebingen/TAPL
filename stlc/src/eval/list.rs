@@ -1,5 +1,5 @@
 use super::{errors::Error, Eval, Value};
-use crate::terms::syntax::{Cons, Head, IsNil, Nil, Tail};
+use crate::syntax::{Cons, Head, IsNil, Nil, Tail};
 
 impl Eval for Nil {
     fn eval(self) -> Result<Value, Error> {

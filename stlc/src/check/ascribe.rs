@@ -1,5 +1,5 @@
 use super::{errors::Error, Check, TypingEnv};
-use crate::{terms::syntax::Ascribe, types::Type};
+use crate::{syntax::Ascribe, types::Type};
 
 impl Check for Ascribe {
     fn check(&self, env: &mut TypingEnv) -> Result<Type, Error> {

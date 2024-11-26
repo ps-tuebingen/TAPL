@@ -1,5 +1,5 @@
 use super::{errors::Error, Check, TypingEnv};
-use crate::{terms::syntax::Fix, types::Type};
+use crate::{syntax::Fix, types::Type};
 
 impl Check for Fix {
     fn check(&self, env: &mut TypingEnv) -> Result<Type, Error> {

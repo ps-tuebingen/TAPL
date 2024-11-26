@@ -1,6 +1,6 @@
 use super::{errors::Error, Check, TypingEnv};
 use crate::{
-    terms::syntax::{Record, RecordProj},
+    syntax::{Record, RecordProj},
     types::Type,
 };
 use std::collections::HashMap;

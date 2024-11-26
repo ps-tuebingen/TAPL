@@ -1,5 +1,5 @@
 use super::{errors::Error, Eval, Value};
-use crate::terms::syntax::Term;
+use crate::syntax::Term;
 
 impl Eval for Term {
     fn eval(self) -> Result<Value, Error> {

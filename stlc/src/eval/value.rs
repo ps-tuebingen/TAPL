@@ -1,5 +1,5 @@
 use crate::{
-    terms::syntax::{
+    syntax::{
         Cons, False, Lambda, Left, Nil, Nothing, Pair, Record, Right, Something, Term, True, Tup,
         Unit, Variant,
     },

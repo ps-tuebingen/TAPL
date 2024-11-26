@@ -1,4 +1,4 @@
-use crate::{terms::syntax::Term, types::Type, Label, Var};
+use crate::{syntax::Term, types::Type, Label, Var};
 use std::fmt;
 
 #[derive(Debug)]

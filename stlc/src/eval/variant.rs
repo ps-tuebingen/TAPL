@@ -1,7 +1,7 @@
 use super::{errors::Error, Eval, Value};
-use crate::terms::{
-    subst::Subst,
+use crate::{
     syntax::{Variant, VariantCase, VariantPattern},
+    traits::subst::Subst,
 };
 
 impl Eval for Variant {

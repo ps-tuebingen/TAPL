@@ -1,5 +1,5 @@
 use super::{errors::Error, Check, TypingEnv};
-use crate::{terms::syntax::Let, types::Type};
+use crate::{syntax::Let, types::Type};
 
 impl Check for Let {
     fn check(&self, env: &mut TypingEnv) -> Result<Type, Error> {

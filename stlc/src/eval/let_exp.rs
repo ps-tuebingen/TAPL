@@ -1,5 +1,5 @@
 use super::{errors::Error, Eval, Value};
-use crate::terms::{subst::Subst, syntax::Let};
+use crate::{syntax::Let, traits::subst::Subst};
 
 impl Eval for Let {
     fn eval(self) -> Result<Value, Error> {

@@ -1,5 +1,5 @@
 use super::{errors::Error, Check, TypingEnv};
-use crate::{terms::syntax::Term, types::Type};
+use crate::{syntax::Term, types::Type};
 
 impl Check for Term {
     fn check(&self, env: &mut TypingEnv) -> Result<Type, Error> {

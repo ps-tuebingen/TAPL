@@ -1,5 +1,5 @@
 use super::{errors::Error, Eval, Value};
-use crate::terms::syntax::{Record, RecordProj};
+use crate::syntax::{Record, RecordProj};
 use std::collections::HashMap;
 
 impl Eval for Record {

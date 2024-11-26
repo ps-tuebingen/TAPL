@@ -1,6 +1,6 @@
 use super::{errors::Error, Check, TypingEnv};
 use crate::{
-    terms::syntax::{Variant, VariantCase, VariantPattern},
+    syntax::{Variant, VariantCase, VariantPattern},
     types::Type,
 };
 

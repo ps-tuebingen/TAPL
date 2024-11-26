@@ -1,5 +1,5 @@
 use super::{errors::Error, Eval, Value};
-use crate::terms::syntax::{Proj, Tup};
+use crate::syntax::{Proj, Tup};
 
 impl Eval for Tup {
     fn eval(self) -> Result<Value, Error> {

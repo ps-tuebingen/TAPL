@@ -1,6 +1,6 @@
 use super::{errors::Error, Check, TypingEnv};
 use crate::{
-    terms::syntax::{App, Lambda},
+    syntax::{App, Lambda},
     types::Type,
 };
 

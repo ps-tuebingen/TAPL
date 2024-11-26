@@ -1,4 +1,4 @@
-use super::{terms::subst::Subst, Var};
+use super::{traits::subst::Subst, Var};
 
 pub mod ascription;
 pub mod bool;

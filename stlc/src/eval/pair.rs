@@ -1,5 +1,5 @@
 use super::{errors::Error, Eval, Value};
-use crate::terms::syntax::{Pair, Proj1, Proj2};
+use crate::syntax::{Pair, Proj1, Proj2};
 
 impl Eval for Pair {
     fn eval(self) -> Result<Value, Error> {

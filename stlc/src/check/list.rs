@@ -1,6 +1,6 @@
 use super::{errors::Error, Check, TypingEnv};
 use crate::{
-    terms::syntax::{Cons, Head, IsNil, Nil, Tail},
+    syntax::{Cons, Head, IsNil, Nil, Tail},
     types::Type,
 };
 

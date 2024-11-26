@@ -1,5 +1,5 @@
 use super::{errors::Error, Eval, Value};
-use crate::terms::{subst::Subst, syntax::Fix};
+use crate::{syntax::Fix, traits::subst::Subst};
 
 impl Eval for Fix {
     fn eval(self) -> Result<Value, Error> {

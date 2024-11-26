@@ -1,5 +1,5 @@
 use super::{errors::Error, Eval, Value};
-use crate::terms::syntax::{False, If, True};
+use crate::syntax::{False, If, True};
 impl Eval for True {
     fn eval(self) -> Result<Value, Error> {
         Ok(Value::True)
