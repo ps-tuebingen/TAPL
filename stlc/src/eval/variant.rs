@@ -41,3 +41,60 @@ impl Eval for VariantCase {
         rhs.subst(&bound_var, (*val).into()).eval()
     }
 }
+
+#[cfg(test)]
+mod variant_tests {
+    use super::{Eval, Value, Variant, VariantCase, VariantPattern};
+    use crate::{
+        syntax::{True, Zero},
+        types::Type,
+    };
+    use std::collections::HashMap;
+
+    #[test]
+    fn eval_variant() {
+        let result = Variant {
+            label: "label".to_owned(),
+            term: Box::new(Zero.into()),
+            ty: Type::Variant(HashMap::from([("label".to_owned(), Type::Nat)])),
+        }
+        .eval()
+        .unwrap();
+        let expected = Value::Variant {
+            label: "label".to_owned(),
+            ty: Type::Variant(HashMap::from([("label".to_owned(), Type::Nat)])),
+            val: Box::new(Value::Zero),
+        };
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn eval_case() {
+        let result = VariantCase {
+            bound_term: Box::new(
+                Variant {
+                    label: "label".to_owned(),
+                    term: Box::new(Zero.into()),
+                    ty: Type::Variant(HashMap::from([("label".to_owned(), Type::Nat)])),
+                }
+                .into(),
+            ),
+            cases: vec![
+                VariantPattern {
+                    label: "label".to_owned(),
+                    bound_var: "x".to_owned(),
+                    rhs: Box::new("x".to_owned().into()),
+                },
+                VariantPattern {
+                    label: "label2".to_owned(),
+                    bound_var: "y".to_owned(),
+                    rhs: Box::new(True.into()),
+                },
+            ],
+        }
+        .eval()
+        .unwrap();
+        let expected = Value::Zero;
+        assert_eq!(result, expected)
+    }
+}

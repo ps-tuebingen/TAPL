@@ -9,6 +9,8 @@ pub enum Error {
     UndefinedLabel { label: Label },
     MissingPattern { label: Label },
     ProjectionOutOfBounds { found: usize, expected: usize },
+    HeadOfEmptyList,
+    TailOfEmptyList,
 }
 
 impl fmt::Display for Error {
@@ -22,6 +24,8 @@ impl fmt::Display for Error {
                 f,
                 "Cannot perform projection {expected} with {found} number of terms."
             ),
+            Error::HeadOfEmptyList => f.write_str("Cannot take head of empty list."),
+            Error::TailOfEmptyList => f.write_str("Cannot take tail of empty list."),
         }
     }
 }

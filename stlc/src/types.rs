@@ -7,6 +7,7 @@ pub enum Type {
     Unit,
     Fun(Box<Type>, Box<Type>),
     Bool,
+    Nat,
     Prod(Box<Type>, Box<Type>),
     Tup(Vec<Type>),
     Record(HashMap<Var, Type>),
@@ -22,6 +23,7 @@ impl fmt::Display for Type {
             Type::Unit => f.write_str("Unit"),
             Type::Fun(ty1, ty2) => write!(f, "{ty1} -> {ty2}"),
             Type::Bool => f.write_str("Bool"),
+            Type::Nat => f.write_str("Nat"),
             Type::Prod(ty1, ty2) => write!(f, "{ty1} x {ty2}"),
             Type::Tup(tys) => write!(
                 f,

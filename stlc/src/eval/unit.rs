@@ -6,3 +6,15 @@ impl Eval for Unit {
         Ok(Value::Unit)
     }
 }
+
+#[cfg(test)]
+mod unit_tests {
+    use super::{Eval, Unit, Value};
+
+    #[test]
+    fn eval_unit() {
+        let result = Unit.eval().unwrap();
+        let expected = Value::Unit;
+        assert_eq!(result, expected)
+    }
+}

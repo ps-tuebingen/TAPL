@@ -8,6 +8,7 @@ pub mod fix;
 pub mod lambda;
 pub mod let_exp;
 pub mod list;
+pub mod nat;
 pub mod optional;
 pub mod pair;
 pub mod record;
@@ -19,6 +20,7 @@ pub mod variant;
 
 use errors::Error;
 
+#[derive(Default)]
 pub struct TypingEnv {
     pub used_vars: HashMap<Var, Type>,
 }

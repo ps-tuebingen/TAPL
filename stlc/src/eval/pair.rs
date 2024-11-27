@@ -29,3 +29,73 @@ impl Eval for Proj2 {
         }
     }
 }
+
+#[cfg(test)]
+mod pair_tests {
+    use super::{Eval, Pair, Proj1, Proj2, Value};
+    use crate::syntax::{Succ, Zero};
+
+    #[test]
+    fn eval_pair() {
+        let result = Pair {
+            fst: Box::new(Zero.into()),
+            snd: Box::new(
+                Succ {
+                    term: Box::new(Zero.into()),
+                }
+                .into(),
+            ),
+        }
+        .eval()
+        .unwrap();
+        let expected = Value::Pair {
+            fst: Box::new(Value::Zero.into()),
+            snd: Box::new(Value::Succ(Box::new(Value::Zero))),
+        };
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn eval_proj1() {
+        let result = Proj1 {
+            pair: Box::new(
+                Pair {
+                    fst: Box::new(Zero.into()),
+                    snd: Box::new(
+                        Succ {
+                            term: Box::new(Zero.into()),
+                        }
+                        .into(),
+                    ),
+                }
+                .into(),
+            ),
+        }
+        .eval()
+        .unwrap();
+        let expected = Value::Zero;
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn eval_proj2() {
+        let result = Proj2 {
+            pair: Box::new(
+                Pair {
+                    fst: Box::new(Zero.into()),
+                    snd: Box::new(
+                        Succ {
+                            term: Box::new(Zero.into()),
+                        }
+                        .into(),
+                    ),
+                }
+                .into(),
+            ),
+        }
+        .eval()
+        .unwrap();
+        let expected = Value::Succ(Box::new(Value::Zero));
+        assert_eq!(result, expected)
+    }
+}

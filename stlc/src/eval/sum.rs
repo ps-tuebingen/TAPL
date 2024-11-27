@@ -40,3 +40,94 @@ impl Eval for SumCase {
         }
     }
 }
+
+#[cfg(test)]
+mod sum_tests {
+    use super::{Eval, Left, Right, SumCase, Value};
+    use crate::{
+        syntax::{IsZero, True, Zero},
+        types::Type,
+    };
+
+    #[test]
+    fn eval_left() {
+        let result = Left {
+            left_term: Box::new(Zero.into()),
+            right_ty: Type::Bool,
+        }
+        .eval()
+        .unwrap();
+        let expected = Value::Left {
+            left_term: Box::new(Value::Zero),
+            right_ty: Type::Bool,
+        };
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn eval_right() {
+        let result = Right {
+            right_term: Box::new(True.into()),
+            left_ty: Type::Nat,
+        }
+        .eval()
+        .unwrap();
+        let expected = Value::Right {
+            right_term: Box::new(Value::True),
+            left_ty: Type::Nat,
+        };
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn eval_case_left() {
+        let result = SumCase {
+            bound_term: Box::new(
+                Left {
+                    left_term: Box::new(Zero.into()),
+                    right_ty: Type::Bool,
+                }
+                .into(),
+            ),
+            left_var: "x".to_owned(),
+            left_term: Box::new(
+                IsZero {
+                    term: Box::new("x".to_owned().into()),
+                }
+                .into(),
+            ),
+            right_var: "x".to_owned(),
+            right_term: Box::new("x".to_owned().into()),
+        }
+        .eval()
+        .unwrap();
+        let expected = Value::True;
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn eval_case_right() {
+        let result = SumCase {
+            bound_term: Box::new(
+                Right {
+                    right_term: Box::new(True.into()),
+                    left_ty: Type::Nat,
+                }
+                .into(),
+            ),
+            left_var: "x".to_owned(),
+            left_term: Box::new(
+                IsZero {
+                    term: Box::new("x".to_owned().into()),
+                }
+                .into(),
+            ),
+            right_var: "x".to_owned(),
+            right_term: Box::new("x".to_owned().into()),
+        }
+        .eval()
+        .unwrap();
+        let expected = Value::True;
+        assert_eq!(result, expected)
+    }
+}

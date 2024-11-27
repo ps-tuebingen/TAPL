@@ -7,6 +7,7 @@ pub mod fix;
 pub mod lambda;
 pub mod let_exp;
 pub mod list;
+pub mod nat;
 pub mod optional;
 pub mod pair;
 pub mod record;

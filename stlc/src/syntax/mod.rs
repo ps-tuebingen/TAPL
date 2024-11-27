@@ -7,6 +7,7 @@ pub mod fix;
 pub mod lambda;
 pub mod let_exp;
 pub mod list;
+pub mod nat;
 pub mod optional;
 pub mod pair;
 pub mod record;
@@ -21,6 +22,7 @@ pub use fix::Fix;
 pub use lambda::{App, Lambda};
 pub use let_exp::Let;
 pub use list::{Cons, Head, IsNil, Nil, Tail};
+pub use nat::{IsZero, Pred, Succ, Zero};
 pub use optional::{Nothing, Something};
 pub use pair::{Pair, Proj1, Proj2};
 pub use record::{Record, RecordProj};
@@ -38,6 +40,10 @@ pub enum Term {
     True(True),
     False(False),
     If(If),
+    Zero(Zero),
+    Pred(Pred),
+    Succ(Succ),
+    IsZero(IsZero),
     Ascribe(Ascribe),
     Let(Let),
     Pair(Pair),
@@ -78,6 +84,10 @@ impl fmt::Display for Term {
             Term::True(tru) => tru.fmt(f),
             Term::False(fls) => fls.fmt(f),
             Term::If(ift) => ift.fmt(f),
+            Term::Zero(z) => z.fmt(f),
+            Term::Pred(p) => p.fmt(f),
+            Term::Succ(s) => s.fmt(f),
+            Term::IsZero(isz) => isz.fmt(f),
             Term::Ascribe(asc) => asc.fmt(f),
             Term::Let(lt) => lt.fmt(f),
             Term::Pair(pr) => pr.fmt(f),

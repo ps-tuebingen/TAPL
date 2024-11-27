@@ -7,6 +7,7 @@ pub mod fix;
 pub mod lambda;
 pub mod let_exp;
 pub mod list;
+pub mod nat;
 pub mod optional;
 pub mod pair;
 pub mod record;
@@ -27,5 +28,17 @@ pub trait Eval: Subst {
 impl Eval for Var {
     fn eval(self) -> Result<Value, Error> {
         Err(Error::FreeVariable { var: self })
+    }
+}
+
+#[cfg(test)]
+mod var_tests {
+    use super::Eval;
+    use crate::syntax::Term;
+
+    #[test]
+    fn eval_var() {
+        let result = Term::Var("x".to_owned()).eval();
+        assert!(result.is_err())
     }
 }

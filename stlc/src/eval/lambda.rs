@@ -30,3 +30,45 @@ impl Eval for App {
         }
     }
 }
+
+#[cfg(test)]
+mod lambda_tests {
+    use super::{App, Eval, Lambda, Value};
+    use crate::{syntax::True, types::Type};
+
+    #[test]
+    fn eval_lam() {
+        let result = Lambda {
+            var: "x".to_owned(),
+            annot: Type::Bool,
+            body: Box::new("x".to_owned().into()),
+        }
+        .eval()
+        .unwrap();
+        let expected = Value::Lambda {
+            var: "x".to_owned(),
+            annot: Type::Bool,
+            body: "x".to_owned().into(),
+        };
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn eval_app() {
+        let result = App {
+            fun: Box::new(
+                Lambda {
+                    var: "x".to_owned(),
+                    annot: Type::Bool,
+                    body: Box::new("x".to_owned().into()),
+                }
+                .into(),
+            ),
+            arg: Box::new(True.into()),
+        }
+        .eval()
+        .unwrap();
+        let expected = Value::True;
+        assert_eq!(result, expected)
+    }
+}

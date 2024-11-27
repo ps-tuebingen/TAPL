@@ -1,7 +1,7 @@
 use crate::{
     syntax::{
-        Cons, False, Lambda, Left, Nil, Nothing, Pair, Record, Right, Something, Term, True, Tup,
-        Unit, Variant,
+        Cons, False, Lambda, Left, Nil, Nothing, Pair, Pred, Record, Right, Something, Succ, Term,
+        True, Tup, Unit, Variant, Zero,
     },
     types::Type,
     Var,
@@ -9,7 +9,7 @@ use crate::{
 use std::collections::HashMap;
 use std::fmt;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Value {
     Lambda {
         var: Var,
@@ -19,6 +19,9 @@ pub enum Value {
     Unit,
     True,
     False,
+    Zero,
+    Succ(Box<Value>),
+    Pred(Box<Value>),
     Pair {
         fst: Box<Value>,
         snd: Box<Value>,
@@ -64,6 +67,15 @@ impl From<Value> for Term {
             Value::Unit => Unit.into(),
             Value::True => True.into(),
             Value::False => False.into(),
+            Value::Zero => Zero.into(),
+            Value::Succ(val) => Succ {
+                term: Box::new((*val).into()),
+            }
+            .into(),
+            Value::Pred(val) => Pred {
+                term: Box::new((*val).into()),
+            }
+            .into(),
             Value::Pair { fst: v1, snd: v2 } => Pair {
                 fst: Box::new((*v1).into()),
                 snd: Box::new((*v2).into()),
