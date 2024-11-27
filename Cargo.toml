@@ -1,7 +1,8 @@
 [workspace]
 members = [
     "app",
-    "stlc"
+    "stlc",
+    "untyped_lambda"
 ]
 
 resolver = "2"
