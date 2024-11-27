@@ -1,3 +1,7 @@
+use super::{
+    bool::{fls, tru},
+    pair::{fst, pair, snd},
+};
 use crate::{parse::parse, terms::Term};
 
 pub fn c0() -> Term {
@@ -31,9 +35,55 @@ pub fn plus() -> Term {
     parse(&mut "\\m.\\n.\\s.\\z. ((m s) ((n s) z))".to_owned()).unwrap()
 }
 
+pub fn times() -> Term {
+    parse(&mut format!("\\m.\\n. (m (({}) n)) ({})", plus(), c0())).unwrap()
+}
+
+pub fn pow() -> Term {
+    parse(&mut format!("\\m.\\n.(m (({}) n)) ({})", times(), c0())).unwrap()
+}
+
+pub fn iszero() -> Term {
+    parse(&mut format!("\\m. (m (\\x.({}))) ({})", fls(), tru())).unwrap()
+}
+
+pub fn prd() -> Term {
+    let zz = format!("((({}) ({})) ({}))", pair(), c0(), c0());
+    let ss = format!(
+        "(\\p. (({}) (({}) p)) ((({}) ({})) (({}) p)) )",
+        pair(),
+        snd(),
+        plus(),
+        c1(),
+        snd()
+    );
+
+    parse(&mut format!("\\m. ({}) ((m ({})) ({}))", fst(), ss, zz)).unwrap()
+}
+
+pub fn sub() -> Term {
+    parse(&mut format!("\\m.\\n. (m (({}) n)) ({})", prd(), c0())).unwrap()
+}
+
+pub fn equal() -> Term {
+    parse(&mut format!("\\m.\\n. ({}) ((({}) m) n)", iszero(), sub())).unwrap()
+}
+
 #[cfg(test)]
 mod num_tests {
-    use super::{c0, c1, cn, plus, succ};
+    use super::{c0, c1, cn, equal, iszero, plus, pow, prd, sub, succ, times};
+
+    #[test]
+    fn test_terms() {
+        succ();
+        plus();
+        times();
+        pow();
+        iszero();
+        prd();
+        sub();
+        equal();
+    }
 
     #[test]
     fn test_zero() {
@@ -47,15 +97,5 @@ mod num_tests {
         let result = cn(1);
         let expected = c1();
         assert_eq!(result, expected)
-    }
-
-    #[test]
-    fn test_succ() {
-        succ();
-    }
-
-    #[test]
-    fn test_plus() {
-        plus();
     }
 }

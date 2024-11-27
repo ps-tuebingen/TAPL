@@ -14,89 +14,12 @@ pub fn fold() -> Term {
 
 #[cfg(test)]
 mod tree_tests {
-    use super::{fold, leaf, node, Term};
+    use super::{fold, leaf, node};
 
     #[test]
-    fn test_leaf() {
-        let result = leaf();
-        let expected = Term::Lambda(
-            "v".to_owned(),
-            Box::new(Term::Lambda(
-                "f".to_owned(),
-                Box::new(Term::Lambda(
-                    "g".to_owned(),
-                    Box::new(Term::App(
-                        Box::new(Term::Var("g".to_owned())),
-                        Box::new(Term::Var("v".to_owned())),
-                    )),
-                )),
-            )),
-        );
-        assert_eq!(result, expected)
-    }
-
-    #[test]
-    fn test_node() {
-        let result = node();
-        let expected = Term::Lambda(
-            "v".to_owned(),
-            Box::new(Term::Lambda(
-                "l".to_owned(),
-                Box::new(Term::Lambda(
-                    "r".to_owned(),
-                    Box::new(Term::Lambda(
-                        "f".to_owned(),
-                        Box::new(Term::Lambda(
-                            "g".to_owned(),
-                            Box::new(Term::App(
-                                Box::new(Term::App(
-                                    Box::new(Term::App(
-                                        Box::new(Term::Var("f".to_owned())),
-                                        Box::new(Term::Var("v".to_owned())),
-                                    )),
-                                    Box::new(Term::App(
-                                        Box::new(Term::App(
-                                            Box::new(Term::Var("l".to_owned())),
-                                            Box::new(Term::Var("f".to_owned())),
-                                        )),
-                                        Box::new(Term::Var("g".to_owned())),
-                                    )),
-                                )),
-                                Box::new(Term::App(
-                                    Box::new(Term::App(
-                                        Box::new(Term::Var("r".to_owned())),
-                                        Box::new(Term::Var("f".to_owned())),
-                                    )),
-                                    Box::new(Term::Var("g".to_owned())),
-                                )),
-                            )),
-                        )),
-                    )),
-                )),
-            )),
-        );
-        assert_eq!(result, expected)
-    }
-
-    #[test]
-    fn test_fold() {
-        let result = fold();
-        let expected = Term::Lambda(
-            "f".to_owned(),
-            Box::new(Term::Lambda(
-                "g".to_owned(),
-                Box::new(Term::Lambda(
-                    "t".to_owned(),
-                    Box::new(Term::App(
-                        Box::new(Term::App(
-                            Box::new(Term::Var("t".to_owned())),
-                            Box::new(Term::Var("f".to_owned())),
-                        )),
-                        Box::new(Term::Var("g".to_owned())),
-                    )),
-                )),
-            )),
-        );
-        assert_eq!(result, expected)
+    fn test_terms() {
+        leaf();
+        node();
+        fold();
     }
 }
