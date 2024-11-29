@@ -1,3 +1,4 @@
+pub mod constraints;
 pub mod syntax;
 pub mod types;
 
