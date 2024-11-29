@@ -10,3 +10,4 @@ path = "src/main.rs"
 [dependencies]
 stlc = { path="../stlc" }
 untyped_lambda = { path="../untyped_lambda" }
+inference = {path="../inference"}

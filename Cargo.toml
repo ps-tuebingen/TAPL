@@ -2,7 +2,8 @@
 members = [
     "app",
     "stlc",
-    "untyped_lambda"
+    "untyped_lambda",
+    "inference"
 ]
 
 resolver = "2"
