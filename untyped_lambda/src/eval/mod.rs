@@ -1,5 +1,6 @@
 use super::terms::Term;
 
+pub mod big;
 pub mod cbn;
 pub mod cbv;
 pub mod full_beta;
@@ -25,10 +26,7 @@ impl EvalOrder {
 }
 
 pub fn is_value(t: &Term) -> bool {
-    match t {
-        Term::Lambda(_, _) => true,
-        _ => false,
-    }
+    matches!(t, Term::Lambda(_, _))
 }
 
 pub fn eval(t: Term, eo: EvalOrder) -> Term {

@@ -85,7 +85,7 @@ fn skip_spaces(tokens: &mut VecDeque<Token>) {
     match next_tok {
         Some(Token::Space) => skip_spaces(tokens),
         Some(tok) => tokens.push_front(tok),
-        None => return,
+        None => (),
     }
 }
 
