@@ -1,2 +1,4 @@
 /target
 Cargo.lock
+.git_ps
+.git_private
