@@ -43,3 +43,22 @@ impl Check for Var {
             .ok_or(Error::UnboundVariable { var: self.clone() })
     }
 }
+
+#[cfg(test)]
+mod var_tests {
+    use super::{Check, TypingEnv};
+    use crate::types::Type;
+    use std::collections::HashMap;
+
+    #[test]
+    fn check_var() {
+        let result = "x"
+            .to_owned()
+            .check(&mut TypingEnv {
+                used_vars: HashMap::from([("x".to_owned(), Type::Nat)]),
+            })
+            .unwrap();
+        let expected = Type::Nat;
+        assert_eq!(result, expected)
+    }
+}

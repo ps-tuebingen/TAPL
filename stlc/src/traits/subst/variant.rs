@@ -22,7 +22,7 @@ impl Subst for VariantCase {
         let cases = self
             .cases
             .into_iter()
-            .map(|case| case.subst(&var, term.clone()))
+            .map(|case| case.subst(var, term.clone()))
             .collect();
         VariantCase {
             bound_term: self.bound_term.subst(var, term),

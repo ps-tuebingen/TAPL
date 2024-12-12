@@ -20,3 +20,27 @@ impl Check for Fix {
         }
     }
 }
+
+#[cfg(test)]
+mod fix_tests {
+    use super::{Check, Fix};
+    use crate::{syntax::Lambda, types::Type};
+
+    #[test]
+    fn check_fix() {
+        let result = Fix {
+            term: Box::new(
+                Lambda {
+                    var: "x".to_owned(),
+                    annot: Type::Nat,
+                    body: Box::new("x".to_owned().into()),
+                }
+                .into(),
+            ),
+        }
+        .check(&mut Default::default())
+        .unwrap();
+        let expected = Type::Nat;
+        assert_eq!(result, expected)
+    }
+}

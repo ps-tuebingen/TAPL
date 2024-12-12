@@ -1,5 +1,8 @@
 use super::{errors::Error, Eval, Value};
-use crate::syntax::{Nothing, Something};
+use crate::{
+    syntax::{Nothing, SomeCase, Something},
+    traits::subst::Subst,
+};
 
 impl Eval for Something {
     fn eval(self) -> Result<Value, Error> {
@@ -13,6 +16,17 @@ impl Eval for Nothing {
         Ok(Value::Nothing {
             inner_type: self.inner_type,
         })
+    }
+}
+
+impl Eval for SomeCase {
+    fn eval(self) -> Result<Value, Error> {
+        let bound_res = self.bound_term.eval()?;
+        match bound_res {
+            Value::Nothing { .. } => self.none_rhs.eval(),
+            Value::Something(val) => self.some_rhs.subst(&self.some_var, (*val).into()).eval(),
+            _ => Err(Error::BadValue { val: bound_res }),
+        }
     }
 }
 

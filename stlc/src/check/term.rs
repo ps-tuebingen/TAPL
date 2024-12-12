@@ -31,6 +31,7 @@ impl Check for Term {
             Term::VariantCase(case) => case.check(env),
             Term::Nothing(not) => not.check(env),
             Term::Something(some) => some.check(env),
+            Term::SomeCase(case) => case.check(env),
             Term::Fix(fix) => fix.check(env),
             Term::Nil(nil) => nil.check(env),
             Term::Cons(cons) => cons.check(env),

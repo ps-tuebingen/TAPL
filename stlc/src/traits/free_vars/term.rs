@@ -32,6 +32,7 @@ impl FreeVars for Term {
             Term::VariantCase(case) => case.free_vars(),
             Term::Nothing(not) => not.free_vars(),
             Term::Something(some) => some.free_vars(),
+            Term::SomeCase(case) => case.free_vars(),
             Term::Fix(fix) => fix.free_vars(),
             Term::Nil(nil) => nil.free_vars(),
             Term::Cons(cons) => cons.free_vars(),

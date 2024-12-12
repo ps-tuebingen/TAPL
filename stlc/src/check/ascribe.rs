@@ -14,3 +14,21 @@ impl Check for Ascribe {
         }
     }
 }
+
+#[cfg(test)]
+mod ascribe_tests {
+    use super::{Ascribe, Check};
+    use crate::{syntax::Zero, types::Type};
+
+    #[test]
+    fn check_ascribe() {
+        let result = Ascribe {
+            term: Box::new(Zero.into()),
+            ty: Type::Nat,
+        }
+        .check(&mut Default::default())
+        .unwrap();
+        let expected = Type::Nat;
+        assert_eq!(result, expected)
+    }
+}

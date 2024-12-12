@@ -32,6 +32,7 @@ impl Subst for Term {
             Term::VariantCase(case) => case.subst(var, term).into(),
             Term::Nothing(not) => not.subst(var, term).into(),
             Term::Something(some) => some.subst(var, term).into(),
+            Term::SomeCase(case) => case.subst(var, term).into(),
             Term::Fix(fix) => fix.subst(var, term).into(),
             Term::Nil(nil) => nil.subst(var, term).into(),
             Term::Cons(cons) => cons.subst(var, term).into(),

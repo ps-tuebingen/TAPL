@@ -32,3 +32,41 @@ impl Check for App {
         }
     }
 }
+
+#[cfg(test)]
+mod lambda_tests {
+    use super::{App, Check, Lambda};
+    use crate::{syntax::Zero, types::Type};
+
+    #[test]
+    fn check_lam() {
+        let result = Lambda {
+            var: "x".to_owned(),
+            annot: Type::Nat,
+            body: Box::new("x".to_owned().into()),
+        }
+        .check(&mut Default::default())
+        .unwrap();
+        let expected = Type::Fun(Box::new(Type::Nat), Box::new(Type::Nat));
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn check_app() {
+        let result = App {
+            fun: Box::new(
+                Lambda {
+                    var: "x".to_owned(),
+                    annot: Type::Nat,
+                    body: Box::new("x".to_owned().into()),
+                }
+                .into(),
+            ),
+            arg: Box::new(Zero.into()),
+        }
+        .check(&mut Default::default())
+        .unwrap();
+        let expected = Type::Nat;
+        assert_eq!(result, expected)
+    }
+}

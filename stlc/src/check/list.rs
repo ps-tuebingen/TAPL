@@ -104,3 +104,89 @@ impl Check for Tail {
         }
     }
 }
+
+#[cfg(test)]
+mod list_tests {
+    use super::{Check, Cons, Head, IsNil, Nil, Tail};
+    use crate::{syntax::Zero, types::Type};
+
+    #[test]
+    fn check_nil() {
+        let result = Nil {
+            inner_type: Type::Bool,
+        }
+        .check(&mut Default::default())
+        .unwrap();
+        let expected = Type::List(Box::new(Type::Bool));
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn check_cons() {
+        let result = Cons {
+            fst: Box::new(Zero.into()),
+            inner_type: Type::Nat,
+            rst: Box::new(
+                Nil {
+                    inner_type: Type::Nat,
+                }
+                .into(),
+            ),
+        }
+        .check(&mut Default::default())
+        .unwrap();
+        let expected = Type::List(Box::new(Type::Nat));
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn check_isnil() {
+        let result = IsNil {
+            inner_type: Type::Nat,
+            list: Box::new(
+                Nil {
+                    inner_type: Type::Nat,
+                }
+                .into(),
+            ),
+        }
+        .check(&mut Default::default())
+        .unwrap();
+        let expected = Type::Bool;
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn check_head() {
+        let result = Head {
+            inner_type: Type::Nat,
+            list: Box::new(
+                Nil {
+                    inner_type: Type::Nat,
+                }
+                .into(),
+            ),
+        }
+        .check(&mut Default::default())
+        .unwrap();
+        let expected = Type::Nat;
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn check_tail() {
+        let result = Tail {
+            inner_type: Type::Bool,
+            list: Box::new(
+                Nil {
+                    inner_type: Type::Bool,
+                }
+                .into(),
+            ),
+        }
+        .check(&mut Default::default())
+        .unwrap();
+        let expected = Type::List(Box::new(Type::Bool));
+        assert_eq!(result, expected)
+    }
+}

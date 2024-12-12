@@ -39,3 +39,36 @@ impl Check for If {
         }
     }
 }
+
+#[cfg(test)]
+mod bool_tests {
+    use super::{Check, False, If, True};
+    use crate::types::Type;
+
+    #[test]
+    fn check_true() {
+        let result = True.check(&mut Default::default()).unwrap();
+        let expected = Type::Bool;
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn check_false() {
+        let result = False.check(&mut Default::default()).unwrap();
+        let expected = Type::Bool;
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn check_if() {
+        let result = If {
+            ifc: Box::new(True.into()),
+            thenc: Box::new(False.into()),
+            elsec: Box::new(True.into()),
+        }
+        .check(&mut Default::default())
+        .unwrap();
+        let expected = Type::Bool;
+        assert_eq!(result, expected)
+    }
+}

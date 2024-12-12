@@ -31,6 +31,7 @@ impl Eval for Term {
             Term::VariantCase(case) => case.eval(),
             Term::Nothing(not) => not.eval(),
             Term::Something(some) => some.eval(),
+            Term::SomeCase(case) => case.eval(),
             Term::Fix(fix) => fix.eval(),
             Term::Nil(nil) => nil.eval(),
             Term::Cons(cons) => cons.eval(),

@@ -71,3 +71,70 @@ impl Check for VariantCase {
         }
     }
 }
+
+#[cfg(test)]
+mod variant_tests {
+    use super::{Check, Variant, VariantCase, VariantPattern};
+    use crate::{
+        syntax::{IsZero, Zero},
+        types::Type,
+    };
+    use std::collections::HashMap;
+
+    #[test]
+    fn check_variant() {
+        let result = Variant {
+            label: "label1".to_owned(),
+            term: Box::new(Zero.into()),
+            ty: Type::Variant(HashMap::from([
+                ("label1".to_owned(), Type::Nat),
+                ("label2".to_owned(), Type::Bool),
+            ])),
+        }
+        .check(&mut Default::default())
+        .unwrap();
+        let expected = Type::Variant(HashMap::from([
+            ("label1".to_owned(), Type::Nat),
+            ("label2".to_owned(), Type::Bool),
+        ]));
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn check_variantcase() {
+        let result = VariantCase {
+            bound_term: Box::new(
+                Variant {
+                    label: "label1".to_owned(),
+                    term: Box::new(Zero.into()),
+                    ty: Type::Variant(HashMap::from([
+                        ("label1".to_owned(), Type::Nat),
+                        ("label2".to_owned(), Type::Bool),
+                    ])),
+                }
+                .into(),
+            ),
+            cases: vec![
+                VariantPattern {
+                    bound_var: "x".to_owned(),
+                    label: "label1".to_owned(),
+                    rhs: Box::new(
+                        IsZero {
+                            term: Box::new("x".to_owned().into()),
+                        }
+                        .into(),
+                    ),
+                },
+                VariantPattern {
+                    bound_var: "y".to_owned(),
+                    label: "label2".to_owned(),
+                    rhs: Box::new("y".to_owned().into()),
+                },
+            ],
+        }
+        .check(&mut Default::default())
+        .unwrap();
+        let expected = Type::Bool;
+        assert_eq!(result, expected)
+    }
+}

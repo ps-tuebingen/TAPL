@@ -23,7 +23,7 @@ pub use lambda::{App, Lambda};
 pub use let_exp::Let;
 pub use list::{Cons, Head, IsNil, Nil, Tail};
 pub use nat::{IsZero, Pred, Succ, Zero};
-pub use optional::{Nothing, Something};
+pub use optional::{Nothing, SomeCase, Something};
 pub use pair::{Pair, Proj1, Proj2};
 pub use record::{Record, RecordProj};
 pub use sum::{Left, Right, SumCase};
@@ -60,12 +60,62 @@ pub enum Term {
     VariantCase(VariantCase),
     Nothing(Nothing),
     Something(Something),
+    SomeCase(SomeCase),
     Fix(Fix),
     Nil(Nil),
     Cons(Cons),
     IsNil(IsNil),
     Head(Head),
     Tail(Tail),
+}
+
+impl Term {
+    pub fn is_numeric_value(&self) -> bool {
+        match self {
+            Term::Zero(_) => true,
+            Term::Succ(s) => s.term.is_numeric_value() && !matches!(*s.term, Term::Pred(_)),
+            Term::Pred(p) => p.term.is_numeric_value() && !matches!(*p.term, Term::Succ(_)),
+            _ => false,
+        }
+    }
+    pub fn is_value(&self) -> bool {
+        match self {
+            Term::Var(_) => false,
+            Term::Lambda(_) => true,
+            Term::App(_) => false,
+            Term::Unit(_) => true,
+            Term::True(_) => true,
+            Term::False(_) => true,
+            Term::If(_) => false,
+            Term::Zero(_) => true,
+            Term::Pred(_) => self.is_numeric_value(),
+            Term::Succ(_) => self.is_numeric_value(),
+            Term::IsZero(_) => false,
+            Term::Ascribe(asc) => asc.term.is_value(),
+            Term::Let(_) => false,
+            Term::Pair(p) => p.fst.is_value() && p.snd.is_value(),
+            Term::Proj1(_) => false,
+            Term::Proj2(_) => false,
+            Term::Tup(tups) => tups.terms.iter().all(|x| x.is_value()),
+            Term::Proj(_) => false,
+            Term::Record(rec) => rec.records.iter().all(|(_, t)| t.is_value()),
+            Term::RecordProj(_) => false,
+            Term::Left(l) => l.left_term.is_value(),
+            Term::Right(r) => r.right_term.is_value(),
+            Term::SumCase(_) => false,
+            Term::Variant(var) => var.term.is_value(),
+            Term::VariantCase(_) => false,
+            Term::Nothing(_) => true,
+            Term::Something(s) => s.term.is_value(),
+            Term::SomeCase(_) => false,
+            Term::Fix(_) => false,
+            Term::Nil(_) => true,
+            Term::Cons(c) => c.fst.is_value() && c.rst.is_value(),
+            Term::IsNil(_) => false,
+            Term::Head(_) => false,
+            Term::Tail(_) => false,
+        }
+    }
 }
 
 impl From<Var> for Term {
@@ -104,6 +154,7 @@ impl fmt::Display for Term {
             Term::VariantCase(case) => case.fmt(f),
             Term::Nothing(not) => not.fmt(f),
             Term::Something(some) => some.fmt(f),
+            Term::SomeCase(case) => case.fmt(f),
             Term::Fix(fix) => fix.fmt(f),
             Term::Nil(nil) => nil.fmt(f),
             Term::Cons(cons) => cons.fmt(f),

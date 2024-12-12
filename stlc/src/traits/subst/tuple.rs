@@ -11,7 +11,7 @@ impl Subst for Tup {
             terms: self
                 .terms
                 .into_iter()
-                .map(|t| t.subst(&var, term.clone()))
+                .map(|t| t.subst(var, term.clone()))
                 .collect(),
         }
     }

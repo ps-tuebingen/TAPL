@@ -33,3 +33,50 @@ impl Check for RecordProj {
         }
     }
 }
+
+#[cfg(test)]
+mod record_tests {
+    use super::{Check, Record, RecordProj};
+    use crate::{
+        syntax::{Unit, Zero},
+        types::Type,
+    };
+    use std::collections::HashMap;
+
+    #[test]
+    fn check_record() {
+        let result = Record {
+            records: HashMap::from([
+                ("label1".to_owned(), Unit.into()),
+                ("label2".to_owned(), Zero.into()),
+            ]),
+        }
+        .check(&mut Default::default())
+        .unwrap();
+        let expected = Type::Record(HashMap::from([
+            ("label1".to_owned(), Type::Unit),
+            ("label2".to_owned(), Type::Nat),
+        ]));
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn check_proj() {
+        let result = RecordProj {
+            record: Box::new(
+                Record {
+                    records: HashMap::from([
+                        ("label1".to_owned(), Unit.into()),
+                        ("label2".to_owned(), Zero.into()),
+                    ]),
+                }
+                .into(),
+            ),
+            label: "label1".to_owned(),
+        }
+        .check(&mut Default::default())
+        .unwrap();
+        let expected = Type::Unit;
+        assert_eq!(result, expected)
+    }
+}

@@ -50,3 +50,62 @@ impl Check for SumCase {
         }
     }
 }
+
+#[cfg(test)]
+mod sum_tests {
+    use super::{Check, Left, Right, SumCase};
+    use crate::{
+        syntax::{IsZero, True, Zero},
+        types::Type,
+    };
+
+    #[test]
+    fn check_left() {
+        let result = Left {
+            left_term: Box::new(Zero.into()),
+            right_ty: Type::Bool,
+        }
+        .check(&mut Default::default())
+        .unwrap();
+        let expected = Type::Sum(Box::new(Type::Nat), Box::new(Type::Bool));
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn check_right() {
+        let result = Right {
+            right_term: Box::new(True.into()),
+            left_ty: Type::Nat,
+        }
+        .check(&mut Default::default())
+        .unwrap();
+        let expected = Type::Sum(Box::new(Type::Nat), Box::new(Type::Bool));
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn check_case() {
+        let result = SumCase {
+            bound_term: Box::new(
+                Left {
+                    left_term: Box::new(Zero.into()),
+                    right_ty: Type::Bool,
+                }
+                .into(),
+            ),
+            left_var: "x".to_owned(),
+            left_term: Box::new(
+                IsZero {
+                    term: Box::new("x".to_owned().into()),
+                }
+                .into(),
+            ),
+            right_var: "y".to_owned(),
+            right_term: Box::new("y".to_owned().into()),
+        }
+        .check(&mut Default::default())
+        .unwrap();
+        let expected = Type::Bool;
+        assert_eq!(result, expected)
+    }
+}

@@ -33,3 +33,67 @@ impl Check for Proj {
         }
     }
 }
+
+#[cfg(test)]
+mod tup_tests {
+    use super::{Check, Proj, Tup};
+    use crate::{
+        syntax::{Nil, Nothing, True, Zero},
+        types::Type,
+    };
+
+    #[test]
+    fn check_tup() {
+        let result = Tup {
+            terms: vec![
+                Zero.into(),
+                True.into(),
+                Nil {
+                    inner_type: Type::Bool,
+                }
+                .into(),
+                Nothing {
+                    inner_type: Type::Nat,
+                }
+                .into(),
+            ],
+        }
+        .check(&mut Default::default())
+        .unwrap();
+        let expected = Type::Tup(vec![
+            Type::Nat,
+            Type::Bool,
+            Type::List(Box::new(Type::Bool)),
+            Type::Optional(Box::new(Type::Nat)),
+        ]);
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn check_proj() {
+        let result = Proj {
+            tup: Box::new(
+                Tup {
+                    terms: vec![
+                        Zero.into(),
+                        True.into(),
+                        Nil {
+                            inner_type: Type::Bool,
+                        }
+                        .into(),
+                        Nothing {
+                            inner_type: Type::Nat,
+                        }
+                        .into(),
+                    ],
+                }
+                .into(),
+            ),
+            ind: 0,
+        }
+        .check(&mut Default::default())
+        .unwrap();
+        let expected = Type::Nat;
+        assert_eq!(result, expected)
+    }
+}

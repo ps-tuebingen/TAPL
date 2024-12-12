@@ -39,3 +39,58 @@ impl Check for Proj2 {
         }
     }
 }
+
+#[cfg(test)]
+mod pair_tests {
+    use super::{Check, Pair, Proj1, Proj2};
+    use crate::{
+        syntax::{True, Zero},
+        types::Type,
+    };
+
+    #[test]
+    fn check_pair() {
+        let result = Pair {
+            fst: Box::new(Zero.into()),
+            snd: Box::new(True.into()),
+        }
+        .check(&mut Default::default())
+        .unwrap();
+        let expected = Type::Prod(Box::new(Type::Nat), Box::new(Type::Bool));
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn check_proj1() {
+        let result = Proj1 {
+            pair: Box::new(
+                Pair {
+                    fst: Box::new(Zero.into()),
+                    snd: Box::new(True.into()),
+                }
+                .into(),
+            ),
+        }
+        .check(&mut Default::default())
+        .unwrap();
+        let expected = Type::Nat;
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn check_proj2() {
+        let result = Proj2 {
+            pair: Box::new(
+                Pair {
+                    fst: Box::new(Zero.into()),
+                    snd: Box::new(True.into()),
+                }
+                .into(),
+            ),
+        }
+        .check(&mut Default::default())
+        .unwrap();
+        let expected = Type::Bool;
+        assert_eq!(result, expected)
+    }
+}
