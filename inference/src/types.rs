@@ -1,5 +1,3 @@
-use super::Var;
-use std::collections::HashMap;
 use std::fmt;
 
 pub type TypeVar = String;
@@ -12,10 +10,7 @@ pub enum Type {
     Bool,
     Nat,
     Prod(Box<Type>, Box<Type>),
-    Tup(Vec<Type>),
-    Record(HashMap<Var, Type>),
     Sum(Box<Type>, Box<Type>),
-    Variant(HashMap<Var, Type>),
     Optional(Box<Type>),
     List(Box<Type>),
 }
@@ -41,30 +36,19 @@ impl Type {
                 Box::new((*ty1).subst(v, ty.clone())),
                 Box::new((*ty2).subst(v, ty)),
             ),
-            Type::Tup(tys) => Type::Tup(
-                tys.into_iter()
-                    .map(|ty2| ty2.subst(v, ty.clone()))
-                    .collect(),
-            ),
-            Type::Record(records) => Type::Record(
-                records
-                    .into_iter()
-                    .map(|(label, ty2)| (label, ty2.subst(v, ty.clone())))
-                    .collect(),
-            ),
             Type::Sum(ty1, ty2) => Type::Sum(
                 Box::new((*ty1).subst(v, ty.clone())),
                 Box::new((*ty2).subst(v, ty)),
             ),
-            Type::Variant(variants) => Type::Variant(
-                variants
-                    .into_iter()
-                    .map(|(label, ty2)| (label, ty2.subst(v, ty.clone())))
-                    .collect(),
-            ),
             Type::Optional(ty2) => Type::Optional(Box::new((*ty2).subst(v, ty))),
             Type::List(ty2) => Type::List(Box::new((*ty2).subst(v, ty))),
         }
+    }
+}
+
+impl From<TypeVar> for Type {
+    fn from(v: TypeVar) -> Type {
+        Type::Var(v)
     }
 }
 
@@ -77,32 +61,7 @@ impl fmt::Display for Type {
             Type::Bool => f.write_str("Bool"),
             Type::Nat => f.write_str("Nat"),
             Type::Prod(ty1, ty2) => write!(f, "{ty1} x {ty2}"),
-            Type::Tup(tys) => write!(
-                f,
-                "({})",
-                tys.iter()
-                    .map(|ty| format!("{}", ty))
-                    .collect::<Vec<String>>()
-                    .join(", ")
-            ),
-            Type::Record(records) => write!(
-                f,
-                "{{ {} }}",
-                records
-                    .iter()
-                    .map(|(label, ty)| format!("{label}:{ty}"))
-                    .collect::<Vec<String>>()
-                    .join(", ")
-            ),
             Type::Sum(ty1, ty2) => write!(f, "{ty1}+{ty2}"),
-            Type::Variant(vars) => write!(
-                f,
-                "<{}>",
-                vars.iter()
-                    .map(|(label, ty)| format!("{label}:{ty}"))
-                    .collect::<Vec<String>>()
-                    .join(", ")
-            ),
             Type::Optional(ty) => write!(f, "Option {ty}"),
             Type::List(ty) => write!(f, "List {ty}"),
         }

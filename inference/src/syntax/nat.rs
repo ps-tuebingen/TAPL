@@ -19,6 +19,24 @@ pub struct IsZero {
     pub term: Box<Term>,
 }
 
+impl From<i64> for Term {
+    fn from(i: i64) -> Term {
+        if i == 0 {
+            Zero.into()
+        } else if i > 0 {
+            Succ {
+                term: Box::new((i - 1).into()),
+            }
+            .into()
+        } else {
+            Pred {
+                term: Box::new((i + 1).into()),
+            }
+            .into()
+        }
+    }
+}
+
 impl From<Zero> for Term {
     fn from(z: Zero) -> Term {
         Term::Zero(z)
@@ -64,5 +82,56 @@ impl fmt::Display for Succ {
 impl fmt::Display for IsZero {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "iszero({})", self.term)
+    }
+}
+
+#[cfg(test)]
+mod nat_tests {
+    use super::{Pred, Succ, Term, Zero};
+    #[test]
+    fn from_three() {
+        let result: Term = 3.into();
+        let expected = Succ {
+            term: Box::new(
+                Succ {
+                    term: Box::new(
+                        Succ {
+                            term: Box::new(Zero.into()),
+                        }
+                        .into(),
+                    ),
+                }
+                .into(),
+            ),
+        }
+        .into();
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn from_neg() {
+        let result: Term = (-3).into();
+        let expected = Pred {
+            term: Box::new(
+                Pred {
+                    term: Box::new(
+                        Pred {
+                            term: Box::new(Zero.into()),
+                        }
+                        .into(),
+                    ),
+                }
+                .into(),
+            ),
+        }
+        .into();
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn from_zero() {
+        let result: Term = 0.into();
+        let expected = Zero.into();
+        assert_eq!(result, expected)
     }
 }

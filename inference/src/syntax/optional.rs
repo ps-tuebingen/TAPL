@@ -1,4 +1,5 @@
 use super::Term;
+use crate::Var;
 use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -7,6 +8,14 @@ pub struct Nothing;
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Something {
     pub term: Box<Term>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct SomeCase {
+    pub bound_term: Box<Term>,
+    pub none_rhs: Box<Term>,
+    pub some_var: Var,
+    pub some_rhs: Box<Term>,
 }
 
 impl From<Nothing> for Term {
@@ -21,6 +30,12 @@ impl From<Something> for Term {
     }
 }
 
+impl From<SomeCase> for Term {
+    fn from(case: SomeCase) -> Term {
+        Term::SomeCase(case)
+    }
+}
+
 impl fmt::Display for Nothing {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.write_str("Nothing")
@@ -30,5 +45,15 @@ impl fmt::Display for Nothing {
 impl fmt::Display for Something {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "Some({})", self.term)
+    }
+}
+
+impl fmt::Display for SomeCase {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(
+            f,
+            "case {} of None => {} | Some {} => {}",
+            self.bound_term, self.none_rhs, self.some_var, self.some_rhs
+        )
     }
 }

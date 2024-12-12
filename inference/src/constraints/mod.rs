@@ -1,62 +1,22 @@
-use crate::{
-    syntax::Term,
-    types::{Type, TypeVar},
-    Var,
-};
-use std::collections::{HashMap, HashSet};
+use crate::{syntax::Term, types::Type, Var};
+use std::collections::HashMap;
 
+pub mod constraint;
 pub mod errors;
+pub mod gen_constraints;
+pub mod unify;
 
 use errors::Error;
-
-pub struct Constraint {
-    pub left: Type,
-    pub right: Type,
-}
-
-impl Constraint {
-    pub fn subst(self, v: &TypeVar, ty: Type) -> Constraint {
-        Constraint {
-            left: self.left.subst(v, ty.clone()),
-            right: self.right.subst(v, ty.clone()),
-        }
-    }
-
-    pub fn subst_all(constrs: Vec<Constraint>, v: &TypeVar, ty: Type) -> Vec<Constraint> {
-        constrs
-            .into_iter()
-            .map(|ctr| ctr.subst(v, ty.clone()))
-            .collect()
-    }
-}
+use gen_constraints::{GenConstraints, GenState};
+use unify::{unify, Unifier};
 
 pub type TypingEnv = HashMap<Var, Type>;
-pub type Unifier = HashMap<TypeVar, Type>;
 
-pub fn fres_unification_var(used_vars: &HashSet<TypeVar>) -> TypeVar {
-    let mut count = 0;
-    while used_vars.contains(&("X".to_owned() + &count.to_string())) {
-        count += 1;
-    }
-    "X".to_owned() + &count.to_string()
-}
-
-pub fn typecheck(term: Term, env: &mut TypingEnv) -> Result<Type, Error> {
-    let (ty, constraints) = generate_constraints(term, env);
-    let unified = unify_constraints(constraints)?;
+pub fn typecheck(term: Term) -> Result<Type, Error> {
+    let mut state = GenState::default();
+    let ty = term.gen_constraints(&mut state);
+    let unified = unify(state.constrs)?;
     Ok(apply_unifier(unified, ty))
-}
-
-pub fn generate_constraints(term: Term, env: &mut TypingEnv) -> (Type, Vec<Constraint>) {
-    todo!()
-}
-
-pub fn unify_constraints(constraints: Vec<Constraint>) -> Result<Unifier, Error> {
-    todo!()
-}
-
-pub fn consains_var(ty: &Type, var: &TypeVar) -> bool {
-    todo!()
 }
 
 pub fn apply_unifier(unifier: Unifier, ty: Type) -> Type {
@@ -73,28 +33,151 @@ pub fn apply_unifier(unifier: Unifier, ty: Type) -> Type {
             Box::new(apply_unifier(unifier.clone(), *ty1)),
             Box::new(apply_unifier(unifier, *ty2)),
         ),
-        Type::Tup(tys) => Type::Tup(
-            tys.into_iter()
-                .map(|ty| apply_unifier(unifier.clone(), ty))
-                .collect(),
-        ),
-        Type::Record(records) => Type::Record(
-            records
-                .into_iter()
-                .map(|(key, ty)| (key, apply_unifier(unifier.clone(), ty)))
-                .collect(),
-        ),
         Type::Sum(ty1, ty2) => Type::Sum(
             Box::new(apply_unifier(unifier.clone(), *ty1)),
             Box::new(apply_unifier(unifier.clone(), *ty2)),
         ),
-        Type::Variant(variants) => Type::Variant(
-            variants
-                .into_iter()
-                .map(|(key, ty)| (key, apply_unifier(unifier.clone(), ty)))
-                .collect(),
-        ),
         Type::Optional(ty) => Type::Optional(Box::new(apply_unifier(unifier, *ty))),
         Type::List(ty) => Type::List(Box::new(apply_unifier(unifier, *ty))),
+    }
+}
+
+#[cfg(test)]
+mod infer_tests {
+    use super::typecheck;
+    use crate::{
+        syntax::{
+            App, Cons, False, Head, If, Lambda, Left, Nil, Nothing, Pred, Something, Succ, SumCase,
+            True, Zero,
+        },
+        types::Type,
+    };
+
+    #[test]
+    fn infer_id() {
+        let result = typecheck(
+            Lambda {
+                var: "x".to_owned(),
+                body: Box::new("x".to_owned().into()),
+            }
+            .into(),
+        )
+        .unwrap();
+        let expected = Type::Fun(
+            Box::new(Type::Var("X0".to_owned())),
+            Box::new(Type::Var("X0".to_owned())),
+        );
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn infer_lam() {
+        let result = typecheck(
+            App {
+                fun: Box::new(
+                    Lambda {
+                        var: "x".to_owned(),
+                        body: Box::new(
+                            Succ {
+                                term: Box::new("x".to_owned().into()),
+                            }
+                            .into(),
+                        ),
+                    }
+                    .into(),
+                ),
+                arg: Box::new(
+                    Pred {
+                        term: Box::new(Zero.into()),
+                    }
+                    .into(),
+                ),
+            }
+            .into(),
+        )
+        .unwrap();
+        let expected = Type::Nat;
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn infer_list() {
+        let result = typecheck(
+            Head {
+                list: Box::new(
+                    Cons {
+                        fst: Box::new(
+                            If {
+                                ifc: Box::new(False.into()),
+                                thenc: Box::new(Zero.into()),
+                                elsec: Box::new(
+                                    Succ {
+                                        term: Box::new(Zero.into()),
+                                    }
+                                    .into(),
+                                ),
+                            }
+                            .into(),
+                        ),
+                        rst: Box::new(
+                            Cons {
+                                fst: Box::new(Zero.into()),
+                                rst: Box::new(Nil.into()),
+                            }
+                            .into(),
+                        ),
+                    }
+                    .into(),
+                ),
+            }
+            .into(),
+        )
+        .unwrap();
+        let expected = Type::Nat;
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn infer_sumcase() {
+        let result = typecheck(
+            SumCase {
+                bound_term: Box::new(
+                    Left {
+                        left_term: Box::new(True.into()),
+                    }
+                    .into(),
+                ),
+                left_var: "x".to_owned(),
+                left_term: Box::new(
+                    If {
+                        ifc: Box::new("x".to_owned().into()),
+                        thenc: Box::new(Nothing.into()),
+                        elsec: Box::new(
+                            Something {
+                                term: Box::new(Zero.into()),
+                            }
+                            .into(),
+                        ),
+                    }
+                    .into(),
+                ),
+                right_var: "y".to_owned(),
+                right_term: Box::new(
+                    Something {
+                        term: Box::new(
+                            Succ {
+                                term: Box::new("y".to_owned().into()),
+                            }
+                            .into(),
+                        ),
+                    }
+                    .into(),
+                ),
+            }
+            .into(),
+        )
+        .unwrap();
+        let expected = Type::Optional(Box::new(Type::Nat));
+        assert_eq!(result, expected)
     }
 }
