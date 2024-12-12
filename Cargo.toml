@@ -3,7 +3,9 @@ members = [
     "app",
     "stlc",
     "untyped_lambda",
-    "inference"
+    "untyped_arithmetic",
+    "inference",
+    "nameless_representation"
 ]
 
 resolver = "2"
