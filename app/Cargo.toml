@@ -13,3 +13,5 @@ untyped_lambda = { path="../untyped_lambda" }
 stlc = { path="../stlc" }
 inference = {path="../inference"}
 nameless_representation = {path="../nameless_representation"}
+references = {path="../references"}
+exceptions = {path="../exceptions"}

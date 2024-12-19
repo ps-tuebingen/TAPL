@@ -12,7 +12,7 @@ impl NamingContext {
     }
 
     pub fn max_ind(&self) -> Option<usize> {
-        self.mappings.iter().map(|(_, ind)| ind).max().map(|i| *i)
+        self.mappings.iter().map(|(_, ind)| ind).max().copied()
     }
 
     pub fn shift_up(&mut self) {
@@ -43,7 +43,7 @@ impl NamingContext {
             .find(|(_, (var, _))| *var == v)
             .map(|(ind, _)| ind);
         match ind {
-            None => return,
+            None => (),
             Some(i) => {
                 self.mappings.remove(i);
             }

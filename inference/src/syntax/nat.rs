@@ -21,18 +21,16 @@ pub struct IsZero {
 
 impl From<i64> for Term {
     fn from(i: i64) -> Term {
-        if i == 0 {
-            Zero.into()
-        } else if i > 0 {
-            Succ {
+        match i {
+            0 => Zero.into(),
+            i if i > 0 => Succ {
                 term: Box::new((i - 1).into()),
             }
-            .into()
-        } else {
-            Pred {
+            .into(),
+            _ => Pred {
                 term: Box::new((i + 1).into()),
             }
-            .into()
+            .into(),
         }
     }
 }
