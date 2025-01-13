@@ -29,9 +29,7 @@ pub fn restore_with_ctx(t: NamelessTerm, ctx: &mut NamingContext) -> NamedTerm {
                 None => 0,
                 Some(i) => i + 1,
             };
-            println!("new index {new_ind}");
             let new_var = format!("x{new_ind}");
-            println!("added {new_var} to ctx {ctx:?}");
             ctx.add_var(new_var.clone());
             let inner = restore_with_ctx(*t, ctx);
             NamedTerm::Lambda(new_var, Box::new(inner))
