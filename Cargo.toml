@@ -4,8 +4,19 @@ members = [
     "stlc",
     "untyped_lambda",
     "untyped_arithmetic",
+    "exceptions",
+    "references",
+    "subtypes",
     "inference",
-    "nameless_representation"
+    "nameless_representation",
+    "system_f",
+    "featherweight",
+    "recursive", 
+    "existential",
+    "bounded_quantification",
+    "lambda_omega",
+    "f_omega",
+    "f_omega_sub",
 ]
 
 resolver = "2"
