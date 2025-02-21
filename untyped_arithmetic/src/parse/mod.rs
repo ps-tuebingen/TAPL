@@ -6,8 +6,8 @@ use errors::Error;
 use lexer::{lex, Token};
 use std::collections::VecDeque;
 
-pub fn parse(source: &mut String) -> Result<Term, Error> {
-    let mut tokens = VecDeque::from(lex(source)?);
+pub fn parse(mut source: String) -> Result<Term, Error> {
+    let mut tokens = VecDeque::from(lex(&mut source)?);
     let t = parse_term(&mut tokens)?;
     if tokens.is_empty() {
         Ok(t)

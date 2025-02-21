@@ -1,17 +1,23 @@
-use std::env;
-use untyped_lambda::{
-    eval::{eval, EvalOrder},
-    parse::parse,
-};
+use clap::{Parser, Subcommand};
+mod errors;
+mod untyped_arithmetic;
+
+#[derive(Parser)]
+struct Cli {
+    #[clap(subcommand)]
+    command: Command,
+}
+
+#[derive(Subcommand)]
+enum Command {
+    UntypedArithmetic(untyped_arithmetic::Args),
+}
 
 fn main() -> Result<(), String> {
-    let mut args = env::args();
-    //remove file name
-    args.next();
-    let mut arg_str = args.collect::<Vec<String>>().join(" ");
-    let parsed = parse(&mut arg_str).map_err(|err| err.to_string())?;
-    println!("Parsed term:\n{parsed}");
-    let evaled = eval(parsed, EvalOrder::CBV);
-    println!("Evaled term:\n{evaled}");
-    Ok(())
+    let cli = Cli::parse();
+    match cli.command {
+        Command::UntypedArithmetic(args) => {
+            untyped_arithmetic::exec(args).map_err(|err| err.to_string())
+        }
+    }
 }

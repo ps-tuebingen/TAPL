@@ -8,6 +8,7 @@ name = "tapl"
 path = "src/main.rs"
 
 [dependencies]
+clap = { version = "4", features=["derive"]}
 untyped_arithmetic = { path="../untyped_arithmetic" }
 untyped_lambda = { path="../untyped_lambda" }
 stlc = { path="../stlc" }
