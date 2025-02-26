@@ -27,7 +27,7 @@ pub trait TestRunner {
 }
 
 fn setup() -> Result<(), Box<dyn std::error::Error>> {
-    let dir = current_dir()?.join("..");
+    let dir = current_dir()?.join("..").join("..");
     set_current_dir(dir)?;
     Ok(())
 }

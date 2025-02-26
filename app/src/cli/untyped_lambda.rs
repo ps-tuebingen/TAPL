@@ -27,7 +27,7 @@ pub struct EvalOrder {
 }
 
 impl EvalOrder {
-    fn to_lam_eval_order(self) -> EvalOrd {
+    fn to_lam_eval_order(&self) -> EvalOrd {
         if self.cbn {
             return EvalOrd::CBN;
         }
