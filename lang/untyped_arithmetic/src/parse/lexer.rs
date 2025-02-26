@@ -58,6 +58,7 @@ pub fn lex(source: &mut String) -> Result<Vec<Token>, Error> {
     if source.is_empty() {
         return Err(Error::UnexpectedEOI);
     }
+    *source = source.to_lowercase();
     let mut tokens = vec![];
     while !source.is_empty() {
         let c1 = source.remove(0);
