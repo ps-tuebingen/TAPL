@@ -14,6 +14,7 @@ pub enum Token {
     IsZero,
     ParenO,
     ParenC,
+    Digit(u8),
 }
 
 impl fmt::Display for Token {
@@ -30,6 +31,7 @@ impl fmt::Display for Token {
             Token::IsZero => f.write_str("IsZero"),
             Token::ParenO => f.write_str("("),
             Token::ParenC => f.write_str(")"),
+            Token::Digit(dig) => write!(f, "{dig}"),
         }
     }
 }
@@ -59,7 +61,7 @@ pub fn lex(source: &mut String) -> Result<Vec<Token>, Error> {
     let mut tokens = vec![];
     while !source.is_empty() {
         let c1 = source.remove(0);
-        match c1 {
+        match c1.to_ascii_uppercase() {
             'T' => {
                 if source.starts_with("rue") {
                     remove_n(source, 3)?;
@@ -107,7 +109,7 @@ pub fn lex(source: &mut String) -> Result<Vec<Token>, Error> {
                 if source.starts_with("f") {
                     remove_n(source, 1)?;
                     tokens.push(Token::If);
-                } else if source.starts_with("sZero") {
+                } else if source.starts_with("szero") {
                     remove_n(source, 5)?;
                     tokens.push(Token::IsZero);
                 } else {
@@ -124,6 +126,10 @@ pub fn lex(source: &mut String) -> Result<Vec<Token>, Error> {
             }
             '(' => tokens.push(Token::ParenO),
             ')' => tokens.push(Token::ParenC),
+            c if c.is_numeric() => {
+                let dig = c.to_string().parse::<u8>().unwrap();
+                tokens.push(Token::Digit(dig));
+            }
             _ => return Err(Error::UnexpectedChar(c1)),
         }
         remove_whitespace(source)
@@ -192,6 +198,13 @@ mod lexer_tests {
     fn lex_iszero() {
         let result = lex(&mut "IsZero(Zero)".to_owned()).unwrap();
         let expected = vec![Token::IsZero, Token::ParenO, Token::Zero, Token::ParenC];
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn lex_num() {
+        let result = lex(&mut "123".to_owned()).unwrap();
+        let expected = vec![Token::Digit(1), Token::Digit(2), Token::Digit(3)];
         assert_eq!(result, expected)
     }
 }
