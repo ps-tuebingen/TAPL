@@ -1,17 +1,8 @@
-use clap::{Parser, Subcommand};
-mod errors;
-mod untyped_arithmetic;
+use clap::Parser;
 
-#[derive(Parser)]
-struct Cli {
-    #[clap(subcommand)]
-    command: Command,
-}
+mod cli;
 
-#[derive(Subcommand)]
-enum Command {
-    UntypedArithmetic(untyped_arithmetic::Args),
-}
+use cli::{untyped_arithmetic, Cli, Command};
 
 fn main() -> Result<(), String> {
     let cli = Cli::parse();
@@ -19,5 +10,6 @@ fn main() -> Result<(), String> {
         Command::UntypedArithmetic(args) => {
             untyped_arithmetic::exec(args).map_err(|err| err.to_string())
         }
+        Command::UntypedLambda(args) => todo!(),
     }
 }

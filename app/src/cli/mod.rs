@@ -1,14 +1,22 @@
-use super::errors::Error;
+use clap::{Parser, Subcommand};
 use std::{fs::read_to_string, path::PathBuf};
-use untyped_arithmetic::parse::parse;
 
-#[derive(clap::Args)]
-pub struct Args {
-    #[clap(flatten)]
-    source: Source,
-    /// Print additional information
-    #[clap(short, long)]
-    verbose: bool,
+mod errors;
+pub mod untyped_arithmetic;
+pub mod untyped_lambda;
+
+use errors::Error;
+
+#[derive(Parser)]
+pub struct Cli {
+    #[clap(subcommand)]
+    pub command: Command,
+}
+
+#[derive(Subcommand)]
+pub enum Command {
+    UntypedArithmetic(untyped_arithmetic::Args),
+    UntypedLambda(untyped_lambda::Args),
 }
 
 #[derive(Debug, clap::Args)]
@@ -35,15 +43,4 @@ impl Source {
 
         panic!("Either --file or --input must be provided")
     }
-}
-
-pub fn exec(args: Args) -> Result<(), Error> {
-    let src = args.source.get_source()?;
-    let parsed = parse(src)?;
-    if args.verbose {
-        println!("Successfully parsed {parsed:?}\n");
-    }
-    let evaled = parsed.eval();
-    println!("{evaled:?}");
-    Ok(())
 }
