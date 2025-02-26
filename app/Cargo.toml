@@ -9,19 +9,19 @@ path = "src/main.rs"
 
 [dependencies]
 clap = { version = "4", features=["derive"]}
-untyped_arithmetic = { path="../untyped_arithmetic" }
-untyped_lambda = { path="../untyped_lambda" }
-stlc = { path="../stlc" }
-inference = {path="../inference"}
-nameless_representation = {path="../nameless_representation"}
-references = {path="../references"}
-exceptions = {path="../exceptions"}
-subtypes = {path="../subtypes"}
-featherweight = {path="../featherweight"}
-system_f = {path="../system_f"}
-recursive = {path="../recursive"}
-existential = {path="../existential"}
-bounded_quantification = {path="../bounded_quantification"}
-lambda_omega = {path="../lambda_omega"}
-f_omega = {path="../f_omega"}
-f_omega_sub = {path="../f_omega_sub"}
+untyped_arithmetic = { path="../lang/untyped_arithmetic" }
+untyped_lambda = { path="../lang/untyped_lambda" }
+stlc = { path="../lang/stlc" }
+inference = {path="../lang/inference"}
+nameless_representation = {path="../lang/nameless_representation"}
+references = {path="../lang/references"}
+exceptions = {path="../lang/exceptions"}
+subtypes = {path="../lang/subtypes"}
+featherweight = {path="../lang/featherweight"}
+system_f = {path="../lang/system_f"}
+recursive = {path="../lang/recursive"}
+existential = {path="../lang/existential"}
+bounded_quantification = {path="../lang/bounded_quantification"}
+lambda_omega = {path="../lang/lambda_omega"}
+f_omega = {path="../lang/f_omega"}
+f_omega_sub = {path="../lang/f_omega_sub"}
