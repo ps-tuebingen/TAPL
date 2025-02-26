@@ -3,11 +3,13 @@ use std::{
     path::PathBuf,
 };
 
+mod nameless;
 mod paths;
 mod test;
 mod untyped_arithmetic;
 mod untyped_lambda;
 
+use nameless::NamelessRepTests;
 use paths::{EXAMPLES_PATH, UNTYPED_ARITH_PATH, UNTYPED_LAMBDA_PATH};
 use test::{Test, TestResult};
 use untyped_arithmetic::UntypedArithTests;
@@ -60,6 +62,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     println!("Running tests for untyped lambda\n");
     fails += UntypedLambdaTests::new(examples_dir.join(UNTYPED_LAMBDA_PATH)).run_all_tests()?;
+
+    println!("Running tests for locally nameless representation\n");
+    fails += NamelessRepTests::new(examples_dir.join(UNTYPED_LAMBDA_PATH)).run_all_tests()?;
 
     println!("Finished running tests with {} fails", fails);
     if fails > 0 {
