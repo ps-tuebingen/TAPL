@@ -1,2 +1,3 @@
-pub const EXAMPLES_PATH:&str = "examples";
-pub const UNTYPED_ARITH_PATH:&str = "untyped_arithmetic";
+pub const EXAMPLES_PATH: &str = "examples";
+pub const UNTYPED_ARITH_PATH: &str = "untyped_arithmetic";
+pub const UNTYPED_LAMBDA_PATH: &str = "untyped_lambda";

@@ -3,25 +3,26 @@ use super::{
     TestRunner,
 };
 use std::path::PathBuf;
-use untyped_arithmetic::parse::parse;
+use untyped_lambda::parse::parse;
 
-pub struct UntypedArithTests {
+pub struct UntypedLambdaTests {
     source_dir: PathBuf,
 }
 
-impl UntypedArithTests {
-    pub fn new(source_dir: PathBuf) -> UntypedArithTests {
-        UntypedArithTests { source_dir }
+impl UntypedLambdaTests {
+    pub fn new(source_dir: PathBuf) -> UntypedLambdaTests {
+        UntypedLambdaTests { source_dir }
     }
 }
 
-impl TestRunner for UntypedArithTests {
+impl TestRunner for UntypedLambdaTests {
     fn suite_name(&self) -> String {
-        "Untyped Arithmetic".to_owned()
+        "Untyped Lambda".to_owned()
     }
 
     fn run_test(&self, test: Test) -> TestResult {
-        match parse(test.source_str) {
+        let mut source = test.source_str;
+        match parse(&mut source) {
             Ok(_) => TestResult::Success,
             Err(err) => TestResult::Fail(err.to_string()),
         }
