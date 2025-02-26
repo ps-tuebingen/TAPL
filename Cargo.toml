@@ -1,6 +1,7 @@
 [workspace]
 members = [
     "app",
+    "testsuite",
     "lang/stlc",
     "lang/untyped_lambda",
     "lang/untyped_arithmetic",
