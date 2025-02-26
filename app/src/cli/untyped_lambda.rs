@@ -1,4 +1,5 @@
 use super::{errors::Error, Source};
+use nameless_representation::remove_names::remove_names;
 use untyped_lambda::{
     eval::{eval, EvalOrder as EvalOrd},
     parse::parse,
@@ -13,6 +14,8 @@ pub struct Args {
     verbose: bool,
     #[clap(flatten)]
     eo: EvalOrder,
+    #[clap(short, long)]
+    nameless_representation: bool,
 }
 
 #[derive(clap::Args)]
@@ -43,6 +46,12 @@ impl EvalOrder {
 pub fn exec(args: Args) -> Result<(), Error> {
     let mut source = args.source.get_source()?;
     let parsed = parse(&mut source)?;
+    if args.nameless_representation {
+        let nameless = remove_names(parsed.into());
+        println!("{nameless}");
+        return Ok(());
+    }
+
     let evaled = eval(parsed, args.eo.to_lam_eval_order());
     println!("{evaled}");
     Ok(())

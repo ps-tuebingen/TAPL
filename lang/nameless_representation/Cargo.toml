@@ -2,3 +2,6 @@
 name = "nameless_representation"
 version = "0.1.0"
 edition = "2021"
+
+[dependencies]
+untyped_lambda={path="../untyped_lambda"}

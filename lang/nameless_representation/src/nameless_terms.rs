@@ -1,3 +1,5 @@
+use std::fmt;
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Term {
     Var(usize),
@@ -59,6 +61,16 @@ impl Term {
                 let t2_subst = t2.subst(j, t);
                 Term::app(t1_subst, t2_subst)
             }
+        }
+    }
+}
+
+impl fmt::Display for Term {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Term::Var(v) => write!(f, "{v}"),
+            Term::Lambda(t) => write!(f, "\\{t}"),
+            Term::App(t1, t2) => write!(f, "({t1}) ({t2})"),
         }
     }
 }
