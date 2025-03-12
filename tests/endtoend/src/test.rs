@@ -16,8 +16,8 @@ pub enum TestResult {
 impl TestResult {
     pub fn report(self, test_name: &str) {
         match self {
-            TestResult::Success => println!("Test {test_name}.....ok"),
-            TestResult::Fail(msg) => println!("Test {test_name}.....fail\n\t{msg}"),
+            TestResult::Success => println!("Test {test_name}.....\x1b[32mok\x1b[39m"),
+            TestResult::Fail(msg) => println!("Test {test_name}.....\x1b[31mfail\n\t{msg}\x1b[39m"),
         }
     }
 }

@@ -1,1 +1,1 @@
-\f:Bool->Bool.f (if false then true else false)
+\f:(Bool->Bool).(f) (if false then true else false)

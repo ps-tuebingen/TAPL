@@ -1,1 +1,1 @@
-{ pred 4, if true then false else false}.1
+({pred 4, if true then false else false}).1

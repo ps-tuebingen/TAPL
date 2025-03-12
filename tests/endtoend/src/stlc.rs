@@ -3,22 +3,21 @@ use super::{
     TestRunner,
 };
 use std::path::PathBuf;
-use untyped_lambda::parse::parse;
+use stlc::parser::parse;
 
-pub struct UntypedLambdaTests {
+pub struct StlcTests {
     source_dir: PathBuf,
 }
 
-impl UntypedLambdaTests {
-    pub fn new(source_dir: PathBuf) -> UntypedLambdaTests {
-        UntypedLambdaTests { source_dir }
+impl StlcTests {
+    pub fn new(source_dir: PathBuf) -> StlcTests {
+        StlcTests { source_dir }
     }
 }
 
-impl TestRunner for UntypedLambdaTests {
+impl TestRunner for StlcTests {
     fn run_test(&self, test: Test) -> TestResult {
-        let mut source = test.source_str;
-        match parse(&mut source) {
+        match parse(test.source_str) {
             Ok(_) => TestResult::Success,
             Err(err) => TestResult::Fail(err.to_string()),
         }

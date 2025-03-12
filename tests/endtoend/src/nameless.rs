@@ -17,10 +17,6 @@ impl NamelessRepTests {
 }
 
 impl TestRunner for NamelessRepTests {
-    fn suite_name(&self) -> String {
-        "Locally Nameless".to_owned()
-    }
-
     fn run_test(&self, test: Test) -> TestResult {
         let mut source = test.source_str;
         let parsed = match parse(&mut source) {

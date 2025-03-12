@@ -1,0 +1,28 @@
+
+prim_type = { "Bool" | "Nat" | "String" }
+type = {
+  | "(" ~ type ~ "->" ~ type ~ ")"
+  | "(" ~ type ~ "x" ~ type ~ ")"
+  | "(" ~ type ~ "+" ~ type ~ ")"
+  | "{" ~ variable ~ ":" ~ type ~ (", " ~ variable ~ ":" ~ type)* ~ "}"
+  | prim_type  
+} 
+
+variable = { (ASCII_ALPHA | ASCII_DIGIT)+ }
+const = { "true" | "false" | "zero" }
+ctor = { "inl" | "inr" }
+pattern = { ctor ~ (" " ~ term)* ~ "=>" ~ term }
+
+term = { 
+  | paren_term
+  | const 
+  | ASCII_DIGIT+
+  | "{" ~ term ~ (", " ~ term)* ~ "}"
+  | paren_term ~ ".1"
+  | paren_term ~ ".2"
+  | paren_term ~ "." ~ term
+  | "case" ~ term ~ " of " ~ pattern ~ (" | " ~ pattern)*
+  | "\\" ~ variable ~ ":" ~ type ~ "." ~ term 
+  | variable 
+}
+paren_term = { "(" ~ term ~ ")" }

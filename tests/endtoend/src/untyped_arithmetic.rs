@@ -16,10 +16,6 @@ impl UntypedArithTests {
 }
 
 impl TestRunner for UntypedArithTests {
-    fn suite_name(&self) -> String {
-        "Untyped Arithmetic".to_owned()
-    }
-
     fn run_test(&self, test: Test) -> TestResult {
         match parse(test.source_str) {
             Ok(_) => TestResult::Success,
