@@ -12,6 +12,7 @@ pub struct Args {
     /// Print additional information
     #[clap(short, long)]
     verbose: bool,
+    /// Evaluation order to use when evaluating
     #[clap(flatten)]
     eo: EvalOrder,
     #[clap(short, long)]
@@ -21,10 +22,13 @@ pub struct Args {
 #[derive(clap::Args)]
 #[group(required = false, multiple = false)]
 pub struct EvalOrder {
+    /// Call-by-Value
     #[clap(long)]
     cbv: bool,
+    /// Call-by-Name
     #[clap(long)]
     cbn: bool,
+    /// Full-Beta Reduction
     #[clap(long)]
     full_beta: bool,
 }
@@ -46,6 +50,10 @@ impl EvalOrder {
 pub fn exec(args: Args) -> Result<(), Error> {
     let mut source = args.source.get_source()?;
     let parsed = parse(&mut source)?;
+    if args.verbose {
+        println!("parsed: {parsed}");
+    }
+
     if args.nameless_representation {
         let nameless = remove_names(parsed.into());
         println!("{nameless}");

@@ -2,6 +2,7 @@ use clap::{Parser, Subcommand};
 use std::{fs::read_to_string, path::PathBuf};
 
 mod errors;
+pub mod stlc;
 pub mod untyped_arithmetic;
 pub mod untyped_lambda;
 
@@ -17,6 +18,7 @@ pub struct Cli {
 pub enum Command {
     UntypedArithmetic(untyped_arithmetic::Args),
     UntypedLambda(untyped_lambda::Args),
+    Stlc(stlc::Args),
 }
 
 #[derive(Debug, clap::Args)]

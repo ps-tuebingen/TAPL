@@ -2,7 +2,7 @@ use clap::Parser;
 
 mod cli;
 
-use cli::{untyped_arithmetic, untyped_lambda, Cli, Command};
+use cli::{stlc, untyped_arithmetic, untyped_lambda, Cli, Command};
 
 fn main() -> Result<(), String> {
     let cli = Cli::parse();
@@ -11,5 +11,6 @@ fn main() -> Result<(), String> {
             untyped_arithmetic::exec(args).map_err(|err| err.to_string())
         }
         Command::UntypedLambda(args) => untyped_lambda::exec(args).map_err(|err| err.to_string()),
+        Command::Stlc(args) => stlc::exec(args).map_err(|err| err.to_string()),
     }
 }
