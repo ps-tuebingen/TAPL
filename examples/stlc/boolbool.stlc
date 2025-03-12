@@ -1,0 +1,1 @@
+\f:Bool->Bool\x:Bool.f (if x then false else x)
