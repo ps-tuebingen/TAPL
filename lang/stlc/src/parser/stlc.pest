@@ -10,19 +10,20 @@ type = {
 
 variable = { (ASCII_ALPHA | ASCII_DIGIT)+ }
 const = { "true" | "false" | "zero" }
-ctor = { "inl" | "inr" }
+ctor = { "inl" | "inr" | "pred" }
 pattern = { ctor ~ (" " ~ term)* ~ "=>" ~ term }
+proj = { (variable | paren_term) ~ (".1" | ".2" | "."~variable) }
 
 term = { 
-  | paren_term
   | const 
   | ASCII_DIGIT+
-  | "{" ~ term ~ (", " ~ term)* ~ "}"
-  | paren_term ~ ".1"
-  | paren_term ~ ".2"
-  | paren_term ~ "." ~ term
+  | ctor ~ "(" ~ term? ~ (", " ~ term)* ~ ")"
+  | "if " ~ term ~ " then " ~ term ~ " else " ~ term 
   | "case" ~ term ~ " of " ~ pattern ~ (" | " ~ pattern)*
-  | "\\" ~ variable ~ ":" ~ type ~ "." ~ term 
+  | proj
   | variable 
+  | "{" ~ term ~ (", " ~ term)* ~ "}"
+  | "\\" ~ variable ~ ":" ~ type ~ "." ~ term 
+  | paren_term
 }
 paren_term = { "(" ~ term ~ ")" }
