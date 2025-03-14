@@ -1,4 +1,5 @@
 use super::{
+    errors::Error,
     test::{load_dir, Test, TestResult},
     TestRunner,
 };
@@ -35,7 +36,7 @@ impl TestRunner for NamelessRepTests {
         }
     }
 
-    fn load_tests(&self) -> Result<Vec<Test>, Box<dyn std::error::Error>> {
-        load_dir(&self.source_dir)
+    fn load_tests(&self) -> Result<Vec<Test>, Error> {
+        load_dir(&self.source_dir, "lam")
     }
 }

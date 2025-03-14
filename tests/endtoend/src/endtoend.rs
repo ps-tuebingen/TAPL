@@ -3,6 +3,7 @@ use std::{
     path::PathBuf,
 };
 
+mod errors;
 mod nameless;
 mod paths;
 mod stlc;
@@ -10,6 +11,7 @@ mod test;
 mod untyped_arithmetic;
 mod untyped_lambda;
 
+use errors::Error;
 use nameless::NamelessRepTests;
 use paths::{EXAMPLES_PATH, STLC_PATH, UNTYPED_ARITH_PATH, UNTYPED_LAMBDA_PATH};
 use stlc::StlcTests;
@@ -19,9 +21,9 @@ use untyped_lambda::UntypedLambdaTests;
 
 pub trait TestRunner {
     fn run_test(&self, test: Test) -> TestResult;
-    fn load_tests(&self) -> Result<Vec<Test>, Box<dyn std::error::Error>>;
+    fn load_tests(&self) -> Result<Vec<Test>, Error>;
 
-    fn run_all_tests(&self) -> Result<usize, Box<dyn std::error::Error>> {
+    fn run_all_tests(&self) -> Result<usize, Error> {
         let tests = self.load_tests()?;
         let num_tests = tests.len();
         let mut num_fail = 0;
@@ -44,13 +46,16 @@ pub trait TestRunner {
     }
 }
 
-fn setup() -> Result<(), Box<dyn std::error::Error>> {
-    let dir = current_dir()?.join("..").join("..");
-    set_current_dir(dir)?;
+fn setup() -> Result<(), Error> {
+    let dir = current_dir()
+        .map_err(|_| Error::GetCurrentDir)?
+        .join("..")
+        .join("..");
+    set_current_dir(dir).map_err(|_| Error::SetCurrentDir)?;
     Ok(())
 }
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+fn main() -> Result<(), Error> {
     setup()?;
 
     let examples_dir = PathBuf::from(EXAMPLES_PATH);
@@ -62,9 +67,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("Running tests for untyped lambda\n");
     fails += UntypedLambdaTests::new(examples_dir.join(UNTYPED_LAMBDA_PATH)).run_all_tests()?;
 
-    /*println!("Running tests for locally nameless representation\n");
+    println!("Running tests for locally nameless representation\n");
     fails += NamelessRepTests::new(examples_dir.join(UNTYPED_LAMBDA_PATH)).run_all_tests()?;
-    */
 
     println!("Running tests for stlc\n");
     fails += StlcTests::new(examples_dir.join(STLC_PATH)).run_all_tests()?;

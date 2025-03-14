@@ -9,6 +9,9 @@ path = "src/endtoend.rs"
 harness=false
 
 [dependencies]
+basic-toml = {version="0.1.10"}
+serde = {version="1.0.219", features=["derive"]}
+
 untyped_arithmetic = { path="../../lang/untyped_arithmetic" }
 untyped_lambda = { path="../../lang/untyped_lambda" }
 stlc = { path="../../lang/stlc" }
