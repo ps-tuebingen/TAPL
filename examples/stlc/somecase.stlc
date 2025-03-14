@@ -1,0 +1,1 @@
+case Nothing of Nothing => Nothing | Some(n) => succ(n)

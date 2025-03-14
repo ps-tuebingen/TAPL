@@ -1,41 +1,80 @@
 
-prim_type = { "Bool" | "Nat" }
+prim_type = { "Bool" | "Nat" | "Unit" }
 fun_type = { "(" ~ type ~ "->" ~ type ~ ")" }
 prod_type = { "(" ~ type ~ "x" ~ type ~ ")" }
 sum_type = { "(" ~ type ~ "+" ~ type ~ ")" }
 record_type =  { "{" ~ variable ~ ":" ~ type ~ (", " ~ variable ~ ":" ~ type)* ~ "}" }
+variant_type = { "<" ~ variable ~ ":" ~ type ~ (", " ~ variable ~ ":" ~ type)* ~ ">" }
 type = {
   | fun_type
   | prod_type
   | sum_type
   | record_type
+  | variant_type
   | prim_type  
 } 
 
 variable = { (ASCII_ALPHA | ASCII_DIGIT)+ }
-const = { "true" | "false" | "zero" }
-fst = { ".1" }
-snd = { ".2" }
-rec_proj = { "."~variable }
-tup_term = {"{" ~ term ~ ", " ~ term ~ (", " ~ term)* ~ "}" }
-proj = { (variable | paren_term) ~ (fst | snd | rec_proj) }
+const = { "true" | "false" | "zero" | "unit" | "nothing" }
+tup_term = {"{" ~ term ~ (", " ~ term)* ~ "}" }
+tup_proj = { (variable | paren_term) ~ "." ~ number }
+rec_term = { "{" ~ variable ~ " = " ~ term ~ (", " ~ variable ~ " = " ~ term)* ~ "}" }
+rec_proj = { paren_term ~ "." ~ variable }
 if_term = {  "if " ~ term ~ " then " ~ term ~ " else " ~ term  }
 fix_term = { "fix " ~ term }
 lambda_term = { "\\" ~ variable ~ ":" ~ type ~ "." ~ term }
 term_app = { "(" ~ term ~ ") " ~ term }
 pred_term = { "pred" ~ paren_term } 
+succ_term = { "succ" ~ paren_term }
 number = { ASCII_DIGIT+ }
+ascription = { paren_term ~ " as " ~ type }
+let_term = { "let "  ~ variable ~ " = " ~ term ~ " in " ~ term } 
+left_term = { "inl" ~ paren_term ~ " as " ~ type } 
+right_term = { "inr" ~ paren_term ~ " as " ~ type }
+left_pt = { "inl(" ~ variable ~ ")" ~ " => " ~ term }
+right_pt = { "inr(" ~ variable ~ ")" ~ " => " ~ term }
+sum_pt = { left_pt ~ " | " ~ right_pt | right_pt ~ " | " ~ left_pt }
+sum_case = { "case " ~ term ~ " of " ~ sum_pt }
+variant_term = { "<" ~ variable ~ " = " ~ term ~ ">" ~ " as " ~ type } 
+variant_pt = { "<" ~ variable ~ " = " ~ variable ~ ">" ~ " => " ~ term } 
+variant_case = { "case " ~ term ~ " of " ~ variant_pt ~ ( " | " ~ variant_pt)* }
+some_term = { "something" ~ paren_term } 
+something_pt = { "something(" ~ variable ~ ")" ~ " => " ~ term }
+nothing_pt = { "nothing" ~ " => " ~ term }
+some_pt = { nothing_pt ~ " | " ~ something_pt | something_pt ~ " | " ~ nothing_pt }
+some_case = { "case " ~ term ~ " of " ~ some_pt }
+nil_term = { "Nil" ~ "[" ~ type ~ "]" }
+cons_term = { "Cons" ~ "[" ~ type ~ "]" ~ "(" ~ term ~ ", " ~ term ~ ")" } 
+head_term = { "head" ~ "[" ~ type ~ "]" ~ "(" ~ term ~ ")" }
+tail_term = { "tail" ~ "[" ~ type ~ "]" ~ "(" ~ term ~ ")" }
+isnil_term = { "isnil" ~ "[" ~ type ~ "]" ~ "(" ~ term ~ ")" }
 term = { 
   | const 
   | number
   | if_term
   | fix_term
+  | let_term
   | pred_term
-  | proj
-  | variable 
+  | succ_term
   | tup_term
+  | tup_proj
+  | rec_term
+  | rec_proj
+  | left_term
+  | sum_case
+  | right_term
   | lambda_term
+  | variant_term
+  | variant_case 
+  | some_term
+  | some_case
   | term_app
+  | nil_term
+  | cons_term
+  | head_term
+  | tail_term
+  | isnil_term
   | paren_term
+  | variable 
 }
 paren_term = { "(" ~ term ~ ")" }

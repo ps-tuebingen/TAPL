@@ -1,7 +1,7 @@
 use super::{
     syntax::{
-        App, False, If, Lambda, Pair as TermPair, Pred, Proj1, Proj2, RecordProj, Term, True, Tup,
-        Zero,
+        App, False, If, Lambda, Left, Let, Pred, Proj, Record, RecordProj, Right, Succ, Term, True,
+        Tup, Unit, Variant, Zero,
     },
     types::Type,
 };
@@ -65,14 +65,107 @@ fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
             let ift = pairs_to_if(inner)?;
             Ok(ift.into())
         }
+        Rule::let_term => {
+            let inner = p.into_inner();
+            let lett = pairs_to_let(inner)?;
+            Ok(lett.into())
+        }
         Rule::tup_term => {
             let inner = p.into_inner();
             let tup = pairs_to_tup(inner)?;
-            Ok(tup)
+            Ok(tup.into())
         }
-        Rule::proj => {
-            let inner = p.into_inner();
-            pairs_to_proj(inner)
+        Rule::tup_proj => {
+            let mut inner = p.into_inner();
+            let proj_pair = inner
+                .next()
+                .ok_or(Error::MissingInput("Projection Term".to_owned()))?;
+            let proj_term = pair_to_term(proj_pair)?;
+            let num_pair = inner
+                .next()
+                .ok_or(Error::MissingInput("Projection Index".to_owned()))?;
+            let num = num_pair
+                .as_str()
+                .parse::<usize>()
+                .map_err(|_| Error::BadTerm(num_pair.as_str().to_owned()))?;
+            if let Some(n) = inner.next() {
+                return Err(Error::RemainingInput(n.as_rule()));
+            }
+            Ok(Proj {
+                tup: Box::new(proj_term),
+                ind: num,
+            }
+            .into())
+        }
+        Rule::rec_term => {
+            let mut inner = p.into_inner();
+            let mut records = HashMap::new();
+            while let Some(n) = inner.next() {
+                let var = n.as_str().to_owned();
+                let next_pair = inner
+                    .next()
+                    .ok_or(Error::MissingInput("Record Term".to_owned()))?;
+                let n_rule = next_rule(next_pair, Rule::term)?;
+                let n_term = pair_to_term(n_rule)?;
+                records.insert(var, n_term);
+            }
+            Ok(Record { records }.into())
+        }
+        Rule::rec_proj => {
+            let mut inner = p.into_inner();
+            let rec_pair = inner
+                .next()
+                .ok_or(Error::MissingInput("Projection Record".to_owned()))?;
+            let rec_term = pair_to_term(rec_pair)?;
+            let var_pair = inner
+                .next()
+                .ok_or(Error::MissingInput("Record Label".to_owned()))?;
+            let var = var_pair.as_str().to_owned();
+            if let Some(n) = inner.next() {
+                return Err(Error::RemainingInput(n.as_rule()));
+            }
+            Ok(RecordProj {
+                record: Box::new(rec_term),
+                label: var,
+            }
+            .into())
+        }
+        Rule::left_term => {
+            let mut inner = p.into_inner();
+            let arg_pair = inner
+                .next()
+                .ok_or(Error::MissingInput("inl argument".to_owned()))?;
+            let arg_term = pair_to_term(arg_pair)?;
+            let ty_pair = inner
+                .next()
+                .ok_or(Error::MissingInput("Right Type".to_owned()))?;
+            let ty_rule = next_rule(ty_pair, Rule::r#type)?;
+            let ty = pair_to_type(ty_rule)?;
+            if let Some(n) = inner.next() {
+                return Err(Error::RemainingInput(n.as_rule()));
+            }
+            Ok(Left {
+                left_term: Box::new(arg_term),
+                right_ty: ty,
+            }
+            .into())
+        }
+        Rule::right_term => {
+            let mut inner = p.into_inner();
+            let arg_pair = inner
+                .next()
+                .ok_or(Error::MissingInput("inr argument".to_owned()))?;
+            let arg_term = pair_to_term(arg_pair)?;
+            let ty_pair = inner
+                .next()
+                .ok_or(Error::MissingInput("Left Type".to_owned()))?;
+            let ty_rule = next_rule(ty_pair, Rule::r#type)?;
+            let ty = pair_to_type(ty_rule)?;
+            Ok(Right {
+                right_term: Box::new(arg_term),
+                left_ty: ty,
+            }
+            .into())
         }
         Rule::pred_term => {
             let mut inner = p.into_inner();
@@ -84,6 +177,43 @@ fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
                 return Err(Error::RemainingInput(n.as_rule()));
             }
             Ok(Pred {
+                term: Box::new(inner_term),
+            }
+            .into())
+        }
+        Rule::variant_term => {
+            let mut inner = p.into_inner();
+            let var_pair = inner
+                .next()
+                .ok_or(Error::MissingInput("Variant Label".to_owned()))?;
+            let var = var_pair.as_str().to_owned();
+            let term_pair = inner
+                .next()
+                .ok_or(Error::MissingInput("Variant term".to_owned()))?;
+            let term_rule = next_rule(term_pair, Rule::term)?;
+            let variant_term = pair_to_term(term_rule)?;
+            let ty_pair = inner
+                .next()
+                .ok_or(Error::MissingInput("Variant Type".to_owned()))?;
+            let ty_rule = next_rule(ty_pair, Rule::r#type)?;
+            let variant_ty = pair_to_type(ty_rule)?;
+            Ok(Variant {
+                label: var,
+                term: Box::new(variant_term),
+                ty: variant_ty,
+            }
+            .into())
+        }
+        Rule::succ_term => {
+            let mut inner = p.into_inner();
+            let inner_pair = inner
+                .next()
+                .ok_or(Error::MissingInput("Pred Argument".to_owned()))?;
+            let inner_term = pair_to_term(inner_pair)?;
+            if let Some(n) = inner.next() {
+                return Err(Error::RemainingInput(n.as_rule()));
+            }
+            Ok(Succ {
                 term: Box::new(inner_term),
             }
             .into())
@@ -175,63 +305,36 @@ fn pairs_to_if(mut ps: Pairs<'_, Rule>) -> Result<If, Error> {
     })
 }
 
-fn pairs_to_proj(mut ps: Pairs<'_, Rule>) -> Result<Term, Error> {
-    let term_pair = ps
-        .next()
-        .ok_or(Error::MissingInput("Projection Term".to_owned()))?;
-    let proj_term = pair_to_term(term_pair)?;
-    let proj_rule = ps
-        .next()
-        .ok_or(Error::MissingInput("Projection".to_owned()))?;
-    match proj_rule.as_rule() {
-        Rule::fst => Ok(Proj1 {
-            pair: Box::new(proj_term),
-        }
-        .into()),
-        Rule::snd => Ok(Proj2 {
-            pair: Box::new(proj_term),
-        }
-        .into()),
-        Rule::rec_proj => Ok(RecordProj {
-            record: Box::new(proj_term),
-            label: proj_rule.as_str().to_owned(),
-        }
-        .into()),
-        r => Err(Error::UnexpectedRule {
-            found: r,
-            expected: Rule::rec_proj,
-        }),
-    }
-}
-
-fn pairs_to_tup(mut ps: Pairs<'_, Rule>) -> Result<Term, Error> {
-    let fst_pair = ps
-        .next()
-        .ok_or(Error::MissingInput("Pair First".to_owned()))?;
-    let fst_rule = next_rule(fst_pair, Rule::term)?;
-    let fst_term = pair_to_term(fst_rule)?;
-    let snd_pair = ps
-        .next()
-        .ok_or(Error::MissingInput("Pair Second".to_owned()))?;
-    let snd_rule = next_rule(snd_pair, Rule::term)?;
-    let snd_term = pair_to_term(snd_rule)?;
-    let mut rest = vec![];
+fn pairs_to_tup(mut ps: Pairs<'_, Rule>) -> Result<Tup, Error> {
+    let mut terms = vec![];
     while let Some(p) = ps.next() {
         let p_rule = next_rule(p, Rule::term)?;
         let p_term = pair_to_term(p_rule)?;
-        rest.push(p_term);
+        terms.push(p_term);
     }
-    if rest.is_empty() {
-        Ok(TermPair {
-            fst: Box::new(fst_term),
-            snd: Box::new(snd_term),
-        }
-        .into())
-    } else {
-        rest.insert(0, fst_term);
-        rest.insert(1, snd_term);
-        Ok(Tup { terms: rest }.into())
-    }
+    Ok(Tup { terms }.into())
+}
+
+fn pairs_to_let(mut ps: Pairs<'_, Rule>) -> Result<Let, Error> {
+    let var_pair = ps
+        .next()
+        .ok_or(Error::MissingInput("Let Variable".to_owned()))?;
+    let var = var_pair.as_str().to_owned();
+    let bound_pair = ps
+        .next()
+        .ok_or(Error::MissingInput("Let Bound Term".to_owned()))?;
+    let bound_rule = next_rule(bound_pair, Rule::term)?;
+    let bound_term = pair_to_term(bound_rule)?;
+    let in_pair = ps
+        .next()
+        .ok_or(Error::MissingInput("Let In Term".to_owned()))?;
+    let in_rule = next_rule(in_pair, Rule::term)?;
+    let in_term = pair_to_term(in_rule)?;
+    Ok(Let {
+        var,
+        bound_term: Box::new(bound_term),
+        in_term: Box::new(in_term),
+    })
 }
 
 fn pair_to_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
@@ -279,6 +382,37 @@ fn pair_to_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
             }
             Ok(Type::Record(recs))
         }
+        Rule::sum_type => {
+            let mut inner = p.into_inner();
+            let fst_pair = inner
+                .next()
+                .ok_or(Error::MissingInput("First Sum Type".to_owned()))?;
+            let fst_rule = next_rule(fst_pair, Rule::r#type)?;
+            let fst_ty = pair_to_type(fst_rule)?;
+            let snd_pair = inner
+                .next()
+                .ok_or(Error::MissingInput("Second Sum Type".to_owned()))?;
+            let snd_rule = next_rule(snd_pair, Rule::r#type)?;
+            let snd_ty = pair_to_type(snd_rule)?;
+            if let Some(n) = inner.next() {
+                return Err(Error::RemainingInput(n.as_rule()));
+            }
+            Ok(Type::Sum(Box::new(fst_ty), Box::new(snd_ty)))
+        }
+        Rule::variant_type => {
+            let mut inner = p.into_inner();
+            let mut variants = HashMap::new();
+            while let Some(n) = inner.next() {
+                let label = n.as_str().to_owned();
+                let next_pair = inner
+                    .next()
+                    .ok_or(Error::MissingInput("Variant Type".to_owned()))?;
+                let n_rule = next_rule(next_pair, Rule::r#type)?;
+                let n_ty = pair_to_type(n_rule)?;
+                variants.insert(label, n_ty);
+            }
+            Ok(Type::Variant(variants))
+        }
         r => Err(Error::BadRule(r)),
     }
 }
@@ -287,6 +421,7 @@ fn str_to_ty(s: &str) -> Result<Type, Error> {
     match s.to_lowercase().trim() {
         "bool" => Ok(Type::Bool),
         "nat" => Ok(Type::Nat),
+        "unit" => Ok(Type::Unit),
         _ => Err(Error::BadType(s.to_owned())),
     }
 }
@@ -296,6 +431,7 @@ fn str_to_term(s: &str) -> Result<Term, Error> {
         "true" => Ok(True.into()),
         "false" => Ok(False.into()),
         "zero" => Ok(Zero.into()),
+        "unit" => Ok(Unit.into()),
         _ => Err(Error::BadTerm(s.to_owned())),
     }
 }

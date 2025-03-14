@@ -1,0 +1,1 @@
+case <label = true> of <label=b> => b | <nat=n> => iszero(n)

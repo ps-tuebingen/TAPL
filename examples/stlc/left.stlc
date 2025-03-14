@@ -1,0 +1,1 @@
+inl(succ(zero)) as (Nat+Bool)

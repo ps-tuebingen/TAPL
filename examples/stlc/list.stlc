@@ -1,0 +1,1 @@
+let x = Cons[Bool](false,Cons[Bool](true,Cons[Bool](false,Nil[Bool]))) in if isnil[Bool](x) then false else head[Bool](x)
