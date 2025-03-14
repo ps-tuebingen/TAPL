@@ -4,7 +4,7 @@ use std::fmt;
 
 #[derive(Debug)]
 pub enum Error {
-    Pest(PestErr<Rule>),
+    Pest(Box<PestErr<Rule>>),
     EmptyInput,
     RemainingInput(Rule),
     MissingInput(String),
@@ -35,6 +35,6 @@ impl std::error::Error for Error {}
 
 impl From<PestErr<Rule>> for Error {
     fn from(err: PestErr<Rule>) -> Error {
-        Error::Pest(err)
+        Error::Pest(Box::new(err))
     }
 }

@@ -280,8 +280,7 @@ fn pairs_to_app(mut ps: Pairs<'_, Rule>) -> Result<App, Error> {
     Ok(App {
         fun: Box::new(fst_term),
         arg: Box::new(snd_term),
-    }
-    .into())
+    })
 }
 
 fn pairs_to_if(mut ps: Pairs<'_, Rule>) -> Result<If, Error> {
@@ -305,14 +304,14 @@ fn pairs_to_if(mut ps: Pairs<'_, Rule>) -> Result<If, Error> {
     })
 }
 
-fn pairs_to_tup(mut ps: Pairs<'_, Rule>) -> Result<Tup, Error> {
+fn pairs_to_tup(ps: Pairs<'_, Rule>) -> Result<Tup, Error> {
     let mut terms = vec![];
-    while let Some(p) = ps.next() {
+    for p in ps {
         let p_rule = next_rule(p, Rule::term)?;
         let p_term = pair_to_term(p_rule)?;
         terms.push(p_term);
     }
-    Ok(Tup { terms }.into())
+    Ok(Tup { terms })
 }
 
 fn pairs_to_let(mut ps: Pairs<'_, Rule>) -> Result<Let, Error> {
