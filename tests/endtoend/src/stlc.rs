@@ -10,6 +10,11 @@ pub struct StlcTests {
     source_dir: PathBuf,
 }
 
+#[derive(serde::Deserialize)]
+pub struct StlcConf {
+    expected: String,
+}
+
 impl StlcTests {
     pub fn new(source_dir: PathBuf) -> StlcTests {
         StlcTests { source_dir }
@@ -17,14 +22,16 @@ impl StlcTests {
 }
 
 impl TestRunner for StlcTests {
-    fn run_test(&self, test: Test) -> TestResult {
+    type TestConf = StlcConf;
+
+    fn run_test(&self, test: Test<Self::TestConf>) -> TestResult {
         match parse(test.source_str) {
             Ok(_) => TestResult::Success,
             Err(err) => TestResult::Fail(err.to_string()),
         }
     }
 
-    fn load_tests(&self) -> Result<Vec<Test>, Error> {
+    fn load_tests(&self) -> Result<Vec<Test<Self::TestConf>>, Error> {
         load_dir(&self.source_dir, "stlc")
     }
 }

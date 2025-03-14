@@ -4,10 +4,11 @@ use std::{
 };
 
 mod errors;
-mod nameless;
 mod paths;
-mod stlc;
 mod test;
+
+mod nameless;
+mod stlc;
 mod untyped_arithmetic;
 mod untyped_lambda;
 
@@ -20,8 +21,10 @@ use untyped_arithmetic::UntypedArithTests;
 use untyped_lambda::UntypedLambdaTests;
 
 pub trait TestRunner {
-    fn run_test(&self, test: Test) -> TestResult;
-    fn load_tests(&self) -> Result<Vec<Test>, Error>;
+    type TestConf: for<'a> serde::Deserialize<'a>;
+
+    fn run_test(&self, test: Test<Self::TestConf>) -> TestResult;
+    fn load_tests(&self) -> Result<Vec<Test<Self::TestConf>>, Error>;
 
     fn run_all_tests(&self) -> Result<usize, Error> {
         let tests = self.load_tests()?;

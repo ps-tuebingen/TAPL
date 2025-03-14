@@ -4,15 +4,13 @@ use std::{
     path::PathBuf,
 };
 
-pub struct Test {
+pub struct Test<Conf>
+where
+    Conf: for<'a> serde::Deserialize<'a>,
+{
     pub source_file: PathBuf,
     pub source_str: String,
-    pub config: TestConfig,
-}
-
-#[derive(serde::Deserialize)]
-pub struct TestConfig {
-    pub expected: String,
+    pub config: Conf,
 }
 
 pub enum TestResult {
@@ -29,7 +27,10 @@ impl TestResult {
     }
 }
 
-pub fn load_dir(dir: &PathBuf, src_ext: &str) -> Result<Vec<Test>, Error> {
+pub fn load_dir<Conf>(dir: &PathBuf, src_ext: &str) -> Result<Vec<Test<Conf>>, Error>
+where
+    Conf: for<'a> serde::Deserialize<'a>,
+{
     let mut tests = vec![];
     for entry in read_dir(dir).map_err(|_| Error::ReadDir(dir.clone()))? {
         let entry = entry.map_err(|_| Error::ReadDir(dir.clone()))?;

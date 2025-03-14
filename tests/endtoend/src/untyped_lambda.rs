@@ -10,6 +10,11 @@ pub struct UntypedLambdaTests {
     source_dir: PathBuf,
 }
 
+#[derive(serde::Deserialize)]
+pub struct UntypedLambdaConf {
+    expected: String,
+}
+
 impl UntypedLambdaTests {
     pub fn new(source_dir: PathBuf) -> UntypedLambdaTests {
         UntypedLambdaTests { source_dir }
@@ -17,7 +22,9 @@ impl UntypedLambdaTests {
 }
 
 impl TestRunner for UntypedLambdaTests {
-    fn run_test(&self, test: Test) -> TestResult {
+    type TestConf = UntypedLambdaConf;
+
+    fn run_test(&self, test: Test<Self::TestConf>) -> TestResult {
         let mut source = test.source_str;
         match parse(&mut source) {
             Ok(_) => TestResult::Success,
@@ -25,7 +32,7 @@ impl TestRunner for UntypedLambdaTests {
         }
     }
 
-    fn load_tests(&self) -> Result<Vec<Test>, Error> {
+    fn load_tests(&self) -> Result<Vec<Test<Self::TestConf>>, Error> {
         load_dir(&self.source_dir, "lam")
     }
 }

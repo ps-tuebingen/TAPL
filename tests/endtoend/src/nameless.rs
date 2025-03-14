@@ -11,6 +11,11 @@ pub struct NamelessRepTests {
     source_dir: PathBuf,
 }
 
+#[derive(serde::Deserialize)]
+pub struct NamelessConfig {
+    expected: String,
+}
+
 impl NamelessRepTests {
     pub fn new(source_dir: PathBuf) -> NamelessRepTests {
         NamelessRepTests { source_dir }
@@ -18,7 +23,8 @@ impl NamelessRepTests {
 }
 
 impl TestRunner for NamelessRepTests {
-    fn run_test(&self, test: Test) -> TestResult {
+    type TestConf = NamelessConfig;
+    fn run_test(&self, test: Test<Self::TestConf>) -> TestResult {
         let mut source = test.source_str;
         let parsed = match parse(&mut source) {
             Ok(p) => p,
@@ -36,7 +42,7 @@ impl TestRunner for NamelessRepTests {
         }
     }
 
-    fn load_tests(&self) -> Result<Vec<Test>, Error> {
+    fn load_tests(&self) -> Result<Vec<Test<Self::TestConf>>, Error> {
         load_dir(&self.source_dir, "lam")
     }
 }
