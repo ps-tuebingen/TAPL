@@ -28,7 +28,7 @@ impl NamingContext {
 
         for (var, ind) in self.mappings.iter() {
             if *var == v {
-                return;
+                continue;
             }
             new_vars.push((var.clone(), (ind + 1)));
         }

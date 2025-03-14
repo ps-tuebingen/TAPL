@@ -69,7 +69,7 @@ impl fmt::Display for Term {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             Term::Var(v) => write!(f, "{v}"),
-            Term::Lambda(t) => write!(f, "\\{t}"),
+            Term::Lambda(t) => write!(f, "\\_.{t}"),
             Term::App(t1, t2) => write!(f, "({t1}) ({t2})"),
         }
     }

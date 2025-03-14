@@ -29,7 +29,7 @@ fn consume_spaces(s: &mut String) {
         return;
     }
     let next_char = s.remove(0);
-    if next_char == ' ' {
+    if next_char == ' ' || next_char == '\n' {
         consume_spaces(s)
     } else {
         s.insert(0, next_char)
@@ -46,7 +46,7 @@ fn get_next(s: &mut String) -> Option<Token> {
         '.' => Some(Token::Dot),
         '(' => Some(Token::ParensO),
         ')' => Some(Token::ParensC),
-        ' ' => {
+        ' ' | '\n' => {
             consume_spaces(s);
             Some(Token::Space)
         }
