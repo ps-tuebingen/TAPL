@@ -21,7 +21,7 @@ impl fmt::Display for Type {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             Type::Unit => f.write_str("Unit"),
-            Type::Fun(ty1, ty2) => write!(f, "{ty1} -> {ty2}"),
+            Type::Fun(ty1, ty2) => write!(f, "({ty1}) -> ({ty2})"),
             Type::Bool => f.write_str("Bool"),
             Type::Nat => f.write_str("Nat"),
             Type::Prod(ty1, ty2) => write!(f, "{ty1} x {ty2}"),

@@ -1,5 +1,8 @@
 use std::{fmt, io::Error as IOError};
-use stlc::parser::errors::Error as StlcErr;
+use stlc::{
+    check::errors::Error as StlcCheckErr, eval::errors::Error as StlcEvalErr,
+    eval_context::errors::Error as StlcEvalCtxErr, parser::errors::Error as StlcParseErr,
+};
 use untyped_arithmetic::parse::errors::Error as ArithErr;
 use untyped_lambda::parse::errors::Error as LamErr;
 
@@ -8,7 +11,10 @@ pub enum Error {
     IO(IOError),
     UntypedArith(ArithErr),
     UntypedLam(LamErr),
-    Stlc(StlcErr),
+    StlcParse(StlcParseErr),
+    StlcCheck(StlcCheckErr),
+    StlcEval(StlcEvalErr),
+    StlcEvalCtx(StlcEvalCtxErr),
 }
 
 impl fmt::Display for Error {
@@ -17,7 +23,10 @@ impl fmt::Display for Error {
             Error::IO(err) => write!(f, "IO error: {err}"),
             Error::UntypedArith(err) => err.fmt(f),
             Error::UntypedLam(err) => err.fmt(f),
-            Error::Stlc(err) => err.fmt(f),
+            Error::StlcParse(err) => err.fmt(f),
+            Error::StlcCheck(err) => err.fmt(f),
+            Error::StlcEval(err) => err.fmt(f),
+            Error::StlcEvalCtx(err) => err.fmt(f),
         }
     }
 }
@@ -42,8 +51,26 @@ impl From<LamErr> for Error {
     }
 }
 
-impl From<StlcErr> for Error {
-    fn from(err: StlcErr) -> Error {
-        Error::Stlc(err)
+impl From<StlcParseErr> for Error {
+    fn from(err: StlcParseErr) -> Error {
+        Error::StlcParse(err)
+    }
+}
+
+impl From<StlcCheckErr> for Error {
+    fn from(err: StlcCheckErr) -> Error {
+        Error::StlcCheck(err)
+    }
+}
+
+impl From<StlcEvalErr> for Error {
+    fn from(err: StlcEvalErr) -> Error {
+        Error::StlcEval(err)
+    }
+}
+
+impl From<StlcEvalCtxErr> for Error {
+    fn from(err: StlcEvalCtxErr) -> Error {
+        Error::StlcEvalCtx(err)
     }
 }
