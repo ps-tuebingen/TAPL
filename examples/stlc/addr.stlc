@@ -1,1 +1,0 @@
-\a:({firstlast:String, addr:String}+{name:String, email:String}).case a of inl x => x.firstlast | inr y => y.name

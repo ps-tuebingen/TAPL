@@ -12,11 +12,7 @@ pub struct Args {
 
 pub fn exec(args: Args) -> Result<(), Error> {
     let src = args.source.get_source()?;
-    let parsed = parse(src);
-    /*if args.verbose {
-        println!("Successfully parsed {parsed:?}\n");
-    }*/
-    //let evaled = parsed.eval();
-    //println!("{evaled:?}");
+    let parsed = parse(src)?;
+    println!("parsed term {parsed:?}");
     Ok(())
 }

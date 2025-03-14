@@ -124,6 +124,28 @@ impl From<Var> for Term {
     }
 }
 
+impl From<i64> for Term {
+    fn from(i: i64) -> Term {
+        match i {
+            0 => Zero.into(),
+            i if i > 0 => {
+                let pred: Term = (i - 1).into();
+                Succ {
+                    term: Box::new(pred),
+                }
+                .into()
+            }
+            _ => {
+                let succ = (i + 1).into();
+                Pred {
+                    term: Box::new(succ),
+                }
+                .into()
+            }
+        }
+    }
+}
+
 impl fmt::Display for Term {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {

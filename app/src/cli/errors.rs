@@ -1,4 +1,5 @@
 use std::{fmt, io::Error as IOError};
+use stlc::parser::errors::Error as StlcErr;
 use untyped_arithmetic::parse::errors::Error as ArithErr;
 use untyped_lambda::parse::errors::Error as LamErr;
 
@@ -7,6 +8,7 @@ pub enum Error {
     IO(IOError),
     UntypedArith(ArithErr),
     UntypedLam(LamErr),
+    Stlc(StlcErr),
 }
 
 impl fmt::Display for Error {
@@ -15,6 +17,7 @@ impl fmt::Display for Error {
             Error::IO(err) => write!(f, "IO error: {err}"),
             Error::UntypedArith(err) => err.fmt(f),
             Error::UntypedLam(err) => err.fmt(f),
+            Error::Stlc(err) => err.fmt(f),
         }
     }
 }
@@ -36,5 +39,11 @@ impl From<ArithErr> for Error {
 impl From<LamErr> for Error {
     fn from(err: LamErr) -> Error {
         Error::UntypedLam(err)
+    }
+}
+
+impl From<StlcErr> for Error {
+    fn from(err: StlcErr) -> Error {
+        Error::Stlc(err)
     }
 }
