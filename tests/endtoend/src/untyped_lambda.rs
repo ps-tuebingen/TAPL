@@ -4,7 +4,10 @@ use super::{
     TestRunner,
 };
 use std::path::PathBuf;
-use untyped_lambda::parse::parse;
+use untyped_lambda::{
+    eval::{eval, EvalOrder},
+    parse::parse,
+};
 
 pub struct UntypedLambdaTests {
     source_dir: PathBuf,
@@ -12,7 +15,7 @@ pub struct UntypedLambdaTests {
 
 #[derive(serde::Deserialize)]
 pub struct UntypedLambdaConf {
-    expected: String,
+    evaluated: String,
 }
 
 impl UntypedLambdaTests {
@@ -26,9 +29,19 @@ impl TestRunner for UntypedLambdaTests {
 
     fn run_test(&self, test: Test<Self::TestConf>) -> TestResult {
         let mut source = test.source_str;
-        match parse(&mut source) {
-            Ok(_) => TestResult::Success,
-            Err(err) => TestResult::Fail(err.to_string()),
+        let parsed = match parse(&mut source) {
+            Ok(p) => p,
+            Err(err) => return TestResult::Fail(err.to_string()),
+        };
+        let evaluated = eval(parsed, EvalOrder::CBV);
+        let result = evaluated.to_string();
+        let expected = test.config.evaluated;
+        if result == expected {
+            TestResult::Success
+        } else {
+            TestResult::Fail(format!(
+                "Evaluated does not match expected:\n\tresult:  {result}\n\texpected:{expected}"
+            ))
         }
     }
 

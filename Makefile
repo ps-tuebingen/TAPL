@@ -1,3 +1,10 @@
+.PHONY: nameless
+nameless:
+	cargo run nameless-representation -v -f examples/untyped_lambda/$(name)/$(name).lam
+.PHONY: unt-lambda
+unt-lambda:
+	cargo run untyped-lambda -v -f examples/untyped_lambda/$(name)/$(name).lam
+
 .PHONY: test 
 test:
 	cargo test --all --no-fail-fast 

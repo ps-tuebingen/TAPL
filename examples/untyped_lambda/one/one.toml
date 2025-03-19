@@ -1,1 +1,3 @@
-expected=""
+nameless="\\_.\\_.(1) (0)"
+restored="\\x0.\\x1.(x0 x1)"
+evaluated="\\s.\\z.(s z)"

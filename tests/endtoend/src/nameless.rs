@@ -13,7 +13,8 @@ pub struct NamelessRepTests {
 
 #[derive(serde::Deserialize)]
 pub struct NamelessConfig {
-    expected: String,
+    nameless: String,
+    restored: String,
 }
 
 impl NamelessRepTests {
@@ -31,15 +32,23 @@ impl TestRunner for NamelessRepTests {
             Err(err) => return TestResult::Fail(err.to_string()),
         };
         let nameless = remove_names(parsed.into());
-        let named = restore_names(nameless.clone());
-        let nameless2 = remove_names(named);
-        if nameless2 == nameless {
-            TestResult::Success
-        } else {
-            TestResult::Fail(format!(
-                "Different results removing and restoring names: {nameless}, {nameless2}",
-            ))
+        let result = nameless.to_string();
+        let expected = test.config.nameless;
+        if result != expected {
+            return TestResult::Fail(format!(
+                "Nameless Representation does not match expected:\nresult:{result},expected:{expected}",
+            ));
         }
+        let named = restore_names(nameless.clone());
+        let result = named.to_string();
+        let expected = test.config.restored;
+        if result != expected {
+            return TestResult::Fail(format!(
+                "Restored Name does not match expected:\nresult:{result},expected:{expected}"
+            ));
+        }
+
+        TestResult::Success
     }
 
     fn load_tests(&self) -> Result<Vec<Test<Self::TestConf>>, Error> {
