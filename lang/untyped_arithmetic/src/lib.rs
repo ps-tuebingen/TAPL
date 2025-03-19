@@ -1,3 +1,5 @@
+use std::fmt;
+
 pub mod bool;
 pub mod inductive_definitions;
 pub mod parse;
@@ -138,6 +140,20 @@ impl Term {
                 }
             }
             _ => Some(self),
+        }
+    }
+}
+
+impl fmt::Display for Term {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Term::True => f.write_str("True"),
+            Term::False => f.write_str("False"),
+            Term::If(ift, thent, elset) => write!(f, "If {ift} Then {thent} Else {elset}"),
+            Term::Zero => f.write_str("Zero"),
+            Term::Succ(t) => write!(f, "Succ({t})"),
+            Term::Pred(t) => write!(f, "Pred({t}"),
+            Term::IsZero(t) => write!(f, "IsZero{t}"),
         }
     }
 }

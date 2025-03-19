@@ -25,9 +25,19 @@ impl TestRunner for UntypedArithTests {
     type TestConf = UntypedArithConf;
 
     fn run_test(&self, test: Test<Self::TestConf>) -> TestResult {
-        match parse(test.source_str) {
-            Ok(_) => TestResult::Success,
-            Err(err) => TestResult::Fail(err.to_string()),
+        let parsed = match parse(test.source_str) {
+            Ok(t) => t,
+            Err(err) => return TestResult::Fail(err.to_string()),
+        };
+        let evaled = parsed.eval();
+        let result = evaled.to_string();
+        let expected = test.config.expected;
+        if result != expected {
+            TestResult::Fail(format!(
+                "Result != Expected:\n\tresult:   {result}\n\texpected: {expected}"
+            ))
+        } else {
+            TestResult::Success
         }
     }
 
