@@ -55,7 +55,7 @@ impl fmt::Display for Term {
         match self {
             Term::Var(v) => write!(f, "{}", v),
             Term::Lambda(v, body) => write!(f, "\\{v}.{body}"),
-            Term::App(t1, t2) => write!(f, "({t1} {t2})"),
+            Term::App(t1, t2) => write!(f, "(({t1}) ({t2}))"),
         }
     }
 }

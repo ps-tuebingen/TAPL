@@ -1,3 +1,3 @@
 nameless="\\_.(0) (\\_.\\_.1)"
 restored="\\x0.(x0 \\x1.\\x2.x1)"
-evaluated="\\p.(p \\t.\\f.t)"
+evaluated="\\p.((p) (\\t.\\f.t))"

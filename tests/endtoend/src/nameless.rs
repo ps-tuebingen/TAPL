@@ -44,7 +44,16 @@ impl TestRunner for NamelessRepTests {
         let expected = test.config.restored;
         if result != expected {
             return TestResult::Fail(format!(
-                "Restored Name does not match expected:\nresult:{result},expected:{expected}"
+                "Restored Name does not match expected:\n\tresult:   {result},expected: {expected}"
+            ));
+        }
+
+        let reremoved = remove_names(named);
+        let result = reremoved.to_string();
+        let expected = nameless.to_string();
+        if result != expected {
+            return TestResult::Fail(format!(
+                    "Removed names after restoring does not match removed:\n\tresult:   {result},\n\texpected: {expected}"
             ));
         }
 

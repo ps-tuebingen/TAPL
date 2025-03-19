@@ -29,6 +29,15 @@ impl TestRunner for UntypedArithTests {
             Ok(t) => t,
             Err(err) => return TestResult::Fail(err.to_string()),
         };
+        let reparsed = match parse(parsed.to_string()) {
+            Ok(t) => t,
+            Err(err) => return TestResult::Fail(format!("Could not reparse formatted:\n{err}")),
+        };
+        if reparsed != parsed {
+            return TestResult::Fail(format!(
+                "Reparsed does not match parsed:\nresult:   {reparsed}\n\texpected: {parsed}"
+            ));
+        }
         let evaled = parsed.eval();
         let result = evaled.to_string();
         let expected = test.config.expected;
