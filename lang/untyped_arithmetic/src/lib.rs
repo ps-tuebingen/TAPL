@@ -147,13 +147,13 @@ impl Term {
 impl fmt::Display for Term {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Term::True => f.write_str("True"),
-            Term::False => f.write_str("False"),
-            Term::If(ift, thent, elset) => write!(f, "If {ift} Then {thent} Else {elset}"),
-            Term::Zero => f.write_str("Zero"),
-            Term::Succ(t) => write!(f, "Succ({t})"),
-            Term::Pred(t) => write!(f, "Pred({t}"),
-            Term::IsZero(t) => write!(f, "IsZero{t}"),
+            Term::True => f.write_str("true"),
+            Term::False => f.write_str("false"),
+            Term::If(ift, thent, elset) => write!(f, "if {ift} then {thent} else {elset}"),
+            Term::Zero => f.write_str("zero"),
+            Term::Succ(t) => write!(f, "succ({t})"),
+            Term::Pred(t) => write!(f, "pred({t})"),
+            Term::IsZero(t) => write!(f, "iszero({t})"),
         }
     }
 }
