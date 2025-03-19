@@ -28,11 +28,11 @@ impl TestRunner for StlcTests {
     fn run_test(&self, test: Test<Self::TestConf>) -> TestResult {
         let parsed = match parse(test.source_str) {
             Ok(t) => t,
-            Err(err) => return TestResult::Fail(err.to_string()),
+            Err(err) => return TestResult::Fail(format!("Could not parse source:\n{err}")),
         };
         let reparsed = match parse(parsed.to_string()) {
             Ok(t) => t,
-            Err(err) => return TestResult::Fail(err.to_string()),
+            Err(err) => return TestResult::Fail(format!("Could not reparse formatted:\n{err}")),
         };
         if parsed != reparsed {
             return TestResult::Fail(format!(
