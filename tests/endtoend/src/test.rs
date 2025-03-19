@@ -4,30 +4,13 @@ use std::{
     path::PathBuf,
 };
 
-pub struct Test<Conf>
-where
-    Conf: for<'a> serde::Deserialize<'a>,
-{
-    pub source_file: PathBuf,
-    pub source_str: String,
-    pub config: Conf,
+pub struct TestContents<Conf> {
+    pub conf: Conf,
+    pub source_name: String,
+    pub source_contents: String,
 }
 
-pub enum TestResult {
-    Success,
-    Fail(String),
-}
-
-impl TestResult {
-    pub fn report(self, test_name: &str) {
-        match self {
-            TestResult::Success => println!("Test {test_name}.....\x1b[32mok\x1b[39m"),
-            TestResult::Fail(msg) => println!("Test {test_name}.....\x1b[31mfail\n\t{msg}\x1b[39m"),
-        }
-    }
-}
-
-pub fn load_dir<Conf>(dir: &PathBuf, src_ext: &str) -> Result<Vec<Test<Conf>>, Error>
+pub fn load_dir<Conf>(dir: &PathBuf, src_ext: &str) -> Result<Vec<TestContents<Conf>>, Error>
 where
     Conf: for<'a> serde::Deserialize<'a>,
 {
@@ -42,7 +25,7 @@ where
             .ok_or(Error::FileName(path.clone()))?
             .to_owned();
 
-        let mut source_file = path.join(stem);
+        let mut source_file = path.join(stem.clone());
         source_file.set_extension(src_ext);
 
         let mut config_file = source_file.clone();
@@ -54,10 +37,10 @@ where
 
         let contents = read_to_string(&source_file).map_err(|_| Error::ReadFile(source_file))?;
 
-        tests.push(Test {
-            source_file: path,
-            source_str: contents,
-            config,
+        tests.push(TestContents {
+            source_name: stem,
+            source_contents: contents,
+            conf: config,
         });
     }
 

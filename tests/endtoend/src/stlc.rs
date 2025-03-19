@@ -1,7 +1,8 @@
 use super::{
     errors::Error,
-    test::{load_dir, Test, TestResult},
-    TestRunner,
+    test::{load_dir, TestContents},
+    testsuite::{Test, TestResult},
+    TestSuite,
 };
 use std::path::PathBuf;
 use stlc::{check::Check, eval::Eval, parser::parse};
@@ -22,50 +23,127 @@ impl StlcTests {
     }
 }
 
-impl TestRunner for StlcTests {
-    type TestConf = StlcConf;
+pub struct ParseTest {
+    source_name: String,
+    source_contents: String,
+}
 
-    fn run_test(&self, test: Test<Self::TestConf>) -> TestResult {
-        let parsed = match parse(test.source_str) {
-            Ok(t) => t,
-            Err(err) => return TestResult::Fail(format!("Could not parse source:\n{err}")),
-        };
-        let reparsed = match parse(parsed.to_string()) {
-            Ok(t) => t,
-            Err(err) => return TestResult::Fail(format!("Could not reparse formatted:\n{err}")),
-        };
-        if parsed != reparsed {
-            return TestResult::Fail(format!(
-                "Reparsed does not match parsed:\n\tresult:   {reparsed}\n\texpected: {parsed}"
-            ));
-        }
-        let checked = match parsed.check(&mut Default::default()) {
-            Ok(ty) => ty,
-            Err(err) => return TestResult::Fail(format!("Could not typecheck:\n{err}")),
-        };
-        let result = checked.to_string();
-        let expected = test.config.ty;
-        if result != expected {
-            return TestResult::Fail(format!(
-                    "Checked type does not match expected type:\n\tresult:  {result}\n\texpectd:{expected}"
-                    ));
-        }
-        let evaled = match parsed.eval() {
-            Ok(v) => v,
-            Err(err) => return TestResult::Fail(format!("Could not evaluate term:\n{err}")),
-        };
-        let result = evaled.to_string();
-        let expected = test.config.evaled;
-        if result != expected {
-            return TestResult::Fail(format!(
-                "Evaluated does not match expected:\n\tresult:   {result}\n\texpected: {expected}"
-            ));
-        }
-
-        TestResult::Success
+impl Test for ParseTest {
+    fn name(&self) -> String {
+        format!("Parsing {}", self.source_name)
     }
 
-    fn load_tests(&self) -> Result<Vec<Test<Self::TestConf>>, Error> {
-        load_dir(&self.source_dir, "stlc")
+    fn run(&self) -> TestResult {
+        match parse(self.source_contents.clone()) {
+            Ok(_) => TestResult::Success,
+            Err(err) => TestResult::from_err(err),
+        }
+    }
+}
+
+pub struct ReparseTest {
+    source_name: String,
+    source_contents: String,
+}
+
+impl Test for ReparseTest {
+    fn name(&self) -> String {
+        format!("Reparsing {}", self.source_name)
+    }
+
+    fn run(&self) -> TestResult {
+        let parsed = match parse(self.source_contents.clone()) {
+            Ok(p) => p,
+            Err(err) => return TestResult::from_err(err),
+        };
+        let reparsed = match parse(parsed.to_string()) {
+            Ok(p) => p,
+            Err(err) => return TestResult::from_err(err),
+        };
+        TestResult::from_eq(&parsed, &reparsed)
+    }
+}
+
+pub struct TypecheckTest {
+    source_name: String,
+    source_contents: String,
+    expected: String,
+}
+
+impl Test for TypecheckTest {
+    fn name(&self) -> String {
+        format!("Typechecking {}", self.source_name)
+    }
+
+    fn run(&self) -> TestResult {
+        let parsed = match parse(self.source_contents.clone()) {
+            Ok(p) => p,
+            Err(err) => return TestResult::from_err(err),
+        };
+        let checked = match parsed.check(&mut Default::default()) {
+            Ok(ty) => ty,
+            Err(err) => return TestResult::from_err(err),
+        };
+        TestResult::from_eq(&checked, &self.expected)
+    }
+}
+
+pub struct EvalTest {
+    source_name: String,
+    source_contents: String,
+    expected: String,
+}
+
+impl Test for EvalTest {
+    fn name(&self) -> String {
+        format!("Evaluating {}", self.source_name)
+    }
+
+    fn run(&self) -> TestResult {
+        let parsed = match parse(self.source_contents.clone()) {
+            Ok(p) => p,
+            Err(err) => return TestResult::from_err(err),
+        };
+        let evaled = match parsed.eval() {
+            Ok(v) => v,
+            Err(err) => return TestResult::from_err(err),
+        };
+        TestResult::from_eq(&evaled, &self.expected)
+    }
+}
+
+impl TestSuite for StlcTests {
+    fn name(&self) -> String {
+        "Stlc".to_owned()
+    }
+
+    fn load(&self) -> Result<Vec<Box<dyn Test>>, Error> {
+        let contents: Vec<TestContents<StlcConf>> = load_dir(&self.source_dir, "stlc")?;
+        let mut tests = vec![];
+        for content in contents {
+            let parse_test = ParseTest {
+                source_name: content.source_name.clone(),
+                source_contents: content.source_contents.clone(),
+            };
+            tests.push(Box::new(parse_test) as Box<dyn Test>);
+            let reparse_test = ReparseTest {
+                source_name: content.source_name.clone(),
+                source_contents: content.source_contents.clone(),
+            };
+            tests.push(Box::new(reparse_test) as Box<dyn Test>);
+            let check_test = TypecheckTest {
+                source_name: content.source_name.clone(),
+                source_contents: content.source_contents.clone(),
+                expected: content.conf.ty,
+            };
+            tests.push(Box::new(check_test) as Box<dyn Test>);
+            let eval_test = EvalTest {
+                source_name: content.source_name,
+                source_contents: content.source_contents,
+                expected: content.conf.evaled,
+            };
+            tests.push(Box::new(eval_test) as Box<dyn Test>);
+        }
+        Ok(tests)
     }
 }

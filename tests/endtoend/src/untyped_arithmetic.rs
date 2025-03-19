@@ -1,7 +1,7 @@
 use super::{
     errors::Error,
-    test::{load_dir, Test, TestResult},
-    TestRunner,
+    test::{load_dir, TestContents},
+    testsuite::{Test, TestResult, TestSuite},
 };
 use std::path::PathBuf;
 use untyped_arithmetic::parse::parse;
@@ -21,37 +21,94 @@ impl UntypedArithTests {
     }
 }
 
-impl TestRunner for UntypedArithTests {
-    type TestConf = UntypedArithConf;
+pub struct ParseTest {
+    source_name: String,
+    source: String,
+}
 
-    fn run_test(&self, test: Test<Self::TestConf>) -> TestResult {
-        let parsed = match parse(test.source_str) {
-            Ok(t) => t,
-            Err(err) => return TestResult::Fail(err.to_string()),
-        };
-        println!("parsed: {parsed}");
-        let reparsed = match parse(parsed.to_string()) {
-            Ok(t) => t,
-            Err(err) => return TestResult::Fail(format!("Could not reparse formatted:\n{err}")),
-        };
-        if reparsed != parsed {
-            return TestResult::Fail(format!(
-                "Reparsed does not match parsed:\nresult:   {reparsed}\n\texpected: {parsed}"
-            ));
-        }
-        let evaled = parsed.eval();
-        let result = evaled.to_string();
-        let expected = test.config.expected;
-        if result != expected {
-            TestResult::Fail(format!(
-                "Result != Expected:\n\tresult:   {result}\n\texpected: {expected}"
-            ))
-        } else {
-            TestResult::Success
-        }
+impl Test for ParseTest {
+    fn name(&self) -> String {
+        format!("Parsing {}", self.source_name)
     }
 
-    fn load_tests(&self) -> Result<Vec<Test<Self::TestConf>>, Error> {
-        load_dir(&self.source_dir, "arith")
+    fn run(&self) -> TestResult {
+        match parse(self.source.clone()) {
+            Ok(_) => TestResult::Success,
+            Err(err) => TestResult::from_err(err),
+        }
+    }
+}
+
+pub struct ReparseTest {
+    source_name: String,
+    source: String,
+}
+
+impl Test for ReparseTest {
+    fn name(&self) -> String {
+        format!("Reparsing {}", self.source_name)
+    }
+
+    fn run(&self) -> TestResult {
+        let parsed = match parse(self.source.clone()) {
+            Ok(p) => p,
+            Err(err) => return TestResult::from_err(err),
+        };
+        let reparsed = match parse(parsed.to_string()) {
+            Ok(p) => p,
+            Err(err) => return TestResult::from_err(err),
+        };
+        TestResult::from_eq(&reparsed, &parsed)
+    }
+}
+
+pub struct EvalTest {
+    source_name: String,
+    source: String,
+    expected: String,
+}
+
+impl Test for EvalTest {
+    fn name(&self) -> String {
+        format!("Evaluating {}", self.source_name)
+    }
+
+    fn run(&self) -> TestResult {
+        let parsed = match parse(self.source.clone()) {
+            Ok(p) => p,
+            Err(err) => return TestResult::from_err(err),
+        };
+        let evaled = parsed.eval();
+        TestResult::from_eq(&evaled, &self.expected)
+    }
+}
+
+impl TestSuite for UntypedArithTests {
+    fn name(&self) -> String {
+        "Untyped Arithmetic".to_owned()
+    }
+
+    fn load(&self) -> Result<Vec<Box<dyn Test>>, Error> {
+        let contents: Vec<TestContents<UntypedArithConf>> = load_dir(&self.source_dir, "arith")?;
+        let mut tests = vec![];
+        for content in contents {
+            let parse_test = ParseTest {
+                source_name: content.source_name.clone(),
+                source: content.source_contents.clone(),
+            };
+            tests.push(Box::new(parse_test) as Box<dyn Test>);
+            let reparse_test = ReparseTest {
+                source_name: content.source_name.clone(),
+                source: content.source_contents.clone(),
+            };
+            tests.push(Box::new(reparse_test) as Box<dyn Test>);
+            let eval_test = EvalTest {
+                source_name: content.source_name,
+                source: content.source_contents,
+                expected: content.conf.expected,
+            };
+            tests.push(Box::new(eval_test) as Box<dyn Test>);
+        }
+        Ok(tests)
     }
 }
