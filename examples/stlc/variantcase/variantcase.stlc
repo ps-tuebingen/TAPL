@@ -1,1 +1,1 @@
-case <label = true> as <label:Bool> of { <label=b> => b | <nat=n> => iszero(n) }
+case <label = true> as <label:Bool,nat:Nat> of { <label=b> => b | <nat=n> => iszero(n) }

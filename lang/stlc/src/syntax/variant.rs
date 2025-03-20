@@ -50,7 +50,7 @@ impl fmt::Display for VariantCase {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(
             f,
-            "case {} of {}",
+            "case {} of {{ {} }}",
             self.bound_term,
             self.cases
                 .iter()
