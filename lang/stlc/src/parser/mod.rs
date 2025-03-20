@@ -1,7 +1,7 @@
 use super::{
     syntax::{
-        App, False, If, Lambda, Left, Let, Pred, Proj, Record, RecordProj, Right, Succ, Term, True,
-        Tup, Unit, Variant, Zero,
+        App, Cons, False, Head, If, IsNil, Lambda, Left, Let, Nil, Pred, Proj, Record, RecordProj,
+        Right, Succ, Tail, Term, True, Tup, Unit, Variant, Zero,
     },
     types::Type,
 };
@@ -218,8 +218,118 @@ fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
             }
             .into())
         }
+        Rule::cons_term => {
+            let mut inner = p.into_inner();
+            let ty_pair = inner
+                .next()
+                .ok_or(Error::MissingInput("Cons Type".to_owned()))?;
+            let ty_rule = next_rule(ty_pair, Rule::r#type)?;
+            let ty = pair_to_type(ty_rule)?;
+
+            let fst_pair = inner
+                .next()
+                .ok_or(Error::MissingInput("First Cons argument".to_owned()))?;
+            let fst_rule = next_rule(fst_pair, Rule::term)?;
+            let fst = pair_to_term(fst_rule)?;
+
+            let snd_pair = inner
+                .next()
+                .ok_or(Error::MissingInput("Second Cons argument".to_owned()))?;
+            let snd_rule = next_rule(snd_pair, Rule::term)?;
+            let snd = pair_to_term(snd_rule)?;
+
+            if let Some(next) = inner.next() {
+                return Err(Error::RemainingInput(next.as_rule()));
+            }
+            Ok(Cons {
+                fst: Box::new(fst),
+                rst: Box::new(snd),
+                inner_type: ty,
+            }
+            .into())
+        }
+        Rule::nil_term => {
+            let mut inner = p.into_inner();
+            let ty_pair = inner
+                .next()
+                .ok_or(Error::MissingInput("Nil Type".to_owned()))?;
+            let ty_rule = next_rule(ty_pair, Rule::r#type)?;
+            let ty = pair_to_type(ty_rule)?;
+
+            if let Some(next) = inner.next() {
+                return Err(Error::RemainingInput(next.as_rule()));
+            }
+            Ok(Nil { inner_type: ty }.into())
+        }
+        Rule::isnil_term => {
+            let mut inner = p.into_inner();
+            let ty_pair = inner
+                .next()
+                .ok_or(Error::MissingInput("IsNil Type".to_owned()))?;
+            let ty_rule = next_rule(ty_pair, Rule::r#type)?;
+            let ty = pair_to_type(ty_rule)?;
+            let term_pair = inner
+                .next()
+                .ok_or(Error::MissingInput("IsNil Argument".to_owned()))?;
+            let term_rule = next_rule(term_pair, Rule::term)?;
+            let term = pair_to_term(term_rule)?;
+            if let Some(next) = inner.next() {
+                return Err(Error::RemainingInput(next.as_rule()));
+            }
+            Ok(IsNil {
+                inner_type: ty,
+                list: Box::new(term),
+            }
+            .into())
+        }
+        Rule::head_term => {
+            let mut inner = p.into_inner();
+            let ty_rule = inner
+                .next()
+                .ok_or(Error::MissingInput("Head Type".to_owned()))?;
+            let ty_pair = next_rule(ty_rule, Rule::r#type)?;
+            let ty = pair_to_type(ty_pair)?;
+
+            let term_pair = inner
+                .next()
+                .ok_or(Error::MissingInput("Head Argument".to_owned()))?;
+            let term_rule = next_rule(term_pair, Rule::term)?;
+            let term = pair_to_term(term_rule)?;
+
+            if let Some(next) = inner.next() {
+                return Err(Error::RemainingInput(next.as_rule()));
+            }
+            Ok(Head {
+                inner_type: ty,
+                list: Box::new(term),
+            }
+            .into())
+        }
+        Rule::tail_term => {
+            let mut inner = p.into_inner();
+            let ty_rule = inner
+                .next()
+                .ok_or(Error::MissingInput("Head Type".to_owned()))?;
+            let ty_pair = next_rule(ty_rule, Rule::r#type)?;
+            let ty = pair_to_type(ty_pair)?;
+
+            let term_pair = inner
+                .next()
+                .ok_or(Error::MissingInput("Head Argument".to_owned()))?;
+            let term_rule = next_rule(term_pair, Rule::term)?;
+            let term = pair_to_term(term_rule)?;
+
+            if let Some(next) = inner.next() {
+                return Err(Error::RemainingInput(next.as_rule()));
+            }
+            Ok(Tail {
+                inner_type: ty,
+                list: Box::new(term),
+            }
+            .into())
+        }
         Rule::number => {
-            let num_str = p.as_str();
+            let num_str = p.as_str().trim();
             let num = num_str
                 .parse::<i64>()
                 .map_err(|_| Error::BadTerm(num_str.to_owned()))?;

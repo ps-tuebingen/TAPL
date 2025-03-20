@@ -45,6 +45,6 @@ impl fmt::Display for False {
 
 impl fmt::Display for If {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "if {} then {} else {}", self.ifc, self.thenc, self.elsec)
+        write!(f, "If {} Then {} Else {}", self.ifc, self.thenc, self.elsec)
     }
 }
