@@ -1,7 +1,7 @@
 use super::{
     syntax::{
-        App, Cons, False, Head, If, IsNil, Lambda, Left, Let, Nil, Pred, Proj, Record, RecordProj,
-        Right, Succ, Tail, Term, True, Tup, Unit, Variant, Zero,
+        App, Ascribe, Cons, False, Head, If, IsNil, Lambda, Left, Let, Nil, Pred, Proj, Record,
+        RecordProj, Right, Succ, Tail, Term, True, Tup, Unit, Variant, Zero,
     },
     types::Type,
 };
@@ -55,10 +55,29 @@ fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
             let lam = pairs_to_lambda(inner)?;
             Ok(lam.into())
         }
-        Rule::term_app => {
+        Rule::app_term => {
             let inner = p.into_inner();
             let app = pairs_to_app(inner)?;
             Ok(app.into())
+        }
+        Rule::ascription => {
+            let mut inner = p.into_inner();
+            let t_pair = inner
+                .next()
+                .ok_or(Error::MissingInput("Ascription Term".to_owned()))?;
+            let t_rule = next_rule(t_pair, Rule::term)?;
+            let t = pair_to_term(t_rule)?;
+
+            let ty_pair = inner
+                .next()
+                .ok_or(Error::MissingInput("Ascription Term".to_owned()))?;
+            let ty_rule = next_rule(ty_pair, Rule::r#type)?;
+            let ty = pair_to_type(ty_rule)?;
+            Ok(Ascribe {
+                term: Box::new(t),
+                ty,
+            }
+            .into())
         }
         Rule::if_term => {
             let inner = p.into_inner();
