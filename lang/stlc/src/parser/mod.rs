@@ -188,7 +188,7 @@ fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
             }
             Ok(Left {
                 left_term: Box::new(arg_term),
-                right_ty: ty,
+                ty,
             }
             .into())
         }
@@ -205,7 +205,7 @@ fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
             let ty = pair_to_type(ty_rule)?;
             Ok(Right {
                 right_term: Box::new(arg_term),
-                left_ty: ty,
+                ty,
             }
             .into())
         }

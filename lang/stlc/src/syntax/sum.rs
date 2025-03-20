@@ -5,13 +5,13 @@ use std::fmt;
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Left {
     pub left_term: Box<Term>,
-    pub right_ty: Type,
+    pub ty: Type,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Right {
     pub right_term: Box<Term>,
-    pub left_ty: Type,
+    pub ty: Type,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -43,13 +43,13 @@ impl From<SumCase> for Term {
 
 impl fmt::Display for Left {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "inl({}) as {}", self.left_term, self.right_ty)
+        write!(f, "inl({}) as {}", self.left_term, self.ty)
     }
 }
 
 impl fmt::Display for Right {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "inr({}) as {}", self.right_term, self.left_ty)
+        write!(f, "inr({}) as {}", self.right_term, self.ty)
     }
 }
 

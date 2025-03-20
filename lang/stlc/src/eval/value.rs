@@ -30,11 +30,11 @@ pub enum Value {
     Record(HashMap<Var, Value>),
     Left {
         left_term: Box<Value>,
-        right_ty: Type,
+        ty: Type,
     },
     Right {
         right_term: Box<Value>,
-        left_ty: Type,
+        ty: Type,
     },
     Variant {
         label: Var,
@@ -92,20 +92,14 @@ impl From<Value> for Term {
                     .collect(),
             }
             .into(),
-            Value::Left {
-                left_term,
-                right_ty,
-            } => Left {
+            Value::Left { left_term, ty } => Left {
                 left_term: Box::new((*left_term).into()),
-                right_ty,
+                ty,
             }
             .into(),
-            Value::Right {
-                right_term,
-                left_ty,
-            } => Right {
+            Value::Right { right_term, ty } => Right {
                 right_term: Box::new((*right_term).into()),
-                left_ty,
+                ty,
             }
             .into(),
             Value::Variant { label, ty, val } => Variant {

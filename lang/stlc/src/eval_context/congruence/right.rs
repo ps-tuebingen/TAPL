@@ -4,7 +4,7 @@ use crate::types::Type;
 #[derive(Debug, PartialEq, Eq)]
 pub struct Right {
     pub right_term: Box<EvalContext>,
-    pub left_ty: Type,
+    pub ty: Type,
 }
 
 impl Eval for Right {
@@ -12,7 +12,7 @@ impl Eval for Right {
         let right_val = self.right_term.eval()?;
         Ok(Value::Right {
             right_term: Box::new(right_val),
-            left_ty: self.left_ty,
+            ty: self.ty,
         })
     }
 }
@@ -40,13 +40,13 @@ mod right_tests {
     #[test]
     fn eval_right() {
         let result = Right {
-            left_ty: Type::Nat,
+            ty: Type::Nat,
             right_term: Box::new(IsZeroNum { num: Value::Zero }.into()),
         }
         .eval()
         .unwrap();
         let expected = Value::Right {
-            left_ty: Type::Nat,
+            ty: Type::Nat,
             right_term: Box::new(Value::True),
         };
         assert_eq!(result, expected)

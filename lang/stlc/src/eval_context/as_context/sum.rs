@@ -9,13 +9,13 @@ impl AsContext for Left {
         match (&*self.left_term).try_into() {
             Ok(val) => Ok(EvalContext::Value(Value::Left {
                 left_term: Box::new(val),
-                right_ty: self.right_ty,
+                ty: self.ty,
             })),
             Err(_) => {
                 let ctx = (*self.left_term).to_context()?;
                 Ok(congruence::Left {
                     left_term: Box::new(ctx),
-                    right_ty: self.right_ty,
+                    ty: self.ty,
                 }
                 .into())
             }
@@ -28,13 +28,13 @@ impl AsContext for Right {
         match (&*self.right_term).try_into() {
             Ok(val) => Ok(EvalContext::Value(Value::Right {
                 right_term: Box::new(val),
-                left_ty: self.left_ty,
+                ty: self.ty,
             })),
             Err(_) => {
                 let ctx = (*self.right_term).to_context()?;
                 Ok(congruence::Right {
                     right_term: Box::new(ctx),
-                    left_ty: self.left_ty,
+                    ty: self.ty,
                 }
                 .into())
             }
@@ -84,13 +84,13 @@ mod sum_tests {
     fn ctx_left_val() {
         let result = Left {
             left_term: Box::new(True.into()),
-            right_ty: Type::Nat,
+            ty: Type::Nat,
         }
         .to_context()
         .unwrap();
         let expected = EvalContext::Value(Value::Left {
             left_term: Box::new(Value::True),
-            right_ty: Type::Nat,
+            ty: Type::Nat,
         });
         assert_eq!(result, expected)
     }
@@ -104,13 +104,13 @@ mod sum_tests {
                 }
                 .into(),
             ),
-            right_ty: Type::Nat,
+            ty: Type::Nat,
         }
         .to_context()
         .unwrap();
         let expected = congruence::Left {
             left_term: Box::new(IsZeroNum { num: Value::Zero }.into()),
-            right_ty: Type::Nat,
+            ty: Type::Nat,
         }
         .into();
         assert_eq!(result, expected)
@@ -119,14 +119,14 @@ mod sum_tests {
     #[test]
     fn ctx_right_val() {
         let result = Right {
-            left_ty: Type::Nat,
+            ty: Type::Nat,
             right_term: Box::new(True.into()),
         }
         .to_context()
         .unwrap();
         let expected = EvalContext::Value(Value::Right {
             right_term: Box::new(Value::True),
-            left_ty: Type::Nat,
+            ty: Type::Nat,
         });
         assert_eq!(result, expected)
     }
@@ -134,7 +134,7 @@ mod sum_tests {
     #[test]
     fn ctx_right_cong() {
         let result = Right {
-            left_ty: Type::Bool,
+            ty: Type::Bool,
             right_term: Box::new(
                 Succ {
                     term: Box::new(
@@ -150,7 +150,7 @@ mod sum_tests {
         .to_context()
         .unwrap();
         let expected = congruence::Right {
-            left_ty: Type::Bool,
+            ty: Type::Bool,
             right_term: Box::new(SuccPred { val: Value::Zero }.into()),
         }
         .into();
@@ -163,7 +163,7 @@ mod sum_tests {
             bound_term: Box::new(
                 Left {
                     left_term: Box::new(True.into()),
-                    right_ty: Type::Nat,
+                    ty: Type::Nat,
                 }
                 .into(),
             ),
@@ -177,7 +177,7 @@ mod sum_tests {
         let expected = SumCaseRhs {
             bound_val: Value::Left {
                 left_term: Box::new(Value::True),
-                right_ty: Type::Nat,
+                ty: Type::Nat,
             },
             left_var: "x".to_owned(),
             left_term: True.into(),
@@ -193,7 +193,7 @@ mod sum_tests {
         let result = SumCase {
             bound_term: Box::new(
                 Left {
-                    right_ty: Type::Nat,
+                    ty: Type::Nat,
                     left_term: Box::new(
                         IsZero {
                             term: Box::new(Zero.into()),
@@ -214,7 +214,7 @@ mod sum_tests {
             bound_term: Box::new(
                 congruence::Left {
                     left_term: Box::new(IsZeroNum { num: Value::Zero }.into()),
-                    right_ty: Type::Nat,
+                    ty: Type::Nat,
                 }
                 .into(),
             ),

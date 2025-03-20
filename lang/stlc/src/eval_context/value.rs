@@ -31,11 +31,11 @@ pub enum Value {
     Record(HashMap<Var, Value>),
     Left {
         left_term: Box<Value>,
-        right_ty: Type,
+        ty: Type,
     },
     Right {
         right_term: Box<Value>,
-        left_ty: Type,
+        ty: Type,
     },
     Variant {
         label: Var,
@@ -93,20 +93,14 @@ impl From<Value> for Term {
                     .collect(),
             }
             .into(),
-            Value::Left {
-                left_term,
-                right_ty,
-            } => Left {
+            Value::Left { left_term, ty } => Left {
                 left_term: Box::new((*left_term).into()),
-                right_ty,
+                ty,
             }
             .into(),
-            Value::Right {
-                right_term,
-                left_ty,
-            } => Right {
+            Value::Right { right_term, ty } => Right {
                 right_term: Box::new((*right_term).into()),
-                left_ty,
+                ty,
             }
             .into(),
             Value::Variant { label, ty, val } => Variant {
@@ -192,14 +186,14 @@ impl TryFrom<&Term> for Value {
                 let inner = (&*l.left_term).try_into()?;
                 Ok(Value::Left {
                     left_term: Box::new(inner),
-                    right_ty: l.right_ty.clone(),
+                    ty: l.ty.clone(),
                 })
             }
             Term::Right(r) => {
                 let inner = (&*r.right_term).try_into()?;
                 Ok(Value::Right {
                     right_term: Box::new(inner),
-                    left_ty: r.left_ty.clone(),
+                    ty: r.ty.clone(),
                 })
             }
             Term::Variant(var) => {
@@ -417,13 +411,13 @@ mod val_tests {
     fn from_left() {
         let result: Value = (&Term::Left(Left {
             left_term: Box::new(True.into()),
-            right_ty: Type::Nat,
+            ty: Type::Nat,
         }))
             .try_into()
             .unwrap();
         let expected = Value::Left {
             left_term: Box::new(Value::True),
-            right_ty: Type::Nat,
+            ty: Type::Nat,
         };
         assert_eq!(result, expected)
     }
@@ -432,13 +426,13 @@ mod val_tests {
     fn from_right() {
         let result: Value = (&Term::Right(Right {
             right_term: Box::new(False.into()),
-            left_ty: Type::Bool,
+            ty: Type::Bool,
         }))
             .try_into()
             .unwrap();
         let expected = Value::Right {
             right_term: Box::new(Value::False),
-            left_ty: Type::Bool,
+            ty: Type::Bool,
         };
         assert_eq!(result, expected)
     }

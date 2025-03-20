@@ -4,7 +4,7 @@ use crate::types::Type;
 #[derive(Debug, PartialEq, Eq)]
 pub struct Left {
     pub left_term: Box<EvalContext>,
-    pub right_ty: Type,
+    pub ty: Type,
 }
 
 impl Eval for Left {
@@ -12,7 +12,7 @@ impl Eval for Left {
         let left_val = self.left_term.eval()?;
         Ok(Value::Left {
             left_term: Box::new(left_val),
-            right_ty: self.right_ty,
+            ty: self.ty,
         })
     }
 }
@@ -41,13 +41,13 @@ mod left_tests {
     fn eval_left() {
         let result = Left {
             left_term: Box::new(SuccPred { val: Value::Zero }.into()),
-            right_ty: Type::Bool,
+            ty: Type::Bool,
         }
         .eval()
         .unwrap();
         let expected = Value::Left {
             left_term: Box::new(Value::Zero),
-            right_ty: Type::Bool,
+            ty: Type::Bool,
         };
         assert_eq!(result, expected)
     }

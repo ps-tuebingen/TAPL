@@ -10,7 +10,7 @@ impl Subst for Left {
     fn subst(self, var: &Var, term: Term) -> Self::Target {
         Left {
             left_term: self.left_term.subst(var, term),
-            right_ty: self.right_ty,
+            ty: self.ty,
         }
     }
 }
@@ -20,7 +20,7 @@ impl Subst for Right {
     fn subst(self, var: &Var, term: Term) -> Self::Target {
         Right {
             right_term: self.right_term.subst(var, term),
-            left_ty: self.left_ty,
+            ty: self.ty,
         }
     }
 }

@@ -13,18 +13,12 @@ pub struct SumCaseRhs {
 impl Eval for SumCaseRhs {
     fn eval(self) -> Result<Value, Error> {
         match self.bound_val {
-            Value::Left {
-                left_term,
-                right_ty: _,
-            } => {
+            Value::Left { left_term, ty: _ } => {
                 let t = self.left_term.subst(&self.left_var, (*left_term).into());
                 let ctx: EvalContext = t.to_context()?;
                 ctx.eval()
             }
-            Value::Right {
-                right_term,
-                left_ty: _,
-            } => {
+            Value::Right { right_term, ty: _ } => {
                 let t = self.right_term.subst(&self.right_var, (*right_term).into());
                 let ctx: EvalContext = t.to_context()?;
                 ctx.eval()
@@ -56,7 +50,7 @@ mod sumcaserhs_tests {
         let result = SumCaseRhs {
             bound_val: Value::Left {
                 left_term: Box::new(Value::False),
-                right_ty: Type::Nat,
+                ty: Type::Nat,
             },
             left_var: "x".to_owned(),
             left_term: "x".to_owned().into(),
@@ -77,7 +71,7 @@ mod sumcaserhs_tests {
         let result = SumCaseRhs {
             bound_val: Value::Right {
                 right_term: Box::new(Value::Zero),
-                left_ty: Type::Bool,
+                ty: Type::Bool,
             },
             left_var: "x".to_owned(),
             left_term: "x".to_owned().into(),

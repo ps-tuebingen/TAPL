@@ -9,7 +9,7 @@ impl Eval for Left {
         let left_val = self.left_term.eval()?;
         Ok(Value::Left {
             left_term: Box::new(left_val),
-            right_ty: self.right_ty,
+            ty: self.ty,
         })
     }
 }
@@ -19,7 +19,7 @@ impl Eval for Right {
         let right_val = self.right_term.eval()?;
         Ok(Value::Right {
             right_term: Box::new(right_val),
-            left_ty: self.left_ty,
+            ty: self.ty,
         })
     }
 }
@@ -30,11 +30,11 @@ impl Eval for SumCase {
         match bound_val {
             Value::Left {
                 left_term: val,
-                right_ty: _,
+                ty: _,
             } => self.left_term.subst(&self.left_var, (*val).into()).eval(),
             Value::Right {
                 right_term: val,
-                left_ty: _,
+                ty: _,
             } => self.right_term.subst(&self.right_var, (*val).into()).eval(),
             _ => Err(Error::BadValue { val: bound_val }),
         }
@@ -53,13 +53,13 @@ mod sum_tests {
     fn eval_left() {
         let result = Left {
             left_term: Box::new(Zero.into()),
-            right_ty: Type::Bool,
+            ty: Type::Bool,
         }
         .eval()
         .unwrap();
         let expected = Value::Left {
             left_term: Box::new(Value::Zero),
-            right_ty: Type::Bool,
+            ty: Type::Bool,
         };
         assert_eq!(result, expected)
     }
@@ -68,13 +68,13 @@ mod sum_tests {
     fn eval_right() {
         let result = Right {
             right_term: Box::new(True.into()),
-            left_ty: Type::Nat,
+            ty: Type::Nat,
         }
         .eval()
         .unwrap();
         let expected = Value::Right {
             right_term: Box::new(Value::True),
-            left_ty: Type::Nat,
+            ty: Type::Nat,
         };
         assert_eq!(result, expected)
     }
@@ -85,7 +85,7 @@ mod sum_tests {
             bound_term: Box::new(
                 Left {
                     left_term: Box::new(Zero.into()),
-                    right_ty: Type::Bool,
+                    ty: Type::Bool,
                 }
                 .into(),
             ),
@@ -111,7 +111,7 @@ mod sum_tests {
             bound_term: Box::new(
                 Right {
                     right_term: Box::new(True.into()),
-                    left_ty: Type::Nat,
+                    ty: Type::Nat,
                 }
                 .into(),
             ),
