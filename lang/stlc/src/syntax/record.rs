@@ -43,6 +43,6 @@ impl fmt::Display for Record {
 
 impl fmt::Display for RecordProj {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}.{}", self.record, self.label)
+        write!(f, "({}).{}", self.record, self.label)
     }
 }
