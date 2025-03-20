@@ -31,12 +31,12 @@ let_term = { "let"  ~ variable ~ "=" ~ term ~ "in" ~ term }
 
 pred_term = { "pred" ~ paren_term } 
 succ_term = { "succ" ~ paren_term }
+isz_term = { "iszero" ~ paren_term }
 
 tup_term = {"{" ~ term ~ ("," ~ term)* ~ "}" }
-tup_proj = { (variable | paren_term) ~ "." ~ number }
+proj = { (variable | paren_term) ~ "." ~ ( variable | number ) }
 
 rec_term = { "{" ~ variable ~ "=" ~ term ~ ("," ~ variable ~ "=" ~ term)* ~ "}" }
-rec_proj = { paren_term ~ "." ~ variable }
 
 left_term = { "inl" ~ paren_term ~ "as" ~ type } 
 right_term = { "inr" ~ paren_term ~ "as" ~ type }
@@ -73,10 +73,9 @@ term = {
   | let_term
   | pred_term
   | succ_term
+  | isz_term
   | tup_term
-  | tup_proj
   | rec_term
-  | rec_proj
   | left_term
   | right_term
   | sum_case
@@ -89,6 +88,7 @@ term = {
   | head_term
   | tail_term
   | isnil_term
+  | proj
   | paren_term
   | variable 
 }

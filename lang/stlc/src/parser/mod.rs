@@ -1,7 +1,7 @@
 use super::{
     syntax::{
-        App, Ascribe, Cons, False, Head, If, IsNil, Lambda, Left, Let, Nil, Pred, Proj, Record,
-        RecordProj, Right, Succ, Tail, Term, True, Tup, Unit, Variant, Zero,
+        App, Ascribe, Cons, False, Head, If, IsNil, IsZero, Lambda, Left, Let, Nil, Pred, Proj,
+        Record, RecordProj, Right, Succ, Tail, Term, True, Tup, Unit, Variant, Zero,
     },
     types::Type,
 };
@@ -117,7 +117,7 @@ fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
             let tup = pairs_to_tup(inner)?;
             Ok(tup.into())
         }
-        Rule::tup_proj => {
+        Rule::proj => {
             let mut inner = p.into_inner();
             let proj_pair = inner
                 .next()
@@ -125,19 +125,24 @@ fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
             let proj_term = pair_to_term(proj_pair)?;
             let num_pair = inner
                 .next()
-                .ok_or(Error::MissingInput("Projection Index".to_owned()))?;
+                .ok_or(Error::MissingInput("Projection Target".to_owned()))?;
             let num_pair_str = num_pair.as_str().trim();
-            let num = num_pair_str
-                .parse::<usize>()
-                .map_err(|_| Error::BadTerm(num_pair_str.to_owned()))?;
+            let term = match num_pair_str.parse::<usize>() {
+                Ok(num) => Proj {
+                    tup: Box::new(proj_term),
+                    ind: num,
+                }
+                .into(),
+                Err(_) => RecordProj {
+                    record: Box::new(proj_term),
+                    label: num_pair_str.to_owned(),
+                }
+                .into(),
+            };
             if let Some(n) = inner.next() {
                 return Err(Error::RemainingInput(n.as_rule()));
             }
-            Ok(Proj {
-                tup: Box::new(proj_term),
-                ind: num,
-            }
-            .into())
+            Ok(term)
         }
         Rule::rec_term => {
             let mut inner = p.into_inner();
@@ -152,25 +157,6 @@ fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
                 records.insert(var, n_term);
             }
             Ok(Record { records }.into())
-        }
-        Rule::rec_proj => {
-            let mut inner = p.into_inner();
-            let rec_pair = inner
-                .next()
-                .ok_or(Error::MissingInput("Projection Record".to_owned()))?;
-            let rec_term = pair_to_term(rec_pair)?;
-            let var_pair = inner
-                .next()
-                .ok_or(Error::MissingInput("Record Label".to_owned()))?;
-            let var = var_pair.as_str().to_owned();
-            if let Some(n) = inner.next() {
-                return Err(Error::RemainingInput(n.as_rule()));
-            }
-            Ok(RecordProj {
-                record: Box::new(rec_term),
-                label: var,
-            }
-            .into())
         }
         Rule::left_term => {
             let mut inner = p.into_inner();
@@ -257,6 +243,21 @@ fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
             }
             Ok(Succ {
                 term: Box::new(inner_term),
+            }
+            .into())
+        }
+        Rule::isz_term => {
+            let mut inner = p.into_inner();
+            let term_pair = inner
+                .next()
+                .ok_or(Error::MissingInput("IsZero Argument".to_owned()))?;
+            let term_rule = next_rule(term_pair, Rule::term)?;
+            let term = pair_to_term(term_rule)?;
+            if let Some(n) = inner.next() {
+                return Err(Error::RemainingInput(n.as_rule()));
+            }
+            Ok(IsZero {
+                term: Box::new(term),
             }
             .into())
         }
