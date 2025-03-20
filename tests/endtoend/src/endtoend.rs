@@ -4,8 +4,8 @@ use std::{
 };
 
 mod errors;
+mod load_tests;
 mod paths;
-mod test;
 mod testsuite;
 
 mod nameless;

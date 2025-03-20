@@ -1,6 +1,6 @@
 use super::{
     errors::Error,
-    test::{load_dir, TestContents},
+    load_tests::{load_dir, TestContents},
     testsuite::{Test, TestResult, TestSuite},
 };
 use std::path::PathBuf;
