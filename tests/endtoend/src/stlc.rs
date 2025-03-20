@@ -5,7 +5,7 @@ use super::{
     TestSuite,
 };
 use std::path::PathBuf;
-use stlc::{check::Check, eval::Eval, parser::parse};
+use stlc::{check::Check, eval::Eval, eval_context::eval_with_context, parser::parse};
 
 pub struct StlcTests {
     source_dir: PathBuf,
@@ -113,6 +113,31 @@ impl Test for EvalTest {
     }
 }
 
+pub struct EvalCtxTest {
+    source_name: String,
+    source_contents: String,
+    expected: String,
+}
+
+impl Test for EvalCtxTest {
+    fn name(&self) -> String {
+        format!("Evaluating with Context {}", self.source_name)
+    }
+
+    fn run(&self) -> TestResult {
+        let parsed = match parse(self.source_contents.clone()) {
+            Ok(p) => p,
+            Err(err) => return TestResult::from_err(err),
+        };
+        let evaled = match eval_with_context(parsed) {
+            Ok(v) => v,
+            Err(err) => return TestResult::from_err(err),
+        };
+        let result = evaled.to_string();
+        TestResult::from_eq(&result, &self.expected)
+    }
+}
+
 impl TestSuite for StlcTests {
     fn name(&self) -> String {
         "Stlc".to_owned()
@@ -139,11 +164,17 @@ impl TestSuite for StlcTests {
             };
             tests.push(Box::new(check_test) as Box<dyn Test>);
             let eval_test = EvalTest {
+                source_name: content.source_name.clone(),
+                source_contents: content.source_contents.clone(),
+                expected: content.conf.evaled.clone(),
+            };
+            tests.push(Box::new(eval_test) as Box<dyn Test>);
+            let eval_ctx_test = EvalCtxTest {
                 source_name: content.source_name,
                 source_contents: content.source_contents,
                 expected: content.conf.evaled,
             };
-            tests.push(Box::new(eval_test) as Box<dyn Test>);
+            tests.push(Box::new(eval_ctx_test) as Box<dyn Test>);
         }
         Ok(tests)
     }
