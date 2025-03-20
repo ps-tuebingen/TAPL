@@ -153,7 +153,7 @@ rec_term = { "{" ~ variable ~ "=" ~ term ~ ("," ~ variable ~ "=" ~ term)* ~ "}" 
 variant_term = { "<" ~ variable ~ "=" ~ term ~ ">" ~ kw_as ~ type } 
 
 //Left Recursive Terms 
-app_term = { "(" ~ term ~ " " ~ term ~ ")"}
+app_term = { "(" ~ term ~ ")" ~ "(" ~ term ~ ")"}
 ascription = { "(" ~ term ~ ")" ~ kw_as ~ type }
 proj = { (variable | paren_term) ~ "." ~ ( variable | number ) }
 paren_term = { "(" ~ term ~ ")" }

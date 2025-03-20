@@ -12,7 +12,6 @@ impl Eval for LetSubst {
     fn eval(self) -> Result<Value, Error> {
         let t = self.in_term.subst(&self.var, self.bound_val.into());
         let ctx: EvalContext = t.to_context()?;
-        println!("ctx after substitution {ctx:?}");
         ctx.eval()
     }
 }

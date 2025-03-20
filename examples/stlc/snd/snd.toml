@@ -1,2 +1,2 @@
-ty="(NatxNat)"
+ty="Nat"
 evaled="succ(succ(succ(succ(0))))"

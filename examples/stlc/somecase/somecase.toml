@@ -1,2 +1,2 @@
 ty="Optional[Nat]"
-evaled="Nothing"
+evaled="Nothing[Nat]"

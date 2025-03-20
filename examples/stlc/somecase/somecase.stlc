@@ -1,1 +1,1 @@
-case Nothing of { Nothing => Nothing | Something(n) => succ(n) }
+case Nothing[Nat] of { Nothing => Nothing[Nat] | Something(n) => Something(succ(n)) }

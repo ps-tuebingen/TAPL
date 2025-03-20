@@ -4,6 +4,7 @@ use pest::iterators::Pair;
 
 mod ascribe;
 mod case;
+mod fix;
 mod ift;
 mod lambda;
 mod lett;
@@ -17,6 +18,7 @@ mod tup;
 mod variant;
 use ascribe::pair_to_ascribe;
 use case::pair_to_case;
+use fix::pair_to_fix;
 use ift::pair_to_if;
 use lambda::{pair_to_app, pair_to_lambda};
 use lett::pair_to_let;
@@ -38,6 +40,7 @@ pub fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
         Rule::some_term => pair_to_some(p).map(|som| som.into()),
         Rule::none_term => pair_to_none(p).map(|non| non.into()),
         Rule::ascription => pair_to_ascribe(p).map(|asc| asc.into()),
+        Rule::fix_term => pair_to_fix(p).map(|fix| fix.into()),
         Rule::if_term => pair_to_if(p).map(|ift| ift.into()),
         Rule::let_term => pair_to_let(p).map(|lett| lett.into()),
         Rule::tup_term => pair_to_tup(p).map(|tup| tup.into()),

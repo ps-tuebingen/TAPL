@@ -1,2 +1,2 @@
-ty="{x:Nat,y:Bool,z:(Nat->Nat)} -> (Nat -> Nat)"
+ty="({x: Nat, y: Bool, z: (Nat -> Nat)} -> (Nat -> Nat))"
 evaled="\\a:{x: Nat, y: Bool, z: (Nat -> Nat)}.(a).z"
