@@ -2,35 +2,35 @@ WHITESPACE = _{ " " | "\n" }
 program = { SOI ~ term ~ EOI }
 
 // Keywords
-kw_tybool = { "Bool" }
-kw_tynat = { "Nat" }
-kw_tyunit = { "Unit" }
+kw_tybool = _{ "Bool" }
+kw_tynat = _{ "Nat" }
+kw_tyunit = _{ "Unit" }
 
-kw_true = { "true" }
-kw_false = {  "false" }
-kw_zero = { "zero" }
-kw_unit = { "unit" }
-kw_nothing = { "Nothing" }
-kw_something = { "Something" }
-kw_if = { "if" }
-kw_then = { "then" }
-kw_else = { "else" }
-kw_fix = { "fix" }
-kw_let = { "let" }
-kw_in = { "in" }
-kw_pred = { "pred" }
-kw_succ = { "succ" }
-kw_iszero = { "iszero" }
-kw_inl = { "inl" }
-kw_inr = { "inr" }
-kw_nil = { "Nil" }
-kw_cons = { "Cons" }
-kw_head = { "head" }
-kw_tail = { "tail" }
-kw_isnil = { "isnil" }
-kw_case = { "case" }
-kw_of = { "of" }
-kw_as = { "as" }
+kw_true = _{ "true" }
+kw_false = _{  "false" }
+kw_zero = _{ "zero" }
+kw_unit = _{ "unit" }
+kw_nothing = _{ "Nothing" }
+kw_something = _{ "Something" }
+kw_if = _{ "if" }
+kw_then = _{ "then" }
+kw_else = _{ "else" }
+kw_fix = _{ "fix" }
+kw_let = _{ "let" }
+kw_in = _{ "in" }
+kw_pred = _{ "pred" }
+kw_succ = _{ "succ" }
+kw_iszero = _{ "iszero" }
+kw_inl = _{ "inl" }
+kw_inr = _{ "inr" }
+kw_nil = _{ "Nil" }
+kw_cons = _{ "Cons" }
+kw_head = _{ "head" }
+kw_tail = _{ "tail" }
+kw_isnil = _{ "isnil" }
+kw_case = _{ "case" }
+kw_of = _{ "of" }
+kw_as = _{ "as" }
 
 keyword = { 
   | kw_tybool
@@ -70,17 +70,22 @@ record_type =  { "{" ~ variable ~ ":" ~ type ~ ("," ~ variable ~ ":" ~ type)* ~ 
 variant_type = { "<" ~ variable ~ ":" ~ type ~ ("," ~ variable ~ ":" ~ type)* ~ ">" }
 paren_type = {"(" ~ type ~ ")"}
 type = {
+  | prim_type 
   | fun_type
   | prod_type
   | sum_type
   | record_type
   | variant_type
-  | prim_type 
   | paren_type
-} 
+}
 
 // Terms 
 term = { 
+  | app_term
+  | ascription
+  | proj
+  | paren_term
+
   | const 
   | if_term
   | fix_term
@@ -103,18 +108,13 @@ term = {
   | rec_term
   | variant_term
 
-  | app_term
-  | ascription
-  | proj
-  | paren_term
-
   | variable 
   | number
 }
 
 // Starts with keyword 
 const = { kw_true | kw_false | kw_zero | kw_unit | kw_nothing }
-if_term = {  kw_if ~ term ~ kw_then ~ term ~ kw_if ~ term }
+if_term = {  kw_if ~ term ~ kw_then ~ term ~ kw_else ~ term }
 fix_term = { kw_fix ~ term }
 let_term = { kw_let  ~ variable ~ "=" ~ term ~ kw_in ~ term } 
 some_term = { kw_something ~ paren_term } 
