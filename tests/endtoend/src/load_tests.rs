@@ -43,6 +43,6 @@ where
             conf: config,
         });
     }
-
+    tests.sort_by(|tst1, tst2| tst1.source_name.cmp(&tst2.source_name));
     Ok(tests)
 }
