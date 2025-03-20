@@ -6,7 +6,7 @@ use crate::{
 
 impl Check for Left {
     fn check(&self, env: &mut TypingEnv) -> Result<Type, Error> {
-        let left_ty = self.left_term.check(env)?;
+        let ty = self.left_term.check(env)?;
         let (annot_l, annot_r) = if let Type::Sum(annot_left, annot_right) = self.ty.clone() {
             (annot_left, annot_right)
         } else {
@@ -15,9 +15,9 @@ impl Check for Left {
                 ty: self.ty.clone(),
             });
         };
-        if left_ty != *annot_l {
+        if ty != *annot_l {
             return Err(Error::TypeMismatch {
-                types: vec![left_ty, *annot_l],
+                types: vec![ty, *annot_l],
             });
         }
 
@@ -27,7 +27,7 @@ impl Check for Left {
 
 impl Check for Right {
     fn check(&self, env: &mut TypingEnv) -> Result<Type, Error> {
-        let right_ty = self.right_term.check(env)?;
+        let ty = self.right_term.check(env)?;
         let (annot_l, annot_r) = if let Type::Sum(annot_left, annot_right) = self.ty.clone() {
             (annot_left, annot_right)
         } else {
@@ -37,13 +37,13 @@ impl Check for Right {
             });
         };
 
-        if right_ty != *annot_r {
+        if ty != *annot_r {
             return Err(Error::TypeMismatch {
-                types: vec![right_ty, *annot_r],
+                types: vec![ty, *annot_r],
             });
         }
 
-        Ok(Type::Sum(annot_l, Box::new(right_ty)))
+        Ok(Type::Sum(annot_l, Box::new(ty)))
     }
 }
 
@@ -52,17 +52,17 @@ impl Check for SumCase {
         let bound_ty = self.bound_term.check_local(env)?;
         if let Type::Sum(left_ty, right_ty) = bound_ty {
             env.used_vars.insert(self.left_var.clone(), *left_ty);
-            let left_ty = self.left_term.check_local(env)?;
+            let left_checked = self.left_term.check_local(env)?;
             env.used_vars.remove(&self.left_var);
 
             env.used_vars.insert(self.right_var.clone(), *right_ty);
-            let right_ty = self.right_term.check(env)?;
+            let right_checked = self.right_term.check(env)?;
 
-            if left_ty == right_ty {
-                Ok(left_ty)
+            if left_checked == right_checked {
+                Ok(left_checked)
             } else {
                 Err(Error::TypeMismatch {
-                    types: vec![left_ty, right_ty],
+                    types: vec![left_checked, right_checked],
                 })
             }
         } else {
@@ -86,7 +86,7 @@ mod sum_tests {
     fn check_left() {
         let result = Left {
             left_term: Box::new(Zero.into()),
-            right_ty: Type::Bool,
+            ty: Type::Sum(Box::new(Type::Nat), Box::new(Type::Bool)),
         }
         .check(&mut Default::default())
         .unwrap();
@@ -98,7 +98,7 @@ mod sum_tests {
     fn check_right() {
         let result = Right {
             right_term: Box::new(True.into()),
-            left_ty: Type::Nat,
+            ty: Type::Sum(Box::new(Type::Nat), Box::new(Type::Bool)),
         }
         .check(&mut Default::default())
         .unwrap();
@@ -112,7 +112,7 @@ mod sum_tests {
             bound_term: Box::new(
                 Left {
                     left_term: Box::new(Zero.into()),
-                    right_ty: Type::Bool,
+                    ty: Type::Sum(Box::new(Type::Nat), Box::new(Type::Bool)),
                 }
                 .into(),
             ),

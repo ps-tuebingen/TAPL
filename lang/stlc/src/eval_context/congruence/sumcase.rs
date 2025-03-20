@@ -51,7 +51,7 @@ mod sumcase_tests {
         let result = SumCase {
             bound_term: Box::new(
                 Right {
-                    left_ty: Type::Bool,
+                    ty: Type::Bool,
                     right_term: Box::new(SuccPred { val: Value::Zero }.into()),
                 }
                 .into(),

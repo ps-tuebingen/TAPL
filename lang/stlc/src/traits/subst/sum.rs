@@ -63,12 +63,12 @@ mod sum_tests {
     fn subst_left() {
         let result = Left {
             left_term: Box::new("x".to_owned().into()),
-            right_ty: Type::Bool,
+            ty: Type::Bool,
         }
         .subst(&"x".to_owned(), "y".to_owned().into());
         let expected = Left {
             left_term: Box::new("y".to_owned().into()),
-            right_ty: Type::Bool,
+            ty: Type::Bool,
         };
         assert_eq!(result, expected)
     }
@@ -77,12 +77,12 @@ mod sum_tests {
     fn subst_right() {
         let result = Right {
             right_term: Box::new("x".to_owned().into()),
-            left_ty: Type::Bool,
+            ty: Type::Bool,
         }
         .subst(&"x".to_owned(), "y".to_owned().into());
         let expected = Right {
             right_term: Box::new("y".to_owned().into()),
-            left_ty: Type::Bool,
+            ty: Type::Bool,
         };
         assert_eq!(result, expected)
     }
