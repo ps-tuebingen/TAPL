@@ -1,2 +1,2 @@
-ty=""
-evaled=""
+ty="Nat+Bool"
+evaled="inl(succ(zero)) as (Nat+Bool)"

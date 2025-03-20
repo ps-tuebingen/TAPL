@@ -60,7 +60,7 @@ impl Test for ReparseTest {
             Ok(p) => p,
             Err(err) => return TestResult::from_err(err),
         };
-        TestResult::from_eq(&parsed, &reparsed)
+        TestResult::from_eq(&reparsed, &parsed)
     }
 }
 
@@ -80,6 +80,7 @@ impl Test for TypecheckTest {
             Ok(p) => p,
             Err(err) => return TestResult::from_err(err),
         };
+        println!("parsed {parsed:?}");
         let checked = match parsed.check(&mut Default::default()) {
             Ok(ty) => ty,
             Err(err) => return TestResult::from_err(err),

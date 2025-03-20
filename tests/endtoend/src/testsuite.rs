@@ -54,7 +54,7 @@ pub trait TestSuite {
         }
         println!("");
         println!(
-            "\tRan {} tests: {} success, {} fail",
+            "\tRan {} tests: {} success, {} fail\n",
             num_tests,
             num_tests - num_fail,
             num_fail

@@ -48,7 +48,7 @@ fn next_rule(p: Pair<'_, Rule>, r: Rule) -> Result<Pair<'_, Rule>, Error> {
 
 fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
     match p.as_rule() {
-        Rule::variable => Ok(Term::Var(p.as_str().to_owned())),
+        Rule::variable => Ok(Term::Var(p.as_str().trim().to_owned())),
         Rule::r#const => str_to_term(p.as_str()),
         Rule::lambda_term => {
             let inner = p.into_inner();

@@ -1,2 +1,2 @@
-ty=""
-evaled=""
+ty="(Nat x Nat) -> (Nat x Nat)"
+evaled="\\p:(NatxNat).{p.2, p.1}"
