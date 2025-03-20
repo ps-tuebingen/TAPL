@@ -40,6 +40,6 @@ impl fmt::Display for Tup {
 
 impl fmt::Display for Proj {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}.{}", self.tup, self.ind)
+        write!(f, "({}).{}", self.tup, self.ind)
     }
 }

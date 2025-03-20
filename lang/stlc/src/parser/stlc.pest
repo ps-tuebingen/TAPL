@@ -91,6 +91,7 @@ term = {
   | fix_term
   | let_term
   | some_term
+  | none_term
   | pred_term
   | succ_term
   | isz_term
@@ -113,11 +114,12 @@ term = {
 }
 
 // Starts with keyword 
-const = { kw_true | kw_false | kw_zero | kw_unit | kw_nothing }
+const = { kw_true | kw_false | kw_zero | kw_unit }
 if_term = {  kw_if ~ term ~ kw_then ~ term ~ kw_else ~ term }
 fix_term = { kw_fix ~ term }
 let_term = { kw_let  ~ variable ~ "=" ~ term ~ kw_in ~ term } 
 some_term = { kw_something ~ paren_term } 
+none_term = { kw_nothing ~ "[" ~ type ~ "]" } 
 
 pred_term = { kw_pred ~ paren_term } 
 succ_term = { kw_succ ~ paren_term }

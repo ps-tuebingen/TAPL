@@ -47,14 +47,15 @@ impl fmt::Display for Type {
                 )
             }
             Type::Sum(ty1, ty2) => write!(f, "({ty1}+{ty2})"),
-            Type::Variant(vars) => write!(
-                f,
-                "<{}>",
-                vars.iter()
-                    .map(|(label, ty)| format!("{label}:{ty}"))
-                    .collect::<Vec<String>>()
-                    .join(", ")
-            ),
+            Type::Variant(vars) => {
+                let mut variants: Vec<(&String, &Type)> = vars.iter().collect();
+                variants.sort_by(|(lb1, _), (lb2, _)| lb1.cmp(lb2));
+                let variant_strs: Vec<String> = variants
+                    .iter()
+                    .map(|(lb, ty)| format!("{lb}:{ty}"))
+                    .collect();
+                write!(f, "<{}>", variant_strs.join(", "))
+            }
             Type::Optional(ty) => write!(f, "Option {ty}"),
             Type::List(ty) => write!(f, "List {ty}"),
         }

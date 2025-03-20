@@ -9,6 +9,7 @@ mod lambda;
 mod lett;
 mod list;
 mod nat;
+mod optional;
 mod proj;
 mod record;
 mod sum;
@@ -21,6 +22,7 @@ use lambda::{pair_to_app, pair_to_lambda};
 use lett::pair_to_let;
 use list::{pair_to_cons, pair_to_head, pair_to_isnil, pair_to_nil, pair_to_tail};
 use nat::{pair_to_isz, pair_to_num, pair_to_pred, pair_to_succ};
+use optional::{pair_to_none, pair_to_some};
 use proj::pair_to_proj;
 use record::pair_to_rec;
 use sum::{pair_to_left, pair_to_right};
@@ -33,6 +35,8 @@ pub fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
         Rule::r#const => const_to_term(p.as_str()),
         Rule::lambda_term => pair_to_lambda(p).map(|lam| lam.into()),
         Rule::app_term => pair_to_app(p).map(|app| app.into()),
+        Rule::some_term => pair_to_some(p).map(|som| som.into()),
+        Rule::none_term => pair_to_none(p).map(|non| non.into()),
         Rule::ascription => pair_to_ascribe(p).map(|asc| asc.into()),
         Rule::if_term => pair_to_if(p).map(|ift| ift.into()),
         Rule::let_term => pair_to_let(p).map(|lett| lett.into()),

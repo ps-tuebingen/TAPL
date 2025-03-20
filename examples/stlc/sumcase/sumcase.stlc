@@ -1,1 +1,1 @@
-case inr(true) of { inl(n) => succ(n) | inr(b) => if b then zero else succ(zero) }
+case (inr(true) as (Nat+Bool)) of { inl(n) => succ(n) | inr(b) => if b then zero else succ(zero) }

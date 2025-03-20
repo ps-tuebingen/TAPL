@@ -48,15 +48,14 @@ impl fmt::Display for VariantPattern {
 
 impl fmt::Display for VariantCase {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let mut cases: Vec<&VariantPattern> = self.cases.iter().collect();
+        cases.sort_by(|case1, case2| case1.label.cmp(&case2.label));
+        let case_strs: Vec<String> = cases.iter().map(|case| case.to_string()).collect();
         write!(
             f,
             "case {} of {{ {} }}",
             self.bound_term,
-            self.cases
-                .iter()
-                .map(|case| format!("{case}"))
-                .collect::<Vec<String>>()
-                .join(" | ")
+            case_strs.join(" | ")
         )
     }
 }

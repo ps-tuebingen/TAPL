@@ -1,1 +1,1 @@
-case Nothing of Nothing => Nothing | Some(n) => succ(n)
+case Nothing of { Nothing => Nothing | Something(n) => succ(n) }

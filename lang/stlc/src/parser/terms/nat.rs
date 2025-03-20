@@ -1,6 +1,6 @@
 use super::pair_to_term;
 use crate::{
-    parser::{errors::Error, get_n_inner, next_rule, Rule},
+    parser::{errors::Error, get_n_inner, Rule},
     syntax::{IsZero, Pred, Succ, Term},
 };
 use pest::iterators::Pair;
