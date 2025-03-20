@@ -68,6 +68,7 @@ prod_type = { "(" ~ type ~ "x" ~ type ~ ")" }
 sum_type = { "(" ~ type ~ "+" ~ type ~ ")" }
 record_type =  { "{" ~ variable ~ ":" ~ type ~ ("," ~ variable ~ ":" ~ type)* ~ "}" }
 variant_type = { "<" ~ variable ~ ":" ~ type ~ ("," ~ variable ~ ":" ~ type)* ~ ">" }
+tuple_type = { "(" ~ type ~ ("," ~ type)+ ~ ")" }
 paren_type = {"(" ~ type ~ ")"}
 type = {
   | prim_type 
@@ -76,6 +77,7 @@ type = {
   | sum_type
   | record_type
   | variant_type
+  | tuple_type
   | paren_type
 }
 
@@ -109,8 +111,8 @@ term = {
   | rec_term
   | variant_term
 
-  | variable 
   | number
+  | variable 
 }
 
 // Starts with keyword 

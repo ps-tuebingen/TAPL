@@ -1,1 +1,1 @@
-\p:(NatxNat).{p.2, p.1}
+\p:(Nat,Nat).{p.1, p.0}

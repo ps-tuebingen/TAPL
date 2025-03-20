@@ -74,16 +74,16 @@ impl fmt::Display for Cons {
 }
 impl fmt::Display for IsNil {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "IsNil[{}]({})", self.inner_type, self.list)
+        write!(f, "isnil[{}]({})", self.inner_type, self.list)
     }
 }
 impl fmt::Display for Head {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Head[{}]({})", self.inner_type, self.list)
+        write!(f, "head[{}]({})", self.inner_type, self.list)
     }
 }
 impl fmt::Display for Tail {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Tail[{}]({})", self.inner_type, self.list)
+        write!(f, "tail[{}]({})", self.inner_type, self.list)
     }
 }
