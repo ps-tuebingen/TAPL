@@ -1,4 +1,5 @@
 use super::{CongruenceRule, Error, Eval, EvalContext, Value};
+use crate::{eval_context::as_context::AsContext, syntax::Term};
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Pred {
@@ -7,7 +8,13 @@ pub struct Pred {
 impl Eval for Pred {
     fn eval(self) -> Result<Value, Error> {
         let val = self.term.eval()?;
-        Ok(Value::Pred(Box::new(val)))
+        if let Value::Succ(v) = val {
+            let t: Term = (*v).into();
+            let ctx: EvalContext = t.to_context()?;
+            ctx.eval()
+        } else {
+            Ok(Value::Pred(Box::new(val)))
+        }
     }
 }
 impl From<Pred> for CongruenceRule {
