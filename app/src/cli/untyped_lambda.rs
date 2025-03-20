@@ -1,4 +1,4 @@
-use super::{errors::Error, Source};
+use super::{display_or_debug, errors::Error, Source};
 use untyped_lambda::{
     eval::{eval, EvalOrder as EvalOrd},
     parse::parse,
@@ -11,6 +11,9 @@ pub struct Args {
     /// Print additional information
     #[clap(short, long)]
     verbose: bool,
+    /// use debug print instead of regular
+    #[clap(short, long)]
+    debug: bool,
     /// Evaluation order to use when evaluating
     #[clap(flatten)]
     eo: EvalOrder,
@@ -48,9 +51,11 @@ pub fn exec(args: Args) -> Result<(), Error> {
     let mut source = args.source.get_source()?;
     let parsed = parse(&mut source)?;
     if args.verbose {
-        println!("parsed: {parsed}");
+        let parsed_str = display_or_debug(&parsed, args.debug);
+        println!("parsed: {parsed_str}");
     }
     let evaled = eval(parsed, args.eo.to_lam_eval_order());
-    println!("evaluated: {evaled}");
+    let evaled_str = display_or_debug(&evaled, args.debug);
+    println!("evaluated: {evaled_str}");
     Ok(())
 }

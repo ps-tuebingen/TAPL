@@ -1,5 +1,5 @@
 use clap::{Parser, Subcommand};
-use std::{fs::read_to_string, path::PathBuf};
+use std::{fmt, fs::read_to_string, path::PathBuf};
 
 mod errors;
 pub mod nameless_representation;
@@ -46,5 +46,13 @@ impl Source {
         }
 
         panic!("Either --file or --input must be provided")
+    }
+}
+
+pub fn display_or_debug<T: fmt::Debug + fmt::Display>(t: &T, debug: bool) -> String {
+    if debug {
+        format!("{t:?}")
+    } else {
+        format!("{t}")
     }
 }
