@@ -49,6 +49,20 @@ impl Source {
     }
 }
 
+pub fn run() -> Result<(), String> {
+    let cli = Cli::parse();
+    match cli.command {
+        Command::UntypedArithmetic(args) => {
+            untyped_arithmetic::exec(args).map_err(|err| err.to_string())
+        }
+        Command::UntypedLambda(args) => untyped_lambda::exec(args).map_err(|err| err.to_string()),
+        Command::NamelessRepresentation(args) => {
+            nameless_representation::exec(args).map_err(|err| err.to_string())
+        }
+        Command::Stlc(args) => stlc::exec(args).map_err(|err| err.to_string()),
+    }
+}
+
 pub fn display_or_debug<T: fmt::Debug + fmt::Display>(t: &T, debug: bool) -> String {
     if debug {
         format!("{t:?}")

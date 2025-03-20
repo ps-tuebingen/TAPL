@@ -61,6 +61,7 @@ head_term = { "head" ~ "[" ~ type ~ "]" ~ "(" ~ term ~ ")" }
 tail_term = { "tail" ~ "[" ~ type ~ "]" ~ "(" ~ term ~ ")" }
 isnil_term = { "isnil" ~ "[" ~ type ~ "]" ~ "(" ~ term ~ ")" }
 
+paren_term = { "(" ~ term ~ ")" }
 term = { 
   | const 
   | number
@@ -91,4 +92,5 @@ term = {
   | paren_term
   | variable 
 }
-paren_term = { "(" ~ term ~ ")" }
+
+program = { SOI ~ term ~ EOI }

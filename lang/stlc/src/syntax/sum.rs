@@ -43,13 +43,13 @@ impl From<SumCase> for Term {
 
 impl fmt::Display for Left {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "inl({})", self.left_term)
+        write!(f, "inl({}) as {}", self.left_term, self.right_ty)
     }
 }
 
 impl fmt::Display for Right {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "inr({})", self.right_term)
+        write!(f, "inr({}) as {}", self.right_term, self.left_ty)
     }
 }
 

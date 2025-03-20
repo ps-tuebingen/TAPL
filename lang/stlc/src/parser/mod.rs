@@ -20,13 +20,36 @@ use errors::Error;
 struct StlcParser;
 
 pub fn parse(input: String) -> Result<Term, Error> {
-    let mut parsed = StlcParser::parse(Rule::term, &input)?;
-    let term_rule = parsed.next().ok_or(Error::EmptyInput)?;
+    let mut parsed = StlcParser::parse(Rule::program, &input)?;
+    let prog_pair = parsed
+        .next()
+        .ok_or(Error::MissingInput("Program".to_owned()))?;
+    let rule = prog_pair.as_rule();
+    if rule != Rule::program {
+        return Err(Error::UnexpectedRule {
+            found: rule,
+            expected: Rule::program,
+        });
+    }
     if let Some(n) = parsed.next() {
         return Err(Error::RemainingInput(n.as_rule()));
     }
-    let next = next_rule(term_rule, Rule::term)?;
-    let term = pair_to_term(next)?;
+
+    let mut prog_inner = prog_pair.into_inner();
+    let term_pair = prog_inner
+        .next()
+        .ok_or(Error::MissingInput("Term".to_owned()))?;
+    let term_rule = next_rule(term_pair, Rule::term)?;
+    let term = pair_to_term(term_rule)?;
+
+    let _ = prog_inner
+        .next()
+        .ok_or(Error::MissingInput("EOI".to_owned()))?;
+
+    if let Some(n) = prog_inner.next() {
+        return Err(Error::RemainingInput(n.as_rule()));
+    }
+
     Ok(term)
 }
 

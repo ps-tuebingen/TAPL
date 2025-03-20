@@ -46,7 +46,7 @@ impl fmt::Display for Type {
                         .join(", ")
                 )
             }
-            Type::Sum(ty1, ty2) => write!(f, "{ty1}+{ty2}"),
+            Type::Sum(ty1, ty2) => write!(f, "({ty1}+{ty2})"),
             Type::Variant(vars) => write!(
                 f,
                 "<{}>",
