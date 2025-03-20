@@ -1,6 +1,68 @@
 WHITESPACE = _{ " " | "\n" }
+program = { SOI ~ term ~ EOI }
 
-prim_type = { "Bool" | "Nat" | "Unit" }
+// Keywords
+kw_tybool = { "Bool" }
+kw_tynat = { "Nat" }
+kw_tyunit = { "Unit" }
+
+kw_true = { "true" }
+kw_false = {  "false" }
+kw_zero = { "zero" }
+kw_unit = { "unit" }
+kw_nothing = { "Nothing" }
+kw_something = { "Something" }
+kw_if = { "if" }
+kw_then = { "then" }
+kw_else = { "else" }
+kw_fix = { "fix" }
+kw_let = { "let" }
+kw_in = { "in" }
+kw_pred = { "pred" }
+kw_succ = { "succ" }
+kw_iszero = { "iszero" }
+kw_inl = { "inl" }
+kw_inr = { "inr" }
+kw_nil = { "Nil" }
+kw_cons = { "Cons" }
+kw_head = { "head" }
+kw_tail = { "tail" }
+kw_isnil = { "isnil" }
+kw_case = { "case" }
+kw_of = { "of" }
+kw_as = { "as" }
+
+keyword = { 
+  | kw_tybool
+  | kw_tynat
+  | kw_tyunit
+  | kw_zero
+  | kw_unit 
+  | kw_something
+  | kw_nothing
+  | kw_if
+  | kw_then 
+  | kw_else
+  | kw_fix
+  | kw_let 
+  | kw_in
+  | kw_pred 
+  | kw_succ
+  | kw_iszero
+  | kw_inl
+  | kw_inr
+  | kw_nil
+  | kw_cons
+  | kw_head
+  | kw_tail
+  | kw_isnil
+  | kw_case
+  | kw_of
+  | kw_as
+}
+
+// Types 
+prim_type = { kw_tybool | kw_tynat | kw_tyunit }
 fun_type = { "(" ~ type ~ "->" ~ type ~ ")" }
 prod_type = { "(" ~ type ~ "x" ~ type ~ ")" }
 sum_type = { "(" ~ type ~ "+" ~ type ~ ")" }
@@ -17,80 +79,82 @@ type = {
   | paren_type
 } 
 
-variable = { (ASCII_ALPHA | ASCII_DIGIT)+ }
-const = { "true" | "false" | "zero" | "unit" | "nothing" }
-number = { ASCII_DIGIT+ }
-
-lambda_term = { "\\" ~ variable ~ ":" ~ type ~ "." ~ term }
-app_term = { "(" ~ term ~ ")" ~ " " ~ term }
-
-ascription = { "(" ~ term ~ ")" ~ "as" ~ type }
-if_term = {  "if" ~ term ~ "then" ~ term ~ "else" ~ term }
-fix_term = { "fix" ~ term }
-let_term = { "let"  ~ variable ~ "=" ~ term ~ "in" ~ term } 
-
-pred_term = { "pred" ~ paren_term } 
-succ_term = { "succ" ~ paren_term }
-isz_term = { "iszero" ~ paren_term }
-
-tup_term = {"{" ~ term ~ ("," ~ term)* ~ "}" }
-proj = { (variable | paren_term) ~ "." ~ ( variable | number ) }
-
-rec_term = { "{" ~ variable ~ "=" ~ term ~ ("," ~ variable ~ "=" ~ term)* ~ "}" }
-
-left_term = { "inl" ~ paren_term ~ "as" ~ type } 
-right_term = { "inr" ~ paren_term ~ "as" ~ type }
-left_pt = { "inl(" ~ variable ~ ")" ~ "=>" ~ term }
-right_pt = { "inr(" ~ variable ~ ")" ~ "=>" ~ term }
-sum_pt = { left_pt ~ "|" ~ right_pt | right_pt ~ "|" ~ left_pt }
-sum_case = { "case" ~ term ~ "of" ~ sum_pt }
-
-variant_term = { "<" ~ variable ~ "=" ~ term ~ ">" ~ "as" ~ type } 
-variant_pt = { "<" ~ variable ~ "=" ~ variable ~ ">" ~ "=>" ~ term } 
-variant_case = { "case " ~ term ~ "of" ~ variant_pt ~ ("|" ~ variant_pt)* }
-
-some_term = { "something" ~ paren_term } 
-something_pt = { "something(" ~ variable ~ ")" ~ "=>" ~ term }
-nothing_pt = { "nothing" ~ "=>" ~ term }
-some_pt = { nothing_pt ~ "|" ~ something_pt | something_pt ~ "|" ~ nothing_pt }
-some_case = { "case" ~ term ~ "of" ~ some_pt }
-
-nil_term = { "Nil" ~ "[" ~ type ~ "]" }
-cons_term = { "Cons" ~ "[" ~ type ~ "]" ~ "(" ~ term ~ "," ~ term ~ ")" } 
-head_term = { "head" ~ "[" ~ type ~ "]" ~ "(" ~ term ~ ")" }
-tail_term = { "tail" ~ "[" ~ type ~ "]" ~ "(" ~ term ~ ")" }
-isnil_term = { "isnil" ~ "[" ~ type ~ "]" ~ "(" ~ term ~ ")" }
-
-paren_term = { "(" ~ term ~ ")" }
+// Terms 
 term = { 
   | const 
-  | number
-  | ascription
-  | lambda_term
-  | app_term
   | if_term
   | fix_term
   | let_term
+  | some_term
   | pred_term
   | succ_term
   | isz_term
-  | tup_term
-  | rec_term
   | left_term
   | right_term
-  | sum_case
-  | variant_term
-  | variant_case 
-  | some_term
-  | some_case
   | nil_term
   | cons_term
   | head_term
   | tail_term
   | isnil_term
+  | case_term
+
+  | lambda_term
+  | tup_term
+  | rec_term
+  | variant_term
+
+  | app_term
+  | ascription
   | proj
   | paren_term
+
   | variable 
+  | number
 }
 
-program = { SOI ~ term ~ EOI }
+// Starts with keyword 
+const = { kw_true | kw_false | kw_zero | kw_unit | kw_nothing }
+if_term = {  kw_if ~ term ~ kw_then ~ term ~ kw_if ~ term }
+fix_term = { kw_fix ~ term }
+let_term = { kw_let  ~ variable ~ "=" ~ term ~ kw_in ~ term } 
+some_term = { kw_something ~ paren_term } 
+
+pred_term = { kw_pred ~ paren_term } 
+succ_term = { kw_succ ~ paren_term }
+isz_term = { kw_iszero ~ paren_term }
+
+left_term = { kw_inl ~ paren_term ~ kw_as ~ type } 
+right_term = { kw_inr ~ paren_term ~ kw_as ~ type }
+
+nil_term = { kw_nil ~ "[" ~ type ~ "]" }
+cons_term = { kw_cons ~ "[" ~ type ~ "]" ~ "(" ~ term ~ "," ~ term ~ ")" } 
+head_term = { kw_head ~ "[" ~ type ~ "]" ~ "(" ~ term ~ ")" }
+tail_term = { kw_tail ~ "[" ~ type ~ "]" ~ "(" ~ term ~ ")" }
+isnil_term = { kw_isnil ~ "[" ~ type ~ "]" ~ "(" ~ term ~ ")" }
+
+//Cases
+case_term = { kw_case ~ term ~ "of" ~ "{" ~ pattern ~ ("|" ~ pattern)* ~ "}" }
+pattern = { pt_binding ~ "=>" ~ term }
+pt_binding = { inl_bnd | inr_bnd | variant_bnd | some_bnd | none_bnd }
+inl_bnd = { kw_inl ~ "(" ~ variable ~ ")" }
+inr_bnd = { kw_inr ~ "(" ~ variable ~ ")" }
+variant_bnd = { "<" ~ variable ~ "=" ~ variable ~ ">" }
+some_bnd = { kw_something ~ "(" ~ variable ~ ")" }
+none_bnd = { kw_nothing }
+
+//Starts with symbol
+lambda_term = { "\\" ~ variable ~ ":" ~ type ~ "." ~ term }
+tup_term = { "{" ~ term ~ ("," ~ term)* ~ "}" }
+rec_term = { "{" ~ variable ~ "=" ~ term ~ ("," ~ variable ~ "=" ~ term)* ~ "}" }
+variant_term = { "<" ~ variable ~ "=" ~ term ~ ">" ~ kw_as ~ type } 
+
+//Left Recursive Terms 
+app_term = { "(" ~ term ~ " " ~ term ~ ")"}
+ascription = { "(" ~ term ~ ")" ~ kw_as ~ type }
+proj = { (variable | paren_term) ~ "." ~ ( variable | number ) }
+paren_term = { "(" ~ term ~ ")" }
+
+//Constants
+variable = { !(keyword ~ !ASCII_ALPHANUMERIC) ~ ASCII_ALPHANUMERIC+ }
+number = { ASCII_DIGIT+ }
+
