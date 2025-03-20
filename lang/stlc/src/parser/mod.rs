@@ -22,7 +22,7 @@ pub fn parse(input: String) -> Result<Term, Error> {
     if rule != Rule::program {
         return Err(Error::UnexpectedRule {
             found: rule,
-            expected: Rule::program,
+            expected: "Program".to_owned(),
         });
     }
     if let Some(n) = parsed.next() {
@@ -52,7 +52,7 @@ fn next_rule(p: Pair<'_, Rule>, r: Rule) -> Result<Pair<'_, Rule>, Error> {
     if rule != r {
         return Err(Error::UnexpectedRule {
             found: rule,
-            expected: r,
+            expected: format!("{r:?}"),
         });
     }
     let mut inner = p.into_inner();

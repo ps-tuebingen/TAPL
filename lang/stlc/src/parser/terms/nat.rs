@@ -32,8 +32,7 @@ pub fn pair_to_succ(p: Pair<'_, Rule>) -> Result<Succ, Error> {
 }
 
 pub fn pair_to_isz(p: Pair<'_, Rule>) -> Result<IsZero, Error> {
-    let term_pair = get_n_inner(p, vec!["IsZero Argument"])?.remove(0);
-    let term_rule = next_rule(term_pair, Rule::term)?;
+    let term_rule = get_n_inner(p, vec!["IsZero Argument"])?.remove(0);
     let term = pair_to_term(term_rule)?;
     Ok(IsZero {
         term: Box::new(term),

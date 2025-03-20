@@ -8,7 +8,9 @@ pub enum Error {
     EmptyInput,
     RemainingInput(Rule),
     MissingInput(String),
-    UnexpectedRule { found: Rule, expected: Rule },
+    UnexpectedRule { found: Rule, expected: String },
+
+    WrongPattern { expected: String },
     BadType(String),
     BadTerm(String),
     BadRule(Rule),
@@ -22,7 +24,10 @@ impl fmt::Display for Error {
             Error::RemainingInput(rule) => write!(f, "Remaining input {rule:?} after parsing"),
             Error::MissingInput(msg) => write!(f, "Missing input: {msg}"),
             Error::UnexpectedRule { found, expected } => {
-                write!(f, "Unexpected rule: {found:?}, expected {expected:?}")
+                write!(f, "Unexpected rule: {found:?}, expected {expected}")
+            }
+            Error::WrongPattern { expected } => {
+                write!(f, "Bad Pattern: {expected}")
             }
             Error::BadType(ty) => write!(f, "{ty} is not a type"),
             Error::BadTerm(t) => write!(f, "{t} is not a term"),
