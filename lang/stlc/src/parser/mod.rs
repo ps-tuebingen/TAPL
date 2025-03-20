@@ -84,10 +84,10 @@ fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
             let num_pair = inner
                 .next()
                 .ok_or(Error::MissingInput("Projection Index".to_owned()))?;
-            let num = num_pair
-                .as_str()
+            let num_pair_str = num_pair.as_str().trim();
+            let num = num_pair_str
                 .parse::<usize>()
-                .map_err(|_| Error::BadTerm(num_pair.as_str().to_owned()))?;
+                .map_err(|_| Error::BadTerm(num_pair_str.to_owned()))?;
             if let Some(n) = inner.next() {
                 return Err(Error::RemainingInput(n.as_rule()));
             }
@@ -101,7 +101,7 @@ fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
             let mut inner = p.into_inner();
             let mut records = HashMap::new();
             while let Some(n) = inner.next() {
-                let var = n.as_str().to_owned();
+                let var = n.as_str().trim().to_owned();
                 let next_pair = inner
                     .next()
                     .ok_or(Error::MissingInput("Record Term".to_owned()))?;
@@ -428,7 +428,7 @@ fn pairs_to_let(mut ps: Pairs<'_, Rule>) -> Result<Let, Error> {
     let var_pair = ps
         .next()
         .ok_or(Error::MissingInput("Let Variable".to_owned()))?;
-    let var = var_pair.as_str().to_owned();
+    let var = var_pair.as_str().trim().to_owned();
     let bound_pair = ps
         .next()
         .ok_or(Error::MissingInput("Let Bound Term".to_owned()))?;

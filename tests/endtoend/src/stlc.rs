@@ -56,12 +56,10 @@ impl Test for ReparseTest {
             Ok(p) => p,
             Err(err) => return TestResult::from_err(err),
         };
-        println!("parsed {parsed:?}");
         let reparsed = match parse(parsed.to_string()) {
             Ok(p) => p,
             Err(err) => return TestResult::from_err(err),
         };
-        println!("reparsed {reparsed:?}");
         TestResult::from_eq(&reparsed, &parsed)
     }
 }

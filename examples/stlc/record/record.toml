@@ -1,2 +1,2 @@
-ty="{a:Bool, b:Bool, c:Nat}"
-evaled="{a = true, b = false, c = succ(zero)}"
+ty="{a: Bool, b: Bool, c: Nat}"
+evaled="{a=True, b=False, c=succ(0)}"

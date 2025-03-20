@@ -33,15 +33,19 @@ impl fmt::Display for Type {
                     .collect::<Vec<String>>()
                     .join(", ")
             ),
-            Type::Record(records) => write!(
-                f,
-                "{{ {} }}",
-                records
-                    .iter()
-                    .map(|(label, ty)| format!("{label}:{ty}"))
-                    .collect::<Vec<String>>()
-                    .join(", ")
-            ),
+            Type::Record(records) => {
+                let mut recs: Vec<(&String, &Type)> = records.iter().collect();
+                recs.sort_by(|(lb1, _), (lb2, _)| lb1.cmp(lb2));
+
+                write!(
+                    f,
+                    "{{{}}}",
+                    recs.iter()
+                        .map(|(label, ty)| format!("{label}: {ty}"))
+                        .collect::<Vec<String>>()
+                        .join(", ")
+                )
+            }
             Type::Sum(ty1, ty2) => write!(f, "{ty1}+{ty2}"),
             Type::Variant(vars) => write!(
                 f,
