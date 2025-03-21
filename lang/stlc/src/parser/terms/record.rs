@@ -18,5 +18,5 @@ pub fn pair_to_rec(p: Pair<'_, Rule>) -> Result<Record, Error> {
         let n_term = pair_to_term(next_pair)?;
         records.insert(var, n_term);
     }
-    Ok(Record { records }.into())
+    Ok(Record { records })
 }

@@ -19,8 +19,7 @@ pub fn pair_to_pred(p: Pair<'_, Rule>) -> Result<Pred, Error> {
     let inner_term = pair_to_term(inner_rule)?;
     Ok(Pred {
         term: Box::new(inner_term),
-    }
-    .into())
+    })
 }
 
 pub fn pair_to_succ(p: Pair<'_, Rule>) -> Result<Succ, Error> {
@@ -29,8 +28,7 @@ pub fn pair_to_succ(p: Pair<'_, Rule>) -> Result<Succ, Error> {
     let inner_term = pair_to_term(inner_rule)?;
     Ok(Succ {
         term: Box::new(inner_term),
-    }
-    .into())
+    })
 }
 
 pub fn pair_to_isz(p: Pair<'_, Rule>) -> Result<IsZero, Error> {
@@ -39,6 +37,5 @@ pub fn pair_to_isz(p: Pair<'_, Rule>) -> Result<IsZero, Error> {
     let term = pair_to_term(term_rule)?;
     Ok(IsZero {
         term: Box::new(term),
-    }
-    .into())
+    })
 }

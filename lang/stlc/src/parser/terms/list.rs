@@ -10,7 +10,7 @@ pub fn pair_to_nil(p: Pair<'_, Rule>) -> Result<Nil, Error> {
     let ty_rule = next_rule(ty_pair, Rule::r#type)?;
     let ty = pair_to_type(ty_rule)?;
 
-    Ok(Nil { inner_type: ty }.into())
+    Ok(Nil { inner_type: ty })
 }
 
 pub fn pair_to_cons(p: Pair<'_, Rule>) -> Result<Cons, Error> {
@@ -33,8 +33,7 @@ pub fn pair_to_cons(p: Pair<'_, Rule>) -> Result<Cons, Error> {
         fst: Box::new(fst),
         rst: Box::new(snd),
         inner_type: ty,
-    }
-    .into())
+    })
 }
 
 pub fn pair_to_head(p: Pair<'_, Rule>) -> Result<Head, Error> {
@@ -50,8 +49,7 @@ pub fn pair_to_head(p: Pair<'_, Rule>) -> Result<Head, Error> {
     Ok(Head {
         inner_type: ty,
         list: Box::new(term),
-    }
-    .into())
+    })
 }
 
 pub fn pair_to_tail(p: Pair<'_, Rule>) -> Result<Tail, Error> {
@@ -73,8 +71,7 @@ pub fn pair_to_tail(p: Pair<'_, Rule>) -> Result<Tail, Error> {
     Ok(Tail {
         inner_type: ty,
         list: Box::new(term),
-    }
-    .into())
+    })
 }
 
 pub fn pair_to_isnil(p: Pair<'_, Rule>) -> Result<IsNil, Error> {
@@ -90,6 +87,5 @@ pub fn pair_to_isnil(p: Pair<'_, Rule>) -> Result<IsNil, Error> {
     Ok(IsNil {
         inner_type: ty,
         list: Box::new(term),
-    }
-    .into())
+    })
 }

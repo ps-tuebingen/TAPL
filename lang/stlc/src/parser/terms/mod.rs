@@ -112,7 +112,7 @@ pub fn pair_to_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
                 }
                 Rule::proj => {
                     let pair = next_rule(next, Rule::proj)?;
-                    pair_to_proj(pair, t).map(|proj| proj.into())
+                    pair_to_proj(pair, t)
                 }
                 Rule::term => {
                     let arg = pair_to_term(next)?;

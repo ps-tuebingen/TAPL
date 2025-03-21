@@ -13,7 +13,7 @@ enum PatternBinding {
 }
 
 impl PatternBinding {
-    fn as_inl(self) -> Result<String, Error> {
+    fn into_inl(self) -> Result<String, Error> {
         if let PatternBinding::Inl { var } = self {
             Ok(var)
         } else {
@@ -23,7 +23,7 @@ impl PatternBinding {
         }
     }
 
-    fn as_inr(self) -> Result<String, Error> {
+    fn into_inr(self) -> Result<String, Error> {
         if let PatternBinding::Inr { var } = self {
             Ok(var)
         } else {
@@ -33,7 +33,7 @@ impl PatternBinding {
         }
     }
 
-    fn as_variant(self) -> Result<(String, String), Error> {
+    fn into_variant(self) -> Result<(String, String), Error> {
         if let PatternBinding::Variant { label, var } = self {
             Ok((label, var))
         } else {
@@ -43,7 +43,7 @@ impl PatternBinding {
         }
     }
 
-    fn as_something(self) -> Result<String, Error> {
+    fn into_something(self) -> Result<String, Error> {
         if let PatternBinding::Something { var } = self {
             Ok(var)
         } else {
@@ -53,7 +53,7 @@ impl PatternBinding {
         }
     }
 
-    fn as_nothing(self) -> Result<(), Error> {
+    fn into_nothing(self) -> Result<(), Error> {
         if let PatternBinding::Nothing = self {
             Ok(())
         } else {
@@ -146,7 +146,7 @@ fn patterns_to_term(mut pts: Vec<Pattern>, bound: Term) -> Result<Term, Error> {
     let term = match pt_fst.bnd {
         PatternBinding::Inl { var: left_var } => {
             let inr_pt = pts.remove(0);
-            let right_var = inr_pt.bnd.as_inr()?;
+            let right_var = inr_pt.bnd.into_inr()?;
             SumCase {
                 bound_term: Box::new(bound),
                 left_var,
@@ -158,7 +158,7 @@ fn patterns_to_term(mut pts: Vec<Pattern>, bound: Term) -> Result<Term, Error> {
         }
         PatternBinding::Inr { var: right_var } => {
             let inl_pt = pts.remove(0);
-            let left_var = inl_pt.bnd.as_inl()?;
+            let left_var = inl_pt.bnd.into_inl()?;
             SumCase {
                 bound_term: Box::new(bound),
                 left_var,
@@ -170,7 +170,7 @@ fn patterns_to_term(mut pts: Vec<Pattern>, bound: Term) -> Result<Term, Error> {
         }
         PatternBinding::Something { var } => {
             let nothing_pt = pts.remove(0);
-            let _ = nothing_pt.bnd.as_nothing()?;
+            nothing_pt.bnd.into_nothing()?;
             SomeCase {
                 bound_term: Box::new(bound),
                 some_var: var,
@@ -181,7 +181,7 @@ fn patterns_to_term(mut pts: Vec<Pattern>, bound: Term) -> Result<Term, Error> {
         }
         PatternBinding::Nothing => {
             let some_pt = pts.remove(0);
-            let some_var = some_pt.bnd.as_something()?;
+            let some_var = some_pt.bnd.into_something()?;
             SomeCase {
                 bound_term: Box::new(bound),
                 some_var,
@@ -197,7 +197,7 @@ fn patterns_to_term(mut pts: Vec<Pattern>, bound: Term) -> Result<Term, Error> {
                 rhs: Box::new(pt_fst.rhs),
             }];
             for pt in pts {
-                let (label, bound_var) = pt.bnd.as_variant()?;
+                let (label, bound_var) = pt.bnd.into_variant()?;
                 cases.push(VariantPattern {
                     label,
                     bound_var,
