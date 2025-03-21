@@ -1,2 +1,2 @@
 ty="((Nat, Nat) -> (Nat, Nat))"
-evaled="\\p:(Nat, Nat).{(p).1, (p).0}"
+evaled="\\p:(Nat, Nat).({(p).1, (p).0})"

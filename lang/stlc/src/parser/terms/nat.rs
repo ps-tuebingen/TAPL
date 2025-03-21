@@ -14,11 +14,9 @@ pub fn pair_to_num(p: Pair<'_, Rule>) -> Result<Term, Error> {
 }
 
 pub fn pair_to_pred(p: Pair<'_, Rule>) -> Result<Pred, Error> {
-    println!("trying to get pred term");
     let inner_pair = get_n_inner(p, vec!["Pred Argument"])?.remove(0);
     let inner_rule = next_rule(inner_pair, Rule::paren_term)?;
     let inner_term = pair_to_term(inner_rule)?;
-    println!("got pred inner {inner_term}");
     Ok(Pred {
         term: Box::new(inner_term),
     }
@@ -36,7 +34,6 @@ pub fn pair_to_succ(p: Pair<'_, Rule>) -> Result<Succ, Error> {
 }
 
 pub fn pair_to_isz(p: Pair<'_, Rule>) -> Result<IsZero, Error> {
-    println!("trying to get iszero term");
     let term_pair = get_n_inner(p, vec!["IsZero Argument"])?.remove(0);
     let term_rule = next_rule(term_pair, Rule::paren_term)?;
     let term = pair_to_term(term_rule)?;

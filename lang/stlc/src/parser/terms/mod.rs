@@ -32,7 +32,6 @@ use tup::pair_to_tup;
 use variant::pair_to_variant;
 
 pub fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
-    println!("trying to parse term rule");
     if p.as_rule() != Rule::term {
         return Err(Error::UnexpectedRule {
             found: p.as_rule(),
@@ -42,11 +41,8 @@ pub fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
 
     let mut inner = p.into_inner();
     let prim_term_pair = inner.next().ok_or(Error::MissingInput("Term".to_owned()))?;
-    println!("got prim term pair {:?}", prim_term_pair.as_rule());
     let prim_term_rule = get_n_inner(prim_term_pair, vec!["Prim Term"])?.remove(0);
-    println!("got prim term inner {:?}", prim_term_rule.as_rule());
     let prim_term = pair_to_primterm(prim_term_rule)?;
-    println!("prim term {prim_term:?}\n");
 
     let term = if let Some(p) = inner.next() {
         pair_to_leftrec(p, prim_term)?
@@ -102,16 +98,13 @@ fn const_to_term(s: &str) -> Result<Term, Error> {
 
 fn paren_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
     let term_rule = get_n_inner(p, vec!["Term"])?.remove(0);
-    println!("got paren inner: {term_rule}\n");
     pair_to_term(term_rule)
 }
 
 pub fn pair_to_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
-    println!("trying to get left rec wile rule {:?}", p.as_rule());
     match p.as_rule() {
         Rule::left_rec => {
             let next = get_n_inner(p, vec!["Left Recursive Term"])?.remove(0);
-            println!("got left rec inner {:?}", next.as_rule());
             match next.as_rule() {
                 Rule::ascription => {
                     let pair = next_rule(next, Rule::ascription)?;

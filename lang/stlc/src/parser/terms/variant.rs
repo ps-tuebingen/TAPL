@@ -6,7 +6,6 @@ use crate::{
 use pest::iterators::Pair;
 
 pub fn pair_to_variant(p: Pair<'_, Rule>) -> Result<Variant, Error> {
-    println!("trying to parse variant");
     let mut inner = get_n_inner(p, vec!["Variant Label", "Variant Term", "Variant Type"])?;
 
     let var_pair = inner.remove(0);

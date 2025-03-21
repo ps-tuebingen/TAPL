@@ -70,14 +70,12 @@ struct Pattern {
 }
 
 pub fn pair_to_case(p: Pair<'_, Rule>) -> Result<Term, Error> {
-    println!("trying to get case");
     let mut inner = p.into_inner();
 
     let bound_pair = inner
         .next()
         .ok_or(Error::MissingInput("Case Bound Term".to_owned()))?;
     let bound_term = pair_to_term(bound_pair)?;
-    println!("got case bound: {bound_term}");
 
     let mut patterns = vec![];
     for pt_pair in inner {
