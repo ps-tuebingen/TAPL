@@ -1,11 +1,18 @@
 use std::path::PathBuf;
 use test_common::{
     errors::Error,
+    load_tests::{load_dir, TestContents},
     testsuite::{Test, TestSuite},
 };
 
 pub struct ReferencesTests {
     source_dir: PathBuf,
+}
+
+#[derive(serde::Deserialize)]
+pub struct ReferencesConf {
+    ty: String,
+    evaluated: String,
 }
 
 impl ReferencesTests {
@@ -20,6 +27,9 @@ impl TestSuite for ReferencesTests {
     }
 
     fn load(&self) -> Result<Vec<Box<dyn Test>>, Error> {
-        todo!()
+        let contents: Vec<TestContents<ReferencesConf>> = load_dir(&self.source_dir, "ref")?;
+        let mut tests = vec![];
+        for tst in contents {}
+        Ok(tests)
     }
 }
