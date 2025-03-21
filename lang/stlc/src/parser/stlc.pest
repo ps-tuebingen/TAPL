@@ -82,12 +82,9 @@ type = {
 }
 
 // Terms 
-term = { 
-  | app_term
-  | ascription
-  | proj
+term = { prim_term ~ left_rec? }
+prim_term = { 
   | paren_term
-
   | const 
   | if_term
   | fix_term
@@ -114,6 +111,7 @@ term = {
   | number
   | variable 
 }
+paren_term = { "(" ~ term ~ ")" }
 
 // Starts with keyword 
 const = { kw_true | kw_false | kw_zero | kw_unit }
@@ -147,18 +145,18 @@ some_bnd = { kw_something ~ "(" ~ variable ~ ")" }
 none_bnd = { kw_nothing }
 
 //Starts with symbol
-lambda_term = { "\\" ~ variable ~ ":" ~ type ~ "." ~ term }
+lambda_term = { "\\" ~ variable ~ ":" ~ type ~ "." ~ paren_term }
 tup_term = { "{" ~ term ~ ("," ~ term)* ~ "}" }
 rec_term = { "{" ~ variable ~ "=" ~ term ~ ("," ~ variable ~ "=" ~ term)* ~ "}" }
 variant_term = { "<" ~ variable ~ "=" ~ term ~ ">" ~ kw_as ~ type } 
 
-//Left Recursive Terms 
-app_term = { "(" ~ term ~ ")" ~ "(" ~ term ~ ")"}
-ascription = { "(" ~ term ~ ")" ~ kw_as ~ type }
-proj = { (variable | paren_term) ~ "." ~ ( variable | number ) }
-paren_term = { "(" ~ term ~ ")" }
-
 //Constants
-variable = { !(keyword ~ !ASCII_ALPHANUMERIC) ~ ASCII_ALPHANUMERIC+ }
+variable = { !(keyword ~ !ASCII_ALPHANUMERIC) ~ ( !(WHITESPACE) ~ (ASCII_ALPHA|ASCII_DIGIT) )+ }
 number = { ASCII_DIGIT+ }
 
+
+//Left Recursive Terms 
+left_rec = { ascription | proj | term } 
+
+ascription = { kw_as ~ type }
+proj = { "." ~ (variable | number) } 

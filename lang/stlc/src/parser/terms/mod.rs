@@ -1,5 +1,5 @@
 use super::{errors::Error, get_n_inner, next_rule, Rule};
-use crate::syntax::{False, Term, True, Unit, Zero};
+use crate::syntax::{App, False, Term, True, Unit, Zero};
 use pest::iterators::Pair;
 
 mod ascribe;
@@ -20,7 +20,7 @@ use ascribe::pair_to_ascribe;
 use case::pair_to_case;
 use fix::pair_to_fix;
 use ift::pair_to_if;
-use lambda::{pair_to_app, pair_to_lambda};
+use lambda::pair_to_lambda;
 use lett::pair_to_let;
 use list::{pair_to_cons, pair_to_head, pair_to_isnil, pair_to_nil, pair_to_tail};
 use nat::{pair_to_isz, pair_to_num, pair_to_pred, pair_to_succ};
@@ -32,19 +32,45 @@ use tup::pair_to_tup;
 use variant::pair_to_variant;
 
 pub fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
+    println!("trying to parse term rule");
+    if p.as_rule() != Rule::term {
+        return Err(Error::UnexpectedRule {
+            found: p.as_rule(),
+            expected: "Term".to_owned(),
+        });
+    }
+
+    let mut inner = p.into_inner();
+    let prim_term_pair = inner.next().ok_or(Error::MissingInput("Term".to_owned()))?;
+    println!("got prim term pair {:?}", prim_term_pair.as_rule());
+    let prim_term_rule = get_n_inner(prim_term_pair, vec!["Prim Term"])?.remove(0);
+    println!("got prim term inner {:?}", prim_term_rule.as_rule());
+    let prim_term = pair_to_primterm(prim_term_rule)?;
+    println!("prim term {prim_term:?}\n");
+
+    let term = if let Some(p) = inner.next() {
+        pair_to_leftrec(p, prim_term)?
+    } else {
+        prim_term
+    };
+
+    if let Some(n) = inner.next() {
+        return Err(Error::RemainingInput(n.as_rule()));
+    }
+    Ok(term)
+}
+
+pub fn pair_to_primterm(p: Pair<'_, Rule>) -> Result<Term, Error> {
     match p.as_rule() {
         Rule::variable => Ok(Term::Var(p.as_str().trim().to_owned())),
         Rule::r#const => const_to_term(p.as_str()),
         Rule::lambda_term => pair_to_lambda(p).map(|lam| lam.into()),
-        Rule::app_term => pair_to_app(p).map(|app| app.into()),
         Rule::some_term => pair_to_some(p).map(|som| som.into()),
         Rule::none_term => pair_to_none(p).map(|non| non.into()),
-        Rule::ascription => pair_to_ascribe(p).map(|asc| asc.into()),
         Rule::fix_term => pair_to_fix(p).map(|fix| fix.into()),
         Rule::if_term => pair_to_if(p).map(|ift| ift.into()),
         Rule::let_term => pair_to_let(p).map(|lett| lett.into()),
         Rule::tup_term => pair_to_tup(p).map(|tup| tup.into()),
-        Rule::proj => pair_to_proj(p).map(|proj| proj.into()),
         Rule::rec_term => pair_to_rec(p).map(|rec| rec.into()),
         Rule::left_term => pair_to_left(p).map(|lft| lft.into()),
         Rule::right_term => pair_to_right(p).map(|rgt| rgt.into()),
@@ -76,6 +102,43 @@ fn const_to_term(s: &str) -> Result<Term, Error> {
 
 fn paren_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
     let term_rule = get_n_inner(p, vec!["Term"])?.remove(0);
-    let next_rule = next_rule(term_rule, Rule::term)?;
-    pair_to_term(next_rule)
+    println!("got paren inner: {term_rule}\n");
+    pair_to_term(term_rule)
+}
+
+pub fn pair_to_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
+    println!("trying to get left rec wile rule {:?}", p.as_rule());
+    match p.as_rule() {
+        Rule::left_rec => {
+            let next = get_n_inner(p, vec!["Left Recursive Term"])?.remove(0);
+            println!("got left rec inner {:?}", next.as_rule());
+            match next.as_rule() {
+                Rule::ascription => {
+                    let pair = next_rule(next, Rule::ascription)?;
+                    pair_to_ascribe(pair, t).map(|asc| asc.into())
+                }
+                Rule::proj => {
+                    let pair = next_rule(next, Rule::proj)?;
+                    pair_to_proj(pair, t).map(|proj| proj.into())
+                }
+                Rule::term => {
+                    let arg = pair_to_term(next)?;
+                    Ok(App {
+                        fun: Box::new(t),
+                        arg: Box::new(arg),
+                    }
+                    .into())
+                }
+                r => Err(Error::UnexpectedRule {
+                    found: r,
+                    expected: "Ascription, Projection or Term".to_owned(),
+                }),
+            }
+        }
+        Rule::EOI => Ok(t),
+        r => Err(Error::UnexpectedRule {
+            found: r,
+            expected: "Left Recursive Term or End of Input".to_owned(),
+        }),
+    }
 }

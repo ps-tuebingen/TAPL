@@ -56,7 +56,7 @@ impl fmt::Display for Type {
                     .collect();
                 write!(f, "<{}>", variant_strs.join(", "))
             }
-            Type::Optional(ty) => write!(f, "Option {ty}"),
+            Type::Optional(ty) => write!(f, "Optional[{ty}]"),
             Type::List(ty) => write!(f, "List {ty}"),
         }
     }

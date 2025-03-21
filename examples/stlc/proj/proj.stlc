@@ -1,1 +1,1 @@
-\a:{x:Nat, y:Bool, z:(Nat->Nat)}.(a).z
+\a:{x:Nat, y:Bool, z:(Nat->Nat)}.(a.z)

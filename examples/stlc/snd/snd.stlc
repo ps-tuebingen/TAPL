@@ -1,1 +1,1 @@
-(\x:(Nat,Nat).(x).1)({pred(4), pred(5)})
+\x:(Nat,Nat).(x.1)({pred(4), pred(5)})

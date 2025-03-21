@@ -24,12 +24,10 @@ pub fn pair_to_cons(p: Pair<'_, Rule>) -> Result<Cons, Error> {
     let ty = pair_to_type(ty_rule)?;
 
     let fst_pair = inner.remove(0);
-    let fst_rule = next_rule(fst_pair, Rule::term)?;
-    let fst = pair_to_term(fst_rule)?;
+    let fst = pair_to_term(fst_pair)?;
 
     let snd_pair = inner.remove(0);
-    let snd_rule = next_rule(snd_pair, Rule::term)?;
-    let snd = pair_to_term(snd_rule)?;
+    let snd = pair_to_term(snd_pair)?;
 
     Ok(Cons {
         fst: Box::new(fst),
@@ -47,8 +45,7 @@ pub fn pair_to_head(p: Pair<'_, Rule>) -> Result<Head, Error> {
     let ty = pair_to_type(ty_pair)?;
 
     let term_pair = inner.remove(0);
-    let term_rule = next_rule(term_pair, Rule::term)?;
-    let term = pair_to_term(term_rule)?;
+    let term = pair_to_term(term_pair)?;
 
     Ok(Head {
         inner_type: ty,
@@ -68,8 +65,7 @@ pub fn pair_to_tail(p: Pair<'_, Rule>) -> Result<Tail, Error> {
     let term_pair = inner
         .next()
         .ok_or(Error::MissingInput("Head Argument".to_owned()))?;
-    let term_rule = next_rule(term_pair, Rule::term)?;
-    let term = pair_to_term(term_rule)?;
+    let term = pair_to_term(term_pair)?;
 
     if let Some(next) = inner.next() {
         return Err(Error::RemainingInput(next.as_rule()));
@@ -89,8 +85,7 @@ pub fn pair_to_isnil(p: Pair<'_, Rule>) -> Result<IsNil, Error> {
     let ty = pair_to_type(ty_rule)?;
 
     let term_pair = inner.remove(0);
-    let term_rule = next_rule(term_pair, Rule::term)?;
-    let term = pair_to_term(term_rule)?;
+    let term = pair_to_term(term_pair)?;
 
     Ok(IsNil {
         inner_type: ty,

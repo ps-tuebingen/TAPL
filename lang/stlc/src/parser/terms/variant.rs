@@ -6,14 +6,14 @@ use crate::{
 use pest::iterators::Pair;
 
 pub fn pair_to_variant(p: Pair<'_, Rule>) -> Result<Variant, Error> {
+    println!("trying to parse variant");
     let mut inner = get_n_inner(p, vec!["Variant Label", "Variant Term", "Variant Type"])?;
 
     let var_pair = inner.remove(0);
     let var = var_pair.as_str().to_owned();
 
     let term_pair = inner.remove(0);
-    let term_rule = next_rule(term_pair, Rule::term)?;
-    let variant_term = pair_to_term(term_rule)?;
+    let variant_term = pair_to_term(term_pair)?;
 
     let ty_pair = inner.remove(0);
     let ty_rule = next_rule(ty_pair, Rule::r#type)?;

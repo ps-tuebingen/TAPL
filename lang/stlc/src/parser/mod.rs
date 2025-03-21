@@ -15,6 +15,7 @@ struct StlcParser;
 
 pub fn parse(input: String) -> Result<Term, Error> {
     let mut parsed = StlcParser::parse(Rule::program, &input)?;
+    println!("trying to parse program");
     let prog_pair = parsed
         .next()
         .ok_or(Error::MissingInput("Program".to_owned()))?;
@@ -33,17 +34,13 @@ pub fn parse(input: String) -> Result<Term, Error> {
     let term_pair = prog_inner
         .next()
         .ok_or(Error::MissingInput("Term".to_owned()))?;
-    let term_rule = next_rule(term_pair, Rule::term)?;
-    let term = pair_to_term(term_rule)?;
-
-    let _ = prog_inner
-        .next()
-        .ok_or(Error::MissingInput("EOI".to_owned()))?;
-
     if let Some(n) = prog_inner.next() {
-        return Err(Error::RemainingInput(n.as_rule()));
+        if n.as_rule() != Rule::EOI {
+            return Err(Error::RemainingInput(n.as_rule()));
+        }
     }
-
+    let term = pair_to_term(term_pair)?;
+    println!("got term {term}");
     Ok(term)
 }
 

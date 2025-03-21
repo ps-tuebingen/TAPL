@@ -1,6 +1,6 @@
 use super::pair_to_term;
 use crate::{
-    parser::{errors::Error, get_n_inner, Rule},
+    parser::{errors::Error, get_n_inner, next_rule, Rule},
     syntax::{IsZero, Pred, Succ, Term},
 };
 use pest::iterators::Pair;
@@ -14,8 +14,11 @@ pub fn pair_to_num(p: Pair<'_, Rule>) -> Result<Term, Error> {
 }
 
 pub fn pair_to_pred(p: Pair<'_, Rule>) -> Result<Pred, Error> {
+    println!("trying to get pred term");
     let inner_pair = get_n_inner(p, vec!["Pred Argument"])?.remove(0);
-    let inner_term = pair_to_term(inner_pair)?;
+    let inner_rule = next_rule(inner_pair, Rule::paren_term)?;
+    let inner_term = pair_to_term(inner_rule)?;
+    println!("got pred inner {inner_term}");
     Ok(Pred {
         term: Box::new(inner_term),
     }
@@ -24,7 +27,8 @@ pub fn pair_to_pred(p: Pair<'_, Rule>) -> Result<Pred, Error> {
 
 pub fn pair_to_succ(p: Pair<'_, Rule>) -> Result<Succ, Error> {
     let inner_pair = get_n_inner(p, vec!["Succ Argument"])?.remove(0);
-    let inner_term = pair_to_term(inner_pair)?;
+    let inner_rule = next_rule(inner_pair, Rule::paren_term)?;
+    let inner_term = pair_to_term(inner_rule)?;
     Ok(Succ {
         term: Box::new(inner_term),
     }
@@ -32,7 +36,9 @@ pub fn pair_to_succ(p: Pair<'_, Rule>) -> Result<Succ, Error> {
 }
 
 pub fn pair_to_isz(p: Pair<'_, Rule>) -> Result<IsZero, Error> {
-    let term_rule = get_n_inner(p, vec!["IsZero Argument"])?.remove(0);
+    println!("trying to get iszero term");
+    let term_pair = get_n_inner(p, vec!["IsZero Argument"])?.remove(0);
+    let term_rule = next_rule(term_pair, Rule::paren_term)?;
     let term = pair_to_term(term_rule)?;
     Ok(IsZero {
         term: Box::new(term),

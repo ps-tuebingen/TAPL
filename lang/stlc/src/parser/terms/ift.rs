@@ -1,6 +1,6 @@
 use super::pair_to_term;
 use crate::{
-    parser::{errors::Error, get_n_inner, next_rule, Rule},
+    parser::{errors::Error, get_n_inner, Rule},
     syntax::If,
 };
 use pest::iterators::Pair;
@@ -9,16 +9,13 @@ pub fn pair_to_if(p: Pair<'_, Rule>) -> Result<If, Error> {
     let mut inner = get_n_inner(p, vec!["If Term", "Then Term", "Else Term"])?;
 
     let if_pair = inner.remove(0);
-    let if_rule = next_rule(if_pair, Rule::term)?;
-    let if_term = pair_to_term(if_rule)?;
+    let if_term = pair_to_term(if_pair)?;
 
     let then_pair = inner.remove(0);
-    let then_rule = next_rule(then_pair, Rule::term)?;
-    let then_term = pair_to_term(then_rule)?;
+    let then_term = pair_to_term(then_pair)?;
 
     let else_pair = inner.remove(0);
-    let else_rule = next_rule(else_pair, Rule::term)?;
-    let else_term = pair_to_term(else_rule)?;
+    let else_term = pair_to_term(else_pair)?;
     Ok(If {
         ifc: Box::new(if_term),
         thenc: Box::new(then_term),

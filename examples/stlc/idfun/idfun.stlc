@@ -1,1 +1,1 @@
-\f:(Nat->Nat).f
+\f:(Nat->Nat).(f)

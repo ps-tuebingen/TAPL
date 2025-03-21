@@ -1,2 +1,2 @@
 ty="((Nat -> Nat) -> (Nat -> Nat))"
-evaled="\\f:(Nat -> Nat).f"
+evaled="\\f:(Nat -> Nat).(f)"

@@ -7,7 +7,7 @@ use pest::iterators::Pair;
 
 pub fn pair_to_some(p: Pair<'_, Rule>) -> Result<Something, Error> {
     let arg_pair = get_n_inner(p, vec!["Something Argument"])?.remove(0);
-    let arg_rule = next_rule(arg_pair, Rule::term)?;
+    let arg_rule = next_rule(arg_pair, Rule::paren_term)?;
     let arg = pair_to_term(arg_rule)?;
     Ok(Something {
         term: Box::new(arg),
