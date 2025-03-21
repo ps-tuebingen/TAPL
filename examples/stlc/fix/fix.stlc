@@ -1,5 +1,8 @@
 fix 
-  (\ieio:{iseven:(Nat -> Bool), isodd:(Nat -> Bool)}. 
+  (\ieio:{
+      iseven:(Nat -> Bool), 
+      isodd:(Nat -> Bool)
+    }. 
    ({iseven = 
       \x:Nat.(if (iszero(x)) { 
         true 
@@ -11,4 +14,4 @@ fix
       } else { 
       (ieio.iseven) (pred(x)) 
       })
-    }))
+    })) (5)
