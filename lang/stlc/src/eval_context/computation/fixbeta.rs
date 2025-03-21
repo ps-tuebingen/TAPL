@@ -1,5 +1,9 @@
 use super::{ComputationRule, Error, Eval, EvalContext, Value};
-use crate::{eval_context::AsContext, syntax::Lambda, traits::subst::Subst};
+use crate::{
+    eval_context::AsContext,
+    syntax::{Fix, Lambda},
+    traits::subst::Subst,
+};
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct FixBeta {
@@ -11,10 +15,15 @@ impl Eval for FixBeta {
         if let Value::Lambda { var, annot, body } = self.lam {
             let t = body.clone().subst(
                 &var,
-                Lambda {
-                    var: var.clone(),
-                    annot,
-                    body: Box::new(body),
+                Fix {
+                    term: Box::new(
+                        Lambda {
+                            var: var.clone(),
+                            annot,
+                            body: Box::new(body),
+                        }
+                        .into(),
+                    ),
                 }
                 .into(),
             );

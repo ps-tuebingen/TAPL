@@ -1,5 +1,8 @@
 use super::{errors::Error, Eval, Value};
-use crate::{syntax::Fix, traits::subst::Subst};
+use crate::{
+    syntax::{Fix, Lambda},
+    traits::subst::Subst,
+};
 
 impl Eval for Fix {
     fn eval(self) -> Result<Value, Error> {
@@ -8,10 +11,15 @@ impl Eval for Fix {
             body.clone()
                 .subst(
                     &var,
-                    Value::Lambda {
-                        var: var.clone(),
-                        annot,
-                        body,
+                    Fix {
+                        term: Box::new(
+                            Lambda {
+                                var: var.clone(),
+                                annot,
+                                body: Box::new(body),
+                            }
+                            .into(),
+                        ),
                     }
                     .into(),
                 )

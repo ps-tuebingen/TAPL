@@ -4,7 +4,6 @@ use crate::{syntax::Fix, types::Type};
 impl Check for Fix {
     fn check(&self, env: &mut TypingEnv) -> Result<Type, Error> {
         let ty = self.term.check(env)?;
-        println!("got fix type: {ty}");
         if let Type::Fun(ty1, ty2) = ty {
             if *ty1 == *ty2 {
                 Ok(*ty1)
