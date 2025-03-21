@@ -1,11 +1,12 @@
-use super::{
-    errors::Error,
-    load_tests::{load_dir, TestContents},
-    testsuite::{Test, TestResult},
-    TestSuite,
-};
 use std::path::PathBuf;
 use stlc::{check::Check, eval::Eval, eval_context::eval_with_context, parser::parse};
+use test_common::{
+    errors::Error,
+    load_tests::{load_dir, TestContents},
+    paths::{EXAMPLES_PATH, STLC_PATH},
+    setup,
+    testsuite::{Test, TestResult, TestSuite},
+};
 
 pub struct StlcTests {
     source_dir: PathBuf,
@@ -177,4 +178,20 @@ impl TestSuite for StlcTests {
         }
         Ok(tests)
     }
+}
+
+fn main() -> Result<(), Error> {
+    setup()?;
+
+    let examples_dir = PathBuf::from(EXAMPLES_PATH);
+    let fails = StlcTests::new(examples_dir.join(STLC_PATH)).run_all()?;
+
+    println!(
+        "Finished running tests with \x1b[31m{} fails\x1b[39m",
+        fails
+    );
+    if fails > 0 {
+        panic!("Not all tests finished successfully");
+    }
+    Ok(())
 }

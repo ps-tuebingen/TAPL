@@ -1,0 +1,16 @@
+[package]
+name = "e2e_nameless"
+version = "0.1.0"
+edition = "2021"
+
+[[test]]
+name = "nameless"
+path = "src/nameless.rs"
+harness=false
+
+[dependencies]
+serde = {version="1.0.219", features=["derive"]}
+
+test_common = { path="../test_common" }
+untyped_lambda = { path="../../lang/untyped_lambda" }
+nameless_representation = {path="../../lang/nameless_representation"}

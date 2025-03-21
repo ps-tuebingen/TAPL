@@ -1,0 +1,15 @@
+[package]
+name = "e2e_stlc"
+version = "0.1.0"
+edition = "2021"
+
+[[test]]
+name = "stlc"
+path = "src/stlc.rs"
+harness=false
+
+[dependencies]
+serde = {version="1.0.219", features=["derive"]}
+
+test_common = { path="../test_common" }
+stlc = { path="../../lang/stlc" }

@@ -1,10 +1,12 @@
-use super::{
-    errors::Error,
-    load_tests::{load_dir, TestContents},
-    testsuite::{Test, TestResult, TestSuite},
-};
 use nameless_representation::{remove_names::remove_names, restore_names::restore_names};
 use std::path::PathBuf;
+use test_common::{
+    errors::Error,
+    load_tests::{load_dir, TestContents},
+    paths::{EXAMPLES_PATH, UNTYPED_LAMBDA_PATH},
+    setup,
+    testsuite::{Test, TestResult, TestSuite},
+};
 use untyped_lambda::parse::parse;
 
 pub struct NamelessRepTests {
@@ -120,4 +122,20 @@ impl TestSuite for NamelessRepTests {
         }
         Ok(tests)
     }
+}
+
+fn main() -> Result<(), Error> {
+    setup()?;
+
+    let examples_dir = PathBuf::from(EXAMPLES_PATH);
+    let fails = NamelessRepTests::new(examples_dir.join(UNTYPED_LAMBDA_PATH)).run_all()?;
+
+    println!(
+        "Finished running tests with \x1b[31m{} fails\x1b[39m",
+        fails
+    );
+    if fails > 0 {
+        panic!("Not all tests finished successfully");
+    }
+    Ok(())
 }

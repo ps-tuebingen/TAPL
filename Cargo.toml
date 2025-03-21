@@ -1,7 +1,13 @@
 [workspace]
 members = [
     "app",
-    "tests/endtoend",
+
+    "tests/test_common",
+    "tests/nameless",
+    "tests/stlc",
+    "tests/untyped_arithmetic",
+    "tests/untyped_lambda",
+
     "lang/stlc",
     "lang/untyped_lambda",
     "lang/untyped_arithmetic",

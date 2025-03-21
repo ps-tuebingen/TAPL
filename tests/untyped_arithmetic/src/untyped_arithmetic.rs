@@ -1,65 +1,62 @@
-use super::{
+use std::path::PathBuf;
+use test_common::{
     errors::Error,
     load_tests::{load_dir, TestContents},
+    paths::{EXAMPLES_PATH, UNTYPED_ARITH_PATH},
+    setup,
     testsuite::{Test, TestResult, TestSuite},
 };
-use std::path::PathBuf;
-use untyped_lambda::{
-    eval::{eval, EvalOrder},
-    parse::parse,
-};
+use untyped_arithmetic::parse::parse;
 
-pub struct UntypedLambdaTests {
+pub struct UntypedArithTests {
     source_dir: PathBuf,
 }
 
-impl UntypedLambdaTests {
-    pub fn new(source_dir: PathBuf) -> UntypedLambdaTests {
-        UntypedLambdaTests { source_dir }
-    }
+#[derive(serde::Deserialize)]
+pub struct UntypedArithConf {
+    expected: String,
 }
 
-#[derive(serde::Deserialize)]
-pub struct UntypedLambdaConf {
-    evaluated: String,
+impl UntypedArithTests {
+    pub fn new(source_dir: PathBuf) -> UntypedArithTests {
+        UntypedArithTests { source_dir }
+    }
 }
 
 pub struct ParseTest {
     source_name: String,
-    source_contents: String,
+    source: String,
 }
 
 impl Test for ParseTest {
     fn name(&self) -> String {
-        format!("Parse {}", self.source_name)
+        format!("Parsing {}", self.source_name)
     }
 
     fn run(&self) -> TestResult {
-        let mut src = self.source_contents.clone();
-        match parse(&mut src) {
+        match parse(self.source.clone()) {
             Ok(_) => TestResult::Success,
-            Err(err) => return TestResult::from_err(err),
+            Err(err) => TestResult::from_err(err),
         }
     }
 }
 
 pub struct ReparseTest {
     source_name: String,
-    source_contents: String,
+    source: String,
 }
 
 impl Test for ReparseTest {
     fn name(&self) -> String {
-        format!("Reparse {}", self.source_name)
+        format!("Reparsing {}", self.source_name)
     }
 
     fn run(&self) -> TestResult {
-        let mut src = self.source_contents.clone();
-        let parsed = match parse(&mut src) {
+        let parsed = match parse(self.source.clone()) {
             Ok(p) => p,
             Err(err) => return TestResult::from_err(err),
         };
-        let reparsed = match parse(&mut parsed.to_string()) {
+        let reparsed = match parse(parsed.to_string()) {
             Ok(p) => p,
             Err(err) => return TestResult::from_err(err),
         };
@@ -69,52 +66,68 @@ impl Test for ReparseTest {
 
 pub struct EvalTest {
     source_name: String,
-    source_contents: String,
+    source: String,
     expected: String,
 }
 
 impl Test for EvalTest {
     fn name(&self) -> String {
-        format!("Evaluate {}", self.source_name)
+        format!("Evaluating {}", self.source_name)
     }
 
     fn run(&self) -> TestResult {
-        let mut src = self.source_contents.clone();
-        let parsed = match parse(&mut src) {
+        let parsed = match parse(self.source.clone()) {
             Ok(p) => p,
             Err(err) => return TestResult::from_err(err),
         };
-        let evaled = eval(parsed, EvalOrder::CBV);
+        let evaled = parsed.eval();
         TestResult::from_eq(&evaled, &self.expected)
     }
 }
 
-impl TestSuite for UntypedLambdaTests {
+impl TestSuite for UntypedArithTests {
     fn name(&self) -> String {
-        "Untyped Lambda".to_owned()
+        "Untyped Arithmetic".to_owned()
     }
 
     fn load(&self) -> Result<Vec<Box<dyn Test>>, Error> {
-        let contents: Vec<TestContents<UntypedLambdaConf>> = load_dir(&self.source_dir, "lam")?;
+        let contents: Vec<TestContents<UntypedArithConf>> = load_dir(&self.source_dir, "arith")?;
         let mut tests = vec![];
         for content in contents {
             let parse_test = ParseTest {
                 source_name: content.source_name.clone(),
-                source_contents: content.source_contents.clone(),
+                source: content.source_contents.clone(),
             };
             tests.push(Box::new(parse_test) as Box<dyn Test>);
             let reparse_test = ReparseTest {
                 source_name: content.source_name.clone(),
-                source_contents: content.source_contents.clone(),
+                source: content.source_contents.clone(),
             };
             tests.push(Box::new(reparse_test) as Box<dyn Test>);
             let eval_test = EvalTest {
                 source_name: content.source_name,
-                source_contents: content.source_contents,
-                expected: content.conf.evaluated,
+                source: content.source_contents,
+                expected: content.conf.expected,
             };
             tests.push(Box::new(eval_test) as Box<dyn Test>);
         }
         Ok(tests)
     }
+}
+
+fn main() -> Result<(), Error> {
+    setup()?;
+
+    let examples_dir = PathBuf::from(EXAMPLES_PATH);
+
+    let fails = UntypedArithTests::new(examples_dir.join(UNTYPED_ARITH_PATH)).run_all()?;
+
+    println!(
+        "Finished running tests with \x1b[31m{} fails\x1b[39m",
+        fails
+    );
+    if fails > 0 {
+        panic!("Not all tests finished successfully");
+    }
+    Ok(())
 }
