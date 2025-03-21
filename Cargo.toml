@@ -7,6 +7,7 @@ members = [
     "tests/stlc",
     "tests/untyped_arithmetic",
     "tests/untyped_lambda",
+    "tests/references",
 
     "lang/stlc",
     "lang/untyped_lambda",

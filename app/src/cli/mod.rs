@@ -3,6 +3,7 @@ use std::{fmt, fs::read_to_string, path::PathBuf};
 
 mod errors;
 pub mod nameless_representation;
+pub mod references;
 pub mod stlc;
 pub mod untyped_arithmetic;
 pub mod untyped_lambda;
@@ -21,6 +22,7 @@ pub enum Command {
     UntypedLambda(untyped_lambda::Args),
     NamelessRepresentation(nameless_representation::Args),
     Stlc(stlc::Args),
+    References(references::Args),
 }
 
 #[derive(Debug, clap::Args)]
@@ -60,6 +62,7 @@ pub fn run() -> Result<(), String> {
             nameless_representation::exec(args).map_err(|err| err.to_string())
         }
         Command::Stlc(args) => stlc::exec(args).map_err(|err| err.to_string()),
+        Command::References(args) => references::exec(args).map_err(|err| err.to_string()),
     }
 }
 
