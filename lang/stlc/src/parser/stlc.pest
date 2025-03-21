@@ -1,4 +1,4 @@
-WHITESPACE = _{ " " | "\n" }
+WHITESPACE = _{ " " | "\n" | "\t" }
 program = { SOI ~ term ~ EOI }
 
 // Keywords
@@ -13,7 +13,6 @@ kw_unit = _{ "unit" }
 kw_nothing = _{ "Nothing" }
 kw_something = _{ "Something" }
 kw_if = _{ "if" }
-kw_then = _{ "then" }
 kw_else = _{ "else" }
 kw_fix = _{ "fix" }
 kw_let = _{ "let" }
@@ -41,7 +40,6 @@ keyword = {
   | kw_something
   | kw_nothing
   | kw_if
-  | kw_then 
   | kw_else
   | kw_fix
   | kw_let 
@@ -82,7 +80,7 @@ type = {
 }
 
 // Terms 
-term = { prim_term ~ left_rec? }
+term = { prim_term ~ (left_rec)? }
 prim_term = { 
   | paren_term
   | const 
@@ -115,7 +113,7 @@ paren_term = { "(" ~ term ~ ")" }
 
 // Starts with keyword 
 const = { kw_true | kw_false | kw_zero | kw_unit }
-if_term = {  kw_if ~ term ~ kw_then ~ term ~ kw_else ~ term }
+if_term = {  kw_if  ~ paren_term ~ "{" ~ term ~ "}" ~ kw_else ~ "{" ~ term ~ "}" }
 fix_term = { kw_fix ~ term }
 let_term = { kw_let  ~ variable ~ "=" ~ term ~ kw_in ~ term } 
 some_term = { kw_something ~ paren_term } 

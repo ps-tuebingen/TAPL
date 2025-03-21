@@ -1,2 +1,2 @@
 ty="((Bool -> Bool) -> Bool)"
-evaled="\\f:(Bool -> Bool).((f) (if false then true else false))"
+evaled="\\f:(Bool -> Bool).((f) (if (false) { true } else { false }))"
