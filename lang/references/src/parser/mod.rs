@@ -2,7 +2,7 @@ use crate::terms::Term;
 use pest::Parser;
 use pest_derive::Parser;
 
-mod errors;
+pub mod errors;
 use errors::Error;
 
 #[derive(Parser)]
