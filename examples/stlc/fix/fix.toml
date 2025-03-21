@@ -1,2 +1,2 @@
-ty="{iseven: (Nat -> Bool), isodd: (Nat -> Bool)}"
+ty="Bool"
 evaled="false"

@@ -14,9 +14,13 @@ impl Check for Lambda {
 
 impl Check for App {
     fn check(&self, env: &mut TypingEnv) -> Result<Type, Error> {
+        println!("checking app fun {}", self.fun);
         let ty1 = self.fun.check_local(env)?;
+        println!("got function type {ty1} for function {}", self.fun);
         if let Type::Fun(ty11, ty12) = ty1 {
+            println!("checking app arg {}", self.arg);
             let ty2 = self.arg.check(env)?;
+            println!("comparing app types {ty11}, {ty2}");
             if ty2 == *ty11 {
                 Ok(*ty12)
             } else {

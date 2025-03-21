@@ -1,17 +1,15 @@
-fix 
-  (\ieio:{
-      iseven:(Nat -> Bool), 
-      isodd:(Nat -> Bool)
-    }. 
-   ({iseven = 
-      \x:Nat.(if (iszero(x)) { 
-        true 
-      } else { 
-        (ieio.isodd)(pred(x)) 
-      }),
-    isodd = \x:Nat.(if (iszero(x)) { 
-        false 
-      } else { 
-      (ieio.iseven) (pred(x)) 
-      })
-    })) (5)
+(fix(
+  \ie:(Nat->Bool).(
+    \x:Nat. (
+      if (iszero(x)){
+        true
+      } else {
+        if (iszero(pred(x))) {
+          false 
+        } else {
+          (ie (pred(pred(x))))
+        }
+      }
+    )
+  )
+)) (5)
