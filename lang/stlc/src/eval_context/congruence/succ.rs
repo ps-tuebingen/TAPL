@@ -14,7 +14,7 @@ impl Eval for Succ {
             let ctx: EvalContext = t.to_context()?;
             ctx.eval()
         } else {
-            Ok(Value::Pred(Box::new(val)))
+            Ok(Value::Succ(Box::new(val)))
         }
     }
 }
