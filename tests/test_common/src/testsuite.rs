@@ -52,7 +52,7 @@ pub trait TestSuite {
                 num_fail += 1
             }
         }
-        println!("");
+        println!();
         println!(
             "\tRan {} tests: {} success, {} fail\n",
             num_tests,
