@@ -115,7 +115,7 @@ paren_term = { "(" ~ term ~ ")" }
 const = { kw_true | kw_false | kw_zero | kw_unit }
 if_term = {  kw_if  ~ paren_term ~ "{" ~ term ~ "}" ~ kw_else ~ "{" ~ term ~ "}" }
 fix_term = { kw_fix ~ term }
-let_term = { kw_let  ~ variable ~ "=" ~ term ~ kw_in ~ term } 
+let_term = { kw_let  ~ "(" ~ variable ~ "=" ~ term ~ ")" ~ kw_in ~ term } 
 some_term = { kw_something ~ paren_term } 
 none_term = { kw_nothing ~ "[" ~ type ~ "]" } 
 
