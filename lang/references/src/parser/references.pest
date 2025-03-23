@@ -26,11 +26,9 @@ prim_term = {
   | lambda_term
   | ref_term
   | deref_term
-  | loc_term
   | variable 
 }
 
-loc_term = { "l" ~ number } 
 deref_term = { "!" ~ term }
 ref_term = { kw_ref ~ paren_term }
 lambda_term = { "\\" ~ variable ~ ":" ~ type ~ "." ~ paren_term }
