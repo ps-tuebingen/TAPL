@@ -9,10 +9,12 @@ use test_common::{
 mod parse_test;
 mod reparse_test;
 mod suite;
+mod typecheck_test;
 
 use parse_test::ParseTest;
 use reparse_test::ReparseTest;
 use suite::ReferencesTests;
+use typecheck_test::TypecheckTest;
 
 fn main() -> Result<(), Error> {
     setup()?;
