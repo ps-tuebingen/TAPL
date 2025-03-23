@@ -48,7 +48,7 @@ impl fmt::Display for Error {
             Error::MissingInput { expected } => write!(f, "Missing input {expected}"),
             Error::RemainingInput { rule } => write!(f, "Remaining input {rule:?}"),
             Error::UnexpectedRule { found, expected } => {
-                write!(f, "Unexpected rule {found:?}, expectd {expected}")
+                write!(f, "Unexpected rule {found:?}, expected {expected}")
             }
             Error::UnknownKw { kw } => write!(f, "Unknown Keyword {kw}"),
             Error::BadNumber { num } => write!(f, "Canot parse number {num}"),
