@@ -9,6 +9,7 @@ pub enum Error {
     RemainingInput { rule: Rule },
     UnexpectedRule { found: Rule, expected: String },
     UnknownKw { kw: String },
+    BadNumber { num: String },
 }
 
 impl Error {
@@ -32,6 +33,12 @@ impl Error {
     pub fn kw(kw: &str) -> Error {
         Error::UnknownKw { kw: kw.to_owned() }
     }
+
+    pub fn num(num: &str) -> Error {
+        Error::BadNumber {
+            num: num.to_owned(),
+        }
+    }
 }
 
 impl fmt::Display for Error {
@@ -44,6 +51,7 @@ impl fmt::Display for Error {
                 write!(f, "Unexpected rule {found:?}, expectd {expected}")
             }
             Error::UnknownKw { kw } => write!(f, "Unknown Keyword {kw}"),
+            Error::BadNumber { num } => write!(f, "Canot parse number {num}"),
         }
     }
 }

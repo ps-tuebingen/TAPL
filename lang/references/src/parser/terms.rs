@@ -32,6 +32,14 @@ fn pair_to_prim_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
 fn prim_rule_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
     match p.as_rule() {
         Rule::variable => Ok(Term::Var(p.as_str().trim().to_owned())),
+        Rule::number => {
+            let num = p
+                .as_str()
+                .trim()
+                .parse::<i64>()
+                .map_err(|_| Error::num(p.as_str()))?;
+            Ok(Term::Const(num))
+        }
         Rule::paren_term => {
             let term_rule = pair_to_n_inner(p, vec!["Term"])?.remove(0);
             pair_to_term(term_rule)

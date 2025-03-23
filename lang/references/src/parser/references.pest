@@ -26,6 +26,7 @@ prim_term = {
   | lambda_term
   | ref_term
   | deref_term
+  | number
   | variable 
 }
 
