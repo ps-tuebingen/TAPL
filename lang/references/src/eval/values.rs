@@ -9,6 +9,7 @@ use std::fmt;
 pub enum Value {
     Lambda { var: Var, annot: Type, body: Term },
     Unit,
+    Const(i64),
     Loc(Loc),
 }
 
@@ -26,6 +27,7 @@ impl From<Value> for Term {
                 annot,
                 body: Box::new(body),
             },
+            Value::Const(i) => Term::Const(i),
             Value::Unit => Term::Unit,
             Value::Loc(loc) => Term::Loc(loc),
         }

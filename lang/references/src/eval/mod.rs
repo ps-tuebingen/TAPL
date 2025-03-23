@@ -19,6 +19,7 @@ pub fn fresh_loc(st: &Store) -> Loc {
 pub fn eval(t: Term, st: &mut Store) -> Result<Value, Error> {
     match t {
         Term::Var(v) => Err(Error::FreeVar(v)),
+        Term::Const(i) => Ok(Value::Const(i)),
         Term::Lambda { var, annot, body } => Ok(Value::Lambda {
             var,
             annot,

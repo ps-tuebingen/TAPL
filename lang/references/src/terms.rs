@@ -7,6 +7,7 @@ pub type Loc = usize;
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Term {
     Var(Var),
+    Const(i64),
     Lambda {
         var: Var,
         annot: Type,
@@ -82,6 +83,7 @@ impl Term {
     pub fn free_vars(&self) -> HashSet<Var> {
         match self {
             Term::Var(v) => HashSet::from([v.clone()]),
+            Term::Const(_) => HashSet::new(),
             Term::Lambda {
                 var,
                 annot: _,
@@ -117,6 +119,7 @@ impl Term {
                     Term::Var(v1)
                 }
             }
+            Term::Const(i) => Term::Const(i),
             Term::Lambda { var, annot, body } => {
                 if var == *v {
                     Term::Lambda { var, annot, body }
@@ -148,6 +151,7 @@ impl fmt::Display for Term {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             Term::Var(v) => write!(f, "{v}"),
+            Term::Const(c) => write!(f, "{c}"),
             Term::Lambda { var, annot, body } => write!(f, "\\{var}:{annot}.{body}"),
             Term::App { fun, arg } => write!(f, "({fun}) ({arg})"),
             Term::Unit => f.write_str("unit"),
