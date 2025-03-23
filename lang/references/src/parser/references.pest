@@ -6,6 +6,8 @@ kw_unit = { "unit" }
 kw_ref = { "ref" }
 kw_let = { "let" }
 kw_in = { "in" }
+kw_if = { "if" }
+kw_else = { "else" }
 kw_tyref = { "Ref" }
 kw_tyunit = { "Unit" }
 kw_tynat = { "Nat" }
@@ -15,6 +17,8 @@ keyword = {
   | kw_ref
   | kw_let
   | kw_in
+  | kw_if
+  | kw_else 
   | kw_tyunit
   | kw_tyref
   | kw_tynat
@@ -31,6 +35,7 @@ prim_term = {
   | const 
   | lambda_term
   | let_term
+  | if_term
   | ref_term
   | deref_term
   | number
@@ -40,7 +45,15 @@ prim_term = {
 deref_term = { "!" ~ term }
 ref_term = { kw_ref ~ paren_term }
 let_term = { kw_let ~ "(" ~ variable ~ "=" ~ term ~ ")" ~ kw_in ~ term }
+if_term = { kw_if ~ "(" ~ term ~ cmp ~ term ~ ")" ~ "{" ~ term ~ "}" ~ kw_else ~ "{" ~ term ~ "}" }
 lambda_term = { "\\" ~ variable ~ ":" ~ type ~ "." ~ paren_term }
+
+cmp = { leq | lt | geq | gt | eq } 
+lt = { "<" }
+leq = { "<=" }
+gt = { ">" }
+geq = { ">=" }
+eq = { "==" }
 
 // Left Recursive Terms
 left_rec = { assign_term | sequence | term }

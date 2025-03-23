@@ -30,6 +30,22 @@ pub enum Term {
         bound_term: Box<Term>,
         in_term: Box<Term>,
     },
+    If {
+        left: Box<Term>,
+        cmp: Cmp,
+        right: Box<Term>,
+        then_term: Box<Term>,
+        else_term: Box<Term>,
+    },
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum Cmp {
+    Equal,
+    Greater,
+    GreaterEqual,
+    Less,
+    LessEqual,
 }
 
 impl Term {
@@ -122,6 +138,19 @@ impl Term {
                 vars.extend(bound_term.free_vars());
                 vars
             }
+            Term::If {
+                left,
+                right,
+                then_term,
+                else_term,
+                ..
+            } => {
+                let mut vars = left.free_vars();
+                vars.extend(right.free_vars());
+                vars.extend(then_term.free_vars());
+                vars.extend(else_term.free_vars());
+                vars
+            }
         }
     }
 
@@ -178,6 +207,25 @@ impl Term {
                     }
                 }
             }
+            Term::If {
+                left,
+                cmp,
+                right,
+                then_term,
+                else_term,
+            } => {
+                let left_subst = left.subst(v, t.clone());
+                let right_subst = right.subst(v, t.clone());
+                let then_subst = then_term.subst(v, t.clone());
+                let else_subst = else_term.subst(v, t);
+                Term::If {
+                    left: Box::new(left_subst),
+                    cmp,
+                    right: Box::new(right_subst),
+                    then_term: Box::new(then_subst),
+                    else_term: Box::new(else_subst),
+                }
+            }
         }
     }
 }
@@ -199,6 +247,28 @@ impl fmt::Display for Term {
                 bound_term,
                 in_term,
             } => write!(f, "let ({var} = {bound_term}) in {in_term}"),
+            Term::If {
+                left,
+                cmp,
+                right,
+                then_term,
+                else_term,
+            } => write!(
+                f,
+                "if ({left}{cmp}{right}) {{ {then_term} }} else {{ {else_term} }}"
+            ),
+        }
+    }
+}
+
+impl fmt::Display for Cmp {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Cmp::Equal => f.write_str("=="),
+            Cmp::Less => f.write_str("<"),
+            Cmp::LessEqual => f.write_str("<="),
+            Cmp::Greater => f.write_str(">"),
+            Cmp::GreaterEqual => f.write_str(">="),
         }
     }
 }

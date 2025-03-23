@@ -8,6 +8,7 @@ pub enum Error {
     LocationNotFound(Loc),
     NotAFunction(Value),
     NotALocation(Value),
+    NotANumber(Value),
     NotAValue(Term),
 }
 
@@ -18,6 +19,7 @@ impl fmt::Display for Error {
             Error::LocationNotFound(loc) => write!(f, "Could not find location {loc} in store"),
             Error::NotAFunction(v) => write!(f, "{v} should be a function value"),
             Error::NotALocation(val) => write!(f, "{val} should be a store location"),
+            Error::NotANumber(val) => write!(f, "{val} should be a number"),
             Error::NotAValue(t) => write!(f, "Term {t} is not a value"),
         }
     }

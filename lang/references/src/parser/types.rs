@@ -11,6 +11,10 @@ pub fn pair_to_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
         Rule::prim_type => str_to_prim_type(inner.as_str()),
         Rule::fun_type => pair_to_fun_type(inner),
         Rule::ref_type => pair_to_ref_type(inner),
+        Rule::paren_type => {
+            let inner = pair_to_n_inner(inner, vec!["Type"])?.remove(0);
+            pair_to_type(inner)
+        }
         r => Err(Error::unexpected(r, "Type")),
     }
 }
@@ -18,6 +22,7 @@ pub fn pair_to_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
 fn str_to_prim_type(s: &str) -> Result<Type, Error> {
     match s.to_lowercase().trim() {
         "unit" => Ok(Type::Unit),
+        "nat" => Ok(Type::Nat),
         s => Err(Error::kw(s)),
     }
 }

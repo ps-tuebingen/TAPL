@@ -23,7 +23,7 @@ pub fn check(t: Term, env: &mut Env, st: &mut StoreTy) -> Result<Type, Error> {
             })
         }
         Term::App { fun, arg } => {
-            let fun_ty = check(*fun, &mut env.clone(), &mut st.clone())?;
+            let fun_ty = check(*fun, &mut env.clone(), st)?;
             if let Type::Fun { from, to } = fun_ty {
                 let arg_ty = check(*arg, env, st)?;
                 if *from == arg_ty {
@@ -52,7 +52,7 @@ pub fn check(t: Term, env: &mut Env, st: &mut StoreTy) -> Result<Type, Error> {
             }
         }
         Term::Assign { to, body } => {
-            let ty1 = check(*to, &mut env.clone(), &mut st.clone())?;
+            let ty1 = check(*to, &mut env.clone(), st)?;
             let ref_inner = if let Type::Ref(ty) = ty1 {
                 ty
             } else {
@@ -77,9 +77,40 @@ pub fn check(t: Term, env: &mut Env, st: &mut StoreTy) -> Result<Type, Error> {
             bound_term,
             in_term,
         } => {
-            let bound_ty = check(*bound_term, &mut env.clone(), &mut st.clone())?;
+            let bound_ty = check(*bound_term, &mut env.clone(), st)?;
             env.insert(var, bound_ty);
             check(*in_term, env, st)
+        }
+        Term::If {
+            left,
+            right,
+            then_term,
+            else_term,
+            ..
+        } => {
+            let left_ty = check(*left, &mut env.clone(), st)?;
+            if left_ty != Type::Nat {
+                return Err(Error::TypeMismatch {
+                    found: left_ty,
+                    expected: Type::Nat,
+                });
+            }
+            let right_ty = check(*right, &mut env.clone(), st)?;
+            if right_ty != Type::Nat {
+                return Err(Error::TypeMismatch {
+                    found: right_ty,
+                    expected: Type::Nat,
+                });
+            }
+            let then_ty = check(*then_term, &mut env.clone(), st)?;
+            let else_ty = check(*else_term, env, st)?;
+            if then_ty != else_ty {
+                return Err(Error::TypeMismatch {
+                    found: then_ty,
+                    expected: else_ty,
+                });
+            }
+            Ok(then_ty)
         }
     }
 }

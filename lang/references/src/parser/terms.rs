@@ -1,5 +1,8 @@
 use super::{errors::Error, pair_to_n_inner, types::pair_to_type, Rule};
-use crate::{terms::Term, types::Type};
+use crate::{
+    terms::{Cmp, Term},
+    types::Type,
+};
 use pest::iterators::Pair;
 
 pub fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
@@ -49,6 +52,7 @@ fn prim_rule_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
         Rule::ref_term => pair_to_ref(p),
         Rule::deref_term => pair_to_deref(p),
         Rule::let_term => pair_to_let(p),
+        Rule::if_term => pair_to_if(p),
         r => Err(Error::unexpected(r, "Term (non-left recursive)")),
     }
 }
@@ -151,4 +155,49 @@ fn pair_to_let(p: Pair<'_, Rule>) -> Result<Term, Error> {
         bound_term: Box::new(bound_term),
         in_term: Box::new(in_term),
     })
+}
+
+fn pair_to_if(p: Pair<'_, Rule>) -> Result<Term, Error> {
+    let mut inner = pair_to_n_inner(
+        p,
+        vec![
+            "If Keyword",
+            "Left Compared Term",
+            "Comparison Operator",
+            "Right Compared Term",
+            "then Term",
+            "Else Keyword",
+            "else Term",
+        ],
+    )?;
+    inner.remove(0);
+    let left_pair = inner.remove(0);
+    let left_term = pair_to_term(left_pair)?;
+    let cmp_pair = inner.remove(0);
+    let cmp = pair_to_cmp(cmp_pair)?;
+    let right_pair = inner.remove(0);
+    let right_term = pair_to_term(right_pair)?;
+    let then_pair = inner.remove(0);
+    let then_term = pair_to_term(then_pair)?;
+    inner.remove(0);
+    let else_pair = inner.remove(0);
+    let else_term = pair_to_term(else_pair)?;
+    Ok(Term::If {
+        left: Box::new(left_term),
+        cmp,
+        right: Box::new(right_term),
+        then_term: Box::new(then_term),
+        else_term: Box::new(else_term),
+    })
+}
+
+fn pair_to_cmp(p: Pair<'_, Rule>) -> Result<Cmp, Error> {
+    match p.as_str().trim() {
+        "<" => Ok(Cmp::Less),
+        "<=" => Ok(Cmp::LessEqual),
+        ">" => Ok(Cmp::Greater),
+        ">=" => Ok(Cmp::GreaterEqual),
+        "==" => Ok(Cmp::Equal),
+        s => Err(Error::kw(s)),
+    }
 }

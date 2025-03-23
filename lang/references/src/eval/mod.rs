@@ -1,4 +1,4 @@
-use super::terms::{Loc, Term};
+use super::terms::{Cmp, Loc, Term};
 use std::collections::HashMap;
 
 pub mod errors;
@@ -121,6 +121,40 @@ pub fn eval(t: Term, st: &mut Store) -> Result<Value, Error> {
             let bound_val = eval(*bound_term, st)?;
             let in_subst = in_term.subst(&var, bound_val.into());
             eval(in_subst, st)
+        }
+        Term::If {
+            left,
+            cmp,
+            right,
+            then_term,
+            else_term,
+        } => {
+            let left_val = eval(*left, st)?;
+            let left_num = if let Value::Const(i) = left_val {
+                i
+            } else {
+                return Err(Error::NotANumber(left_val));
+            };
+            let right_val = eval(*right, st)?;
+            let right_num = if let Value::Const(i) = right_val {
+                i
+            } else {
+                return Err(Error::NotANumber(right_val));
+            };
+
+            let cmp_fun = |l, r| match cmp {
+                Cmp::Equal => l == r,
+                Cmp::Less => l < r,
+                Cmp::LessEqual => l <= r,
+                Cmp::Greater => l > r,
+                Cmp::GreaterEqual => l >= r,
+            };
+
+            if cmp_fun(left_num, right_num) {
+                eval(*then_term, st)
+            } else {
+                eval(*else_term, st)
+            }
         }
     }
 }
