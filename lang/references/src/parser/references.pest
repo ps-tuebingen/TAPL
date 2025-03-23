@@ -4,15 +4,21 @@ program = { SOI ~ term ~ EOI }
 // Keywords 
 kw_unit = { "unit" }
 kw_ref = { "ref" }
+kw_let = { "let" }
+kw_in = { "in" }
 kw_tyref = { "Ref" }
 kw_tyunit = { "Unit" }
+kw_tynat = { "Nat" }
 
 keyword = { 
- | kw_unit 
- | kw_ref
- | kw_tyunit
- | kw_tyref
- }
+  | kw_unit 
+  | kw_ref
+  | kw_let
+  | kw_in
+  | kw_tyunit
+  | kw_tyref
+  | kw_tynat
+}
 
 // Terms 
 term = { prim_term ~ left_rec? }
@@ -24,6 +30,7 @@ prim_term = {
   | paren_term
   | const 
   | lambda_term
+  | let_term
   | ref_term
   | deref_term
   | number
@@ -32,23 +39,26 @@ prim_term = {
 
 deref_term = { "!" ~ term }
 ref_term = { kw_ref ~ paren_term }
+let_term = { kw_let ~ "(" ~ variable ~ "=" ~ term ~ ")" ~ kw_in ~ term }
 lambda_term = { "\\" ~ variable ~ ":" ~ type ~ "." ~ paren_term }
 
 // Left Recursive Terms
-left_rec = { assign_term | term }
+left_rec = { assign_term | sequence | term }
 
 assign_term = { ":=" ~ term }
+sequence = { ";" ~ term }
 
-variable = { !(keyword ~ !ASCII_ALPHANUMERIC) ~ ( !(WHITESPACE) ~ (ASCII_ALPHA|ASCII_DIGIT) )+ }
+variable = { !(keyword ~ !ASCII_ALPHANUMERIC) ~ ( !(WHITESPACE) ~ (ASCII_ALPHA|ASCII_DIGIT) )+ | "_" }
 number = { ASCII_DIGIT+ }
 
 // Types 
 type = {
- | prim_type
- | fun_type
- | ref_type
+  | prim_type
+  | fun_type
+  | ref_type
+  | paren_type
 }
-
-prim_type = { kw_tyunit }
+paren_type = { "(" ~ type ~ ")" }
+prim_type = { kw_tyunit | kw_tynat }
 fun_type = { "(" ~ type ~ "->" ~ type ~ ")" }
-ref_type = { kw_ref ~ type }
+ref_type = { kw_tyref ~ type }

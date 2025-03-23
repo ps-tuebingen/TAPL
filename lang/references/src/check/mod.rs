@@ -52,25 +52,35 @@ pub fn check(t: Term, env: &mut Env, st: &mut StoreTy) -> Result<Type, Error> {
             }
         }
         Term::Assign { to, body } => {
-            let ty1 = check(*to, env, st)?;
-            if let Type::Ref(ty) = ty1 {
-                let ty2 = check(*body, env, st)?;
-                if ty2 == *ty {
-                    Ok(Type::Unit)
-                } else {
-                    Err(Error::TypeMismatch {
-                        found: ty2,
-                        expected: *ty,
-                    })
-                }
+            let ty1 = check(*to, &mut env.clone(), &mut st.clone())?;
+            let ref_inner = if let Type::Ref(ty) = ty1 {
+                ty
             } else {
-                Err(Error::NotAReference(ty1))
+                return Err(Error::NotAReference(ty1));
+            };
+            let ty2 = check(*body, env, st)?;
+            if ty2 == *ref_inner {
+                Ok(Type::Unit)
+            } else {
+                Err(Error::TypeMismatch {
+                    found: ty2,
+                    expected: *ref_inner,
+                })
             }
         }
         Term::Loc(loc) => st
             .get(&loc)
             .ok_or(Error::UnknownLocation(loc))
             .map(|ty| Type::Ref(Box::new(ty.clone()))),
+        Term::Let {
+            var,
+            bound_term,
+            in_term,
+        } => {
+            let bound_ty = check(*bound_term, &mut env.clone(), &mut st.clone())?;
+            env.insert(var, bound_ty);
+            check(*in_term, env, st)
+        }
     }
 }
 

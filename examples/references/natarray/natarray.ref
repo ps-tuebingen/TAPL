@@ -1,5 +1,5 @@
 let (newarray=\_:Unit.(ref(\n:Nat.(0)))) in 
-let (lookup=\a:(Ref(Nat->Nat)).(\n:Nat.((!a)(n))) in 
+let (lookup=\a:(Ref(Nat->Nat)).(\n:Nat.((!a)(n)))) in 
 let (update=\a:(Ref(Nat->Nat)).(\m:Nat.(\v:Nat.(
   let (oldf = !a) in 
   a := (\n:Nat.(if (equal(m)(n) {
@@ -7,5 +7,5 @@ let (update=\a:(Ref(Nat->Nat)).(\m:Nat.(\v:Nat.(
     } else {
       oldf(n)
     })))
-))) in 
+)))) in 
 lookup(update(newarray(unit))(1)(2))(1)

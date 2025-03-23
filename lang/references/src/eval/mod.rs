@@ -113,6 +113,15 @@ pub fn eval(t: Term, st: &mut Store) -> Result<Value, Error> {
             }
         },
         Term::Loc(loc) => Ok(Value::Loc(loc)),
+        Term::Let {
+            var,
+            bound_term,
+            in_term,
+        } => {
+            let bound_val = eval(*bound_term, st)?;
+            let in_subst = in_term.subst(&var, bound_val.into());
+            eval(in_subst, st)
+        }
     }
 }
 

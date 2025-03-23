@@ -25,6 +25,11 @@ pub enum Term {
         body: Box<Term>,
     },
     Loc(Loc),
+    Let {
+        var: Var,
+        bound_term: Box<Term>,
+        in_term: Box<Term>,
+    },
 }
 
 impl Term {
@@ -107,6 +112,16 @@ impl Term {
             Term::Deref(t) => t.free_vars(),
             Term::Unit => HashSet::new(),
             Term::Loc(_) => HashSet::new(),
+            Term::Let {
+                var,
+                bound_term,
+                in_term,
+            } => {
+                let mut vars = in_term.free_vars();
+                vars.remove(var);
+                vars.extend(bound_term.free_vars());
+                vars
+            }
         }
     }
 
@@ -143,6 +158,26 @@ impl Term {
                 body: Box::new((*body).subst(v, t)),
             },
             Term::Loc(loc) => Term::Loc(loc),
+            Term::Let {
+                var,
+                bound_term,
+                in_term,
+            } => {
+                let in_subst = in_term.subst(v, t.clone());
+                if var == *v {
+                    Term::Let {
+                        var,
+                        bound_term,
+                        in_term: Box::new(in_subst),
+                    }
+                } else {
+                    Term::Let {
+                        var,
+                        bound_term: Box::new(bound_term.subst(v, t)),
+                        in_term: Box::new(in_subst),
+                    }
+                }
+            }
         }
     }
 }
@@ -152,13 +187,18 @@ impl fmt::Display for Term {
         match self {
             Term::Var(v) => write!(f, "{v}"),
             Term::Const(c) => write!(f, "{c}"),
-            Term::Lambda { var, annot, body } => write!(f, "\\{var}:{annot}.{body}"),
+            Term::Lambda { var, annot, body } => write!(f, "\\{var}:{annot}.({body})"),
             Term::App { fun, arg } => write!(f, "({fun}) ({arg})"),
             Term::Unit => f.write_str("unit"),
             Term::Ref(t) => write!(f, "ref ({t})"),
             Term::Deref(t) => write!(f, "!({t})"),
             Term::Assign { to, body } => write!(f, "({to}) := ({body})"),
             Term::Loc(loc) => write!(f, "{loc}"),
+            Term::Let {
+                var,
+                bound_term,
+                in_term,
+            } => write!(f, "let ({var} = {bound_term}) in {in_term}"),
         }
     }
 }
