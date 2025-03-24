@@ -63,10 +63,10 @@ succ_term = { kw_succ ~ paren_term }
 pred_term = { kw_pred ~ paren_term }
 iszero_term = { kw_iszero ~ paren_term }
 if_term = { kw_if ~ "(" ~ term ~ ")" ~ "{" ~ term ~ "}" ~ kw_else ~ "{" ~ term ~ "}" }
-try_term = { kw_try ~ term ~ kw_with ~ term }
-try_catch = { kw_try ~ term ~ kw_catch ~ term }
+try_term = { kw_try ~ "{" ~ term ~ "}" ~ kw_with ~ "{" ~ term ~ "}" }
+try_catch = { kw_try ~ "{" ~ term ~ "}" ~ kw_catch ~ "{" ~ term ~ "}" }
 err_term = { kw_error ~ "[" ~ type ~ "]" }
-raise_term = { kw_raise ~ "[" ~ type ~ "]" ~ term ~ ":" ~ type } 
+raise_term = { kw_raise ~ "[" ~ type ~ "]" ~ "(" ~ term ~ ":" ~ type ~ ")" } 
 
 left_rec = { term }
 

@@ -48,12 +48,16 @@ impl From<TryWithVal> for Term {
 
 impl fmt::Display for Raise {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "raise ({}:{})", self.exception, self.ex_ty)
+        write!(
+            f,
+            "raise[{}] ({}:{})",
+            self.cont_ty, self.exception, self.ex_ty
+        )
     }
 }
 
 impl fmt::Display for TryWithVal {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "try ({}) with ({})", self.term, self.handler)
+        write!(f, "try {{ {} }}  catch {{ {} }}", self.term, self.handler)
     }
 }

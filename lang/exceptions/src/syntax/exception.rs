@@ -42,6 +42,6 @@ impl fmt::Display for Error {
 
 impl fmt::Display for Try {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "try ({}) with ({})", self.term, self.handler)
+        write!(f, "try {{ {} }} with {{ {} }}", self.term, self.handler)
     }
 }

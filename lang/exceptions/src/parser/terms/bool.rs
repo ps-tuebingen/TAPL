@@ -10,7 +10,7 @@ pub fn pair_to_if(p: Pair<'_, Rule>) -> Result<If, Error> {
         p,
         vec![
             "If Keyword",
-            "If Term",
+            "If Condition",
             "Then Term",
             "Else Keyword",
             "Else Term",
