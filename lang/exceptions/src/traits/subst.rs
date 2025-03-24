@@ -112,7 +112,7 @@ impl Subst for Succ {
 impl Subst for Pred {
     fn subst(self, v: &Var, t: Term) -> Term {
         Pred {
-            term: Box::new(self.term.subst(v, t)).into(),
+            term: Box::new(self.term.subst(v, t)),
         }
         .into()
     }
