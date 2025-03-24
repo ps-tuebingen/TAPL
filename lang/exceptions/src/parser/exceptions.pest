@@ -1,0 +1,54 @@
+WHITESPACE = _{ " " | "\n" | "\t" }
+program = { SOI ~ term ~ EOI }
+
+// Keyword 
+kw_unit = { "unit" }
+kw_try = { "try" }
+kw_with = { "with" }
+kw_catch = { "catch" }
+kw_raise = { "raise" }
+kw_error = { "error" }
+kw_tyunit = { "Unit" }
+
+keyword = {
+  | kw_unit
+  | kw_try
+  | kw_with 
+  | kw_raise
+  | kw_error 
+}
+
+// Terms 
+term = { prim_term ~ left_rec? }
+paren_term = { "(" ~ term ~ ")" }
+
+prim_term = {
+  | const 
+  | lambda_term
+  | try_term 
+  | try_catch
+  | raise_term 
+  | variable 
+}
+
+const = { kw_unit | kw_error } 
+lambda_term = { "\\" ~ variable ~ ":" ~ type ~ "." ~ term }
+try_term = { kw_try ~ term ~ kw_with ~ term }
+try_catch = { kw_try ~ term ~ kw_catch ~ term }
+raise_term = { kw_raise ~ term } 
+
+left_rec = { term }
+
+variable = { !(keyword ~ !ASCII_ALPHANUMERIC) ~ ( !(WHITESPACE) ~ (ASCII_ALPHA|ASCII_DIGIT) )+ | "_" }
+number = { ASCII_DIGIT+ }
+
+// Types 
+type = {
+  | prim_type 
+  | fun_type
+  | paren_type
+}
+
+prim_type = { kw_tyunit }
+fun_type = { "(" ~ type ~ "->" ~ type ~ ")" }
+paren_type = { "(" ~ type ~ ")" }
