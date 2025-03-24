@@ -11,7 +11,10 @@ pub fn lookup_fields(
         return Ok(vec![]);
     }
 
-    let decl = ct.get(class).ok_or(Error::ClassNotFound(class.clone()))?;
+    let decl = ct
+        .classes
+        .get(class)
+        .ok_or(Error::ClassNotFound(class.clone()))?;
 
     let mut fields = decl.fields.clone();
     fields.extend(lookup_fields(&decl.parent, ct)?);
@@ -23,7 +26,10 @@ pub fn lookup_method_type(
     class: &ClassName,
     ct: &ClassTable,
 ) -> Result<MethodType, Error> {
-    let decl = ct.get(class).ok_or(Error::ClassNotFound(class.clone()))?;
+    let decl = ct
+        .classes
+        .get(class)
+        .ok_or(Error::ClassNotFound(class.clone()))?;
     match decl.methods.iter().find(|mdecl| mdecl.name == *method) {
         None => lookup_method_type(method, &decl.parent, ct),
         Some(mdecl) => Ok(mdecl.get_type()),
@@ -35,7 +41,10 @@ pub fn lookup_method_body(
     class: &ClassName,
     ct: &ClassTable,
 ) -> Result<(Vec<Var>, Term), Error> {
-    let decl = ct.get(class).ok_or(Error::ClassNotFound(class.clone()))?;
+    let decl = ct
+        .classes
+        .get(class)
+        .ok_or(Error::ClassNotFound(class.clone()))?;
     match decl.methods.iter().find(|mdecl| mdecl.name == *method) {
         None => lookup_method_body(method, &decl.parent, ct),
         Some(mdecl) => Ok((

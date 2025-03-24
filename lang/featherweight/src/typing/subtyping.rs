@@ -9,7 +9,7 @@ pub fn is_subtype(cl1: &ClassName, cl2: &ClassName, ct: &ClassTable) -> bool {
         return true;
     }
 
-    let decl1 = ct.get(cl1);
+    let decl1 = ct.classes.get(cl1);
     if let Some(decl) = decl1 {
         is_subtype(&decl.parent, cl2, ct)
     } else {

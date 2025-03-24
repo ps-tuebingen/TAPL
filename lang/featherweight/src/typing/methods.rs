@@ -21,7 +21,7 @@ pub fn method_is_ok(mdecl: &MethodDeclaration, in_class: &ClassName, ct: &ClassT
         return false;
     }
 
-    let decl = if let Some(decl) = ct.get(in_class) {
+    let decl = if let Some(decl) = ct.classes.get(in_class) {
         decl
     } else {
         return false;

@@ -1,4 +1,4 @@
-use crate::syntax::ClassDeclaration;
+use crate::syntax::ClassTable;
 use pest::Parser;
 use pest_derive::Parser;
 
@@ -9,8 +9,8 @@ use errors::Error;
 #[grammar = "parser/featherweight.pest"]
 struct FeatherweightParser;
 
-pub fn parse(input: String) -> Result<ClassDeclaration, Error> {
+pub fn parse(input: String) -> Result<ClassTable, Error> {
     let mut parsed = FeatherweightParser::parse(Rule::program, &input)?;
-
+    println!("parsed: {parsed:?}");
     todo!()
 }

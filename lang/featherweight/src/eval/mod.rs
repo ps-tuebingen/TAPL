@@ -28,7 +28,10 @@ fn eval_once(t: Term, ct: &ClassTable) -> Result<Term, Error> {
         // E-ProjNew
         Term::FieldProjection(v, field) => {
             if let Term::New(class, args) = *v {
-                let decl = ct.get(&class).ok_or(Error::ClassNotFound(class.clone()))?;
+                let decl = ct
+                    .classes
+                    .get(&class)
+                    .ok_or(Error::ClassNotFound(class.clone()))?;
                 let (index, _) = decl
                     .fields
                     .iter()
