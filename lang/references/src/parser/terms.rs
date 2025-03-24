@@ -49,6 +49,8 @@ fn prim_rule_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
         }
         Rule::r#const => const_to_term(p.as_str()),
         Rule::lambda_term => pair_to_lambda(p),
+        Rule::succ_term => pair_to_succ(p),
+        Rule::pred_term => pair_to_pred(p),
         Rule::ref_term => pair_to_ref(p),
         Rule::deref_term => pair_to_deref(p),
         Rule::let_term => pair_to_let(p),
@@ -200,4 +202,20 @@ fn pair_to_cmp(p: Pair<'_, Rule>) -> Result<Cmp, Error> {
         "==" => Ok(Cmp::Equal),
         s => Err(Error::kw(s)),
     }
+}
+
+fn pair_to_succ(p: Pair<'_, Rule>) -> Result<Term, Error> {
+    let mut inner = pair_to_n_inner(p, vec!["Keyword Succ", "Succ Argument"])?;
+    inner.remove(0);
+    let term_rule = inner.remove(0);
+    let term = prim_rule_to_term(term_rule)?;
+    Ok(Term::Succ(Box::new(term)))
+}
+
+fn pair_to_pred(p: Pair<'_, Rule>) -> Result<Term, Error> {
+    let mut inner = pair_to_n_inner(p, vec!["Keyword Pred", "Pred Argument"])?;
+    inner.remove(0);
+    let term_rule = inner.remove(0);
+    let term = prim_rule_to_term(term_rule)?;
+    Ok(Term::Pred(Box::new(term)))
 }

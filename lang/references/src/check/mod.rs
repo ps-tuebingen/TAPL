@@ -14,6 +14,28 @@ pub fn check(t: Term, env: &mut Env, st: &mut StoreTy) -> Result<Type, Error> {
     match t {
         Term::Var(v) => env.get(&v).ok_or(Error::FreeVar(v)).cloned(),
         Term::Const(_) => Ok(Type::Nat),
+        Term::Succ(t) => {
+            let ty = check(*t, env, st)?;
+            if ty != Type::Nat {
+                Err(Error::TypeMismatch {
+                    found: ty,
+                    expected: Type::Nat,
+                })
+            } else {
+                Ok(Type::Nat)
+            }
+        }
+        Term::Pred(t) => {
+            let ty = check(*t, env, st)?;
+            if ty != Type::Nat {
+                Err(Error::TypeMismatch {
+                    found: ty,
+                    expected: Type::Nat,
+                })
+            } else {
+                Ok(Type::Nat)
+            }
+        }
         Term::Lambda { var, annot, body } => {
             env.insert(var, annot.clone());
             let body_ty = check(*body, env, st)?;

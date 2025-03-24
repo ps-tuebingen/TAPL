@@ -8,6 +8,8 @@ kw_let = { "let" }
 kw_in = { "in" }
 kw_if = { "if" }
 kw_else = { "else" }
+kw_succ = { "succ" }
+kw_pred = { "pred" }
 kw_tyref = { "Ref" }
 kw_tyunit = { "Unit" }
 kw_tynat = { "Nat" }
@@ -36,6 +38,8 @@ prim_term = {
   | lambda_term
   | let_term
   | if_term
+  | succ_term
+  | pred_term
   | ref_term
   | deref_term
   | number
@@ -47,6 +51,8 @@ ref_term = { kw_ref ~ paren_term }
 let_term = { kw_let ~ "(" ~ variable ~ "=" ~ term ~ ")" ~ kw_in ~ term }
 if_term = { kw_if ~ "(" ~ term ~ cmp ~ term ~ ")" ~ "{" ~ term ~ "}" ~ kw_else ~ "{" ~ term ~ "}" }
 lambda_term = { "\\" ~ variable ~ ":" ~ type ~ "." ~ paren_term }
+succ_term = { kw_succ ~ paren_term }
+pred_term = { kw_pred ~ paren_term }
 
 cmp = { leq | lt | geq | gt | eq } 
 lt = { "<" }

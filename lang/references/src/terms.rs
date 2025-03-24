@@ -8,6 +8,8 @@ pub type Loc = usize;
 pub enum Term {
     Var(Var),
     Const(i64),
+    Succ(Box<Term>),
+    Pred(Box<Term>),
     Lambda {
         var: Var,
         annot: Type,
@@ -105,6 +107,8 @@ impl Term {
         match self {
             Term::Var(v) => HashSet::from([v.clone()]),
             Term::Const(_) => HashSet::new(),
+            Term::Succ(t) => t.free_vars(),
+            Term::Pred(t) => t.free_vars(),
             Term::Lambda {
                 var,
                 annot: _,
@@ -164,6 +168,8 @@ impl Term {
                 }
             }
             Term::Const(i) => Term::Const(i),
+            Term::Succ(term) => Term::Succ(Box::new(term.subst(v, t))),
+            Term::Pred(term) => Term::Pred(Box::new(term.subst(v, t))),
             Term::Lambda { var, annot, body } => {
                 if var == *v {
                     Term::Lambda { var, annot, body }
@@ -235,6 +241,8 @@ impl fmt::Display for Term {
         match self {
             Term::Var(v) => write!(f, "{v}"),
             Term::Const(c) => write!(f, "{c}"),
+            Term::Succ(t) => write!(f, "succ({t})"),
+            Term::Pred(t) => write!(f, "pred({t})"),
             Term::Lambda { var, annot, body } => write!(f, "\\{var}:{annot}.({body})"),
             Term::App { fun, arg } => write!(f, "({fun}) ({arg})"),
             Term::Unit => f.write_str("unit"),

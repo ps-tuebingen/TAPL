@@ -20,6 +20,22 @@ pub fn eval(t: Term, st: &mut Store) -> Result<Value, Error> {
     match t {
         Term::Var(v) => Err(Error::FreeVar(v)),
         Term::Const(i) => Ok(Value::Const(i)),
+        Term::Succ(t) => {
+            let val = eval(*t, st)?;
+            if let Value::Const(i) = val {
+                Ok(Value::Const(i + 1))
+            } else {
+                Err(Error::NotANumber(val))
+            }
+        }
+        Term::Pred(t) => {
+            let val = eval(*t, st)?;
+            if let Value::Const(i) = val {
+                Ok(Value::Const(i - 1))
+            } else {
+                Err(Error::NotANumber(val))
+            }
+        }
         Term::Lambda { var, annot, body } => Ok(Value::Lambda {
             var,
             annot,

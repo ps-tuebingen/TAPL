@@ -1,4 +1,7 @@
-use references::parser::errors::Error as RefParseErr;
+use references::{
+    check::errors::Error as RefCheckErr, eval::errors::Error as RefEvalErr,
+    parser::errors::Error as RefParseErr,
+};
 use std::{fmt, io::Error as IOError};
 use stlc::{
     check::errors::Error as StlcCheckErr, eval::errors::Error as StlcEvalErr,
@@ -17,6 +20,8 @@ pub enum Error {
     StlcEval(StlcEvalErr),
     StlcEvalCtx(StlcEvalCtxErr),
     RefParse(RefParseErr),
+    RefCheck(RefCheckErr),
+    RefEval(RefEvalErr),
 }
 
 impl fmt::Display for Error {
@@ -30,6 +35,8 @@ impl fmt::Display for Error {
             Error::StlcEval(err) => err.fmt(f),
             Error::StlcEvalCtx(err) => err.fmt(f),
             Error::RefParse(err) => err.fmt(f),
+            Error::RefCheck(err) => err.fmt(f),
+            Error::RefEval(err) => err.fmt(f),
         }
     }
 }
@@ -81,5 +88,17 @@ impl From<StlcEvalCtxErr> for Error {
 impl From<RefParseErr> for Error {
     fn from(err: RefParseErr) -> Error {
         Error::RefParse(err)
+    }
+}
+
+impl From<RefCheckErr> for Error {
+    fn from(err: RefCheckErr) -> Error {
+        Error::RefCheck(err)
+    }
+}
+
+impl From<RefEvalErr> for Error {
+    fn from(err: RefEvalErr) -> Error {
+        Error::RefEval(err)
     }
 }
