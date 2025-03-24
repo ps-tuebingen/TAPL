@@ -2,6 +2,7 @@ use super::{Term, Var};
 use crate::types::Type;
 use std::fmt;
 
+#[derive(Debug)]
 pub struct Lambda {
     pub var: Var,
     pub annot: Type,
@@ -18,6 +19,7 @@ impl Lambda {
     }
 }
 
+#[derive(Debug)]
 pub struct App {
     pub fun: Box<Term>,
     pub arg: Box<Term>,

@@ -1,6 +1,7 @@
 use super::{Term, Var};
 use std::fmt;
 
+#[derive(Debug)]
 pub struct Let {
     pub var: Var,
     pub bound_term: Box<Term>,

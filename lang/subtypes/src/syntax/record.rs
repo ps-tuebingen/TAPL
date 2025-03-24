@@ -2,6 +2,7 @@ use super::{Label, Term};
 use std::collections::HashMap;
 use std::fmt;
 
+#[derive(Debug)]
 pub struct Record {
     pub records: HashMap<Label, Term>,
 }
@@ -16,6 +17,7 @@ impl Record {
     }
 }
 
+#[derive(Debug)]
 pub struct Projection {
     pub record: Box<Term>,
     pub label: Label,

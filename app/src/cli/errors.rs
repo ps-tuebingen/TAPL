@@ -11,6 +11,7 @@ use stlc::{
     check::errors::Error as StlcCheckErr, eval::errors::Error as StlcEvalErr,
     eval_context::errors::Error as StlcEvalCtxErr, parser::errors::Error as StlcParseErr,
 };
+use subtypes::{parser::errors::Error as SubParseErr, typing::errors::Error as SubCheckErr};
 use untyped_arithmetic::parse::errors::Error as ArithErr;
 use untyped_lambda::parse::errors::Error as LamErr;
 
@@ -29,6 +30,8 @@ pub enum Error {
     ExcParse(ExcParseErr),
     ExcCheck(ExcCheckErr),
     ExcEval(ExcEvalErr),
+    SubParse(SubParseErr),
+    SubCheck(SubCheckErr),
 }
 
 impl fmt::Display for Error {
@@ -47,6 +50,8 @@ impl fmt::Display for Error {
             Error::ExcParse(err) => err.fmt(f),
             Error::ExcCheck(err) => err.fmt(f),
             Error::ExcEval(err) => err.fmt(f),
+            Error::SubParse(err) => err.fmt(f),
+            Error::SubCheck(err) => err.fmt(f),
         }
     }
 }
@@ -128,5 +133,17 @@ impl From<ExcCheckErr> for Error {
 impl From<ExcEvalErr> for Error {
     fn from(err: ExcEvalErr) -> Error {
         Error::ExcEval(err)
+    }
+}
+
+impl From<SubParseErr> for Error {
+    fn from(err: SubParseErr) -> Error {
+        Error::SubParse(err)
+    }
+}
+
+impl From<SubCheckErr> for Error {
+    fn from(err: SubCheckErr) -> Error {
+        Error::SubCheck(err)
     }
 }

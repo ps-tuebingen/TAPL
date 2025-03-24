@@ -2,6 +2,7 @@ use super::Term;
 use crate::types::Type;
 use std::fmt;
 
+#[derive(Debug)]
 pub struct Cast {
     pub term: Box<Term>,
     pub ty: Type,

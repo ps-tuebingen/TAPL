@@ -6,6 +6,7 @@ pub mod exceptions;
 pub mod nameless_representation;
 pub mod references;
 pub mod stlc;
+pub mod subtypes;
 pub mod untyped_arithmetic;
 pub mod untyped_lambda;
 
@@ -25,6 +26,7 @@ pub enum Command {
     Stlc(stlc::Args),
     References(references::Args),
     Exceptions(exceptions::Args),
+    Subtypes(subtypes::Args),
 }
 
 #[derive(Debug, clap::Args)]
@@ -66,6 +68,7 @@ pub fn run() -> Result<(), String> {
         Command::Stlc(args) => stlc::exec(args).map_err(|err| err.to_string()),
         Command::References(args) => references::exec(args).map_err(|err| err.to_string()),
         Command::Exceptions(args) => exceptions::exec(args).map_err(|err| err.to_string()),
+        Command::Subtypes(args) => subtypes::exec(args).map_err(|err| err.to_string()),
     }
 }
 

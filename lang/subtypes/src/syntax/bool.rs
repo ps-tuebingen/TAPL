@@ -1,10 +1,13 @@
 use super::Term;
 use std::fmt;
 
+#[derive(Debug)]
 pub struct True;
 
+#[derive(Debug)]
 pub struct False;
 
+#[derive(Debug)]
 pub struct If {
     pub ifc: Box<Term>,
     pub thenc: Box<Term>,

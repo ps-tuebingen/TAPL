@@ -1,8 +1,10 @@
 use super::Term;
 use std::fmt;
 
+#[derive(Debug)]
 pub struct Zero;
 
+#[derive(Debug)]
 pub struct Succ {
     pub term: Box<Term>,
 }
@@ -13,6 +15,7 @@ impl Succ {
     }
 }
 
+#[derive(Debug)]
 pub struct Pred {
     pub term: Box<Term>,
 }

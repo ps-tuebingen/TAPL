@@ -98,7 +98,7 @@ pred_term = { kw_pred ~ paren_term }
 ref_term = { kw_ref ~ paren_term } 
 deref_term = { "!" ~ term }
 if_term = { kw_if ~ "(" ~ term  ~ ")" ~ "{" ~ term ~ "}" ~ kw_else ~ "{" ~ term ~ "}" }
-let_term = { kw_let ~ "(" ~ term ~ ")" ~ kw_in ~ term }
+let_term = { kw_let ~ "(" ~ variable ~ "=" ~ term ~ ")" ~ kw_in ~ term }
 fix_term = { kw_fix ~ paren_term }
 
 left_rec = { cast_term | proj_term | assign_term | term  }

@@ -1,6 +1,7 @@
 use super::Term;
 use std::fmt;
 
+#[derive(Debug)]
 pub struct Fix {
     pub term: Box<Term>,
 }

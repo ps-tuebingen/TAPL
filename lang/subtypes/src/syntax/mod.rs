@@ -29,6 +29,7 @@ pub type Label = String;
 pub type Var = String;
 pub type Loc = usize;
 
+#[derive(Debug)]
 pub enum Term {
     Var(Var),
     Lambda(Lambda),

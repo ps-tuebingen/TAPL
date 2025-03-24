@@ -1,6 +1,7 @@
 use super::{Loc, Term};
 use std::fmt;
 
+#[derive(Debug)]
 pub struct Ref {
     pub term: Box<Term>,
 }
@@ -11,6 +12,7 @@ impl Ref {
     }
 }
 
+#[derive(Debug)]
 pub struct Deref {
     pub term: Box<Term>,
 }
@@ -21,6 +23,7 @@ impl Deref {
     }
 }
 
+#[derive(Debug)]
 pub struct Assign {
     pub to: Box<Term>,
     pub content: Box<Term>,
@@ -35,6 +38,7 @@ impl Assign {
     }
 }
 
+#[derive(Debug)]
 pub struct Location {
     pub loc: Loc,
 }

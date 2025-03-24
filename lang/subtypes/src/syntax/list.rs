@@ -2,10 +2,12 @@ use super::{Term, Var};
 use crate::types::Type;
 use std::fmt;
 
+#[derive(Debug)]
 pub struct Nil {
     pub ty: Type,
 }
 
+#[derive(Debug)]
 pub struct Cons {
     pub fst: Box<Term>,
     pub rst: Box<Term>,
@@ -20,6 +22,7 @@ impl Cons {
     }
 }
 
+#[derive(Debug)]
 pub struct ListCase {
     pub bound_term: Box<Term>,
     pub list_ty: Type,

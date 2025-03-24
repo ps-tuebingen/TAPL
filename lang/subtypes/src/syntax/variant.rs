@@ -2,6 +2,7 @@ use super::{Label, Term, Var};
 use crate::types::Type;
 use std::fmt;
 
+#[derive(Debug)]
 pub struct Variant {
     pub label: Label,
     pub term: Box<Term>,
@@ -16,6 +17,7 @@ impl Variant {
     }
 }
 
+#[derive(Debug)]
 pub struct VariantPattern {
     pub label: Label,
     pub bound_var: Var,
@@ -34,6 +36,7 @@ impl VariantPattern {
     }
 }
 
+#[derive(Debug)]
 pub struct VariantCase {
     pub bound_term: Box<Term>,
     pub patterns: Vec<VariantPattern>,
