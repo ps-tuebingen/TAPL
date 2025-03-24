@@ -14,7 +14,7 @@
     {
       get = super.get,
       inc = super.inc,
-      reset = \_:Unit.((r.x) := !(r.b))
+      reset = \_:Unit.((r.x) := !(r.b)),
       backup = \_:Unit.((r.b) := !(r.x))
     }
 )

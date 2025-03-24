@@ -2,11 +2,11 @@
   let (r = {x=1,a=0}) in 
   (fix ((
     \r:{ x:Ref(Nat),a:Ref(Nat) }.(
-      \self:{ get :(Unit -> Nat), set:(Nat->Unit), inc:(Unit->Unit), accesses:Unit->Nat}.(
+      \self:{ get :(Unit -> Nat), set:(Nat->Unit), inc:(Unit->Unit), accesses:(Unit->Nat)}.(
         \_:Unit.(
           let (super = (((\r:{x:Ref(Nat)}.(
             fix (
-              \self:{ get : (unit -> nat), set: (nat->unit), inc:(unit->unit) }.({
+              \self:{ get : (Unit -> Nat), set: (Nat->Unit), inc:(Unit->Unit) }.({
                 get: \_:Unit.(!(r.x)),
                 set: \i:Nat.(!(r.x) := i),
                 inc: \_:Unit.((self.set)(succ(self.get(unit))))
