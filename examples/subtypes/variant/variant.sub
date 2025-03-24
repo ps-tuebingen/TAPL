@@ -1,0 +1,7 @@
+\x:<label1:Nat,label2:Bool>.(
+  if (x.label2) {
+    x.label1
+  }else{
+    2
+  }
+)
