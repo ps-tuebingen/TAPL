@@ -8,6 +8,7 @@ members = [
     "tests/untyped_arithmetic",
     "tests/untyped_lambda",
     "tests/references",
+    "tests/exceptions",
 
     "lang/stlc",
     "lang/untyped_lambda",

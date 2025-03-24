@@ -43,6 +43,7 @@ impl TryFrom<Term> for Value {
                 annot,
                 body: *body,
             }),
+            Term::Const(i) => Ok(Value::Const(i)),
             Term::Unit => Ok(Value::Unit),
             Term::Loc(loc) => Ok(Value::Loc(loc)),
             _ => Err(Error::NotAValue(t)),
