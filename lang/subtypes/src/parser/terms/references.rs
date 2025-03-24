@@ -17,7 +17,7 @@ pub fn pair_to_ref(p: Pair<'_, Rule>) -> Result<Ref, Error> {
 
 pub fn pair_to_deref(p: Pair<'_, Rule>) -> Result<Deref, Error> {
     let term_rule = pair_to_n_inner(p, vec!["Deref Term"])?.remove(0);
-    let term = pair_to_prim_term(term_rule)?;
+    let term = pair_to_term(term_rule)?;
     Ok(Deref {
         term: Box::new(term),
     })

@@ -32,7 +32,10 @@ pub fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
     let prim_term = pair_to_prim_term(prim_pair)?;
 
     let term = match inner.next() {
-        Some(p) => pair_to_leftrec(p, prim_term)?,
+        Some(p) => {
+            let leftrec_inner = pair_to_n_inner(p, vec!["Left Recursive Term"])?.remove(0);
+            pair_to_leftrec(leftrec_inner, prim_term)?
+        }
         None => prim_term,
     };
 

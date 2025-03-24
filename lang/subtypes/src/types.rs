@@ -39,10 +39,12 @@ impl Type {
 impl fmt::Display for Type {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Type::Top => f.write_str("⊤"),
-            Type::Bot => f.write_str("⊥"),
-            Type::Fun { from, to } => write!(f, "({from})→({to})"),
+            Type::Top => f.write_str("Top"),
+            Type::Bot => f.write_str("Bot"),
+            Type::Fun { from, to } => write!(f, "({from}->{to})"),
             Type::Record(recs) => {
+                let mut recs: Vec<(&Label, &Type)> = recs.iter().collect();
+                recs.sort_by(|(lb1, _), (lb2, _)| lb1.cmp(lb2));
                 let rec_strs: Vec<String> = recs
                     .iter()
                     .map(|(label, ty)| format!("{label}:{ty}"))
@@ -50,6 +52,8 @@ impl fmt::Display for Type {
                 write!(f, "{{ {} }}", rec_strs.join(", "))
             }
             Type::Variant(variants) => {
+                let mut variants: Vec<&(Label, Type)> = variants.iter().collect();
+                variants.sort_by(|(lb1, _), (lb2, _)| lb1.cmp(lb2));
                 let var_strs: Vec<String> = variants
                     .iter()
                     .map(|(label, ty)| format!("{label}:{ty}"))
