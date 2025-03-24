@@ -2,6 +2,7 @@ use clap::{Parser, Subcommand};
 use std::{fmt, fs::read_to_string, path::PathBuf};
 
 mod errors;
+pub mod exceptions;
 pub mod nameless_representation;
 pub mod references;
 pub mod stlc;
@@ -23,6 +24,7 @@ pub enum Command {
     NamelessRepresentation(nameless_representation::Args),
     Stlc(stlc::Args),
     References(references::Args),
+    Exceptions(exceptions::Args),
 }
 
 #[derive(Debug, clap::Args)]
@@ -63,6 +65,7 @@ pub fn run() -> Result<(), String> {
         }
         Command::Stlc(args) => stlc::exec(args).map_err(|err| err.to_string()),
         Command::References(args) => references::exec(args).map_err(|err| err.to_string()),
+        Command::Exceptions(args) => exceptions::exec(args).map_err(|err| err.to_string()),
     }
 }
 

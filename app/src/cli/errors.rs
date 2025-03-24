@@ -1,3 +1,7 @@
+use exceptions::{
+    check::errors::Error as ExcCheckErr, eval::errors::Error as ExcEvalErr,
+    parser::errors::Error as ExcParseErr,
+};
 use references::{
     check::errors::Error as RefCheckErr, eval::errors::Error as RefEvalErr,
     parser::errors::Error as RefParseErr,
@@ -22,6 +26,9 @@ pub enum Error {
     RefParse(RefParseErr),
     RefCheck(RefCheckErr),
     RefEval(RefEvalErr),
+    ExcParse(ExcParseErr),
+    ExcCheck(ExcCheckErr),
+    ExcEval(ExcEvalErr),
 }
 
 impl fmt::Display for Error {
@@ -37,6 +44,9 @@ impl fmt::Display for Error {
             Error::RefParse(err) => err.fmt(f),
             Error::RefCheck(err) => err.fmt(f),
             Error::RefEval(err) => err.fmt(f),
+            Error::ExcParse(err) => err.fmt(f),
+            Error::ExcCheck(err) => err.fmt(f),
+            Error::ExcEval(err) => err.fmt(f),
         }
     }
 }
@@ -100,5 +110,23 @@ impl From<RefCheckErr> for Error {
 impl From<RefEvalErr> for Error {
     fn from(err: RefEvalErr) -> Error {
         Error::RefEval(err)
+    }
+}
+
+impl From<ExcParseErr> for Error {
+    fn from(err: ExcParseErr) -> Error {
+        Error::ExcParse(err)
+    }
+}
+
+impl From<ExcCheckErr> for Error {
+    fn from(err: ExcCheckErr) -> Error {
+        Error::ExcCheck(err)
+    }
+}
+
+impl From<ExcEvalErr> for Error {
+    fn from(err: ExcEvalErr) -> Error {
+        Error::ExcEval(err)
     }
 }
