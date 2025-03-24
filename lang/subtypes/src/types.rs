@@ -41,7 +41,7 @@ impl fmt::Display for Type {
         match self {
             Type::Top => f.write_str("Top"),
             Type::Bot => f.write_str("Bot"),
-            Type::Fun { from, to } => write!(f, "({from}->{to})"),
+            Type::Fun { from, to } => write!(f, "({from} -> {to})"),
             Type::Record(recs) => {
                 let mut recs: Vec<(&Label, &Type)> = recs.iter().collect();
                 recs.sort_by(|(lb1, _), (lb2, _)| lb1.cmp(lb2));

@@ -14,6 +14,6 @@
     get = super.get,
     inc = super.inc,
     reset = super.reset,
-    dec = \n:Nat.((r.x):=Pred(!(r.x)))
+    dec = \n:Nat.((r.x):=pred(!(r.x)))
   }
 )
