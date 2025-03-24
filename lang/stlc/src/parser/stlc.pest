@@ -149,7 +149,7 @@ rec_term = { "{" ~ variable ~ "=" ~ term ~ ("," ~ variable ~ "=" ~ term)* ~ "}" 
 variant_term = { "<" ~ variable ~ "=" ~ term ~ ">" ~ kw_as ~ type } 
 
 //Constants
-variable = { !(keyword ~ !ASCII_ALPHANUMERIC) ~ ( !(WHITESPACE) ~ (ASCII_ALPHA|ASCII_DIGIT) )+ }
+variable = @{ !(keyword ~ !ASCII_ALPHANUMERIC) ~ ( !(WHITESPACE) ~ (ASCII_ALPHA|ASCII_DIGIT) )+ }
 number = { ASCII_DIGIT+ }
 
 //Left Recursive Terms 

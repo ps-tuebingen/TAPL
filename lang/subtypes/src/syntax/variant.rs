@@ -71,7 +71,11 @@ impl fmt::Display for Variant {
 
 impl fmt::Display for VariantPattern {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "<{}={}> => {}", self.label, self.bound_var, self.rhs)
+        write!(
+            f,
+            "<{}={}:{}> => {}",
+            self.label, self.bound_var, self.var_ty, self.rhs
+        )
     }
 }
 
@@ -82,7 +86,7 @@ impl fmt::Display for VariantCase {
             f,
             "case {} of {{ {} }}",
             self.bound_term,
-            pt_strs.join(", ")
+            pt_strs.join("| ")
         )
     }
 }

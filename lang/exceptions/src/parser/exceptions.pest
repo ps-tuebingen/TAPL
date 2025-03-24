@@ -70,7 +70,7 @@ raise_term = { kw_raise ~ "[" ~ type ~ "]" ~ "(" ~ term ~ ":" ~ type ~ ")" }
 
 left_rec = { term }
 
-variable = { !(keyword ~ !ASCII_ALPHANUMERIC) ~ ( !(WHITESPACE) ~ (ASCII_ALPHA|ASCII_DIGIT) )+ | "_" }
+variable = @{ !(keyword ~ !ASCII_ALPHANUMERIC) ~ ( !(WHITESPACE) ~ (ASCII_ALPHA|ASCII_DIGIT) )+ | "_" }
 number = { ASCII_DIGIT+ }
 
 // Types 

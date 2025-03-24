@@ -67,7 +67,7 @@ left_rec = { assign_term | sequence | term }
 assign_term = { ":=" ~ term }
 sequence = { ";" ~ term }
 
-variable = { !(keyword ~ !ASCII_ALPHANUMERIC) ~ ( !(WHITESPACE) ~ (ASCII_ALPHA|ASCII_DIGIT) )+ | "_" }
+variable = @{ !(keyword ~ !ASCII_ALPHANUMERIC) ~ ( !(WHITESPACE) ~ (ASCII_ALPHA|ASCII_DIGIT) )+ | "_" }
 number = { ASCII_DIGIT+ }
 
 // Types 

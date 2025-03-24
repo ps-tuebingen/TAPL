@@ -54,6 +54,7 @@ keyword = {
  | kw_tysource 
  | kw_tysink
  | kw_tynat
+ | kw_tybool
 }
 
 // Terms 
@@ -86,7 +87,7 @@ const = { kw_unit | kw_true | kw_false | kw_zero }
 lambda_term = { "\\" ~ variable ~ ":" ~ type ~ "." ~ term }
 rec_term = { "{" ~ variable ~ "=" ~ term ~ ("," ~ variable ~ "=" ~ term)* ~ "}" }
 variant_term = { "<" ~ variable ~ "=" ~ term ~ ">" }
-variant_case = { kw_case ~ term ~ kw_of ~ "{" ~ variant_pattern ~ ("|" ~ variant_pattern)+ ~ "}" }
+variant_case = { kw_case ~ term ~ kw_of ~ "{" ~ variant_pattern ~ ("|" ~ variant_pattern)* ~ "}" }
 variant_pattern = { "<" ~ variable ~ "=" ~ variable ~ ":" ~ type ~ ">" ~ "=>" ~ term }
 nil_term = { kw_nil ~ "[" ~ type ~ "]" }
 cons_term = { kw_cons ~ "(" ~ term ~ "," ~ term ~ ")" }
@@ -101,12 +102,13 @@ if_term = { kw_if ~ "(" ~ term  ~ ")" ~ "{" ~ term ~ "}" ~ kw_else ~ "{" ~ term 
 let_term = { kw_let ~ "(" ~ variable ~ "=" ~ term ~ ")" ~ kw_in ~ term }
 fix_term = { kw_fix ~ paren_term }
 
-left_rec = { cast_term | proj_term | assign_term | term  }
+left_rec = { cast_term | proj_term | assign_term | seq_term | term  }
 cast_term = { kw_as ~ type }
 proj_term = { "." ~ variable }
 assign_term = { ":=" ~ term }
+seq_term = { ";" ~ term }
 
-variable = { !(keyword ~ !ASCII_ALPHANUMERIC) ~ ( !(WHITESPACE) ~ (ASCII_ALPHA|ASCII_DIGIT) )+ | "_" }
+variable = @{ !(keyword ~ !ASCII_ALPHANUMERIC) ~ ( (ASCII_ALPHA|ASCII_DIGIT) | "_")+ }
 number = { ASCII_DIGIT+ }
 
 // Types 
@@ -125,8 +127,8 @@ type = {
 prim_type = { kw_tytop | kw_tybot | kw_tynat | kw_tyunit | kw_tybool } 
 paren_ty = { "(" ~ type ~ ")" } 
 fun_type = { "(" ~ type ~ "->" ~ type ~ ")" }
-rec_type = { "{" ~ variable ~ ":" ~ type ~ ("," ~ variable ~ ":" ~ type)*  ~ "}" }
-variant_type = { "<" ~ variable ~ ":" ~ type ~ ("," ~ variable ~ ":" ~ type)* ~ "}" }
+rec_type = { "{" ~ variable ~ ":" ~ type ~ ("," ~ variable ~ ":" ~ type)* ~ "}" }
+variant_type = { "<" ~ variable ~ ":" ~ type ~ ("," ~ variable ~ ":" ~ type)* ~ ">" }
 list_type = { kw_tylist ~ paren_ty }
 ref_type = { kw_tyref ~ paren_ty } 
 sink_type = { kw_tysink ~ paren_ty }
