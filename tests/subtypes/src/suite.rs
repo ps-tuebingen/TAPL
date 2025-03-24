@@ -1,3 +1,4 @@
+use super::{ParseTest, ReparseTest};
 use std::path::PathBuf;
 use test_common::{
     errors::Error,
@@ -28,7 +29,12 @@ impl TestSuite for SubtypesTests {
     fn load(&self) -> Result<Vec<Box<dyn Test>>, Error> {
         let contents: Vec<TestContents<SubtypesConf>> = load_dir(&self.source_path, "sub")?;
         let mut tests = vec![];
-        for tst in contents {}
+        for tst in contents {
+            let parse_test = ParseTest::new(&tst.source_name, &tst.source_contents);
+            tests.push(Box::new(parse_test) as Box<dyn Test>);
+            let reparse_test = ReparseTest::new(&tst.source_name, &tst.source_contents);
+            tests.push(Box::new(reparse_test) as Box<dyn Test>);
+        }
         Ok(tests)
     }
 }
