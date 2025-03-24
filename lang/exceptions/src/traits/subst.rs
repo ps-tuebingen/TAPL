@@ -14,6 +14,7 @@ impl Subst for Term {
                     Term::Var(v1)
                 }
             }
+            Term::Const(i) => Term::Const(i),
             Term::Lambda(lam) => lam.subst(v, t),
             Term::App(app) => app.subst(v, t),
             Term::Unit(u) => u.subst(v, t),

@@ -15,6 +15,7 @@ pub use unit::Unit;
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Term {
     Var(Var),
+    Const(i64),
     Lambda(Lambda),
     App(App),
     Unit(Unit),
@@ -33,6 +34,7 @@ impl fmt::Display for Term {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             Term::Var(v) => write!(f, "{v}"),
+            Term::Const(i) => write!(f, "{i}"),
             Term::Lambda(lam) => lam.fmt(f),
             Term::App(app) => app.fmt(f),
             Term::Unit(u) => u.fmt(f),

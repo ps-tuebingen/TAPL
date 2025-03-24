@@ -37,6 +37,7 @@ impl Eval for Term {
     fn eval_once(self) -> Result<Term, Error> {
         match self {
             Term::Var(v) => Err(Error::FreeVar(v)),
+            Term::Const(i) => Ok(Term::Const(i)),
             Term::Lambda(lam) => lam.eval_once(),
             Term::App(app) => app.eval_once(),
             Term::Unit(u) => u.eval_once(),

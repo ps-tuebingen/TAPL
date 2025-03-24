@@ -9,6 +9,7 @@ kw_catch = { "catch" }
 kw_raise = { "raise" }
 kw_error = { "error" }
 kw_tyunit = { "Unit" }
+kw_tynat = { "Nat" }
 
 keyword = {
   | kw_unit
@@ -16,6 +17,8 @@ keyword = {
   | kw_with 
   | kw_raise
   | kw_error 
+  | kw_tyunit
+  | kw_tynat
 }
 
 // Terms 
@@ -28,6 +31,8 @@ prim_term = {
   | try_term 
   | try_catch
   | raise_term 
+  | paren_term
+  | number
   | variable 
 }
 
@@ -49,6 +54,6 @@ type = {
   | paren_type
 }
 
-prim_type = { kw_tyunit }
+prim_type = { kw_tyunit | kw_tynat }
 fun_type = { "(" ~ type ~ "->" ~ type ~ ")" }
 paren_type = { "(" ~ type ~ ")" }

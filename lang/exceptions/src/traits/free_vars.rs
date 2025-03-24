@@ -17,6 +17,7 @@ impl FreeVars for Term {
     fn free_vars(&self) -> HashSet<Var> {
         match self {
             Term::Var(v) => HashSet::from([v.clone()]),
+            Term::Const(_) => HashSet::new(),
             Term::Lambda(lam) => lam.free_vars(),
             Term::App(app) => app.free_vars(),
             Term::Unit(u) => u.free_vars(),

@@ -17,6 +17,7 @@ impl Check for Term {
     fn check(self, env: &mut Env) -> Result<Type, Error> {
         match self {
             Term::Var(v) => env.get(&v).ok_or(Error::FreeVar(v)).cloned(),
+            Term::Const(_) => Ok(Type::Nat),
             Term::Lambda(lam) => lam.check(env),
             Term::App(app) => app.check(env),
             Term::Unit(u) => u.check(env),
