@@ -45,9 +45,11 @@ pub fn check(t: Term, env: &mut Env, st: &mut StoreTy) -> Result<Type, Error> {
             })
         }
         Term::App { fun, arg } => {
-            let fun_ty = check(*fun, &mut env.clone(), st)?;
+            let fun_ty = check(*fun.clone(), &mut env.clone(), st)?;
+            println!("got function type {fun_ty} for {fun} with arg {arg}");
             if let Type::Fun { from, to } = fun_ty {
-                let arg_ty = check(*arg, env, st)?;
+                let arg_ty = check(*arg.clone(), env, st)?;
+                println!("got arg type {arg_ty} for arg {arg}");
                 if *from == arg_ty {
                     Ok(*to)
                 } else {
@@ -99,7 +101,9 @@ pub fn check(t: Term, env: &mut Env, st: &mut StoreTy) -> Result<Type, Error> {
             bound_term,
             in_term,
         } => {
+            println!("checking let var {var}");
             let bound_ty = check(*bound_term, &mut env.clone(), st)?;
+            println!("got bound type {bound_ty} for let {var}");
             env.insert(var, bound_ty);
             check(*in_term, env, st)
         }
