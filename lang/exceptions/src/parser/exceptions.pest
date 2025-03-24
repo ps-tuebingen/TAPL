@@ -50,13 +50,14 @@ prim_term = {
   | if_term
   | try_term 
   | try_catch
+  | err_term
   | raise_term 
   | paren_term
   | number
   | variable 
 }
 
-const = { kw_unit | kw_error | kw_true | kw_false } 
+const = { kw_unit | kw_true | kw_false } 
 lambda_term = { "\\" ~ variable ~ ":" ~ type ~ "." ~ term }
 succ_term = { kw_succ ~ paren_term }
 pred_term = { kw_pred ~ paren_term }
@@ -64,7 +65,8 @@ iszero_term = { kw_iszero ~ paren_term }
 if_term = { kw_if ~ "(" ~ term ~ ")" ~ "{" ~ term ~ "}" ~ kw_else ~ "{" ~ term ~ "}" }
 try_term = { kw_try ~ term ~ kw_with ~ term }
 try_catch = { kw_try ~ term ~ kw_catch ~ term }
-raise_term = { kw_raise ~ term } 
+err_term = { kw_error ~ "[" ~ type ~ "]" }
+raise_term = { kw_raise ~ "[" ~ type ~ "]" ~ term ~ ":" ~ type } 
 
 left_rec = { term }
 
