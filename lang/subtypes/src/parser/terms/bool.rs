@@ -6,6 +6,7 @@ use crate::{
 use pest::iterators::Pair;
 
 pub fn pair_to_if(p: Pair<'_, Rule>) -> Result<If, Error> {
+    println!("parsing if ");
     let mut inner = pair_to_n_inner(
         p,
         vec![
@@ -18,7 +19,9 @@ pub fn pair_to_if(p: Pair<'_, Rule>) -> Result<If, Error> {
     )?;
     inner.remove(0);
     let cond_rule = inner.remove(0);
+    println!("got if term rule {:?}", cond_rule.as_rule());
     let cond_term = pair_to_term(cond_rule)?;
+    println!("got if term {cond_term}");
     let then_rule = inner.remove(0);
     let then_term = pair_to_term(then_rule)?;
     inner.remove(0);

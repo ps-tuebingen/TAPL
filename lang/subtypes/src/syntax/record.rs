@@ -46,8 +46,9 @@ impl From<Projection> for Term {
 
 impl fmt::Display for Record {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let recs: Vec<String> = self
-            .records
+        let mut records: Vec<(&Label, &Term)> = self.records.iter().collect();
+        records.sort_by(|(lb1, _), (lb2, _)| lb1.cmp(lb2));
+        let recs: Vec<String> = records
             .iter()
             .map(|(label, term)| format!("{label}={term}"))
             .collect();

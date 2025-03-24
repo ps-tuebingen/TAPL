@@ -86,8 +86,13 @@ impl fmt::Display for ListCase {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(
             f,
-            "case {} of {{ Nil => {}, Cons({},{}) => {} }}",
-            self.bound_term, self.nil_rhs, self.cons_fst, self.cons_rst, self.cons_rhs
+            "case {}:{} of {{ Nil => {} | Cons({},{}) => {} }}",
+            self.bound_term,
+            self.list_ty,
+            self.nil_rhs,
+            self.cons_fst,
+            self.cons_rst,
+            self.cons_rhs
         )
     }
 }

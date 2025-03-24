@@ -14,15 +14,16 @@ struct SubtypesParser;
 
 pub fn parse(input: String) -> Result<Term, Error> {
     let mut parsed = SubtypesParser::parse(Rule::program, &input)?;
-    let term_rule = parsed
+    let prog_rule = parsed
         .next()
         .ok_or(Error::MissingInput("Program".to_owned()))?;
-    let term = pair_to_term(term_rule)?;
-
-    parsed.next().ok_or(Error::MissingInput("EOI".to_owned()))?;
     if let Some(n) = parsed.next() {
         return Err(Error::RemainingInput(n.as_rule()));
     }
+
+    let mut prog_inner = pair_to_n_inner(prog_rule, vec!["Term", "EOI"])?;
+    let term_rule = prog_inner.remove(0);
+    let term = pair_to_term(term_rule)?;
     Ok(term)
 }
 

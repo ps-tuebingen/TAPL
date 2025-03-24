@@ -56,18 +56,18 @@ impl From<i64> for Term {
 
 impl fmt::Display for Zero {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        f.write_str("Zero")
+        f.write_str("zero")
     }
 }
 
 impl fmt::Display for Succ {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Succ({})", self.term)
+        write!(f, "succ({})", self.term)
     }
 }
 
 impl fmt::Display for Pred {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Pred({})", self.term)
+        write!(f, "pred({})", self.term)
     }
 }

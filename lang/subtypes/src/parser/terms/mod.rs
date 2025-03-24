@@ -28,8 +28,8 @@ pub fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
     let prim_rule = inner
         .next()
         .ok_or(Error::MissingInput("Non left-recursive term".to_owned()))?;
-    let prim_inner = pair_to_n_inner(prim_rule, vec!["Non left-recursive term"])?.remove(0);
-    let prim_term = pair_to_prim_term(prim_inner)?;
+    let prim_pair = pair_to_n_inner(prim_rule, vec!["Non Left-recursive Term"])?.remove(0);
+    let prim_term = pair_to_prim_term(prim_pair)?;
 
     let term = match inner.next() {
         Some(p) => pair_to_leftrec(p, prim_term)?,
