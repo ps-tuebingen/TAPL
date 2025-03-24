@@ -30,7 +30,7 @@ pub fn pair_to_variantcase(p: Pair<'_, Rule>) -> Result<VariantCase, Error> {
         .ok_or(Error::MissingInput("Of Keyword".to_owned()))?;
 
     let mut patterns = vec![];
-    while let Some(next) = inner.next() {
+    for next in inner {
         let pt = pair_to_variant_pattern(next)?;
         patterns.push(pt);
     }
