@@ -8,8 +8,14 @@ kw_with = { "with" }
 kw_catch = { "catch" }
 kw_raise = { "raise" }
 kw_error = { "error" }
+kw_true = { "true" } 
+kw_false = { "false" }
+kw_succ = { "succ" }
+kw_pred = { "pred" }
+kw_iszero = { "iszero" }
 kw_tyunit = { "Unit" }
 kw_tynat = { "Nat" }
+kw_tybool = { "Bool" }
 
 keyword = {
   | kw_unit
@@ -17,8 +23,14 @@ keyword = {
   | kw_with 
   | kw_raise
   | kw_error 
+  | kw_true 
+  | kw_false
+  | kw_succ 
+  | kw_pred
+  | kw_iszero
   | kw_tyunit
   | kw_tynat
+  | kw_tybool
 }
 
 // Terms 
@@ -28,6 +40,9 @@ paren_term = { "(" ~ term ~ ")" }
 prim_term = {
   | const 
   | lambda_term
+  | succ_term
+  | pred_term
+  | iszero_term
   | try_term 
   | try_catch
   | raise_term 
@@ -36,8 +51,11 @@ prim_term = {
   | variable 
 }
 
-const = { kw_unit | kw_error } 
+const = { kw_unit | kw_error | kw_true | kw_false } 
 lambda_term = { "\\" ~ variable ~ ":" ~ type ~ "." ~ term }
+succ_term = { kw_succ ~ paren_term }
+pred_term = { kw_pred ~ paren_term }
+iszero_term = { kw_iszero ~ paren_term }
 try_term = { kw_try ~ term ~ kw_with ~ term }
 try_catch = { kw_try ~ term ~ kw_catch ~ term }
 raise_term = { kw_raise ~ term } 
@@ -54,6 +72,6 @@ type = {
   | paren_type
 }
 
-prim_type = { kw_tyunit | kw_tynat }
+prim_type = { kw_tyunit | kw_tynat | kw_tybool }
 fun_type = { "(" ~ type ~ "->" ~ type ~ ")" }
 paren_type = { "(" ~ type ~ ")" }

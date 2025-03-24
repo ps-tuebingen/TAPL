@@ -1,4 +1,6 @@
-use crate::syntax::{App, Error, Lambda, Raise, Term, Try, TryWithVal, Unit, Var};
+use crate::syntax::{
+    App, Error, IsZero, Lambda, Pred, Raise, Succ, Term, Try, TryWithVal, Unit, Var,
+};
 
 pub trait Subst {
     fn subst(self, v: &Var, t: Term) -> Term;
@@ -15,6 +17,11 @@ impl Subst for Term {
                 }
             }
             Term::Const(i) => Term::Const(i),
+            Term::True => Term::True,
+            Term::False => Term::False,
+            Term::Succ(s) => s.subst(v, t),
+            Term::Pred(p) => p.subst(v, t),
+            Term::IsZero(isz) => isz.subst(v, t),
             Term::Lambda(lam) => lam.subst(v, t),
             Term::App(app) => app.subst(v, t),
             Term::Unit(u) => u.subst(v, t),
@@ -89,5 +96,32 @@ impl Subst for TryWithVal {
 impl Subst for Unit {
     fn subst(self, _: &Var, _: Term) -> Term {
         self.into()
+    }
+}
+
+impl Subst for Succ {
+    fn subst(self, v: &Var, t: Term) -> Term {
+        Succ {
+            term: Box::new(self.term.subst(v, t)),
+        }
+        .into()
+    }
+}
+
+impl Subst for Pred {
+    fn subst(self, v: &Var, t: Term) -> Term {
+        Pred {
+            term: Box::new(self.term.subst(v, t)).into(),
+        }
+        .into()
+    }
+}
+
+impl Subst for IsZero {
+    fn subst(self, v: &Var, t: Term) -> Term {
+        IsZero {
+            term: Box::new(self.term.subst(v, t)),
+        }
+        .into()
     }
 }

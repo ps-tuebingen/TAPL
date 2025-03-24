@@ -1,5 +1,7 @@
 use super::{
-    syntax::{App, Error as ErrT, Lambda, Raise, Term, Try, TryWithVal, Unit, Var},
+    syntax::{
+        App, Error as ErrT, IsZero, Lambda, Pred, Raise, Succ, Term, Try, TryWithVal, Unit, Var,
+    },
     types::Type,
 };
 use std::collections::HashMap;
@@ -18,6 +20,11 @@ impl Check for Term {
         match self {
             Term::Var(v) => env.get(&v).ok_or(Error::FreeVar(v)).cloned(),
             Term::Const(_) => Ok(Type::Nat),
+            Term::True => Ok(Type::Bool),
+            Term::False => Ok(Type::Bool),
+            Term::Succ(s) => s.check(env),
+            Term::Pred(p) => p.check(env),
+            Term::IsZero(isz) => isz.check(env),
             Term::Lambda(lam) => lam.check(env),
             Term::App(app) => app.check(env),
             Term::Unit(u) => u.check(env),
@@ -116,6 +123,48 @@ impl Check for TryWithVal {
 impl Check for Unit {
     fn check(self, _: &mut Env) -> Result<Type, Error> {
         Ok(Type::Unit)
+    }
+}
+
+impl Check for Succ {
+    fn check(self, env: &mut Env) -> Result<Type, Error> {
+        let inner_ty = self.term.check(env)?;
+        if inner_ty == Type::Nat {
+            Ok(Type::Nat)
+        } else {
+            Err(Error::TypeMismatch {
+                found: inner_ty,
+                expected: Type::Nat,
+            })
+        }
+    }
+}
+
+impl Check for Pred {
+    fn check(self, env: &mut Env) -> Result<Type, Error> {
+        let inner_ty = self.term.check(env)?;
+        if inner_ty == Type::Nat {
+            Ok(Type::Nat)
+        } else {
+            Err(Error::TypeMismatch {
+                found: inner_ty,
+                expected: Type::Nat,
+            })
+        }
+    }
+}
+
+impl Check for IsZero {
+    fn check(self, env: &mut Env) -> Result<Type, Error> {
+        let inner_ty = self.term.check(env)?;
+        if inner_ty == Type::Nat {
+            Ok(Type::Nat)
+        } else {
+            Err(Error::TypeMismatch {
+                found: inner_ty,
+                expected: Type::Nat,
+            })
+        }
     }
 }
 

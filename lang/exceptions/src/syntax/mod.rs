@@ -5,17 +5,24 @@ pub type Var = String;
 pub mod exception;
 pub mod exception_val;
 pub mod lambda;
+pub mod nat;
 pub mod unit;
 
 pub use exception::{Error, Try};
 pub use exception_val::{Raise, TryWithVal};
 pub use lambda::{App, Lambda};
+pub use nat::{IsZero, Pred, Succ};
 pub use unit::Unit;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Term {
     Var(Var),
     Const(i64),
+    True,
+    False,
+    Succ(Succ),
+    Pred(Pred),
+    IsZero(IsZero),
     Lambda(Lambda),
     App(App),
     Unit(Unit),
@@ -27,7 +34,10 @@ pub enum Term {
 
 impl Term {
     pub fn is_value(&self) -> bool {
-        matches!(self, Term::Lambda(_) | Term::Unit(_))
+        matches!(
+            self,
+            Term::Lambda(_) | Term::Unit(_) | Term::Const(_) | Term::True | Term::False
+        )
     }
 }
 impl fmt::Display for Term {
@@ -35,6 +45,11 @@ impl fmt::Display for Term {
         match self {
             Term::Var(v) => write!(f, "{v}"),
             Term::Const(i) => write!(f, "{i}"),
+            Term::True => f.write_str("true"),
+            Term::False => f.write_str("false"),
+            Term::Succ(s) => s.fmt(f),
+            Term::Pred(p) => p.fmt(f),
+            Term::IsZero(isz) => isz.fmt(f),
             Term::Lambda(lam) => lam.fmt(f),
             Term::App(app) => app.fmt(f),
             Term::Unit(u) => u.fmt(f),

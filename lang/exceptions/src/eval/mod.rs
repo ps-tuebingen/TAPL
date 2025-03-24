@@ -1,5 +1,5 @@
 use super::{
-    syntax::{App, Error as ErrT, Lambda, Raise, Term, Try, TryWithVal, Unit},
+    syntax::{App, Error as ErrT, IsZero, Lambda, Pred, Raise, Succ, Term, Try, TryWithVal, Unit},
     traits::subst::Subst,
 };
 
@@ -19,6 +19,9 @@ pub trait Eval {
             match evaled {
                 Term::Lambda(lam) => Ok(lam.into()),
                 Term::Unit(u) => Ok(u.into()),
+                Term::True => Ok(Value::True),
+                Term::False => Ok(Value::False),
+                Term::Const(i) => Ok(Value::Const(i)),
                 Term::Error(_) => Err(Error::Exception),
                 Term::Raise(r) => match *r.exception {
                     Term::Lambda(lam) => Err(Error::ExceptionVal(lam.into())),
@@ -38,6 +41,11 @@ impl Eval for Term {
         match self {
             Term::Var(v) => Err(Error::FreeVar(v)),
             Term::Const(i) => Ok(Term::Const(i)),
+            Term::True => Ok(Term::True),
+            Term::False => Ok(Term::False),
+            Term::Succ(s) => s.eval_once(),
+            Term::Pred(p) => p.eval_once(),
+            Term::IsZero(isz) => isz.eval_once(),
             Term::Lambda(lam) => lam.eval_once(),
             Term::App(app) => app.eval_once(),
             Term::Unit(u) => u.eval_once(),
@@ -163,6 +171,64 @@ impl Eval for Raise {
         } else {
             let t_evaled = self.exception.eval_once()?;
             Ok(Raise::new(t_evaled, self.ex_ty, self.cont_ty).into())
+        }
+    }
+}
+
+impl Eval for Succ {
+    fn eval_once(self) -> Result<Term, Error> {
+        if self.term.is_value() {
+            if let Term::Const(i) = *self.term {
+                Ok(Term::Const(i + 1))
+            } else {
+                Err(Error::Stuck(self.into()))
+            }
+        } else {
+            let evaled = self.term.eval_once()?;
+            Ok(Succ {
+                term: Box::new(evaled),
+            }
+            .into())
+        }
+    }
+}
+
+impl Eval for Pred {
+    fn eval_once(self) -> Result<Term, Error> {
+        if self.term.is_value() {
+            if let Term::Const(i) = *self.term {
+                Ok(Term::Const(i - 1))
+            } else {
+                Err(Error::Stuck(self.into()))
+            }
+        } else {
+            let evaled = self.term.eval_once()?;
+            Ok(Pred {
+                term: Box::new(evaled),
+            }
+            .into())
+        }
+    }
+}
+
+impl Eval for IsZero {
+    fn eval_once(self) -> Result<Term, Error> {
+        if self.term.is_value() {
+            if let Term::Const(i) = *self.term {
+                if i == 0 {
+                    Ok(Term::True)
+                } else {
+                    Ok(Term::False)
+                }
+            } else {
+                Err(Error::Stuck(self.into()))
+            }
+        } else {
+            let evaled = self.term.eval_once()?;
+            Ok(IsZero {
+                term: Box::new(evaled),
+            }
+            .into())
         }
     }
 }

@@ -7,7 +7,10 @@ use std::fmt;
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Value {
     Lambda { var: Var, annot: Type, body: Term },
+    Const(i64),
     Unit,
+    True,
+    False,
 }
 
 impl From<Lambda> for Value {
@@ -36,6 +39,9 @@ impl From<Value> for Term {
             }
             .into(),
             Value::Unit => Unit.into(),
+            Value::True => Term::True,
+            Value::False => Term::False,
+            Value::Const(i) => Term::Const(i),
         }
     }
 }

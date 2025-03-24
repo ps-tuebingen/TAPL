@@ -1,4 +1,6 @@
-use crate::syntax::{App, Error, Lambda, Raise, Term, Try, TryWithVal, Unit, Var};
+use crate::syntax::{
+    App, Error, IsZero, Lambda, Pred, Raise, Succ, Term, Try, TryWithVal, Unit, Var,
+};
 use std::collections::HashSet;
 
 pub trait FreeVars {
@@ -18,6 +20,11 @@ impl FreeVars for Term {
         match self {
             Term::Var(v) => HashSet::from([v.clone()]),
             Term::Const(_) => HashSet::new(),
+            Term::True => HashSet::new(),
+            Term::False => HashSet::new(),
+            Term::Succ(s) => s.free_vars(),
+            Term::Pred(p) => p.free_vars(),
+            Term::IsZero(isz) => isz.free_vars(),
             Term::Lambda(lam) => lam.free_vars(),
             Term::App(app) => app.free_vars(),
             Term::Unit(u) => u.free_vars(),
@@ -76,5 +83,23 @@ impl FreeVars for TryWithVal {
 impl FreeVars for Unit {
     fn free_vars(&self) -> HashSet<Var> {
         HashSet::new()
+    }
+}
+
+impl FreeVars for Succ {
+    fn free_vars(&self) -> HashSet<Var> {
+        self.term.free_vars()
+    }
+}
+
+impl FreeVars for Pred {
+    fn free_vars(&self) -> HashSet<Var> {
+        self.term.free_vars()
+    }
+}
+
+impl FreeVars for IsZero {
+    fn free_vars(&self) -> HashSet<Var> {
+        self.term.free_vars()
     }
 }
