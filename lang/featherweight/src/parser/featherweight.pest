@@ -1,5 +1,5 @@
 WHITESPACE = _{ " " | "\n" | "\t" }
-program = { SOI ~ class ~ EOI }
+program = { SOI ~ class+ ~ EOI }
 
 //Keywords
 kw_class = { "class" }
@@ -18,38 +18,42 @@ keyword = {
   | kw_new
 }
 
-class = { kw_class ~ variable ~ kw_extends ~ variable ~ "{" ~ class_body ~ "}" }
+class = { kw_class ~ class_name ~ kw_extends ~ class_name ~ "{" ~ class_body ~ "}" }
 class_body = { field* ~ ctor_decl ~ method_decl* }
 
-field = { variable ~ " " ~ variable ~ ";" } 
+field = { class_name ~ variable ~ ";" } 
 
-ctor_decl = { variable ~ "(" ~ ctor_args? ~ ")" ~ "{" ~ super_call ~ field_assignments? ~ "}"}
-ctor_args = { ctor_arg ~ (", " ~ ctor_arg)* }
-ctor_arg = { variable ~ " " ~ variable }
-super_call = { kw_super ~ "(" ~ method_args? ~ ")" }
+ctor_decl = { class_name ~ "(" ~ ctor_args? ~ ")" ~ "{" ~ super_call ~ field_assignment* ~ "}"}
+ctor_args = { ctor_arg ~ ("," ~ ctor_arg)* }
+ctor_arg = ${ class_name ~ " " ~ variable }
+super_call = { kw_super ~ "(" ~ method_args? ~ ")" ~ ";" }
 
-field_assignments = { field_assignment ~ ("," ~ field_assignment)* }
 field_assignment = { kw_this ~ "." ~ variable ~ "=" ~ variable ~ ";" } 
 
-method_args = { variable ~ ("," ~ variable )* }
-method_decl = { variable ~ " " ~ variable ~ "(" ~ method_args? ~ ")" ~ "{" ~ kw_return ~ term ~ ";" ~ "}" }
+method_args = { variable ~ ("," ~ variable)* }
+method_decl = { method_head ~ "(" ~ method_args? ~ ")" ~ "{" ~ method_return ~ term ~ ";" ~ "}" }
+method_head = ${class_name ~ " " ~ variable } 
+method_return = @{kw_return ~ " "}
 
 term = { prim_term ~ left_rec? } 
 prim_term = {
   | object_creation
   | cast_term
   | paren_term
+  | number
   | variable 
 }
 
-object_creation = { kw_new ~ " " ~ variable ~ "(" ~ term_args? ~ ")" }
-cast_term = { "(" ~ variable ~ ")" ~ term }
+object_creation = { kw_new ~ variable ~ "(" ~ term_args? ~ ")" }
+cast_term = { "(" ~ class_name ~ ")" ~ term }
 paren_term = { "(" ~ term ~ ")" }
 
 left_rec = { field_access | method_invocation }
 field_access = { "." ~ variable } 
 method_invocation = { "." ~ variable ~ "(" ~ term_args? ~ ")" }
 
-term_args = { term ~ (", " ~ term) }
+term_args = { term ~ ("," ~ term)* }
 
-variable = @{ !(keyword ~ !ASCII_ALPHANUMERIC) ~ ( (ASCII_ALPHA|ASCII_DIGIT) | "_")+ }
+class_name = @{ !(keyword ~ !ASCII_ALPHANUMERIC) ~ ASCII_ALPHA_UPPER ~ (ASCII_ALPHANUMERIC | "_")* }
+variable = @{ !(keyword ~ !ASCII_ALPHANUMERIC) ~ ( (ASCII_ALPHA|ASCII_DIGIT) | "_")+ | kw_this }
+number = { ASCII_DIGIT+ }

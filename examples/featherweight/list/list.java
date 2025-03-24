@@ -1,9 +1,9 @@
 class List extends Object{
   List() { super(); } 
 
-  int head() { return 0; }
+  Int head() { return 0; }
 
-  List tail() { return new List() };
+  List tail() { return new List(); }
 }
 
 class Nil extends List { 
@@ -11,20 +11,20 @@ class Nil extends List {
 }
 
 class Cons extends List{
-  int first;
+  Int first;
   List rest;
 
-  Cons(int first,List rest) {
+  Cons(Int first,List rest) {
     super(); 
-    self.first = first;
-    self.rest= rest;
+    this.first = first;
+    this.rest = rest;
   }
 
-  int head() {
-    return self.first
+  Int head() {
+    return this.first;
   }
 
   List tail(){
-    return sefl.rest
+    return this.rest;
   }
 }
