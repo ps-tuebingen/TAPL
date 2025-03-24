@@ -14,12 +14,22 @@ struct ExceptionsParser;
 
 pub fn parse(input: String) -> Result<Term, Error> {
     let mut parsed = ExceptionsParser::parse(Rule::program, &input)?;
-    let term_rule = parsed
+    let mut prog_inner = parsed
+        .next()
+        .ok_or(Error::MissingInput("Program".to_owned()))?
+        .into_inner();
+    if let Some(n) = parsed.next() {
+        return Err(Error::RemainingInput(n.as_rule()));
+    }
+
+    let term_rule = prog_inner
         .next()
         .ok_or(Error::MissingInput("Term".to_owned()))?;
     let term = pair_to_term(term_rule)?;
 
-    let _ = parsed.next().ok_or(Error::MissingInput("EOI".to_owned()))?;
+    let _ = prog_inner
+        .next()
+        .ok_or(Error::MissingInput("EOI".to_owned()))?;
     if let Some(n) = parsed.next() {
         return Err(Error::RemainingInput(n.as_rule()));
     }
