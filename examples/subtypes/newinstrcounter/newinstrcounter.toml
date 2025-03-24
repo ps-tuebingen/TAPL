@@ -1,1 +1,1 @@
-ty=""
+ty="(Unit -> { accesses:(Unit -> Nat), get:(Unit -> Nat), inc:(Unit -> Unit), set:(Nat -> Unit) })"
