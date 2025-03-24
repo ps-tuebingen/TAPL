@@ -1,6 +1,6 @@
 use super::{
     syntax::{
-        App, Error as ErrT, IsZero, Lambda, Pred, Raise, Succ, Term, Try, TryWithVal, Unit, Var,
+        App, Error as ErrT, If, IsZero, Lambda, Pred, Raise, Succ, Term, Try, TryWithVal, Unit, Var,
     },
     types::Type,
 };
@@ -25,6 +25,7 @@ impl Check for Term {
             Term::Succ(s) => s.check(env),
             Term::Pred(p) => p.check(env),
             Term::IsZero(isz) => isz.check(env),
+            Term::If(ift) => ift.check(env),
             Term::Lambda(lam) => lam.check(env),
             Term::App(app) => app.check(env),
             Term::Unit(u) => u.check(env),
@@ -164,6 +165,28 @@ impl Check for IsZero {
                 found: inner_ty,
                 expected: Type::Nat,
             })
+        }
+    }
+}
+
+impl Check for If {
+    fn check(self, env: &mut Env) -> Result<Type, Error> {
+        let if_ty = self.ift.check(&mut env.clone())?;
+        if if_ty != Type::Bool {
+            return Err(Error::TypeMismatch {
+                found: if_ty,
+                expected: Type::Bool,
+            });
+        }
+        let then_ty = self.thent.check(&mut env.clone())?;
+        let else_ty = self.elset.check(env)?;
+        if then_ty != else_ty {
+            Err(Error::TypeMismatch {
+                found: then_ty,
+                expected: else_ty,
+            })
+        } else {
+            Ok(then_ty)
         }
     }
 }

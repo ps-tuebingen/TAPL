@@ -1,5 +1,5 @@
 use crate::syntax::{
-    App, Error, IsZero, Lambda, Pred, Raise, Succ, Term, Try, TryWithVal, Unit, Var,
+    App, Error, If, IsZero, Lambda, Pred, Raise, Succ, Term, Try, TryWithVal, Unit, Var,
 };
 
 pub trait Subst {
@@ -22,6 +22,7 @@ impl Subst for Term {
             Term::Succ(s) => s.subst(v, t),
             Term::Pred(p) => p.subst(v, t),
             Term::IsZero(isz) => isz.subst(v, t),
+            Term::If(ift) => ift.subst(v, t),
             Term::Lambda(lam) => lam.subst(v, t),
             Term::App(app) => app.subst(v, t),
             Term::Unit(u) => u.subst(v, t),
@@ -121,6 +122,20 @@ impl Subst for IsZero {
     fn subst(self, v: &Var, t: Term) -> Term {
         IsZero {
             term: Box::new(self.term.subst(v, t)),
+        }
+        .into()
+    }
+}
+
+impl Subst for If {
+    fn subst(self, v: &Var, t: Term) -> Term {
+        let ift_subst = self.ift.subst(v, t.clone());
+        let thent_subst = self.thent.subst(v, t.clone());
+        let elset_subst = self.elset.subst(v, t);
+        If {
+            ift: Box::new(ift_subst),
+            thent: Box::new(thent_subst),
+            elset: Box::new(elset_subst),
         }
         .into()
     }

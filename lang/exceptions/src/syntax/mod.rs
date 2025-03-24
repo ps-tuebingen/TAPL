@@ -2,12 +2,14 @@ use std::fmt;
 
 pub type Var = String;
 
+pub mod bool;
 pub mod exception;
 pub mod exception_val;
 pub mod lambda;
 pub mod nat;
 pub mod unit;
 
+pub use bool::If;
 pub use exception::{Error, Try};
 pub use exception_val::{Raise, TryWithVal};
 pub use lambda::{App, Lambda};
@@ -23,6 +25,7 @@ pub enum Term {
     Succ(Succ),
     Pred(Pred),
     IsZero(IsZero),
+    If(If),
     Lambda(Lambda),
     App(App),
     Unit(Unit),
@@ -50,6 +53,7 @@ impl fmt::Display for Term {
             Term::Succ(s) => s.fmt(f),
             Term::Pred(p) => p.fmt(f),
             Term::IsZero(isz) => isz.fmt(f),
+            Term::If(ift) => ift.fmt(f),
             Term::Lambda(lam) => lam.fmt(f),
             Term::App(app) => app.fmt(f),
             Term::Unit(u) => u.fmt(f),

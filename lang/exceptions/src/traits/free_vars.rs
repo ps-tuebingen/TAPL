@@ -1,5 +1,5 @@
 use crate::syntax::{
-    App, Error, IsZero, Lambda, Pred, Raise, Succ, Term, Try, TryWithVal, Unit, Var,
+    App, Error, If, IsZero, Lambda, Pred, Raise, Succ, Term, Try, TryWithVal, Unit, Var,
 };
 use std::collections::HashSet;
 
@@ -25,6 +25,7 @@ impl FreeVars for Term {
             Term::Succ(s) => s.free_vars(),
             Term::Pred(p) => p.free_vars(),
             Term::IsZero(isz) => isz.free_vars(),
+            Term::If(ift) => ift.free_vars(),
             Term::Lambda(lam) => lam.free_vars(),
             Term::App(app) => app.free_vars(),
             Term::Unit(u) => u.free_vars(),
@@ -101,5 +102,14 @@ impl FreeVars for Pred {
 impl FreeVars for IsZero {
     fn free_vars(&self) -> HashSet<Var> {
         self.term.free_vars()
+    }
+}
+
+impl FreeVars for If {
+    fn free_vars(&self) -> HashSet<Var> {
+        let mut vars = self.ift.free_vars();
+        vars.extend(self.thent.free_vars());
+        vars.extend(self.elset.free_vars());
+        vars
     }
 }

@@ -13,6 +13,8 @@ kw_false = { "false" }
 kw_succ = { "succ" }
 kw_pred = { "pred" }
 kw_iszero = { "iszero" }
+kw_if = { "if" }
+kw_else = { "else" }
 kw_tyunit = { "Unit" }
 kw_tynat = { "Nat" }
 kw_tybool = { "Bool" }
@@ -28,6 +30,8 @@ keyword = {
   | kw_succ 
   | kw_pred
   | kw_iszero
+  | kw_if
+  | kw_else
   | kw_tyunit
   | kw_tynat
   | kw_tybool
@@ -43,6 +47,7 @@ prim_term = {
   | succ_term
   | pred_term
   | iszero_term
+  | if_term
   | try_term 
   | try_catch
   | raise_term 
@@ -56,6 +61,7 @@ lambda_term = { "\\" ~ variable ~ ":" ~ type ~ "." ~ term }
 succ_term = { kw_succ ~ paren_term }
 pred_term = { kw_pred ~ paren_term }
 iszero_term = { kw_iszero ~ paren_term }
+if_term = { kw_if ~ "(" ~ term ~ ")" ~ "{" ~ term ~ "}" ~ kw_else ~ "{" ~ term ~ "}" }
 try_term = { kw_try ~ term ~ kw_with ~ term }
 try_catch = { kw_try ~ term ~ kw_catch ~ term }
 raise_term = { kw_raise ~ term } 

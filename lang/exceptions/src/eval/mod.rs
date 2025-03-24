@@ -1,5 +1,7 @@
 use super::{
-    syntax::{App, Error as ErrT, IsZero, Lambda, Pred, Raise, Succ, Term, Try, TryWithVal, Unit},
+    syntax::{
+        App, Error as ErrT, If, IsZero, Lambda, Pred, Raise, Succ, Term, Try, TryWithVal, Unit,
+    },
     traits::subst::Subst,
 };
 
@@ -46,6 +48,7 @@ impl Eval for Term {
             Term::Succ(s) => s.eval_once(),
             Term::Pred(p) => p.eval_once(),
             Term::IsZero(isz) => isz.eval_once(),
+            Term::If(ift) => ift.eval_once(),
             Term::Lambda(lam) => lam.eval_once(),
             Term::App(app) => app.eval_once(),
             Term::Unit(u) => u.eval_once(),
@@ -227,6 +230,26 @@ impl Eval for IsZero {
             let evaled = self.term.eval_once()?;
             Ok(IsZero {
                 term: Box::new(evaled),
+            }
+            .into())
+        }
+    }
+}
+
+impl Eval for If {
+    fn eval_once(self) -> Result<Term, Error> {
+        if self.ift.is_value() {
+            match *self.ift {
+                Term::True => Ok(*self.thent),
+                Term::False => Ok(*self.elset),
+                _ => Err(Error::Stuck(self.into())),
+            }
+        } else {
+            let ift_evaled = self.ift.eval_once()?;
+            Ok(If {
+                ift: Box::new(ift_evaled),
+                thent: self.thent,
+                elset: self.elset,
             }
             .into())
         }

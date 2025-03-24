@@ -1,1 +1,1 @@
-(\\x:Nat.(0)) error
+(\x:Nat.(0)) error
