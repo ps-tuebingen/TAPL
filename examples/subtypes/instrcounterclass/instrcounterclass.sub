@@ -1,5 +1,5 @@
-\r:{ x:Ref(Nat),a:Ref(Nat) }.(
-  \self:{ get :(Unit -> Nat), set:(Nat->Unit), inc:(Unit->Unit), accesses:(Unit->Nat)}.(
+\r:{x:Ref(Nat), a:Ref(Nat)}.(
+  \self:(Unit -> {get:(Unit->Nat), set:(Nat->Unit), inc:(Unit->Unit), accesses:(Unit->Nat)}).(
     \_:Unit.(
       let (super = (((\r:{x:Ref(Nat)}.(
         fix (
@@ -9,12 +9,13 @@
             inc = \_:Unit.((self.set)(succ((self.get)(unit))))
           })
         )
-    ))(r))(self))(unit)) in
-    {
-      get = super.get,
-      set = \i:Nat.(((r.a) := succ(!(r.a))); ((super.set)(i))),
-      inc = super.inc,
-      accesses = \_:Unit.(!(r.a))
-    })
-  ))
+      ))(r))(self))(unit)) in 
+      {
+        get=super.get,
+        set=\i:Nat.((r.a):=succ(!(r.a));((super.set)(i))),
+        inc=super.inc,
+        accesses=\_:Unit.(!(r.a))
+      }
+    )
+  )
 )

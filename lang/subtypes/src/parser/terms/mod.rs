@@ -1,5 +1,8 @@
 use super::{errors::Error, pair_to_n_inner, Rule};
-use crate::syntax::{App, False, Term, True, Unit, Zero};
+use crate::{
+    syntax::{App, False, Lambda, Term, True, Unit, Zero},
+    types::Type,
+};
 use pest::iterators::Pair;
 
 mod bool;
@@ -95,6 +98,11 @@ fn pair_to_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
         Rule::cast_term => pair_to_cast(p, t).map(|cast| cast.into()),
         Rule::proj_term => pair_to_proj(p, t).map(|proj| proj.into()),
         Rule::assign_term => pair_to_assign(p, t).map(|ass| ass.into()),
+        Rule::seq_term => {
+            let second = pair_to_n_inner(p, vec!["Term"])?.remove(0);
+            let term = pair_to_term(second)?;
+            Ok(App::new(Lambda::new("_", Type::Unit, term).into(), t).into())
+        }
         Rule::term => {
             let arg = pair_to_term(p)?;
             Ok(App {
