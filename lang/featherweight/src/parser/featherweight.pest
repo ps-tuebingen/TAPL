@@ -1,0 +1,55 @@
+WHITESPACE = _{ " " | "\n" | "\t" }
+program = { SOI ~ class ~ EOI }
+
+//Keywords
+kw_class = { "class" }
+kw_extends = { "extends" }
+kw_super = { "super" }
+kw_this = { "this" } 
+kw_return = { "return" }
+kw_new = { "new" }
+
+keyword = {
+  | kw_class
+  | kw_extends
+  | kw_super
+  | kw_this
+  | kw_return 
+  | kw_new
+}
+
+class = { kw_class ~ variable ~ kw_extends ~ variable ~ "{" ~ class_body ~ "}" }
+class_body = { field* ~ ctor_decl ~ method_decl* }
+
+field = { variable ~ " " ~ variable ~ ";" } 
+
+ctor_decl = { variable ~ "(" ~ ctor_args? ~ ")" ~ "{" ~ super_call ~ field_assignments? ~ "}"}
+ctor_args = { ctor_arg ~ (", " ~ ctor_arg)* }
+ctor_arg = { variable ~ " " ~ variable }
+super_call = { kw_super ~ "(" ~ method_args? ~ ")" }
+
+field_assignments = { field_assignment ~ ("," ~ field_assignment)* }
+field_assignment = { kw_this ~ "." ~ variable ~ "=" ~ variable ~ ";" } 
+
+method_args = { variable ~ ("," ~ variable )* }
+method_decl = { variable ~ " " ~ variable ~ "(" ~ method_args? ~ ")" ~ "{" ~ kw_return ~ term ~ ";" ~ "}" }
+
+term = { prim_term ~ left_rec? } 
+prim_term = {
+  | object_creation
+  | cast_term
+  | paren_term
+  | variable 
+}
+
+object_creation = { kw_new ~ " " ~ variable ~ "(" ~ term_args? ~ ")" }
+cast_term = { "(" ~ variable ~ ")" ~ term }
+paren_term = { "(" ~ term ~ ")" }
+
+left_rec = { field_access | method_invocation }
+field_access = { "." ~ variable } 
+method_invocation = { "." ~ variable ~ "(" ~ term_args? ~ ")" }
+
+term_args = { term ~ (", " ~ term) }
+
+variable = @{ !(keyword ~ !ASCII_ALPHANUMERIC) ~ ( (ASCII_ALPHA|ASCII_DIGIT) | "_")+ }

@@ -1,6 +1,7 @@
 pub mod errors;
 pub mod eval;
 pub mod lookup;
+pub mod parser;
 pub mod syntax;
 pub mod typing;
 
