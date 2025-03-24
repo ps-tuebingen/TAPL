@@ -8,7 +8,6 @@ pub enum Error {
     NotAFunction(Value),
     NotAValue(Term),
     Stuck(Term),
-    Exception,
     ExceptionVal(Value),
 }
 
@@ -19,7 +18,6 @@ impl fmt::Display for Error {
             Error::NotAFunction(v) => write!(f, "{v} should be a function value"),
             Error::NotAValue(t) => write!(f, "Term {t} is not a value"),
             Error::Stuck(t) => write!(f, "Term {t} is stuck"),
-            Error::Exception => write!(f, "Evaluation encountered an exception term"),
             Error::ExceptionVal(v) => write!(f, "Evaluation encountered an exception: {v}"),
         }
     }

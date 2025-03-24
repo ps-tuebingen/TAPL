@@ -1,5 +1,5 @@
 use crate::{
-    syntax::{Lambda, Term, Unit, Var},
+    syntax::{Error, Lambda, Term, Unit, Var},
     types::Type,
 };
 use std::fmt;
@@ -11,6 +11,7 @@ pub enum Value {
     Unit,
     True,
     False,
+    Error(Type),
 }
 
 impl From<Lambda> for Value {
@@ -42,6 +43,7 @@ impl From<Value> for Term {
             Value::True => Term::True,
             Value::False => Term::False,
             Value::Const(i) => Term::Const(i),
+            Value::Error(ty) => Error { ty }.into(),
         }
     }
 }

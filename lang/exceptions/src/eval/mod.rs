@@ -24,7 +24,7 @@ pub trait Eval {
                 Term::True => Ok(Value::True),
                 Term::False => Ok(Value::False),
                 Term::Const(i) => Ok(Value::Const(i)),
-                Term::Error(_) => Err(Error::Exception),
+                Term::Error(err) => Ok(Value::Error(err.ty)),
                 Term::Raise(r) => match *r.exception {
                     Term::Lambda(lam) => Err(Error::ExceptionVal(lam.into())),
                     Term::Unit(u) => Err(Error::ExceptionVal(u.into())),
@@ -88,8 +88,8 @@ impl Eval for App {
                     }
                 } else
                 // E-AppErr2
-                if let Term::Error(_) = *self.arg {
-                    return Err(Error::Exception);
+                if let Term::Error(err) = *self.arg {
+                    return Ok(Value::Error(err.ty).into());
                 // E-App2
                 } else {
                     let arg_evaled = self.arg.eval_once()?;
@@ -114,8 +114,7 @@ impl Eval for Unit {
 
 impl Eval for ErrT {
     fn eval_once(self) -> Result<Term, Error> {
-        //Err is error
-        Err(Error::Exception)
+        Ok(self.into())
     }
 }
 
