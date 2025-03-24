@@ -159,7 +159,7 @@ impl Check for IsZero {
     fn check(self, env: &mut Env) -> Result<Type, Error> {
         let inner_ty = self.term.check(env)?;
         if inner_ty == Type::Nat {
-            Ok(Type::Nat)
+            Ok(Type::Bool)
         } else {
             Err(Error::TypeMismatch {
                 found: inner_ty,
