@@ -9,6 +9,7 @@ members = [
     "tests/untyped_lambda",
     "tests/references",
     "tests/exceptions",
+    "tests/subtypes",
 
     "lang/stlc",
     "lang/untyped_lambda",
