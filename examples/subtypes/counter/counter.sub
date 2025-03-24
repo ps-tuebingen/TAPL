@@ -1,0 +1,4 @@
+\r:Ref(Nat).({
+  get=\_:Unit.!(r.x),
+  inc=\_:Unit.(r.x):=(succ(!(r.x0)))
+})

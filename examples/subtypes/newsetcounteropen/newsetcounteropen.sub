@@ -1,0 +1,17 @@
+\_:Unit.(
+  let (r = { x=ref(1) }) in 
+  fix(
+    (\r:{x:Ref(Nat)}.(
+      \self:(Unit->{ get: (Unit -> Nat), set: (Nat->Unit), inc:(Unit->Unit) }).(
+        \_:Unit -> (
+          {
+            get = \_:Unit.(!(r.x)),
+            set = \i:Nat.((r.x):=i),
+            inc = \_:Unit.((self.set)(succ((self.get)(unit))))
+          }
+        )
+      )
+    )
+    )(r)
+  )(unit)
+)

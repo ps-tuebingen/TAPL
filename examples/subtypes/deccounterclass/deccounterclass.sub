@@ -1,0 +1,19 @@
+\r:{x:Ref(Nat)}.(
+  let (super = (\r:{x:Ref(Nat)}.(
+    let (super = (\r:{x:Ref(Nat)}.({
+      get = \_:Unit.(!(r.x)),
+      inc = \_:Unit.((r.x):=succ(!(r.x)))
+    }))(r)) in 
+    {
+      get = super.get,
+      inc = super.inc,
+      reset = \_:Unit.((r.x) := 1)
+    }
+  ))(r)) in 
+  {
+    get = super.get,
+    inc = super.inc,
+    reset = super.reset,
+    dec = \n:Nat.((r.x):=Pred(!(r.x)))
+  }
+)
