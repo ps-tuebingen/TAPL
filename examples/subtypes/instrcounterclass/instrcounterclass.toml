@@ -1,1 +1,1 @@
-ty=""
+ty="({ a:Ref(Nat), x:Ref(Nat) } -> ((Unit -> { accesses:(Unit -> Nat), get:(Unit -> Nat), inc:(Unit -> Unit), set:(Nat -> Unit) }) -> (Unit -> { accesses:(Unit -> Nat), get:(Unit -> Nat), inc:(Unit -> Unit), set:(Nat -> Unit) })))"

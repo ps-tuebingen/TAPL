@@ -1,7 +1,5 @@
 \x:<label1:Nat,label2:Bool>.(
-  if (x.label2) {
-     x.label1
-  }else{
-    2
-  }
-)
+  case x of {
+    <label1=x:Nat> => x
+    | <label2=b:Bool> => if (b) { 0 } else { 1 } 
+  })
