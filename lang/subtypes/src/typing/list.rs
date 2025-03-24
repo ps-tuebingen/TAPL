@@ -26,8 +26,13 @@ impl Typecheck for Cons {
 impl Typecheck for ListCase {
     fn check(&self, env: &mut TypingContext) -> Result<Type, Error> {
         let nil_ty = self.nil_rhs.check(&mut env.clone())?;
-        env.add_var(&self.cons_fst, &self.list_ty);
-        env.add_var(&self.cons_rst, &Type::List(Box::new(self.list_ty.clone())));
+        let list_inner = if let Type::List(inner) = self.list_ty.clone() {
+            *inner
+        } else {
+            return Err(Error::NoList(self.list_ty.clone()));
+        };
+        env.add_var(&self.cons_fst, &list_inner);
+        env.add_var(&self.cons_rst, &self.list_ty.clone());
         let cons_ty = self.cons_rhs.check(&mut env.clone())?;
         let combined = meet(nil_ty, cons_ty);
         Ok(combined)
