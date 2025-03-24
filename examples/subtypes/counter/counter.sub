@@ -1,4 +1,5 @@
-\r:{x:Ref(Nat)}.({
-  get=\_:Unit.!(r.x),
-  inc=\_:Unit.(r.x):=(succ(!(r.x)))
-})
+let (r = { x=ref(1) }) in 
+  { 
+    get = \_:Unit.(!(r.x)),
+    inc = \_:Unit.((r.x):=(succ(!(r.x))))
+  }

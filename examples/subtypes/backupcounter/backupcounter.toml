@@ -1,1 +1,0 @@
-ty="({ b:Ref(Nat), x:Ref(Nat) } -> { backup:(Unit -> Unit), get:(Unit -> Nat), inc:(Unit -> Unit), reset:(Unit -> Unit) })"
