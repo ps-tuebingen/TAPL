@@ -5,3 +5,4 @@ pub const STLC_PATH: &str = "stlc";
 pub const REFERENCES_PATH: &str = "references";
 pub const EXCEPTIONS_PATH: &str = "exceptions";
 pub const SUBTYPES_PATH: &str = "subtypes";
+pub const FEATHERWEIGHT_PATH: &str = "featherweight";
