@@ -1,4 +1,4 @@
-\x:{x:Ref(Nat)}.(
+\r:{x:Ref(Nat)}.(
   let (super = (\r:{x:Ref(Nat)}.(
     let (super = (\r:{x:Ref(Nat)}.({
       get = \_:Unit.(!(r.x)),
