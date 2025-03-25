@@ -10,7 +10,7 @@ pub fn method_is_ok(mdecl: &MethodDeclaration, in_class: &ClassName, ct: &ClassT
     for (ty, arg) in mdecl.args.iter().cloned() {
         env.insert(arg, ty);
     }
-    env.insert("this".to_owned(), mdecl.class.clone());
+    env.insert("this".to_owned(), in_class.clone());
     let ret_ty = if let Ok(ty) = check(&mdecl.ret, &mut env, ct) {
         ty
     } else {
@@ -26,6 +26,7 @@ pub fn method_is_ok(mdecl: &MethodDeclaration, in_class: &ClassName, ct: &ClassT
     } else {
         return false;
     };
+
     if lookup_method_type(&mdecl.name, &decl.parent, ct).is_ok() {
         valid_override(&mdecl.name, &decl.parent, &mdecl.get_type(), ct)
     } else {
