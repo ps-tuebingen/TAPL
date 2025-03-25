@@ -19,8 +19,7 @@ pub struct ClassTable {
 
 impl fmt::Display for ClassTable {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let mut classes: Vec<&ClassDeclaration> =
-            self.classes.iter().map(|(_, decl)| decl).collect();
+        let mut classes: Vec<&ClassDeclaration> = self.classes.values().collect();
         classes.sort_by(|decl1, decl2| decl1.name.cmp(&decl2.name));
         for decl in classes {
             writeln!(f, "{decl}")?;

@@ -29,7 +29,7 @@ pub fn pair_to_ctor(p: Pair<'_, Rule>) -> Result<ConstructorDeclaration, Error> 
     let mut fields = vec![];
     for field_rule in inner {
         let (this_field, assigned) = pair_to_field_assignment(field_rule)?;
-        if args.iter().find(|(_, name)| *name == assigned).is_none() {
+        if args.iter().any(|(_, name)| *name == assigned) {
             return Err(Error::UnknownVariable(assigned));
         }
         fields.push(this_field);
