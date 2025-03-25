@@ -1,0 +1,5 @@
+\x. if (iszero(x)) {
+  inl(false)
+}else{
+  inr(x)
+}

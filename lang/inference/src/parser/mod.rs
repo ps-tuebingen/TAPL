@@ -10,6 +10,6 @@ use errors::Error;
 struct InferenceParser;
 
 pub fn parse(input: String) -> Result<Term, Error> {
-    let mut parsed = InferenceParser::parse(Rule::program, &input)?;
+    let parsed = InferenceParser::parse(Rule::program, &input)?;
     todo!()
 }

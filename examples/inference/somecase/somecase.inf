@@ -1,0 +1,5 @@
+let (x = Nothing) in 
+case x of {
+  Nothing => false,
+  | Something(y) => true
+}

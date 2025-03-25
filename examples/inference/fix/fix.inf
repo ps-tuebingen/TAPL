@@ -1,0 +1,15 @@
+(fix(
+  \ie.(
+    \x (
+      if (iszero(x)) {
+        true
+      } else {
+        if (iszero(pred(x))) {
+          false 
+        } else {
+          (ie (pred(pred(x))))
+        }
+      }
+    )
+  )
+)) (5)

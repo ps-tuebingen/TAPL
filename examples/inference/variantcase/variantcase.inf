@@ -1,0 +1,5 @@
+let (x = inl(unit)) in 
+case x of {
+  inl(u) => true
+  | inr(b) => b
+}

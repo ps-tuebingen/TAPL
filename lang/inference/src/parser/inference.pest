@@ -92,7 +92,7 @@ prim_term = {
 const = { kw_unit | kw_true | kw_false | kw_zero | kw_nothing | kw_nil }
 paren_term = { "(" ~ term ~ ")" }
 
-lambda_term = { "\\" ~ variable ~ ":" ~ type ~ "." ~ term }
+lambda_term = { "\\" ~ variable ~ "." ~ term }
 if_term = { kw_if ~ "(" ~ term ~ ")" ~ "{" ~ term ~ "}" ~ kw_else ~ "{" ~ term ~ "}" }
 succ_term = { kw_succ ~ paren_term } 
 pred_term = { kw_pred ~ paren_term } 

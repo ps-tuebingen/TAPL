@@ -1,0 +1,8 @@
+let (double = \f.\a.(f(f(a)))) in 
+let (a = double((\x. succ(succ(x)))(1))) in 
+let (b = double (\x. x)(false)) in 
+if (b) {
+  double(a)
+} else{
+  a
+}
