@@ -1,4 +1,4 @@
-use super::{ParseTest, ReparseTest};
+use super::{BidirectionalTest, InferTest, ParseTest, ReparseTest};
 use std::path::PathBuf;
 use test_common::{
     errors::Error,
@@ -11,7 +11,9 @@ pub struct InferenceTests {
 }
 
 #[derive(serde::Deserialize)]
-pub struct InferenceConf {}
+pub struct InferenceConf {
+    ty: String,
+}
 
 impl InferenceTests {
     pub fn new(path: PathBuf) -> InferenceTests {
@@ -32,6 +34,11 @@ impl TestSuite for InferenceTests {
             tests.push(Box::new(parse_test) as Box<dyn Test>);
             let reparse_test = ReparseTest::new(&tst.source_name, &tst.source_contents);
             tests.push(Box::new(reparse_test) as Box<dyn Test>);
+            let infer_test = InferTest::new(&tst.source_name, &tst.source_contents, &tst.conf.ty);
+            tests.push(Box::new(infer_test) as Box<dyn Test>);
+            let bidirectional_test =
+                BidirectionalTest::new(&tst.source_name, &tst.source_contents, &tst.conf.ty);
+            tests.push(Box::new(bidirectional_test) as Box<dyn Test>);
         }
         Ok(tests)
     }
