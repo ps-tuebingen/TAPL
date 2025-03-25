@@ -5,12 +5,33 @@ use std::fmt;
 #[derive(Debug)]
 pub enum Error {
     Pest(Box<PestErr<Rule>>),
+    MissingInput(String),
+    RemainingInput(Rule),
+    UnexpectedRule { found: Rule, expected: String },
+    NotANumber(String),
+    UnknownKw(String),
+}
+
+impl Error {
+    pub fn unexpected(r: Rule, exp: &str) -> Error {
+        Error::UnexpectedRule {
+            found: r,
+            expected: exp.to_owned(),
+        }
+    }
 }
 
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             Error::Pest(err) => write!(f, "Error in Pest: {err}"),
+            Error::MissingInput(missing) => write!(f, "Missing Input {missing}"),
+            Error::RemainingInput(rule) => write!(f, "Remaining Input {rule:?}"),
+            Error::UnexpectedRule { found, expected } => {
+                write!(f, "Unexpected Rule {found:?}, expected {expected}")
+            }
+            Error::NotANumber(num) => write!(f, "{num} is not a number"),
+            Error::UnknownKw(kw) => write!(f, "Unkown Keyword {kw}"),
         }
     }
 }

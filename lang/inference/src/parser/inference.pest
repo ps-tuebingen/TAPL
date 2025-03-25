@@ -79,6 +79,7 @@ prim_term = {
   | right_term
   | sumcase_term
   | something_term
+  | some_case
   | fix_term 
   | cons_term
   | isnil_term
@@ -106,6 +107,10 @@ sumcase_patterns = { (left_pattern ~ "|" ~ right_pattern) | (right_pattern ~ "|"
 left_pattern = { kw_inl ~ "(" ~ variable ~ ")" ~ "=>" ~ term }
 right_pattern = { kw_inr ~ "(" ~ variable ~ ")" ~ "=>" ~ term }
 something_term = { kw_something ~ paren_term }
+some_case = { kw_case ~ term ~ kw_of ~ "{" ~ some_patterns ~ "}" }
+some_patterns = { (something_pattern ~ "|" ~ nothing_pattern) | (nothing_pattern ~ "|" ~ something_pattern) }
+nothing_pattern = { kw_nothing ~ "=>" ~ term }
+something_pattern = { kw_something ~ "(" ~ variable ~ ")" ~ "=>" ~ term }
 fix_term = { kw_fix ~ paren_term }
 cons_term = { kw_cons ~ "(" ~ term ~ "," ~ term ~ ")" }
 isnil_term = { kw_isnil ~ paren_term }
