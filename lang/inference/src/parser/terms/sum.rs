@@ -38,6 +38,7 @@ pub fn pair_to_sumcase(p: Pair<'_, Rule>) -> Result<SumCase, Error> {
     inner.remove(0);
     let bound_rule = inner.remove(0);
     let bound_term = pair_to_term(bound_rule)?;
+    inner.remove(0);
     let pt_rule = inner.remove(0);
     pair_to_sumcase_patterns(pt_rule, bound_term)
 }

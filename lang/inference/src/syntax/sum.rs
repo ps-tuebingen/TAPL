@@ -55,7 +55,7 @@ impl fmt::Display for SumCase {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(
             f,
-            "case {} of inl({}) => {} | inr({}) => {}",
+            "case {} of {{ inl({}) => {} | inr({}) => {} }}",
             self.bound_term, self.left_var, self.left_term, self.right_var, self.right_term
         )
     }
