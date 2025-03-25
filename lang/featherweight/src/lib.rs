@@ -79,11 +79,13 @@ pub mod test_common {
     }
 
     pub fn example_table() -> ClassTable {
-        HashMap::from([
-            ("Object".to_owned(), ClassDeclaration::default()),
-            ("A".to_owned(), example_a()),
-            ("B".to_owned(), example_b()),
-            ("Pair".to_owned(), example_pair()),
-        ])
+        ClassTable {
+            classes: HashMap::from([
+                ("Object".to_owned(), ClassDeclaration::default()),
+                ("A".to_owned(), example_a()),
+                ("B".to_owned(), example_b()),
+                ("Pair".to_owned(), example_pair()),
+            ]),
+        }
     }
 }
