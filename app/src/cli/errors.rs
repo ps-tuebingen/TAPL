@@ -2,6 +2,7 @@ use exceptions::{
     check::errors::Error as ExcCheckErr, eval::errors::Error as ExcEvalErr,
     parser::errors::Error as ExcParseErr,
 };
+use featherweight::parser::errors::Error as FeatherErr;
 use references::{
     check::errors::Error as RefCheckErr, eval::errors::Error as RefEvalErr,
     parser::errors::Error as RefParseErr,
@@ -32,6 +33,7 @@ pub enum Error {
     ExcEval(ExcEvalErr),
     SubParse(SubParseErr),
     SubCheck(SubCheckErr),
+    Feather(FeatherErr),
 }
 
 impl fmt::Display for Error {
@@ -52,6 +54,7 @@ impl fmt::Display for Error {
             Error::ExcEval(err) => err.fmt(f),
             Error::SubParse(err) => err.fmt(f),
             Error::SubCheck(err) => err.fmt(f),
+            Error::Feather(err) => err.fmt(f),
         }
     }
 }
@@ -145,5 +148,11 @@ impl From<SubParseErr> for Error {
 impl From<SubCheckErr> for Error {
     fn from(err: SubCheckErr) -> Error {
         Error::SubCheck(err)
+    }
+}
+
+impl From<FeatherErr> for Error {
+    fn from(err: FeatherErr) -> Error {
+        Error::Feather(err)
     }
 }
