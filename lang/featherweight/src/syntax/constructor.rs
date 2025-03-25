@@ -27,11 +27,11 @@ impl fmt::Display for ConstructorDeclaration {
             .self_args
             .iter()
             .zip(self.self_fields.iter())
-            .map(|((_, arg_name), arg_value)| format!("this.{arg_name} = {arg_value}"))
+            .map(|((_, arg_name), arg_value)| format!("this.{arg_name} = {arg_value};"))
             .collect();
         write!(
             f,
-            "{}({}) {{\n\t super({})\n\t{}  \n}}",
+            "{}({}) {{\n\t super({});\n\t{}  \n}}",
             self.name,
             self_strs.join(", "),
             super_ctor.join(", "),
