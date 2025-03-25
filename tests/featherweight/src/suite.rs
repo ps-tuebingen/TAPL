@@ -1,4 +1,4 @@
-use super::{ParseTest, ReparseTest};
+use super::{ParseTest, ReparseTest, TypecheckTest};
 use std::path::PathBuf;
 use test_common::{
     errors::Error,
@@ -11,10 +11,7 @@ pub struct FeatherweightTests {
 }
 
 #[derive(serde::Deserialize)]
-struct FeatherweightConf {
-    ty: String,
-    evaluated: String,
-}
+struct FeatherweightConf {}
 
 impl FeatherweightTests {
     pub fn new(path: PathBuf) -> FeatherweightTests {
@@ -35,6 +32,8 @@ impl TestSuite for FeatherweightTests {
             tests.push(Box::new(parse_test) as Box<dyn Test>);
             let reparse_test = ReparseTest::new(&tst.source_name, &tst.source_contents);
             tests.push(Box::new(reparse_test) as Box<dyn Test>);
+            let check_test = TypecheckTest::new(&tst.source_name, &tst.source_contents);
+            tests.push(Box::new(check_test) as Box<dyn Test>);
         }
         Ok(tests)
     }
