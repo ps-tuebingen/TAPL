@@ -78,7 +78,10 @@ fn pair_to_prim_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
             Ok(num.into())
         }
         Rule::variable => Ok(Term::Var(p.as_str().trim().to_owned())),
-        r => Err(Error::unexpected(r, "Non Left-recursive Term")),
+        r => Err(Error::unexpected(
+            r,
+            "Non Left-recursive Term (parsing prim term)",
+        )),
     }
 }
 

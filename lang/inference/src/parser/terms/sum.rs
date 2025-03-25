@@ -9,8 +9,7 @@ pub fn pair_to_left(p: Pair<'_, Rule>) -> Result<Left, Error> {
     let mut inner = pair_to_n_inner(p, vec!["Inl Keyword", "Inl Argument"])?;
     inner.remove(0);
     let arg_rule = inner.remove(0);
-    let arg_inner = pair_to_n_inner(arg_rule, vec!["Non Left-Recursive Term"])?.remove(0);
-    let arg = pair_to_prim_term(arg_inner)?;
+    let arg = pair_to_prim_term(arg_rule)?;
     Ok(Left {
         left_term: Box::new(arg),
     })
@@ -20,8 +19,7 @@ pub fn pair_to_right(p: Pair<'_, Rule>) -> Result<Right, Error> {
     let mut inner = pair_to_n_inner(p, vec!["Inr Keyword", "Inr Argument"])?;
     inner.remove(0);
     let arg_rule = inner.remove(0);
-    let arg_inner = pair_to_n_inner(arg_rule, vec!["Non Left-Recursive Term"])?.remove(0);
-    let arg = pair_to_prim_term(arg_inner)?;
+    let arg = pair_to_prim_term(arg_rule)?;
     Ok(Right {
         right_term: Box::new(arg),
     })

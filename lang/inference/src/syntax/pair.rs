@@ -42,12 +42,12 @@ impl fmt::Display for Pair {
 }
 impl fmt::Display for Proj1 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}.1", self.pair)
+        write!(f, "{}.0", self.pair)
     }
 }
 
 impl fmt::Display for Proj2 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}.2", self.pair)
+        write!(f, "{}.1", self.pair)
     }
 }

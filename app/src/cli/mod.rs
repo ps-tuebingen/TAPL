@@ -4,6 +4,7 @@ use std::{fmt, fs::read_to_string, path::PathBuf};
 mod errors;
 pub mod exceptions;
 pub mod featherweight;
+pub mod inference;
 pub mod nameless_representation;
 pub mod references;
 pub mod stlc;
@@ -29,6 +30,7 @@ pub enum Command {
     Exceptions(exceptions::Args),
     Subtypes(subtypes::Args),
     Featherweight(featherweight::Args),
+    Inference(inference::Args),
 }
 
 #[derive(Debug, clap::Args)]
@@ -72,6 +74,7 @@ pub fn run() -> Result<(), String> {
         Command::Exceptions(args) => exceptions::exec(args).map_err(|err| err.to_string()),
         Command::Subtypes(args) => subtypes::exec(args).map_err(|err| err.to_string()),
         Command::Featherweight(args) => featherweight::exec(args).map_err(|err| err.to_string()),
+        Command::Inference(args) => inference::exec(args).map_err(|err| err.to_string()),
     }
 }
 

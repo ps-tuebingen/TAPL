@@ -26,8 +26,7 @@ pub fn pair_to_isnil(p: Pair<'_, Rule>) -> Result<IsNil, Error> {
     let mut inner = pair_to_n_inner(p, vec!["IsNil Keyword", "IsNil Argument"])?;
     inner.remove(0);
     let arg_rule = inner.remove(0);
-    let arg_inner = pair_to_n_inner(arg_rule, vec!["Non Left-Recursive Term"])?.remove(0);
-    let arg = pair_to_prim_term(arg_inner)?;
+    let arg = pair_to_prim_term(arg_rule)?;
     Ok(IsNil {
         list: Box::new(arg),
     })
@@ -37,8 +36,7 @@ pub fn pair_to_head(p: Pair<'_, Rule>) -> Result<Head, Error> {
     let mut inner = pair_to_n_inner(p, vec!["Head Keyword", "Head Argument"])?;
     inner.remove(0);
     let arg_rule = inner.remove(0);
-    let arg_inner = pair_to_n_inner(arg_rule, vec!["Non Left-Recursive Term"])?.remove(0);
-    let arg = pair_to_prim_term(arg_inner)?;
+    let arg = pair_to_prim_term(arg_rule)?;
     Ok(Head {
         list: Box::new(arg),
     })
@@ -48,8 +46,7 @@ pub fn pair_to_tail(p: Pair<'_, Rule>) -> Result<Tail, Error> {
     let mut inner = pair_to_n_inner(p, vec!["Tail Keyword", "Tail Argument"])?;
     inner.remove(0);
     let arg_rule = inner.remove(0);
-    let arg_inner = pair_to_n_inner(arg_rule, vec!["Non Left-Recursive Term"])?.remove(0);
-    let arg = pair_to_prim_term(arg_inner)?;
+    let arg = pair_to_prim_term(arg_rule)?;
     Ok(Tail {
         list: Box::new(arg),
     })

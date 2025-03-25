@@ -14,6 +14,6 @@ impl From<Fix> for Term {
 
 impl fmt::Display for Fix {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "fix {}", self.term)
+        write!(f, "fix({})", self.term)
     }
 }

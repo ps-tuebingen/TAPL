@@ -57,26 +57,26 @@ impl From<Tail> for Term {
 
 impl fmt::Display for Nil {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Nil]",)
+        write!(f, "Nil",)
     }
 }
 impl fmt::Display for Cons {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Cons]({},{})", self.fst, self.rst)
+        write!(f, "Cons({},{})", self.fst, self.rst)
     }
 }
 impl fmt::Display for IsNil {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "IsNil]({})", self.list)
+        write!(f, "isnil({})", self.list)
     }
 }
 impl fmt::Display for Head {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Head]({})", self.list)
+        write!(f, "head({})", self.list)
     }
 }
 impl fmt::Display for Tail {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Tail]({})", self.list)
+        write!(f, "tail({})", self.list)
     }
 }

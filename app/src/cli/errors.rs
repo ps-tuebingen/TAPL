@@ -3,6 +3,10 @@ use exceptions::{
     parser::errors::Error as ExcParseErr,
 };
 use featherweight::parser::errors::Error as FeatherErr;
+use inference::{
+    bidirectional::errors::Error as InfBiErr, constraints::errors::Error as InfConsErr,
+    parser::errors::Error as InfParseErr,
+};
 use references::{
     check::errors::Error as RefCheckErr, eval::errors::Error as RefEvalErr,
     parser::errors::Error as RefParseErr,
@@ -34,6 +38,9 @@ pub enum Error {
     SubParse(SubParseErr),
     SubCheck(SubCheckErr),
     Feather(FeatherErr),
+    InfParse(InfParseErr),
+    InfBi(InfBiErr),
+    InfCons(InfConsErr),
 }
 
 impl fmt::Display for Error {
@@ -55,6 +62,9 @@ impl fmt::Display for Error {
             Error::SubParse(err) => err.fmt(f),
             Error::SubCheck(err) => err.fmt(f),
             Error::Feather(err) => err.fmt(f),
+            Error::InfParse(err) => err.fmt(f),
+            Error::InfBi(err) => err.fmt(f),
+            Error::InfCons(err) => err.fmt(f),
         }
     }
 }
@@ -154,5 +164,23 @@ impl From<SubCheckErr> for Error {
 impl From<FeatherErr> for Error {
     fn from(err: FeatherErr) -> Error {
         Error::Feather(err)
+    }
+}
+
+impl From<InfParseErr> for Error {
+    fn from(err: InfParseErr) -> Error {
+        Error::InfParse(err)
+    }
+}
+
+impl From<InfBiErr> for Error {
+    fn from(err: InfBiErr) -> Error {
+        Error::InfBi(err)
+    }
+}
+
+impl From<InfConsErr> for Error {
+    fn from(err: InfConsErr) -> Error {
+        Error::InfCons(err)
     }
 }

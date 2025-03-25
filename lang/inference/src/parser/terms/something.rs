@@ -9,8 +9,7 @@ pub fn pair_to_something(p: Pair<'_, Rule>) -> Result<Something, Error> {
     let mut inner = pair_to_n_inner(p, vec!["Keyword Something", "Something Argument"])?;
     inner.remove(0);
     let arg_rule = inner.remove(0);
-    let arg_inner = pair_to_n_inner(arg_rule, vec!["Non Left-Recursive Term"])?.remove(0);
-    let arg = pair_to_prim_term(arg_inner)?;
+    let arg = pair_to_prim_term(arg_rule)?;
     Ok(Something {
         term: Box::new(arg),
     })

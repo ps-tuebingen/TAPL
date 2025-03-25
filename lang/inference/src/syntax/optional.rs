@@ -44,7 +44,7 @@ impl fmt::Display for Nothing {
 
 impl fmt::Display for Something {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Some({})", self.term)
+        write!(f, "Something({})", self.term)
     }
 }
 
@@ -52,7 +52,7 @@ impl fmt::Display for SomeCase {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(
             f,
-            "case {} of None => {} | Some {} => {}",
+            "case {} of {{ Nothing => {} | Something({}) => {} }} ",
             self.bound_term, self.none_rhs, self.some_var, self.some_rhs
         )
     }

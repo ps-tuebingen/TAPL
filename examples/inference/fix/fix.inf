@@ -1,6 +1,6 @@
 (fix(
   \ie.(
-    \x (
+    \x. (
       if (iszero(x)) {
         true
       } else {

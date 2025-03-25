@@ -1,5 +1,5 @@
 let (x = Nothing) in 
 case x of {
-  Nothing => false,
+  Nothing => false
   | Something(y) => true
 }
