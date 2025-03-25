@@ -12,7 +12,10 @@ pub fn class_ok(class: ClassDeclaration, ct: &ClassTable) -> bool {
     } else {
         return false;
     };
-    let ctor_super_args = parent_fields == class.constructor.super_args;
+
+    let ctor_super_args = parent_fields
+        .iter()
+        .all(|field| class.constructor.self_args.contains(field));
 
     let mut all_ok = true;
     for method in class.methods {

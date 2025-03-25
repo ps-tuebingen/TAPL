@@ -11,6 +11,8 @@ pub use methods::{MethodDeclaration, MethodName, MethodType};
 pub use terms::Term;
 
 pub type Var = String;
+
+#[derive(Default)]
 pub struct ClassTable {
     pub classes: HashMap<ClassName, ClassDeclaration>,
 }

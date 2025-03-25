@@ -20,6 +20,7 @@ pub fn eval(t: Term, ct: &ClassTable) -> Result<Term, Error> {
 fn eval_once(t: Term, ct: &ClassTable) -> Result<Term, Error> {
     match t {
         Term::Var(v) => Err(Error::FreeVar(v)),
+        Term::Const(i) => Ok(Term::Const(i)),
         //E-Field
         Term::FieldProjection(t, field) if !t.is_value() => {
             let t_evaled = eval_once(*t, ct)?;

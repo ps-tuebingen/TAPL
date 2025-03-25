@@ -4,7 +4,7 @@ use std::fmt;
 #[derive(Debug, Clone)]
 pub struct ConstructorDeclaration {
     pub name: ClassName,
-    pub super_args: Vec<(ClassName, FieldName)>,
+    pub super_args: Vec<FieldName>,
     pub self_args: Vec<(ClassName, FieldName)>,
     pub self_fields: Vec<FieldName>,
 }
@@ -17,21 +17,12 @@ impl ConstructorDeclaration {
 
 impl fmt::Display for ConstructorDeclaration {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let super_strs: Vec<String> = self
-            .super_args
-            .iter()
-            .map(|(cl, arg)| format!("{cl} {arg}"))
-            .collect();
         let self_strs: Vec<String> = self
             .self_args
             .iter()
             .map(|(cl, arg)| format!("{cl} {arg}"))
             .collect();
-        let super_ctor: Vec<String> = self
-            .super_args
-            .iter()
-            .map(|(_, arg)| arg.to_string())
-            .collect();
+        let super_ctor: Vec<String> = self.super_args.iter().map(|arg| arg.to_string()).collect();
         let self_assign: Vec<String> = self
             .self_args
             .iter()
@@ -40,9 +31,8 @@ impl fmt::Display for ConstructorDeclaration {
             .collect();
         write!(
             f,
-            "{}({}, {}) {{\n\t super({})\n\t{}  \n}}",
+            "{}({}) {{\n\t super({})\n\t{}  \n}}",
             self.name,
-            super_strs.join(", "),
             self_strs.join(", "),
             super_ctor.join(", "),
             self_assign.join("\n\t")

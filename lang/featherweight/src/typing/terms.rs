@@ -8,6 +8,7 @@ use crate::{
 pub fn check(t: &Term, env: &mut Env, ct: &ClassTable) -> Result<ClassName, Error> {
     match t {
         Term::Var(v) => env.get(v).cloned().ok_or(Error::FreeVar(v.clone())),
+        Term::Const(_) => Ok("Int".to_owned()),
         Term::FieldProjection(t, field) => {
             let ty = check(t, env, ct)?;
             let fields = lookup_fields(&ty, ct)?;
