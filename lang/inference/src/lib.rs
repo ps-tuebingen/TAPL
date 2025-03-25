@@ -1,5 +1,6 @@
 pub mod bidirectional;
 pub mod constraints;
+pub mod parser;
 pub mod syntax;
 pub mod types;
 

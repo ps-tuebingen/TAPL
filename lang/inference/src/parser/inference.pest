@@ -1,0 +1,145 @@
+WHITESPACE = _{ " " | "\n" | "\t" }
+program = { SOI ~ term ~ EOI }
+
+// Keywords
+kw_unit = { "unit" }
+kw_true = { "true" }
+kw_false = { "false" } 
+kw_zero = { "zero" }
+kw_nothing = { "nothing" }
+kw_if = { "if" }
+kw_else = { "else" }
+kw_succ = { "succ" }
+kw_pred = { "pred" }
+kw_iszero = { "iszero" }
+kw_let = { "let" }
+kw_in = { "in" }
+kw_inl = { "inl" }
+kw_inr = { "inr" }
+kw_case = { "case" } 
+kw_of = { "of" }
+kw_something = { "something" }
+kw_fix = { "fix" }
+kw_nil = { "Nil" }
+kw_cons = { "cons" }
+kw_isnil = { "isnil" }
+kw_head = { "head" }
+kw_tail = { "tail" }
+kw_as = { "as" }
+kw_tyunit = { "Unit" }
+kw_tynat = { "Nat" }
+kw_tybool = { "Bool" }
+kw_tyoption = { "Optional" }
+kw_tylist = { "List" }
+
+keyword = { 
+  | kw_unit
+  | kw_true 
+  | kw_false
+  | kw_zero
+  | kw_nothing
+  | kw_if
+  | kw_else
+  | kw_succ
+  | kw_pred 
+  | kw_iszero
+  | kw_let 
+  | kw_in 
+  | kw_inl
+  | kw_inr
+  | kw_case
+  | kw_of 
+  | kw_fix 
+  | kw_something
+  | kw_nil
+  | kw_cons
+  | kw_isnil
+  | kw_head
+  | kw_tail
+  | kw_as
+  | kw_tyunit
+  | kw_tybool
+  | kw_tynat
+  | kw_tyoption
+  | kw_tylist
+}
+
+term = { prim_term ~ left_rec? } 
+
+prim_term = {
+  | const 
+  | lambda_term
+  | if_term
+  | succ_term
+  | pred_term
+  | iszero_term
+  | let_term
+  | pair_term
+  | left_term
+  | right_term
+  | sumcase_term
+  | something_term
+  | fix_term 
+  | cons_term
+  | isnil_term
+  | head_term
+  | tail_term
+  | paren_term
+  | number
+  | variable 
+}
+
+const = { kw_unit | kw_true | kw_false | kw_zero | kw_nothing | kw_nil }
+paren_term = { "(" ~ term ~ ")" }
+
+lambda_term = { "\\" ~ variable ~ ":" ~ type ~ "." ~ term }
+if_term = { kw_if ~ "(" ~ term ~ ")" ~ "{" ~ term ~ "}" ~ kw_else ~ "{" ~ term ~ "}" }
+succ_term = { kw_succ ~ paren_term } 
+pred_term = { kw_pred ~ paren_term } 
+iszero_term = { kw_iszero ~ paren_term } 
+let_term = { kw_let ~ "(" ~ variable ~ "=" ~ term ~ ")" ~ kw_in ~ term }
+pair_term = { "{" ~ term ~ "," ~ term ~ "}" }
+left_term = { kw_inl ~ paren_term }
+right_term = { kw_inr ~ paren_term }
+sumcase_term = { kw_case ~ term ~ kw_of ~ "{" ~ sumcase_patterns ~ "}" }
+sumcase_patterns = { (left_pattern ~ "|" ~ right_pattern) | (right_pattern ~ "|" ~ left_pattern) }
+left_pattern = { kw_inl ~ "(" ~ variable ~ ")" ~ "=>" ~ term }
+right_pattern = { kw_inr ~ "(" ~ variable ~ ")" ~ "=>" ~ term }
+something_term = { kw_something ~ paren_term }
+fix_term = { kw_fix ~ paren_term }
+cons_term = { kw_cons ~ "(" ~ term ~ "," ~ term ~ ")" }
+isnil_term = { kw_isnil ~ paren_term }
+head_term = { kw_head ~ paren_term }
+tail_term = { kw_tail ~ paren_term }
+
+variable = @{ !(keyword ~ !ASCII_ALPHANUMERIC) ~ ( !(WHITESPACE) ~ (ASCII_ALPHA|ASCII_DIGIT) )+ | "_" }
+number = { ASCII_DIGIT+ }
+
+left_rec = { ascribe_term |  pair_fst | pair_snd | term  }
+ascribe_term = { kw_as ~ type } 
+pair_fst = { "." ~ "0" }
+pair_snd = { "." ~ "1" }
+
+// Types
+type = { prim_type ~ leftrec_type? }
+prim_type = { 
+  | const_type 
+  | list_type 
+  | option_type 
+  | paren_type 
+}
+
+paren_type = { "(" ~ type ~ ")" }
+const_type  = { kw_tyunit | kw_tynat | kw_tybool }
+option_type = { kw_tyoption ~ paren_type } 
+list_type = { kw_tylist ~ paren_type } 
+
+leftrec_type = {
+  | fun_type 
+  | prod_type 
+  | sum_type 
+}
+
+fun_type = { "->" ~ type } 
+prod_type = { "x" ~ type }
+sum_type = { "+" ~ type }
