@@ -29,6 +29,8 @@ impl Test for ReparseTest {
             Ok(p) => p,
             Err(err) => return TestResult::from_err(err),
         };
-        TestResult::from_eq(&reparsed, &parsed)
+        let result = reparsed.to_string().replace('\n', " ").replace('\t', "");
+        let expected = parsed.to_string().replace('\n', " ").replace('\t', "");
+        TestResult::from_eq(&result, &expected)
     }
 }

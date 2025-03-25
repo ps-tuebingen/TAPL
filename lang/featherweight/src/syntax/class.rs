@@ -50,7 +50,7 @@ impl fmt::Display for ClassDeclaration {
             .collect();
         write!(
             f,
-            "class {} extends {} {{\n\t{}\n\t{}\n\t{}\n}}",
+            "class {} extends {} {{\n\t{}\n\n\t{}\n\t{}\n}}",
             self.name,
             self.parent,
             field_strs.join("\n\t"),

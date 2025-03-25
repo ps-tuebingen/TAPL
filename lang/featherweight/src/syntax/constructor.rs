@@ -31,7 +31,7 @@ impl fmt::Display for ConstructorDeclaration {
             .collect();
         write!(
             f,
-            "{}({}) {{\n\t super({});\n\t{}  \n}}",
+            "{}({}) {{\n\t super({});\n\t{}\n}}",
             self.name,
             self_strs.join(", "),
             super_ctor.join(", "),
