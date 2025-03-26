@@ -29,6 +29,8 @@ fn pair_to_prim_ty(p: Pair<'_, Rule>) -> Result<Type, Error> {
     match p.as_rule() {
         Rule::const_ty => str_to_type(p.as_str()),
         Rule::forall_ty => pair_to_forall(p),
+        Rule::forall_unbounded => pair_to_forall_unbounded(p),
+        Rule::exists_unbounded => pair_to_exists_unbounded(p),
         Rule::exists_ty => pair_to_exists(p),
         Rule::record_ty => pair_to_rec_ty(p),
         Rule::paren_type => {
@@ -77,6 +79,21 @@ fn pair_to_forall(p: Pair<'_, Rule>) -> Result<Type, Error> {
     })
 }
 
+fn pair_to_forall_unbounded(p: Pair<'_, Rule>) -> Result<Type, Error> {
+    let mut inner = pair_to_n_inner(p, vec!["Forall Variable", "Forall Body"])?;
+    let var_rule = inner.remove(0);
+    let mut var_inner = pair_to_n_inner(var_rule, vec!["Forall Keyword", "Forall Variable"])?;
+    var_inner.remove(0);
+    let var = var_inner.remove(0).as_str().trim().to_owned();
+    let body_rule = inner.remove(0);
+    let body_ty = pair_to_type(body_rule)?;
+    Ok(Type::Forall {
+        var,
+        sup_ty: Box::new(Type::Top),
+        ty: Box::new(body_ty),
+    })
+}
+
 fn pair_to_exists(p: Pair<'_, Rule>) -> Result<Type, Error> {
     let mut inner = pair_to_n_inner(
         p,
@@ -97,6 +114,22 @@ fn pair_to_exists(p: Pair<'_, Rule>) -> Result<Type, Error> {
         var,
         sup_ty: Box::new(sup_ty),
         ty: Box::new(ty),
+    })
+}
+
+fn pair_to_exists_unbounded(p: Pair<'_, Rule>) -> Result<Type, Error> {
+    let mut inner = pair_to_n_inner(p, vec!["Exists Variable", "Exists Type"])?;
+    let var_rule = inner.remove(0);
+    let mut var_inner = pair_to_n_inner(var_rule, vec!["Exists Keyword", "Exists Variable"])?;
+    var_inner.remove(0);
+    let var = var_inner.remove(0).as_str().trim().to_string();
+    let body_rule = inner.remove(0);
+    let body_ty = pair_to_type(body_rule)?;
+
+    Ok(Type::Exists {
+        var,
+        sup_ty: Box::new(Type::Top),
+        ty: Box::new(body_ty),
     })
 }
 

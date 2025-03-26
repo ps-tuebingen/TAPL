@@ -12,4 +12,4 @@ let {Counter,counter} =
       inc: Counter -> Counter 
     }
   } in 
-  counter.get (counter.inc (counter.inc (counter.new)))
+  (counter.get)((counter.inc) ((counter.inc) (counter.new)))

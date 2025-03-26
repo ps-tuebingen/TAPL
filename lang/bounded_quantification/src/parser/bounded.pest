@@ -63,7 +63,9 @@ type = { prim_type ~ left_rec_ty? }
 prim_type = {
   | const_ty
   | forall_ty 
+  | forall_unbounded
   | exists_ty 
+  | exists_unbounded
   | record_ty
   | paren_type
   | variable 
@@ -72,8 +74,10 @@ prim_type = {
 paren_type = { "(" ~ type ~ ")" }
 const_ty = { kw_tytop | kw_tynat }
 forall_ty = { forall_start ~ "<:" ~ type ~ "." ~ type } 
+forall_unbounded = { forall_start  ~ "." ~ type }
 forall_start = ${ kw_forall ~ " " ~ variable }
 exists_ty = { "{" ~ exists_start ~ "<:" ~ type ~ "," ~ type ~ "}"  } 
+exists_unbounded = { "{" ~ exists_start ~ "," ~ type ~ "}" }
 exists_start = ${ kw_exists ~ " " ~ variable }
 record_ty = { "{" ~ variable ~ ":" ~ type ~ ("," ~ variable ~ ":" ~ type)* ~ "}" }
 
