@@ -13,6 +13,7 @@ members = [
     "tests/featherweight",
     "tests/inference",
     "tests/systemf",
+    "tests/boundedquantification",
 
     "lang/stlc",
     "lang/untyped_lambda",

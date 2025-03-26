@@ -1,0 +1,15 @@
+[package]
+name = "e2e_bounded"
+version = "0.1.0"
+edition = "2021"
+
+[[test]]
+name = "bounded"
+path = "src/bounded.rs"
+harness=false
+
+[dependencies]
+serde = {version="1.0.219", features=["derive"]}
+
+test_common = { path="../test_common" }
+bounded_quantification = { path="../../lang/bounded_quantification" }

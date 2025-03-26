@@ -8,3 +8,4 @@ pub const SUBTYPES_PATH: &str = "subtypes";
 pub const FEATHERWEIGHT_PATH: &str = "featherweight";
 pub const INFERENCE_PATH: &str = "inference";
 pub const SYSTEMF_PATH: &str = "systemf";
+pub const BOUNDED_PATH: &str = "bounded";
