@@ -1,6 +1,7 @@
 use clap::{Parser, Subcommand};
 use std::{error::Error, fmt, fs::read_to_string, path::PathBuf};
 
+pub mod bounded_quantification;
 pub mod exceptions;
 pub mod featherweight;
 pub mod inference;
@@ -30,6 +31,7 @@ pub enum Command {
     Featherweight(featherweight::Args),
     Inference(inference::Args),
     SystemF(system_f::Args),
+    BoundedQuantification(bounded_quantification::Args),
 }
 
 #[derive(Debug, clap::Args)]
@@ -75,6 +77,9 @@ pub fn run() -> Result<(), String> {
         Command::Featherweight(args) => featherweight::exec(args).map_err(|err| err.to_string()),
         Command::Inference(args) => inference::exec(args).map_err(|err| err.to_string()),
         Command::SystemF(args) => system_f::exec(args).map_err(|err| err.to_string()),
+        Command::BoundedQuantification(args) => {
+            bounded_quantification::exec(args).map_err(|err| err.to_string())
+        }
     }
 }
 
