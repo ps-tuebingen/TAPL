@@ -24,7 +24,7 @@ impl TestSuite for BoundedTests {
     }
 
     fn load(&self) -> Result<Vec<Box<dyn Test>>, Error> {
-        let contents: Vec<TestContents<NamelessConfig>> = load_dir(&self.source_dir, "lam")?;
+        let contents: Vec<TestContents<NamelessConfig>> = load_dir(&self.source_dir, "bd")?;
         let mut tests = vec![];
         for source in contents {}
         Ok(tests)

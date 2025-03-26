@@ -1,0 +1,1 @@
+\X<:{a:Nat}.\x:X.{orig=x,asucc=succ(x.a)}

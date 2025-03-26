@@ -1,0 +1,1 @@
+\X.\Y.\p:(forall Z. (X->Y->Z) ->Z).(p[X])(\x:X.\y:Y.x)
