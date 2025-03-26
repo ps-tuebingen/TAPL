@@ -9,6 +9,7 @@ pub mod nameless_representation;
 pub mod references;
 pub mod stlc;
 pub mod subtypes;
+pub mod system_f;
 pub mod untyped_arithmetic;
 pub mod untyped_lambda;
 
@@ -31,6 +32,7 @@ pub enum Command {
     Subtypes(subtypes::Args),
     Featherweight(featherweight::Args),
     Inference(inference::Args),
+    SystemF(system_f::Args),
 }
 
 #[derive(Debug, clap::Args)]
@@ -75,6 +77,7 @@ pub fn run() -> Result<(), String> {
         Command::Subtypes(args) => subtypes::exec(args).map_err(|err| err.to_string()),
         Command::Featherweight(args) => featherweight::exec(args).map_err(|err| err.to_string()),
         Command::Inference(args) => inference::exec(args).map_err(|err| err.to_string()),
+        Command::SystemF(args) => system_f::exec(args).map_err(|err| err.to_string()),
     }
 }
 

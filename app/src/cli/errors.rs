@@ -17,6 +17,10 @@ use stlc::{
     eval_context::errors::Error as StlcEvalCtxErr, parser::errors::Error as StlcParseErr,
 };
 use subtypes::{parser::errors::Error as SubParseErr, typing::errors::Error as SubCheckErr};
+use system_f::{
+    check::errors::Error as FCheckErr, eval::errors::Error as FEvalErr,
+    parser::errors::Error as FParseErr,
+};
 use untyped_arithmetic::parse::errors::Error as ArithErr;
 use untyped_lambda::parse::errors::Error as LamErr;
 
@@ -41,6 +45,9 @@ pub enum Error {
     InfParse(InfParseErr),
     InfBi(InfBiErr),
     InfCons(InfConsErr),
+    FParse(FParseErr),
+    FCheck(FCheckErr),
+    FEval(FEvalErr),
 }
 
 impl fmt::Display for Error {
@@ -65,6 +72,9 @@ impl fmt::Display for Error {
             Error::InfParse(err) => err.fmt(f),
             Error::InfBi(err) => err.fmt(f),
             Error::InfCons(err) => err.fmt(f),
+            Error::FParse(err) => err.fmt(f),
+            Error::FCheck(err) => err.fmt(f),
+            Error::FEval(err) => err.fmt(f),
         }
     }
 }
@@ -182,5 +192,23 @@ impl From<InfBiErr> for Error {
 impl From<InfConsErr> for Error {
     fn from(err: InfConsErr) -> Error {
         Error::InfCons(err)
+    }
+}
+
+impl From<FParseErr> for Error {
+    fn from(err: FParseErr) -> Error {
+        Error::FParse(err)
+    }
+}
+
+impl From<FCheckErr> for Error {
+    fn from(err: FCheckErr) -> Error {
+        Error::FCheck(err)
+    }
+}
+
+impl From<FEvalErr> for Error {
+    fn from(err: FEvalErr) -> Error {
+        Error::FEval(err)
     }
 }
