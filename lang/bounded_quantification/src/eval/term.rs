@@ -17,6 +17,8 @@ impl Eval for Term {
             Term::TyApp(app) => app.eval(),
             Term::Pack(pack) => pack.eval(),
             Term::Unpack(unpack) => unpack.eval(),
+            Term::Record(rec) => rec.eval(),
+            Term::Projection(proj) => proj.eval(),
         }
     }
 }

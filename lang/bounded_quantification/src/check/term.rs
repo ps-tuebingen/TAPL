@@ -22,6 +22,8 @@ impl Check for Term {
             Term::TyApp(app) => app.check(env),
             Term::Pack(pack) => pack.check(env),
             Term::Unpack(unpack) => unpack.check(env),
+            Term::Record(rec) => rec.check(env),
+            Term::Projection(proj) => proj.check(env),
         }
     }
 }

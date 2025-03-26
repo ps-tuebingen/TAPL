@@ -42,6 +42,18 @@ pub fn check_subtype(lower: Type, upper: Type, env: &mut Env) -> Result<(), Erro
             env.add_tyvar(&var, &sup_ty);
             check_subtype(*ty, super_subst, env)
         }
+        Type::Record(mut rec1) => {
+            let rec2 = upper.as_record().map_err(error_fun.clone())?;
+            for (label, ty2) in rec2.into_iter() {
+                let ty1 = if let Some(ty) = rec1.remove(&label) {
+                    ty
+                } else {
+                    return Err(error_fun(ErrorKind::UndefinedLabel(label.clone())));
+                };
+                check_subtype(ty1.clone(), ty2, env)?;
+            }
+            Ok(())
+        }
         Type::Nat => Err(error_fun(ErrorKind::TypeMismatch {
             found: Type::Nat,
             expected: "Subtype".to_owned(),

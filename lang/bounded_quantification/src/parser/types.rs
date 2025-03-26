@@ -48,7 +48,7 @@ fn pair_to_leftrec_ty(p: Pair<'_, Rule>, ty: Type) -> Result<Type, Error> {
 
 fn str_to_type(s: &str) -> Result<Type, Error> {
     match s.to_lowercase().trim() {
-        "nat" => todo!(),
+        "nat" => Ok(Type::Nat),
         "top" => Ok(Type::Top),
         s => Err(Error::UnknownKw(s.to_owned())),
     }

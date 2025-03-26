@@ -1,5 +1,5 @@
 use super::{pair_to_n_inner, pair_to_type, Error, Rule};
-use crate::syntax::{App, Lambda, LambdaSub, Pack, Term, TyApp, Unpack};
+use crate::syntax::{App, Const, Lambda, LambdaSub, Pack, Pred, Succ, Term, TyApp, Unpack};
 use pest::iterators::Pair;
 
 pub fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
@@ -35,6 +35,16 @@ fn pair_to_prim_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
         Rule::pack_term => pair_to_pack(p).map(|pack| pack.into()),
         Rule::unpack_term => pair_to_unpack(p).map(|unp| unp.into()),
         Rule::rec_term => todo!(),
+        Rule::succ_term => pair_to_succ(p).map(|s| s.into()),
+        Rule::pred_term => pair_to_pred(p).map(|p| p.into()),
+        Rule::number => {
+            let num = p
+                .as_str()
+                .trim()
+                .parse::<i64>()
+                .map_err(|_| Error::UnknownKw(p.as_str().to_owned()))?;
+            Ok(Const { i: num }.into())
+        }
         Rule::variable => Ok(Term::Var(p.as_str().trim().to_owned())),
         r => Err(Error::unexpected(r, "Non Left-Recursive Term")),
     }
@@ -148,5 +158,25 @@ fn pair_to_tyapp(p: Pair<'_, Rule>, t: Term) -> Result<TyApp, Error> {
     Ok(TyApp {
         term: Box::new(t),
         ty,
+    })
+}
+
+fn pair_to_succ(p: Pair<'_, Rule>) -> Result<Succ, Error> {
+    let mut inner = pair_to_n_inner(p, vec!["Succ Keyword", "Succ Argument"])?;
+    inner.remove(0);
+    let arg_rule = inner.remove(0);
+    let arg_term = pair_to_prim_term(arg_rule)?;
+    Ok(Succ {
+        term: Box::new(arg_term),
+    })
+}
+
+fn pair_to_pred(p: Pair<'_, Rule>) -> Result<Pred, Error> {
+    let mut inner = pair_to_n_inner(p, vec!["Pred Keyword", "Pred Argument"])?;
+    inner.remove(0);
+    let arg_rule = inner.remove(0);
+    let arg = pair_to_prim_term(arg_rule)?;
+    Ok(Pred {
+        term: Box::new(arg),
     })
 }

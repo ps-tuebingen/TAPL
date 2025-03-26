@@ -1,6 +1,6 @@
 use crate::{
     eval::Value,
-    syntax::{Term, Var},
+    syntax::{Label, Term, Var},
     types::{Type, TypeVar},
 };
 use std::fmt;
@@ -11,6 +11,7 @@ pub enum ErrorKind {
     TypeMismatch { found: Type, expected: String },
     FreeTypeVar(TypeVar),
     FreeVar(Var),
+    UndefinedLabel(Label),
 }
 
 #[derive(Debug)]
@@ -81,6 +82,7 @@ impl fmt::Display for ErrorKind {
                 write!(f, "Unexpected type {found}, expected {expected}")
             }
             ErrorKind::FreeTypeVar(var) => write!(f, "Type Variable {var} appars free"),
+            ErrorKind::UndefinedLabel(label) => write!(f, "Undefined Label {label}"),
         }
     }
 }

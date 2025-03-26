@@ -1,5 +1,6 @@
 use super::SubstTy;
 use crate::types::{Type, TypeVar};
+use std::collections::HashMap;
 
 impl SubstTy for Type {
     fn subst_ty(self, v: &TypeVar, ty: Type) -> Self {
@@ -57,6 +58,14 @@ impl SubstTy for Type {
                         ty: Box::new(inner.subst_ty(v, ty)),
                     }
                 }
+            }
+            Type::Record(recs) => {
+                let mut new_recs = HashMap::new();
+                for (lb, typ) in recs.into_iter() {
+                    let ty_subst = typ.subst_ty(v, ty.clone());
+                    new_recs.insert(lb, ty_subst);
+                }
+                Type::Record(new_recs)
             }
         }
     }

@@ -1,5 +1,6 @@
 WHITESPACE = _{ " " | "\n" | "\t" }
 variable = @{ !(keyword ~ !ASCII_ALPHANUMERIC) ~ ( !(WHITESPACE) ~ (ASCII_ALPHA|ASCII_DIGIT) )+ | "_" }
+number = { ASCII_DIGIT+ }
 
 program = { SOI ~ term ~ EOI }
 
@@ -9,6 +10,8 @@ kw_let = { "let" }
 kw_in = { "in" }
 kw_forall = { "forall" }
 kw_exists = { "exists" }
+kw_succ = { "succ" }
+kw_pred = { "pred" }
 kw_tytop = { "Top" }
 kw_tynat = { "Nat" }
 
@@ -31,6 +34,9 @@ prim_term = {
   | pack_term
   | unpack_term
   | rec_term 
+  | succ_term 
+  | pred_term
+  | number
   | variable
 }
 
@@ -40,6 +46,8 @@ lambda_sub = { "\\" ~ variable ~ "<:" ~ type ~ "." ~ term }
 rec_term = { "{" ~ variable ~ "=" ~ term ~ ("," ~ variable ~ "=" ~ term)* ~ "}" }
 pack_term = { "{" ~ "*" ~ type ~ "," ~ term ~ "}" ~ kw_as ~ type }
 unpack_term = { kw_let ~ "{" ~ variable ~ "," ~ variable ~ "}" ~ "=" ~ term ~ kw_in ~ term }
+succ_term = { kw_succ ~ paren_term } 
+pred_term = { kw_pred ~ paren_term }
 
 left_rec = { tyapp | paren_tyapp | term }
 tyapp = { "[" ~ type ~ "]" }

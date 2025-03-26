@@ -1,14 +1,17 @@
 use std::fmt;
 pub type Var = String;
+pub type Label = String;
 
 pub mod lambda;
 pub mod lambda_sub;
 pub mod nat;
 pub mod pack;
+pub mod record;
 pub use lambda::{App, Lambda};
 pub use lambda_sub::{LambdaSub, TyApp};
 pub use nat::{Const, Pred, Succ};
 pub use pack::{Pack, Unpack};
+pub use record::{Projection, Record};
 
 #[derive(Clone, Debug)]
 pub enum Term {
@@ -22,6 +25,8 @@ pub enum Term {
     TyApp(TyApp),
     Pack(Pack),
     Unpack(Unpack),
+    Record(Record),
+    Projection(Projection),
 }
 
 impl From<&str> for Term {
@@ -43,6 +48,8 @@ impl fmt::Display for Term {
             Term::TyApp(app) => app.fmt(f),
             Term::Pack(pack) => pack.fmt(f),
             Term::Unpack(unpack) => unpack.fmt(f),
+            Term::Record(rec) => rec.fmt(f),
+            Term::Projection(proj) => proj.fmt(f),
         }
     }
 }

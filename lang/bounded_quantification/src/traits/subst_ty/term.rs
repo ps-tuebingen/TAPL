@@ -17,6 +17,8 @@ impl SubstTy for Term {
             Term::TyApp(app) => app.subst_ty(v, ty).into(),
             Term::Pack(pack) => pack.subst_ty(v, ty).into(),
             Term::Unpack(unpack) => unpack.subst_ty(v, ty).into(),
+            Term::Record(rec) => rec.subst_ty(v, ty).into(),
+            Term::Projection(proj) => proj.subst_ty(v, ty).into(),
         }
     }
 }

@@ -20,6 +20,8 @@ impl SubstTerm for Term {
             Term::TyApp(app) => app.subst(v, t),
             Term::Pack(pack) => pack.subst(v, t),
             Term::Unpack(unpack) => unpack.subst(v, t),
+            Term::Record(rec) => rec.subst(v, t),
+            Term::Projection(proj) => proj.subst(v, t),
         }
     }
 }

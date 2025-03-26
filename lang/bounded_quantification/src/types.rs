@@ -1,5 +1,8 @@
-use crate::errors::ErrorKind;
-use std::{collections::HashSet, fmt};
+use crate::{errors::ErrorKind, syntax::Label};
+use std::{
+    collections::{HashMap, HashSet},
+    fmt,
+};
 
 pub type TypeVar = String;
 
@@ -22,6 +25,7 @@ pub enum Type {
         sup_ty: Box<Type>,
         ty: Box<Type>,
     },
+    Record(HashMap<Label, Type>),
 }
 
 impl Type {
@@ -81,6 +85,17 @@ impl Type {
         }
     }
 
+    pub fn as_record(self) -> Result<HashMap<Label, Type>, ErrorKind> {
+        if let Type::Record(recs) = self {
+            Ok(recs)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self,
+                expected: "Record Type".to_owned(),
+            })
+        }
+    }
+
     pub fn check_equal(&self, other: &Type) -> Result<(), ErrorKind> {
         if self == other {
             Ok(())
@@ -112,6 +127,13 @@ impl Type {
                 let mut vars = ty.free_tyvars();
                 vars.remove(var);
                 vars.extend(sup_ty.free_tyvars());
+                vars
+            }
+            Type::Record(recs) => {
+                let mut vars = HashSet::new();
+                for (_, ty) in recs.iter() {
+                    vars.extend(ty.free_tyvars());
+                }
                 vars
             }
         }
@@ -157,6 +179,14 @@ impl Type {
                 sup_ty: Box::new(sup_ty.rename(v.clone(), new_name.clone())),
                 ty: Box::new(ty.rename(v, new_name)),
             },
+            Type::Record(recs) => {
+                let mut new_recs = HashMap::new();
+                for (lb, ty) in recs.into_iter() {
+                    let ty_renamed = ty.rename(v.clone(), new_name.clone());
+                    new_recs.insert(lb, ty_renamed);
+                }
+                Type::Record(new_recs)
+            }
         }
     }
 }
@@ -176,6 +206,13 @@ impl fmt::Display for Type {
             Type::Fun { from, to } => write!(f, "({from})→({to})"),
             Type::Forall { var, sup_ty, ty } => write!(f, "∀{var}<:{sup_ty}.{ty}"),
             Type::Exists { var, sup_ty, ty } => write!(f, "∃{var}<:{sup_ty}.{ty}"),
+            Type::Record(recs) => {
+                let mut recs: Vec<(&Label, &Type)> = recs.iter().collect();
+                recs.sort_by(|(lb1, _), (lb2, _)| lb1.cmp(lb2));
+                let rec_strs: Vec<String> =
+                    recs.iter().map(|(lb, ty)| format!("{lb}:{ty}")).collect();
+                write!(f, "{{ {} }}", rec_strs.join(", "))
+            }
         }
     }
 }

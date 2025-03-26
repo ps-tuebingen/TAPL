@@ -9,6 +9,7 @@ pub mod lambda;
 pub mod lambda_sub;
 pub mod nat;
 pub mod pack;
+pub mod record;
 pub mod subtype;
 pub mod term;
 pub use subtype::check_subtype;

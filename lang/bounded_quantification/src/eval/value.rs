@@ -1,9 +1,9 @@
 use crate::{
     errors::ErrorKind,
-    syntax::{Const, Lambda, LambdaSub, Pack, Term, Var},
+    syntax::{Const, Label, Lambda, LambdaSub, Pack, Record, Term, Var},
     types::Type,
 };
-use std::fmt;
+use std::{collections::HashMap, fmt};
 
 #[derive(Debug, Clone)]
 pub enum Value {
@@ -23,6 +23,7 @@ pub enum Value {
         outer_ty: Type,
     },
     Const(i64),
+    Record(HashMap<Label, Value>),
 }
 
 impl Value {
@@ -74,6 +75,17 @@ impl Value {
             })
         }
     }
+
+    pub fn as_record(self) -> Result<HashMap<Label, Value>, ErrorKind> {
+        if let Value::Record(recs) = self {
+            Ok(recs)
+        } else {
+            Err(ErrorKind::BadValue {
+                found: self,
+                expected: "Record".to_owned(),
+            })
+        }
+    }
 }
 
 impl From<Value> for Term {
@@ -102,6 +114,10 @@ impl From<Value> for Term {
             }
             .into(),
             Value::Const(i) => Const { i }.into(),
+            Value::Record(recs) => Record {
+                records: recs.into_iter().map(|(lb, v)| (lb, v.into())).collect(),
+            }
+            .into(),
         }
     }
 }
