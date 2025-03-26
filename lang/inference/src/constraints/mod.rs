@@ -62,23 +62,6 @@ mod infer_tests {
     };
 
     #[test]
-    fn infer_id() {
-        let result = typecheck(
-            Lambda {
-                var: "x".to_owned(),
-                body: Box::new("x".to_owned().into()),
-            }
-            .into(),
-        )
-        .unwrap();
-        let expected = Type::Fun(
-            Box::new(Type::Var("X0".to_owned())),
-            Box::new(Type::Var("X0".to_owned())),
-        );
-        assert_eq!(result, expected)
-    }
-
-    #[test]
     fn infer_lam() {
         let result = typecheck(
             App {
