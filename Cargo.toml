@@ -12,6 +12,7 @@ members = [
     "tests/subtypes",
     "tests/featherweight",
     "tests/inference",
+    "tests/systemf",
 
     "lang/stlc",
     "lang/untyped_lambda",

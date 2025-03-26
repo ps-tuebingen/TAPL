@@ -7,3 +7,4 @@ pub const EXCEPTIONS_PATH: &str = "exceptions";
 pub const SUBTYPES_PATH: &str = "subtypes";
 pub const FEATHERWEIGHT_PATH: &str = "featherweight";
 pub const INFERENCE_PATH: &str = "inference";
+pub const SYSTEMF_PATH: &str = "systemf";
