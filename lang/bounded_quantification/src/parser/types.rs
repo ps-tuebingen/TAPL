@@ -1,6 +1,7 @@
 use super::{pair_to_n_inner, Error, Rule};
 use crate::types::Type;
 use pest::iterators::Pair;
+use std::collections::HashMap;
 
 pub fn pair_to_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
     let mut inner = p.into_inner();
@@ -29,7 +30,7 @@ fn pair_to_prim_ty(p: Pair<'_, Rule>) -> Result<Type, Error> {
         Rule::const_ty => str_to_type(p.as_str()),
         Rule::forall_ty => pair_to_forall(p),
         Rule::exists_ty => pair_to_exists(p),
-        Rule::record_ty => todo!(),
+        Rule::record_ty => pair_to_rec_ty(p),
         Rule::paren_type => {
             let inner_rule = pair_to_n_inner(p, vec!["Type"])?.remove(0);
             pair_to_type(inner_rule)
@@ -106,4 +107,18 @@ fn pair_to_fun_ty(p: Pair<'_, Rule>, ty: Type) -> Result<Type, Error> {
         from: Box::new(ty),
         to: Box::new(to_ty),
     })
+}
+
+fn pair_to_rec_ty(p: Pair<'_, Rule>) -> Result<Type, Error> {
+    let mut recs = HashMap::new();
+    let mut inner = p.into_inner();
+    while let Some(label_rule) = inner.next() {
+        let label = label_rule.as_str().trim().to_owned();
+        let ty_rule = inner
+            .next()
+            .ok_or(Error::MissingInput("Record Type".to_owned()))?;
+        let ty = pair_to_type(ty_rule)?;
+        recs.insert(label, ty);
+    }
+    Ok(Type::Record(recs))
 }

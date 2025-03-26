@@ -1,6 +1,9 @@
 use super::{pair_to_n_inner, pair_to_type, Error, Rule};
-use crate::syntax::{App, Const, Lambda, LambdaSub, Pack, Pred, Succ, Term, TyApp, Unpack};
+use crate::syntax::{
+    App, Const, Lambda, LambdaSub, Pack, Pred, Projection, Record, Succ, Term, TyApp, Unpack,
+};
 use pest::iterators::Pair;
+use std::collections::HashMap;
 
 pub fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
     let mut inner = p.into_inner();
@@ -34,7 +37,7 @@ fn pair_to_prim_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
         Rule::lambda_sub => pair_to_lambda_sub(p).map(|lam| lam.into()),
         Rule::pack_term => pair_to_pack(p).map(|pack| pack.into()),
         Rule::unpack_term => pair_to_unpack(p).map(|unp| unp.into()),
-        Rule::rec_term => todo!(),
+        Rule::rec_term => pair_to_rec(p).map(|rec| rec.into()),
         Rule::succ_term => pair_to_succ(p).map(|s| s.into()),
         Rule::pred_term => pair_to_pred(p).map(|p| p.into()),
         Rule::number => {
@@ -52,6 +55,7 @@ fn pair_to_prim_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
 
 fn pair_to_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
     match p.as_rule() {
+        Rule::proj => pair_to_proj(p, t).map(|proj| proj.into()),
         Rule::tyapp => pair_to_tyapp(p, t).map(|app| app.into()),
         Rule::paren_tyapp => {
             let inner = pair_to_n_inner(p, vec!["Type Application"])?.remove(0);
@@ -178,5 +182,31 @@ fn pair_to_pred(p: Pair<'_, Rule>) -> Result<Pred, Error> {
     let arg = pair_to_prim_term(arg_rule)?;
     Ok(Pred {
         term: Box::new(arg),
+    })
+}
+
+fn pair_to_rec(p: Pair<'_, Rule>) -> Result<Record, Error> {
+    let mut inner = p.into_inner();
+    let mut recs = HashMap::new();
+    while let Some(label_rule) = inner.next() {
+        let label = label_rule.as_str().trim().to_owned();
+        let term_rule = inner
+            .next()
+            .ok_or(Error::MissingInput("Record Term".to_owned()))?;
+        let term = pair_to_term(term_rule)?;
+        recs.insert(label, term);
+    }
+    Ok(Record { records: recs })
+}
+
+fn pair_to_proj(p: Pair<'_, Rule>, t: Term) -> Result<Projection, Error> {
+    let label = pair_to_n_inner(p, vec!["Projection Target"])?
+        .remove(0)
+        .as_str()
+        .trim()
+        .to_owned();
+    Ok(Projection {
+        record: Box::new(t),
+        label,
     })
 }
