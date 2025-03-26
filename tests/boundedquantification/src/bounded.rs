@@ -8,6 +8,8 @@ use test_common::{
 
 mod parse_test;
 mod reparse_test;
+use parse_test::ParseTest;
+use reparse_test::ReparseTest;
 mod suite;
 
 use suite::BoundedTests;

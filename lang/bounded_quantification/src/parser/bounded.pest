@@ -10,6 +10,7 @@ kw_in = { "in" }
 kw_forall = { "forall" }
 kw_exists = { "exists" }
 kw_tytop = { "Top" }
+kw_tynat = { "Nat" }
 
 keyword = { 
  | kw_as
@@ -29,13 +30,15 @@ prim_term = {
   | lambda_sub
   | pack_term
   | unpack_term
+  | rec_term 
   | variable
 }
 
 paren_term = { "(" ~ term ~ ")" }
 lambda_term = { "\\" ~ variable ~ ":" ~ type ~ "." ~ term } 
 lambda_sub = { "\\" ~ variable ~ "<:" ~ type ~ "." ~ term }
-pack_term = { "{" ~ type ~ "," ~ term ~ "}" ~ kw_as ~ type }
+rec_term = { "{" ~ variable ~ "=" ~ term ~ ("," ~ variable ~ "=" ~ term)* ~ "}" }
+pack_term = { "{" ~ "*" ~ type ~ "," ~ term ~ "}" ~ kw_as ~ type }
 unpack_term = { kw_let ~ "{" ~ variable ~ "," ~ variable ~ "}" ~ "=" ~ term ~ kw_in ~ term }
 
 left_rec = { tyapp | paren_tyapp | term }
@@ -50,16 +53,18 @@ prim_type = {
   | const_ty
   | forall_ty 
   | exists_ty 
+  | record_ty
   | paren_type
   | variable 
 }
 
 paren_type = { "(" ~ type ~ ")" }
-const_ty = { kw_tytop }
+const_ty = { kw_tytop | kw_tynat }
 forall_ty = { forall_start ~ "<:" ~ type ~ "." ~ type } 
 forall_start = ${ kw_forall ~ " " ~ variable }
-exists_ty = { exists_start ~ "<:" ~ type ~ "." ~ type } 
+exists_ty = { "{" ~ exists_start ~ "<:" ~ type ~ "," ~ type ~ "}"  } 
 exists_start = ${ kw_exists ~ " " ~ variable }
+record_ty = { "{" ~ variable ~ ":" ~ type ~ ("," ~ variable ~ ":" ~ type)* ~ "}" }
 
 left_rec_ty = { fun_ty }
 fun_ty = { "->" ~ type }

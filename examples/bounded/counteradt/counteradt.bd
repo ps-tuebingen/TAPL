@@ -5,7 +5,7 @@
   }
 } as 
 {
-  exists Counter<:Nat, 
+  exists Counter<:Nat,
   { new: Counter,
     get: Counter -> Nat,
     inc: Counter -> Counter }}
