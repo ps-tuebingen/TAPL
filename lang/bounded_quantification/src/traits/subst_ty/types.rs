@@ -12,6 +12,7 @@ impl SubstTy for Type {
                 }
             }
             Type::Top => Type::Top,
+            Type::Nat => Type::Nat,
             Type::Fun { from, to } => Type::Fun {
                 from: Box::new(from.subst_ty(v, ty.clone())),
                 to: Box::new(to.subst_ty(v, ty)),

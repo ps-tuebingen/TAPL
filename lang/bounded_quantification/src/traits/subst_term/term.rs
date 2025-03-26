@@ -11,6 +11,9 @@ impl SubstTerm for Term {
                     Term::Var(var)
                 }
             }
+            Term::Const(c) => c.subst(v, t),
+            Term::Succ(s) => s.subst(v, t),
+            Term::Pred(p) => p.subst(v, t),
             Term::App(app) => app.subst(v, t),
             Term::Lambda(lam) => lam.subst(v, t),
             Term::LambdaSub(lam) => lam.subst(v, t),

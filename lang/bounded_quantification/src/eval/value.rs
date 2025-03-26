@@ -1,6 +1,6 @@
 use crate::{
     errors::ErrorKind,
-    syntax::{Lambda, LambdaSub, Pack, Term, Var},
+    syntax::{Const, Lambda, LambdaSub, Pack, Term, Var},
     types::Type,
 };
 use std::fmt;
@@ -22,6 +22,7 @@ pub enum Value {
         val: Box<Value>,
         outer_ty: Type,
     },
+    Const(i64),
 }
 
 impl Value {
@@ -62,6 +63,17 @@ impl Value {
             })
         }
     }
+
+    pub fn as_const(self) -> Result<i64, ErrorKind> {
+        if let Value::Const(i) = self {
+            Ok(i)
+        } else {
+            Err(ErrorKind::BadValue {
+                found: self,
+                expected: "Number".to_owned(),
+            })
+        }
+    }
 }
 
 impl From<Value> for Term {
@@ -89,6 +101,7 @@ impl From<Value> for Term {
                 outer_ty,
             }
             .into(),
+            Value::Const(i) => Const { i }.into(),
         }
     }
 }

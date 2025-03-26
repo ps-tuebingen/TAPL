@@ -2,6 +2,7 @@ use crate::syntax::{Term, Var};
 
 pub mod lambda;
 pub mod lambda_sub;
+pub mod nat;
 pub mod pack;
 pub mod term;
 

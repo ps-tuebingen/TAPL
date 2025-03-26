@@ -13,6 +13,9 @@ impl Check for Term {
                 .get(v)
                 .cloned()
                 .ok_or(Error::check(ErrorKind::FreeVar(v.clone()), &v.as_str())),
+            Term::Const(c) => c.check(env),
+            Term::Succ(s) => s.check(env),
+            Term::Pred(p) => p.check(env),
             Term::Lambda(lam) => lam.check(env),
             Term::App(app) => app.check(env),
             Term::LambdaSub(lam) => lam.check(env),

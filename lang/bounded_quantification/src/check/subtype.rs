@@ -42,6 +42,10 @@ pub fn check_subtype(lower: Type, upper: Type, env: &mut Env) -> Result<(), Erro
             env.add_tyvar(&var, &sup_ty);
             check_subtype(*ty, super_subst, env)
         }
+        Type::Nat => Err(error_fun(ErrorKind::TypeMismatch {
+            found: Type::Nat,
+            expected: "Subtype".to_owned(),
+        })),
         Type::Top => Err(error_fun(ErrorKind::TypeMismatch {
             found: Type::Top,
             expected: "Subtype".to_owned(),

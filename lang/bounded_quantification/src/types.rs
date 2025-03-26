@@ -7,6 +7,7 @@ pub type TypeVar = String;
 pub enum Type {
     Var(TypeVar),
     Top,
+    Nat,
     Fun {
         from: Box<Type>,
         to: Box<Type>,
@@ -95,6 +96,7 @@ impl Type {
         match self {
             Type::Var(v) => HashSet::from([v.clone()]),
             Type::Top => HashSet::new(),
+            Type::Nat => HashSet::new(),
             Type::Fun { from, to } => {
                 let mut vars = from.free_tyvars();
                 vars.extend(to.free_tyvars());
@@ -140,6 +142,7 @@ impl Type {
                 }
             }
             Type::Top => Type::Top,
+            Type::Nat => Type::Nat,
             Type::Fun { from, to } => Type::Fun {
                 from: Box::new(from.rename(v.clone(), new_name.clone())),
                 to: Box::new(to.rename(v, new_name)),
@@ -169,6 +172,7 @@ impl fmt::Display for Type {
         match self {
             Type::Var(v) => f.write_str(v),
             Type::Top => f.write_str("⊤"),
+            Type::Nat => f.write_str("Nat"),
             Type::Fun { from, to } => write!(f, "({from})→({to})"),
             Type::Forall { var, sup_ty, ty } => write!(f, "∀{var}<:{sup_ty}.{ty}"),
             Type::Exists { var, sup_ty, ty } => write!(f, "∃{var}<:{sup_ty}.{ty}"),
