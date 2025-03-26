@@ -8,7 +8,7 @@ mod nat;
 mod pack;
 mod record;
 use lambda::pair_to_lambda;
-use lambda_sub::{pair_to_lambda_sub, pair_to_tyapp};
+use lambda_sub::{pair_to_lambda_sub, pair_to_tyapp, pair_to_tylambda};
 use nat::{pair_to_pred, pair_to_succ};
 use pack::{pair_to_pack, pair_to_unpack};
 use record::{pair_to_proj, pair_to_rec};
@@ -43,6 +43,7 @@ fn pair_to_prim_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
         }
         Rule::lambda_term => pair_to_lambda(p).map(|lam| lam.into()),
         Rule::lambda_sub => pair_to_lambda_sub(p).map(|lam| lam.into()),
+        Rule::ty_lambda => pair_to_tylambda(p).map(|lam| lam.into()),
         Rule::pack_term => pair_to_pack(p).map(|pack| pack.into()),
         Rule::unpack_term => pair_to_unpack(p).map(|unp| unp.into()),
         Rule::rec_term => pair_to_rec(p).map(|rec| rec.into()),

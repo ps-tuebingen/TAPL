@@ -31,6 +31,7 @@ prim_term = {
   | paren_term
   | lambda_term 
   | lambda_sub
+  | ty_lambda
   | pack_term
   | unpack_term
   | rec_term 
@@ -43,6 +44,7 @@ prim_term = {
 paren_term = { "(" ~ term ~ ")" }
 lambda_term = { "\\" ~ variable ~ ":" ~ type ~ "." ~ term } 
 lambda_sub = { "\\" ~ variable ~ "<:" ~ type ~ "." ~ term }
+ty_lambda = { "\\" ~ variable ~ "." ~ term }
 rec_term = { "{" ~ variable ~ "=" ~ term ~ ("," ~ variable ~ "=" ~ term)* ~ "}" }
 pack_term = { "{" ~ "*" ~ type ~ "," ~ term ~ "}" ~ kw_as ~ type }
 unpack_term = { kw_let ~ "{" ~ variable ~ "," ~ variable ~ "}" ~ "=" ~ term ~ kw_in ~ term }
