@@ -71,8 +71,7 @@ fn pair_to_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
             pair_to_leftrec(inner, t)
         }
         Rule::term => {
-            let term_rule = pair_to_n_inner(p, vec!["Term"])?.remove(0);
-            let arg = pair_to_term(term_rule)?;
+            let arg = pair_to_term(p)?;
             Ok(App {
                 fun: Box::new(t),
                 arg: Box::new(arg),
