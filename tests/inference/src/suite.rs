@@ -13,6 +13,7 @@ pub struct InferenceTests {
 #[derive(serde::Deserialize)]
 pub struct InferenceConf {
     ty: String,
+    can_bi: bool,
 }
 
 impl InferenceTests {
@@ -36,6 +37,9 @@ impl TestSuite for InferenceTests {
             tests.push(Box::new(reparse_test) as Box<dyn Test>);
             let infer_test = InferTest::new(&tst.source_name, &tst.source_contents, &tst.conf.ty);
             tests.push(Box::new(infer_test) as Box<dyn Test>);
+            if !tst.conf.can_bi {
+                continue;
+            }
             let bidirectional_test =
                 BidirectionalTest::new(&tst.source_name, &tst.source_contents, &tst.conf.ty);
             tests.push(Box::new(bidirectional_test) as Box<dyn Test>);
