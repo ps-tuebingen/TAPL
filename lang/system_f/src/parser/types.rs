@@ -44,9 +44,12 @@ fn pair_to_leftrec_ty(p: Pair<'_, Rule>, ty: Type) -> Result<Type, Error> {
 }
 
 fn pair_to_forall(p: Pair<'_, Rule>) -> Result<Type, Error> {
-    let mut inner = pair_to_n_inner(p, vec!["Forall Keyword", "Forall Variable", "Forall Type"])?;
-    inner.remove(0);
-    let var = inner.remove(0).as_str().trim().to_owned();
+    let mut inner = pair_to_n_inner(p, vec!["Forall Variable", "Forall Type"])?;
+    let start_rule = inner.remove(0);
+    let mut start_inner = pair_to_n_inner(start_rule, vec!["Forall Keyword", "Forall Variable"])?;
+    start_inner.remove(0);
+    let var = start_inner.remove(0).as_str().trim().to_owned();
+
     let ty_rule = inner.remove(0);
     let ty = pair_to_type(ty_rule)?;
     Ok(Type::Forall(var, Box::new(ty)))

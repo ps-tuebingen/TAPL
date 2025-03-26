@@ -29,12 +29,13 @@ type = { prim_type ~ left_rec_ty? }
 
 prim_type = {
   | forall_ty
-  | variable 
   | paren_ty
+  | variable 
 }
 
 paren_ty = { "(" ~ type ~ ")" }
-forall_ty = ${ kw_forall ~ " " ~ variable ~ "." ~ type } 
+forall_ty = { forall_var ~ "." ~ type } 
+forall_var = ${kw_forall ~ " " ~ variable }
 
 left_rec_ty = { fun_ty }
 fun_ty = { "->" ~ type } 
