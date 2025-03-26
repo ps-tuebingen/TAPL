@@ -49,6 +49,10 @@ fn pair_to_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
             }
             .into())
         }
+        Rule::paren_tyapp => {
+            let ty_app_rule = pair_to_n_inner(p, vec!["Type Application"])?.remove(0);
+            pair_to_leftrec(ty_app_rule, t)
+        }
         Rule::term => {
             let arg = pair_to_term(p)?;
             Ok(App {
