@@ -1,0 +1,7 @@
+let (double = \f.\a.(f(f(a)))) in 
+let (b = (double(\x. x))(false)) in 
+if (b) {
+  1 
+} else{
+  2
+}

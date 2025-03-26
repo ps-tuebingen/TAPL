@@ -1,4 +1,4 @@
-use std::fmt;
+use std::{collections::HashSet, fmt};
 
 pub type TypeVar = String;
 
@@ -42,6 +42,32 @@ impl Type {
             ),
             Type::Optional(ty2) => Type::Optional(Box::new((*ty2).subst(v, ty))),
             Type::List(ty2) => Type::List(Box::new((*ty2).subst(v, ty))),
+        }
+    }
+
+    pub fn ty_vars(&self) -> HashSet<TypeVar> {
+        match self {
+            Type::Var(v) => HashSet::from([v.clone()]),
+            Type::Unit => HashSet::new(),
+            Type::Nat => HashSet::new(),
+            Type::Bool => HashSet::new(),
+            Type::Fun(from, to) => {
+                let mut vars = from.ty_vars();
+                vars.extend(to.ty_vars());
+                vars
+            }
+            Type::Prod(fst, snd) => {
+                let mut vars = fst.ty_vars();
+                vars.extend(snd.ty_vars());
+                vars
+            }
+            Type::Sum(fst, snd) => {
+                let mut vars = fst.ty_vars();
+                vars.extend(snd.ty_vars());
+                vars
+            }
+            Type::List(ty) => ty.ty_vars(),
+            Type::Optional(ty) => ty.ty_vars(),
         }
     }
 }

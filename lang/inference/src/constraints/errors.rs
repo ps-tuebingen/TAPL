@@ -5,6 +5,7 @@ use std::fmt;
 pub enum Error {
     VariableNotFound { var: Var },
     CannotUnify { ty1: Type, ty2: Type },
+    FreeTypevar(Type),
 }
 
 impl fmt::Display for Error {
@@ -14,6 +15,9 @@ impl fmt::Display for Error {
                 write!(f, "Could not find variable {var} in typing environment")
             }
             Error::CannotUnify { ty1, ty2 } => write!(f, "Cannot unify types {ty1} and {ty2}"),
+            Error::FreeTypevar(ty) => {
+                write!(f, "Type {ty} contains a free type var after unifying")
+            }
         }
     }
 }

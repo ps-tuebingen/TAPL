@@ -16,26 +16,34 @@ pub fn typecheck(term: Term) -> Result<Type, Error> {
     let mut state = GenState::default();
     let ty = term.gen_constraints(&mut state);
     let unified = unify(state.constrs)?;
-    Ok(apply_unifier(unified, ty))
+    let num_vars = unified.keys().len();
+    let mut subst = ty;
+    for _ in 0..(num_vars + 1) {
+        if subst.ty_vars().is_empty() {
+            return Ok(subst);
+        }
+        subst = apply_unifier(&unified, subst);
+    }
+    Err(Error::FreeTypevar(subst))
 }
 
-pub fn apply_unifier(unifier: Unifier, ty: Type) -> Type {
+pub fn apply_unifier(unifier: &Unifier, ty: Type) -> Type {
     match ty {
         Type::Var(v) => unifier.get(&v).cloned().unwrap_or(Type::Var(v)),
         Type::Unit => Type::Unit,
         Type::Fun(ty1, ty2) => Type::Fun(
-            Box::new(apply_unifier(unifier.clone(), *ty1)),
+            Box::new(apply_unifier(unifier, *ty1)),
             Box::new(apply_unifier(unifier, *ty2)),
         ),
         Type::Bool => Type::Bool,
-        Type::Nat => Type::Bool,
+        Type::Nat => Type::Nat,
         Type::Prod(ty1, ty2) => Type::Prod(
-            Box::new(apply_unifier(unifier.clone(), *ty1)),
+            Box::new(apply_unifier(unifier, *ty1)),
             Box::new(apply_unifier(unifier, *ty2)),
         ),
         Type::Sum(ty1, ty2) => Type::Sum(
-            Box::new(apply_unifier(unifier.clone(), *ty1)),
-            Box::new(apply_unifier(unifier.clone(), *ty2)),
+            Box::new(apply_unifier(unifier, *ty1)),
+            Box::new(apply_unifier(unifier, *ty2)),
         ),
         Type::Optional(ty) => Type::Optional(Box::new(apply_unifier(unifier, *ty))),
         Type::List(ty) => Type::List(Box::new(apply_unifier(unifier, *ty))),
