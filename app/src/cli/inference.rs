@@ -23,12 +23,11 @@ pub fn exec(args: Args) -> Result<(), Error> {
         let parsed_str = display_or_debug(&parsed, args.debug);
         println!("Parsed: {parsed_str}");
     }
-    let checked;
-    if args.bidirectional {
-        checked = parsed.infer(&mut Default::default())?
+    let checked = if args.bidirectional {
+        parsed.infer(&mut Default::default())?
     } else {
-        checked = typecheck(parsed)?
-    }
+        typecheck(parsed)?
+    };
     let checked_str = display_or_debug(&checked, args.debug);
     println!("checked: {checked_str}");
 
