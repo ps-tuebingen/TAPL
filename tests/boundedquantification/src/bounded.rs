@@ -6,6 +6,8 @@ use test_common::{
     testsuite::TestSuite,
 };
 
+mod parse_test;
+mod reparse_test;
 mod suite;
 
 use suite::BoundedTests;
