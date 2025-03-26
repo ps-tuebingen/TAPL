@@ -1,0 +1,2 @@
+ty="forall X.X->X->X"
+evaluated="\\X.\\t:X.\\f:X.t"

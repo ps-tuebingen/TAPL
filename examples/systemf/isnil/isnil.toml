@@ -1,0 +1,2 @@
+ty="forall X.(forall R.(X->R->R) -> R -> R) -> forall X. X -> X -> X"
+evaluated="\\X.\\l:(forall R.(X->R->R)->R->R).((l[Bool])(\\hd:X.\\tl:Bool.false))(true)"

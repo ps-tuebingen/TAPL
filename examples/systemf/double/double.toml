@@ -1,0 +1,2 @@
+ty="forall X. (X->X) -> X -> X"
+evaluated="\\X.\\f:X->X.\\a:X.f(f(a))"

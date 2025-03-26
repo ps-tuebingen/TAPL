@@ -6,9 +6,13 @@ use test_common::{
     testsuite::TestSuite,
 };
 
+mod check_test;
+mod eval_test;
 mod parse_test;
 mod reparse_test;
 mod suite;
+use check_test::TypecheckTest;
+use eval_test::EvalTest;
 use parse_test::ParseTest;
 use reparse_test::ReparseTest;
 use suite::SystemFTests;
