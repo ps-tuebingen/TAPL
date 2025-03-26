@@ -95,8 +95,8 @@ impl fmt::Display for Type {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             Type::Var(v) => f.write_str(v),
-            Type::Fun(from, to) => write!(f, "({from}) → ({to})"),
-            Type::Forall(v, ty) => write!(f, "∀{v}.{ty}"),
+            Type::Fun(from, to) => write!(f, "({from}) -> ({to})"),
+            Type::Forall(v, ty) => write!(f, "forall {v}.{ty}"),
         }
     }
 }
