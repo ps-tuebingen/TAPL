@@ -1,0 +1,2 @@
+ty=""
+evaluated="\\X<:{ a:Nat }.\\x:X.{ asucc = succ(x.a), orig = x }"

@@ -203,7 +203,7 @@ impl fmt::Display for Type {
             Type::Var(v) => f.write_str(v),
             Type::Top => f.write_str("Top"),
             Type::Nat => f.write_str("Nat"),
-            Type::Fun { from, to } => write!(f, "({from})->({to})"),
+            Type::Fun { from, to } => write!(f, "({from}) -> ({to})"),
             Type::Forall { var, sup_ty, ty } => write!(f, "forall {var}<:{sup_ty}.{ty}"),
             Type::Exists { var, sup_ty, ty } => write!(f, "exists {var}<:{sup_ty},{ty}"),
             Type::Record(recs) => {

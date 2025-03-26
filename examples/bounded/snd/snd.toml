@@ -1,0 +1,2 @@
+ty="forall X<:Top.forall Y<:Top.(forall Z<:Top.((X) -> ((Y) -> (Z))) -> (Z)) -> (Y)"
+evaluated="\\X<:Top.\\Y<:Top.\\p:forall Z<:Top.((X) -> ((Y) -> (Z))) -> (Z).((p) [Y]) (\\x:X.\\y:Y.y)"

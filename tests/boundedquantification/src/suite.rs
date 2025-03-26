@@ -1,4 +1,4 @@
-use super::{ParseTest, ReparseTest};
+use super::{EvalTest, ParseTest, ReparseTest, TypecheckTest};
 use std::path::PathBuf;
 use test_common::{
     errors::Error,
@@ -17,7 +17,10 @@ impl BoundedTests {
 }
 
 #[derive(serde::Deserialize)]
-pub struct NamelessConfig {}
+pub struct BoundedConf {
+    ty: String,
+    evaluated: String,
+}
 
 impl TestSuite for BoundedTests {
     fn name(&self) -> String {
@@ -25,13 +28,19 @@ impl TestSuite for BoundedTests {
     }
 
     fn load(&self) -> Result<Vec<Box<dyn Test>>, Error> {
-        let contents: Vec<TestContents<NamelessConfig>> = load_dir(&self.source_dir, "bd")?;
+        let contents: Vec<TestContents<BoundedConf>> = load_dir(&self.source_dir, "bd")?;
         let mut tests = vec![];
         for tst in contents {
             let parse_test = ParseTest::new(&tst.source_name, &tst.source_contents);
             tests.push(Box::new(parse_test) as Box<dyn Test>);
             let reparse_test = ReparseTest::new(&tst.source_name, &tst.source_contents);
             tests.push(Box::new(reparse_test) as Box<dyn Test>);
+            let check_test =
+                TypecheckTest::new(&tst.source_name, &tst.source_contents, &tst.conf.ty);
+            tests.push(Box::new(check_test) as Box<dyn Test>);
+            let eval_test =
+                EvalTest::new(&tst.source_name, &tst.source_contents, &tst.conf.evaluated);
+            tests.push(Box::new(eval_test) as Box<dyn Test>);
         }
         Ok(tests)
     }
