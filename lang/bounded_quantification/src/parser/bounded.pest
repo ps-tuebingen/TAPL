@@ -1,0 +1,65 @@
+WHITESPACE = _{ " " | "\n" | "\t" }
+variable = @{ !(keyword ~ !ASCII_ALPHANUMERIC) ~ ( !(WHITESPACE) ~ (ASCII_ALPHA|ASCII_DIGIT) )+ | "_" }
+
+program = { SOI ~ term ~ EOI }
+
+// Keywords
+kw_as = { "as" }
+kw_let = { "let" }
+kw_in = { "in" }
+kw_forall = { "forall" }
+kw_exists = { "exists" }
+kw_tytop = { "Top" }
+
+keyword = { 
+ | kw_as
+ | kw_let
+ | kw_in
+ | kw_forall
+ | kw_exists
+ | kw_tytop
+}
+
+// Terms
+term = { prim_term ~ left_rec? }
+
+prim_term = {
+  | paren_term
+  | lambda_term 
+  | lambda_sub
+  | pack_term
+  | unpack_term
+  | variable
+}
+
+paren_term = { "(" ~ term ~ ")" }
+lambda_term = { "\\" ~ variable ~ ":" ~ type ~ "." ~ term } 
+lambda_sub = { "\\" ~ variable ~ "<:" ~ type ~ "." ~ term }
+pack_term = { "{" ~ type ~ "," ~ term ~ "}" ~ kw_as ~ type }
+unpack_term = { kw_let ~ "{" ~ variable ~ "," ~ variable ~ "}" ~ "=" ~ term ~ kw_in ~ term }
+
+left_rec = { tyapp | paren_tyapp | term }
+tyapp = { "[" ~ type ~ "]" }
+paren_tyapp = { "(" ~ tyapp ~ ")" }
+
+
+// Types
+type = { prim_type ~ left_rec_ty? }
+
+prim_type = {
+  | const_ty
+  | forall_ty 
+  | exists_ty 
+  | paren_type
+  | variable 
+}
+
+paren_type = { "(" ~ type ~ ")" }
+const_ty = { kw_tytop }
+forall_ty = { forall_start ~ "<:" ~ type ~ "." ~ type } 
+forall_start = ${ kw_forall ~ " " ~ variable }
+exists_ty = { exists_start ~ "<:" ~ type ~ "." ~ type } 
+exists_start = ${ kw_exists ~ " " ~ variable }
+
+left_rec_ty = { fun_ty }
+fun_ty = { "->" ~ type }
