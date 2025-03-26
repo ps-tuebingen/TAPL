@@ -201,11 +201,11 @@ impl fmt::Display for Type {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             Type::Var(v) => f.write_str(v),
-            Type::Top => f.write_str("⊤"),
+            Type::Top => f.write_str("Top"),
             Type::Nat => f.write_str("Nat"),
-            Type::Fun { from, to } => write!(f, "({from})→({to})"),
-            Type::Forall { var, sup_ty, ty } => write!(f, "∀{var}<:{sup_ty}.{ty}"),
-            Type::Exists { var, sup_ty, ty } => write!(f, "∃{var}<:{sup_ty}.{ty}"),
+            Type::Fun { from, to } => write!(f, "({from})->({to})"),
+            Type::Forall { var, sup_ty, ty } => write!(f, "forall {var}<:{sup_ty}.{ty}"),
+            Type::Exists { var, sup_ty, ty } => write!(f, "exists {var}<:{sup_ty},{ty}"),
             Type::Record(recs) => {
                 let mut recs: Vec<(&Label, &Type)> = recs.iter().collect();
                 recs.sort_by(|(lb1, _), (lb2, _)| lb1.cmp(lb2));

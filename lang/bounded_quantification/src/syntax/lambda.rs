@@ -54,6 +54,6 @@ impl fmt::Display for App {
 
 impl fmt::Display for Lambda {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "λ{}:{}.{}", self.var, self.annot, self.body)
+        write!(f, "\\{}:{}.{}", self.var, self.annot, self.body)
     }
 }
