@@ -1,4 +1,5 @@
-use super::{display_or_debug, errors::Error, Source};
+use super::{display_or_debug, Source};
+use std::error::Error;
 use untyped_lambda::{
     eval::{eval, EvalOrder as EvalOrd},
     parse::parse,
@@ -47,7 +48,7 @@ impl EvalOrder {
     }
 }
 
-pub fn exec(args: Args) -> Result<(), Error> {
+pub fn exec(args: Args) -> Result<(), Box<dyn Error>> {
     let mut source = args.source.get_source()?;
     let parsed = parse(&mut source)?;
     if args.verbose {

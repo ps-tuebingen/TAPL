@@ -1,7 +1,6 @@
 use clap::{Parser, Subcommand};
-use std::{fmt, fs::read_to_string, path::PathBuf};
+use std::{error::Error, fmt, fs::read_to_string, path::PathBuf};
 
-mod errors;
 pub mod exceptions;
 pub mod featherweight;
 pub mod inference;
@@ -12,8 +11,6 @@ pub mod subtypes;
 pub mod system_f;
 pub mod untyped_arithmetic;
 pub mod untyped_lambda;
-
-use errors::Error;
 
 #[derive(Parser)]
 pub struct Cli {
@@ -47,7 +44,7 @@ pub struct Source {
 }
 
 impl Source {
-    fn get_source(self) -> Result<String, Error> {
+    fn get_source(self) -> Result<String, Box<dyn Error>> {
         if let Some(src) = self.input {
             return Ok(src);
         }

@@ -1,5 +1,6 @@
-use super::{display_or_debug, errors::Error, Source};
+use super::{display_or_debug, Source};
 use featherweight::{parser::parse, typing::class::class_ok};
+use std::error::Error;
 
 #[derive(clap::Args)]
 pub struct Args {
@@ -13,7 +14,7 @@ pub struct Args {
     debug: bool,
 }
 
-pub fn exec(args: Args) -> Result<(), Error> {
+pub fn exec(args: Args) -> Result<(), Box<dyn Error>> {
     let src = args.source.get_source()?;
     let parsed = parse(src)?;
     for class in parsed.classes.clone().into_values() {

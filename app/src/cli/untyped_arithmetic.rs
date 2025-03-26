@@ -1,4 +1,5 @@
-use super::{display_or_debug, errors::Error, Source};
+use super::{display_or_debug, Source};
+use std::error::Error;
 use untyped_arithmetic::parse::parse;
 
 #[derive(clap::Args)]
@@ -13,7 +14,7 @@ pub struct Args {
     debug: bool,
 }
 
-pub fn exec(args: Args) -> Result<(), Error> {
+pub fn exec(args: Args) -> Result<(), Box<dyn Error>> {
     let src = args.source.get_source()?;
     let parsed = parse(src)?;
     if args.verbose {
