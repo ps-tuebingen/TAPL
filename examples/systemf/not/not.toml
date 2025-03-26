@@ -1,2 +1,2 @@
 ty="(forall X.((X -> (X -> X))) -> forall X.((X -> (X -> X))))"
-evaluated="\\b:(forall X.X->X->X).\\X.\\t:X.\\f:X.((b[X])(f))(t)"
+evaluated="\\b:(forall X.((X -> (X -> X)))).(\\X.\\t:(X).(\\f:(X).((((((b[X]))(f)))(t)))))"

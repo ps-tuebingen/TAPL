@@ -22,8 +22,8 @@ impl From<Value> for Term {
 impl fmt::Display for Value {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Value::Lambda { var, annot, body } => write!(f, "λ{}:{}.{}", var, annot, body),
-            Value::TyLambda { var, body } => write!(f, "λ{}.{}", var, body),
+            Value::Lambda { var, annot, body } => write!(f, "\\{}:({}).({})", var, annot, body),
+            Value::TyLambda { var, body } => write!(f, "\\{}.{}", var, body),
         }
     }
 }
