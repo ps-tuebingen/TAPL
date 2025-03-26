@@ -74,6 +74,6 @@ impl fmt::Display for TyLambda {
 
 impl fmt::Display for TyApp {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "({}) [{}]", self.term, self.ty)
+        write!(f, "({}[{}])", self.term, self.ty)
     }
 }
