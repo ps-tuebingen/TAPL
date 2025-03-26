@@ -1,3 +1,4 @@
 \X.(
-  ((\x:(forall X.X->X).(x[forall X.X->X])(x))([X->X]))
-    ((\x:(forall X.X->X).(x[forall X.X->X])(x))([X])))
+ ((\X.(\f:X->X.\a:X.(f) ((f) (a))))[X -> X])
+ ((\X.(\f:X->X.\a:X.(f) ((f) (a))))[X])
+)
