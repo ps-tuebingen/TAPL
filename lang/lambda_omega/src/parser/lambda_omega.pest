@@ -45,7 +45,7 @@ left_rec_ty = { fun_ty | type }
 fun_ty = { "->" ~ type } 
 
 // Kinds 
-kind = { prim_kind ~ arrow_kind?} 
+kind = { prim_kind ~ arrow_kind? } 
 kind_star = { "*" }
 prim_kind = { 
   | kind_star
