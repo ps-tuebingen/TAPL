@@ -1,0 +1,55 @@
+WHITESPACE = _{ " " | "\n" | "\t" }
+variable = @{ !(keyword ~ !ASCII_ALPHANUMERIC) ~ ( !(WHITESPACE) ~ (ASCII_ALPHA|ASCII_DIGIT) )+ | "_" }
+
+program = { SOI ~ term ~ EOI }
+
+// Keywords
+kw_unit = { "unit" }
+kw_tyunit = { "Unit" }
+keyword = {
+  | kw_unit 
+  | kw_tyunit
+}
+
+// Terms
+term = { prim_term ~ left_rec? }
+
+prim_term = {
+  | const_term
+  | lambda_term 
+  | paren_term
+  | variable 
+}
+
+paren_term = { "(" ~ term ~ ")" }
+const_term = { kw_unit }
+lambda_term = { "\\" ~ variable ~ ":" ~ type ~ "." ~ term }
+
+left_rec = { term }
+
+// Types 
+type = { prim_type ~ left_rec_ty? }
+
+prim_type = {
+  | const_ty 
+  | lambda_ty 
+  | paren_type
+  | variable 
+}
+
+paren_type = { "(" ~ type ~ ")" }
+const_ty = { kw_tyunit }
+lambda_ty = { "\\" ~ variable ~ "::" ~ kind ~ "." ~ type}
+
+left_rec_ty = { fun_ty | type }
+fun_ty = { "->" ~ type } 
+
+// Kinds 
+kind = { prim_kind ~ arrow_kind?} 
+kind_star = { "*" }
+prim_kind = { 
+  | kind_star
+  | paren_kind 
+} 
+paren_kind = { "(" ~ kind ~ ")" }
+arrow_kind = { "=>" ~ kind }
