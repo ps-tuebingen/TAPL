@@ -39,3 +39,12 @@ impl Env {
             .ok_or(Error::FreeVar(var.clone()))
     }
 }
+
+impl Default for Env {
+    fn default() -> Env {
+        Env {
+            vars: HashMap::new(),
+            ty_vars: HashMap::new(),
+        }
+    }
+}

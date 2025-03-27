@@ -1,0 +1,15 @@
+[package]
+name = "e2e_lambdaomega"
+version = "0.1.0"
+edition = "2021"
+
+[[test]]
+name = "lambdaomega"
+path = "src/lambdaomega.rs"
+harness=false
+
+[dependencies]
+serde = {version="1.0.219", features=["derive"]}
+
+test_common = { path="../test_common" }
+lambda_omega = { path="../../lang/lambda_omega" }
