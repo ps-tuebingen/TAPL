@@ -71,7 +71,7 @@ impl fmt::Display for Term {
         match self {
             Term::Var(v) => f.write_str(v),
             Term::Lambda { var, annot, body } => {
-                write!(f, "λ{}:{}.{}", var, annot, body)
+                write!(f, "\\{}:{}.{}", var, annot, body)
             }
             Term::App { fun, arg } => write!(f, "({fun}) ({arg})"),
             Term::Unit => f.write_str("unit"),

@@ -1,1 +1,1 @@
-((((\X.\Y.\x:X.\y:Y.(\R.\p:X->Y->R.((p x) y)))[Nat])[Bool])(5))(false)
+((((\X::*.\Y::*.\x:X.\y:Y.(\R::*.\p:X->Y->R.((p x) y)))[Nat])[Bool])(5))(false)

@@ -5,9 +5,11 @@ program = { SOI ~ term ~ EOI }
 
 // Keywords
 kw_unit = { "unit" }
+kw_forall = { "forall" }
 kw_tyunit = { "Unit" }
 keyword = {
   | kw_unit 
+  | kw_forall
   | kw_tyunit
 }
 
@@ -17,6 +19,7 @@ term = { prim_term ~ left_rec? }
 prim_term = {
   | const_term
   | lambda_term 
+  | tylambda_term
   | paren_term
   | variable 
 }
@@ -24,8 +27,10 @@ prim_term = {
 paren_term = { "(" ~ term ~ ")" }
 const_term = { kw_unit }
 lambda_term = { "\\" ~ variable ~ ":" ~ type ~ "." ~ term }
+tylambda_term = { "\\" ~ variable ~ "::" ~ kind ~ "." ~ term }
 
-left_rec = { term }
+left_rec = { tyapp | term }
+tyapp = { "[" ~ type ~ "]" }
 
 // Types 
 type = { prim_type ~ left_rec_ty? }
@@ -33,6 +38,7 @@ type = { prim_type ~ left_rec_ty? }
 prim_type = {
   | const_ty 
   | lambda_ty 
+  | forall_ty
   | paren_type
   | variable 
 }
@@ -40,6 +46,8 @@ prim_type = {
 paren_type = { "(" ~ type ~ ")" }
 const_ty = { kw_tyunit }
 lambda_ty = { "\\" ~ variable ~ "::" ~ kind ~ "." ~ type}
+forall_ty = { forall_start ~ "." ~ type } 
+forall_start = ${ kw_forall ~ " " ~ variable }
 
 left_rec_ty = { fun_ty | type }
 fun_ty = { "->" ~ type } 
