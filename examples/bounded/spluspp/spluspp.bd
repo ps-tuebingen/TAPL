@@ -1,3 +1,4 @@
-\n:SPos.\m:SPos.
+\n:(forall X<:Top.forall S<:X.forall Z<:X. (X->S) -> Z -> S).
+  \m:(forall X<:Top.forall S<:X.forall Z<:X. (X->S) -> Z -> S).
   \X.\S<:X.\Z<:X.\s:X->S.\z:Z.
     ((((n[X])[S])[S])(s))(((((m[X])[S])[Z])s)z)

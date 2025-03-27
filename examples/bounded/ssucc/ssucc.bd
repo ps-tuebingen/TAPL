@@ -1,3 +1,3 @@
 \n:(forall X<:Top.forall S<:X.forall Z<:X.(X->S)->Z->X).
-  \X.\S<:X.\Z<:X.\s:Z->S.\z:Z.
-    (s((((n[X])[S])[Z])(s)))(z)
+  \X.\S<:X.\Z<:X.\s:X->S.\z:Z.
+    (s(((((n[X])[S])[Z])s)z))
