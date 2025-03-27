@@ -34,5 +34,10 @@ pub fn check(t: &Term, env: &mut Env) -> Result<Type, Error> {
                 })
             }
         }
+        Term::TyLambda { var, kind, body } => {
+            env.add_tyvar(var, kind);
+            todo!()
+        }
+        Term::TyApp { fun, arg } => todo!(),
     }
 }

@@ -1,14 +1,24 @@
 use crate::{
     errors::Error,
+    kinds::Kind,
     syntax::{Term, Var},
-    types::Type,
+    types::{Type, TypeVar},
 };
 use std::fmt;
 
 #[derive(Clone, Debug)]
 pub enum Value {
     Unit,
-    Lambda { var: Var, annot: Type, body: Term },
+    Lambda {
+        var: Var,
+        annot: Type,
+        body: Term,
+    },
+    TyLambda {
+        var: TypeVar,
+        annot: Kind,
+        body: Term,
+    },
 }
 
 impl Value {
@@ -22,6 +32,17 @@ impl Value {
             })
         }
     }
+
+    pub fn as_tylambda(self) -> Result<(TypeVar, Kind, Term), Error> {
+        if let Value::TyLambda { var, annot, body } = self {
+            Ok((var, annot, body))
+        } else {
+            Err(Error::BadValue {
+                found: self,
+                expected: "Type Abstraction".to_owned(),
+            })
+        }
+    }
 }
 
 impl From<Value> for Term {
@@ -30,6 +51,11 @@ impl From<Value> for Term {
             Value::Lambda { var, annot, body } => Term::Lambda {
                 var,
                 annot,
+                body: Box::new(body),
+            },
+            Value::TyLambda { var, annot, body } => Term::TyLambda {
+                var,
+                kind: annot,
                 body: Box::new(body),
             },
             Value::Unit => Term::Unit,

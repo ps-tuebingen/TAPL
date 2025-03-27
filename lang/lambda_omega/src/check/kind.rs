@@ -40,5 +40,17 @@ pub fn kind_ty(ty: &Type, env: &mut Env) -> Result<Kind, Error> {
                 })
             }
         }
+        Type::Forall { var, ty } => {
+            env.add_tyvar(var, &Kind::Star);
+            let ty_knd = kind_ty(ty, env)?;
+            if let Kind::Star = ty_knd {
+                Ok(Kind::Star)
+            } else {
+                Err(Error::KindMismatch {
+                    found: ty_knd,
+                    expected: "*".to_owned(),
+                })
+            }
+        }
     }
 }

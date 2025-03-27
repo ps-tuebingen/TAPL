@@ -16,5 +16,11 @@ pub fn eval(t: Term) -> Result<Value, Error> {
             let (var, _, body) = fun_val.as_lambda()?;
             eval(body.subst(&var, *arg))
         }
+        Term::TyLambda { var, kind, body } => Ok(Value::TyLambda {
+            var,
+            annot: kind,
+            body: *body,
+        }),
+        Term::TyApp { fun, arg } => todo!(),
     }
 }

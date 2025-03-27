@@ -1,4 +1,4 @@
-use crate::types::Type;
+use crate::{kinds::Kind, types::Type};
 use std::fmt;
 
 pub type Var = String;
@@ -12,9 +12,18 @@ pub enum Term {
         annot: Type,
         body: Box<Term>,
     },
+    TyLambda {
+        var: Var,
+        kind: Kind,
+        body: Box<Term>,
+    },
     App {
         fun: Box<Term>,
         arg: Box<Term>,
+    },
+    TyApp {
+        fun: Box<Term>,
+        arg: Type,
     },
 }
 
@@ -44,6 +53,15 @@ impl Term {
                 arg: Box::new(arg.subst(v, t)),
             },
             Term::Unit => Term::Unit,
+            Term::TyLambda { var, kind, body } => Term::TyLambda {
+                var,
+                kind,
+                body: Box::new(body.subst(v, t)),
+            },
+            Term::TyApp { fun, arg } => Term::TyApp {
+                fun: Box::new(fun.subst(v, t)),
+                arg,
+            },
         }
     }
 }
@@ -57,6 +75,8 @@ impl fmt::Display for Term {
             }
             Term::App { fun, arg } => write!(f, "({fun}) ({arg})"),
             Term::Unit => f.write_str("unit"),
+            Term::TyLambda { var, kind, body } => write!(f, "\\{var}::{kind}.{body}"),
+            Term::TyApp { fun, arg } => write!(f, "{fun}[{arg}]"),
         }
     }
 }

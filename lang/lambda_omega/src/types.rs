@@ -20,6 +20,10 @@ pub enum Type {
         from: Box<Type>,
         to: Box<Type>,
     },
+    Forall {
+        var: TypeVar,
+        ty: Box<Type>,
+    },
 }
 
 impl Type {
@@ -105,6 +109,16 @@ impl Type {
                 from: Box::new(from.subst(v, ty.clone())),
                 to: Box::new(to.subst(v, ty)),
             },
+            Type::Forall { var, ty: body } => {
+                if var == *v {
+                    Type::Forall { var, ty: body }
+                } else {
+                    Type::Forall {
+                        var,
+                        ty: Box::new(body.subst(v, ty)),
+                    }
+                }
+            }
         }
     }
 }
@@ -117,6 +131,7 @@ impl fmt::Display for Type {
             Type::Lambda { var, annot, body } => write!(f, "λ{}::{}.{}", var, annot, body),
             Type::App { fun, arg } => write!(f, "({fun}) ({arg})"),
             Type::Fun { from, to } => write!(f, "({from}) → ({to})"),
+            Type::Forall { var, ty } => write!(f, "forall {var}.{ty}"),
         }
     }
 }
