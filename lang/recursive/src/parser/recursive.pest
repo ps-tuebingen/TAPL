@@ -1,0 +1,116 @@
+WHITESPACE = _{ " " | "\n" | "\t" }
+variable = @{ !(keyword ~ !ASCII_ALPHANUMERIC) ~ ( !(WHITESPACE) ~ (ASCII_ALPHA|ASCII_DIGIT) )+ | "_" }
+number = { ASCII_DIGIT+ }
+
+program = { SOI ~ term ~ EOI }
+
+// Keywords 
+kw_unit = { "unit" }
+kw_zero = { "zero" }
+kw_true = { "true" }
+kw_false = { "false" }
+kw_fold = { "fold" }
+kw_unfold = { "unfold" }
+kw_as = { "as" }
+kw_case = { "case" }
+kw_of = { "of" }
+kw_succ = { "succ" }
+kw_pred = { "pred" }
+kw_iszero = { "iszero" }
+kw_if = { "if" }
+kw_else = { "else" }
+kw_fix = { "fix" }
+kw_let = { "let" }
+kw_in = { "in" }
+kw_tyunit = { "Unit" }
+kw_tynat = { "Nat" }
+kw_tybool = { "Bool" }
+kw_mu = { "mu" }
+keyword = {
+  | kw_unit 
+  | kw_zero
+  | kw_true
+  | kw_false
+  | kw_fold
+  | kw_unfold
+  | kw_case 
+  | kw_of
+  | kw_succ
+  | kw_pred 
+  | kw_iszero
+  | kw_if
+  | kw_else
+  | kw_fix
+  | kw_let
+  | kw_in
+  | kw_tyunit
+  | kw_tynat
+  | kw_tybool
+  | kw_mu
+}
+
+// Terms 
+term = { prim_term ~ left_rec? } 
+
+prim_term = {
+  | const_term
+  | lambda_term 
+  | fold_term 
+  | unfold_term
+  | variant_term
+  | variantcase_term
+  | succ_term
+  | pred_term
+  | iszero_term
+  | if_term
+  | fix_term
+  | let_term 
+  | record_term
+  | paren_term
+  | number
+  | variable 
+}
+
+paren_term = { "(" ~ term ~ ")" }
+const_term = { kw_unit | kw_zero } 
+lambda_term = { "\\" ~ variable ~ ":" ~ type ~ "." ~ term }
+fold_term = { kw_fold ~ "[" ~ type ~ "]" ~ term }
+unfold_term = { kw_unfold ~ "[" ~ type ~ "]" ~ term }
+variant_term = { "<" ~ variable ~ "=" ~ term ~ ">" ~ kw_as ~ type}
+variantcase_term = { kw_case ~ term ~ kw_of ~ "{" ~ variant_pattern ~ ("|" ~ variant_pattern)* ~ "}" }
+variant_pattern = { "<" ~ variable ~ "=" ~ variable ~ ">" ~ "=>" ~ term }
+pair_term = { "{" ~ term ~ "," ~ term ~ "}" }
+succ_term = { kw_succ ~ paren_term } 
+pred_term = { kw_pred ~ paren_term } 
+iszero_term = { kw_iszero ~ paren_term } 
+if_term = { kw_if ~ paren_term ~ "{" ~ term ~ "}" ~ kw_else ~ "{" ~ term ~ "}" } 
+fix_term = { kw_fix ~ paren_term }
+let_term = { kw_let ~ "(" ~ variable ~ "=" ~ term ~ ")" ~ kw_in ~ term }
+record_term = { "{" ~ variable ~ "=" ~ term ~ ("," ~ variable ~ "=" ~ term)* ~ "}" }
+
+left_rec = { fst_term | snd_term | projection | term }
+fst_term = { ".0" }
+snd_term = { ".1" } 
+projection = { "." ~ variable }
+
+// Types 
+type = { prim_type ~ left_rec_type? }
+
+prim_type = {
+  | const_type
+  | mu_type
+  | variant_type
+  | record_type
+  | paren_type
+  | variable 
+}
+
+paren_type = { "(" ~ type ~ ")" }
+const_type = { kw_tyunit | kw_tynat | kw_tybool } 
+mu_type = { kw_mu ~ variable ~ "." ~ type }
+variant_type = { "<" ~ variable ~ ":" ~ type ~ ("," ~ variable ~ ":" ~ type)* ~ ">" } 
+record_type = { "{" ~ variable ~ ":" ~ type ~ ("," ~ variable ~ ":" ~ type)* ~ ">" }
+
+left_rec_type = { fun_type | pair_type }
+fun_type = { "->" ~ type }
+pair_type = { "x" ~ type }
