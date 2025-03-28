@@ -1,4 +1,4 @@
-use super::{pair_to_n_inner, pair_to_type, Error, Rule};
+use super::{pair_to_kind, pair_to_n_inner, pair_to_type, Error, Rule};
 use crate::syntax::Term;
 use pest::iterators::Pair;
 
@@ -29,7 +29,7 @@ fn pair_to_prim_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
     match p.as_rule() {
         Rule::const_term => str_to_term(p.as_str()),
         Rule::lambda_term => pair_to_lambda(p),
-        Rule::tylambda_term => todo!(),
+        Rule::tylambda_term => pair_to_tylambda(p),
         Rule::paren_term => {
             let term_rule = pair_to_n_inner(p, vec!["Term"])?.remove(0);
             pair_to_term(term_rule)
@@ -41,7 +41,7 @@ fn pair_to_prim_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
 
 fn pair_to_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
     match p.as_rule() {
-        Rule::tyapp => todo!(),
+        Rule::tyapp => pair_to_tyapp(p, t),
         Rule::term => {
             let arg = pair_to_term(p)?;
             Ok(Term::App {
@@ -71,5 +71,32 @@ fn pair_to_lambda(p: Pair<'_, Rule>) -> Result<Term, Error> {
         var,
         annot: ty,
         body: Box::new(body),
+    })
+}
+
+fn pair_to_tylambda(p: Pair<'_, Rule>) -> Result<Term, Error> {
+    let mut inner = pair_to_n_inner(
+        p,
+        vec!["Type Variable", "Kind Annot", "Type Abstraction Body"],
+    )?;
+    let var = inner.remove(0).as_str().trim().to_owned();
+    let knd_rule = inner.remove(0);
+    let knd = pair_to_kind(knd_rule)?;
+
+    let body_rule = inner.remove(0);
+    let body = pair_to_term(body_rule)?;
+    Ok(Term::TyLambda {
+        var,
+        kind: knd,
+        body: Box::new(body),
+    })
+}
+
+fn pair_to_tyapp(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
+    let ty_rule = pair_to_n_inner(p, vec!["Type"])?.remove(0);
+    let ty = pair_to_type(ty_rule)?;
+    Ok(Term::TyApp {
+        fun: Box::new(t),
+        arg: ty,
     })
 }

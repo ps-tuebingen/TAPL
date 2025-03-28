@@ -139,9 +139,9 @@ impl fmt::Display for Type {
         match self {
             Type::Var(v) => f.write_str(v),
             Type::Unit => f.write_str("Unit"),
-            Type::Lambda { var, annot, body } => write!(f, "λ{}::{}.{}", var, annot, body),
+            Type::Lambda { var, annot, body } => write!(f, "\\{}::{}.{}", var, annot, body),
             Type::App { fun, arg } => write!(f, "({fun}) ({arg})"),
-            Type::Fun { from, to } => write!(f, "({from}) → ({to})"),
+            Type::Fun { from, to } => write!(f, "({from}) -> ({to})"),
             Type::Forall { var, ty } => write!(f, "forall {var}.{ty}"),
         }
     }
