@@ -1,4 +1,4 @@
-use lambda_omega::parser::parse;
+use recursive::parser::parse;
 use test_common::testsuite::{Test, TestResult};
 
 pub struct ParseTest {
