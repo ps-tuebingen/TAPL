@@ -34,6 +34,8 @@ impl fmt::Display for Error {
     }
 }
 
+impl std::error::Error for Error {}
+
 impl From<PestErr<Rule>> for Error {
     fn from(err: PestErr<Rule>) -> Error {
         Error::Pest(Box::new(err))

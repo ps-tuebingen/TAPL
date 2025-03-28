@@ -5,6 +5,7 @@ pub mod bounded_quantification;
 pub mod exceptions;
 pub mod featherweight;
 pub mod inference;
+pub mod lambda_omega;
 pub mod nameless_representation;
 pub mod references;
 pub mod stlc;
@@ -32,6 +33,7 @@ pub enum Command {
     Inference(inference::Args),
     SystemF(system_f::Args),
     BoundedQuantification(bounded_quantification::Args),
+    LambdaOmega(lambda_omega::Args),
 }
 
 #[derive(Debug, clap::Args)]
@@ -80,6 +82,7 @@ pub fn run() -> Result<(), String> {
         Command::BoundedQuantification(args) => {
             bounded_quantification::exec(args).map_err(|err| err.to_string())
         }
+        Command::LambdaOmega(args) => lambda_omega::exec(args).map_err(|err| err.to_string()),
     }
 }
 
