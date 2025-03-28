@@ -9,6 +9,7 @@ use std::fmt;
 #[derive(Clone, Debug)]
 pub enum Value {
     Unit,
+    Const(i64),
     Lambda {
         var: Var,
         annot: Type,
@@ -59,6 +60,7 @@ impl From<Value> for Term {
                 body: Box::new(body),
             },
             Value::Unit => Term::Unit,
+            Value::Const(i) => Term::Const(i),
         }
     }
 }

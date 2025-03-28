@@ -7,6 +7,7 @@ pub type TypeVar = String;
 pub enum Type {
     Var(TypeVar),
     Unit,
+    Nat,
     Lambda {
         var: TypeVar,
         annot: Kind,
@@ -100,6 +101,7 @@ impl Type {
                     Type::Var(var)
                 }
             }
+            Type::Nat => Type::Nat,
             Type::Unit => Type::Unit,
             Type::Lambda { var, annot, body } => {
                 if var == *v {
@@ -139,6 +141,7 @@ impl fmt::Display for Type {
         match self {
             Type::Var(v) => f.write_str(v),
             Type::Unit => f.write_str("Unit"),
+            Type::Nat => f.write_str("Nat"),
             Type::Lambda { var, annot, body } => write!(f, "\\{}::{}.{}", var, annot, body),
             Type::App { fun, arg } => write!(f, "({fun}) ({arg})"),
             Type::Fun { from, to } => write!(f, "({from}) -> ({to})"),

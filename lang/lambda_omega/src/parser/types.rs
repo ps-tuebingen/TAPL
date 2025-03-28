@@ -55,6 +55,7 @@ fn pair_to_leftrec_ty(p: Pair<'_, Rule>, ty: Type) -> Result<Type, Error> {
 fn str_to_ty(s: &str) -> Result<Type, Error> {
     match s.to_lowercase().trim() {
         "unit" => Ok(Type::Unit),
+        "nat" => Ok(Type::Nat),
         s => Err(Error::UnknownKw(s.to_owned())),
     }
 }

@@ -4,6 +4,7 @@ use crate::{errors::Error, kinds::Kind, syntax::Term, types::Type};
 pub fn check(t: &Term, env: &mut Env) -> Result<Type, Error> {
     match t {
         Term::Var(v) => env.get_var(v),
+        Term::Const(_) => Ok(Type::Nat),
         Term::Unit => Ok(Type::Unit),
         Term::Lambda { var, annot, body } => {
             let annot_kind = kind_ty(annot, &mut env.clone())?;

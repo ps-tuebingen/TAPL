@@ -9,6 +9,7 @@ pub type Var = String;
 #[derive(Debug, Clone)]
 pub enum Term {
     Var(Var),
+    Const(i64),
     Unit,
     Lambda {
         var: Var,
@@ -40,6 +41,7 @@ impl Term {
                     Term::Var(var)
                 }
             }
+            Term::Const(i) => Term::Const(i),
             Term::Lambda { var, annot, body } => {
                 if var == *v {
                     Term::Lambda { var, annot, body }
@@ -71,6 +73,7 @@ impl Term {
     pub fn subst_ty(self, v: &TypeVar, ty: Type) -> Term {
         match self {
             Term::Var(v) => Term::Var(v),
+            Term::Const(i) => Term::Const(i),
             Term::Unit => Term::Unit,
             Term::Lambda { var, annot, body } => {
                 let annot_subst = annot.subst(v, ty.clone());
@@ -117,6 +120,7 @@ impl fmt::Display for Term {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             Term::Var(v) => f.write_str(v),
+            Term::Const(i) => write!(f, "{i}"),
             Term::Lambda { var, annot, body } => {
                 write!(f, "\\{}:{}.{}", var, annot, body)
             }

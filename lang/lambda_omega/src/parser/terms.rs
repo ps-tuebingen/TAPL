@@ -34,6 +34,14 @@ fn pair_to_prim_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
             let term_rule = pair_to_n_inner(p, vec!["Term"])?.remove(0);
             pair_to_term(term_rule)
         }
+        Rule::number => {
+            let num = p
+                .as_str()
+                .trim()
+                .parse::<i64>()
+                .map_err(|_| Error::UnknownKw(p.as_str().to_owned()))?;
+            Ok(Term::Const(num))
+        }
         Rule::variable => Ok(Term::Var(p.as_str().trim().to_owned())),
         r => Err(Error::unexpected(r, "Non Left-Recusrive Term")),
     }

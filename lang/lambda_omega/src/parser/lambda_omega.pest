@@ -7,10 +7,12 @@ program = { SOI ~ term ~ EOI }
 kw_unit = { "unit" }
 kw_forall = { "forall" }
 kw_tyunit = { "Unit" }
+kw_tynat = { "Nat" }
 keyword = {
   | kw_unit 
   | kw_forall
   | kw_tyunit
+  | kw_tynat
 }
 
 // Terms
@@ -21,11 +23,13 @@ prim_term = {
   | lambda_term 
   | tylambda_term
   | paren_term
+  | number 
   | variable 
 }
 
 paren_term = { "(" ~ term ~ ")" }
 const_term = { kw_unit }
+number = { ASCII_DIGIT+ }
 lambda_term = { "\\" ~ variable ~ ":" ~ type ~ "." ~ term }
 tylambda_term = { "\\" ~ variable ~ "::" ~ kind ~ "." ~ term }
 
@@ -44,7 +48,7 @@ prim_type = {
 }
 
 paren_type = { "(" ~ type ~ ")" }
-const_ty = { kw_tyunit }
+const_ty = { kw_tyunit | kw_tynat }
 lambda_ty = { "\\" ~ variable ~ "::" ~ kind ~ "." ~ type}
 forall_ty = { forall_start ~ "." ~ type } 
 forall_start = ${ kw_forall ~ " " ~ variable }
