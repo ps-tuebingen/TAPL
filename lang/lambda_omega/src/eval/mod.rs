@@ -21,6 +21,10 @@ pub fn eval(t: Term) -> Result<Value, Error> {
             annot: kind,
             body: *body,
         }),
-        Term::TyApp { fun, arg } => todo!(),
+        Term::TyApp { fun, arg } => {
+            let fun_val = eval(*fun)?;
+            let (var, _, body) = fun_val.as_tylambda()?;
+            eval(body.subst_ty(&var, arg))
+        }
     }
 }

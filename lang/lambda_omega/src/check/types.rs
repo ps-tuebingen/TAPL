@@ -36,8 +36,16 @@ pub fn check(t: &Term, env: &mut Env) -> Result<Type, Error> {
         }
         Term::TyLambda { var, kind, body } => {
             env.add_tyvar(var, kind);
-            todo!()
+            let body_ty = check(body, env)?;
+            Ok(Type::Forall {
+                var: var.clone(),
+                ty: Box::new(body_ty),
+            })
         }
-        Term::TyApp { fun, arg } => todo!(),
+        Term::TyApp { fun, arg } => {
+            let fun_ty = check(fun, env)?;
+            let (var, ty) = fun_ty.as_forall()?;
+            Ok(ty.subst(&var, arg.clone()))
+        }
     }
 }

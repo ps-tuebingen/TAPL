@@ -38,6 +38,17 @@ impl Type {
         }
     }
 
+    pub fn as_forall(self) -> Result<(TypeVar, Type), Error> {
+        if let Type::Forall { var, ty } = self {
+            Ok((var, *ty))
+        } else {
+            Err(Error::TypeMismatch {
+                found: self,
+                expected: "Forall Type".to_owned(),
+            })
+        }
+    }
+
     pub fn equiv(&self, other: &Type) -> bool {
         match (self, other) {
             (Type::Var(_), Type::Var(_)) => true,

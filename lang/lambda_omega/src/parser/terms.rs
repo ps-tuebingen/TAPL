@@ -29,6 +29,7 @@ fn pair_to_prim_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
     match p.as_rule() {
         Rule::const_term => str_to_term(p.as_str()),
         Rule::lambda_term => pair_to_lambda(p),
+        Rule::tylambda_term => todo!(),
         Rule::paren_term => {
             let term_rule = pair_to_n_inner(p, vec!["Term"])?.remove(0);
             pair_to_term(term_rule)
@@ -40,6 +41,7 @@ fn pair_to_prim_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
 
 fn pair_to_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
     match p.as_rule() {
+        Rule::tyapp => todo!(),
         Rule::term => {
             let arg = pair_to_term(p)?;
             Ok(Term::App {

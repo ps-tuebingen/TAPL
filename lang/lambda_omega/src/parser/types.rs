@@ -27,6 +27,7 @@ pub fn pair_to_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
 fn pair_to_prim_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
     match p.as_rule() {
         Rule::const_ty => str_to_ty(p.as_str()),
+        Rule::forall_ty => todo!(),
         Rule::lambda_ty => pair_to_lambda_ty(p),
         Rule::paren_type => {
             let inner = pair_to_n_inner(p, vec!["Type"])?.remove(0);
