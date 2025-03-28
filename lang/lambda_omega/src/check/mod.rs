@@ -10,7 +10,7 @@ pub mod kind;
 pub mod types;
 pub use kind::kind_ty;
 
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub struct Env {
     pub vars: HashMap<Var, Type>,
     pub ty_vars: HashMap<TypeVar, Kind>,
@@ -37,14 +37,5 @@ impl Env {
             .get(var)
             .cloned()
             .ok_or(Error::FreeVar(var.clone()))
-    }
-}
-
-impl Default for Env {
-    fn default() -> Env {
-        Env {
-            vars: HashMap::new(),
-            ty_vars: HashMap::new(),
-        }
     }
 }
