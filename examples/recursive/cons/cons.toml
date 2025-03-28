@@ -1,2 +1,2 @@
 ty=""
-evaluated=""
+evaluated="\\n:(Nat).(\\l:(mu X.<cons:{ Nat, X }, nil:Unit>).(fold [mu X.<cons:{ Nat, X }, nil:Unit>] <cons = {n,l}> as mu X.<cons:{ Nat, X }, nil:Unit>))"

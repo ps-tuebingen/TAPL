@@ -1,2 +1,2 @@
 ty=""
-evaluated=""
+evaluated="\\s:(mu A.(Unit) -> ({ Nat, A })).(((s) (unit)).2)"

@@ -113,13 +113,13 @@ impl From<If> for Term {
 
 impl fmt::Display for True {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        f.write_str("True")
+        f.write_str("true")
     }
 }
 
 impl fmt::Display for False {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        f.write_str("False")
+        f.write_str("false")
     }
 }
 

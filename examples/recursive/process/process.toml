@@ -1,2 +1,2 @@
 ty=""
-evaluated=""
+evaluated="\\acc:(Nat).(\\n:(Nat).(let (newacc=((plus) (((acc) (n))))) in (({newacc,((f) (newacc))}) (zero))))"

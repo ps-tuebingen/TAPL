@@ -1,2 +1,2 @@
 ty=""
-evaluated=""
+evaluated="\\l:(mu x.<cons:{ Nat, X }, nil:Unit>).(let (isnil=\\l:(mu x.<cons:{ Nat, X }, nil:Unit>).(case l of { <nil=u> => true| <cons=p> => false })) in let (head=\\l:(mu x.<cons:{ Nat, X }, nil:Unit>).(case l of { <nil=u> => zero| <cons=p> => p.0 })) in let (tail=\\l:(mu x.<cons:{ Nat, X }, nil:Unit>).(case l of { <nil=u> => l| <cons=p> => p.1 })) in if ((isnil) (l)) { zero } else { ((plus) (((((head) (l))) (((s) (((tail) (l)))))))) })"

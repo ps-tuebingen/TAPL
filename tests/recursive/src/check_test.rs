@@ -1,15 +1,15 @@
-use recursive::{eval::Eval, parser::parse};
+use recursive::{check::Check, parser::parse};
 use test_common::testsuite::{Test, TestResult};
 
-pub struct EvalTest {
+pub struct TypecheckTest {
     source_name: String,
     source: String,
     expected: String,
 }
 
-impl EvalTest {
-    pub fn new(source_name: &str, source: &str, expected: &str) -> EvalTest {
-        EvalTest {
+impl TypecheckTest {
+    pub fn new(source_name: &str, source: &str, expected: &str) -> TypecheckTest {
+        TypecheckTest {
             source_name: source_name.to_owned(),
             source: source.to_owned(),
             expected: expected.to_owned(),
@@ -17,9 +17,9 @@ impl EvalTest {
     }
 }
 
-impl Test for EvalTest {
+impl Test for TypecheckTest {
     fn name(&self) -> String {
-        format!("Evaluating {}", self.source_name)
+        format!("Type Checking {}", self.source_name)
     }
 
     fn run(&self) -> TestResult {
@@ -27,10 +27,10 @@ impl Test for EvalTest {
             Ok(p) => p,
             Err(err) => return TestResult::from_err(err),
         };
-        let evaled = match parsed.eval() {
-            Ok(v) => v,
+        let checked = match parsed.check(&mut Default::default()) {
+            Ok(ty) => ty,
             Err(err) => return TestResult::from_err(err),
         };
-        TestResult::from_eq(&evaled, &self.expected)
+        TestResult::from_eq(&checked, &self.expected)
     }
 }
