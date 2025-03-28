@@ -7,6 +7,7 @@ pub mod featherweight;
 pub mod inference;
 pub mod lambda_omega;
 pub mod nameless_representation;
+pub mod recursive;
 pub mod references;
 pub mod stlc;
 pub mod subtypes;
@@ -30,6 +31,7 @@ pub enum Command {
     Exceptions(exceptions::Args),
     Subtypes(subtypes::Args),
     Featherweight(featherweight::Args),
+    Recursive(recursive::Args),
     Inference(inference::Args),
     SystemF(system_f::Args),
     BoundedQuantification(bounded_quantification::Args),
@@ -77,6 +79,7 @@ pub fn run() -> Result<(), String> {
         Command::Exceptions(args) => exceptions::exec(args).map_err(|err| err.to_string()),
         Command::Subtypes(args) => subtypes::exec(args).map_err(|err| err.to_string()),
         Command::Featherweight(args) => featherweight::exec(args).map_err(|err| err.to_string()),
+        Command::Recursive(args) => recursive::exec(args).map_err(|err| err.to_string()),
         Command::Inference(args) => inference::exec(args).map_err(|err| err.to_string()),
         Command::SystemF(args) => system_f::exec(args).map_err(|err| err.to_string()),
         Command::BoundedQuantification(args) => {
