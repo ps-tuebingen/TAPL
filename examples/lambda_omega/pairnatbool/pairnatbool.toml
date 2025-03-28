@@ -1,2 +1,2 @@
 ty=""
-evaluated=""
+evaluated="\\R::*.\\p:(Nat) -> ((Bool) -> (R)).((p) (5)) (false)"

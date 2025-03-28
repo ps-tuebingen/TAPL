@@ -27,7 +27,7 @@ impl Test for TypecheckTest {
             Ok(p) => p,
             Err(err) => return TestResult::from_err(err),
         };
-        let checked = match check(parsed, &mut Default::default()) {
+        let checked = match check(&parsed, &mut Default::default()) {
             Ok(ty) => ty,
             Err(err) => return TestResult::from_err(err),
         };
