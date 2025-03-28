@@ -1,0 +1,16 @@
+[package]
+name = "e2e_recursive"
+version = "0.1.0"
+edition = "2021"
+
+[[test]]
+name = "recursive"
+path = "src/recursive.rs"
+harness=false
+
+[dependencies]
+serde = {version="1.0.219", features=["derive"]}
+
+test_common = { path="../test_common" }
+recursive = { path="../../lang/recursive" }
+
