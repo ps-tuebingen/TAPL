@@ -1,5 +1,5 @@
 use super::{pair_to_n_inner, pair_to_type, Error, Rule};
-use crate::terms::{App, Fst, Snd, Term, Zero};
+use crate::terms::{App, False, Fst, Snd, Term, True, Zero};
 use pest::iterators::Pair;
 
 mod bool;
@@ -96,6 +96,8 @@ fn str_to_term(s: &str) -> Result<Term, Error> {
     match s.to_lowercase().trim() {
         "unit" => Ok(Term::Unit),
         "zero" => Ok(Zero.into()),
+        "true" => Ok(True.into()),
+        "false" => Ok(False.into()),
         s => Err(Error::UnknownKw(s.to_owned())),
     }
 }

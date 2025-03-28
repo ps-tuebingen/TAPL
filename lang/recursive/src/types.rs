@@ -153,8 +153,8 @@ impl fmt::Display for Type {
         match self {
             Type::TypeVar(v) => f.write_str(v),
             Type::Unit => f.write_str("Unit"),
-            Type::Fun { from, to } => write!(f, "({from}) → ({to})"),
-            Type::Mu(var, ty) => write!(f, "μ{var}.{ty}"),
+            Type::Fun { from, to } => write!(f, "({from}) -> ({to})"),
+            Type::Mu(var, ty) => write!(f, "mu {var}.{ty}"),
             Type::Variant(vars) => write!(
                 f,
                 "<{}>",
@@ -163,7 +163,7 @@ impl fmt::Display for Type {
                     .collect::<Vec<String>>()
                     .join(", ")
             ),
-            Type::Pair(ty1, ty2) => write!(f, "({ty1}) x ({ty2})"),
+            Type::Pair(ty1, ty2) => write!(f, "{{ {ty1}, {ty2} }}"),
             Type::Nat => f.write_str("Nat"),
             Type::Bool => f.write_str("Bool"),
             Type::Record(recs) => {

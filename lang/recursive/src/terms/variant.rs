@@ -154,7 +154,7 @@ impl From<VariantCase> for Term {
 
 impl fmt::Display for Variant {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "<{} = {}>", self.label, self.term)
+        write!(f, "<{} = {}> as {}", self.label, self.term, self.annot)
     }
 }
 
@@ -168,7 +168,7 @@ impl fmt::Display for VariantCase {
                 .iter()
                 .map(|pt| pt.to_string())
                 .collect::<Vec<String>>()
-                .join(", ")
+                .join("| ")
         )
     }
 }

@@ -172,18 +172,18 @@ impl fmt::Display for Zero {
 
 impl fmt::Display for Succ {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Succ({})", self.term)
+        write!(f, "succ({})", self.term)
     }
 }
 
 impl fmt::Display for Pred {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Pred({})", self.term)
+        write!(f, "pred({})", self.term)
     }
 }
 
 impl fmt::Display for IsZero {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "IsZero({})", self.term)
+        write!(f, "iszero({})", self.term)
     }
 }

@@ -73,7 +73,7 @@ prim_term = {
 }
 
 paren_term = { "(" ~ term ~ ")" }
-const_term = { kw_unit | kw_zero } 
+const_term = { kw_unit | kw_zero | kw_true | kw_false } 
 lambda_term = { "\\" ~ variable ~ ":" ~ type ~ "." ~ term }
 fold_term = { kw_fold ~ "[" ~ type ~ "]" ~ term }
 unfold_term = { kw_unfold ~ "[" ~ type ~ "]" ~ term }
@@ -112,7 +112,7 @@ const_type = { kw_tyunit | kw_tynat | kw_tybool }
 mu_type = { kw_mu ~ variable ~ "." ~ type }
 pair_type = { "{" ~ type ~ "," ~ type ~ "}" }
 variant_type = { "<" ~ variable ~ ":" ~ type ~ ("," ~ variable ~ ":" ~ type)* ~ ">" } 
-record_type = { "{" ~ variable ~ ":" ~ type ~ ("," ~ variable ~ ":" ~ type)* ~ ">" }
+record_type = { "{" ~ variable ~ ":" ~ type ~ ("," ~ variable ~ ":" ~ type)* ~ "}" }
 
 left_rec_type = { fun_type  }
 fun_type = { "->" ~ type }

@@ -108,12 +108,12 @@ impl From<App> for Term {
 
 impl fmt::Display for App {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "({}) ({})", self.fun, self.arg)
+        write!(f, "(({}) ({}))", self.fun, self.arg)
     }
 }
 
 impl fmt::Display for Lambda {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "λ{}:{}.{}", self.var, self.annot, self.body)
+        write!(f, "\\{}:({}).({})", self.var, self.annot, self.body)
     }
 }
