@@ -1,0 +1,5 @@
+let (lam = \f:(mu X.X->X)->(mu X.X->X).f) in 
+let (ap = \f:(mu X.X->X).\a:(mu X.X->X).f(a)) in 
+  (ap 
+    (lam (\x:(mu X.X->X). (ap(f))((ap(x))(x))))
+    (lam (\x:(mu X.X->X). (ap(f))((ap(x))(x)))))

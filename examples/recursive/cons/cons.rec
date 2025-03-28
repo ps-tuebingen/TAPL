@@ -1,0 +1,3 @@
+\n:Nat.\l:(mu X.<nil:Unit, cons:{Nat,X}>).
+  fold [mu X.<nil:Unit, cons:{Nat,X}>] 
+    (<cons={n,l}> as (mu X.<nil:Unit, cons:{Nat,X}>))

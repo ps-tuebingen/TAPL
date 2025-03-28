@@ -1,0 +1,6 @@
+fix(
+  \f:Nat -> (mu A.Nat->{Nat,A}).
+  \acc:Nat.\n:Nat.
+  let (newacc = plus (acc n)) in 
+  ({ newacc, f(newacc) })(0)
+)

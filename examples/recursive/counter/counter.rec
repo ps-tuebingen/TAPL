@@ -1,0 +1,8 @@
+let (create = fix(
+  \f:{x:Nat} -> (mu C.{get:Nat,inc:Unit->C,dec:Unit->C}).
+  \s:{x:Nat}.{
+    get = s.x,
+    inc = \_:Unit. f({x=succ(s.x)}),
+    dec = \_:Unit. f({x=pred(s.x)})
+  }
+)) in (create)({x=0})
