@@ -123,7 +123,7 @@ impl fmt::Display for Term {
             Term::App { fun, arg } => write!(f, "({fun}) ({arg})"),
             Term::Unit => f.write_str("unit"),
             Term::TyLambda { var, kind, body } => write!(f, "\\{var}::{kind}.{body}"),
-            Term::TyApp { fun, arg } => write!(f, "{fun}[{arg}]"),
+            Term::TyApp { fun, arg } => write!(f, "({fun})[{arg}]"),
         }
     }
 }
