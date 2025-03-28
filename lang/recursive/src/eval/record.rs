@@ -36,7 +36,6 @@ impl Eval for RecordProj {
             let rec_evaled = self.record.eval_once()?;
             Ok(RecordProj {
                 record: Box::new(rec_evaled),
-                ty: self.ty,
                 label: self.label,
             }
             .into())

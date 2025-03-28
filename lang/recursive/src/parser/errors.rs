@@ -8,6 +8,7 @@ pub enum Error {
     MissingInput(String),
     RemainingInput(Rule),
     UnexpectedRule { found: Rule, expected: String },
+    UnknownKw(String),
 }
 
 impl Error {
@@ -28,6 +29,7 @@ impl fmt::Display for Error {
             Error::UnexpectedRule { found, expected } => {
                 write!(f, "Unexpected Rule {found:?}, expected: {expected}")
             }
+            Error::UnknownKw(kw) => write!(f, "Unknown Keyword {kw}"),
         }
     }
 }

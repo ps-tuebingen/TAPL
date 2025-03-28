@@ -44,6 +44,22 @@ impl IsZero {
     }
 }
 
+impl From<i64> for Term {
+    fn from(i: i64) -> Term {
+        match i {
+            0 => Zero.into(),
+            i if i > 0 => Succ {
+                term: Box::new((i - 1).into()),
+            }
+            .into(),
+            _ => Pred {
+                term: Box::new((i + 1).into()),
+            }
+            .into(),
+        }
+    }
+}
+
 impl From<Zero> for Term {
     fn from(zero: Zero) -> Term {
         Term::Zero(zero)

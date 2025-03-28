@@ -27,7 +27,7 @@ pub fn pair_to_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
 fn pair_to_prim_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
     match p.as_rule() {
         Rule::const_ty => str_to_ty(p.as_str()),
-        Rule::forall_ty => todo!(),
+        Rule::forall_ty => pair_to_forall(p),
         Rule::lambda_ty => pair_to_lambda_ty(p),
         Rule::paren_type => {
             let inner = pair_to_n_inner(p, vec!["Type"])?.remove(0);
@@ -81,5 +81,20 @@ fn pair_to_fun_ty(p: Pair<'_, Rule>, ty: Type) -> Result<Type, Error> {
     Ok(Type::Fun {
         from: Box::new(ty),
         to: Box::new(to_ty),
+    })
+}
+
+fn pair_to_forall(p: Pair<'_, Rule>) -> Result<Type, Error> {
+    let mut inner = pair_to_n_inner(p, vec!["Forall Variable", "Forall Type"])?;
+    let var_rule = inner.remove(0);
+    let mut var_inner = pair_to_n_inner(var_rule, vec!["Forall Keyword", "Forall Variable"])?;
+    var_inner.remove(0);
+    let var = var_inner.remove(0).as_str().trim().to_owned();
+    let ty_rule = inner.remove(0);
+    let ty = pair_to_type(ty_rule)?;
+
+    Ok(Type::Forall {
+        var,
+        ty: Box::new(ty),
     })
 }

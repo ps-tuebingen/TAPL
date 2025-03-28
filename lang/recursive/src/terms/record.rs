@@ -27,15 +27,13 @@ impl Record {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct RecordProj {
     pub record: Box<Term>,
-    pub ty: Type,
     pub label: Label,
 }
 
 impl RecordProj {
-    pub fn new(rec: Term, ty: Type, label: &str) -> RecordProj {
+    pub fn new(rec: Term, label: &str) -> RecordProj {
         RecordProj {
             record: Box::new(rec),
-            ty,
             label: label.to_owned(),
         }
     }
@@ -68,7 +66,6 @@ impl SubstTy for RecordProj {
     fn subst_ty(self, v: TypeVar, ty: Type) -> Self {
         RecordProj {
             record: Box::new(self.record.subst_ty(v.clone(), ty.clone())),
-            ty: self.ty.subst_ty(v, ty),
             label: self.label,
         }
     }
@@ -90,7 +87,6 @@ impl SubstTerm for RecordProj {
     fn subst(self, v: Var, t: Term) -> Self {
         RecordProj {
             record: Box::new(self.record.subst(v, t)),
-            ty: self.ty,
             label: self.label,
         }
     }

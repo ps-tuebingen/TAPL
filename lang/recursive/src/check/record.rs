@@ -18,8 +18,10 @@ impl Check for Record {
 }
 
 impl Check for RecordProj {
-    fn check(&self, _: &mut Env) -> Result<Type, Error> {
-        let recs = self.ty.as_record().map_err(|knd| Error::check(knd, self))?;
+    fn check(&self, env: &mut Env) -> Result<Type, Error> {
+        let rec_ty = self.record.check(env)?;
+
+        let recs = rec_ty.as_record().map_err(|knd| Error::check(knd, self))?;
         let ty = recs.get(&self.label).ok_or(Error::check(
             ErrorKind::UndefinedLabel(self.label.clone()),
             self,

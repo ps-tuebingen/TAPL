@@ -30,15 +30,7 @@ pub fn new_counter() -> Term {
                     Type::Record(HashMap::from([("x".to_owned(), Type::Nat)])),
                     Fold::new(
                         Record::new(&[
-                            (
-                                "get",
-                                RecordProj::new(
-                                    "s".into(),
-                                    Type::Record(HashMap::from([("x".to_owned(), Type::Nat)])),
-                                    "x",
-                                )
-                                .into(),
-                            ),
+                            ("get", RecordProj::new("s".into(), "x").into()),
                             (
                                 "inc",
                                 Lambda::new(
@@ -48,18 +40,8 @@ pub fn new_counter() -> Term {
                                         "f".into(),
                                         Record::new(&[(
                                             "x",
-                                            Succ::new(
-                                                RecordProj::new(
-                                                    "s".into(),
-                                                    Type::Record(HashMap::from([(
-                                                        "x".to_owned(),
-                                                        Type::Nat,
-                                                    )])),
-                                                    "x",
-                                                )
+                                            Succ::new(RecordProj::new("s".into(), "x").into())
                                                 .into(),
-                                            )
-                                            .into(),
                                         )])
                                         .into(),
                                     )
@@ -76,18 +58,8 @@ pub fn new_counter() -> Term {
                                         "f".into(),
                                         Record::new(&[(
                                             "x",
-                                            Pred::new(
-                                                RecordProj::new(
-                                                    "s".into(),
-                                                    Type::Record(HashMap::from([(
-                                                        "x".to_owned(),
-                                                        Type::Nat,
-                                                    )])),
-                                                    "x",
-                                                )
+                                            Pred::new(RecordProj::new("s".into(), "x").into())
                                                 .into(),
-                                            )
-                                            .into(),
                                         )])
                                         .into(),
                                     )

@@ -59,6 +59,7 @@ prim_term = {
   | unfold_term
   | variant_term
   | variantcase_term
+  | pair_term
   | succ_term
   | pred_term
   | iszero_term
