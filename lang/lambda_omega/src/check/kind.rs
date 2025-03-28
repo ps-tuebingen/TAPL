@@ -6,6 +6,7 @@ pub fn kind_ty(ty: &Type, env: &mut Env) -> Result<Kind, Error> {
         Type::Var(v) => env.get_tyvar(v),
         Type::Unit => Ok(Kind::Star),
         Type::Nat => Ok(Kind::Star),
+        Type::Bool => Ok(Kind::Star),
         Type::App { fun, arg } => {
             let fun_kind = kind_ty(fun, &mut env.clone())?;
             let (from, to) = fun_kind.as_arrow()?;

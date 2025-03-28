@@ -10,6 +10,8 @@ pub type Var = String;
 pub enum Term {
     Var(Var),
     Const(i64),
+    True,
+    False,
     Unit,
     Lambda {
         var: Var,
@@ -42,6 +44,8 @@ impl Term {
                 }
             }
             Term::Const(i) => Term::Const(i),
+            Term::True => Term::True,
+            Term::False => Term::False,
             Term::Lambda { var, annot, body } => {
                 if var == *v {
                     Term::Lambda { var, annot, body }
@@ -74,6 +78,8 @@ impl Term {
         match self {
             Term::Var(v) => Term::Var(v),
             Term::Const(i) => Term::Const(i),
+            Term::True => Term::True,
+            Term::False => Term::False,
             Term::Unit => Term::Unit,
             Term::Lambda { var, annot, body } => {
                 let annot_subst = annot.subst(v, ty.clone());
@@ -121,6 +127,8 @@ impl fmt::Display for Term {
         match self {
             Term::Var(v) => f.write_str(v),
             Term::Const(i) => write!(f, "{i}"),
+            Term::True => f.write_str("true"),
+            Term::False => f.write_str("false"),
             Term::Lambda { var, annot, body } => {
                 write!(f, "\\{}:{}.{}", var, annot, body)
             }

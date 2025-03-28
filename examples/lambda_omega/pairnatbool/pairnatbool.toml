@@ -1,2 +1,2 @@
-ty=""
+ty="forall R.((Nat) -> ((Bool) -> (R))) -> (R)"
 evaluated="\\R::*.\\p:(Nat) -> ((Bool) -> (R)).((p) (5)) (false)"

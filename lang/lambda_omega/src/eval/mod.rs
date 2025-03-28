@@ -6,6 +6,8 @@ pub fn eval(t: Term) -> Result<Value, Error> {
     match t {
         Term::Unit => Ok(Value::Unit),
         Term::Const(i) => Ok(Value::Const(i)),
+        Term::True => Ok(Value::True),
+        Term::False => Ok(Value::False),
         Term::Var(v) => Err(Error::FreeVar(v)),
         Term::Lambda { var, annot, body } => Ok(Value::Lambda {
             var,

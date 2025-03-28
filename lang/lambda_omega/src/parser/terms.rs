@@ -64,6 +64,8 @@ fn pair_to_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
 fn str_to_term(s: &str) -> Result<Term, Error> {
     match s.to_lowercase().trim() {
         "unit" => Ok(Term::Unit),
+        "true" => Ok(Term::True),
+        "false" => Ok(Term::False),
         s => Err(Error::UnknownKw(s.to_owned())),
     }
 }

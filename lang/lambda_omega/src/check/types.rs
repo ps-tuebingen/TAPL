@@ -6,6 +6,8 @@ pub fn check(t: &Term, env: &mut Env) -> Result<Type, Error> {
         Term::Var(v) => env.get_var(v),
         Term::Const(_) => Ok(Type::Nat),
         Term::Unit => Ok(Type::Unit),
+        Term::True => Ok(Type::Bool),
+        Term::False => Ok(Type::Bool),
         Term::Lambda { var, annot, body } => {
             let annot_kind = kind_ty(annot, &mut env.clone())?;
             env.add_var(var, annot);

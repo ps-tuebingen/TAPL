@@ -5,11 +5,16 @@ program = { SOI ~ term ~ EOI }
 
 // Keywords
 kw_unit = { "unit" }
+kw_false = { "false" }
+kw_true = { "true" }
 kw_forall = { "forall" }
 kw_tyunit = { "Unit" }
 kw_tynat = { "Nat" }
+kw_tybool = { "Bool" }
 keyword = {
   | kw_unit 
+  | kw_false
+  | kw_true
   | kw_forall
   | kw_tyunit
   | kw_tynat
@@ -28,7 +33,7 @@ prim_term = {
 }
 
 paren_term = { "(" ~ term ~ ")" }
-const_term = { kw_unit }
+const_term = { kw_unit | kw_true | kw_false }
 number = { ASCII_DIGIT+ }
 lambda_term = { "\\" ~ variable ~ ":" ~ type ~ "." ~ term }
 tylambda_term = { "\\" ~ variable ~ "::" ~ kind ~ "." ~ term }
@@ -48,7 +53,7 @@ prim_type = {
 }
 
 paren_type = { "(" ~ type ~ ")" }
-const_ty = { kw_tyunit | kw_tynat }
+const_ty = { kw_tyunit | kw_tynat | kw_tybool }
 lambda_ty = { "\\" ~ variable ~ "::" ~ kind ~ "." ~ type}
 forall_ty = { forall_start ~ "." ~ type } 
 forall_start = ${ kw_forall ~ " " ~ variable }

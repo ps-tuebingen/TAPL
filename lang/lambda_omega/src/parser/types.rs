@@ -56,6 +56,7 @@ fn str_to_ty(s: &str) -> Result<Type, Error> {
     match s.to_lowercase().trim() {
         "unit" => Ok(Type::Unit),
         "nat" => Ok(Type::Nat),
+        "bool" => Ok(Type::Bool),
         s => Err(Error::UnknownKw(s.to_owned())),
     }
 }

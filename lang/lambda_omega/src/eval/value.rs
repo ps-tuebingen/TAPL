@@ -9,6 +9,8 @@ use std::fmt;
 #[derive(Clone, Debug)]
 pub enum Value {
     Unit,
+    True,
+    False,
     Const(i64),
     Lambda {
         var: Var,
@@ -60,6 +62,8 @@ impl From<Value> for Term {
                 body: Box::new(body),
             },
             Value::Unit => Term::Unit,
+            Value::True => Term::True,
+            Value::False => Term::False,
             Value::Const(i) => Term::Const(i),
         }
     }
