@@ -155,18 +155,24 @@ impl fmt::Display for Type {
             Type::Unit => f.write_str("Unit"),
             Type::Fun { from, to } => write!(f, "({from}) -> ({to})"),
             Type::Mu(var, ty) => write!(f, "mu {var}.{ty}"),
-            Type::Variant(vars) => write!(
-                f,
-                "<{}>",
-                vars.iter()
-                    .map(|(label, ty)| format!("{label}:{ty}"))
-                    .collect::<Vec<String>>()
-                    .join(", ")
-            ),
+            Type::Variant(vars) => {
+                let mut vars: Vec<&(Label, Type)> = vars.iter().collect();
+                vars.sort_by(|(lb1, _), (lb2, _)| lb1.cmp(&lb2));
+                write!(
+                    f,
+                    "<{}>",
+                    vars.iter()
+                        .map(|(label, ty)| format!("{label}:{ty}"))
+                        .collect::<Vec<String>>()
+                        .join(", ")
+                )
+            }
             Type::Pair(ty1, ty2) => write!(f, "{{ {ty1}, {ty2} }}"),
             Type::Nat => f.write_str("Nat"),
             Type::Bool => f.write_str("Bool"),
             Type::Record(recs) => {
+                let mut recs: Vec<(&Label, &Type)> = recs.iter().collect();
+                recs.sort_by(|(lb1, _), (lb2, _)| lb1.cmp(&lb2));
                 write!(
                     f,
                     "{{ {} }}",

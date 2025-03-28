@@ -1,4 +1,4 @@
-use super::{pair_to_n_inner, pair_to_term, Error, Rule};
+use super::{pair_to_n_inner, pair_to_prim_term, pair_to_term, Error, Rule};
 use crate::terms::If;
 use pest::iterators::Pair;
 
@@ -15,7 +15,7 @@ pub fn pair_to_if(p: Pair<'_, Rule>) -> Result<If, Error> {
     )?;
     inner.remove(0);
     let cond_rule = inner.remove(0);
-    let cond = pair_to_term(cond_rule)?;
+    let cond = pair_to_prim_term(cond_rule)?;
     let then_rule = inner.remove(0);
     let thent = pair_to_term(then_rule)?;
     inner.remove(0);
