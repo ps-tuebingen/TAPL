@@ -1,2 +1,2 @@
-ty=""
+ty="(mu A.(Nat) -> ({ Nat, A })) -> (mu A.(Nat) -> ({ Nat, A }))"
 evaluated="\\s:(mu A.(Nat) -> ({ Nat, A })).(((s) (zero)).1)"

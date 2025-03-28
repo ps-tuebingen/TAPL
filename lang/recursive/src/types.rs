@@ -27,6 +27,8 @@ impl Type {
     pub fn as_fun(&self) -> Result<(Type, Type), ErrorKind> {
         if let Type::Fun { from, to } = self {
             Ok((*from.clone(), *to.clone()))
+        } else if let Type::Fun { from, to } = self.clone().unfold() {
+            Ok((*from, *to))
         } else {
             Err(ErrorKind::UnexpectedType {
                 found: self.clone(),
@@ -42,6 +44,8 @@ impl Type {
     pub fn as_mu(&self) -> Result<(TypeVar, Type), ErrorKind> {
         if let Type::Mu(v, ty) = self {
             Ok((v.clone(), *ty.clone()))
+        } else if let Type::Mu(v, ty) = self.clone().unfold() {
+            Ok((v, *ty))
         } else {
             Err(ErrorKind::unexpected_type(self, "Recursive Type"))
         }
@@ -58,6 +62,8 @@ impl Type {
     pub fn as_variant(&self) -> Result<Vec<(Label, Type)>, ErrorKind> {
         if let Type::Variant(vars) = self {
             Ok(vars.clone())
+        } else if let Type::Variant(vars) = self.clone().unfold() {
+            Ok(vars)
         } else {
             Err(ErrorKind::unexpected_type(self, "Variant Type"))
         }
@@ -70,6 +76,8 @@ impl Type {
     pub fn as_pair(&self) -> Result<(Type, Type), ErrorKind> {
         if let Type::Pair(fst, snd) = self {
             Ok((*fst.clone(), *snd.clone()))
+        } else if let Type::Pair(fst, snd) = self.clone().unfold() {
+            Ok((*fst, *snd))
         } else {
             Err(ErrorKind::unexpected_type(self, "Pair Type"))
         }
@@ -86,6 +94,8 @@ impl Type {
     pub fn as_record(&self) -> Result<HashMap<Label, Type>, ErrorKind> {
         if let Type::Record(recs) = self {
             Ok(recs.clone())
+        } else if let Type::Record(recs) = self.clone().unfold() {
+            Ok(recs)
         } else {
             Err(ErrorKind::unexpected_type(self, "Record Type"))
         }
@@ -96,6 +106,13 @@ impl Type {
             Ok(self.clone())
         } else {
             Err(ErrorKind::unexpected_type(self, &ty.to_string()))
+        }
+    }
+
+    pub fn unfold(self) -> Type {
+        match self {
+            Type::Mu(var, ty) => ty.clone().subst_ty(var.clone(), Type::Mu(var, ty)),
+            _ => self,
         }
     }
 }
