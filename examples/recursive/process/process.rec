@@ -1,6 +1,14 @@
+let (plus = fix(
+      \f:Nat->(Nat->Nat).\n:Nat.\m:Nat.
+      if (iszero(n)) {
+      m
+      }else {
+      (f(pred(n)))(m)
+      })
+) in 
 fix(
   \f:Nat -> (mu A.Nat->{Nat,A}).
   \acc:Nat.\n:Nat.
-  let (newacc = plus (acc n)) in 
+  let (newacc = ((plus acc) n)) in 
   ({ newacc, f(newacc) })(0)
 )

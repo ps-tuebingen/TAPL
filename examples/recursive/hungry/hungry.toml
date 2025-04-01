@@ -1,2 +1,2 @@
 ty=""
-evaluated="\\n:(Nat).(f)"
+evaluated="\\n:(Nat).(fix (\\f:((Nat) -> (mu A.(Nat) -> (A))).(\\n:(Nat).(f))))"

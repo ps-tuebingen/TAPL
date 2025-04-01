@@ -1,2 +1,2 @@
 ty=""
-evaluated="\\n:(Nat).(\\_:(Unit).((({n,((f) (succ(n)))}) (zero))))"
+evaluated="\\n:(Nat).(\\_:(Unit).((({n,((fix (\\f:((Nat) -> (mu A.(Unit) -> ({ Nat, A }))).(\\n:(Nat).(\\_:(Unit).((({n,((f) (succ(n)))}) (zero))))))) (succ(n)))}) (zero))))"

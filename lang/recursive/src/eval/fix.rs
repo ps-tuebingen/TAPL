@@ -10,12 +10,10 @@ impl Eval for Fix {
         if self.term.is_value() {
             let lam = self
                 .term
+                .clone()
                 .as_lambda()
                 .map_err(|knd| Error::eval(knd, &self))?;
-            Ok(lam
-                .body
-                .clone()
-                .subst(lam.var.clone(), Fix::new(lam.into()).into()))
+            Ok(lam.body.clone().subst(lam.var, self.into()))
         } else {
             let term_evaled = self.term.eval_once()?;
             Ok(Fix::new(term_evaled).into())

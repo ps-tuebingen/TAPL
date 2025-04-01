@@ -1,0 +1,8 @@
+fix(
+  \f:Nat->(Nat->Nat).\n:Nat.\m:Nat.
+  if (iszero(n)) {
+    m
+  }else {
+    (f(pred(n)))(m)
+  }
+)

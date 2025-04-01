@@ -1,25 +1,36 @@
-fix (
-  \s:(mu x.<nil:Unit, cons:{Nat,X}>)->Nat.
-  \l:(mu x.<nil:Unit, cons:{Nat,X}>).
-  let (isnil = 
-    \l:(mu x.<nil:Unit, cons:{Nat,X}>).
+let (isnil = 
+    \l:(mu X.<nil:Unit, cons:{Nat,X}>).
+    case l of {
+      <nil=u> => true
+      | <cons=p> => false
+    }
+) in 
+let (head = \l:(mu X.<nil:Unit, cons:{Nat,X}>). 
+    case l of {
+      <nil=u> => 0
+      | <cons=p> => p.0
+    }
+) in
+let (tail = \l:(mu X.<nil:Unit, cons:{Nat,X}>).
       case l of {
-        <nil=u> => true
-        | <cons=p> => false
-      }) in 
-  let (head = \l:(mu x.<nil:Unit, cons:{Nat,X}>). 
-      case l of {
-        <nil=u> => 0
-        | <cons=p> => p.0
-      }) in 
-  let (tail = \l:(mu x.<nil:Unit, cons:{Nat,X}>).
-      case l of {
-        <nil=u> => l
-        | <cons=p> => p.1
-      }) in 
-  if (isnil(l)) {
-    0 
-  } else {
-   plus (head l) (s(tail(l)))
+      <nil=u> => l
+      | <cons=p> => p.1
+      }
+) in
+let (plus = fix(
+  \f:Nat->(Nat->Nat).\n:Nat.\m:Nat.
+  if (iszero(n)) {
+    m
+  }else {
+    (f(pred(n)))(m)
   }
-)
+)) in 
+fix (
+  \s:(mu X.<nil:Unit, cons:{Nat,X}>)->Nat.
+  \l:(mu X.<nil:Unit, cons:{Nat,X}>). 
+  if (isnil(l)) {
+  0 
+  } else {
+  plus (head l) (s(tail(l)))
+}
+    )

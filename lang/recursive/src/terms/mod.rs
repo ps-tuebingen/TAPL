@@ -294,7 +294,13 @@ impl SubstTy for Term {
 impl SubstTerm for Term {
     fn subst(self, v: Var, t: Term) -> Term {
         match self {
-            Term::Var(_) => self,
+            Term::Var(v2) => {
+                if v == v2 {
+                    t
+                } else {
+                    Term::Var(v2)
+                }
+            }
             Term::Lambda(lam) => lam.subst(v, t).into(),
             Term::App(app) => app.subst(v, t).into(),
             Term::Unit => self,
