@@ -1,4 +1,4 @@
-fix(
+(fix( 
   \f:Nat -> (mu A.Unit -> {Nat,A}).
-  \n:Nat.\_:Unit.({n,f(succ(n))}(0))
-)
+  \n:Nat.fold [mu A.Unit -> {Nat,A}] (\_:Unit.{n,f(succ(n))})
+)) (0)
