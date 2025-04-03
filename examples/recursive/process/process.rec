@@ -8,7 +8,7 @@ let (plus = fix(
 ) in 
 fix(
   \f:Nat -> (mu A.Nat->{Nat,A}).
-  \acc:Nat.\n:Nat.
+  \acc:Nat.(fold [mu A.Nat->{Nat,A}] \n:Nat.
   let (newacc = ((plus acc) n)) in 
-  ({ newacc, f(newacc) })(0)
-)
+  ({ newacc, f(newacc) }))
+)(0)

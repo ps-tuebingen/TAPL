@@ -1,2 +1,3 @@
 ty="(Nat) -> ((mu A.(Nat) -> ({ Nat, A })) -> (mu A.(Nat) -> ({ Nat, A })))"
-evaluated="\\n:(Nat).(\\s:(mu A.(Nat) -> ({ Nat, A })).(((s) (n)).1))"
+evaluated="\\n:(Nat).(\\s:(mu A.(Nat) -> ({ Nat, A })).(((unfold [mu A.(Nat) -> ({ Nat, A })] s) (n)).1))"
+

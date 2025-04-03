@@ -1,1 +1,1 @@
-\s:(mu A.Unit -> {Nat,A}).(s unit).2
+\s:(mu A.Unit -> {Nat,A}).((unfold [mu A.Unit->{Nat,A}] s) unit).1
