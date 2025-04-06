@@ -8,11 +8,15 @@ pub fn pair_to_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
     let prim_rule = inner
         .next()
         .ok_or(Error::missing("Non Left-Recursive Type"))?;
-    let prim_ty = pair_to_prim_ty(prim_rule)?;
+    let prim_inner = pair_to_n_inner(prim_rule, vec!["Non Left-Recursive Type"])?.remove(0);
+    let prim_ty = pair_to_prim_ty(prim_inner)?;
 
     let ty = match inner.next() {
         None => prim_ty,
-        Some(leftrec) => pair_to_leftrec_ty(leftrec, prim_ty)?,
+        Some(leftrec) => {
+            let leftrec_inner = pair_to_n_inner(leftrec, vec!["Left Recursive Type"])?.remove(0);
+            pair_to_leftrec_ty(leftrec_inner, prim_ty)?
+        }
     };
 
     if let Some(n) = inner.next() {
