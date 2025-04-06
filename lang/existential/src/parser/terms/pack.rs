@@ -3,11 +3,20 @@ use crate::terms::{Pack, Unpack};
 use pest::iterators::Pair;
 
 pub fn pair_to_pack(p: Pair<'_, Rule>) -> Result<Pack, Error> {
-    let mut inner = pair_to_n_inner(p, vec!["Packed Type", "Packed Term", "Pack Outer Type"])?;
+    let mut inner = pair_to_n_inner(
+        p,
+        vec![
+            "Packed Type",
+            "Packed Term",
+            "As Keyword",
+            "Pack Outer Type",
+        ],
+    )?;
     let packed_rule = inner.remove(0);
     let packed = pair_to_type(packed_rule)?;
     let term_rule = inner.remove(0);
     let term = pair_to_term(term_rule)?;
+    inner.remove(0);
     let outer_rule = inner.remove(0);
     let outer = pair_to_type(outer_rule)?;
     Ok(Pack {
