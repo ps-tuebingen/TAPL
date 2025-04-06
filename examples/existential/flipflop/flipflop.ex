@@ -13,7 +13,7 @@ let {Counter,counter} =
 let {FlipFlop,flipflop} = 
   {*Counter,
     { new=counter.new,
-      read=\c:Counter.fix(
+      read=\c:Counter.(fix(
           \f:Nat->Nat.\n:Nat. 
           if (iszero(n)) {
             true
@@ -23,7 +23,7 @@ let {FlipFlop,flipflop} =
             }else{
               f(pred(n))
             }
-          })(counter.get(c)),
+          }))((counter.get)(c)),
       toggle=\c:Counter. ((counter.inc) c),
       reset=\c:Counter.(counter.new)
       }
