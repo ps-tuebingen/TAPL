@@ -1,4 +1,4 @@
-use recursive::{eval::Eval, parser::parse};
+use existential::{eval::Eval, parser::parse};
 use test_common::testsuite::{Test, TestResult};
 
 pub struct EvalTest {

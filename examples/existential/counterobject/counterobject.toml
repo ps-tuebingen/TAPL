@@ -1,2 +1,2 @@
 ty="{ exists X, { methods:{ get:(X) -> (Nat), inc:(X) -> (X) }, state:X } }"
-evaluated=""
+evaluated="{*Nat,{ methods = { get = \\x:Nat.x, inc = \\x:Nat.succ(x) }, state = succ(succ(succ(succ(succ(zero))))) }} as { exists X, { methods:{ get:(X) -> (Nat), inc:(X) -> (X) }, state:X } }"

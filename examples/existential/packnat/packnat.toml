@@ -1,2 +1,2 @@
 ty="{ exists X, { a:X, f:(X) -> (X) } }"
-evaluated=""
+evaluated="{*Nat,{ a = succ(succ(succ(succ(succ(zero))))), f = \\x:Nat.succ(x) }} as { exists X, { a:X, f:(X) -> (X) } }"

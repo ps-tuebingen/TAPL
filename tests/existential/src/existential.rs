@@ -7,11 +7,11 @@ use test_common::{
 };
 
 mod check_test;
-//mod eval_test;
+mod eval_test;
 mod parse_test;
 mod reparse_test;
 use check_test::TypecheckTest;
-//use eval_test::EvalTest;
+use eval_test::EvalTest;
 use parse_test::ParseTest;
 use reparse_test::ReparseTest;
 mod suite;

@@ -66,7 +66,7 @@ impl From<i64> for Term {
 
 impl fmt::Display for Zero {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        f.write_str("Zero")
+        f.write_str("zero")
     }
 }
 
