@@ -1,2 +1,2 @@
-ty=""
+ty="{ exists X, { a:X, f:(X) -> (X) } }"
 evaluated=""

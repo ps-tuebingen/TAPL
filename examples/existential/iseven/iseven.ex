@@ -1,5 +1,5 @@
 fix(
-  \f:Nat->Nat.\n:Nat. 
+  \f:Nat->Bool.\n:Nat. 
     if (iszero(n)) {
       true
     }else {

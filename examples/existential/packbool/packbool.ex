@@ -1,1 +1,1 @@
-{*Bool, {a=true, f=\x:Bool.0}} as {exists X, {a:X, f:X->X}}
+{*Bool, {a=true, f=\x:Bool.if (x) { false } else { true } }} as {exists X, {a:X, f:X->X}}

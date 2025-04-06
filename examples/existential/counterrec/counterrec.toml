@@ -1,2 +1,2 @@
-ty=""
+ty="{ exists Counter, { get:(Counter) -> (Nat), inc:(Counter) -> (Counter), new:Counter } }"
 evaluated=""

@@ -14,7 +14,7 @@ let {FlipFlop,flipflop} =
   {*Counter,
     { new=counter.new,
       read=\c:Counter.(fix(
-          \f:Nat->Nat.\n:Nat. 
+          \f:Nat->Bool.\n:Nat. 
           if (iszero(n)) {
             true
           }else {
@@ -34,4 +34,4 @@ let {FlipFlop,flipflop} =
       reset: FlipFlop->FlipFlop
     }
   } in 
-(flipflop.read)(((flipflop.toggle)(flipflop.toggle))(flipflop.new))
+(flipflop.read)((flipflop.toggle)((flipflop.toggle)(flipflop.new)))
