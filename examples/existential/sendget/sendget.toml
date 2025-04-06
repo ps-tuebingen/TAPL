@@ -1,2 +1,2 @@
-ty=""
+ty="({ exists X, { methods:{ get:(X) -> (Nat), inc:(X) -> (X) }, state:X } }) -> (Nat)"
 evaluated=""

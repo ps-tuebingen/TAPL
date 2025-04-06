@@ -1,4 +1,4 @@
-use recursive::{check::Check, parser::parse};
+use existential::{check::Check, parser::parse};
 use test_common::testsuite::{Test, TestResult};
 
 pub struct TypecheckTest {
