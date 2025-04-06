@@ -1,4 +1,4 @@
-use recursive::parser::parse;
+use existential::parser::parse;
 use test_common::testsuite::{Test, TestResult};
 
 pub struct ReparseTest {
