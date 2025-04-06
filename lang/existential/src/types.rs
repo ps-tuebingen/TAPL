@@ -93,7 +93,7 @@ impl fmt::Display for Type {
             Type::Package { ty_var, ty } => write!(f, "{{ exists {ty_var}, {ty} }}"),
             Type::Record(recs) => {
                 let mut recs: Vec<(&String, &Type)> = recs.iter().collect();
-                recs.sort_by(|(lb1, _), (lb2, _)| lb1.cmp(&lb2));
+                recs.sort_by(|(lb1, _), (lb2, _)| lb1.cmp(lb2));
                 write!(
                     f,
                     "{{ {} }}",

@@ -157,7 +157,7 @@ impl fmt::Display for Type {
             Type::Mu(var, ty) => write!(f, "mu {var}.{ty}"),
             Type::Variant(vars) => {
                 let mut vars: Vec<&(Label, Type)> = vars.iter().collect();
-                vars.sort_by(|(lb1, _), (lb2, _)| lb1.cmp(&lb2));
+                vars.sort_by(|(lb1, _), (lb2, _)| lb1.cmp(lb2));
                 write!(
                     f,
                     "<{}>",
@@ -172,7 +172,7 @@ impl fmt::Display for Type {
             Type::Bool => f.write_str("Bool"),
             Type::Record(recs) => {
                 let mut recs: Vec<(&Label, &Type)> = recs.iter().collect();
-                recs.sort_by(|(lb1, _), (lb2, _)| lb1.cmp(&lb2));
+                recs.sort_by(|(lb1, _), (lb2, _)| lb1.cmp(lb2));
                 write!(
                     f,
                     "{{ {} }}",
