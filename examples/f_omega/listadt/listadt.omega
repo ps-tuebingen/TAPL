@@ -1,0 +1,13 @@
+{*\X. forall R.(X->R->R) -> R -> R,
+  { nil = \X.(\R.\c:X->R->R.\n:R.n),
+    cons = \X.\hd:X.\tl:(forall R.(X->R->R) -> R ->R ).(\R.\c:X->R->R.\n:R.(c hd) (((tl [R]) c) n)),
+    isnil = \X.\l:(forall R.(X->R->R) -> R -> R).((l [Bool]) (\hd:X.\tl:Bool. false)) true,
+    head = \X.\l:forall R.(X->R->R) -> R -> R.((l [X]) (\hd:X.\tl:X.hd)) ((\X.\_:Unit.fix(\x:X.x)) [X] unit)
+  }
+} as { exists List :: * => *, 
+  { nil : forall X.List X,
+    cons: forall X. X -> List X -> List X,
+    isnil: forall X. List X -> Bool,
+    head: forall X.List X -> X,
+  }
+}
