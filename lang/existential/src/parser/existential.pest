@@ -15,6 +15,7 @@ kw_in = { "in" }
 kw_succ = { "succ" }
 kw_pred = { "pred" }
 kw_iszero = { "iszero" }
+kw_fix = { "fix" }
 kw_if = { "if" }
 kw_else = { "else" }
 kw_tyunit = { "Unit" }
@@ -32,6 +33,7 @@ keyword = {
   | kw_succ 
   | kw_pred
   | kw_iszero
+  | kw_fix
   | kw_if
   | kw_else
   | kw_exists
@@ -49,8 +51,10 @@ prim_term = {
   | succ_term
   | pred_term
   | iszero_term
+  | fix_term
   | record_term
   | if_term
+  | number
   | variable
 }
 
@@ -58,10 +62,11 @@ const_term = { kw_unit | kw_zero | kw_true | kw_false }
 paren_term = { "(" ~ term ~ ")" }
 lambda_term = { "\\" ~ variable ~ ":" ~ type ~ "." ~ term } 
 pack_term = { "{" ~ "*" ~ type ~ "," ~ term ~ "}" ~ kw_as ~ type }
-unpack_term = { kw_let ~ "{" ~ variable ~ "," ~ variable ~ "}" ~ "=" ~ term ~ kw_in ~ term }
+unpack_term = { kw_let ~ "{" ~ variable ~ "," ~ variable ~ "}" ~ "=" ~ term ~ kw_in ~ term  }
 succ_term = { kw_succ ~ paren_term }
 pred_term = { kw_pred ~ paren_term } 
 iszero_term = { kw_iszero ~ paren_term }
+fix_term = { kw_fix ~ paren_term }
 record_term = { "{" ~ variable ~ "=" ~ term ~ ("," ~ variable ~ "=" ~ term)* ~ "}" }
 if_term = { kw_if ~ paren_term ~ "{" ~ term ~ "}" ~ kw_else ~ "{" ~ term ~ "}" }
 
@@ -81,7 +86,7 @@ prim_type = {
 
 paren_type = { "(" ~ type ~ ")" }
 const_ty = { kw_tyunit | kw_tynat | kw_tybool }
-pack_ty = { exists_start ~ "," ~ type }
+pack_ty = { "{" ~ exists_start ~ "," ~ type ~ "}" }
 exists_start = ${ kw_exists ~ " " ~ variable } 
 record_ty = { "{" ~ variable ~ ":" ~ type ~ ("," ~ variable ~ ":" ~ type)* ~ "}" }
 

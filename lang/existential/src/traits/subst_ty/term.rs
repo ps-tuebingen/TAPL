@@ -22,6 +22,7 @@ impl SubstTy for Term {
             Term::True(tru) => tru.subst_ty(v, ty).into(),
             Term::False(fls) => fls.subst_ty(v, ty).into(),
             Term::If(ift) => ift.subst_ty(v, ty).into(),
+            Term::Fix(fix) => fix.subst_ty(v, ty).into(),
         }
     }
 }

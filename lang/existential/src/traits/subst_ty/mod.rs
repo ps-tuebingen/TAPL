@@ -1,6 +1,7 @@
 use crate::types::{Type, TypeVar};
 
 pub mod bool;
+pub mod fix;
 pub mod lambda;
 pub mod nat;
 pub mod pack;

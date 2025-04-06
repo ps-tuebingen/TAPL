@@ -1,6 +1,7 @@
 use crate::terms::{Term, Var};
 
 pub mod bool;
+pub mod fix;
 pub mod lambda;
 pub mod nat;
 pub mod pack;

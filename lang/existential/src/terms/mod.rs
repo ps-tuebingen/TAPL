@@ -3,11 +3,13 @@ use std::fmt;
 pub type Var = String;
 
 pub mod bool;
+pub mod fix;
 pub mod lambda;
 pub mod nat;
 pub mod pack;
 pub mod record;
 pub use bool::{False, If, True};
+pub use fix::Fix;
 pub use lambda::{App, Lambda};
 pub use nat::{IsZero, Pred, Succ, Zero};
 pub use pack::{Pack, Unpack};
@@ -30,6 +32,7 @@ pub enum Term {
     True(True),
     False(False),
     If(If),
+    Fix(Fix),
 }
 
 impl From<&str> for Term {
@@ -56,6 +59,7 @@ impl fmt::Display for Term {
             Term::True(tru) => tru.fmt(f),
             Term::False(fls) => fls.fmt(f),
             Term::If(ift) => ift.fmt(f),
+            Term::Fix(fix) => fix.fmt(f),
         }
     }
 }

@@ -19,6 +19,7 @@ impl Check for Term {
             Term::True(tru) => tru.check(env),
             Term::False(fls) => fls.check(env),
             Term::If(ift) => ift.check(env),
+            Term::Fix(fix) => fix.check(env),
         }
     }
 }

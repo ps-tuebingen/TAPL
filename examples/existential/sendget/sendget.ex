@@ -5,4 +5,4 @@
     inc:X->X
   }  
 }}. let {X,body} = c in 
-((body.methods).get(body.state))
+(((body.methods).get)(body.state))

@@ -19,6 +19,7 @@ impl SubstTerm for Term {
             Term::True(tru) => tru.subst(v, t),
             Term::False(fls) => fls.subst(v, t),
             Term::If(ift) => ift.subst(v, t),
+            Term::Fix(fix) => fix.subst(v, t),
         }
     }
 }
