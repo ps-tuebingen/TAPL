@@ -65,7 +65,11 @@ fn pair_to_primterm(p: Pair<'_, Rule>) -> Result<Term, Error> {
 fn pair_to_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
     match p.as_rule() {
         Rule::record_proj => {
-            let label = p.as_str().trim().to_owned();
+            let label = pair_to_n_inner(p, vec!["Projection Target"])?
+                .remove(0)
+                .as_str()
+                .trim()
+                .to_owned();
             Ok(RecordProj {
                 term: Box::new(t),
                 label,
