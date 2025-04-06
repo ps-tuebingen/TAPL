@@ -28,7 +28,7 @@ impl TestSuite for ExistentialTests {
     }
 
     fn load(&self) -> Result<Vec<Box<dyn Test>>, Error> {
-        let contents: Vec<TestContents<BoundedConf>> = load_dir(&self.source_dir, "rec")?;
+        let contents: Vec<TestContents<BoundedConf>> = load_dir(&self.source_dir, "ex")?;
         let mut tests = vec![];
         for tst in contents {
             let parse_test = ParseTest::new(&tst.source_name, &tst.source_contents);

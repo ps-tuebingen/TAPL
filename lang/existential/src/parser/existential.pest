@@ -81,7 +81,7 @@ prim_type = {
 
 paren_type = { "(" ~ type ~ ")" }
 const_ty = { kw_tyunit | kw_tynat | kw_tybool }
-pack_ty = { exists_start ~ "." ~ type }
+pack_ty = { exists_start ~ "," ~ type }
 exists_start = ${ kw_exists ~ " " ~ variable } 
 record_ty = { "{" ~ variable ~ ":" ~ type ~ ("," ~ variable ~ ":" ~ type)* ~ "}" }
 
