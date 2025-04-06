@@ -12,3 +12,4 @@ pub const INFERENCE_PATH: &str = "inference";
 pub const SYSTEMF_PATH: &str = "systemf";
 pub const BOUNDED_PATH: &str = "bounded";
 pub const LAMBDA_OMEGA_PATH: &str = "lambda_omega";
+pub const F_OMEGA_PATH: &str = "f_omega";

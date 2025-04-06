@@ -17,6 +17,7 @@ members = [
     "tests/systemf",
     "tests/boundedquantification",
     "tests/lambdaomega",
+    "tests/f_omega",
 
     "lang/stlc",
     "lang/untyped_lambda",
