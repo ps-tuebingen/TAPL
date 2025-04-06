@@ -23,17 +23,17 @@ All languages can be found in the `lang` directory, with the following implement
 
 ## IV Recursive Types 
 
-* `recursive`: Recursive Types (chapter 20), TODO: parser+tests
+* `recursive`: Recursive Types (chapter 20) 
 
 ## V Polymorphism
 
 * `inference`: implements type inference (bidirectional and constraint-based) for STLC (chapter 22)
 * `system_f`: implements system F (chapter 23,25)
-* `existential`: Existential Types (chapter 24), TODO: parser+tests
+* `existential`: Existential Types (chapter 24), TODO: parser+tests+cli
 * `bounded_quantification`: kernel F<: (chapter 26-28)
 
 ## VI Higher-Order Systems 
 
 * `lambda_omega`: Higher order STLC (chapter 29)
-* `f_omega`: system f omega (chapter 30), TODO:tests+parser
+* `f_omega`: system f omega (chapter 30), TODO:tests+parser+cli
 * `f_omega_sub`: system f omega with subtypes (chapter 31,32), tests+parser

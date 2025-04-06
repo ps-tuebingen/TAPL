@@ -1,4 +1,4 @@
-use super::{EvalTest, ParseTest, ReparseTest, TypecheckTest};
+//use super::{EvalTest, ParseTest, ReparseTest, TypecheckTest};
 use std::path::PathBuf;
 use test_common::{
     errors::Error,
@@ -6,13 +6,13 @@ use test_common::{
     testsuite::{Test, TestSuite},
 };
 
-pub struct RecursiveTests {
+pub struct ExistentialTests {
     source_dir: PathBuf,
 }
 
-impl RecursiveTests {
-    pub fn new(source_dir: PathBuf) -> RecursiveTests {
-        RecursiveTests { source_dir }
+impl ExistentialTests {
+    pub fn new(source_dir: PathBuf) -> ExistentialTests {
+        ExistentialTests { source_dir }
     }
 }
 
@@ -22,16 +22,16 @@ pub struct BoundedConf {
     evaluated: String,
 }
 
-impl TestSuite for RecursiveTests {
+impl TestSuite for ExistentialTests {
     fn name(&self) -> String {
-        "Recursive".to_owned()
+        "Existential".to_owned()
     }
 
     fn load(&self) -> Result<Vec<Box<dyn Test>>, Error> {
         let contents: Vec<TestContents<BoundedConf>> = load_dir(&self.source_dir, "rec")?;
         let mut tests = vec![];
         for tst in contents {
-            let parse_test = ParseTest::new(&tst.source_name, &tst.source_contents);
+            /*let parse_test = ParseTest::new(&tst.source_name, &tst.source_contents);
             tests.push(Box::new(parse_test) as Box<dyn Test>);
             let reparse_test = ReparseTest::new(&tst.source_name, &tst.source_contents);
             tests.push(Box::new(reparse_test) as Box<dyn Test>);
@@ -40,7 +40,7 @@ impl TestSuite for RecursiveTests {
             tests.push(Box::new(check_test) as Box<dyn Test>);
             let eval_test =
                 EvalTest::new(&tst.source_name, &tst.source_contents, &tst.conf.evaluated);
-            tests.push(Box::new(eval_test) as Box<dyn Test>);
+            tests.push(Box::new(eval_test) as Box<dyn Test>);*/
         }
         Ok(tests)
     }

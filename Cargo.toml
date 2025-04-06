@@ -12,6 +12,7 @@ members = [
     "tests/subtypes",
     "tests/featherweight",
     "tests/recursive",
+    "tests/existential",
     "tests/inference",
     "tests/systemf",
     "tests/boundedquantification",
