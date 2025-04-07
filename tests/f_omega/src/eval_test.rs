@@ -1,4 +1,4 @@
-use existential::{eval::Eval, parser::parse};
+use f_omega::{eval::Eval, parser::parse};
 use test_common::testsuite::{Test, TestResult};
 
 pub struct EvalTest {
