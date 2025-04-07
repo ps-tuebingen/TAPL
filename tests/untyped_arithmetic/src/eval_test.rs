@@ -1,3 +1,4 @@
+use common::Eval;
 use test_common::testsuite::{Test, TestResult};
 use untyped_arithmetic::parse::parse;
 
@@ -27,7 +28,10 @@ impl Test for EvalTest {
             Ok(p) => p,
             Err(err) => return TestResult::from_err(err),
         };
-        let evaled = parsed.eval();
+        let evaled = match parsed.eval() {
+            Ok(val) => val,
+            Err(err) => return TestResult::from_err(err),
+        };
         TestResult::from_eq(&evaled, &self.expected)
     }
 }

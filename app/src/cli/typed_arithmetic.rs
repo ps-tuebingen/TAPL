@@ -1,6 +1,7 @@
 use super::{display_or_debug, Source};
+use common::Eval;
 use std::error::Error;
-use typed_arithmetic::{check::check, eval::eval, parser::parse};
+use typed_arithmetic::{check::check, parser::parse};
 
 #[derive(clap::Args)]
 pub struct Args {
@@ -26,7 +27,7 @@ pub fn exec(args: Args) -> Result<(), Box<dyn Error>> {
         let checked_str = display_or_debug(&checked, args.debug);
         println!("checked: {checked_str}");
     }
-    let evaled = eval(parsed)?;
+    let evaled = parsed.eval()?;
     let evaled_str = display_or_debug(&evaled, args.debug);
     println!("evaled: {evaled_str}");
     Ok(())

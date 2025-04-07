@@ -1,3 +1,4 @@
+use common::Eval;
 use std::fmt;
 
 pub mod bool;
@@ -15,131 +16,68 @@ pub enum Term {
     IsZero(Box<Term>),
 }
 
-impl Term {
-    pub fn is_value(&self) -> bool {
-        self.is_numeric_value() || matches!(self, Term::True | Term::False)
-    }
+#[derive(Debug, PartialEq, Eq)]
+pub enum Value {
+    True,
+    False,
+    Numerical(i64),
+}
 
-    pub fn is_numeric_value(&self) -> bool {
-        match self {
-            Term::Zero => true,
-            Term::Succ(t) => t.is_numeric_value(),
-            _ => false,
+impl Value {
+    fn into_numerical(self) -> Result<i64, String> {
+        if let Value::Numerical(i) = self {
+            Ok(i)
+        } else {
+            Err(format!("Bad Value {self:?}"))
         }
     }
+}
 
-    pub fn is_stuck(&self) -> bool {
-        self.clone().eval_once().is_none()
-    }
-
-    pub fn eval_once(self) -> Option<Term> {
+impl fmt::Display for Value {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Term::If(t1, t2, t3) => match *t1 {
-                Term::True => Some(*t2),
-                Term::False => Some(*t3),
-                _ => {
-                    let t1_evaled = t1.eval_once()?;
-                    Some(Term::If(Box::new(t1_evaled), t2, t3))
-                }
-            },
-            Term::Succ(t) => {
-                if t.is_numeric_value() {
-                    Some(Term::Succ(t))
-                } else {
-                    let t_evaled = t.eval_once()?;
-                    Some(Term::Succ(Box::new(t_evaled)))
-                }
-            }
-            Term::Pred(t) => match *t {
-                Term::Zero => Some(Term::Zero),
-                Term::Succ(t1) => {
-                    if t1.is_numeric_value() {
-                        Some(*t1)
-                    } else {
-                        let t_evaled = Term::Succ(t1).eval_once()?;
-                        Some(Term::Pred(Box::new(t_evaled)))
-                    }
-                }
-                _ => {
-                    let t_evaled = t.eval_once()?;
-                    Some(Term::Pred(Box::new(t_evaled)))
-                }
-            },
-            Term::IsZero(t) => match *t {
-                Term::Zero => Some(Term::True),
-                Term::Succ(t) => {
-                    if t.is_numeric_value() {
-                        Some(Term::False)
-                    } else {
-                        let t_evaled = Term::Succ(t).eval_once()?;
-                        Some(Term::IsZero(Box::new(t_evaled)))
-                    }
-                }
-                _ => {
-                    let t_evaled = t.eval_once()?;
-                    Some(Term::IsZero(Box::new(t_evaled)))
-                }
-            },
-            _ => {
-                if self.is_value() {
-                    Some(self)
-                } else {
-                    None
-                }
-            }
+            Value::True => f.write_str("true"),
+            Value::False => f.write_str("false"),
+            Value::Numerical(i) => write!(f, "{i}"),
         }
     }
+}
 
-    pub fn eval(self) -> Term {
-        match self.clone().eval_once() {
-            None => self,
-            Some(t) => {
-                if t.is_value() {
-                    t
-                } else {
-                    t.eval()
-                }
-            }
-        }
-    }
-
-    pub fn eval_big(self) -> Option<Term> {
+impl Eval for Term {
+    type Value = Value;
+    type Error = String;
+    fn eval(self) -> Result<Self::Value, Self::Error> {
         match self {
-            Term::If(t1, t2, t3) => match t1.eval_big()? {
-                Term::True => t2.eval_big(),
-                Term::False => t3.eval_big(),
-                _ => None,
-            },
-            Term::Succ(t) => {
-                let t_evaled = t.eval_big()?;
-                if t_evaled.is_numeric_value() {
-                    Some(Term::Succ(Box::new(t_evaled)))
-                } else {
-                    None
-                }
-            }
-            Term::Pred(t) => match t.eval_big()? {
-                Term::Zero => Some(Term::Zero),
-                Term::Succ(t) => {
-                    if t.is_numeric_value() {
-                        Some(*t)
-                    } else {
-                        None
-                    }
-                }
-                _ => None,
-            },
+            Term::True => Ok(Value::True),
+            Term::False => Ok(Value::False),
+            Term::Zero => Ok(Value::Numerical(0)),
             Term::IsZero(t) => {
-                let t_evaled = t.eval_big()?;
-                if let Term::Zero = t_evaled {
-                    Some(Term::True)
-                } else if t_evaled.is_numeric_value() {
-                    Some(Term::False)
+                let val = t.eval()?;
+                let num = val.into_numerical()?;
+                if num == 0 {
+                    Ok(Value::True)
                 } else {
-                    None
+                    Ok(Value::False)
                 }
             }
-            _ => Some(self),
+            Term::Succ(t) => {
+                let val = t.eval()?;
+                let num = val.into_numerical()?;
+                Ok(Value::Numerical(num + 1))
+            }
+            Term::Pred(t) => {
+                let val = t.eval()?;
+                let num = val.into_numerical()?;
+                Ok(Value::Numerical(num - 1))
+            }
+            Term::If(ifc, thent, elset) => {
+                let val = ifc.eval()?;
+                match val {
+                    Value::True => thent.eval(),
+                    Value::False => elset.eval(),
+                    _ => Err("If Condition needs to be boolean".to_owned()),
+                }
+            }
         }
     }
 }
@@ -160,27 +98,16 @@ impl fmt::Display for Term {
 
 #[cfg(test)]
 mod term_tests {
-    use super::Term;
-
-    #[test]
-    fn is_val_true() {
-        let result = Term::True.is_value();
-        assert!(result)
-    }
-
-    #[test]
-    fn is_val_false() {
-        let result = Term::Succ(Box::new(Term::True)).is_value();
-        assert!(!result)
-    }
+    use super::{Eval, Term, Value};
 
     #[test]
     fn eval_simple() {
         let result = Term::Succ(Box::new(Term::Succ(Box::new(Term::Pred(Box::new(
             Term::Zero,
         ))))))
-        .eval();
-        let expected = Term::Succ(Box::new(Term::Succ(Box::new(Term::Zero))));
+        .eval()
+        .unwrap();
+        let expected = Value::Numerical(1);
         assert_eq!(result, expected)
     }
 
@@ -191,21 +118,9 @@ mod term_tests {
             Box::new(Term::Pred(Box::new(Term::Succ(Box::new(Term::Zero))))),
             Box::new(Term::Succ(Box::new(Term::Pred(Box::new(Term::Zero))))),
         )
-        .eval();
-        let expected = Term::Succ(Box::new(Term::Zero));
-        assert_eq!(result, expected)
-    }
-
-    #[test]
-    fn eval_big() {
-        let result = Term::If(
-            Box::new(Term::IsZero(Box::new(Term::Succ(Box::new(Term::Zero))))),
-            Box::new(Term::Pred(Box::new(Term::Succ(Box::new(Term::Zero))))),
-            Box::new(Term::Succ(Box::new(Term::Pred(Box::new(Term::Zero))))),
-        )
-        .eval_big()
+        .eval()
         .unwrap();
-        let expected = Term::Succ(Box::new(Term::Zero));
+        let expected = Value::Numerical(0);
         assert_eq!(result, expected)
     }
 }

@@ -1,5 +1,6 @@
+use common::Eval;
 use test_common::testsuite::{Test, TestResult};
-use typed_arithmetic::{eval::eval, parser::parse};
+use typed_arithmetic::parser::parse;
 
 pub struct EvalTest {
     source_name: String,
@@ -27,7 +28,7 @@ impl Test for EvalTest {
             Ok(p) => p,
             Err(err) => return TestResult::from_err(err),
         };
-        let evaled = match eval(parsed) {
+        let evaled = match parsed.eval() {
             Ok(val) => val,
             Err(err) => return TestResult::from_err(err),
         };

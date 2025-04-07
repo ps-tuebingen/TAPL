@@ -26,3 +26,4 @@ bounded_quantification = {path="../lang/bounded_quantification"}
 lambda_omega = {path="../lang/lambda_omega"}
 f_omega = {path="../lang/f_omega"}
 f_omega_sub = {path="../lang/f_omega_sub"}
+common = { path="../lang/common" }

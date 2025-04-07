@@ -21,6 +21,7 @@ members = [
     "tests/f_omega",
     "tests/f_omega_sub",
 
+    "lang/common",
     "lang/untyped_lambda",
     "lang/untyped_arithmetic",
     "lang/typed_arithmetic",
