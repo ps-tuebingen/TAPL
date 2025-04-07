@@ -4,6 +4,7 @@ use std::{error::Error, fmt, fs::read_to_string, path::PathBuf};
 pub mod bounded_quantification;
 pub mod exceptions;
 pub mod existential;
+pub mod f_omega;
 pub mod featherweight;
 pub mod inference;
 pub mod lambda_omega;
@@ -38,6 +39,7 @@ pub enum Command {
     SystemF(system_f::Args),
     BoundedQuantification(bounded_quantification::Args),
     LambdaOmega(lambda_omega::Args),
+    FOmega(f_omega::Args),
 }
 
 #[derive(Debug, clap::Args)]
@@ -68,28 +70,24 @@ impl Source {
 
 pub fn run() -> Result<(), String> {
     let cli = Cli::parse();
-    match cli.command {
-        Command::UntypedArithmetic(args) => {
-            untyped_arithmetic::exec(args).map_err(|err| err.to_string())
-        }
-        Command::UntypedLambda(args) => untyped_lambda::exec(args).map_err(|err| err.to_string()),
-        Command::NamelessRepresentation(args) => {
-            nameless_representation::exec(args).map_err(|err| err.to_string())
-        }
-        Command::Stlc(args) => stlc::exec(args).map_err(|err| err.to_string()),
-        Command::References(args) => references::exec(args).map_err(|err| err.to_string()),
-        Command::Exceptions(args) => exceptions::exec(args).map_err(|err| err.to_string()),
-        Command::Subtypes(args) => subtypes::exec(args).map_err(|err| err.to_string()),
-        Command::Featherweight(args) => featherweight::exec(args).map_err(|err| err.to_string()),
-        Command::Recursive(args) => recursive::exec(args).map_err(|err| err.to_string()),
-        Command::Inference(args) => inference::exec(args).map_err(|err| err.to_string()),
-        Command::SystemF(args) => system_f::exec(args).map_err(|err| err.to_string()),
-        Command::BoundedQuantification(args) => {
-            bounded_quantification::exec(args).map_err(|err| err.to_string())
-        }
-        Command::LambdaOmega(args) => lambda_omega::exec(args).map_err(|err| err.to_string()),
-        Command::Existential(args) => existential::exec(args).map_err(|err| err.to_string()),
-    }
+    let res = match cli.command {
+        Command::UntypedArithmetic(args) => untyped_arithmetic::exec(args),
+        Command::UntypedLambda(args) => untyped_lambda::exec(args),
+        Command::NamelessRepresentation(args) => nameless_representation::exec(args),
+        Command::Stlc(args) => stlc::exec(args),
+        Command::References(args) => references::exec(args),
+        Command::Exceptions(args) => exceptions::exec(args),
+        Command::Subtypes(args) => subtypes::exec(args),
+        Command::Featherweight(args) => featherweight::exec(args),
+        Command::Recursive(args) => recursive::exec(args),
+        Command::Inference(args) => inference::exec(args),
+        Command::SystemF(args) => system_f::exec(args),
+        Command::BoundedQuantification(args) => bounded_quantification::exec(args),
+        Command::LambdaOmega(args) => lambda_omega::exec(args),
+        Command::Existential(args) => existential::exec(args),
+        Command::FOmega(args) => f_omega::exec(args),
+    };
+    res.map_err(|err| err.to_string())
 }
 
 pub fn display_or_debug<T: fmt::Debug + fmt::Display>(t: &T, debug: bool) -> String {

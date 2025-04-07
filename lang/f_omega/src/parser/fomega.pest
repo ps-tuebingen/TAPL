@@ -24,6 +24,7 @@ prim_term = {
   | paren_term
   | lambda_term 
   | tylambda_term
+  | tylambda_star_term
   | pack_term
   | unpack_term
   | record_term
@@ -33,7 +34,8 @@ prim_term = {
 paren_term = { "(" ~ term ~ "(" }
 lambda_term = { "\\" ~ variable ~ ":" ~ type ~ "." ~ term }
 tylambda_term = { "\\" ~ variable ~ "::" ~ kind ~ "." ~ term }
-pack_term = { "{" ~ "*" ~ variable ~ "," ~ term ~ kw_as ~ type ~ "}" }
+tylambda_star_term = { "\\" ~ variable ~ "." ~ term }
+pack_term = { "{" ~ "*" ~ type ~ "," ~ term ~ kw_as ~ type ~ "}" }
 unpack_term = { kw_let ~ "{" ~ variable ~ "," ~ variable ~ "}" ~ "=" ~ term ~ kw_in ~ term}
 record_term = { "{" ~ variable ~ "=" ~ term ~ ("," ~ variable ~ "=" ~ term)* ~ "}" }
 
@@ -46,6 +48,8 @@ type = { prim_type ~ left_rec_ty? }
 prim_type = { 
   | paren_type 
   | forall_ty 
+  | forall_star_ty
+  | op_lambda_star
   | op_lambda
   | exists_ty
   | record_ty
@@ -53,7 +57,10 @@ prim_type = {
 }
 
 paren_type = { "(" ~ type ~ ")" }
-forall_ty = { kw_forall ~ variable ~ "::" ~ kind ~ "." ~ type } 
+forall_ty = { forall_start ~ "::" ~ kind ~ "." ~ type } 
+forall_star_ty = { forall_start ~ "." ~ type }
+forall_start = ${ kw_forall ~ " " ~ variable } 
+op_lambda_star = { "\\" ~ variable ~ "." ~ type }
 op_lambda = { "\\" ~ variable ~ "::" ~ kind ~ "." ~ type }
 exists_ty = { kw_exists ~ variable ~ "::" ~ kind ~ "," ~ type } 
 record_ty = { "{" ~ variable ~ ":" ~ type ~ ("," ~ variable ~ ":" ~ type)* ~ "}" }

@@ -1,5 +1,5 @@
 {*\X.\Y.forall R.(X->Y->R) -> R,
-  { pair = \X.\Y.\x:X.\y:Y.\R.\p:X->Y->R.(p x) y,
+  { pair = \X.\Y.\x:X.\y:Y.\R.\p:X->Y->R.(p(x) y),
     fst = \X.\Y.\p:forall R.(X->Y->R) -> R.
       p [X] (\x:X.\y:Y.x),
     snd = \X.\Y.\p:forall R.(X->Y->R) -> R.
