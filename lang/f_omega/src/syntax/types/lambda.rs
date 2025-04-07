@@ -41,6 +41,6 @@ impl From<OpLambda> for Type {
 
 impl fmt::Display for OpLambda {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "λ{}::{}.{}", self.var, self.annot, self.body)
+        write!(f, "\\{}::{}.{}", self.var, self.annot, self.body)
     }
 }

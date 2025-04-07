@@ -22,13 +22,13 @@ keyword = _{
 term = { prim_term ~ left_rec? }
 prim_term = {
   | paren_term
-  | lambda_term 
-  | tylambda_term
-  | tylambda_star_term
-  | pack_term
-  | unpack_term
-  | record_term
-  | variable
+    | lambda_term 
+    | tylambda_term
+    | tylambda_star_term
+    | pack_term
+    | unpack_term
+    | record_term
+    | variable
 }
 
 paren_term = { "(" ~ term ~ ")" }
@@ -66,17 +66,17 @@ exists_ty = { "{" ~ exists_start ~ "::" ~ kind ~ "," ~ type  ~ "}" }
 exists_start = ${ kw_exists ~ " " ~ variable } 
 record_ty = { "{" ~ variable ~ ":" ~ type ~ ("," ~ variable ~ ":" ~ type)* ~ "}" }
 
-left_rec_ty = { fun_ty | type }
+left_rec_ty = { fun_ty | op_app}
 fun_ty = { "->" ~ type }
+op_app = { "[" ~ type ~ "]" }
 
 //Kinds
-kind = { prim_kind ~ left_rec_kind? } 
+kind = { prim_kind ~ arrow_kind? } 
 prim_kind = { 
- | star_kind
- | paren_kind
- }
+  | paren_kind
+  | star_kind
+}
 
- paren_kind = { "(" ~ kind ~ ")" }
- star_kind = { "*" }
-
- left_rec_kind = { "=>" ~ kind } 
+paren_kind = { "(" ~ kind ~ ")" }
+star_kind = { "*" }
+arrow_kind = { "=>" ~ kind } 

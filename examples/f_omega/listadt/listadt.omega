@@ -5,9 +5,9 @@
     head = \X.\l:forall R.(X->R->R) -> R -> R.((l [X]) (\hd:X.\tl:X.hd)) (((\X.\_:Unit.fix(\x:X.x)) [X]) unit)
   }
 } as { exists List :: * => *, 
-  { nil : forall X.List X,
-    cons: forall X. X -> List X -> List X,
-    isnil: forall X. List X -> Bool,
-    head: forall X.List X -> X
+  { nil : forall X.(List[X]),
+    cons: forall X. (X -> (List[X]) -> (List[X])),
+    isnil: forall X. ((List[X]) -> Bool),
+    head: forall X.((List[X]) -> X)
   }
 }

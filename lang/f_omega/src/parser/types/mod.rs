@@ -62,8 +62,9 @@ fn pair_to_leftrec_ty(p: Pair<'_, Rule>, ty: Type) -> Result<Type, Error> {
             }
             .into())
         }
-        Rule::r#type => {
-            let arg = pair_to_type(p)?;
+        Rule::op_app => {
+            let arg_rule = pair_to_n_inner(p, vec!["Type"])?.remove(0);
+            let arg = pair_to_type(arg_rule)?;
             Ok(OpApp {
                 fun: Box::new(ty),
                 arg: Box::new(arg),

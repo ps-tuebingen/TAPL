@@ -12,7 +12,7 @@ pub fn pair_to_kind(p: Pair<'_, Rule>) -> Result<Kind, Error> {
 
     let kind = match inner.next() {
         None => prim_kind,
-        Some(leftrec) => pair_to_leftrec_kind(leftrec, prim_kind)?,
+        Some(arrow) => pair_to_arrow_kind(arrow, prim_kind)?,
     };
 
     if let Some(n) = inner.next() {
@@ -33,7 +33,7 @@ fn pair_to_prim_kind(p: Pair<'_, Rule>) -> Result<Kind, Error> {
     }
 }
 
-fn pair_to_leftrec_kind(p: Pair<'_, Rule>, knd: Kind) -> Result<Kind, Error> {
+fn pair_to_arrow_kind(p: Pair<'_, Rule>, knd: Kind) -> Result<Kind, Error> {
     let to_rule = pair_to_n_inner(p, vec!["Left Recursive Kind"])?.remove(0);
     let to_kind = pair_to_kind(to_rule)?;
     Ok(Kind::Arrow(Box::new(knd), Box::new(to_kind)))

@@ -7,8 +7,8 @@
   } 
 } as 
 { exists Pair :: * => * => *,
-  { pair: forall X.forall Y.X->Y->((Pair X) Y),
-    fst: forall X.forall Y.((Pair X) Y) -> X,
-    snd: forall X.forall Y.((Pair X) Y) -> Y 
+  { pair: forall X.forall Y.X->Y->(Pair[X])[Y],
+    fst: forall X.forall Y.(Pair[X])[Y] -> X,
+    snd: forall X.forall Y.(Pair[X])[Y] -> Y 
   }
 }

@@ -44,12 +44,13 @@ impl SubstTy for RecTy {
 
 impl fmt::Display for RecTy {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let mut recs: Vec<(&String, &Type)> = self.records.iter().collect();
+        recs.sort_by(|(lb1, _), (lb2, _)| lb1.cmp(lb2));
         write!(
             f,
             "{{ {} }}",
-            self.records
-                .iter()
-                .map(|(label, ty)| format!("{label} = {ty}"))
+            recs.iter()
+                .map(|(label, ty)| format!("{label} : {ty}"))
                 .collect::<Vec<String>>()
                 .join(", ")
         )

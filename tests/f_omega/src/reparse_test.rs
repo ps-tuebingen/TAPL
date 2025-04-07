@@ -1,4 +1,4 @@
-use existential::parser::parse;
+use f_omega::parser::parse;
 use test_common::testsuite::{Test, TestResult};
 
 pub struct ReparseTest {
