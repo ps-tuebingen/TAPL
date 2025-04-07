@@ -16,6 +16,9 @@ impl Eval for Term {
             Term::Unpack(unpack) => unpack.eval(),
             Term::Record(rec) => rec.eval(),
             Term::RecordProj(proj) => proj.eval(),
+            Term::True(tru) => tru.eval(),
+            Term::False(fls) => fls.eval(),
+            Term::If(ift) => ift.eval(),
         }
     }
 }

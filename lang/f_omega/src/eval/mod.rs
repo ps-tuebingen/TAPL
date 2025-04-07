@@ -1,6 +1,7 @@
 use crate::errors::Error;
 
 pub mod app;
+pub mod bool;
 pub mod lambda;
 pub mod pack;
 pub mod record;

@@ -6,6 +6,7 @@ use std::fmt;
 pub type Var = String;
 
 pub mod app;
+pub mod bool;
 pub mod lambda;
 pub mod pack;
 pub mod record;
@@ -14,6 +15,7 @@ pub mod tyapp;
 pub mod tylambda;
 pub mod unpack;
 pub use app::App;
+pub use bool::{False, If, True};
 pub use lambda::Lambda;
 pub use pack::Pack;
 pub use record::Record;
@@ -33,6 +35,9 @@ pub enum Term {
     Unpack(Unpack),
     Record(Record),
     RecordProj(RecordProj),
+    True(True),
+    False(False),
+    If(If),
 }
 
 impl SubstTerm for Term {
@@ -53,6 +58,9 @@ impl SubstTerm for Term {
             Term::Unpack(unpack) => unpack.subst(v, t),
             Term::Record(rec) => rec.subst(v, t),
             Term::RecordProj(proj) => proj.subst(v, t),
+            Term::True(tru) => tru.subst(v, t),
+            Term::False(fls) => fls.subst(v, t),
+            Term::If(ift) => ift.subst(v, t),
         }
     }
 }
@@ -69,6 +77,9 @@ impl SubstTy for Term {
             Term::Unpack(unpack) => unpack.subst_ty(v, ty).into(),
             Term::Record(rec) => rec.subst_ty(v, ty).into(),
             Term::RecordProj(proj) => proj.subst_ty(v, ty).into(),
+            Term::True(tru) => tru.subst_ty(v, ty).into(),
+            Term::False(fls) => fls.subst_ty(v, ty).into(),
+            Term::If(ift) => ift.subst_ty(v, ty).into(),
         }
     }
 }
@@ -91,6 +102,9 @@ impl fmt::Display for Term {
             Term::Unpack(unpack) => unpack.fmt(f),
             Term::Record(rec) => rec.fmt(f),
             Term::RecordProj(proj) => proj.fmt(f),
+            Term::True(tru) => tru.fmt(f),
+            Term::False(fls) => fls.fmt(f),
+            Term::If(ift) => ift.fmt(f),
         }
     }
 }

@@ -2,7 +2,7 @@ use crate::{
     errors::ErrorKind,
     syntax::{
         kinds::Kind,
-        terms::{Lambda, Pack, Record, Term, TyLambda, Var},
+        terms::{False, Lambda, Pack, Record, Term, True, TyLambda, Var},
         types::{Type, TypeVar},
         Label,
     },
@@ -29,6 +29,8 @@ pub enum Value {
     Record {
         records: HashMap<Label, Value>,
     },
+    True,
+    False,
 }
 
 impl Value {
@@ -114,33 +116,14 @@ impl From<Value> for Term {
                     .collect(),
             }
             .into(),
+            Value::True => True.into(),
+            Value::False => False.into(),
         }
     }
 }
 
 impl fmt::Display for Value {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Value::Lambda { var, annot, body } => {
-                write!(f, "λ{}:{}.{}", var, annot, body)
-            }
-            Value::TyLambda { var, annot, body } => {
-                write!(f, "λ{}::{}.{}", var, annot, body)
-            }
-            Value::Pack {
-                inner_ty,
-                val,
-                outer_ty,
-            } => write!(f, "{{*{},{}}} as {}", inner_ty, val, outer_ty),
-            Value::Record { records } => write!(
-                f,
-                "{{ {} }}",
-                records
-                    .iter()
-                    .map(|(label, val)| format!("{label} = {val}"))
-                    .collect::<Vec<String>>()
-                    .join(", ")
-            ),
-        }
+        <Value as Into<Term>>::into(self.clone()).fmt(f)
     }
 }

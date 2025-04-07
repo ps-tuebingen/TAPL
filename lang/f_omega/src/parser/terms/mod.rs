@@ -1,11 +1,13 @@
 use super::{pair_to_kind, pair_to_n_inner, pair_to_type, Error, Rule};
-use crate::syntax::terms::{App, RecordProj, Term};
+use crate::syntax::terms::{App, False, RecordProj, Term, True};
 use pest::iterators::Pair;
 
+mod ift;
 mod lambda;
 mod pack;
 mod record;
 mod ty_lambda;
+use ift::pair_to_if;
 use lambda::pair_to_lambda;
 use pack::{pair_to_pack, pair_to_unpack};
 use record::pair_to_record;
@@ -41,12 +43,14 @@ fn pair_to_primterm(p: Pair<'_, Rule>) -> Result<Term, Error> {
             pair_to_term(term_rule)
         }
         Rule::lambda_term => pair_to_lambda(p).map(|lam| lam.into()),
+        Rule::if_term => pair_to_if(p).map(|ift| ift.into()),
         Rule::tylambda_term => pair_to_ty_lambda(p).map(|tylam| tylam.into()),
         Rule::tylambda_star_term => pair_to_ty_lambda_star(p).map(|tylam| tylam.into()),
         Rule::pack_term => pair_to_pack(p).map(|pack| pack.into()),
         Rule::unpack_term => pair_to_unpack(p).map(|unpack| unpack.into()),
         Rule::record_term => pair_to_record(p).map(|rec| rec.into()),
         Rule::variable => Ok(Term::Var(p.as_str().trim().to_owned())),
+        Rule::const_term => str_to_term(p.as_str()),
         _ => Err(Error::unexpected(&p, "Non Left-Recursive Term")),
     }
 }
@@ -72,5 +76,13 @@ fn pair_to_leftrec_term(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
             .into())
         }
         _ => Err(Error::unexpected(&p, "Left Recursive Term")),
+    }
+}
+
+fn str_to_term(s: &str) -> Result<Term, Error> {
+    match s.to_lowercase().trim() {
+        "true" => Ok(True.into()),
+        "false" => Ok(False.into()),
+        s => Err(Error::unknown(s)),
     }
 }

@@ -10,29 +10,42 @@ kw_in = _{ "in" }
 kw_let = _{ "let" }
 kw_forall = _{ "forall" }
 kw_exists = _{ "exists" }
+kw_true = _{ "true" }
+kw_false = _{ "false" }
+kw_if = _{ "if" }
+kw_else = _{ "else" }
+kw_tybool = _{ "Bool" }
 keyword = _{ 
   | kw_as
   | kw_in 
   | kw_let 
   | kw_forall 
   | kw_exists
+  | kw_true
+  | kw_false
+  | kw_if
+  | kw_else
 }
 
 //Terms 
 term = { prim_term ~ left_rec? }
 prim_term = {
   | paren_term
-    | lambda_term 
-    | tylambda_term
-    | tylambda_star_term
-    | pack_term
-    | unpack_term
-    | record_term
-    | variable
+  | const_term
+  | lambda_term 
+  | if_term
+  | tylambda_term
+  | tylambda_star_term
+  | pack_term
+  | unpack_term
+  | record_term
+  | variable
 }
 
 paren_term = { "(" ~ term ~ ")" }
+const_term = { kw_true | kw_false }
 lambda_term = { "\\" ~ variable ~ ":" ~ type ~ "." ~ term }
+if_term = { kw_if ~ paren_term ~ "{" ~ term ~ "}" ~ kw_else ~ "{" ~ term ~ "}" }
 tylambda_term = { "\\" ~ variable ~ "::" ~ kind ~ "." ~ term }
 tylambda_star_term = { "\\" ~ variable ~ "." ~ term }
 pack_term = { "{" ~ "*" ~ type ~ "," ~ term ~ "}" ~ kw_as ~ type }
@@ -47,6 +60,7 @@ record_projection = { "." ~ variable }
 type = { prim_type ~ left_rec_ty? }
 prim_type = { 
   | paren_type 
+  | const_ty 
   | forall_ty 
   | forall_star_ty
   | op_lambda_star
@@ -57,6 +71,7 @@ prim_type = {
 }
 
 paren_type = { "(" ~ type ~ ")" }
+const_ty = { kw_tybool }
 forall_ty = { forall_start ~ "::" ~ kind ~ "." ~ type } 
 forall_star_ty = { forall_start ~ "." ~ type }
 forall_start = ${ kw_forall ~ " " ~ variable } 

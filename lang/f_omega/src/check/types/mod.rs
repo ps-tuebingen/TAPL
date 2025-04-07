@@ -23,6 +23,7 @@ impl CheckKind for Type {
             Type::OpApp(app) => app.check_kind(env),
             Type::Existential(ex) => ex.check_kind(env),
             Type::Record(rec) => rec.check_kind(env),
+            Type::Bool => Ok(Kind::Star),
         }
     }
 }

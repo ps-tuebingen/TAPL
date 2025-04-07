@@ -5,6 +5,7 @@ use crate::{
 };
 
 pub mod app;
+pub mod bool;
 pub mod lambda;
 pub mod pack;
 pub mod record;
@@ -25,6 +26,9 @@ impl CheckType for Term {
             Term::Unpack(unpack) => unpack.check_type(env),
             Term::Record(rec) => rec.check_type(env),
             Term::RecordProj(proj) => proj.check_type(env),
+            Term::True(tru) => tru.check_type(env),
+            Term::False(fls) => fls.check_type(env),
+            Term::If(ift) => ift.check_type(env),
         }
     }
 }

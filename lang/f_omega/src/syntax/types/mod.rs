@@ -26,6 +26,7 @@ pub enum Type {
     OpApp(OpApp),
     Existential(Existential),
     Record(RecTy),
+    Bool,
 }
 
 impl Type {
@@ -175,6 +176,7 @@ impl SubstTy for Type {
             Type::OpApp(app) => app.subst_ty(v, ty).into(),
             Type::Existential(ex) => ex.subst_ty(v, ty).into(),
             Type::Record(rec) => rec.subst_ty(v, ty).into(),
+            Type::Bool => Type::Bool,
         }
     }
 }
@@ -195,6 +197,7 @@ impl fmt::Display for Type {
             Type::Universal(uni) => uni.fmt(f),
             Type::Existential(ex) => ex.fmt(f),
             Type::Record(rec) => rec.fmt(f),
+            Type::Bool => f.write_str("Bool"),
         }
     }
 }

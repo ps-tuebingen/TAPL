@@ -40,6 +40,7 @@ fn pair_to_primtype(p: Pair<'_, Rule>) -> Result<Type, Error> {
             let ty_rule = pair_to_n_inner(p, vec!["Type"])?.remove(0);
             pair_to_type(ty_rule)
         }
+        Rule::const_ty => str_to_type(p.as_str()),
         Rule::forall_ty => pair_to_universal(p).map(|uni| uni.into()),
         Rule::forall_star_ty => pair_to_universal_star(p).map(|uni| uni.into()),
         Rule::op_lambda_star => pair_to_op_lambda_star(p).map(|oplam| oplam.into()),
@@ -72,5 +73,12 @@ fn pair_to_leftrec_ty(p: Pair<'_, Rule>, ty: Type) -> Result<Type, Error> {
             .into())
         }
         _ => Err(Error::unexpected(&p, "Left Recursive Type")),
+    }
+}
+
+fn str_to_type(s: &str) -> Result<Type, Error> {
+    match s.to_lowercase().trim() {
+        "bool" => Ok(Type::Bool),
+        s => Err(Error::unknown(s)),
     }
 }
