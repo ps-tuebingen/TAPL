@@ -13,4 +13,4 @@ let {Pair,pair} =
      snd: forall X.forall Y.(((Pair[X])[Y]) -> Y) 
     }
   } 
-in (((((((pair.fst) [Nat]) [Bool]) (pair.pair)) [Nat]) [Bool]) 5) true
+in (((pair.fst) [Nat]) [Bool]) (((((pair.pair) [Nat]) [Bool]) 5) true)

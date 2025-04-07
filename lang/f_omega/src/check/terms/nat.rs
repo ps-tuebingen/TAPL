@@ -8,7 +8,7 @@ use crate::{
 };
 
 impl CheckType for Zero {
-    fn check_type(&self, __: &mut Env) -> Result<Type, Error> {
+    fn check_type(&self, _: &mut Env) -> Result<Type, Error> {
         Ok(Type::Nat)
     }
 }

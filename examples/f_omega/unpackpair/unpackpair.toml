@@ -1,2 +1,2 @@
-ty=""
-evaluated=""
+ty="Nat"
+evaluated="succ(succ(succ(succ(succ(zero)))))"
