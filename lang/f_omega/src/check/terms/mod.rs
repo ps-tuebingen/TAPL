@@ -6,6 +6,7 @@ use crate::{
 
 pub mod app;
 pub mod bool;
+pub mod fix;
 pub mod lambda;
 pub mod pack;
 pub mod record;
@@ -30,6 +31,7 @@ impl CheckType for Term {
             Term::False(fls) => fls.check_type(env),
             Term::If(ift) => ift.check_type(env),
             Term::Unit => Ok(Type::Unit),
+            Term::Fix(fix) => fix.check_type(env),
         }
     }
 }

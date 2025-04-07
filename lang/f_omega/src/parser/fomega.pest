@@ -13,6 +13,7 @@ kw_exists = _{ "exists" }
 kw_true = _{ "true" }
 kw_false = _{ "false" }
 kw_unit = _{ "unit" }
+kw_fix = _{ "fix" }
 kw_if = _{ "if" }
 kw_else = _{ "else" }
 kw_tybool = _{ "Bool" }
@@ -28,6 +29,7 @@ keyword = _{
   | kw_unit 
   | kw_if
   | kw_else
+  | kw_fix
 }
 
 //Terms 
@@ -36,6 +38,7 @@ prim_term = {
   | paren_term
   | const_term
   | lambda_term 
+  | fix_term
   | if_term
   | tylambda_term
   | tylambda_star_term
@@ -48,6 +51,7 @@ prim_term = {
 paren_term = { "(" ~ term ~ ")" }
 const_term = { kw_true | kw_false | kw_unit }
 lambda_term = { "\\" ~ variable ~ ":" ~ type ~ "." ~ term }
+fix_term = { kw_fix ~ paren_term }
 if_term = { kw_if ~ paren_term ~ "{" ~ term ~ "}" ~ kw_else ~ "{" ~ term ~ "}" }
 tylambda_term = { "\\" ~ variable ~ "::" ~ kind ~ "." ~ term }
 tylambda_star_term = { "\\" ~ variable ~ "." ~ term }

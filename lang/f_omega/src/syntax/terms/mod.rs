@@ -7,6 +7,7 @@ pub type Var = String;
 
 pub mod app;
 pub mod bool;
+pub mod fix;
 pub mod lambda;
 pub mod pack;
 pub mod record;
@@ -16,6 +17,7 @@ pub mod tylambda;
 pub mod unpack;
 pub use app::App;
 pub use bool::{False, If, True};
+pub use fix::Fix;
 pub use lambda::Lambda;
 pub use pack::Pack;
 pub use record::Record;
@@ -39,6 +41,7 @@ pub enum Term {
     False(False),
     If(If),
     Unit,
+    Fix(Fix),
 }
 
 impl SubstTerm for Term {
@@ -63,6 +66,7 @@ impl SubstTerm for Term {
             Term::False(fls) => fls.subst(v, t),
             Term::If(ift) => ift.subst(v, t),
             Term::Unit => Term::Unit,
+            Term::Fix(fix) => fix.subst(v, t),
         }
     }
 }
@@ -83,6 +87,7 @@ impl SubstTy for Term {
             Term::False(fls) => fls.subst_ty(v, ty).into(),
             Term::If(ift) => ift.subst_ty(v, ty).into(),
             Term::Unit => Term::Unit,
+            Term::Fix(fix) => fix.subst_ty(v, ty).into(),
         }
     }
 }
@@ -109,6 +114,7 @@ impl fmt::Display for Term {
             Term::False(fls) => fls.fmt(f),
             Term::If(ift) => ift.fmt(f),
             Term::Unit => f.write_str("unit"),
+            Term::Fix(fix) => fix.fmt(f),
         }
     }
 }

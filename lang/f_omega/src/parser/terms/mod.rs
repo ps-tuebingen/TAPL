@@ -1,5 +1,5 @@
 use super::{pair_to_kind, pair_to_n_inner, pair_to_type, Error, Rule};
-use crate::syntax::terms::{App, False, RecordProj, Term, True};
+use crate::syntax::terms::{App, False, Fix, RecordProj, Term, True};
 use pest::iterators::Pair;
 
 mod ift;
@@ -43,6 +43,14 @@ fn pair_to_primterm(p: Pair<'_, Rule>) -> Result<Term, Error> {
             pair_to_term(term_rule)
         }
         Rule::lambda_term => pair_to_lambda(p).map(|lam| lam.into()),
+        Rule::fix_term => {
+            let inner = pair_to_n_inner(p, vec!["Fix Term"])?.remove(0);
+            let inner_term = pair_to_primterm(inner)?;
+            Ok(Fix {
+                term: Box::new(inner_term),
+            }
+            .into())
+        }
         Rule::if_term => pair_to_if(p).map(|ift| ift.into()),
         Rule::tylambda_term => pair_to_ty_lambda(p).map(|tylam| tylam.into()),
         Rule::tylambda_star_term => pair_to_ty_lambda_star(p).map(|tylam| tylam.into()),

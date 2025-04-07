@@ -20,6 +20,7 @@ impl Eval for Term {
             Term::False(fls) => fls.eval(),
             Term::If(ift) => ift.eval(),
             Term::Unit => Ok(Value::Unit),
+            Term::Fix(fix) => fix.eval(),
         }
     }
 }
