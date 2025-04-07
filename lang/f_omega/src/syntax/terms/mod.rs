@@ -38,6 +38,7 @@ pub enum Term {
     True(True),
     False(False),
     If(If),
+    Unit,
 }
 
 impl SubstTerm for Term {
@@ -61,6 +62,7 @@ impl SubstTerm for Term {
             Term::True(tru) => tru.subst(v, t),
             Term::False(fls) => fls.subst(v, t),
             Term::If(ift) => ift.subst(v, t),
+            Term::Unit => Term::Unit,
         }
     }
 }
@@ -80,6 +82,7 @@ impl SubstTy for Term {
             Term::True(tru) => tru.subst_ty(v, ty).into(),
             Term::False(fls) => fls.subst_ty(v, ty).into(),
             Term::If(ift) => ift.subst_ty(v, ty).into(),
+            Term::Unit => Term::Unit,
         }
     }
 }
@@ -105,6 +108,7 @@ impl fmt::Display for Term {
             Term::True(tru) => tru.fmt(f),
             Term::False(fls) => fls.fmt(f),
             Term::If(ift) => ift.fmt(f),
+            Term::Unit => f.write_str("unit"),
         }
     }
 }

@@ -29,6 +29,7 @@ impl CheckType for Term {
             Term::True(tru) => tru.check_type(env),
             Term::False(fls) => fls.check_type(env),
             Term::If(ift) => ift.check_type(env),
+            Term::Unit => Ok(Type::Unit),
         }
     }
 }

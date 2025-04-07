@@ -12,9 +12,11 @@ kw_forall = _{ "forall" }
 kw_exists = _{ "exists" }
 kw_true = _{ "true" }
 kw_false = _{ "false" }
+kw_unit = _{ "unit" }
 kw_if = _{ "if" }
 kw_else = _{ "else" }
 kw_tybool = _{ "Bool" }
+kw_tyunit = _{ "Unit" }
 keyword = _{ 
   | kw_as
   | kw_in 
@@ -23,6 +25,7 @@ keyword = _{
   | kw_exists
   | kw_true
   | kw_false
+  | kw_unit 
   | kw_if
   | kw_else
 }
@@ -43,7 +46,7 @@ prim_term = {
 }
 
 paren_term = { "(" ~ term ~ ")" }
-const_term = { kw_true | kw_false }
+const_term = { kw_true | kw_false | kw_unit }
 lambda_term = { "\\" ~ variable ~ ":" ~ type ~ "." ~ term }
 if_term = { kw_if ~ paren_term ~ "{" ~ term ~ "}" ~ kw_else ~ "{" ~ term ~ "}" }
 tylambda_term = { "\\" ~ variable ~ "::" ~ kind ~ "." ~ term }
@@ -71,7 +74,7 @@ prim_type = {
 }
 
 paren_type = { "(" ~ type ~ ")" }
-const_ty = { kw_tybool }
+const_ty = { kw_tybool | kw_tyunit }
 forall_ty = { forall_start ~ "::" ~ kind ~ "." ~ type } 
 forall_star_ty = { forall_start ~ "." ~ type }
 forall_start = ${ kw_forall ~ " " ~ variable } 

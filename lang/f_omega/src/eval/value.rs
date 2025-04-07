@@ -31,6 +31,7 @@ pub enum Value {
     },
     True,
     False,
+    Unit,
 }
 
 impl Value {
@@ -118,6 +119,7 @@ impl From<Value> for Term {
             .into(),
             Value::True => True.into(),
             Value::False => False.into(),
+            Value::Unit => Term::Unit,
         }
     }
 }

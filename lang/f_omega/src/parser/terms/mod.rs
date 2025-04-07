@@ -83,6 +83,7 @@ fn str_to_term(s: &str) -> Result<Term, Error> {
     match s.to_lowercase().trim() {
         "true" => Ok(True.into()),
         "false" => Ok(False.into()),
+        "unit" => Ok(Term::Unit),
         s => Err(Error::unknown(s)),
     }
 }

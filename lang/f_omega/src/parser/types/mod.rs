@@ -79,6 +79,7 @@ fn pair_to_leftrec_ty(p: Pair<'_, Rule>, ty: Type) -> Result<Type, Error> {
 fn str_to_type(s: &str) -> Result<Type, Error> {
     match s.to_lowercase().trim() {
         "bool" => Ok(Type::Bool),
+        "unit" => Ok(Type::Unit),
         s => Err(Error::unknown(s)),
     }
 }
