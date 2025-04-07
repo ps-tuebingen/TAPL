@@ -135,30 +135,6 @@ impl From<Value> for Term {
 
 impl fmt::Display for Value {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Value::Lambda { var, annot, body } => {
-                write!(f, "λ{}:{}.{}", var, annot, body)
-            }
-            Value::TyLambda { var, sup_ty, body } => {
-                write!(f, "λ{}<:{}.{}", var, sup_ty, body)
-            }
-            Value::Pack {
-                inner_ty,
-                val,
-                outer_ty,
-            } => write!(f, "{{*{},{}}} as {}", inner_ty, val, outer_ty),
-            Value::Record { records } => write!(
-                f,
-                "{{ {} }}",
-                records
-                    .iter()
-                    .map(|(label, val)| format!("{label} = {val}"))
-                    .collect::<Vec<String>>()
-                    .join(", ")
-            ),
-            Value::Zero => f.write_str("Zero"),
-            Value::Succ { term } => write!(f, "Succ({term})"),
-            Value::Pred { term } => write!(f, "Pred({term})"),
-        }
+        <Value as Into<Term>>::into(self.clone()).fmt(f)
     }
 }

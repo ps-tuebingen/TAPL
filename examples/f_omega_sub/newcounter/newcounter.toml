@@ -1,2 +1,2 @@
-ty=""
-evaluated=""
+ty="{exists X<:Top::*,{ methods:(\\R::*.{ get:(R) -> (Nat), inc:(R) -> (R) }) [X], state:X } }"
+evaluated="{*{ x:Nat },{ methods={ get=\\r:{ x:Nat }.(r).x, inc=\\r:{ x:Nat }.{ x=succ((r).x) } }, state={ x=zero } }} as (\\M::*=>*.{exists X<:Top::*,{ methods:(M) [X], state:X } }) [\\R::*.{ get:(R) -> (Nat), inc:(R) -> (R) }]"

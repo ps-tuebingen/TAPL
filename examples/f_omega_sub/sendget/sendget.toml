@@ -1,2 +1,2 @@
-ty=""
-evaluated=""
+ty="forall M<:\\R::*.{ get:(R) -> (Nat), inc:(R) -> (R) }.({exists X<:Top::*,{ methods:(M) [X], state:X } }) -> (Nat)"
+evaluated="\\M<:\\R::*.{ get:(R) -> (Nat), inc:(R) -> (R) }.\\c:(\\M::*=>*.{exists X<:Top::*,{ methods:(M) [X], state:X } }) [M].let {X,b}=c in (((b).methods).get) (c)"
