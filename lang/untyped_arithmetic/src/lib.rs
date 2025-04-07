@@ -149,7 +149,7 @@ impl fmt::Display for Term {
         match self {
             Term::True => f.write_str("true"),
             Term::False => f.write_str("false"),
-            Term::If(ift, thent, elset) => write!(f, "if {ift} then {thent} else {elset}"),
+            Term::If(ift, thent, elset) => write!(f, "if ({ift}) {{ {thent} }} else {{ {elset} }}"),
             Term::Zero => f.write_str("zero"),
             Term::Succ(t) => write!(f, "succ({t})"),
             Term::Pred(t) => write!(f, "pred({t})"),

@@ -15,6 +15,7 @@ pub mod references;
 pub mod stlc;
 pub mod subtypes;
 pub mod system_f;
+pub mod typed_arithmetic;
 pub mod untyped_arithmetic;
 pub mod untyped_lambda;
 
@@ -28,6 +29,7 @@ pub struct Cli {
 pub enum Command {
     UntypedArithmetic(untyped_arithmetic::Args),
     UntypedLambda(untyped_lambda::Args),
+    TypedArithmetic(typed_arithmetic::Args),
     NamelessRepresentation(nameless_representation::Args),
     Stlc(stlc::Args),
     References(references::Args),
@@ -75,6 +77,7 @@ pub fn run() -> Result<(), String> {
     let res = match cli.command {
         Command::UntypedArithmetic(args) => untyped_arithmetic::exec(args),
         Command::UntypedLambda(args) => untyped_lambda::exec(args),
+        Command::TypedArithmetic(args) => typed_arithmetic::exec(args),
         Command::NamelessRepresentation(args) => nameless_representation::exec(args),
         Command::Stlc(args) => stlc::exec(args),
         Command::References(args) => references::exec(args),

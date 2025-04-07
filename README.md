@@ -11,7 +11,7 @@ All languages can be found in the `lang` directory, with the following implement
 
 ## II Simple Types 
 
-* `typed-arithmetic`: Typed Arithmetic expressions (chapter 8), TODO
+* `typed-arithmetic`: Typed Arithmetic expressions (chapter 8)
 * `stlc`: Simply-Typed Lambda Calculus (chapters 9-11 (and some of chapter 19))
 * `references`: STLC with References (chapter 13)
 * `exception`: STLC with exceptions (chapter 14)
@@ -36,4 +36,4 @@ All languages can be found in the `lang` directory, with the following implement
 
 * `lambda_omega`: Higher order STLC (chapter 29)
 * `f_omega`: system f omega (chapter 30) 
-* `f_omega_sub`: system f omega with subtypes (chapter 31,32), TODO:tests+parser+cli
+* `f_omega_sub`: system f omega with subtypes (chapter 31,32) 

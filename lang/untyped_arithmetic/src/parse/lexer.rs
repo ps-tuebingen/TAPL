@@ -6,7 +6,6 @@ pub enum Token {
     True,
     False,
     If,
-    Then,
     Else,
     Zero,
     Succ,
@@ -14,6 +13,8 @@ pub enum Token {
     IsZero,
     ParenO,
     ParenC,
+    BrackO,
+    BrackC,
     Digit(u8),
 }
 
@@ -23,7 +24,6 @@ impl fmt::Display for Token {
             Token::True => f.write_str("True"),
             Token::False => f.write_str("Fase"),
             Token::If => f.write_str("If"),
-            Token::Then => f.write_str("Then"),
             Token::Else => f.write_str("Else"),
             Token::Zero => f.write_str("Zero"),
             Token::Succ => f.write_str("Succ"),
@@ -31,6 +31,8 @@ impl fmt::Display for Token {
             Token::IsZero => f.write_str("IsZero"),
             Token::ParenO => f.write_str("("),
             Token::ParenC => f.write_str(")"),
+            Token::BrackO => f.write_str("{"),
+            Token::BrackC => f.write_str("}"),
             Token::Digit(dig) => write!(f, "{dig}"),
         }
     }
@@ -67,9 +69,6 @@ pub fn lex(source: &mut String) -> Result<Vec<Token>, Error> {
                 if source.starts_with("rue") {
                     remove_n(source, 3)?;
                     tokens.push(Token::True);
-                } else if source.starts_with("hen") {
-                    remove_n(source, 3)?;
-                    tokens.push(Token::Then);
                 } else {
                     return Err(Error::UnexpectedChar('T'));
                 }
@@ -127,6 +126,8 @@ pub fn lex(source: &mut String) -> Result<Vec<Token>, Error> {
             }
             '(' => tokens.push(Token::ParenO),
             ')' => tokens.push(Token::ParenC),
+            '{' => tokens.push(Token::BrackO),
+            '}' => tokens.push(Token::BrackC),
             c if c.is_numeric() => {
                 let dig = c.to_string().parse::<u8>().unwrap();
                 tokens.push(Token::Digit(dig));
@@ -162,11 +163,10 @@ mod lexer_tests {
 
     #[test]
     fn lex_if() {
-        let result = lex(&mut "If True Then False Else True".to_owned()).unwrap();
+        let result = lex(&mut "If True False Else True".to_owned()).unwrap();
         let expected = vec![
             Token::If,
             Token::True,
-            Token::Then,
             Token::False,
             Token::Else,
             Token::True,

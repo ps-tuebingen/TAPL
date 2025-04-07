@@ -1,0 +1,15 @@
+[package]
+name = "e2e_typed_arithmetic"
+version = "0.1.0"
+edition = "2021"
+
+[[test]]
+name = "typed_arithmetic"
+path = "src/typed_arithmetic.rs"
+harness=false
+
+[dependencies]
+serde = {version="1.0.219", features=["derive"]}
+
+test_common = { path="../test_common" }
+typed_arithmetic = { path="../../lang/typed_arithmetic" }

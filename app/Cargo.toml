@@ -11,6 +11,7 @@ path = "src/main.rs"
 clap = { version = "4", features=["derive"]}
 untyped_arithmetic = { path="../lang/untyped_arithmetic" }
 untyped_lambda = { path="../lang/untyped_lambda" }
+typed_arithmetic = { path="../lang/typed_arithmetic" }
 stlc = { path="../lang/stlc" }
 inference = {path="../lang/inference"}
 nameless_representation = {path="../lang/nameless_representation"}

@@ -54,10 +54,13 @@ fn parse_term(tokens: &mut VecDeque<Token>) -> Result<Term, Error> {
         }
         Token::If => {
             let ifc = parse_term(tokens)?;
-            consume_token(tokens, Token::Then)?;
+            consume_token(tokens, Token::BrackO)?;
             let thenc = parse_term(tokens)?;
+            consume_token(tokens, Token::BrackC)?;
             consume_token(tokens, Token::Else)?;
+            consume_token(tokens, Token::BrackO)?;
             let elsec = parse_term(tokens)?;
+            consume_token(tokens, Token::BrackC)?;
             Ok(Term::If(Box::new(ifc), Box::new(thenc), Box::new(elsec)))
         }
         Token::IsZero => {
@@ -127,7 +130,7 @@ mod parser_tests {
 
     #[test]
     fn parse_if() {
-        let result = parse("If True Then False Else True".to_owned()).unwrap();
+        let result = parse("If (true) { false } else { true }".to_owned()).unwrap();
         let expected = Term::If(
             Box::new(Term::True),
             Box::new(Term::False),

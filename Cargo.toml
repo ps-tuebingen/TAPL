@@ -4,9 +4,10 @@ members = [
 
     "tests/test_common",
     "tests/nameless",
-    "tests/stlc",
+    "tests/typed_arithmetic",
     "tests/untyped_arithmetic",
     "tests/untyped_lambda",
+    "tests/stlc",
     "tests/references",
     "tests/exceptions",
     "tests/subtypes",
@@ -20,9 +21,10 @@ members = [
     "tests/f_omega",
     "tests/f_omega_sub",
 
-    "lang/stlc",
     "lang/untyped_lambda",
     "lang/untyped_arithmetic",
+    "lang/typed_arithmetic",
+    "lang/stlc",
     "lang/exceptions",
     "lang/references",
     "lang/subtypes",
