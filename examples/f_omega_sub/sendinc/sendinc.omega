@@ -1,9 +1,8 @@
 \M<:(\R::*.{get:R->Nat, inc:R->R}).
-  \c:((\M:*=>*{exists X::*,{state:X, methods: M[X]}})[M]).
-    let (X,b) = c in {*X,{
+  \c:((\M::*=>*.{exists X::*,{state:X, methods: M[X]}})[M]).
+    let {X,b} = c in {*X,{
       state = ((b.methods).inc) (b.methods),
       methods = b.methods
     }
-    } as {
-    ((\M:*=>*{exists X::*,{state:X, methods: M[X]}})[M])
-    }  
+    } as 
+    ((\M::*=>*.{exists X::*,{state:X, methods: M[X]}})[M]) 

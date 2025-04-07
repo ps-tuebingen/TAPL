@@ -1,4 +1,4 @@
-use f_omega::parser::parse;
+use f_omega_sub::parser::parse;
 use test_common::testsuite::{Test, TestResult};
 
 pub struct ParseTest {

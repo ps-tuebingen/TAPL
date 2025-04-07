@@ -47,7 +47,7 @@ fn pair_to_primtype(p: Pair<'_, Rule>) -> Result<Type, Error> {
             Ok(Type::Top(kind))
         }
         Rule::forall_ty => pair_to_universal(p).map(|uni| uni.into()),
-        Rule::forall_unbounded => pair_to_universal(p).map(|uni| uni.into()),
+        Rule::forall_unbounded => pair_to_universal_unbounded(p).map(|uni| uni.into()),
         Rule::op_lambda_star => pair_to_op_lambda_star(p).map(|oplam| oplam.into()),
         Rule::op_lambda => pair_to_op_lambda(p).map(|oplam| oplam.into()),
         Rule::exists_ty => pair_to_exists(p).map(|ex| ex.into()),

@@ -1,4 +1,4 @@
-//use super::{EvalTest, ParseTest, ReparseTest, TypecheckTest};
+use super::ParseTest; //EvalTest, ParseTest, ReparseTest, TypecheckTest};
 use std::path::PathBuf;
 use test_common::{
     errors::Error,
@@ -31,9 +31,9 @@ impl TestSuite for FOmegaSubTests {
         let contents: Vec<TestContents<FOmegaSubConf>> = load_dir(&self.source_dir, "omega")?;
         let mut tests = vec![];
         for tst in contents {
-            /*
             let parse_test = ParseTest::new(&tst.source_name, &tst.source_contents);
             tests.push(Box::new(parse_test) as Box<dyn Test>);
+            /*
             let reparse_test = ReparseTest::new(&tst.source_name, &tst.source_contents);
             tests.push(Box::new(reparse_test) as Box<dyn Test>);
             let check_test =

@@ -1,6 +1,6 @@
 \M<:(\R::*.{get:R->Nat,inc:R->R,reset:R->R}).
-  \c:((\M::*=>*.{exists X::*.{state:X,methods:M[X]}})[M]).
-  let (X,B) = c in {*X, {
-    state = ((b.methods).reset) (b.state)
-    method = b.methods
-  }} as {((\M::*=>*.{exists X::*.{state:X,methods:M[X]}})[M])}
+  \c:((\M::*=>*.{exists X::*,{state:X,methods:M[X]}})[M]).
+  let {X,B} = c in {*X, {
+    state = ((b.methods).reset) (b.state),
+    methods = b.methods
+  }} as ((\M::*=>*.{exists X::*,{state:X,methods:M[X]}})[M])
