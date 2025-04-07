@@ -18,6 +18,7 @@ members = [
     "tests/boundedquantification",
     "tests/lambdaomega",
     "tests/f_omega",
+    "tests/f_omega_sub",
 
     "lang/stlc",
     "lang/untyped_lambda",

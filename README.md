@@ -35,5 +35,5 @@ All languages can be found in the `lang` directory, with the following implement
 ## VI Higher-Order Systems 
 
 * `lambda_omega`: Higher order STLC (chapter 29)
-* `f_omega`: system f omega (chapter 30), TODO:tests+parser+cli
+* `f_omega`: system f omega (chapter 30) 
 * `f_omega_sub`: system f omega with subtypes (chapter 31,32), TODO:tests+parser+cli
