@@ -5,6 +5,7 @@ pub mod bounded_quantification;
 pub mod exceptions;
 pub mod existential;
 pub mod f_omega;
+pub mod f_omega_sub;
 pub mod featherweight;
 pub mod inference;
 pub mod lambda_omega;
@@ -40,6 +41,7 @@ pub enum Command {
     BoundedQuantification(bounded_quantification::Args),
     LambdaOmega(lambda_omega::Args),
     FOmega(f_omega::Args),
+    FOmegaSub(f_omega_sub::Args),
 }
 
 #[derive(Debug, clap::Args)]
@@ -86,6 +88,7 @@ pub fn run() -> Result<(), String> {
         Command::LambdaOmega(args) => lambda_omega::exec(args),
         Command::Existential(args) => existential::exec(args),
         Command::FOmega(args) => f_omega::exec(args),
+        Command::FOmegaSub(args) => f_omega_sub::exec(args),
     };
     res.map_err(|err| err.to_string())
 }
