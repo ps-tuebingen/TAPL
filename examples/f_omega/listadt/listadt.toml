@@ -1,2 +1,2 @@
-ty=""
-evaluated=""
+ty="{exists List::(*=>*),{ cons : forall X::*.((X) -> (((List[X])) -> ((List[X])))), head : forall X::*.(((List[X])) -> (X)), isnil : forall X::*.(((List[X])) -> (Bool)), nil : forall X::*.((List[X])) } }"
+evaluated="{*\\X::*.forall R::*.(((X) -> ((R) -> (R))) -> ((R) -> (R))),{ cons = \\X::*.\\hd:X.\\tl:forall R::*.(((X) -> ((R) -> (R))) -> ((R) -> (R))).\\R::*.\\c:(X) -> ((R) -> (R)).\\n:R.((c) (hd)) ((((tl) [R]) (c)) (n)), head = \\X::*.\\l:forall R::*.(((X) -> ((R) -> (R))) -> ((R) -> (R))).(((l) [X]) (\\hd:X.\\tl:X.hd)) (((\\X::*.\\_:Unit.fix(\\x:X.x)) [X]) (unit)), isnil = \\X::*.\\l:forall R::*.(((X) -> ((R) -> (R))) -> ((R) -> (R))).(((l) [Bool]) (\\hd:X.\\tl:Bool.false)) (true), nil = \\X::*.\\R::*.\\c:(X) -> ((R) -> (R)).\\n:R.n }} as {exists List::(*=>*),{ cons : forall X::*.((X) -> (((List[X])) -> ((List[X])))), head : forall X::*.(((List[X])) -> (X)), isnil : forall X::*.(((List[X])) -> (Bool)), nil : forall X::*.((List[X])) } }"
