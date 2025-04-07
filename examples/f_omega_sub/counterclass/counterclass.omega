@@ -1,0 +1,3 @@
+{ get = \r:{x:Nat}.(r.x),
+  inc = \r:{x:Nat}.{x=succ(r.x)
+}

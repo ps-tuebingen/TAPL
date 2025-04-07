@@ -1,0 +1,3 @@
+\M<:(\R::*.{get:R->Nat, inc:R->R}).
+  \c:((\M:*=>*.{exists X::*,{state:X,methods:M[X]}})[M]).
+    let {X,b} = c in (((b.methods).get) c)
