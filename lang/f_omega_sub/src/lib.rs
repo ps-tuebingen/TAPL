@@ -2,6 +2,7 @@ pub mod check;
 pub mod errors;
 pub mod eval;
 pub mod objects;
+pub mod parser;
 pub mod syntax;
 pub mod traits;
 

@@ -97,6 +97,22 @@ impl From<&str> for Term {
     }
 }
 
+impl From<i64> for Term {
+    fn from(i: i64) -> Term {
+        match i {
+            0 => Term::Zero,
+            i if i > 0 => Succ {
+                term: Box::new((i - 1).into()),
+            }
+            .into(),
+            _ => Pred {
+                term: Box::new((i + 1).into()),
+            }
+            .into(),
+        }
+    }
+}
+
 impl fmt::Display for Term {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {

@@ -34,6 +34,7 @@ impl SubstTy for Succ {
         }
     }
 }
+
 impl From<Succ> for Term {
     fn from(succ: Succ) -> Term {
         Term::Succ(succ)
