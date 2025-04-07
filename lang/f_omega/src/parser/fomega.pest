@@ -31,11 +31,11 @@ prim_term = {
   | variable
 }
 
-paren_term = { "(" ~ term ~ "(" }
+paren_term = { "(" ~ term ~ ")" }
 lambda_term = { "\\" ~ variable ~ ":" ~ type ~ "." ~ term }
 tylambda_term = { "\\" ~ variable ~ "::" ~ kind ~ "." ~ term }
 tylambda_star_term = { "\\" ~ variable ~ "." ~ term }
-pack_term = { "{" ~ "*" ~ type ~ "," ~ term ~ kw_as ~ type ~ "}" }
+pack_term = { "{" ~ "*" ~ type ~ "," ~ term ~ "}" ~ kw_as ~ type }
 unpack_term = { kw_let ~ "{" ~ variable ~ "," ~ variable ~ "}" ~ "=" ~ term ~ kw_in ~ term}
 record_term = { "{" ~ variable ~ "=" ~ term ~ ("," ~ variable ~ "=" ~ term)* ~ "}" }
 
@@ -62,7 +62,8 @@ forall_star_ty = { forall_start ~ "." ~ type }
 forall_start = ${ kw_forall ~ " " ~ variable } 
 op_lambda_star = { "\\" ~ variable ~ "." ~ type }
 op_lambda = { "\\" ~ variable ~ "::" ~ kind ~ "." ~ type }
-exists_ty = { kw_exists ~ variable ~ "::" ~ kind ~ "," ~ type } 
+exists_ty = { "{" ~ exists_start ~ "::" ~ kind ~ "," ~ type  ~ "}" } 
+exists_start = @{ kw_exists ~ " " ~ variable } 
 record_ty = { "{" ~ variable ~ ":" ~ type ~ ("," ~ variable ~ ":" ~ type)* ~ "}" }
 
 left_rec_ty = { fun_ty | type }
