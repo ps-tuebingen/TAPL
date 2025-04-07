@@ -9,6 +9,7 @@ pub mod app;
 pub mod bool;
 pub mod fix;
 pub mod lambda;
+pub mod nat;
 pub mod pack;
 pub mod record;
 pub mod record_proj;
@@ -19,6 +20,7 @@ pub use app::App;
 pub use bool::{False, If, True};
 pub use fix::Fix;
 pub use lambda::Lambda;
+pub use nat::{IsZero, Pred, Succ, Zero};
 pub use pack::Pack;
 pub use record::Record;
 pub use record_proj::RecordProj;
@@ -42,6 +44,10 @@ pub enum Term {
     If(If),
     Unit,
     Fix(Fix),
+    Zero(Zero),
+    Succ(Succ),
+    Pred(Pred),
+    IsZero(IsZero),
 }
 
 impl SubstTerm for Term {
@@ -67,6 +73,10 @@ impl SubstTerm for Term {
             Term::If(ift) => ift.subst(v, t),
             Term::Unit => Term::Unit,
             Term::Fix(fix) => fix.subst(v, t),
+            Term::Zero(z) => z.subst(v, t),
+            Term::Succ(s) => s.subst(v, t),
+            Term::Pred(p) => p.subst(v, t),
+            Term::IsZero(isz) => isz.subst(v, t),
         }
     }
 }
@@ -88,6 +98,10 @@ impl SubstTy for Term {
             Term::If(ift) => ift.subst_ty(v, ty).into(),
             Term::Unit => Term::Unit,
             Term::Fix(fix) => fix.subst_ty(v, ty).into(),
+            Term::Zero(z) => z.subst_ty(v, ty).into(),
+            Term::Succ(s) => s.subst_ty(v, ty).into(),
+            Term::Pred(p) => p.subst_ty(v, ty).into(),
+            Term::IsZero(isz) => isz.subst_ty(v, ty).into(),
         }
     }
 }
@@ -115,6 +129,10 @@ impl fmt::Display for Term {
             Term::If(ift) => ift.fmt(f),
             Term::Unit => f.write_str("unit"),
             Term::Fix(fix) => fix.fmt(f),
+            Term::Zero(z) => z.fmt(f),
+            Term::Succ(s) => s.fmt(f),
+            Term::Pred(p) => p.fmt(f),
+            Term::IsZero(isz) => isz.fmt(f),
         }
     }
 }

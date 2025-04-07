@@ -80,6 +80,7 @@ fn str_to_type(s: &str) -> Result<Type, Error> {
     match s.to_lowercase().trim() {
         "bool" => Ok(Type::Bool),
         "unit" => Ok(Type::Unit),
+        "nat" => Ok(Type::Nat),
         s => Err(Error::unknown(s)),
     }
 }

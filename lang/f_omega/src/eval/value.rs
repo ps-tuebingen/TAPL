@@ -32,6 +32,7 @@ pub enum Value {
     True,
     False,
     Unit,
+    Const(i64),
 }
 
 impl Value {
@@ -83,6 +84,17 @@ impl Value {
             })
         }
     }
+
+    pub fn as_const(self) -> Result<i64, ErrorKind> {
+        if let Value::Const(i) = self {
+            Ok(i)
+        } else {
+            Err(ErrorKind::BadValue {
+                found: self,
+                expected: "Constant".to_owned(),
+            })
+        }
+    }
 }
 
 impl From<Value> for Term {
@@ -120,6 +132,7 @@ impl From<Value> for Term {
             Value::True => True.into(),
             Value::False => False.into(),
             Value::Unit => Term::Unit,
+            Value::Const(i) => i.into(),
         }
     }
 }

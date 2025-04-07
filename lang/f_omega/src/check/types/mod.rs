@@ -25,6 +25,7 @@ impl CheckKind for Type {
             Type::Record(rec) => rec.check_kind(env),
             Type::Bool => Ok(Kind::Star),
             Type::Unit => Ok(Kind::Star),
+            Type::Nat => Ok(Kind::Star),
         }
     }
 }

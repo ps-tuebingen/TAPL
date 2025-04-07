@@ -1,14 +1,16 @@
 use super::{pair_to_kind, pair_to_n_inner, pair_to_type, Error, Rule};
-use crate::syntax::terms::{App, False, Fix, RecordProj, Term, True};
+use crate::syntax::terms::{App, False, Fix, RecordProj, Term, True, Zero};
 use pest::iterators::Pair;
 
 mod ift;
 mod lambda;
+mod nat;
 mod pack;
 mod record;
 mod ty_lambda;
 use ift::pair_to_if;
 use lambda::pair_to_lambda;
+use nat::{pair_to_iszero, pair_to_pred, pair_to_succ};
 use pack::{pair_to_pack, pair_to_unpack};
 use record::pair_to_record;
 use ty_lambda::{pair_to_ty_lambda, pair_to_ty_lambda_star, pair_to_tyapp};
@@ -51,6 +53,9 @@ fn pair_to_primterm(p: Pair<'_, Rule>) -> Result<Term, Error> {
             }
             .into())
         }
+        Rule::succ_term => pair_to_succ(p).map(|s| s.into()),
+        Rule::pred_term => pair_to_pred(p).map(|p| p.into()),
+        Rule::iszero_term => pair_to_iszero(p).map(|isz| isz.into()),
         Rule::if_term => pair_to_if(p).map(|ift| ift.into()),
         Rule::tylambda_term => pair_to_ty_lambda(p).map(|tylam| tylam.into()),
         Rule::tylambda_star_term => pair_to_ty_lambda_star(p).map(|tylam| tylam.into()),
@@ -59,6 +64,14 @@ fn pair_to_primterm(p: Pair<'_, Rule>) -> Result<Term, Error> {
         Rule::record_term => pair_to_record(p).map(|rec| rec.into()),
         Rule::variable => Ok(Term::Var(p.as_str().trim().to_owned())),
         Rule::const_term => str_to_term(p.as_str()),
+        Rule::number => {
+            let num = p
+                .as_str()
+                .trim()
+                .parse::<i64>()
+                .map_err(|_| Error::unknown(p.as_str()))?;
+            Ok(num.into())
+        }
         _ => Err(Error::unexpected(&p, "Non Left-Recursive Term")),
     }
 }
@@ -92,6 +105,7 @@ fn str_to_term(s: &str) -> Result<Term, Error> {
         "true" => Ok(True.into()),
         "false" => Ok(False.into()),
         "unit" => Ok(Term::Unit),
+        "zero" => Ok(Zero.into()),
         s => Err(Error::unknown(s)),
     }
 }

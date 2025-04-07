@@ -8,6 +8,7 @@ pub mod app;
 pub mod bool;
 pub mod fix;
 pub mod lambda;
+pub mod nat;
 pub mod pack;
 pub mod record;
 pub mod record_proj;
@@ -32,6 +33,10 @@ impl CheckType for Term {
             Term::If(ift) => ift.check_type(env),
             Term::Unit => Ok(Type::Unit),
             Term::Fix(fix) => fix.check_type(env),
+            Term::Zero(z) => z.check_type(env),
+            Term::Succ(s) => s.check_type(env),
+            Term::Pred(p) => p.check_type(env),
+            Term::IsZero(isz) => isz.check_type(env),
         }
     }
 }

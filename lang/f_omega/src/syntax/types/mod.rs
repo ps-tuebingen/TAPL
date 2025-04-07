@@ -28,6 +28,7 @@ pub enum Type {
     Record(RecTy),
     Bool,
     Unit,
+    Nat,
 }
 
 impl Type {
@@ -179,6 +180,7 @@ impl SubstTy for Type {
             Type::Record(rec) => rec.subst_ty(v, ty).into(),
             Type::Bool => Type::Bool,
             Type::Unit => Type::Unit,
+            Type::Nat => Type::Nat,
         }
     }
 }
@@ -201,6 +203,7 @@ impl fmt::Display for Type {
             Type::Record(rec) => rec.fmt(f),
             Type::Bool => f.write_str("Bool"),
             Type::Unit => f.write_str("Unit"),
+            Type::Nat => f.write_str("Nat"),
         }
     }
 }

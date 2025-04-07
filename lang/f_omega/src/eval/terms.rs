@@ -21,6 +21,10 @@ impl Eval for Term {
             Term::If(ift) => ift.eval(),
             Term::Unit => Ok(Value::Unit),
             Term::Fix(fix) => fix.eval(),
+            Term::Zero(z) => z.eval(),
+            Term::Succ(s) => s.eval(),
+            Term::Pred(p) => p.eval(),
+            Term::IsZero(isz) => isz.eval(),
         }
     }
 }
