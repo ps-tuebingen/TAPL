@@ -7,9 +7,9 @@ let {List,list} =
   }
 } as { exists List :: * => *, 
   { nil : forall X.List[X],
-    cons: forall X. X -> List[X] -> List[X],
-    isnil: forall X. List[X] -> Bool,
-    head: forall X.List[X] -> X
+    cons: forall X.(X -> (List[X]) -> List[X]),
+    isnil: forall X.((List[X]) -> Bool),
+    head: forall X.((List[X]) -> X)
   }
 } in 
 ((list.isnil) [Nat]) ((((list.cons) [Nat]) 1) ((((list.cons) [Nat]) 2) ((list.nil) [Nat] )))

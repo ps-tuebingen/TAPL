@@ -2,9 +2,9 @@ let {Pair,pair} =
   {*\X.\Y.forall R.(X->Y->R) -> R,
     { pair = \X.\Y.\x:X.\y:Y.\R.\p:X->Y->R.(p x) y,
       fst = \X.\Y.\p:forall R.((X->Y->R) -> R).
-        p [X] (\x:X.\y:Y.x),
+        (p [X]) (\x:X.\y:Y.x),
       snd = \X.\Y.\p:forall R.((X->Y->R) -> R).
-        p [Y] (\x:X.\y:Y.y)
+        (p [Y]) (\x:X.\y:Y.y)
     } 
   } as 
   { exists Pair :: * => * => *,
