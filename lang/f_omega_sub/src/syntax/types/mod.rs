@@ -238,7 +238,7 @@ impl fmt::Display for Type {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             Type::Var(v) => f.write_str(v),
-            Type::Top(_) => f.write_str("⊤"),
+            Type::Top(knd) => write!(f, "Top::{knd}"),
             Type::Fun(fun) => fun.fmt(f),
             Type::Universal(uni) => uni.fmt(f),
             Type::OpLambda(lam) => lam.fmt(f),

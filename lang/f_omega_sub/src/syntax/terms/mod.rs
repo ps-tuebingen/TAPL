@@ -125,7 +125,7 @@ impl fmt::Display for Term {
             Term::Unpack(unpack) => unpack.fmt(f),
             Term::Record(rec) => rec.fmt(f),
             Term::RecordProj(proj) => proj.fmt(f),
-            Term::Zero => f.write_str("Zero"),
+            Term::Zero => f.write_str("zero"),
             Term::Succ(succ) => succ.fmt(f),
             Term::Pred(pred) => pred.fmt(f),
             Term::Let(lt) => lt.fmt(f),

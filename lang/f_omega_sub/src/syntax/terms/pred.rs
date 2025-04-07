@@ -34,6 +34,6 @@ impl From<Pred> for Term {
 
 impl fmt::Display for Pred {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Pred({})", self.term)
+        write!(f, "pred({})", self.term)
     }
 }

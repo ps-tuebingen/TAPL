@@ -37,10 +37,12 @@ impl From<RecordTy> for Type {
 
 impl fmt::Display for RecordTy {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let mut records: Vec<(&Label, &Type)> = self.records.iter().collect();
+        records.sort_by(|(lb1, _), (lb2, _)| lb1.cmp(lb2));
         write!(
             f,
             "{{ {} }}",
-            self.records
+            records
                 .iter()
                 .map(|(label, ty)| format!("{label}:{ty}"))
                 .collect::<Vec<String>>()

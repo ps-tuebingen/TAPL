@@ -54,6 +54,6 @@ impl From<Existential> for Type {
 
 impl fmt::Display for Existential {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "∃{}<:{}.{}", self.var, self.sup_ty, self.ty)
+        write!(f, "{{exists {}<:{},{} }}", self.var, self.sup_ty, self.ty)
     }
 }

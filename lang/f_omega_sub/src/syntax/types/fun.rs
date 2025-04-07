@@ -34,6 +34,6 @@ impl From<Fun> for Type {
 
 impl fmt::Display for Fun {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "({}) → ({})", self.from, self.to)
+        write!(f, "({}) -> ({})", self.from, self.to)
     }
 }

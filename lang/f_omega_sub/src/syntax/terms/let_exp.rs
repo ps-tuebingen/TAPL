@@ -63,7 +63,7 @@ impl fmt::Display for Let {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(
             f,
-            "Let {}={} in {}",
+            "Let ({}={}) in {}",
             self.var, self.bound_term, self.in_term
         )
     }

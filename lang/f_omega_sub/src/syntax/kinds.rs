@@ -39,7 +39,7 @@ impl fmt::Display for Kind {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             Kind::Star => f.write_str("*"),
-            Kind::Arrow(left, right) => write!(f, "{left}⇒{right}"),
+            Kind::Arrow(left, right) => write!(f, "{left}=>{right}"),
         }
     }
 }

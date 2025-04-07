@@ -43,6 +43,6 @@ impl From<Succ> for Term {
 
 impl fmt::Display for Succ {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Succ({})", self.term)
+        write!(f, "succ({})", self.term)
     }
 }

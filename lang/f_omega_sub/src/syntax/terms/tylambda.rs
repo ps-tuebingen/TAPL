@@ -71,6 +71,6 @@ impl From<TyLambda> for Term {
 
 impl fmt::Display for TyLambda {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "λ{}<:{}.{}", self.var, self.sup_ty, self.body)
+        write!(f, "\\{}<:{}.{}", self.var, self.sup_ty, self.body)
     }
 }
