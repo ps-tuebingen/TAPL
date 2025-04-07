@@ -16,7 +16,8 @@ pub fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
     let prim_rule = inner
         .next()
         .ok_or(Error::missing("Non Left-Recursive Term"))?;
-    let prim_term = pair_to_primterm(prim_rule)?;
+    let prim_inner = pair_to_n_inner(prim_rule, vec!["Non Left-Recursive Term"])?.remove(0);
+    let prim_term = pair_to_primterm(prim_inner)?;
 
     let term = match inner.next() {
         None => prim_term,

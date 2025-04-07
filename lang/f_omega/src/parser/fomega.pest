@@ -63,7 +63,7 @@ forall_start = ${ kw_forall ~ " " ~ variable }
 op_lambda_star = { "\\" ~ variable ~ "." ~ type }
 op_lambda = { "\\" ~ variable ~ "::" ~ kind ~ "." ~ type }
 exists_ty = { "{" ~ exists_start ~ "::" ~ kind ~ "," ~ type  ~ "}" } 
-exists_start = @{ kw_exists ~ " " ~ variable } 
+exists_start = ${ kw_exists ~ " " ~ variable } 
 record_ty = { "{" ~ variable ~ ":" ~ type ~ ("," ~ variable ~ ":" ~ type)* ~ "}" }
 
 left_rec_ty = { fun_ty | type }

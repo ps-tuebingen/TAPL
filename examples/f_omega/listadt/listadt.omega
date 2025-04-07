@@ -8,6 +8,6 @@
   { nil : forall X.List X,
     cons: forall X. X -> List X -> List X,
     isnil: forall X. List X -> Bool,
-    head: forall X.List X -> X,
+    head: forall X.List X -> X
   }
 }

@@ -7,14 +7,12 @@ pub fn pair_to_kind(p: Pair<'_, Rule>) -> Result<Kind, Error> {
     let prim_rule = inner
         .next()
         .ok_or(Error::missing("Non Left-Recursive Kind"))?;
-    let prim_kind = pair_to_prim_kind(prim_rule)?;
+    let prim_inner = pair_to_n_inner(prim_rule, vec!["Non Left-Recursive Kind"])?.remove(0);
+    let prim_kind = pair_to_prim_kind(prim_inner)?;
 
     let kind = match inner.next() {
         None => prim_kind,
-        Some(leftrec) => {
-            let leftrec_inner = pair_to_n_inner(leftrec, vec!["Left-Recursive Kind"])?.remove(0);
-            pair_to_leftrec_kind(leftrec_inner, prim_kind)?
-        }
+        Some(leftrec) => pair_to_leftrec_kind(leftrec, prim_kind)?,
     };
 
     if let Some(n) = inner.next() {
