@@ -5,8 +5,9 @@ pub trait Eval<'a> {
     fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Error>;
 }
 
-pub trait Typechck {
+pub trait Typecheck<'a> {
     type Type;
     type Error;
-    fn check(&self) -> Result<Self::Type, Self::Error>;
+    type Env;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error>;
 }

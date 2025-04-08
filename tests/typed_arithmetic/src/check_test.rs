@@ -1,5 +1,6 @@
+use common::Typecheck;
 use test_common::testsuite::{Test, TestResult};
-use typed_arithmetic::{check::check, parser::parse};
+use typed_arithmetic::parser::parse;
 
 pub struct TypecheckTest {
     source_name: String,
@@ -27,7 +28,7 @@ impl Test for TypecheckTest {
             Ok(p) => p,
             Err(err) => return TestResult::from_err(err),
         };
-        let checked = match check(&parsed) {
+        let checked = match parsed.check(Default::default()) {
             Ok(ty) => ty,
             Err(err) => return TestResult::from_err(err),
         };

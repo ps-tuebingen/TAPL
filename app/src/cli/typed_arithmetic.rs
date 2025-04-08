@@ -1,7 +1,7 @@
 use super::{display_or_debug, Source};
-use common::Eval;
+use common::{Eval, Typecheck};
 use std::error::Error;
-use typed_arithmetic::{check::check, parser::parse};
+use typed_arithmetic::parser::parse;
 
 #[derive(clap::Args)]
 pub struct Args {
@@ -22,7 +22,7 @@ pub fn exec(args: Args) -> Result<(), Box<dyn Error>> {
         let parsed_str = display_or_debug(&parsed, args.debug);
         println!("parsed: {parsed_str}")
     }
-    let checked = check(&parsed)?;
+    let checked = parsed.check(Default::default())?;
     if args.verbose {
         let checked_str = display_or_debug(&checked, args.debug);
         println!("checked: {checked_str}");
