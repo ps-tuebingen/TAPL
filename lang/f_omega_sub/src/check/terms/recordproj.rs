@@ -1,9 +1,9 @@
 use crate::{
     check::{Check, Env},
     errors::{Error, ErrorKind},
-    eval::Eval,
     syntax::{terms::RecordProj, types::Type},
 };
+use common::Eval;
 
 impl Check for RecordProj {
     type Target = Type;

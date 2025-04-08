@@ -1,4 +1,5 @@
-use f_omega_sub::{eval::Eval, parser::parse};
+use common::Eval;
+use f_omega_sub::parser::parse;
 use test_common::testsuite::{Test, TestResult};
 
 pub struct EvalTest {

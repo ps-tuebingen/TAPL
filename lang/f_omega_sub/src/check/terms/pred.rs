@@ -1,9 +1,9 @@
 use crate::{
     check::{Check, Env},
     errors::Error,
-    eval::Eval,
     syntax::{terms::Pred, types::Type},
 };
+use common::Eval;
 
 impl Check for Pred {
     type Target = Type;

@@ -1,9 +1,9 @@
 use crate::{
     errors::{Error, ErrorKind},
-    eval::Eval,
     syntax::kinds::Kind,
     traits::SubstTy,
 };
+use common::Eval;
 use std::{collections::HashSet, fmt};
 pub type TypeVar = String;
 

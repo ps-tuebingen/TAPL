@@ -1,9 +1,9 @@
 use crate::{
     check::{check_subtype, Check, Env},
     errors::Error,
-    eval::Eval,
     syntax::{terms::App, types::Type},
 };
+use common::Eval;
 
 impl Check for App {
     type Target = Type;

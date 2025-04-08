@@ -113,9 +113,9 @@ mod counter_tests {
     };
     use crate::{
         check::Check,
-        eval::Eval,
         syntax::types::{Fun, OpApp, Type, Universal},
     };
+    use common::Eval;
 
     #[test]
     fn check_send_inc() {

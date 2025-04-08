@@ -1,13 +1,16 @@
+use super::{Env, Value};
 use crate::{
     errors::Error,
-    eval::{Env, Eval, Value},
     syntax::terms::Unpack,
     traits::{SubstTerm, SubstTy},
 };
+use common::Eval;
 
-impl Eval for Unpack {
-    type Target = Value;
-    fn eval(self, env: &mut Env) -> Result<Self::Target, Error> {
+impl<'a> Eval<'a> for Unpack {
+    type Value = Value;
+    type Error = Error;
+    type Env = &'a mut Env;
+    fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Error> {
         let bound_val = self.bound_term.clone().eval(&mut env.clone())?;
         let (inner, val, _) = bound_val
             .as_pack()

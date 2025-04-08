@@ -1,12 +1,12 @@
 use crate::{
     check::{Check, Env},
     errors::Error,
-    eval::Eval,
     syntax::{
         terms::Record,
         types::{RecordTy, Type},
     },
 };
+use common::Eval;
 use std::collections::HashMap;
 
 impl Check for Record {

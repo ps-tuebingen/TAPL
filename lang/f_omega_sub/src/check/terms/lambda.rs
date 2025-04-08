@@ -1,13 +1,13 @@
 use crate::{
     check::{Check, Env},
     errors::Error,
-    eval::Eval,
     syntax::{
         kinds::Kind,
         terms::Lambda,
         types::{Fun, Type},
     },
 };
+use common::Eval;
 impl Check for Lambda {
     type Target = Type;
     fn check(&self, env: &mut Env) -> Result<Self::Target, Error> {

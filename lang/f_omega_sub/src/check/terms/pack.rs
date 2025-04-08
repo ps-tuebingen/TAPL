@@ -1,10 +1,10 @@
 use crate::{
     check::{check_subtype, Check, Env},
     errors::Error,
-    eval::Eval,
     syntax::{terms::Pack, types::Type},
     traits::SubstTy,
 };
+use common::Eval;
 
 impl Check for Pack {
     type Target = Type;

@@ -77,10 +77,10 @@ mod reset_counter_tests {
     use super::{object, reset_counter, reset_counter_class, reset_counter_m, send_reset};
     use crate::{
         check::{check_subtype, Check},
-        eval::Eval,
         objects::counter::{counter, counter_m, counter_r},
         syntax::types::{Fun, OpApp, Type, Universal},
     };
+    use common::Eval;
 
     #[test]
     fn reset_counter_sub() {

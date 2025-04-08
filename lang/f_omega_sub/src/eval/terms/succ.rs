@@ -1,12 +1,15 @@
+use super::{Env, Value};
 use crate::{
     errors::{Error, ErrorKind},
-    eval::{Env, Eval, Value},
     syntax::terms::Succ,
 };
+use common::Eval;
 
-impl Eval for Succ {
-    type Target = Value;
-    fn eval(self, env: &mut Env) -> Result<Self::Target, Error> {
+impl<'a> Eval<'a> for Succ {
+    type Value = Value;
+    type Error = Error;
+    type Env = &'a mut Env;
+    fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Error> {
         let val = self.term.clone().eval(env)?;
         match val {
             Value::Zero => Ok(Value::Succ {

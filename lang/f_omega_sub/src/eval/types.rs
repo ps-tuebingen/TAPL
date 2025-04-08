@@ -1,14 +1,17 @@
-use super::{Env, Eval};
+use super::Env;
 use crate::{
     errors::Error,
     syntax::types::{Fun, RecordTy, Type},
     traits::SubstTy,
 };
+use common::Eval;
 use std::collections::HashMap;
 
-impl Eval for Type {
-    type Target = Self;
-    fn eval(self, env: &mut Env) -> Result<Self::Target, Error> {
+impl<'a> Eval<'a> for Type {
+    type Value = Self;
+    type Error = Error;
+    type Env = &'a mut Env;
+    fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Error> {
         match self {
             Type::Var(ref v) => env.get_tyvar(v).map_err(|knd| Error::ty_red(knd, self)),
             Type::OpApp(app) => {

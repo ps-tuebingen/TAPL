@@ -1,9 +1,9 @@
 use crate::{
     check::{Check, Env},
     errors::Error,
-    eval::Eval,
     syntax::{terms::Succ, types::Type},
 };
+use common::Eval;
 
 impl Check for Succ {
     type Target = Type;
