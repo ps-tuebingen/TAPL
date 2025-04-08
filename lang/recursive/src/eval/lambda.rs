@@ -1,41 +1,34 @@
-use super::Eval;
+use super::Value;
 use crate::{
     errors::Error,
-    terms::{App, Lambda, Term},
-    traits::{is_value::IsValue, subst::SubstTerm},
+    terms::{App, Lambda},
+    traits::subst::SubstTerm,
 };
+use common::Eval;
 
-impl Eval for Lambda {
-    fn eval_once(self) -> Result<Term, Error> {
-        Ok(self.into())
+impl<'a> Eval<'a> for Lambda {
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Error> {
+        Ok(Value::Lambda {
+            var: self.var,
+            annot: self.annot,
+            body: *self.body,
+        })
     }
 }
 
-impl Eval for App {
-    fn eval_once(self) -> Result<Term, Error> {
-        //E-App1
-        if !self.fun.is_value() {
-            let fun_evaled = self.fun.eval_once()?;
-            Ok(App {
-                fun: Box::new(fun_evaled),
-                arg: self.arg,
-            }
-            .into())
-        //E-App2
-        } else if !self.arg.is_value() {
-            let arg_evaled = self.arg.eval_once()?;
-            Ok(App {
-                fun: self.fun,
-                arg: Box::new(arg_evaled),
-            }
-            .into())
-        //A-AppAbs
-        } else {
-            let lam = self
-                .fun
-                .as_lambda()
-                .map_err(|knd| Error::eval(knd, &self))?;
-            Ok(lam.body.subst(lam.var, *self.arg))
-        }
+impl<'a> Eval<'a> for App {
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Error> {
+        let fun_val = self.fun.clone().eval(_env)?;
+        let lam = fun_val
+            .into_lambda()
+            .map_err(|knd| Error::eval(knd, &self))?;
+        let arg_val = self.arg.eval(_env)?;
+        lam.body.subst(lam.var, arg_val.into()).eval(_env)
     }
 }

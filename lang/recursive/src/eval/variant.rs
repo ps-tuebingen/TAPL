@@ -1,60 +1,49 @@
-use super::Eval;
+use super::Value;
 use crate::{
     errors::{Error, ErrorKind},
-    terms::{Term, Variant, VariantCase},
-    traits::is_value::IsValue,
+    terms::{Variant, VariantCase},
     traits::subst::SubstTerm,
 };
-
-impl Eval for Variant {
-    fn eval_once(self) -> Result<Term, Error> {
-        if self.term.is_value() {
-            Ok(self.into())
-        //E-Variant
-        } else {
-            let term_evaled = self.term.eval_once()?;
-            Ok(Variant {
-                label: self.label,
-                term: Box::new(term_evaled),
-                annot: self.annot,
-            }
-            .into())
-        }
+use common::Eval;
+impl<'a> Eval<'a> for Variant {
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Error> {
+        let term_val = self.term.eval(_env)?;
+        Ok(Value::Variant {
+            label: self.label,
+            val: Box::new(term_val),
+            annot: self.annot,
+        })
     }
 }
-impl Eval for VariantCase {
-    fn eval_once(self) -> Result<Term, Error> {
-        //E-VariantCaseRhs
-        if self.bound_term.is_value() {
-            let variant = self
-                .bound_term
-                .as_variant()
-                .map_err(|knd| Error::eval(knd, &self))?;
+impl<'a> Eval<'a> for VariantCase {
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Error> {
+        let bound_val = self.bound_term.clone().eval(_env)?;
+        let (label, val, _) = bound_val
+            .clone()
+            .into_variant()
+            .map_err(|knd| Error::eval(knd, &self))?;
 
-            let matching_pattern = self
-                .patterns
-                .clone()
-                .into_iter()
-                .find(|pt| pt.label == variant.label)
-                .ok_or(Error::eval(
-                    ErrorKind::UndefinedLabel(variant.label.clone()),
-                    &VariantCase {
-                        bound_term: Box::new(variant.clone().into()),
-                        patterns: self.patterns,
-                    },
-                ))?;
-            Ok(matching_pattern
-                .rhs
-                .subst(matching_pattern.bound_var, *variant.term))
-
-        //E-VariantCase
-        } else {
-            let term_evaled = self.bound_term.eval_once()?;
-            Ok(VariantCase {
-                bound_term: Box::new(term_evaled),
-                patterns: self.patterns,
-            }
-            .into())
-        }
+        let matching_pattern = self
+            .patterns
+            .clone()
+            .into_iter()
+            .find(|pt| pt.label == label)
+            .ok_or(Error::eval(
+                ErrorKind::UndefinedLabel(label.clone()),
+                &VariantCase {
+                    bound_term: Box::new(bound_val.clone().into()),
+                    patterns: self.patterns,
+                },
+            ))?;
+        matching_pattern
+            .rhs
+            .subst(matching_pattern.bound_var, val.into())
+            .eval(_env)
     }
 }

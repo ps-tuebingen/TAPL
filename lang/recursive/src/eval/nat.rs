@@ -1,67 +1,51 @@
-use super::Eval;
+use super::Value;
 use crate::{
-    errors::{Error, ErrorKind},
-    terms::{False, IsZero, Pred, Succ, Term, True, Zero},
-    traits::is_value::IsValue,
+    errors::Error,
+    terms::{IsZero, Pred, Succ, Zero},
 };
+use common::Eval;
 
-impl Eval for Zero {
-    fn eval_once(self) -> Result<Term, Error> {
-        Ok(Zero.into())
+impl<'a> Eval<'a> for Zero {
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Error> {
+        Ok(Value::Const(0))
     }
 }
 
-impl Eval for Succ {
-    fn eval_once(self) -> Result<Term, Error> {
-        if self.term.is_value() {
-            if let Term::Pred(pred) = *self.term {
-                Ok(*pred.term)
-            } else {
-                Ok(self.into())
-            }
-        } else {
-            let t_evaled = self.term.eval_once()?;
-            Ok(Succ {
-                term: Box::new(t_evaled),
-            }
-            .into())
-        }
+impl<'a> Eval<'a> for Succ {
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Error> {
+        let val = self.term.clone().eval(_env)?;
+        let num = val.into_const().map_err(|knd| Error::eval(knd, &self))?;
+        Ok(Value::Const(num + 1))
+    }
+}
+impl<'a> Eval<'a> for Pred {
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Error> {
+        let val = self.term.clone().eval(_env)?;
+        let num = val.into_const().map_err(|knd| Error::eval(knd, &self))?;
+        Ok(Value::Const(num - 1))
     }
 }
 
-impl Eval for Pred {
-    fn eval_once(self) -> Result<Term, Error> {
-        if self.term.is_value() {
-            if let Term::Succ(succ) = *self.term {
-                Ok(*succ.term)
-            } else {
-                Ok(self.into())
-            }
+impl<'a> Eval<'a> for IsZero {
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Error> {
+        let val = self.term.clone().eval(_env)?;
+        let num = val.into_const().map_err(|knd| Error::eval(knd, &self))?;
+        if num == 0 {
+            Ok(Value::True)
         } else {
-            let t_evaled = self.term.eval_once()?;
-            Ok(Succ {
-                term: Box::new(t_evaled),
-            }
-            .into())
-        }
-    }
-}
-
-impl Eval for IsZero {
-    fn eval_once(self) -> Result<Term, Error> {
-        if self.term.is_value() {
-            match *self.term {
-                Term::Zero(_) => Ok(True.into()),
-                Term::Succ(_) => Ok(False.into()),
-                Term::Pred(_) => Ok(False.into()),
-                t => Err(Error::eval(
-                    ErrorKind::unexpected_term(&t, "Natural number"),
-                    &IsZero { term: Box::new(t) },
-                )),
-            }
-        } else {
-            let term_evaled = self.term.eval()?;
-            Ok(IsZero::new(term_evaled).into())
+            Ok(Value::False)
         }
     }
 }

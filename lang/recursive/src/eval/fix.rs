@@ -1,22 +1,16 @@
-use super::Eval;
-use crate::{
-    errors::Error,
-    terms::{Fix, Term},
-    traits::{is_value::IsValue, subst::SubstTerm},
-};
+use super::Value;
+use crate::{errors::Error, terms::Fix, traits::subst::SubstTerm};
+use common::Eval;
 
-impl Eval for Fix {
-    fn eval_once(self) -> Result<Term, Error> {
-        if self.term.is_value() {
-            let lam = self
-                .term
-                .clone()
-                .as_lambda()
-                .map_err(|knd| Error::eval(knd, &self))?;
-            Ok(lam.body.clone().subst(lam.var, self.into()))
-        } else {
-            let term_evaled = self.term.eval_once()?;
-            Ok(Fix::new(term_evaled).into())
-        }
+impl<'a> Eval<'a> for Fix {
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Error> {
+        let term_val = self.term.clone().eval(_env)?;
+        let lam = term_val
+            .into_lambda()
+            .map_err(|knd| Error::eval(knd, &self))?;
+        lam.body.clone().subst(lam.var, self.into()).eval(_env)
     }
 }

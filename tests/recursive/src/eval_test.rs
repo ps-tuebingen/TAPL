@@ -1,4 +1,5 @@
-use recursive::{eval::Eval, parser::parse};
+use common::Eval;
+use recursive::parser::parse;
 use test_common::testsuite::{Test, TestResult};
 
 pub struct EvalTest {
@@ -27,7 +28,7 @@ impl Test for EvalTest {
             Ok(p) => p,
             Err(err) => return TestResult::from_err(err),
         };
-        let evaled = match parsed.eval() {
+        let evaled = match parsed.eval(Default::default()) {
             Ok(v) => v,
             Err(err) => return TestResult::from_err(err),
         };

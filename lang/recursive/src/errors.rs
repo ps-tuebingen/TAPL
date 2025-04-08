@@ -1,4 +1,4 @@
-use super::{terms::Term, terms::Var, types::Type, Label};
+use super::{eval::Value, terms::Term, terms::Var, types::Type, Label};
 use std::fmt;
 
 #[derive(Debug)]
@@ -14,6 +14,7 @@ pub enum ErrorKind {
     EmptyCase,
     UnexpectedType { found: Type, expected: String },
     UnexpectedTerm { found: Term, expected: String },
+    BadValue { found: Value, expected: String },
 }
 
 impl ErrorKind {
@@ -27,6 +28,13 @@ impl ErrorKind {
     pub fn unexpected_term(found: &Term, expected: &str) -> ErrorKind {
         ErrorKind::UnexpectedTerm {
             found: found.clone(),
+            expected: expected.to_owned(),
+        }
+    }
+
+    pub fn value(found: Value, expected: &str) -> ErrorKind {
+        ErrorKind::BadValue {
+            found,
             expected: expected.to_owned(),
         }
     }
@@ -78,6 +86,9 @@ impl fmt::Display for ErrorKind {
                 write!(f, "Unexpected term: found {found}, expected {expected}")
             }
             ErrorKind::EmptyCase => f.write_str("No patterns in case expression"),
+            ErrorKind::BadValue { found, expected } => {
+                write!(f, "Unexpected Value {found}, expected {expected}")
+            }
         }
     }
 }

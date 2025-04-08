@@ -1,5 +1,6 @@
 use super::{display_or_debug, Source};
-use recursive::{check::Check, eval::Eval, parser::parse};
+use common::Eval;
+use recursive::{check::Check, parser::parse};
 use std::error::Error;
 
 #[derive(clap::Args)]
@@ -26,7 +27,7 @@ pub fn exec(args: Args) -> Result<(), Box<dyn Error>> {
         let checked_str = display_or_debug(&checked, args.debug);
         println!("checked: {checked_str}");
     }
-    let evaled = parsed.eval()?;
+    let evaled = parsed.eval(Default::default())?;
     let evaled_str = display_or_debug(&evaled, args.debug);
     println!("evaled: {evaled_str}");
     Ok(())

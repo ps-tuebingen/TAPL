@@ -1,64 +1,44 @@
-use super::Eval;
+use super::Value;
 use crate::{
     errors::Error,
-    terms::{Fst, Pair, Snd, Term},
-    traits::is_value::IsValue,
+    terms::{Fst, Pair, Snd},
 };
-
-impl Eval for Pair {
-    fn eval_once(self) -> Result<Term, Error> {
-        //E-Pair1
-        if !self.fst.is_value() {
-            let fst_evaled = self.fst.eval_once()?;
-            Ok(Pair {
-                fst: Box::new(fst_evaled),
-                snd: self.snd,
-            }
-            .into())
-        //E-Pair2
-        } else if !self.snd.is_value() {
-            let snd_evaled = self.snd.eval_once()?;
-            Ok(Pair {
-                fst: self.fst,
-                snd: Box::new(snd_evaled),
-            }
-            .into())
-        } else {
-            Ok(self.into())
-        }
+use common::Eval;
+impl<'a> Eval<'a> for Pair {
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Error> {
+        let fst_val = self.fst.eval(_env)?;
+        let snd_val = self.snd.eval(_env)?;
+        Ok(Value::Pair {
+            fst: Box::new(fst_val),
+            snd: Box::new(snd_val),
+        })
+    }
+}
+impl<'a> Eval<'a> for Fst {
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Error> {
+        let pair_val = self.term.clone().eval(_env)?;
+        let (fst, _) = pair_val
+            .into_pair()
+            .map_err(|knd| Error::eval(knd, &self))?;
+        Ok(fst)
     }
 }
 
-impl Eval for Fst {
-    fn eval_once(self) -> Result<Term, Error> {
-        //E-Fst
-        if !self.term.is_value() {
-            let term_evaled = self.term.eval_once()?;
-            Ok(Fst {
-                term: Box::new(term_evaled),
-            }
-            .into())
-            //E-FstBeta
-        } else {
-            let pair = self.term.as_pair().map_err(|knd| Error::eval(knd, &self))?;
-            Ok(*pair.fst)
-        }
-    }
-}
-
-impl Eval for Snd {
-    fn eval_once(self) -> Result<Term, Error> {
-        //E-Snd
-        if !self.term.is_value() {
-            let term_evaled = self.term.eval_once()?;
-            Ok(Snd {
-                term: Box::new(term_evaled),
-            }
-            .into())
-        //E-SndBeta
-        } else {
-            let pair = self.term.as_pair().map_err(|knd| Error::eval(knd, &self))?;
-            Ok(*pair.snd)
-        }
+impl<'a> Eval<'a> for Snd {
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Error> {
+        let pair_val = self.term.clone().eval(_env)?;
+        let (_, snd) = pair_val
+            .into_pair()
+            .map_err(|knd| Error::check(knd, &self))?;
+        Ok(snd)
     }
 }

@@ -1,34 +1,38 @@
-use super::Eval;
+use super::Value;
 use crate::{
     errors::{Error, ErrorKind},
     terms::Term,
 };
+use common::Eval;
 
-impl Eval for Term {
-    fn eval_once(self) -> Result<Term, Error> {
+impl<'a> Eval<'a> for Term {
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Error> {
         match self {
             Term::Var(v) => Err(Error::eval(ErrorKind::FreeVar(v.clone()), &Term::Var(v))),
-            Term::Lambda(lam) => lam.eval_once(),
-            Term::App(app) => app.eval_once(),
-            Term::Unit => Ok(Term::Unit),
-            Term::Fold(fold) => fold.eval_once(),
-            Term::Unfold(unfold) => unfold.eval_once(),
-            Term::Variant(var) => var.eval_once(),
-            Term::VariantCase(case) => case.eval_once(),
-            Term::Pair(p) => p.eval_once(),
-            Term::Fst(fst) => fst.eval_once(),
-            Term::Snd(snd) => snd.eval_once(),
-            Term::Zero(zero) => zero.eval_once(),
-            Term::Succ(succ) => succ.eval_once(),
-            Term::Pred(pred) => pred.eval_once(),
-            Term::IsZero(isz) => isz.eval_once(),
-            Term::True(tru) => tru.eval_once(),
-            Term::False(fls) => fls.eval_once(),
-            Term::If(ift) => ift.eval_once(),
-            Term::Fix(fix) => fix.eval_once(),
-            Term::Let(lt) => lt.eval_once(),
-            Term::Record(rec) => rec.eval_once(),
-            Term::RecordProj(proj) => proj.eval_once(),
+            Term::Lambda(lam) => lam.eval(_env),
+            Term::App(app) => app.eval(_env),
+            Term::Unit => Ok(Value::Unit),
+            Term::Fold(fold) => fold.eval(_env),
+            Term::Unfold(unfold) => unfold.eval(_env),
+            Term::Variant(var) => var.eval(_env),
+            Term::VariantCase(case) => case.eval(_env),
+            Term::Pair(p) => p.eval(_env),
+            Term::Fst(fst) => fst.eval(_env),
+            Term::Snd(snd) => snd.eval(_env),
+            Term::Zero(zero) => zero.eval(_env),
+            Term::Succ(succ) => succ.eval(_env),
+            Term::Pred(pred) => pred.eval(_env),
+            Term::IsZero(isz) => isz.eval(_env),
+            Term::True(tru) => tru.eval(_env),
+            Term::False(fls) => fls.eval(_env),
+            Term::If(ift) => ift.eval(_env),
+            Term::Fix(fix) => fix.eval(_env),
+            Term::Let(lt) => lt.eval(_env),
+            Term::Record(rec) => rec.eval(_env),
+            Term::RecordProj(proj) => proj.eval(_env),
         }
     }
 }

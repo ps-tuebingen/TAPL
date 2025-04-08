@@ -1,44 +1,39 @@
-use super::Eval;
+use super::Value;
 use crate::{
     errors::{Error, ErrorKind},
-    terms::{Record, RecordProj, Term},
-    traits::is_value::IsValue,
+    terms::{Record, RecordProj},
 };
+use common::Eval;
+use std::collections::HashMap;
 
-impl Eval for Record {
-    fn eval_once(self) -> Result<Term, Error> {
-        let mut recs = self.records.clone();
-        for (label, term) in self.records.iter() {
-            if !term.is_value() {
-                let term_evaled = term.clone().eval_once()?;
-                recs.insert(label.clone(), term_evaled);
-            }
+impl<'a> Eval<'a> for Record {
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Error> {
+        let mut vals = HashMap::new();
+        for (lb, term) in self.records {
+            let val = term.eval(_env)?;
+            vals.insert(lb, val);
         }
-        Ok(Record { records: recs }.into())
+        Ok(Value::Record(vals))
     }
 }
-
-impl Eval for RecordProj {
-    fn eval_once(self) -> Result<Term, Error> {
-        if self.record.is_value() {
-            let rec = self
-                .record
-                .as_record()
-                .map_err(|knd| Error::eval(knd, &self))?;
-            rec.records
-                .get(&self.label)
-                .ok_or(Error::eval(
-                    ErrorKind::UndefinedLabel(self.label.clone()),
-                    &self,
-                ))
-                .cloned()
-        } else {
-            let rec_evaled = self.record.eval_once()?;
-            Ok(RecordProj {
-                record: Box::new(rec_evaled),
-                label: self.label,
-            }
-            .into())
-        }
+impl<'a> Eval<'a> for RecordProj {
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Error> {
+        let rec_val = self.record.clone().eval(_env)?;
+        let records = rec_val
+            .into_record()
+            .map_err(|knd| Error::eval(knd, &self))?;
+        records
+            .get(&self.label)
+            .ok_or(Error::eval(
+                ErrorKind::UndefinedLabel(self.label.clone()),
+                &self,
+            ))
+            .cloned()
     }
 }

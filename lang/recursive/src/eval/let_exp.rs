@@ -1,20 +1,13 @@
-use super::Eval;
-use crate::{
-    errors::Error,
-    terms::{Let, Term},
-    traits::{is_value::IsValue, subst::SubstTerm},
-};
+use super::Value;
+use crate::{errors::Error, terms::Let, traits::subst::SubstTerm};
+use common::Eval;
 
-impl Eval for Let {
-    fn eval_once(self) -> Result<Term, Error> {
-        if self.bound_term.is_value() {
-            Ok(self
-                .in_term
-                .clone()
-                .subst(self.var, *self.bound_term.clone()))
-        } else {
-            let bound_evaled = self.bound_term.eval_once()?;
-            Ok(Let::new(&self.var, bound_evaled, *self.in_term.clone()).into())
-        }
+impl<'a> Eval<'a> for Let {
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Error> {
+        let bound_val = self.bound_term.eval(_env)?;
+        self.in_term.subst(self.var, bound_val.into()).eval(_env)
     }
 }

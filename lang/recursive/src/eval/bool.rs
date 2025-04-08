@@ -1,44 +1,41 @@
-use super::Eval;
+use super::Value;
 use crate::{
     errors::{Error, ErrorKind},
-    terms::{False, If, Term, True},
-    traits::is_value::IsValue,
+    terms::{False, If, True},
 };
+use common::Eval;
 
-impl Eval for True {
-    fn eval_once(self) -> Result<Term, Error> {
-        Ok(self.into())
+impl<'a> Eval<'a> for True {
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Error> {
+        Ok(Value::True)
     }
 }
 
-impl Eval for False {
-    fn eval_once(self) -> Result<Term, Error> {
-        Ok(self.into())
+impl<'a> Eval<'a> for False {
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Error> {
+        Ok(Value::False)
     }
 }
 
-impl Eval for If {
-    fn eval_once(self) -> Result<Term, Error> {
-        if !self.ifc.is_value() {
-            let ifc_evaled = self.ifc.eval_once()?;
-            Ok(If {
-                ifc: Box::new(ifc_evaled),
-                thenc: self.thenc,
-                elsec: self.elsec,
-            }
-            .into())
-        } else {
-            match *self.ifc {
-                Term::True(_) => Ok(*self.thenc),
-                Term::False(_) => Ok(*self.elsec),
-                _ => Err(Error::eval(
-                    ErrorKind::UnexpectedTerm {
-                        found: *self.ifc.clone(),
-                        expected: "Boolean Constant".into(),
-                    },
-                    &self,
-                )),
-            }
+impl<'a> Eval<'a> for If {
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Error> {
+        let cond_val = self.ifc.clone().eval(_env)?;
+        match cond_val {
+            Value::True => self.thenc.clone().eval(_env),
+            Value::False => self.elsec.clone().eval(_env),
+            _ => Err(Error::eval(
+                ErrorKind::value(cond_val, "Boolean Value"),
+                &self,
+            )),
         }
     }
 }
