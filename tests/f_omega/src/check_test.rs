@@ -1,4 +1,5 @@
-use f_omega::{check::CheckType, parser::parse};
+use common::Typecheck;
+use f_omega::parser::parse;
 use test_common::testsuite::{Test, TestResult};
 
 pub struct TypecheckTest {
@@ -27,7 +28,7 @@ impl Test for TypecheckTest {
             Ok(p) => p,
             Err(err) => return TestResult::from_err(err),
         };
-        let checked = match parsed.check_type(&mut Default::default()) {
+        let checked = match parsed.check(&mut Default::default()) {
             Ok(ty) => ty,
             Err(err) => return TestResult::from_err(err),
         };

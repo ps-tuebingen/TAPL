@@ -152,14 +152,12 @@ pub fn pair_adt() -> Term {
 #[cfg(test)]
 mod pair_tests {
     use super::{pair_adt, pair_sig};
-    use crate::{
-        check::{CheckKind, CheckType},
-        syntax::kinds::Kind,
-    };
+    use crate::syntax::kinds::Kind;
+    use common::Typecheck;
 
     #[test]
     fn check_sig() {
-        let result = pair_sig().check_kind(&mut Default::default()).unwrap();
+        let result = pair_sig().check(&mut Default::default()).unwrap();
         let expected = Kind::Star;
         assert_eq!(result, expected)
     }
@@ -167,7 +165,7 @@ mod pair_tests {
     #[test]
     fn check_pair() {
         let result = pair_adt()
-            .check_type(&mut Default::default())
+            .check(&mut Default::default())
             .map_err(|err| err.to_string())
             .unwrap();
         let expected = pair_sig();

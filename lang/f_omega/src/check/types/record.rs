@@ -1,13 +1,17 @@
 use crate::{
-    check::{CheckKind, Env},
+    check::Env,
     errors::Error,
     syntax::{kinds::Kind, types::RecTy},
 };
+use common::Typecheck;
 
-impl CheckKind for RecTy {
-    fn check_kind(&self, env: &mut Env) -> Result<Kind, Error> {
+impl<'a> Typecheck<'a> for RecTy {
+    type Type = Kind;
+    type Err = Error;
+    type Env = &'a Env;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         for (_, ty) in self.records.iter() {
-            let ty_kind = ty.check_kind(&mut env.clone())?;
+            let ty_kind = ty.check(&mut env.clone())?;
             ty_kind
                 .check_equal(&Kind::Star)
                 .map_err(|knd| Error::kinding(knd, self))?;

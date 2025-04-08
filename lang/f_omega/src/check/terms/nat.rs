@@ -1,4 +1,4 @@
-use super::{CheckType, Env};
+use super::Env;
 use crate::{
     errors::{Error, ErrorKind},
     syntax::{
@@ -6,16 +6,23 @@ use crate::{
         types::Type,
     },
 };
+use common::Typecheck;
 
-impl CheckType for Zero {
-    fn check_type(&self, _: &mut Env) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for Zero {
+    type Type = Type;
+    type Err = Error;
+    type Env = &'a mut Env;
+    fn check(&self, _: Self::Env) -> Result<Self::Type, Self::Err> {
         Ok(Type::Nat)
     }
 }
 
-impl CheckType for Succ {
-    fn check_type(&self, env: &mut Env) -> Result<Type, Error> {
-        let inner = self.term.check_type(env)?;
+impl<'a> Typecheck<'a> for Succ {
+    type Type = Type;
+    type Err = Error;
+    type Env = &'a mut Env;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
+        let inner = self.term.check(env)?;
         if inner != Type::Nat {
             return Err(Error::check(
                 ErrorKind::TypeMismatch {
@@ -29,9 +36,12 @@ impl CheckType for Succ {
     }
 }
 
-impl CheckType for Pred {
-    fn check_type(&self, env: &mut Env) -> Result<Type, Error> {
-        let inner = self.term.check_type(env)?;
+impl<'a> Typecheck<'a> for Pred {
+    type Type = Type;
+    type Err = Error;
+    type Env = &'a mut Env;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
+        let inner = self.term.check(env)?;
         if inner != Type::Nat {
             return Err(Error::check(
                 ErrorKind::TypeMismatch {
@@ -45,9 +55,12 @@ impl CheckType for Pred {
     }
 }
 
-impl CheckType for IsZero {
-    fn check_type(&self, env: &mut Env) -> Result<Type, Error> {
-        let inner = self.term.check_type(env)?;
+impl<'a> Typecheck<'a> for IsZero {
+    type Type = Type;
+    type Err = Error;
+    type Env = &'a mut Env;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
+        let inner = self.term.check(env)?;
         if inner != Type::Nat {
             return Err(Error::check(
                 ErrorKind::TypeMismatch {

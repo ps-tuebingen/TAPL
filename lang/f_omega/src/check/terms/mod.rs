@@ -1,8 +1,9 @@
-use super::{CheckType, Env};
+use super::Env;
 use crate::{
     errors::Error,
     syntax::{terms::Term, types::Type},
 };
+use common::Typecheck;
 
 pub mod app;
 pub mod bool;
@@ -16,27 +17,31 @@ pub mod tyapp;
 pub mod tylambda;
 pub mod unpack;
 
-impl CheckType for Term {
-    fn check_type(&self, env: &mut Env) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for Term {
+    type Type = Type;
+    type Err = Error;
+    type Env = &'a mut Env;
+
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         match self {
             Term::Var(v) => env.get_var(v).map_err(|knd| Error::check(knd, &v.as_str())),
-            Term::Lambda(lam) => lam.check_type(env),
-            Term::App(app) => app.check_type(env),
-            Term::TyLambda(lam) => lam.check_type(env),
-            Term::TyApp(app) => app.check_type(env),
-            Term::Pack(pack) => pack.check_type(env),
-            Term::Unpack(unpack) => unpack.check_type(env),
-            Term::Record(rec) => rec.check_type(env),
-            Term::RecordProj(proj) => proj.check_type(env),
-            Term::True(tru) => tru.check_type(env),
-            Term::False(fls) => fls.check_type(env),
-            Term::If(ift) => ift.check_type(env),
+            Term::Lambda(lam) => lam.check(env),
+            Term::App(app) => app.check(env),
+            Term::TyLambda(lam) => lam.check(env),
+            Term::TyApp(app) => app.check(env),
+            Term::Pack(pack) => pack.check(env),
+            Term::Unpack(unpack) => unpack.check(env),
+            Term::Record(rec) => rec.check(env),
+            Term::RecordProj(proj) => proj.check(env),
+            Term::True(tru) => tru.check(env),
+            Term::False(fls) => fls.check(env),
+            Term::If(ift) => ift.check(env),
             Term::Unit => Ok(Type::Unit),
-            Term::Fix(fix) => fix.check_type(env),
-            Term::Zero(z) => z.check_type(env),
-            Term::Succ(s) => s.check_type(env),
-            Term::Pred(p) => p.check_type(env),
-            Term::IsZero(isz) => isz.check_type(env),
+            Term::Fix(fix) => fix.check(env),
+            Term::Zero(z) => z.check(env),
+            Term::Succ(s) => s.check(env),
+            Term::Pred(p) => p.check(env),
+            Term::IsZero(isz) => isz.check(env),
         }
     }
 }

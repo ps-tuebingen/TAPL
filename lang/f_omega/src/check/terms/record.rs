@@ -1,18 +1,22 @@
 use crate::{
-    check::{CheckType, Env},
+    check::Env,
     errors::Error,
     syntax::{
         terms::Record,
         types::{RecTy, Type},
     },
 };
+use common::Typecheck;
 use std::collections::HashMap;
 
-impl CheckType for Record {
-    fn check_type(&self, env: &mut Env) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for Record {
+    type Type = Type;
+    type Err = Error;
+    type Env = &'a mut Env;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let mut recs = HashMap::new();
         for (label, t) in self.records.iter() {
-            let t_ty = t.check_type(&mut env.clone())?;
+            let t_ty = t.check(&mut env.clone())?;
             recs.insert(label.clone(), t_ty);
         }
         Ok(RecTy { records: recs }.into())

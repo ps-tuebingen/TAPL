@@ -1,5 +1,5 @@
 use crate::{
-    errors::{Error, ErrorKind},
+    errors::ErrorKind,
     syntax::{
         kinds::Kind,
         terms::Var,
@@ -39,12 +39,4 @@ impl Env {
     pub fn add_tyvar(&mut self, v: &TypeVar, kind: &Kind) {
         self.ty_vars.insert(v.clone(), kind.clone());
     }
-}
-
-pub trait CheckKind {
-    fn check_kind(&self, env: &mut Env) -> Result<Kind, Error>;
-}
-
-pub trait CheckType {
-    fn check_type(&self, env: &mut Env) -> Result<Type, Error>;
 }

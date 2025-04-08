@@ -1,4 +1,4 @@
-use super::{CheckType, Env};
+use super::Env;
 use crate::{
     errors::Error,
     syntax::{
@@ -6,11 +6,15 @@ use crate::{
         types::{Type, Universal},
     },
 };
+use common::Typecheck;
 
-impl CheckType for TyLambda {
-    fn check_type(&self, env: &mut Env) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for TyLambda {
+    type Type = Type;
+    type Err = Error;
+    type Env = &'a mut Env;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         env.add_tyvar(&self.var, &self.annot);
-        let body_ty = self.body.check_type(env)?;
+        let body_ty = self.body.check(env)?;
         Ok(Universal {
             var: self.var.clone(),
             kind: self.annot.clone(),

@@ -1,25 +1,35 @@
-use super::{CheckType, Env};
+use super::Env;
 use crate::errors::{Error, ErrorKind};
 use crate::syntax::{
     terms::{False, If, True},
     types::Type,
 };
+use common::Typecheck;
 
-impl CheckType for True {
-    fn check_type(&self, _: &mut Env) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for True {
+    type Type = Type;
+    type Err = Error;
+    type Env = &'a mut Env;
+    fn check(&self, _: Self::Env) -> Result<Self::Type, Self::Err> {
         Ok(Type::Bool)
     }
 }
 
-impl CheckType for False {
-    fn check_type(&self, _: &mut Env) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for False {
+    type Type = Type;
+    type Err = Error;
+    type Env = &'a mut Env;
+    fn check(&self, _: Self::Env) -> Result<Self::Type, Self::Err> {
         Ok(Type::Bool)
     }
 }
 
-impl CheckType for If {
-    fn check_type(&self, env: &mut Env) -> Result<Type, Error> {
-        let cond_ty = self.ifc.check_type(&mut env.clone())?;
+impl<'a> Typecheck<'a> for If {
+    type Type = Type;
+    type Err = Error;
+    type Env = &'a mut Env;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
+        let cond_ty = self.ifc.check(&mut env.clone())?;
         if cond_ty != Type::Bool {
             return Err(Error::check(
                 ErrorKind::TypeMismatch {
@@ -30,8 +40,8 @@ impl CheckType for If {
             ));
         }
 
-        let then_ty = self.thent.check_type(&mut env.clone())?;
-        let else_ty = self.elset.check_type(env)?;
+        let then_ty = self.thent.check(&mut env.clone())?;
+        let else_ty = self.elset.check(env)?;
         then_ty
             .check_equal(&else_ty)
             .map_err(|knd| Error::check(knd, self))?;
