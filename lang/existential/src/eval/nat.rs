@@ -1,18 +1,25 @@
-use super::{Eval, Value};
+use super::Value;
 use crate::{
     errors::{Error, ErrorKind},
     terms::{IsZero, Pred, Succ, Zero},
 };
+use common::Eval;
 
-impl Eval for Zero {
-    fn eval(self) -> Result<Value, Error> {
+impl Eval<'_> for Zero {
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, _env: Self::Env) -> Result<Value, Error> {
         Ok(Value::Zero)
     }
 }
 
-impl Eval for Succ {
-    fn eval(self) -> Result<Value, Error> {
-        let t_evaled = self.0.clone().eval()?;
+impl Eval<'_> for Succ {
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, _env: Self::Env) -> Result<Value, Error> {
+        let t_evaled = self.0.clone().eval(_env)?;
         match t_evaled {
             Value::Zero => Ok(Value::Succ(Box::new(Value::Zero))),
             Value::Succ(v) => Ok(Value::Succ(Box::new(Value::Succ(v)))),
@@ -25,9 +32,12 @@ impl Eval for Succ {
     }
 }
 
-impl Eval for Pred {
-    fn eval(self) -> Result<Value, Error> {
-        let t_evaled = self.0.clone().eval()?;
+impl Eval<'_> for Pred {
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, _env: Self::Env) -> Result<Value, Error> {
+        let t_evaled = self.0.clone().eval(_env)?;
         match t_evaled {
             Value::Zero => Ok(Value::Pred(Box::new(Value::Zero))),
             Value::Succ(v) => Ok(*v),
@@ -40,9 +50,12 @@ impl Eval for Pred {
     }
 }
 
-impl Eval for IsZero {
-    fn eval(self) -> Result<Value, Error> {
-        let val = self.0.clone().eval()?;
+impl Eval<'_> for IsZero {
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, _env: Self::Env) -> Result<Value, Error> {
+        let val = self.0.clone().eval(_env)?;
         match val {
             Value::Zero => Ok(Value::True),
             Value::Succ(_) => Ok(Value::False),

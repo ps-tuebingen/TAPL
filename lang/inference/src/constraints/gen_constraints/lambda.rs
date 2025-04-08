@@ -78,10 +78,7 @@ mod lam_tests {
                 Box::new("X1".to_owned().into()),
                 Box::new("X1".to_owned().into()),
             ),
-            Type::Fun(
-                Box::new(Type::Nat),
-                Box::new(Type::Var("X0".to_owned())),
-            ),
+            Type::Fun(Box::new(Type::Nat), Box::new(Type::Var("X0".to_owned()))),
         );
         assert_eq!(result, expected);
         assert_eq!(st, new_st)

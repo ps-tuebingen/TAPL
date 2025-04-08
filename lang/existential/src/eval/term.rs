@@ -1,25 +1,32 @@
-use super::{Eval, Value};
-use crate::{errors::Error, terms::Term};
+use super::Value;
+use crate::{
+    errors::{Error, ErrorKind},
+    terms::Term,
+};
+use common::Eval;
 
-impl Eval for Term {
-    fn eval(self) -> Result<Value, Error> {
+impl Eval<'_> for Term {
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, _env: Self::Env) -> Result<Value, Error> {
         match self {
-            Term::Var(var) => var.eval(),
+            Term::Var(ref var) => Err(Error::eval(ErrorKind::FreeVar(var.clone()), &self)),
             Term::Unit => Ok(Value::Unit),
-            Term::Lambda(lam) => lam.eval(),
-            Term::App(app) => app.eval(),
-            Term::Pack(pack) => pack.eval(),
-            Term::Unpack(unpack) => unpack.eval(),
-            Term::Record(rec) => rec.eval(),
-            Term::RecordProj(proj) => proj.eval(),
-            Term::Zero(zero) => zero.eval(),
-            Term::Succ(succ) => succ.eval(),
-            Term::Pred(pred) => pred.eval(),
-            Term::IsZero(isz) => isz.eval(),
-            Term::True(tru) => tru.eval(),
-            Term::False(fls) => fls.eval(),
-            Term::If(ift) => ift.eval(),
-            Term::Fix(fix) => fix.eval(),
+            Term::Lambda(lam) => lam.eval(_env),
+            Term::App(app) => app.eval(_env),
+            Term::Pack(pack) => pack.eval(_env),
+            Term::Unpack(unpack) => unpack.eval(_env),
+            Term::Record(rec) => rec.eval(_env),
+            Term::RecordProj(proj) => proj.eval(_env),
+            Term::Zero(zero) => zero.eval(_env),
+            Term::Succ(succ) => succ.eval(_env),
+            Term::Pred(pred) => pred.eval(_env),
+            Term::IsZero(isz) => isz.eval(_env),
+            Term::True(tru) => tru.eval(_env),
+            Term::False(fls) => fls.eval(_env),
+            Term::If(ift) => ift.eval(_env),
+            Term::Fix(fix) => fix.eval(_env),
         }
     }
 }
