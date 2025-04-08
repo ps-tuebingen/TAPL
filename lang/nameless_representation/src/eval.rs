@@ -6,12 +6,12 @@ impl Eval for Term {
     type Value = Term;
     type Error = Infallible;
     type Env = ();
-    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Self::Error> {
+    fn eval(self, _env: &mut Self::Env) -> Result<Self::Value, Self::Error> {
         let evaled = eval_once(self.clone());
         if evaled == self {
             Ok(evaled)
         } else {
-            evaled.eval(env)
+            evaled.eval(_env)
         }
     }
 }

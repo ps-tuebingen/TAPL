@@ -11,7 +11,9 @@ use cbn::eval_once_cbn;
 use cbv::eval_once_cbv;
 use full_beta::eval_once_full_beta;
 
+#[derive(Default)]
 pub enum EvalOrder {
+    #[default]
     CBV,
     CBN,
     FullBeta,
@@ -24,12 +26,6 @@ impl EvalOrder {
             EvalOrder::CBN => eval_once_cbn,
             EvalOrder::FullBeta => eval_once_full_beta,
         }
-    }
-}
-
-impl Default for EvalOrder {
-    fn default() -> EvalOrder {
-        EvalOrder::CBV
     }
 }
 

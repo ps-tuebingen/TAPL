@@ -47,13 +47,13 @@ impl Eval for Term {
     type Value = Value;
     type Error = String;
     type Env = ();
-    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Self::Error> {
+    fn eval(self, _env: &mut Self::Env) -> Result<Self::Value, Self::Error> {
         match self {
             Term::True => Ok(Value::True),
             Term::False => Ok(Value::False),
             Term::Zero => Ok(Value::Numerical(0)),
             Term::IsZero(t) => {
-                let val = t.eval(env)?;
+                let val = t.eval(_env)?;
                 let num = val.into_numerical()?;
                 if num == 0 {
                     Ok(Value::True)
@@ -62,20 +62,20 @@ impl Eval for Term {
                 }
             }
             Term::Succ(t) => {
-                let val = t.eval(env)?;
+                let val = t.eval(_env)?;
                 let num = val.into_numerical()?;
                 Ok(Value::Numerical(num + 1))
             }
             Term::Pred(t) => {
-                let val = t.eval(env)?;
+                let val = t.eval(_env)?;
                 let num = val.into_numerical()?;
                 Ok(Value::Numerical(num - 1))
             }
             Term::If(ifc, thent, elset) => {
-                let val = ifc.eval(env)?;
+                let val = ifc.eval(_env)?;
                 match val {
-                    Value::True => thent.eval(env),
-                    Value::False => elset.eval(env),
+                    Value::True => thent.eval(_env),
+                    Value::False => elset.eval(_env),
                     _ => Err("If Condition needs to be boolean".to_owned()),
                 }
             }
