@@ -8,7 +8,6 @@ use std::collections::HashMap;
 
 pub mod kind;
 pub mod types;
-pub use kind::kind_ty;
 
 #[derive(Clone, Default)]
 pub struct Env {
