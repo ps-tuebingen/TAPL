@@ -4,9 +4,9 @@ use common::Typecheck;
 
 impl<'a> Typecheck<'a> for Fix {
     type Type = Type;
-    type Error = Error;
+    type Err = Error;
     type Env = &'a mut TypingEnv;
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let ty = self.term.check(env)?;
         if let Type::Fun(ty1, ty2) = ty {
             if *ty1 == *ty2 {

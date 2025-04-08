@@ -7,27 +7,27 @@ use common::Typecheck;
 
 impl<'a> Typecheck<'a> for True {
     type Type = Type;
-    type Error = Error;
+    type Err = Error;
     type Env = &'a mut TypingEnv;
-    fn check(&self, _: Self::Env) -> Result<Self::Type, Self::Error> {
+    fn check(&self, _: Self::Env) -> Result<Self::Type, Self::Err> {
         Ok(Type::Bool)
     }
 }
 
 impl<'a> Typecheck<'a> for False {
     type Type = Type;
-    type Error = Error;
+    type Err = Error;
     type Env = &'a mut TypingEnv;
-    fn check(&self, _: Self::Env) -> Result<Self::Type, Self::Error> {
+    fn check(&self, _: Self::Env) -> Result<Self::Type, Self::Err> {
         Ok(Type::Bool)
     }
 }
 
 impl<'a> Typecheck<'a> for If {
     type Type = Type;
-    type Error = Error;
+    type Err = Error;
     type Env = &'a mut TypingEnv;
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let ifc_ty = self.ifc.check(&mut env.clone())?;
         if let Type::Bool = ifc_ty {
             Ok(())

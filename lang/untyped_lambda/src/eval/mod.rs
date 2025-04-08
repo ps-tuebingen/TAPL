@@ -35,10 +35,10 @@ pub fn is_value(t: &Term) -> bool {
 
 impl Eval<'_> for Term {
     type Value = Term;
-    type Error = Infallible;
+    type Err = Infallible;
     type Env = EvalOrder;
 
-    fn eval(self, eo: EvalOrder) -> Result<Self::Value, Self::Error> {
+    fn eval(self, eo: EvalOrder) -> Result<Self::Value, Self::Err> {
         let eval_once = eo.get_eval_fun();
         let evaled = eval_once(self.clone());
         if self == evaled {

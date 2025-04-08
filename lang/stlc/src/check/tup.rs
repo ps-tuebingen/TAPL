@@ -7,9 +7,9 @@ use common::Typecheck;
 
 impl<'a> Typecheck<'a> for Tup {
     type Type = Type;
-    type Error = Error;
+    type Err = Error;
     type Env = &'a mut TypingEnv;
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let mut tys = vec![];
         for term in self.terms.iter() {
             let ty = term.check(&mut env.clone())?;
@@ -21,9 +21,9 @@ impl<'a> Typecheck<'a> for Tup {
 
 impl<'a> Typecheck<'a> for Proj {
     type Type = Type;
-    type Error = Error;
+    type Err = Error;
     type Env = &'a mut TypingEnv;
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let tup_ty = self.tup.check(env)?;
         if let Type::Tup(tys) = tup_ty {
             tys.get(self.ind)

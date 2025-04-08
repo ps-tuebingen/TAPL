@@ -4,9 +4,9 @@ use common::Eval;
 
 impl Eval<'_> for TryWithVal {
     type Value = Value;
-    type Error = Error;
+    type Err = Error;
     type Env = ();
-    fn eval(self, env: Self::Env) -> Result<Value, Error> {
+    fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
         let term_evaled = self.term.eval(env);
         if let Err(Error::ExceptionVal(val)) = term_evaled {
             App {

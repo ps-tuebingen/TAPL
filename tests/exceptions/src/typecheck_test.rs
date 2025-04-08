@@ -1,4 +1,5 @@
-use exceptions::{check::Check, parser::parse};
+use common::Typecheck;
+use exceptions::parser::parse;
 use test_common::testsuite::{Test, TestResult};
 
 pub struct TypecheckTest {

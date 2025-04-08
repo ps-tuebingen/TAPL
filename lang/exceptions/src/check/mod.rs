@@ -4,6 +4,7 @@ use super::{
     },
     types::Type,
 };
+use common::Typecheck;
 use std::collections::HashMap;
 
 pub mod errors;
@@ -11,14 +12,13 @@ use errors::Error;
 
 pub type Env = HashMap<Var, Type>;
 
-pub trait Check {
-    fn check(self, env: &mut Env) -> Result<Type, Error>;
-}
-
-impl Check for Term {
-    fn check(self, env: &mut Env) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for Term {
+    type Type = Type;
+    type Err = Error;
+    type Env = &'a mut Env;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         match self {
-            Term::Var(v) => env.get(&v).ok_or(Error::FreeVar(v)).cloned(),
+            Term::Var(v) => env.get(v).ok_or(Error::FreeVar(v.clone())).cloned(),
             Term::Const(_) => Ok(Type::Nat),
             Term::True => Ok(Type::Bool),
             Term::False => Ok(Type::Bool),
@@ -37,19 +37,25 @@ impl Check for Term {
     }
 }
 
-impl Check for Lambda {
-    fn check(self, env: &mut Env) -> Result<Type, Error> {
-        env.insert(self.var, self.annot.clone());
+impl<'a> Typecheck<'a> for Lambda {
+    type Type = Type;
+    type Err = Error;
+    type Env = &'a mut Env;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
+        env.insert(self.var.clone(), self.annot.clone());
         let body_ty = self.body.check(env)?;
         Ok(Type::Fun {
-            from: Box::new(self.annot),
+            from: Box::new(self.annot.clone()),
             to: Box::new(body_ty),
         })
     }
 }
 
-impl Check for App {
-    fn check(self, env: &mut Env) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for App {
+    type Type = Type;
+    type Err = Error;
+    type Env = &'a mut Env;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let fun_ty = self.fun.check(&mut env.clone())?;
         if let Type::Fun { from, to } = fun_ty {
             let arg_ty = self.arg.check(env)?;
@@ -67,14 +73,20 @@ impl Check for App {
     }
 }
 
-impl Check for ErrT {
-    fn check(self, _: &mut Env) -> Result<Type, Error> {
-        Ok(self.ty)
+impl<'a> Typecheck<'a> for ErrT {
+    type Type = Type;
+    type Err = Error;
+    type Env = &'a mut Env;
+    fn check(&self, _: Self::Env) -> Result<Self::Type, Self::Err> {
+        Ok(self.ty.clone())
     }
 }
 
-impl Check for Try {
-    fn check(self, env: &mut Env) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for Try {
+    type Type = Type;
+    type Err = Error;
+    type Env = &'a mut Env;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let term_ty = self.term.check(&mut env.clone())?;
         let handler_ty = self.handler.check(env)?;
         if term_ty == handler_ty {
@@ -88,22 +100,28 @@ impl Check for Try {
     }
 }
 
-impl Check for Raise {
-    fn check(self, env: &mut Env) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for Raise {
+    type Type = Type;
+    type Err = Error;
+    type Env = &'a mut Env;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let err_ty = self.exception.check(env)?;
         if err_ty == self.ex_ty {
-            Ok(self.cont_ty)
+            Ok(self.cont_ty.clone())
         } else {
             Err(Error::TypeMismatch {
                 found: err_ty,
-                expected: self.ex_ty,
+                expected: self.ex_ty.clone(),
             })
         }
     }
 }
 
-impl Check for TryWithVal {
-    fn check(self, env: &mut Env) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for TryWithVal {
+    type Type = Type;
+    type Err = Error;
+    type Env = &'a mut Env;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let t_ty = self.term.check(&mut env.clone())?;
         let handler_ty = self.handler.check(env)?;
         if let Type::Fun { from: _, to } = handler_ty {
@@ -121,14 +139,20 @@ impl Check for TryWithVal {
     }
 }
 
-impl Check for Unit {
-    fn check(self, _: &mut Env) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for Unit {
+    type Type = Type;
+    type Err = Error;
+    type Env = &'a mut Env;
+    fn check(&self, _: Self::Env) -> Result<Self::Type, Self::Err> {
         Ok(Type::Unit)
     }
 }
 
-impl Check for Succ {
-    fn check(self, env: &mut Env) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for Succ {
+    type Type = Type;
+    type Err = Error;
+    type Env = &'a mut Env;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let inner_ty = self.term.check(env)?;
         if inner_ty == Type::Nat {
             Ok(Type::Nat)
@@ -141,8 +165,11 @@ impl Check for Succ {
     }
 }
 
-impl Check for Pred {
-    fn check(self, env: &mut Env) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for Pred {
+    type Type = Type;
+    type Err = Error;
+    type Env = &'a mut Env;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let inner_ty = self.term.check(env)?;
         if inner_ty == Type::Nat {
             Ok(Type::Nat)
@@ -155,8 +182,11 @@ impl Check for Pred {
     }
 }
 
-impl Check for IsZero {
-    fn check(self, env: &mut Env) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for IsZero {
+    type Type = Type;
+    type Err = Error;
+    type Env = &'a mut Env;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let inner_ty = self.term.check(env)?;
         if inner_ty == Type::Nat {
             Ok(Type::Bool)
@@ -169,8 +199,11 @@ impl Check for IsZero {
     }
 }
 
-impl Check for If {
-    fn check(self, env: &mut Env) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for If {
+    type Type = Type;
+    type Err = Error;
+    type Env = &'a mut Env;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let if_ty = self.ift.check(&mut env.clone())?;
         if if_ty != Type::Bool {
             return Err(Error::TypeMismatch {
@@ -193,8 +226,9 @@ impl Check for If {
 
 #[cfg(test)]
 mod check_tests {
-    use super::{Check, Type};
+    use super::Type;
     use crate::syntax::term_tests::{example_term1, example_term2};
+    use common::Typecheck;
 
     #[test]
     fn check1() {

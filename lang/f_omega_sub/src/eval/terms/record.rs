@@ -6,9 +6,9 @@ use std::collections::HashMap;
 
 impl<'a> Eval<'a> for Record {
     type Value = Value;
-    type Error = Error;
+    type Err = Error;
     type Env = &'a mut Env;
-    fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Error> {
+    fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
         let mut vals = HashMap::new();
         for (label, term) in self.records {
             let val = term.eval(env)?;

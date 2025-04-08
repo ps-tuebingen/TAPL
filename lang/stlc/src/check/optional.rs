@@ -7,27 +7,27 @@ use common::Typecheck;
 
 impl<'a> Typecheck<'a> for Nothing {
     type Type = Type;
-    type Error = Error;
+    type Err = Error;
     type Env = &'a mut TypingEnv;
-    fn check(&self, _: Self::Env) -> Result<Self::Type, Self::Error> {
+    fn check(&self, _: Self::Env) -> Result<Self::Type, Self::Err> {
         Ok(Type::Optional(Box::new(self.inner_type.clone())))
     }
 }
 
 impl<'a> Typecheck<'a> for Something {
     type Type = Type;
-    type Error = Error;
+    type Err = Error;
     type Env = &'a mut TypingEnv;
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let ty = self.term.check(env)?;
         Ok(Type::Optional(Box::new(ty)))
     }
 }
 impl<'a> Typecheck<'a> for SomeCase {
     type Type = Type;
-    type Error = Error;
+    type Err = Error;
     type Env = &'a mut TypingEnv;
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let bound_ty = self.bound_term.check(env)?;
         if let Type::Optional(ty) = bound_ty {
             let none_ty = self.none_rhs.check(&mut env.clone())?;

@@ -8,9 +8,9 @@ use common::Eval;
 
 impl Eval<'_> for LambdaSub {
     type Value = Value;
-    type Error = Error;
+    type Err = Error;
     type Env = ();
-    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Error> {
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Err> {
         Ok(Value::LambdaSub {
             var: self.var,
             sup_ty: self.sup_ty,
@@ -21,9 +21,9 @@ impl Eval<'_> for LambdaSub {
 
 impl Eval<'_> for TyApp {
     type Value = Value;
-    type Error = Error;
+    type Err = Error;
     type Env = ();
-    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Error> {
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Err> {
         let fun_val = self.term.clone().eval(_env)?;
         let (var, _, body) = fun_val.as_lamsub().map_err(|knd| Error::eval(knd, &self))?;
         body.subst_ty(&var, self.ty).eval(_env)

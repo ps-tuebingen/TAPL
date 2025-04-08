@@ -4,9 +4,9 @@ use common::Eval;
 
 impl Eval<'_> for Fix {
     type Value = Value;
-    type Error = Error;
+    type Err = Error;
     type Env = ();
-    fn eval(self, _env: Self::Env) -> Result<Value, Error> {
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Err> {
         let body_val = self.term.clone().eval(_env)?;
         let (var, _, body) = body_val
             .as_lambda()

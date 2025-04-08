@@ -7,9 +7,9 @@ use common::Eval;
 
 impl<'a> Eval<'a> for Succ {
     type Value = Value;
-    type Error = Error;
+    type Err = Error;
     type Env = &'a mut Env;
-    fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Error> {
+    fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
         let val = self.term.clone().eval(env)?;
         match val {
             Value::Zero => Ok(Value::Succ {

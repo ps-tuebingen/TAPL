@@ -4,9 +4,9 @@ use common::Eval;
 
 impl<'a> Eval<'a> for Pack {
     type Value = Value;
-    type Error = Error;
+    type Err = Error;
     type Env = &'a mut Env;
-    fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Error> {
+    fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
         let val = self.term.eval(env)?;
         Ok(Value::Pack {
             inner_ty: self.inner_ty,

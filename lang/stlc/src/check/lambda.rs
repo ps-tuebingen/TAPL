@@ -7,9 +7,9 @@ use common::Typecheck;
 
 impl<'a> Typecheck<'a> for Lambda {
     type Type = Type;
-    type Error = Error;
+    type Err = Error;
     type Env = &'a mut TypingEnv;
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         env.used_vars.insert(self.var.clone(), self.annot.clone());
         let ty = self.body.check(env)?;
         Ok(Type::Fun(Box::new(self.annot.clone()), Box::new(ty)))
@@ -18,9 +18,9 @@ impl<'a> Typecheck<'a> for Lambda {
 
 impl<'a> Typecheck<'a> for App {
     type Type = Type;
-    type Error = Error;
+    type Err = Error;
     type Env = &'a mut TypingEnv;
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let ty1 = self.fun.check(&mut env.clone())?;
         if let Type::Fun(ty11, ty12) = ty1 {
             let ty2 = self.arg.check(env)?;

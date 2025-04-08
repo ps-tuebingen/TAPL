@@ -3,9 +3,9 @@ use crate::syntax::Unit;
 
 impl Eval<'_> for Unit {
     type Value = Value;
-    type Error = Error;
+    type Err = Error;
     type Env = ();
-    fn eval(self, _: Self::Env) -> Result<Value, Error> {
+    fn eval(self, _: Self::Env) -> Result<Self::Value, Self::Err> {
         Ok(Value::Unit)
     }
 }

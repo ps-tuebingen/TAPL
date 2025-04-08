@@ -1,13 +1,13 @@
 pub trait Eval<'a> {
     type Value;
-    type Error;
+    type Err;
     type Env;
-    fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Error>;
+    fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err>;
 }
 
 pub trait Typecheck<'a> {
     type Type;
-    type Error;
+    type Err;
     type Env;
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error>;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err>;
 }

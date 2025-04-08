@@ -4,10 +4,10 @@ use common::Eval;
 
 impl Eval<'_> for Term {
     type Value = Value;
-    type Error = Error;
+    type Err = Error;
     type Env = ();
 
-    fn eval(self, env: Self::Env) -> Result<Value, Error> {
+    fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
         match self {
             Term::Var(v) => Err(Error::FreeVar(v)),
             Term::Lambda(lam) => lam.eval(env),

@@ -19,9 +19,9 @@ pub mod unpack;
 
 impl<'a> Eval<'a> for Term {
     type Value = Value;
-    type Error = Error;
+    type Err = Error;
     type Env = &'a mut Env;
-    fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Error> {
+    fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
         match self {
             Term::Var(ref v) => Err(Error::eval(ErrorKind::FreeVar(v.clone()), self)),
             Term::Lambda(lam) => lam.eval(env),

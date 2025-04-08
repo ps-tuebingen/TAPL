@@ -4,10 +4,10 @@ use common::Eval;
 
 impl Eval<'_> for If {
     type Value = Value;
-    type Error = Error;
+    type Err = Error;
     type Env = ();
 
-    fn eval(self, env: Self::Env) -> Result<Value, Error> {
+    fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
         let cond_val = self.ift.eval(env)?;
         match cond_val {
             Value::True => self.thent.eval(env),

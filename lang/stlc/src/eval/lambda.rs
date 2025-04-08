@@ -7,9 +7,9 @@ use common::Eval;
 
 impl Eval<'_> for Lambda {
     type Value = Value;
-    type Error = Error;
+    type Err = Error;
     type Env = ();
-    fn eval(self, _: Self::Env) -> Result<Value, Error> {
+    fn eval(self, _: Self::Env) -> Result<Self::Value, Self::Err> {
         Ok(Value::Lambda {
             var: self.var.clone(),
             annot: self.annot.clone(),
@@ -20,9 +20,9 @@ impl Eval<'_> for Lambda {
 
 impl Eval<'_> for App {
     type Value = Value;
-    type Error = Error;
+    type Err = Error;
     type Env = ();
-    fn eval(self, env: Self::Env) -> Result<Value, Error> {
+    fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
         let val1 = self.fun.eval(env)?;
         match val1 {
             Value::Lambda {

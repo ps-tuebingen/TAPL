@@ -4,9 +4,9 @@ use common::Typecheck;
 
 impl<'a> Typecheck<'a> for Term {
     type Type = Type;
-    type Error = Error;
+    type Err = Error;
     type Env = &'a mut TypingEnv;
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         match self {
             Term::Var(v) => env
                 .used_vars

@@ -24,10 +24,10 @@ impl Value {
 
 impl Eval<'_> for Term {
     type Value = Value;
-    type Error = Error;
+    type Err = Error;
     type Env = ();
 
-    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Error> {
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Err> {
         match self {
             Term::Zero => Ok(Value::Numerical(0)),
             Term::True => Ok(Value::True),

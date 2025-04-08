@@ -7,18 +7,18 @@ use common::Eval;
 
 impl Eval<'_> for Zero {
     type Value = Value;
-    type Error = Error;
+    type Err = Error;
     type Env = ();
-    fn eval(self, _env: Self::Env) -> Result<Value, Error> {
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Err> {
         Ok(Value::Zero)
     }
 }
 
 impl Eval<'_> for Succ {
     type Value = Value;
-    type Error = Error;
+    type Err = Error;
     type Env = ();
-    fn eval(self, _env: Self::Env) -> Result<Value, Error> {
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Err> {
         let t_evaled = self.0.clone().eval(_env)?;
         match t_evaled {
             Value::Zero => Ok(Value::Succ(Box::new(Value::Zero))),
@@ -34,9 +34,9 @@ impl Eval<'_> for Succ {
 
 impl Eval<'_> for Pred {
     type Value = Value;
-    type Error = Error;
+    type Err = Error;
     type Env = ();
-    fn eval(self, _env: Self::Env) -> Result<Value, Error> {
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Err> {
         let t_evaled = self.0.clone().eval(_env)?;
         match t_evaled {
             Value::Zero => Ok(Value::Pred(Box::new(Value::Zero))),
@@ -52,9 +52,9 @@ impl Eval<'_> for Pred {
 
 impl Eval<'_> for IsZero {
     type Value = Value;
-    type Error = Error;
+    type Err = Error;
     type Env = ();
-    fn eval(self, _env: Self::Env) -> Result<Value, Error> {
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Err> {
         let val = self.0.clone().eval(_env)?;
         match val {
             Value::Zero => Ok(Value::True),

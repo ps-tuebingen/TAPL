@@ -4,9 +4,9 @@ use std::convert::Infallible;
 
 impl Eval<'_> for Term {
     type Value = Term;
-    type Error = Infallible;
+    type Err = Infallible;
     type Env = ();
-    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Error> {
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Err> {
         let evaled = eval_once(self.clone());
         if evaled == self {
             Ok(evaled)

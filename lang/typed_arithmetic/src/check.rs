@@ -7,8 +7,8 @@ use common::Typecheck;
 impl Typecheck<'_> for Term {
     type Type = Type;
     type Env = ();
-    type Error = Error;
-    fn check(&self, _env: Self::Env) -> Result<Self::Type, Self::Error> {
+    type Err = Error;
+    fn check(&self, _env: Self::Env) -> Result<Self::Type, Self::Err> {
         match self {
             Term::True => Ok(Type::Bool),
             Term::False => Ok(Type::Bool),

@@ -7,18 +7,18 @@ use common::Typecheck;
 
 impl<'a> Typecheck<'a> for Zero {
     type Type = Type;
-    type Error = Error;
+    type Err = Error;
     type Env = &'a mut TypingEnv;
-    fn check(&self, _: Self::Env) -> Result<Self::Type, Self::Error> {
+    fn check(&self, _: Self::Env) -> Result<Self::Type, Self::Err> {
         Ok(Type::Nat)
     }
 }
 
 impl<'a> Typecheck<'a> for Pred {
     type Type = Type;
-    type Error = Error;
+    type Err = Error;
     type Env = &'a mut TypingEnv;
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let inner_ty = self.term.check(env)?;
         if let Type::Nat = inner_ty {
             Ok(Type::Nat)
@@ -33,9 +33,9 @@ impl<'a> Typecheck<'a> for Pred {
 
 impl<'a> Typecheck<'a> for Succ {
     type Type = Type;
-    type Error = Error;
+    type Err = Error;
     type Env = &'a mut TypingEnv;
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let inner_ty = self.term.check(env)?;
         if let Type::Nat = inner_ty {
             Ok(Type::Nat)
@@ -50,9 +50,9 @@ impl<'a> Typecheck<'a> for Succ {
 
 impl<'a> Typecheck<'a> for IsZero {
     type Type = Type;
-    type Error = Error;
+    type Err = Error;
     type Env = &'a mut TypingEnv;
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let inner_ty = self.term.check(env)?;
         if let Type::Nat = inner_ty {
             Ok(Type::Bool)

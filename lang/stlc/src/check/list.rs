@@ -7,18 +7,18 @@ use common::Typecheck;
 
 impl<'a> Typecheck<'a> for Nil {
     type Type = Type;
-    type Error = Error;
+    type Err = Error;
     type Env = &'a mut TypingEnv;
-    fn check(&self, _: Self::Env) -> Result<Self::Type, Self::Error> {
+    fn check(&self, _: Self::Env) -> Result<Self::Type, Self::Err> {
         Ok(Type::List(Box::new(self.inner_type.clone())))
     }
 }
 
 impl<'a> Typecheck<'a> for Cons {
     type Type = Type;
-    type Error = Error;
+    type Err = Error;
     type Env = &'a mut TypingEnv;
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let fst_ty = self.fst.check(&mut env.clone())?;
         if fst_ty == self.inner_type {
             Ok(())
@@ -51,9 +51,9 @@ impl<'a> Typecheck<'a> for Cons {
 
 impl<'a> Typecheck<'a> for IsNil {
     type Type = Type;
-    type Error = Error;
+    type Err = Error;
     type Env = &'a mut TypingEnv;
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let lst_ty = self.list.check(env)?;
         if let Type::List(ty1) = lst_ty {
             if *ty1 == self.inner_type {
@@ -75,9 +75,9 @@ impl<'a> Typecheck<'a> for IsNil {
 
 impl<'a> Typecheck<'a> for Head {
     type Type = Type;
-    type Error = Error;
+    type Err = Error;
     type Env = &'a mut TypingEnv;
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let lst_ty = self.list.check(env)?;
         if let Type::List(ty1) = lst_ty {
             if *ty1 == self.inner_type {
@@ -99,9 +99,9 @@ impl<'a> Typecheck<'a> for Head {
 
 impl<'a> Typecheck<'a> for Tail {
     type Type = Type;
-    type Error = Error;
+    type Err = Error;
     type Env = &'a mut TypingEnv;
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let lst_ty = self.list.check(env)?;
         if let Type::List(ty1) = lst_ty {
             if self.inner_type == *ty1 {

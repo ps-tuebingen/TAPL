@@ -3,9 +3,9 @@ use crate::syntax::{Proj, Tup};
 
 impl Eval<'_> for Tup {
     type Value = Value;
-    type Error = Error;
+    type Err = Error;
     type Env = ();
-    fn eval(self, env: Self::Env) -> Result<Value, Error> {
+    fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
         let mut vals = vec![];
         for term in self.terms.into_iter() {
             let val = term.eval(env)?;
@@ -17,9 +17,9 @@ impl Eval<'_> for Tup {
 
 impl Eval<'_> for Proj {
     type Value = Value;
-    type Error = Error;
+    type Err = Error;
     type Env = ();
-    fn eval(self, env: Self::Env) -> Result<Value, Error> {
+    fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
         let tup_val = self.tup.eval(env)?;
         if let Value::Tup(vals) = tup_val {
             vals.get(self.ind)

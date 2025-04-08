@@ -4,9 +4,9 @@ use common::Typecheck;
 
 impl<'a> Typecheck<'a> for Let {
     type Type = Type;
-    type Error = Error;
+    type Err = Error;
     type Env = &'a mut TypingEnv;
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let bound_ty = self.bound_term.check(&mut env.clone())?;
         env.used_vars.insert(self.var.clone(), bound_ty);
         self.in_term.check(env)

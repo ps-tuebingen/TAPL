@@ -4,7 +4,7 @@ use common::Eval;
 
 impl Eval<'_> for Pred {
     type Value = Value;
-    type Error = Error;
+    type Err = Error;
     type Env = ();
 
     fn eval(self, env: Self::Env) -> Result<Value, Error> {

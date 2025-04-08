@@ -6,9 +6,9 @@ use crate::{
 
 impl Eval<'_> for Left {
     type Value = Value;
-    type Error = Error;
+    type Err = Error;
     type Env = ();
-    fn eval(self, env: Self::Env) -> Result<Value, Error> {
+    fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
         let left_val = self.left_term.eval(env)?;
         Ok(Value::Left {
             left_term: Box::new(left_val),
@@ -19,9 +19,9 @@ impl Eval<'_> for Left {
 
 impl Eval<'_> for Right {
     type Value = Value;
-    type Error = Error;
+    type Err = Error;
     type Env = ();
-    fn eval(self, env: Self::Env) -> Result<Value, Error> {
+    fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
         let right_val = self.right_term.eval(env)?;
         Ok(Value::Right {
             right_term: Box::new(right_val),
@@ -32,9 +32,9 @@ impl Eval<'_> for Right {
 
 impl Eval<'_> for SumCase {
     type Value = Value;
-    type Error = Error;
+    type Err = Error;
     type Env = ();
-    fn eval(self, env: Self::Env) -> Result<Value, Error> {
+    fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
         let bound_val = self.bound_term.eval(env)?;
         match bound_val {
             Value::Left {

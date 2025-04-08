@@ -4,9 +4,9 @@ use common::Eval;
 
 impl Eval<'_> for Nil {
     type Value = Value;
-    type Error = Error;
+    type Err = Error;
     type Env = ();
-    fn eval(self, _: Self::Env) -> Result<Value, Error> {
+    fn eval(self, _: Self::Env) -> Result<Self::Value, Self::Err> {
         Ok(Value::Nil {
             inner_type: self.inner_type,
         })
@@ -15,9 +15,9 @@ impl Eval<'_> for Nil {
 
 impl Eval<'_> for Cons {
     type Value = Value;
-    type Error = Error;
+    type Err = Error;
     type Env = ();
-    fn eval(self, env: Self::Env) -> Result<Value, Error> {
+    fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
         let fst_val = self.fst.eval(env)?;
         let rst_val = self.rst.eval(env)?;
         Ok(Value::Cons {
@@ -30,9 +30,9 @@ impl Eval<'_> for Cons {
 
 impl Eval<'_> for IsNil {
     type Value = Value;
-    type Error = Error;
+    type Err = Error;
     type Env = ();
-    fn eval(self, env: Self::Env) -> Result<Value, Error> {
+    fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
         match self.list.eval(env)? {
             Value::Nil { .. } => Ok(Value::True),
             Value::Cons { .. } => Ok(Value::False),
@@ -43,9 +43,9 @@ impl Eval<'_> for IsNil {
 
 impl Eval<'_> for Head {
     type Value = Value;
-    type Error = Error;
+    type Err = Error;
     type Env = ();
-    fn eval(self, env: Self::Env) -> Result<Value, Error> {
+    fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
         match self.list.eval(env)? {
             Value::Cons { fst, .. } => Ok(*fst),
             Value::Nil { .. } => Err(Error::HeadOfEmptyList),
@@ -56,9 +56,9 @@ impl Eval<'_> for Head {
 
 impl Eval<'_> for Tail {
     type Value = Value;
-    type Error = Error;
+    type Err = Error;
     type Env = ();
-    fn eval(self, env: Self::Env) -> Result<Value, Error> {
+    fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
         match self.list.eval(env)? {
             Value::Cons { rst, .. } => Ok(*rst),
             Value::Nil { .. } => Err(Error::TailOfEmptyList),

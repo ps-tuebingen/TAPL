@@ -7,9 +7,9 @@ use common::Eval;
 
 impl Eval<'_> for Fix {
     type Value = Value;
-    type Error = Error;
+    type Err = Error;
     type Env = ();
-    fn eval(self, env: Self::Env) -> Result<Value, Error> {
+    fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
         let fix_val = self.term.eval(env)?;
         if let Value::Lambda { var, annot, body } = fix_val {
             body.clone()

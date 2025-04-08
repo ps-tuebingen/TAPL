@@ -36,9 +36,9 @@ impl Environment {
 
 impl<'a> Typecheck<'a> for Term {
     type Type = Type;
-    type Error = Error;
+    type Err = Error;
     type Env = &'a mut Environment;
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         match self {
             Term::Var(v) => env.get_var(v),
             Term::Const(_) => Ok(Type::Nat),

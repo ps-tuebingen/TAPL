@@ -45,9 +45,9 @@ impl fmt::Display for Value {
 
 impl Eval<'_> for Term {
     type Value = Value;
-    type Error = String;
+    type Err = String;
     type Env = ();
-    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Error> {
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Err> {
         match self {
             Term::True => Ok(Value::True),
             Term::False => Ok(Value::False),

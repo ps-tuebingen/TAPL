@@ -4,9 +4,9 @@ use common::Eval;
 
 impl Eval<'_> for Ascribe {
     type Value = Value;
-    type Error = Error;
+    type Err = Error;
     type Env = ();
-    fn eval(self, env: Self::Env) -> Result<Value, Error> {
+    fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
         self.term.eval(env)
     }
 }

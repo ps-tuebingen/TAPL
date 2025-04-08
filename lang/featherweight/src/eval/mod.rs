@@ -43,10 +43,10 @@ impl From<Value> for Term {
 
 impl<'a> Eval<'a> for Term {
     type Value = Value;
-    type Error = Error;
+    type Err = Error;
     type Env = &'a ClassTable;
 
-    fn eval(self, ct: &'a ClassTable) -> Result<Value, Error> {
+    fn eval(self, ct: &'a ClassTable) -> Result<Self::Value, Self::Err> {
         match self {
             Term::Var(v) => Err(Error::FreeVar(v)),
             Term::Const(i) => Ok(Value::Const(i)),

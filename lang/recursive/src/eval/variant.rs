@@ -7,9 +7,9 @@ use crate::{
 use common::Eval;
 impl Eval<'_> for Variant {
     type Value = Value;
-    type Error = Error;
+    type Err = Error;
     type Env = ();
-    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Error> {
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Err> {
         let term_val = self.term.eval(_env)?;
         Ok(Value::Variant {
             label: self.label,
@@ -20,9 +20,9 @@ impl Eval<'_> for Variant {
 }
 impl Eval<'_> for VariantCase {
     type Value = Value;
-    type Error = Error;
+    type Err = Error;
     type Env = ();
-    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Error> {
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Err> {
         let bound_val = self.bound_term.clone().eval(_env)?;
         let (label, val, _) = bound_val
             .clone()

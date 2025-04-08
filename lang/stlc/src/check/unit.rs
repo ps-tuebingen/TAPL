@@ -4,9 +4,9 @@ use common::Typecheck;
 
 impl<'a> Typecheck<'a> for Unit {
     type Type = Type;
-    type Error = Error;
+    type Err = Error;
     type Env = &'a mut TypingEnv;
-    fn check(&self, _: Self::Env) -> Result<Self::Type, Self::Error> {
+    fn check(&self, _: Self::Env) -> Result<Self::Type, Self::Err> {
         Ok(Type::Unit)
     }
 }

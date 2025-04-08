@@ -4,27 +4,27 @@ use common::Eval;
 
 impl Eval<'_> for True {
     type Value = Value;
-    type Error = Error;
+    type Err = Error;
     type Env = ();
-    fn eval(self, _: Self::Env) -> Result<Value, Error> {
+    fn eval(self, _: Self::Env) -> Result<Self::Value, Self::Err> {
         Ok(Value::True)
     }
 }
 
 impl Eval<'_> for False {
     type Value = Value;
-    type Error = Error;
+    type Err = Error;
     type Env = ();
-    fn eval(self, _: Self::Env) -> Result<Value, Error> {
+    fn eval(self, _: Self::Env) -> Result<Self::Value, Self::Err> {
         Ok(Value::False)
     }
 }
 
 impl Eval<'_> for If {
     type Value = Value;
-    type Error = Error;
+    type Err = Error;
     type Env = ();
-    fn eval(self, env: Self::Env) -> Result<Value, Error> {
+    fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
         let if_v = self.ifc.eval(env)?;
         match if_v {
             Value::True => self.thenc.eval(env),

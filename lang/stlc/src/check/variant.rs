@@ -7,9 +7,9 @@ use common::Typecheck;
 
 impl<'a> Typecheck<'a> for Variant {
     type Type = Type;
-    type Error = Error;
+    type Err = Error;
     type Env = &'a mut TypingEnv;
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let term_ty = self.term.check(env)?;
         match &self.ty {
             Type::Variant(labels) => {
@@ -31,9 +31,9 @@ impl<'a> Typecheck<'a> for Variant {
 
 impl<'a> Typecheck<'a> for VariantCase {
     type Type = Type;
-    type Error = Error;
+    type Err = Error;
     type Env = &'a mut TypingEnv;
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let bound_ty = self.bound_term.check(&mut env.clone())?;
         let var_ty = if let Type::Variant(vars) = bound_ty {
             Ok(vars)

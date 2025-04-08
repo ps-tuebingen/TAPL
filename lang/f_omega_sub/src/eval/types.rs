@@ -9,9 +9,9 @@ use std::collections::HashMap;
 
 impl<'a> Eval<'a> for Type {
     type Value = Self;
-    type Error = Error;
+    type Err = Error;
     type Env = &'a mut Env;
-    fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Error> {
+    fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
         match self {
             Type::Var(ref v) => env.get_tyvar(v).map_err(|knd| Error::ty_red(knd, self)),
             Type::OpApp(app) => {

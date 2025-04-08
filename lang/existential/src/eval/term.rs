@@ -7,9 +7,9 @@ use common::Eval;
 
 impl Eval<'_> for Term {
     type Value = Value;
-    type Error = Error;
+    type Err = Error;
     type Env = ();
-    fn eval(self, _env: Self::Env) -> Result<Value, Error> {
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Err> {
         match self {
             Term::Var(ref var) => Err(Error::eval(ErrorKind::FreeVar(var.clone()), &self)),
             Term::Unit => Ok(Value::Unit),

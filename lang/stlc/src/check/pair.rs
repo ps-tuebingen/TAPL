@@ -7,9 +7,9 @@ use common::Typecheck;
 
 impl<'a> Typecheck<'a> for Pair {
     type Type = Type;
-    type Error = Error;
+    type Err = Error;
     type Env = &'a mut TypingEnv;
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let ty1 = self.fst.check(&mut env.clone())?;
         let ty2 = self.snd.check(env)?;
         Ok(Type::Prod(Box::new(ty1), Box::new(ty2)))
@@ -18,9 +18,9 @@ impl<'a> Typecheck<'a> for Pair {
 
 impl<'a> Typecheck<'a> for Proj1 {
     type Type = Type;
-    type Error = Error;
+    type Err = Error;
     type Env = &'a mut TypingEnv;
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let ty = self.pair.check(env)?;
         if let Type::Prod(ty1, _) = ty {
             Ok(*ty1)
@@ -35,9 +35,9 @@ impl<'a> Typecheck<'a> for Proj1 {
 
 impl<'a> Typecheck<'a> for Proj2 {
     type Type = Type;
-    type Error = Error;
+    type Err = Error;
     type Env = &'a mut TypingEnv;
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let ty = self.pair.check(env)?;
         if let Type::Prod(_, ty2) = ty {
             Ok(*ty2)
