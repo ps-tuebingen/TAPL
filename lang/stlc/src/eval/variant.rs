@@ -5,8 +5,11 @@ use crate::{
 };
 
 impl Eval for Variant {
-    fn eval(self) -> Result<Value, Error> {
-        let val = self.term.eval()?;
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, env: &mut Self::Env) -> Result<Value, Error> {
+        let val = self.term.eval(env)?;
         Ok(Value::Variant {
             label: self.label,
             ty: self.ty,
@@ -16,8 +19,11 @@ impl Eval for Variant {
 }
 
 impl Eval for VariantCase {
-    fn eval(self) -> Result<Value, Error> {
-        let bound_val = self.bound_term.eval()?;
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, env: &mut Self::Env) -> Result<Value, Error> {
+        let bound_val = self.bound_term.eval(env)?;
         let (lb, val) = if let Value::Variant { label, ty: _, val } = bound_val {
             Ok((label, val))
         } else {
@@ -38,7 +44,7 @@ impl Eval for VariantCase {
                  }| *label == lb,
             )
             .ok_or(Error::MissingPattern { label: lb })?;
-        rhs.subst(&bound_var, (*val).into()).eval()
+        rhs.subst(&bound_var, (*val).into()).eval(env)
     }
 }
 
@@ -58,7 +64,7 @@ mod variant_tests {
             term: Box::new(Zero.into()),
             ty: Type::Variant(HashMap::from([("label".to_owned(), Type::Nat)])),
         }
-        .eval()
+        .eval(&mut Default::default())
         .unwrap();
         let expected = Value::Variant {
             label: "label".to_owned(),
@@ -92,7 +98,7 @@ mod variant_tests {
                 },
             ],
         }
-        .eval()
+        .eval(&mut Default::default())
         .unwrap();
         let expected = Value::Zero;
         assert_eq!(result, expected)

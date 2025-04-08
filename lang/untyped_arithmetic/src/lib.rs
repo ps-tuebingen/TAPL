@@ -46,13 +46,14 @@ impl fmt::Display for Value {
 impl Eval for Term {
     type Value = Value;
     type Error = String;
-    fn eval(self) -> Result<Self::Value, Self::Error> {
+    type Env = ();
+    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Self::Error> {
         match self {
             Term::True => Ok(Value::True),
             Term::False => Ok(Value::False),
             Term::Zero => Ok(Value::Numerical(0)),
             Term::IsZero(t) => {
-                let val = t.eval()?;
+                let val = t.eval(env)?;
                 let num = val.into_numerical()?;
                 if num == 0 {
                     Ok(Value::True)
@@ -61,20 +62,20 @@ impl Eval for Term {
                 }
             }
             Term::Succ(t) => {
-                let val = t.eval()?;
+                let val = t.eval(env)?;
                 let num = val.into_numerical()?;
                 Ok(Value::Numerical(num + 1))
             }
             Term::Pred(t) => {
-                let val = t.eval()?;
+                let val = t.eval(env)?;
                 let num = val.into_numerical()?;
                 Ok(Value::Numerical(num - 1))
             }
             Term::If(ifc, thent, elset) => {
-                let val = ifc.eval()?;
+                let val = ifc.eval(env)?;
                 match val {
-                    Value::True => thent.eval(),
-                    Value::False => elset.eval(),
+                    Value::True => thent.eval(env),
+                    Value::False => elset.eval(env),
                     _ => Err("If Condition needs to be boolean".to_owned()),
                 }
             }
@@ -105,7 +106,7 @@ mod term_tests {
         let result = Term::Succ(Box::new(Term::Succ(Box::new(Term::Pred(Box::new(
             Term::Zero,
         ))))))
-        .eval()
+        .eval(&mut Default::default())
         .unwrap();
         let expected = Value::Numerical(1);
         assert_eq!(result, expected)
@@ -118,7 +119,7 @@ mod term_tests {
             Box::new(Term::Pred(Box::new(Term::Succ(Box::new(Term::Zero))))),
             Box::new(Term::Succ(Box::new(Term::Pred(Box::new(Term::Zero))))),
         )
-        .eval()
+        .eval(&mut Default::default())
         .unwrap();
         let expected = Value::Numerical(0);
         assert_eq!(result, expected)

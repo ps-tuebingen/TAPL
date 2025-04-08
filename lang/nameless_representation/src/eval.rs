@@ -1,4 +1,20 @@
 use super::nameless_terms::Term;
+use common::Eval;
+use std::convert::Infallible;
+
+impl Eval for Term {
+    type Value = Term;
+    type Error = Infallible;
+    type Env = ();
+    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Self::Error> {
+        let evaled = eval_once(self.clone());
+        if evaled == self {
+            Ok(evaled)
+        } else {
+            evaled.eval(env)
+        }
+    }
+}
 
 pub fn eval_once(t: Term) -> Term {
     match t {
@@ -12,14 +28,5 @@ pub fn eval_once(t: Term) -> Term {
                 Term::app(t1_evaled, *t2)
             }
         }
-    }
-}
-
-pub fn eval(t: Term) -> Term {
-    let evaled = eval_once(t.clone());
-    if evaled == t {
-        evaled
-    } else {
-        eval(evaled)
     }
 }

@@ -1,11 +1,15 @@
-use super::{errors::Error, Eval, Value};
+use super::{errors::Error, Value};
 use crate::{
     syntax::{App, Lambda},
     traits::subst::Subst,
 };
+use common::Eval;
 
 impl Eval for Lambda {
-    fn eval(self) -> Result<Value, Error> {
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, _: &mut Self::Env) -> Result<Value, Error> {
         Ok(Value::Lambda {
             var: self.var.clone(),
             annot: self.annot.clone(),
@@ -15,8 +19,11 @@ impl Eval for Lambda {
 }
 
 impl Eval for App {
-    fn eval(self) -> Result<Value, Error> {
-        let val1 = self.fun.eval()?;
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, env: &mut Self::Env) -> Result<Value, Error> {
+        let val1 = self.fun.eval(env)?;
         match val1 {
             Value::Lambda {
                 var,
@@ -24,7 +31,7 @@ impl Eval for App {
                 body,
             } => {
                 let body_subst = body.subst(&var, *self.arg);
-                body_subst.eval()
+                body_subst.eval(env)
             }
             _ => Err(Error::BadValue { val: val1 }),
         }
@@ -43,7 +50,7 @@ mod lambda_tests {
             annot: Type::Bool,
             body: Box::new("x".to_owned().into()),
         }
-        .eval()
+        .eval(&mut Default::default())
         .unwrap();
         let expected = Value::Lambda {
             var: "x".to_owned(),
@@ -66,7 +73,7 @@ mod lambda_tests {
             ),
             arg: Box::new(True.into()),
         }
-        .eval()
+        .eval(&mut Default::default())
         .unwrap();
         let expected = Value::True;
         assert_eq!(result, expected)

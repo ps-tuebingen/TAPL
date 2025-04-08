@@ -22,7 +22,7 @@ pub fn exec(args: Args) -> Result<(), Box<dyn Error>> {
         let parsed_str = display_or_debug(&parsed, args.debug);
         println!("Successfully parsed {parsed_str}\n");
     }
-    let evaled = parsed.eval()?;
+    let evaled = parsed.eval(&mut Default::default())?;
     let evaled_str = display_or_debug(&evaled, args.debug);
     println!("{evaled_str}");
     Ok(())

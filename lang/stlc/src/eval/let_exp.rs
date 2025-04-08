@@ -1,10 +1,14 @@
-use super::{errors::Error, Eval, Value};
+use super::{errors::Error, Value};
 use crate::{syntax::Let, traits::subst::Subst};
+use common::Eval;
 
 impl Eval for Let {
-    fn eval(self) -> Result<Value, Error> {
-        let bound_val = self.bound_term.eval()?;
-        self.in_term.subst(&self.var, bound_val.into()).eval()
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, env: &mut Self::Env) -> Result<Value, Error> {
+        let bound_val = self.bound_term.eval(env)?;
+        self.in_term.subst(&self.var, bound_val.into()).eval(env)
     }
 }
 
@@ -32,7 +36,7 @@ mod let_tests {
                 .into(),
             ),
         }
-        .eval()
+        .eval(&mut Default::default())
         .unwrap();
         let expected = Value::Zero;
         assert_eq!(result, expected)

@@ -28,7 +28,7 @@ impl Test for EvalTest {
             Ok(p) => p,
             Err(err) => return TestResult::from_err(err),
         };
-        let evaled = match parsed.eval() {
+        let evaled = match parsed.eval(&mut Default::default()) {
             Ok(val) => val,
             Err(err) => return TestResult::from_err(err),
         };

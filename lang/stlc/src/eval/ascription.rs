@@ -1,9 +1,13 @@
-use super::{errors::Error, Eval, Value};
+use super::{errors::Error, Value};
 use crate::syntax::Ascribe;
+use common::Eval;
 
 impl Eval for Ascribe {
-    fn eval(self) -> Result<Value, Error> {
-        self.term.eval()
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, env: &mut Self::Env) -> Result<Value, Error> {
+        self.term.eval(env)
     }
 }
 
@@ -18,7 +22,7 @@ mod ascribe_tests {
             term: Box::new(True.into()),
             ty: Type::Bool,
         }
-        .eval()
+        .eval(&mut Default::default())
         .unwrap();
         let expected = Value::True;
         assert_eq!(result, expected)

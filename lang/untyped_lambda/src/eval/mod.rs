@@ -1,4 +1,6 @@
 use super::terms::Term;
+use common::Eval;
+use std::convert::Infallible;
 
 pub mod big;
 pub mod cbn;
@@ -25,17 +27,29 @@ impl EvalOrder {
     }
 }
 
+impl Default for EvalOrder {
+    fn default() -> EvalOrder {
+        EvalOrder::CBV
+    }
+}
+
 pub fn is_value(t: &Term) -> bool {
     matches!(t, Term::Lambda(_, _))
 }
 
-pub fn eval(t: Term, eo: EvalOrder) -> Term {
-    let eval_once = eo.get_eval_fun();
-    let evaled = eval_once(t.clone());
-    if t == evaled {
-        evaled
-    } else {
-        eval(evaled, eo)
+impl Eval for Term {
+    type Value = Term;
+    type Error = Infallible;
+    type Env = EvalOrder;
+
+    fn eval(self, eo: &mut EvalOrder) -> Result<Self::Value, Self::Error> {
+        let eval_once = eo.get_eval_fun();
+        let evaled = eval_once(self.clone());
+        if self == evaled {
+            Ok(evaled)
+        } else {
+            evaled.eval(eo)
+        }
     }
 }
 

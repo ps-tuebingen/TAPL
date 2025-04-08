@@ -1,4 +1,4 @@
-use super::{traits::subst::Subst, Var};
+use common::Eval;
 
 pub mod ascription;
 pub mod bool;
@@ -18,18 +18,7 @@ pub mod unit;
 pub mod value;
 pub mod variant;
 
-use errors::Error;
 pub use value::Value;
-
-pub trait Eval: Subst {
-    fn eval(self) -> Result<Value, Error>;
-}
-
-impl Eval for Var {
-    fn eval(self) -> Result<Value, Error> {
-        Err(Error::FreeVariable { var: self })
-    }
-}
 
 #[cfg(test)]
 mod var_tests {
@@ -38,7 +27,7 @@ mod var_tests {
 
     #[test]
     fn eval_var() {
-        let result = Term::Var("x".to_owned()).eval();
+        let result = Term::Var("x".to_owned()).eval(&mut Default::default());
         assert!(result.is_err())
     }
 }

@@ -1,10 +1,14 @@
-use super::{errors::Error, Eval, Value};
+use super::{errors::Error, Value};
 use crate::syntax::{Pair, Proj1, Proj2};
+use common::Eval;
 
 impl Eval for Pair {
-    fn eval(self) -> Result<Value, Error> {
-        let val_1 = self.fst.eval()?;
-        let val_2 = self.snd.eval()?;
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, env: &mut Self::Env) -> Result<Value, Error> {
+        let val_1 = self.fst.eval(env)?;
+        let val_2 = self.snd.eval(env)?;
         Ok(Value::Pair {
             fst: Box::new(val_1),
             snd: Box::new(val_2),
@@ -13,8 +17,11 @@ impl Eval for Pair {
 }
 
 impl Eval for Proj1 {
-    fn eval(self) -> Result<Value, Error> {
-        match self.pair.eval()? {
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, env: &mut Self::Env) -> Result<Value, Error> {
+        match self.pair.eval(env)? {
             Value::Pair { fst: v1, .. } => Ok(*v1),
             val => Err(Error::BadValue { val }),
         }
@@ -22,8 +29,11 @@ impl Eval for Proj1 {
 }
 
 impl Eval for Proj2 {
-    fn eval(self) -> Result<Value, Error> {
-        match self.pair.eval()? {
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, env: &mut Self::Env) -> Result<Value, Error> {
+        match self.pair.eval(env)? {
             Value::Pair { snd: v2, .. } => Ok(*v2),
             val => Err(Error::BadValue { val }),
         }
@@ -46,7 +56,7 @@ mod pair_tests {
                 .into(),
             ),
         }
-        .eval()
+        .eval(&mut Default::default())
         .unwrap();
         let expected = Value::Pair {
             fst: Box::new(Value::Zero.into()),
@@ -71,7 +81,7 @@ mod pair_tests {
                 .into(),
             ),
         }
-        .eval()
+        .eval(&mut Default::default())
         .unwrap();
         let expected = Value::Zero;
         assert_eq!(result, expected)
@@ -93,7 +103,7 @@ mod pair_tests {
                 .into(),
             ),
         }
-        .eval()
+        .eval(&mut Default::default())
         .unwrap();
         let expected = Value::Succ(Box::new(Value::Zero));
         assert_eq!(result, expected)

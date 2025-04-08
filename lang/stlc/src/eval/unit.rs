@@ -2,7 +2,10 @@ use super::{errors::Error, Eval, Value};
 use crate::syntax::Unit;
 
 impl Eval for Unit {
-    fn eval(self) -> Result<Value, Error> {
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, _: &mut Self::Env) -> Result<Value, Error> {
         Ok(Value::Unit)
     }
 }
@@ -13,7 +16,7 @@ mod unit_tests {
 
     #[test]
     fn eval_unit() {
-        let result = Unit.eval().unwrap();
+        let result = Unit.eval(&mut Default::default()).unwrap();
         let expected = Value::Unit;
         assert_eq!(result, expected)
     }

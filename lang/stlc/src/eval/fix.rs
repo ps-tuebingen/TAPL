@@ -1,12 +1,16 @@
-use super::{errors::Error, Eval, Value};
+use super::{errors::Error, Value};
 use crate::{
     syntax::{Fix, Lambda},
     traits::subst::Subst,
 };
+use common::Eval;
 
 impl Eval for Fix {
-    fn eval(self) -> Result<Value, Error> {
-        let fix_val = self.term.eval()?;
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, env: &mut Self::Env) -> Result<Value, Error> {
+        let fix_val = self.term.eval(env)?;
         if let Value::Lambda { var, annot, body } = fix_val {
             body.clone()
                 .subst(
@@ -23,7 +27,7 @@ impl Eval for Fix {
                     }
                     .into(),
                 )
-                .eval()
+                .eval(env)
         } else {
             Err(Error::BadValue { val: fix_val })
         }
@@ -113,7 +117,7 @@ mod fix_tests {
             ),
             arg: Box::new(Zero.into()),
         }
-        .eval()
+        .eval(&mut Default::default())
         .unwrap();
         let expected = Value::True;
         assert_eq!(result, expected)

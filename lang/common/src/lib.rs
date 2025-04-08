@@ -1,7 +1,8 @@
 pub trait Eval {
     type Value;
     type Error;
-    fn eval(self) -> Result<Self::Value, Self::Error>;
+    type Env: Default;
+    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Self::Error>;
 }
 
 pub trait Typechck {

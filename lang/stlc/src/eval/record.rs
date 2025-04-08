@@ -1,12 +1,16 @@
-use super::{errors::Error, Eval, Value};
+use super::{errors::Error, Value};
 use crate::syntax::{Record, RecordProj};
+use common::Eval;
 use std::collections::HashMap;
 
 impl Eval for Record {
-    fn eval(self) -> Result<Value, Error> {
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, env: &mut Self::Env) -> Result<Value, Error> {
         let mut vals = HashMap::new();
         for (label, term) in self.records.into_iter() {
-            let val = term.eval()?;
+            let val = term.eval(env)?;
             vals.insert(label, val);
         }
         Ok(Value::Record(vals))
@@ -14,8 +18,11 @@ impl Eval for Record {
 }
 
 impl Eval for RecordProj {
-    fn eval(self) -> Result<Value, Error> {
-        match self.record.eval()? {
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, env: &mut Self::Env) -> Result<Value, Error> {
+        match self.record.eval(env)? {
             Value::Record(records) => {
                 records
                     .get(&self.label)
@@ -43,7 +50,7 @@ mod record_tests {
                 ("label2".to_owned(), True.into()),
             ]),
         }
-        .eval()
+        .eval(&mut Default::default())
         .unwrap();
         let expected = Value::Record(HashMap::from([
             ("label1".to_owned(), Value::Zero),
@@ -66,7 +73,7 @@ mod record_tests {
             ),
             label: "label1".to_owned(),
         }
-        .eval()
+        .eval(&mut Default::default())
         .unwrap();
         let expected = Value::Zero;
         assert_eq!(result, expected)

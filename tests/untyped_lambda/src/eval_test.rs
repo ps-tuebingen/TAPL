@@ -1,8 +1,6 @@
+use common::Eval;
 use test_common::testsuite::{Test, TestResult};
-use untyped_lambda::{
-    eval::{eval, EvalOrder},
-    parse::parse,
-};
+use untyped_lambda::parse::parse;
 
 pub struct EvalTest {
     source_name: String,
@@ -31,7 +29,7 @@ impl Test for EvalTest {
             Ok(p) => p,
             Err(err) => return TestResult::from_err(err),
         };
-        let evaled = eval(parsed, EvalOrder::CBV);
+        let evaled = parsed.eval(&mut Default::default()).unwrap();
         TestResult::from_eq(&evaled, &self.expected)
     }
 }

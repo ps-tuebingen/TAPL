@@ -1,23 +1,34 @@
-use super::{errors::Error, Eval, Value};
+use super::{errors::Error, Value};
 use crate::syntax::{False, If, True};
+use common::Eval;
+
 impl Eval for True {
-    fn eval(self) -> Result<Value, Error> {
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, _: &mut Self::Env) -> Result<Value, Error> {
         Ok(Value::True)
     }
 }
 
 impl Eval for False {
-    fn eval(self) -> Result<Value, Error> {
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, _: &mut Self::Env) -> Result<Value, Error> {
         Ok(Value::False)
     }
 }
 
 impl Eval for If {
-    fn eval(self) -> Result<Value, Error> {
-        let if_v = self.ifc.eval()?;
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, env: &mut Self::Env) -> Result<Value, Error> {
+        let if_v = self.ifc.eval(env)?;
         match if_v {
-            Value::True => self.thenc.eval(),
-            Value::False => self.elsec.eval(),
+            Value::True => self.thenc.eval(env),
+            Value::False => self.elsec.eval(env),
             _ => Err(Error::BadValue { val: if_v }),
         }
     }
@@ -29,14 +40,14 @@ mod bool_tests {
 
     #[test]
     fn eval_true() {
-        let result = True.eval().unwrap();
+        let result = True.eval(&mut Default::default()).unwrap();
         let expected = Value::True;
         assert_eq!(result, expected)
     }
 
     #[test]
     fn eval_false() {
-        let result = False.eval().unwrap();
+        let result = False.eval(&mut Default::default()).unwrap();
         let expected = Value::False;
         assert_eq!(result, expected)
     }
@@ -48,7 +59,7 @@ mod bool_tests {
             thenc: Box::new(False.into()),
             elsec: Box::new(True.into()),
         }
-        .eval()
+        .eval(&mut Default::default())
         .unwrap();
         let expected = Value::False;
         assert_eq!(result, expected)

@@ -5,8 +5,11 @@ use crate::{
 };
 
 impl Eval for Left {
-    fn eval(self) -> Result<Value, Error> {
-        let left_val = self.left_term.eval()?;
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, env: &mut Self::Env) -> Result<Value, Error> {
+        let left_val = self.left_term.eval(env)?;
         Ok(Value::Left {
             left_term: Box::new(left_val),
             ty: self.ty,
@@ -15,8 +18,11 @@ impl Eval for Left {
 }
 
 impl Eval for Right {
-    fn eval(self) -> Result<Value, Error> {
-        let right_val = self.right_term.eval()?;
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, env: &mut Self::Env) -> Result<Value, Error> {
+        let right_val = self.right_term.eval(env)?;
         Ok(Value::Right {
             right_term: Box::new(right_val),
             ty: self.ty,
@@ -25,17 +31,26 @@ impl Eval for Right {
 }
 
 impl Eval for SumCase {
-    fn eval(self) -> Result<Value, Error> {
-        let bound_val = self.bound_term.eval()?;
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, env: &mut Self::Env) -> Result<Value, Error> {
+        let bound_val = self.bound_term.eval(env)?;
         match bound_val {
             Value::Left {
                 left_term: val,
                 ty: _,
-            } => self.left_term.subst(&self.left_var, (*val).into()).eval(),
+            } => self
+                .left_term
+                .subst(&self.left_var, (*val).into())
+                .eval(env),
             Value::Right {
                 right_term: val,
                 ty: _,
-            } => self.right_term.subst(&self.right_var, (*val).into()).eval(),
+            } => self
+                .right_term
+                .subst(&self.right_var, (*val).into())
+                .eval(env),
             _ => Err(Error::BadValue { val: bound_val }),
         }
     }
@@ -55,7 +70,7 @@ mod sum_tests {
             left_term: Box::new(Zero.into()),
             ty: Type::Bool,
         }
-        .eval()
+        .eval(&mut Default::default())
         .unwrap();
         let expected = Value::Left {
             left_term: Box::new(Value::Zero),
@@ -70,7 +85,7 @@ mod sum_tests {
             right_term: Box::new(True.into()),
             ty: Type::Nat,
         }
-        .eval()
+        .eval(&mut Default::default())
         .unwrap();
         let expected = Value::Right {
             right_term: Box::new(Value::True),
@@ -99,7 +114,7 @@ mod sum_tests {
             right_var: "x".to_owned(),
             right_term: Box::new("x".to_owned().into()),
         }
-        .eval()
+        .eval(&mut Default::default())
         .unwrap();
         let expected = Value::True;
         assert_eq!(result, expected)
@@ -125,7 +140,7 @@ mod sum_tests {
             right_var: "x".to_owned(),
             right_term: Box::new("x".to_owned().into()),
         }
-        .eval()
+        .eval(&mut Default::default())
         .unwrap();
         let expected = Value::True;
         assert_eq!(result, expected)

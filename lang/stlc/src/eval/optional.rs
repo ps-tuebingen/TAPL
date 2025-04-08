@@ -1,18 +1,25 @@
-use super::{errors::Error, Eval, Value};
+use super::{errors::Error, Value};
 use crate::{
     syntax::{Nothing, SomeCase, Something},
     traits::subst::Subst,
 };
+use common::Eval;
 
 impl Eval for Something {
-    fn eval(self) -> Result<Value, Error> {
-        let val = self.term.eval()?;
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, env: &mut Self::Env) -> Result<Value, Error> {
+        let val = self.term.eval(env)?;
         Ok(Value::Something(Box::new(val)))
     }
 }
 
 impl Eval for Nothing {
-    fn eval(self) -> Result<Value, Error> {
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, _: &mut Self::Env) -> Result<Value, Error> {
         Ok(Value::Nothing {
             inner_type: self.inner_type,
         })
@@ -20,11 +27,14 @@ impl Eval for Nothing {
 }
 
 impl Eval for SomeCase {
-    fn eval(self) -> Result<Value, Error> {
-        let bound_res = self.bound_term.eval()?;
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, env: &mut Self::Env) -> Result<Value, Error> {
+        let bound_res = self.bound_term.eval(env)?;
         match bound_res {
-            Value::Nothing { .. } => self.none_rhs.eval(),
-            Value::Something(val) => self.some_rhs.subst(&self.some_var, (*val).into()).eval(),
+            Value::Nothing { .. } => self.none_rhs.eval(env),
+            Value::Something(val) => self.some_rhs.subst(&self.some_var, (*val).into()).eval(env),
             _ => Err(Error::BadValue { val: bound_res }),
         }
     }
@@ -40,7 +50,7 @@ mod optional_tests {
         let result = Nothing {
             inner_type: Type::Bool,
         }
-        .eval()
+        .eval(&mut Default::default())
         .unwrap();
         let expected = Value::Nothing {
             inner_type: Type::Bool,
@@ -53,7 +63,7 @@ mod optional_tests {
         let result = Something {
             term: Box::new(Zero.into()),
         }
-        .eval()
+        .eval(&mut Default::default())
         .unwrap();
         let expected = Value::Something(Box::new(Value::Zero));
         assert_eq!(result, expected)

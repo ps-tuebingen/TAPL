@@ -1,5 +1,6 @@
+use super::Error;
 use crate::{
-    syntax::{Error, Lambda, Term, Unit, Var},
+    syntax::{Lambda, Term, Unit, Var},
     types::Type,
 };
 use std::fmt;
@@ -11,7 +12,24 @@ pub enum Value {
     Unit,
     True,
     False,
-    Error(Type),
+}
+
+impl Value {
+    pub fn into_lambda(self) -> Result<(Var, Type, Term), Error> {
+        if let Value::Lambda { var, annot, body } = self {
+            Ok((var, annot, body))
+        } else {
+            Err(Error::NotAFunction(self))
+        }
+    }
+
+    pub fn into_num(self) -> Result<i64, Error> {
+        if let Value::Const(i) = self {
+            Ok(i)
+        } else {
+            Err(Error::NotANumber(self))
+        }
+    }
 }
 
 impl From<Lambda> for Value {
@@ -43,7 +61,6 @@ impl From<Value> for Term {
             Value::True => Term::True,
             Value::False => Term::False,
             Value::Const(i) => Term::Const(i),
-            Value::Error(ty) => Error { ty }.into(),
         }
     }
 }
