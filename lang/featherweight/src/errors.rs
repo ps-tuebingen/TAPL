@@ -1,4 +1,7 @@
-use super::syntax::{ClassName, FieldName, MethodName, Term, Var};
+use super::{
+    eval::Value,
+    syntax::{ClassName, FieldName, MethodName, Term, Var},
+};
 use std::fmt;
 
 #[derive(Debug)]
@@ -8,6 +11,10 @@ pub enum Error {
     FieldNotFound {
         class: ClassName,
         field: FieldName,
+    },
+    BadValue {
+        found: Value,
+        expected: String,
     },
     StuckTerm(Term),
     NotASubClass {
@@ -50,6 +57,7 @@ impl fmt::Display for Error {
             } => write!(f, "Wrong number of arguments for constructor {class}, found {found}, expected {expected}"),
             Error::MethodArity{class,method,found,expected} => write!(f,"Wrong number of arguments for method {method} of class {class}: found:{found}, expected:{expected}"),
             Error::NotASubClass{sub,sup} => write!(f,"{sub} is not a subclass of {sup}"),
+            Error::BadValue{found,expected} => write!(f,"Unexpected value {found}, expected {expected}"),
         }
     }
 }
