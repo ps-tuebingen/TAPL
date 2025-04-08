@@ -9,6 +9,11 @@ impl Eval<'_> for Lambda {
     type Value = Value;
     type Err = Error;
     type Env = ();
+
+    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+        self.eval(())
+    }
+
     fn eval(self, _: Self::Env) -> Result<Self::Value, Self::Err> {
         Ok(Value::Lambda {
             var: self.var.clone(),
@@ -22,6 +27,11 @@ impl Eval<'_> for App {
     type Value = Value;
     type Err = Error;
     type Env = ();
+
+    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+        self.eval(())
+    }
+
     fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
         let val1 = self.fun.eval(env)?;
         match val1 {

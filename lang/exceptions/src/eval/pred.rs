@@ -7,6 +7,10 @@ impl Eval<'_> for Pred {
     type Err = Error;
     type Env = ();
 
+    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+        self.eval(())
+    }
+
     fn eval(self, env: Self::Env) -> Result<Value, Error> {
         let val = self.term.eval(env)?;
         let num = val.into_num()?;

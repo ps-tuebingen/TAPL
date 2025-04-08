@@ -8,6 +8,11 @@ impl Eval<'_> for Left {
     type Value = Value;
     type Err = Error;
     type Env = ();
+
+    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+        self.eval(())
+    }
+
     fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
         let left_val = self.left_term.eval(env)?;
         Ok(Value::Left {
@@ -21,6 +26,11 @@ impl Eval<'_> for Right {
     type Value = Value;
     type Err = Error;
     type Env = ();
+
+    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+        self.eval(())
+    }
+
     fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
         let right_val = self.right_term.eval(env)?;
         Ok(Value::Right {
@@ -34,6 +44,11 @@ impl Eval<'_> for SumCase {
     type Value = Value;
     type Err = Error;
     type Env = ();
+
+    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+        self.eval(())
+    }
+
     fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
         let bound_val = self.bound_term.eval(env)?;
         match bound_val {

@@ -6,6 +6,11 @@ impl Eval<'_> for Ascribe {
     type Value = Value;
     type Err = Error;
     type Env = ();
+
+    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+        self.eval(())
+    }
+
     fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
         self.term.eval(env)
     }

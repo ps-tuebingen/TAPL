@@ -6,6 +6,11 @@ impl Eval<'_> for Zero {
     type Value = Value;
     type Err = Error;
     type Env = ();
+
+    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+        self.eval(())
+    }
+
     fn eval(self, _: Self::Env) -> Result<Self::Value, Self::Err> {
         Ok(Value::Zero)
     }
@@ -15,6 +20,11 @@ impl Eval<'_> for Succ {
     type Value = Value;
     type Err = Error;
     type Env = ();
+
+    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+        self.eval(())
+    }
+
     fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
         let inner_res = self.term.eval(env)?;
         match inner_res {
@@ -30,6 +40,11 @@ impl Eval<'_> for Pred {
     type Value = Value;
     type Err = Error;
     type Env = ();
+
+    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+        self.eval(())
+    }
+
     fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
         let inner_res = self.term.eval(env)?;
         match inner_res {
@@ -45,6 +60,11 @@ impl Eval<'_> for IsZero {
     type Value = Value;
     type Err = Error;
     type Env = ();
+
+    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+        self.eval(())
+    }
+
     fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
         let inner_res = self.term.eval(env)?;
         match inner_res {

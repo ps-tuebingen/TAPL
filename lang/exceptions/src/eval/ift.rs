@@ -7,6 +7,10 @@ impl Eval<'_> for If {
     type Err = Error;
     type Env = ();
 
+    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+        self.eval(())
+    }
+
     fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
         let cond_val = self.ift.eval(env)?;
         match cond_val {

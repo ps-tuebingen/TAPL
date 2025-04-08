@@ -47,6 +47,11 @@ impl Eval<'_> for Term {
     type Value = Value;
     type Err = String;
     type Env = ();
+
+    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+        self.eval(())
+    }
+
     fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Err> {
         match self {
             Term::True => Ok(Value::True),

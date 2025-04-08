@@ -6,6 +6,11 @@ impl Eval<'_> for Pair {
     type Value = Value;
     type Err = Error;
     type Env = ();
+
+    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+        self.eval(())
+    }
+
     fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
         let val_1 = self.fst.eval(env)?;
         let val_2 = self.snd.eval(env)?;
@@ -20,6 +25,11 @@ impl Eval<'_> for Proj1 {
     type Value = Value;
     type Err = Error;
     type Env = ();
+
+    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+        self.eval(())
+    }
+
     fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
         match self.pair.eval(env)? {
             Value::Pair { fst: v1, .. } => Ok(*v1),
@@ -32,6 +42,11 @@ impl Eval<'_> for Proj2 {
     type Value = Value;
     type Err = Error;
     type Env = ();
+
+    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+        self.eval(())
+    }
+
     fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
         match self.pair.eval(env)? {
             Value::Pair { snd: v2, .. } => Ok(*v2),

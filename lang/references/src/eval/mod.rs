@@ -22,6 +22,10 @@ impl<'a> Eval<'a> for Term {
     type Err = Error;
     type Env = &'a mut Store;
 
+    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+        self.eval(&mut Default::default())
+    }
+
     fn eval(self, st: &mut Store) -> Result<Self::Value, Self::Err> {
         match self {
             Term::Var(v) => Err(Error::FreeVar(v)),

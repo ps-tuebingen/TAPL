@@ -9,6 +9,11 @@ impl<'a> Typecheck<'a> for Pair {
     type Type = Type;
     type Err = Error;
     type Env = &'a mut TypingEnv;
+
+    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+        self.check(&mut Default::default())
+    }
+
     fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let ty1 = self.fst.check(&mut env.clone())?;
         let ty2 = self.snd.check(env)?;
@@ -20,6 +25,11 @@ impl<'a> Typecheck<'a> for Proj1 {
     type Type = Type;
     type Err = Error;
     type Env = &'a mut TypingEnv;
+
+    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+        self.check(&mut Default::default())
+    }
+
     fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let ty = self.pair.check(env)?;
         if let Type::Prod(ty1, _) = ty {
@@ -37,6 +47,11 @@ impl<'a> Typecheck<'a> for Proj2 {
     type Type = Type;
     type Err = Error;
     type Env = &'a mut TypingEnv;
+
+    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+        self.check(&mut Default::default())
+    }
+
     fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let ty = self.pair.check(env)?;
         if let Type::Prod(_, ty2) = ty {

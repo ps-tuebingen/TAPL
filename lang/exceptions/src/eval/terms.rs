@@ -7,6 +7,10 @@ impl Eval<'_> for Term {
     type Err = Error;
     type Env = ();
 
+    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+        self.eval(())
+    }
+
     fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
         match self {
             Term::Var(v) => Err(Error::FreeVar(v)),

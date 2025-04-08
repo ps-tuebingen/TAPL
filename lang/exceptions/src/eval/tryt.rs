@@ -7,6 +7,10 @@ impl Eval<'_> for Try {
     type Err = Error;
     type Env = ();
 
+    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+        self.eval(())
+    }
+
     fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
         let term_val = self.term.eval(env);
         if term_val.is_err() {

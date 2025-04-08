@@ -10,6 +10,11 @@ impl<'a> Typecheck<'a> for Record {
     type Type = Type;
     type Err = Error;
     type Env = &'a mut TypingEnv;
+
+    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+        self.check(&mut Default::default())
+    }
+
     fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let mut tys = HashMap::new();
         for (label, term) in self.records.iter() {
@@ -24,6 +29,11 @@ impl<'a> Typecheck<'a> for RecordProj {
     type Type = Type;
     type Err = Error;
     type Env = &'a mut TypingEnv;
+
+    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+        self.check(&mut Default::default())
+    }
+
     fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let rec_ty = self.record.check(env)?;
         if let Type::Record(tys) = rec_ty {

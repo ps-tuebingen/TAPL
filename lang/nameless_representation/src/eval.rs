@@ -6,6 +6,11 @@ impl Eval<'_> for Term {
     type Value = Term;
     type Err = Infallible;
     type Env = ();
+
+    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+        self.eval(())
+    }
+
     fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Err> {
         let evaled = eval_once(self.clone());
         if evaled == self {

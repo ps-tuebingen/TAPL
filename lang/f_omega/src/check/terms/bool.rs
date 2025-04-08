@@ -10,6 +10,11 @@ impl<'a> Typecheck<'a> for True {
     type Type = Type;
     type Err = Error;
     type Env = &'a mut Env;
+
+    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+        self.check(&mut Default::default())
+    }
+
     fn check(&self, _: Self::Env) -> Result<Self::Type, Self::Err> {
         Ok(Type::Bool)
     }
@@ -19,6 +24,11 @@ impl<'a> Typecheck<'a> for False {
     type Type = Type;
     type Err = Error;
     type Env = &'a mut Env;
+
+    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+        self.check(&mut Default::default())
+    }
+
     fn check(&self, _: Self::Env) -> Result<Self::Type, Self::Err> {
         Ok(Type::Bool)
     }
@@ -28,6 +38,11 @@ impl<'a> Typecheck<'a> for If {
     type Type = Type;
     type Err = Error;
     type Env = &'a mut Env;
+
+    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+        self.check(&mut Default::default())
+    }
+
     fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let cond_ty = self.ifc.check(&mut env.clone())?;
         if cond_ty != Type::Bool {

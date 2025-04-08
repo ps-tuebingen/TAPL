@@ -8,6 +8,11 @@ impl Typecheck<'_> for Term {
     type Type = Type;
     type Env = ();
     type Err = Error;
+
+    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+        self.check(())
+    }
+
     fn check(&self, _env: Self::Env) -> Result<Self::Type, Self::Err> {
         match self {
             Term::True => Ok(Type::Bool),

@@ -9,6 +9,11 @@ impl<'a> Typecheck<'a> for Fun {
     type Type = Kind;
     type Err = Error;
     type Env = &'a mut Env;
+
+    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+        self.check(&mut Default::default())
+    }
+
     fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let from_kind = self.from.check(&mut env.clone())?;
         from_kind

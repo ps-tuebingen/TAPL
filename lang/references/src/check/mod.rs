@@ -38,6 +38,11 @@ impl<'a> Typecheck<'a> for Term {
     type Type = Type;
     type Err = Error;
     type Env = &'a mut Environment;
+
+    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+        self.check(&mut Default::default())
+    }
+
     fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         match self {
             Term::Var(v) => env.get_var(v),

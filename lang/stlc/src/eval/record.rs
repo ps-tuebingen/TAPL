@@ -7,6 +7,11 @@ impl Eval<'_> for Record {
     type Value = Value;
     type Err = Error;
     type Env = ();
+
+    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+        self.eval(())
+    }
+
     fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
         let mut vals = HashMap::new();
         for (label, term) in self.records.into_iter() {
@@ -21,6 +26,11 @@ impl Eval<'_> for RecordProj {
     type Value = Value;
     type Err = Error;
     type Env = ();
+
+    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+        self.eval(())
+    }
+
     fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
         match self.record.eval(env)? {
             Value::Record(records) => {

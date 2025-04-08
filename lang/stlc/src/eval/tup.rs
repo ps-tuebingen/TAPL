@@ -5,6 +5,11 @@ impl Eval<'_> for Tup {
     type Value = Value;
     type Err = Error;
     type Env = ();
+
+    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+        self.eval(())
+    }
+
     fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
         let mut vals = vec![];
         for term in self.terms.into_iter() {
@@ -19,6 +24,11 @@ impl Eval<'_> for Proj {
     type Value = Value;
     type Err = Error;
     type Env = ();
+
+    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+        self.eval(())
+    }
+
     fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
         let tup_val = self.tup.eval(env)?;
         if let Value::Tup(vals) = tup_val {

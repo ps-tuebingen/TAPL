@@ -7,6 +7,10 @@ impl Eval<'_> for Unit {
     type Err = Error;
     type Env = ();
 
+    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+        self.eval(())
+    }
+
     fn eval(self, _: Self::Env) -> Result<Self::Value, Self::Err> {
         Ok(self.into())
     }

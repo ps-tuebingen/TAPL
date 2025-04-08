@@ -10,6 +10,11 @@ impl Eval<'_> for Record {
     type Value = Value;
     type Err = Error;
     type Env = ();
+
+    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+        self.eval(())
+    }
+
     fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Err> {
         let mut vals = HashMap::new();
         for (label, term) in self.records {
@@ -24,6 +29,11 @@ impl Eval<'_> for RecordProj {
     type Value = Value;
     type Err = Error;
     type Env = ();
+
+    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+        self.eval(())
+    }
+
     fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Err> {
         let val = self.term.clone().eval(_env)?;
         let recs = val.as_rec().map_err(|knd| Error::eval(knd, &self))?;

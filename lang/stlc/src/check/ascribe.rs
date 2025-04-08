@@ -6,6 +6,11 @@ impl<'a> Typecheck<'a> for Ascribe {
     type Type = Type;
     type Err = Error;
     type Env = &'a mut TypingEnv;
+
+    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+        self.check(&mut Default::default())
+    }
+
     fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let ty1 = self.term.check(env)?;
         if self.ty == ty1 {

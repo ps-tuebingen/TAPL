@@ -38,6 +38,10 @@ impl Eval<'_> for Term {
     type Err = Infallible;
     type Env = EvalOrder;
 
+    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+        self.eval(EvalOrder::CBV)
+    }
+
     fn eval(self, eo: EvalOrder) -> Result<Self::Value, Self::Err> {
         let eval_once = eo.get_eval_fun();
         let evaled = eval_once(self.clone());

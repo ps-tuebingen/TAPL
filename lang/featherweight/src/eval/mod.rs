@@ -46,6 +46,10 @@ impl<'a> Eval<'a> for Term {
     type Err = Error;
     type Env = &'a ClassTable;
 
+    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+        self.eval(&Default::default())
+    }
+
     fn eval(self, ct: &'a ClassTable) -> Result<Self::Value, Self::Err> {
         match self {
             Term::Var(v) => Err(Error::FreeVar(v)),

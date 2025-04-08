@@ -9,6 +9,11 @@ impl<'a> Typecheck<'a> for Variant {
     type Type = Type;
     type Err = Error;
     type Env = &'a mut TypingEnv;
+
+    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+        self.check(&mut Default::default())
+    }
+
     fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let term_ty = self.term.check(env)?;
         match &self.ty {
@@ -33,6 +38,11 @@ impl<'a> Typecheck<'a> for VariantCase {
     type Type = Type;
     type Err = Error;
     type Env = &'a mut TypingEnv;
+
+    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+        self.check(&mut Default::default())
+    }
+
     fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let bound_ty = self.bound_term.check(&mut env.clone())?;
         let var_ty = if let Type::Variant(vars) = bound_ty {

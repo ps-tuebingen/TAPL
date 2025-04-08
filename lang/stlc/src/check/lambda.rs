@@ -9,6 +9,11 @@ impl<'a> Typecheck<'a> for Lambda {
     type Type = Type;
     type Err = Error;
     type Env = &'a mut TypingEnv;
+
+    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+        self.check(&mut Default::default())
+    }
+
     fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         env.used_vars.insert(self.var.clone(), self.annot.clone());
         let ty = self.body.check(env)?;
@@ -20,6 +25,11 @@ impl<'a> Typecheck<'a> for App {
     type Type = Type;
     type Err = Error;
     type Env = &'a mut TypingEnv;
+
+    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+        self.check(&mut Default::default())
+    }
+
     fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let ty1 = self.fun.check(&mut env.clone())?;
         if let Type::Fun(ty11, ty12) = ty1 {
