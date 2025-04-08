@@ -1,6 +1,7 @@
 use super::{display_or_debug, Source};
+use common::Eval;
 use std::error::Error;
-use system_f::{check::Check, eval::Eval, parser::parse};
+use system_f::{check::Check, parser::parse};
 
 #[derive(clap::Args)]
 pub struct Args {
@@ -28,7 +29,7 @@ pub fn exec(args: Args) -> Result<(), Box<dyn Error>> {
         println!("checked: {checked_str}");
     }
 
-    let evaled = parsed.eval()?;
+    let evaled = parsed.eval(Default::default())?;
     let evaled_str = display_or_debug(&evaled, args.debug);
     println!("evaluated: {evaled_str}");
     Ok(())

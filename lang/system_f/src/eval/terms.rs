@@ -1,14 +1,18 @@
-use super::{errors::Error, Eval, Value};
+use super::{errors::Error, Value};
 use crate::syntax::Term;
+use common::Eval;
 
-impl Eval for Term {
-    fn eval(self) -> Result<Value, Error> {
+impl<'a> Eval<'a> for Term {
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Error> {
         match self {
             Term::Var(v) => Err(Error::FreeVar(v)),
-            Term::Lambda(lam) => lam.eval(),
-            Term::App(app) => app.eval(),
-            Term::TyLambda(lam) => lam.eval(),
-            Term::TyApp(app) => app.eval(),
+            Term::Lambda(lam) => lam.eval(_env),
+            Term::App(app) => app.eval(_env),
+            Term::TyLambda(lam) => lam.eval(_env),
+            Term::TyApp(app) => app.eval(_env),
         }
     }
 }

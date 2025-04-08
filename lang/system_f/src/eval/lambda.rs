@@ -1,8 +1,12 @@
-use super::{errors::Error, Eval, Value};
+use super::{errors::Error, Value};
 use crate::syntax::{App, Lambda, Subst};
+use common::Eval;
 
-impl Eval for Lambda {
-    fn eval(self) -> Result<Value, Error> {
+impl<'a> Eval<'a> for Lambda {
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Error> {
         Ok(Value::Lambda {
             var: self.var,
             annot: self.annot,
@@ -11,17 +15,20 @@ impl Eval for Lambda {
     }
 }
 
-impl Eval for App {
-    fn eval(self) -> Result<Value, Error> {
-        let fun_val = self.fun.eval()?;
+impl<'a> Eval<'a> for App {
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Error> {
+        let fun_val = self.fun.eval(_env)?;
         match fun_val {
             Value::Lambda {
                 var,
                 annot: _,
                 body,
             } => {
-                let arg_val = self.arg.eval()?;
-                body.subst(&var, arg_val.into()).eval()
+                let arg_val = self.arg.eval(_env)?;
+                body.subst(&var, arg_val.into()).eval(_env)
             }
             _ => Err(Error::NotAFunction(fun_val)),
         }
