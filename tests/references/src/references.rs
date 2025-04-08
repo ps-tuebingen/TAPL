@@ -7,14 +7,10 @@ use test_common::{
 };
 
 mod eval_test;
-mod parse_test;
-mod reparse_test;
 mod suite;
 mod typecheck_test;
 
 use eval_test::EvalTest;
-use parse_test::ParseTest;
-use reparse_test::ReparseTest;
 use suite::ReferencesTests;
 use typecheck_test::TypecheckTest;
 

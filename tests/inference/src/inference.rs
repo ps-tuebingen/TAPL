@@ -8,13 +8,9 @@ use test_common::{
 
 mod bidirectional_test;
 mod infer_test;
-mod parse_test;
-mod reparse_test;
 mod suite;
 use bidirectional_test::BidirectionalTest;
 use infer_test::InferTest;
-use parse_test::ParseTest;
-use reparse_test::ReparseTest;
 
 use suite::InferenceTests;
 

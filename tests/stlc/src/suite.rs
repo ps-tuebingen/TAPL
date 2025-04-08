@@ -1,8 +1,10 @@
-use super::{EvalCtxTest, EvalTest, ParseTest, ReparseTest, TypecheckTest};
+use super::{EvalCtxTest, EvalTest, TypecheckTest};
 use std::path::PathBuf;
 use test_common::{
     errors::Error,
     load_tests::{load_dir, TestContents},
+    parse_test::ParseTest,
+    reparse_test::ReparseTest,
     testsuite::{Test, TestSuite},
 };
 
@@ -31,9 +33,15 @@ impl TestSuite for StlcTests {
         let contents: Vec<TestContents<StlcConf>> = load_dir(&self.source_dir, "stlc")?;
         let mut tests = vec![];
         for content in contents {
-            let parse_test = ParseTest::new(&content.source_name, &content.source_contents);
+            let parse_test = ParseTest::<stlc::syntax::Term>::new(
+                &content.source_name,
+                &content.source_contents,
+            );
             tests.push(Box::new(parse_test) as Box<dyn Test>);
-            let reparse_test = ReparseTest::new(&content.source_name, &content.source_contents);
+            let reparse_test = ReparseTest::<stlc::syntax::Term>::new(
+                &content.source_name,
+                &content.source_contents,
+            );
             tests.push(Box::new(reparse_test) as Box<dyn Test>);
             let check_test = TypecheckTest::new(
                 &content.source_name,

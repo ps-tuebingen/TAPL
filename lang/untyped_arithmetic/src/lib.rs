@@ -23,12 +23,23 @@ pub enum Value {
     Numerical(i64),
 }
 
+#[derive(Debug)]
+pub struct Error(String);
+
+impl fmt::Display for Error {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        f.write_str(&self.0)
+    }
+}
+
+impl std::error::Error for Error {}
+
 impl Value {
-    fn into_numerical(self) -> Result<i64, String> {
+    fn into_numerical(self) -> Result<i64, Error> {
         if let Value::Numerical(i) = self {
             Ok(i)
         } else {
-            Err(format!("Bad Value {self:?}"))
+            Err(Error(format!("Bad Value {self:?}")))
         }
     }
 }
@@ -45,7 +56,7 @@ impl fmt::Display for Value {
 
 impl Eval<'_> for Term {
     type Value = Value;
-    type Err = String;
+    type Err = Error;
     type Env = ();
 
     fn eval_start(self) -> Result<Self::Value, Self::Err> {
@@ -81,7 +92,7 @@ impl Eval<'_> for Term {
                 match val {
                     Value::True => thent.eval(_env),
                     Value::False => elset.eval(_env),
-                    _ => Err("If Condition needs to be boolean".to_owned()),
+                    _ => Err(Error("If Condition needs to be boolean".to_owned())),
                 }
             }
         }

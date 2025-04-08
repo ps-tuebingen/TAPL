@@ -1,8 +1,10 @@
-use super::{EvalTest, ParseTest, ReparseTest, TypecheckTest};
+use super::{EvalTest, TypecheckTest};
 use std::path::PathBuf;
 use test_common::{
     errors::Error,
     load_tests::{load_dir, TestContents},
+    parse_test::ParseTest,
+    reparse_test::ReparseTest,
     testsuite::{Test, TestSuite},
 };
 
@@ -31,9 +33,11 @@ impl TestSuite for RecursiveTests {
         let contents: Vec<TestContents<BoundedConf>> = load_dir(&self.source_dir, "rec")?;
         let mut tests = vec![];
         for tst in contents {
-            let parse_test = ParseTest::new(&tst.source_name, &tst.source_contents);
+            let parse_test =
+                ParseTest::<recursive::terms::Term>::new(&tst.source_name, &tst.source_contents);
             tests.push(Box::new(parse_test) as Box<dyn Test>);
-            let reparse_test = ReparseTest::new(&tst.source_name, &tst.source_contents);
+            let reparse_test =
+                ReparseTest::<recursive::terms::Term>::new(&tst.source_name, &tst.source_contents);
             tests.push(Box::new(reparse_test) as Box<dyn Test>);
             let check_test =
                 TypecheckTest::new(&tst.source_name, &tst.source_contents, &tst.conf.ty);

@@ -1,8 +1,10 @@
-use super::{EvalTest, ParseTest, ReparseTest};
+use super::EvalTest;
 use std::path::PathBuf;
 use test_common::{
     errors::Error,
     load_tests::{load_dir, TestContents},
+    parse_test::ParseTest,
+    reparse_test::ReparseTest,
     testsuite::{Test, TestSuite},
 };
 
@@ -30,9 +32,15 @@ impl TestSuite for UntypedArithTests {
         let contents: Vec<TestContents<UntypedArithConf>> = load_dir(&self.source_dir, "arith")?;
         let mut tests = vec![];
         for content in contents {
-            let parse_test = ParseTest::new(&content.source_name, &content.source_contents);
+            let parse_test = ParseTest::<untyped_arithmetic::Term>::new(
+                &content.source_name,
+                &content.source_contents,
+            );
             tests.push(Box::new(parse_test) as Box<dyn Test>);
-            let reparse_test = ReparseTest::new(&content.source_name, &content.source_contents);
+            let reparse_test = ReparseTest::<untyped_arithmetic::Term>::new(
+                &content.source_name,
+                &content.source_contents,
+            );
             tests.push(Box::new(reparse_test) as Box<dyn Test>);
             let eval_test = EvalTest::new(
                 &content.source_name,

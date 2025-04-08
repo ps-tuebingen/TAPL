@@ -1,8 +1,10 @@
-use super::{ParseTest, ReparseTest, TypecheckTest};
+use super::TypecheckTest;
 use std::path::PathBuf;
 use test_common::{
     errors::Error,
     load_tests::{load_dir, TestContents},
+    parse_test::ParseTest,
+    reparse_test::ReparseTest,
     testsuite::{Test, TestSuite},
 };
 
@@ -30,9 +32,11 @@ impl TestSuite for SubtypesTests {
         let contents: Vec<TestContents<SubtypesConf>> = load_dir(&self.source_path, "sub")?;
         let mut tests = vec![];
         for tst in contents {
-            let parse_test = ParseTest::new(&tst.source_name, &tst.source_contents);
+            let parse_test =
+                ParseTest::<subtypes::syntax::Term>::new(&tst.source_name, &tst.source_contents);
             tests.push(Box::new(parse_test) as Box<dyn Test>);
-            let reparse_test = ReparseTest::new(&tst.source_name, &tst.source_contents);
+            let reparse_test =
+                ReparseTest::<subtypes::syntax::Term>::new(&tst.source_name, &tst.source_contents);
             tests.push(Box::new(reparse_test) as Box<dyn Test>);
             let check_test =
                 TypecheckTest::new(&tst.source_name, &tst.source_contents, &tst.conf.ty);
