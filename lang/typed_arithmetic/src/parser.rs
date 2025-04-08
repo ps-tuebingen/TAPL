@@ -1,10 +1,18 @@
 use crate::{errors::Error, syntax::Term};
+use common::Parse;
 use pest::{iterators::Pair, Parser};
 use pest_derive::Parser;
 
 #[derive(Parser)]
 #[grammar = "typed_arith.pest"]
 struct TypedArithParser;
+
+impl Parse for Term {
+    type Err = Error;
+    fn parse(input: String) -> Result<Self, Self::Err> {
+        parse(input)
+    }
+}
 
 pub fn parse(input: String) -> Result<Term, Error> {
     let mut parsed = TypedArithParser::parse(Rule::term, &input)?;

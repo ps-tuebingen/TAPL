@@ -11,3 +11,8 @@ pub trait Typecheck<'a> {
     type Env;
     fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err>;
 }
+
+pub trait Parse: Sized {
+    type Err;
+    fn parse(source: String) -> Result<Self, Self::Err>;
+}

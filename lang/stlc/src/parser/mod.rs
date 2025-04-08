@@ -1,4 +1,5 @@
 use crate::syntax::Term;
+use common::Parse;
 use pest::{iterators::Pair, Parser};
 use pest_derive::Parser;
 
@@ -12,6 +13,13 @@ use terms::pair_to_term;
 #[derive(Parser)]
 #[grammar = "parser/stlc.pest"]
 struct StlcParser;
+
+impl Parse for Term {
+    type Err = Error;
+    fn parse(input: String) -> Result<Self, Self::Err> {
+        parse(input)
+    }
+}
 
 pub fn parse(input: String) -> Result<Term, Error> {
     let mut parsed = StlcParser::parse(Rule::program, &input)?;

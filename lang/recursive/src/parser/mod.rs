@@ -1,4 +1,5 @@
 use crate::terms::Term;
+use common::Parse;
 use pest::{iterators::Pair, Parser};
 use pest_derive::Parser;
 
@@ -12,6 +13,13 @@ use types::pair_to_type;
 #[derive(Parser)]
 #[grammar = "parser/recursive.pest"]
 struct RecursiveParser;
+
+impl Parse for Term {
+    type Err = Error;
+    fn parse(input: String) -> Result<Self, Self::Err> {
+        parse(input)
+    }
+}
 
 pub fn parse(input: String) -> Result<Term, Error> {
     let mut parsed = RecursiveParser::parse(Rule::program, &input)?;

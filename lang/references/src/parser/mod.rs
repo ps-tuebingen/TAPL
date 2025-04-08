@@ -1,4 +1,5 @@
 use crate::terms::Term;
+use common::Parse;
 use pest::{iterators::Pair, Parser};
 use pest_derive::Parser;
 
@@ -11,6 +12,13 @@ use terms::pair_to_term;
 #[derive(Parser)]
 #[grammar = "parser/references.pest"]
 struct ReferencesParser;
+
+impl Parse for Term {
+    type Err = Error;
+    fn parse(input: String) -> Result<Self, Self::Err> {
+        parse(input)
+    }
+}
 
 pub fn parse(input: String) -> Result<Term, Error> {
     let mut parsed = ReferencesParser::parse(Rule::program, &input)?;

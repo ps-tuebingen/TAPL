@@ -1,4 +1,5 @@
 use super::terms::{Term, Var};
+use common::Parse;
 use std::collections::VecDeque;
 
 pub mod errors;
@@ -6,7 +7,14 @@ pub mod lexer;
 
 use errors::Error;
 use lexer::{lex, Token};
-//"\\v.\\l.\\r.\\f.\\g.(((f v) ((l f) g)) ((r f) g))"
+
+impl Parse for Term {
+    type Err = Error;
+    fn parse(mut input: String) -> Result<Self, Self::Err> {
+        parse(&mut input)
+    }
+}
+
 fn split_parensc(
     tokens: &mut VecDeque<Token>,
 ) -> Result<(VecDeque<Token>, VecDeque<Token>), Error> {

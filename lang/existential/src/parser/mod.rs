@@ -1,4 +1,5 @@
 use crate::terms::Term;
+use common::Parse;
 use pest::{iterators::Pair, Parser};
 use pest_derive::Parser;
 
@@ -8,6 +9,13 @@ pub mod types;
 use errors::Error;
 use terms::pair_to_term;
 use types::pair_to_type;
+
+impl Parse for Term {
+    type Err = Error;
+    fn parse(input: String) -> Result<Self, Self::Err> {
+        parse(input)
+    }
+}
 
 #[derive(Parser)]
 #[grammar = "parser/existential.pest"]

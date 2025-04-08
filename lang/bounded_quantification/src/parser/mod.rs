@@ -1,7 +1,7 @@
 use crate::syntax::Term;
+use common::Parse;
 use pest::{iterators::Pair, Parser};
 use pest_derive::Parser;
-
 pub mod errors;
 mod terms;
 mod types;
@@ -12,6 +12,13 @@ use types::pair_to_type;
 #[derive(Parser)]
 #[grammar = "parser/bounded.pest"]
 struct BoundedParser;
+
+impl Parse for Term {
+    type Err = Error;
+    fn parse(input: String) -> Result<Self, Self::Err> {
+        parse(input)
+    }
+}
 
 pub fn parse(input: String) -> Result<Term, Error> {
     let mut parsed = BoundedParser::parse(Rule::program, &input)?;

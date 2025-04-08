@@ -1,3 +1,4 @@
+use common::Parse;
 pub mod errors;
 pub mod lexer;
 
@@ -5,6 +6,13 @@ use super::Term;
 use errors::Error;
 use lexer::{lex, Token};
 use std::collections::VecDeque;
+
+impl Parse for Term {
+    type Err = Error;
+    fn parse(input: String) -> Result<Self, Self::Err> {
+        parse(input)
+    }
+}
 
 pub fn parse(source: String) -> Result<Term, Error> {
     let mut source = source.trim().to_owned();

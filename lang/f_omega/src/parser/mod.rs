@@ -1,4 +1,5 @@
 use crate::syntax::terms::Term;
+use common::Parse;
 use pest::{iterators::Pair, Parser};
 use pest_derive::Parser;
 
@@ -14,6 +15,13 @@ use types::pair_to_type;
 #[derive(Parser)]
 #[grammar = "parser/fomega.pest"]
 struct FOmegaParser;
+
+impl Parse for Term {
+    type Err = Error;
+    fn parse(input: String) -> Result<Self, Self::Err> {
+        parse(input)
+    }
+}
 
 pub fn parse(input: String) -> Result<Term, Error> {
     let mut parsed = FOmegaParser::parse(Rule::program, &input)?

@@ -1,4 +1,5 @@
 use crate::syntax::ClassTable;
+use common::Parse;
 use pest::{iterators::Pair, Parser};
 use pest_derive::Parser;
 
@@ -13,6 +14,13 @@ use errors::Error;
 #[derive(Parser)]
 #[grammar = "parser/featherweight.pest"]
 struct FeatherweightParser;
+
+impl Parse for ClassTable {
+    type Err = Error;
+    fn parse(input: String) -> Result<Self, Self::Err> {
+        parse(input)
+    }
+}
 
 pub fn parse(input: String) -> Result<ClassTable, Error> {
     let mut parsed = FeatherweightParser::parse(Rule::program, &input)?;
