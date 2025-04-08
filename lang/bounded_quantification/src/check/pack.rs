@@ -1,13 +1,17 @@
-use super::{check_subtype, Check, Env};
+use super::{check_subtype, Env};
 use crate::{
     errors::Error,
     syntax::{Pack, Unpack},
     traits::SubstTy,
     types::Type,
 };
+use common::Typecheck;
 
-impl Check for Pack {
-    fn check(&self, env: &mut Env) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for Pack {
+    type Type = Type;
+    type Err = Error;
+    type Env = &'a mut Env;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let (var, sup_ty, ty) = self
             .outer_ty
             .clone()
@@ -22,8 +26,11 @@ impl Check for Pack {
     }
 }
 
-impl Check for Unpack {
-    fn check(&self, env: &mut Env) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for Unpack {
+    type Type = Type;
+    type Err = Error;
+    type Env = &'a mut Env;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let bound_ty = self.bound_term.check(&mut env.clone())?;
         let (var, sup_ty, ty) = bound_ty
             .as_exists()

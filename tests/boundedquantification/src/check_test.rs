@@ -1,4 +1,5 @@
-use bounded_quantification::{check::Check, parser::parse};
+use bounded_quantification::parser::parse;
+use common::Typecheck;
 use test_common::testsuite::{Test, TestResult};
 
 pub struct TypecheckTest {

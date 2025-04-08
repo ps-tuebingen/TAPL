@@ -79,7 +79,8 @@ pub fn snd() -> Term {
 #[cfg(test)]
 mod pair_tests {
     use super::{fst, pair, snd, ty_pair};
-    use crate::{check::Check, types::Type};
+    use crate::types::Type;
+    use common::Typecheck;
 
     #[test]
     fn check_pair() {

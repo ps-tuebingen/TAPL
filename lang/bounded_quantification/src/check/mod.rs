@@ -43,7 +43,3 @@ impl Env {
             .ok_or(ErrorKind::FreeTypeVar(v.clone()))
     }
 }
-
-pub trait Check {
-    fn check(&self, env: &mut Env) -> Result<Type, Error>;
-}

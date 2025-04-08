@@ -244,7 +244,8 @@ pub fn s_pluspp() -> Term {
 #[cfg(test)]
 mod nat_tests {
     use super::{s_nat, s_one, s_pluspp, s_pos, s_succ, s_three, s_two, s_zero, ty_s_zero};
-    use crate::{check::Check, types::Type};
+    use crate::types::Type;
+    use common::Typecheck;
 
     #[test]
     fn check_zero() {

@@ -1,12 +1,16 @@
-use super::{Check, Env};
+use super::Env;
 use crate::{
     errors::{Error, ErrorKind},
     syntax::Term,
     types::Type,
 };
+use common::Typecheck;
 
-impl Check for Term {
-    fn check(&self, env: &mut Env) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for Term {
+    type Type = Type;
+    type Err = Error;
+    type Env = &'a mut Env;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         match self {
             Term::Var(v) => env
                 .vars

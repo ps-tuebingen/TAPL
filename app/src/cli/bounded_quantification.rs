@@ -1,6 +1,6 @@
 use super::{display_or_debug, Source};
-use bounded_quantification::{check::Check, parser::parse};
-use common::Eval;
+use bounded_quantification::parser::parse;
+use common::{Eval, Typecheck};
 use std::error::Error;
 
 #[derive(clap::Args)]

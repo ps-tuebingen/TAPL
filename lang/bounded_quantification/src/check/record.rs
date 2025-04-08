@@ -1,12 +1,16 @@
-use super::{Check, Env, Error, ErrorKind};
+use super::{Env, Error, ErrorKind};
 use crate::{
     syntax::{Projection, Record},
     types::Type,
 };
+use common::Typecheck;
 use std::collections::HashMap;
 
-impl Check for Record {
-    fn check(&self, env: &mut Env) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for Record {
+    type Type = Type;
+    type Err = Error;
+    type Env = &'a mut Env;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let mut records = HashMap::new();
         for (lb, t) in self.records.iter() {
             let ty = t.check(&mut env.clone())?;
@@ -16,8 +20,11 @@ impl Check for Record {
     }
 }
 
-impl Check for Projection {
-    fn check(&self, env: &mut Env) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for Projection {
+    type Type = Type;
+    type Err = Error;
+    type Env = &'a mut Env;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let rec_ty = self.record.check(env)?;
         let recs = if let Type::Var(v) = rec_ty {
             env.get_tyvar(&v)
