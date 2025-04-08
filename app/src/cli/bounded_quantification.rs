@@ -1,5 +1,6 @@
 use super::{display_or_debug, Source};
-use bounded_quantification::{check::Check, eval::Eval, parser::parse};
+use bounded_quantification::{check::Check, parser::parse};
+use common::Eval;
 use std::error::Error;
 
 #[derive(clap::Args)]
@@ -28,7 +29,7 @@ pub fn exec(args: Args) -> Result<(), Box<dyn Error>> {
         println!("checked: {checked_str}");
     }
 
-    let evaled = parsed.eval()?;
+    let evaled = parsed.eval(Default::default())?;
     let evaled_str = display_or_debug(&evaled, args.debug);
     println!("evaled: {evaled_str}");
     Ok(())

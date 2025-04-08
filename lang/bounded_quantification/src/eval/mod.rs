@@ -8,7 +8,3 @@ pub mod record;
 pub mod term;
 pub mod value;
 pub use value::Value;
-
-pub trait Eval {
-    fn eval(self) -> Result<Value, Error>;
-}

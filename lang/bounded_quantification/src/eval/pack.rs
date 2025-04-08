@@ -1,13 +1,17 @@
-use super::{Eval, Value};
+use super::Value;
 use crate::{
     errors::Error,
     syntax::{Pack, Unpack},
     traits::{SubstTerm, SubstTy},
 };
+use common::Eval;
 
-impl Eval for Pack {
-    fn eval(self) -> Result<Value, Error> {
-        let t_evaled = self.term.eval()?;
+impl Eval<'_> for Pack {
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Error> {
+        let t_evaled = self.term.eval(_env)?;
         Ok(Value::Pack {
             inner_ty: self.inner_ty,
             val: Box::new(t_evaled),
@@ -15,15 +19,18 @@ impl Eval for Pack {
         })
     }
 }
-impl Eval for Unpack {
-    fn eval(self) -> Result<Value, Error> {
-        let bound_evaled = self.bound_term.clone().eval()?;
+impl Eval<'_> for Unpack {
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Error> {
+        let bound_evaled = self.bound_term.clone().eval(_env)?;
         let (inner_ty, val, _) = bound_evaled
             .as_pack()
             .map_err(|knd| Error::eval(knd, &self))?;
         self.in_term
             .subst(&self.bound_var, val.into())
             .subst_ty(&self.ty_var, inner_ty)
-            .eval()
+            .eval(_env)
     }
 }
