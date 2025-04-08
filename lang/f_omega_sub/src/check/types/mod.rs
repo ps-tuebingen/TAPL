@@ -1,8 +1,9 @@
-use super::{Check, Env};
+use super::Env;
 use crate::{
     errors::Error,
     syntax::{kinds::Kind, types::Type},
 };
+use common::Typecheck;
 
 pub mod existential;
 pub mod fun;
@@ -12,9 +13,12 @@ pub mod record;
 pub mod subtype;
 pub mod universal;
 
-impl Check for Type {
-    type Target = Kind;
-    fn check(&self, env: &mut Env) -> Result<Self::Target, Error> {
+impl<'a> Typecheck<'a> for Type {
+    type Type = Kind;
+    type Err = Error;
+    type Env = &'a mut Env;
+
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         match self {
             Type::Var(v) => {
                 let ty = env.get_tyvar(v).map_err(|knd| Error::kind(knd, self))?;

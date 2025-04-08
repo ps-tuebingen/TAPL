@@ -1,14 +1,17 @@
 use crate::{
-    check::{check_subtype, Check, Env},
+    check::{check_subtype, Env},
     errors::Error,
     syntax::{terms::TyApp, types::Type},
     traits::SubstTy,
 };
 use common::Eval;
+use common::Typecheck;
 
-impl Check for TyApp {
-    type Target = Type;
-    fn check(&self, env: &mut Env) -> Result<Self::Target, Error> {
+impl<'a> Typecheck<'a> for TyApp {
+    type Type = Type;
+    type Err = Error;
+    type Env = &'a mut Env;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let t_ty = self.term.check(&mut env.clone())?.eval(&mut env.clone())?;
         let uni = t_ty.as_universal().map_err(|knd| Error::check(knd, self))?;
         let ty_evaled = self.ty.clone().eval(&mut env.clone())?;

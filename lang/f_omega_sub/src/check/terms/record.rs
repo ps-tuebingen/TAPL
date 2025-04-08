@@ -1,5 +1,5 @@
 use crate::{
-    check::{Check, Env},
+    check::Env,
     errors::Error,
     syntax::{
         terms::Record,
@@ -7,11 +7,14 @@ use crate::{
     },
 };
 use common::Eval;
+use common::Typecheck;
 use std::collections::HashMap;
 
-impl Check for Record {
-    type Target = Type;
-    fn check(&self, env: &mut Env) -> Result<Self::Target, Error> {
+impl<'a> Typecheck<'a> for Record {
+    type Type = Type;
+    type Err = Error;
+    type Env = &'a mut Env;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let mut tys = HashMap::new();
         for (label, term) in self.records.iter() {
             let ty = term.check(&mut env.clone())?.eval(&mut env.clone())?;

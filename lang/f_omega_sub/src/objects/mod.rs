@@ -25,7 +25,8 @@ pub fn object() -> Type {
 #[cfg(test)]
 mod object_tests {
     use super::object;
-    use crate::{check::Check, syntax::kinds::Kind};
+    use crate::syntax::kinds::Kind;
+    use common::Typecheck;
 
     #[test]
     fn check_object() {

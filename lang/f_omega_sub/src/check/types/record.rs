@@ -1,12 +1,15 @@
 use crate::{
-    check::{Check, Env},
+    check::Env,
     errors::{Error, ErrorKind},
     syntax::{kinds::Kind, types::RecordTy},
 };
+use common::Typecheck;
 
-impl Check for RecordTy {
-    type Target = Kind;
-    fn check(&self, env: &mut Env) -> Result<Self::Target, Error> {
+impl<'a> Typecheck<'a> for RecordTy {
+    type Type = Kind;
+    type Err = Error;
+    type Env = &'a mut Env;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let kinds = self
             .records
             .values()

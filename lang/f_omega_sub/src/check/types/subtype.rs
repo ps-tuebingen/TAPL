@@ -1,9 +1,10 @@
 use crate::{
-    check::{Check, Env},
+    check::Env,
     errors::{Error, ErrorKind},
     syntax::types::Type,
     traits::SubstTy,
 };
+use common::Typecheck;
 
 pub fn check_subtype(lower: &Type, upper: &Type, env: &mut Env) -> Result<(), Error> {
     let lower_kind = lower.check(&mut env.clone())?;

@@ -1,6 +1,6 @@
 use super::{display_or_debug, Source};
-use common::Eval;
-use f_omega_sub::{check::Check, parser::parse};
+use common::{Eval, Typecheck};
+use f_omega_sub::parser::parse;
 use std::error::Error;
 
 #[derive(clap::Args)]

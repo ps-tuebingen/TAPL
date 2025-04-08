@@ -1,13 +1,16 @@
 use crate::{
-    check::{Check, Env},
+    check::Env,
     errors::Error,
     syntax::{terms::Let, types::Type},
 };
 use common::Eval;
+use common::Typecheck;
 
-impl Check for Let {
-    type Target = Type;
-    fn check(&self, env: &mut Env) -> Result<Self::Target, Error> {
+impl<'a> Typecheck<'a> for Let {
+    type Type = Type;
+    type Err = Error;
+    type Env = &'a mut Env;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let bound_ty = self
             .bound_term
             .check(&mut env.clone())?

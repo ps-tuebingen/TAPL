@@ -1,12 +1,15 @@
 use crate::{
-    check::{Check, Env},
+    check::Env,
     errors::Error,
     syntax::{kinds::Kind, types::Fun},
 };
+use common::Typecheck;
 
-impl Check for Fun {
-    type Target = Kind;
-    fn check(&self, env: &mut Env) -> Result<Self::Target, Error> {
+impl<'a> Typecheck<'a> for Fun {
+    type Type = Kind;
+    type Err = Error;
+    type Env = &'a mut Env;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let from_kind = self.from.check(&mut env.clone())?;
         from_kind
             .check_equal(&Kind::Star)

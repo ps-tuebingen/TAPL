@@ -1,5 +1,5 @@
 use crate::{
-    check::{Check, Env},
+    check::Env,
     errors::Error,
     syntax::{
         kinds::Kind,
@@ -8,9 +8,12 @@ use crate::{
     },
 };
 use common::Eval;
-impl Check for Lambda {
-    type Target = Type;
-    fn check(&self, env: &mut Env) -> Result<Self::Target, Error> {
+use common::Typecheck;
+impl<'a> Typecheck<'a> for Lambda {
+    type Type = Type;
+    type Err = Error;
+    type Env = &'a mut Env;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let annot_kind = self.annot.check(&mut env.clone())?;
         annot_kind
             .check_equal(&Kind::Star)

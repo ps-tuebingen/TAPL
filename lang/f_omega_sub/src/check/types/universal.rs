@@ -1,12 +1,15 @@
 use crate::{
-    check::{Check, Env},
+    check::Env,
     errors::Error,
     syntax::{kinds::Kind, types::Universal},
 };
+use common::Typecheck;
 
-impl Check for Universal {
-    type Target = Kind;
-    fn check(&self, env: &mut Env) -> Result<Self::Target, Error> {
+impl<'a> Typecheck<'a> for Universal {
+    type Type = Kind;
+    type Err = Error;
+    type Env = &'a mut Env;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         env.add_tyvar(&self.var, &self.sup_ty)?;
         let ty_kind = self.ty.check(env)?;
         ty_kind

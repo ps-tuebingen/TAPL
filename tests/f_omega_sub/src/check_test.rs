@@ -1,4 +1,5 @@
-use f_omega_sub::{check::Check, parser::parse};
+use common::Typecheck;
+use f_omega_sub::parser::parse;
 use test_common::testsuite::{Test, TestResult};
 
 pub struct TypecheckTest {

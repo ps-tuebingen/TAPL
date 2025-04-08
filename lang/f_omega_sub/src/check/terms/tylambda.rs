@@ -1,5 +1,5 @@
 use crate::{
-    check::{Check, Env},
+    check::Env,
     errors::Error,
     syntax::{
         terms::TyLambda,
@@ -7,10 +7,13 @@ use crate::{
     },
 };
 use common::Eval;
+use common::Typecheck;
 
-impl Check for TyLambda {
-    type Target = Type;
-    fn check(&self, env: &mut Env) -> Result<Self::Target, Error> {
+impl<'a> Typecheck<'a> for TyLambda {
+    type Type = Type;
+    type Err = Error;
+    type Env = &'a mut Env;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         env.add_tyvar(&self.var, &self.sup_ty)?;
         let body_ty = self.body.check(&mut env.clone())?.eval(env)?;
         Ok(Universal::new(self.var.as_str(), self.sup_ty.clone(), body_ty).into())

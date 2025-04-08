@@ -111,11 +111,9 @@ mod counter_tests {
     use super::{
         counter, counter_class, counter_m, counter_r, new_counter, object, send_get, send_inc,
     };
-    use crate::{
-        check::Check,
-        syntax::types::{Fun, OpApp, Type, Universal},
-    };
+    use crate::syntax::types::{Fun, OpApp, Type, Universal};
     use common::Eval;
+    use common::Typecheck;
 
     #[test]
     fn check_send_inc() {

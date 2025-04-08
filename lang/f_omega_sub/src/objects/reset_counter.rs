@@ -76,11 +76,12 @@ pub fn send_reset() -> Term {
 mod reset_counter_tests {
     use super::{object, reset_counter, reset_counter_class, reset_counter_m, send_reset};
     use crate::{
-        check::{check_subtype, Check},
+        check::check_subtype,
         objects::counter::{counter, counter_m, counter_r},
         syntax::types::{Fun, OpApp, Type, Universal},
     };
     use common::Eval;
+    use common::Typecheck;
 
     #[test]
     fn reset_counter_sub() {

@@ -1,15 +1,18 @@
 use crate::{
-    check::{Check, Env},
+    check::Env,
     errors::Error,
     syntax::{
         kinds::Kind,
         types::{OpLambda, Type},
     },
 };
+use common::Typecheck;
 
-impl Check for OpLambda {
-    type Target = Kind;
-    fn check(&self, env: &mut Env) -> Result<Self::Target, Error> {
+impl<'a> Typecheck<'a> for OpLambda {
+    type Type = Kind;
+    type Err = Error;
+    type Env = &'a mut Env;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         env.add_tyvar(&self.var, &Type::Top(self.annot.clone()))?;
         let body_kind = self.body.check(env)?;
         Ok(Kind::Arrow(
