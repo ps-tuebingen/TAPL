@@ -1,9 +1,13 @@
-use super::{Eval, Value};
+use super::Value;
 use crate::{errors::Error, syntax::terms::Pack};
+use common::Eval;
 
-impl Eval for Pack {
-    fn eval(self) -> Result<Value, Error> {
-        let val = self.term.eval()?;
+impl Eval<'_> for Pack {
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Error> {
+        let val = self.term.eval(_env)?;
         Ok(Value::Pack {
             inner_ty: self.inner_ty,
             val: Box::new(val),

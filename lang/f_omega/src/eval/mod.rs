@@ -1,5 +1,3 @@
-use crate::errors::Error;
-
 pub mod app;
 pub mod bool;
 pub mod fix;
@@ -14,7 +12,3 @@ pub mod tylambda;
 pub mod unpack;
 pub mod value;
 pub use value::Value;
-
-pub trait Eval {
-    fn eval(self) -> Result<Value, Error>;
-}

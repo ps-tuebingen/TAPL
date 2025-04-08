@@ -1,25 +1,35 @@
-use super::{Eval, Value};
+use super::Value;
 use crate::errors::{Error, ErrorKind};
 use crate::syntax::terms::{False, If, True};
+use common::Eval;
 
-impl Eval for True {
-    fn eval(self) -> Result<Value, Error> {
+impl Eval<'_> for True {
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Error> {
         Ok(Value::True)
     }
 }
 
-impl Eval for False {
-    fn eval(self) -> Result<Value, Error> {
+impl Eval<'_> for False {
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Error> {
         Ok(Value::False)
     }
 }
 
-impl Eval for If {
-    fn eval(self) -> Result<Value, Error> {
-        let cond_evaled = self.ifc.clone().eval()?;
+impl Eval<'_> for If {
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Error> {
+        let cond_evaled = self.ifc.clone().eval(_env)?;
         match cond_evaled {
-            Value::True => self.thent.eval(),
-            Value::False => self.elset.eval(),
+            Value::True => self.thent.eval(_env),
+            Value::False => self.elset.eval(_env),
             v => Err(Error::eval(
                 ErrorKind::BadValue {
                     found: v,

@@ -1,13 +1,17 @@
-use super::{Eval, Value};
+use super::Value;
 use crate::{
     errors::Error,
     syntax::terms::{Fix, Lambda},
     traits::SubstTerm,
 };
+use common::Eval;
 
-impl Eval for Fix {
-    fn eval(self) -> Result<Value, Error> {
-        let inner_val = self.term.clone().eval()?;
+impl Eval<'_> for Fix {
+    type Value = Value;
+    type Error = Error;
+    type Env = ();
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Error> {
+        let inner_val = self.term.clone().eval(_env)?;
         let (var, annot, body) = inner_val
             .as_lambda()
             .map_err(|knd| Error::eval(knd, &self))?;
@@ -27,6 +31,6 @@ impl Eval for Fix {
                 }
                 .into(),
             )
-            .eval()
+            .eval(_env)
     }
 }
