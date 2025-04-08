@@ -2,11 +2,11 @@ use super::{Error, Value};
 use crate::syntax::{App, TryWithVal};
 use common::Eval;
 
-impl Eval for TryWithVal {
+impl<'a> Eval<'a> for TryWithVal {
     type Value = Value;
     type Error = Error;
     type Env = ();
-    fn eval(self, env: &mut Self::Env) -> Result<Value, Error> {
+    fn eval(self, env: Self::Env) -> Result<Value, Error> {
         let term_evaled = self.term.eval(env);
         if let Err(Error::ExceptionVal(val)) = term_evaled {
             App {

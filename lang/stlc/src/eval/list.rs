@@ -2,22 +2,22 @@ use super::{errors::Error, Value};
 use crate::syntax::{Cons, Head, IsNil, Nil, Tail};
 use common::Eval;
 
-impl Eval for Nil {
+impl<'a> Eval<'a> for Nil {
     type Value = Value;
     type Error = Error;
     type Env = ();
-    fn eval(self, _: &mut Self::Env) -> Result<Value, Error> {
+    fn eval(self, _: Self::Env) -> Result<Value, Error> {
         Ok(Value::Nil {
             inner_type: self.inner_type,
         })
     }
 }
 
-impl Eval for Cons {
+impl<'a> Eval<'a> for Cons {
     type Value = Value;
     type Error = Error;
     type Env = ();
-    fn eval(self, env: &mut Self::Env) -> Result<Value, Error> {
+    fn eval(self, env: Self::Env) -> Result<Value, Error> {
         let fst_val = self.fst.eval(env)?;
         let rst_val = self.rst.eval(env)?;
         Ok(Value::Cons {
@@ -28,11 +28,11 @@ impl Eval for Cons {
     }
 }
 
-impl Eval for IsNil {
+impl<'a> Eval<'a> for IsNil {
     type Value = Value;
     type Error = Error;
     type Env = ();
-    fn eval(self, env: &mut Self::Env) -> Result<Value, Error> {
+    fn eval(self, env: Self::Env) -> Result<Value, Error> {
         match self.list.eval(env)? {
             Value::Nil { .. } => Ok(Value::True),
             Value::Cons { .. } => Ok(Value::False),
@@ -41,11 +41,11 @@ impl Eval for IsNil {
     }
 }
 
-impl Eval for Head {
+impl<'a> Eval<'a> for Head {
     type Value = Value;
     type Error = Error;
     type Env = ();
-    fn eval(self, env: &mut Self::Env) -> Result<Value, Error> {
+    fn eval(self, env: Self::Env) -> Result<Value, Error> {
         match self.list.eval(env)? {
             Value::Cons { fst, .. } => Ok(*fst),
             Value::Nil { .. } => Err(Error::HeadOfEmptyList),
@@ -54,11 +54,11 @@ impl Eval for Head {
     }
 }
 
-impl Eval for Tail {
+impl<'a> Eval<'a> for Tail {
     type Value = Value;
     type Error = Error;
     type Env = ();
-    fn eval(self, env: &mut Self::Env) -> Result<Value, Error> {
+    fn eval(self, env: Self::Env) -> Result<Value, Error> {
         match self.list.eval(env)? {
             Value::Cons { rst, .. } => Ok(*rst),
             Value::Nil { .. } => Err(Error::TailOfEmptyList),
@@ -77,7 +77,7 @@ mod list_tests {
         let result = Nil {
             inner_type: Type::Bool,
         }
-        .eval(&mut Default::default())
+        .eval(Default::default())
         .unwrap();
         let expected = Value::Nil {
             inner_type: Type::Bool,
@@ -97,7 +97,7 @@ mod list_tests {
                 .into(),
             ),
         }
-        .eval(&mut Default::default())
+        .eval(Default::default())
         .unwrap();
         let expected = Value::Cons {
             inner_type: Type::Bool,
@@ -120,7 +120,7 @@ mod list_tests {
                 .into(),
             ),
         }
-        .eval(&mut Default::default())
+        .eval(Default::default())
         .unwrap();
         let expected = Value::True;
         assert_eq!(result, expected)
@@ -144,7 +144,7 @@ mod list_tests {
                 .into(),
             ),
         }
-        .eval(&mut Default::default())
+        .eval(Default::default())
         .unwrap();
         let expected = Value::False;
         assert_eq!(result, expected)
@@ -161,7 +161,7 @@ mod list_tests {
                 .into(),
             ),
         }
-        .eval(&mut Default::default());
+        .eval(Default::default());
         assert!(result.is_err())
     }
 
@@ -183,7 +183,7 @@ mod list_tests {
                 .into(),
             ),
         }
-        .eval(&mut Default::default())
+        .eval(Default::default())
         .unwrap();
         let expected = Value::True;
         assert_eq!(result, expected)
@@ -200,7 +200,7 @@ mod list_tests {
                 .into(),
             ),
         }
-        .eval(&mut Default::default());
+        .eval(Default::default());
         assert!(result.is_err())
     }
 
@@ -222,7 +222,7 @@ mod list_tests {
                 .into(),
             ),
         }
-        .eval(&mut Default::default())
+        .eval(Default::default())
         .unwrap();
         let expected = Value::Nil {
             inner_type: Type::Bool,

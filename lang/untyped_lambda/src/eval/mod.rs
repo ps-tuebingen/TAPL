@@ -33,12 +33,12 @@ pub fn is_value(t: &Term) -> bool {
     matches!(t, Term::Lambda(_, _))
 }
 
-impl Eval for Term {
+impl<'a> Eval<'a> for Term {
     type Value = Term;
     type Error = Infallible;
     type Env = EvalOrder;
 
-    fn eval(self, eo: &mut EvalOrder) -> Result<Self::Value, Self::Error> {
+    fn eval(self, eo: EvalOrder) -> Result<Self::Value, Self::Error> {
         let eval_once = eo.get_eval_fun();
         let evaled = eval_once(self.clone());
         if self == evaled {

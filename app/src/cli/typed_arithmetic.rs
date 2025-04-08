@@ -27,7 +27,7 @@ pub fn exec(args: Args) -> Result<(), Box<dyn Error>> {
         let checked_str = display_or_debug(&checked, args.debug);
         println!("checked: {checked_str}");
     }
-    let evaled = parsed.eval(&mut Default::default())?;
+    let evaled = parsed.eval(Default::default())?;
     let evaled_str = display_or_debug(&evaled, args.debug);
     println!("evaled: {evaled_str}");
     Ok(())

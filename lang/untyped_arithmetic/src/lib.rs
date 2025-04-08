@@ -43,11 +43,11 @@ impl fmt::Display for Value {
     }
 }
 
-impl Eval for Term {
+impl<'a> Eval<'a> for Term {
     type Value = Value;
     type Error = String;
     type Env = ();
-    fn eval(self, _env: &mut Self::Env) -> Result<Self::Value, Self::Error> {
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Error> {
         match self {
             Term::True => Ok(Value::True),
             Term::False => Ok(Value::False),
@@ -106,7 +106,7 @@ mod term_tests {
         let result = Term::Succ(Box::new(Term::Succ(Box::new(Term::Pred(Box::new(
             Term::Zero,
         ))))))
-        .eval(&mut Default::default())
+        .eval(Default::default())
         .unwrap();
         let expected = Value::Numerical(1);
         assert_eq!(result, expected)
@@ -119,7 +119,7 @@ mod term_tests {
             Box::new(Term::Pred(Box::new(Term::Succ(Box::new(Term::Zero))))),
             Box::new(Term::Succ(Box::new(Term::Pred(Box::new(Term::Zero))))),
         )
-        .eval(&mut Default::default())
+        .eval(Default::default())
         .unwrap();
         let expected = Value::Numerical(0);
         assert_eq!(result, expected)

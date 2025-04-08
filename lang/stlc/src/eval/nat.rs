@@ -2,20 +2,20 @@ use super::{errors::Error, Value};
 use crate::syntax::{IsZero, Pred, Succ, Zero};
 use common::Eval;
 
-impl Eval for Zero {
+impl<'a> Eval<'a> for Zero {
     type Value = Value;
     type Error = Error;
     type Env = ();
-    fn eval(self, _: &mut Self::Env) -> Result<Value, Error> {
+    fn eval(self, _: Self::Env) -> Result<Value, Error> {
         Ok(Value::Zero)
     }
 }
 
-impl Eval for Succ {
+impl<'a> Eval<'a> for Succ {
     type Value = Value;
     type Error = Error;
     type Env = ();
-    fn eval(self, env: &mut Self::Env) -> Result<Value, Error> {
+    fn eval(self, env: Self::Env) -> Result<Value, Error> {
         let inner_res = self.term.eval(env)?;
         match inner_res {
             Value::Zero => Ok(Value::Succ(Box::new(Value::Zero))),
@@ -26,11 +26,11 @@ impl Eval for Succ {
     }
 }
 
-impl Eval for Pred {
+impl<'a> Eval<'a> for Pred {
     type Value = Value;
     type Error = Error;
     type Env = ();
-    fn eval(self, env: &mut Self::Env) -> Result<Value, Error> {
+    fn eval(self, env: Self::Env) -> Result<Value, Error> {
         let inner_res = self.term.eval(env)?;
         match inner_res {
             Value::Zero => Ok(Value::Pred(Box::new(Value::Zero))),
@@ -41,11 +41,11 @@ impl Eval for Pred {
     }
 }
 
-impl Eval for IsZero {
+impl<'a> Eval<'a> for IsZero {
     type Value = Value;
     type Error = Error;
     type Env = ();
-    fn eval(self, env: &mut Self::Env) -> Result<Value, Error> {
+    fn eval(self, env: Self::Env) -> Result<Value, Error> {
         let inner_res = self.term.eval(env)?;
         match inner_res {
             Value::Zero => Ok(Value::True),
@@ -62,7 +62,7 @@ mod nat_tests {
 
     #[test]
     fn eval_zero() {
-        let result = Zero.eval(&mut Default::default()).unwrap();
+        let result = Zero.eval(Default::default()).unwrap();
         let expected = Value::Zero;
         assert_eq!(result, expected)
     }
@@ -77,7 +77,7 @@ mod nat_tests {
                 .into(),
             ),
         }
-        .eval(&mut Default::default())
+        .eval(Default::default())
         .unwrap();
         let expected = Value::Succ(Box::new(Value::Succ(Box::new(Value::Zero))));
         assert_eq!(result, expected)
@@ -103,7 +103,7 @@ mod nat_tests {
                 .into(),
             ),
         }
-        .eval(&mut Default::default())
+        .eval(Default::default())
         .unwrap();
         let expected = Value::Zero;
         assert_eq!(result, expected)
@@ -124,7 +124,7 @@ mod nat_tests {
                 .into(),
             ),
         }
-        .eval(&mut Default::default())
+        .eval(Default::default())
         .unwrap();
         let expected = Value::Pred(Box::new(Value::Zero));
         assert_eq!(result, expected)
@@ -145,7 +145,7 @@ mod nat_tests {
                 .into(),
             ),
         }
-        .eval(&mut Default::default())
+        .eval(Default::default())
         .unwrap();
         let expected = Value::Pred(Box::new(Value::Pred(Box::new(Value::Pred(Box::new(
             Value::Zero,
@@ -158,7 +158,7 @@ mod nat_tests {
         let result = IsZero {
             term: Box::new(Zero.into()),
         }
-        .eval(&mut Default::default())
+        .eval(Default::default())
         .unwrap();
         let expected = Value::True;
         assert_eq!(result, expected)
@@ -174,7 +174,7 @@ mod nat_tests {
                 .into(),
             ),
         }
-        .eval(&mut Default::default())
+        .eval(Default::default())
         .unwrap();
         let expected = Value::False;
         assert_eq!(result, expected)
@@ -190,7 +190,7 @@ mod nat_tests {
                 .into(),
             ),
         }
-        .eval(&mut Default::default())
+        .eval(Default::default())
         .unwrap();
         let expected = Value::False;
         assert_eq!(result, expected)

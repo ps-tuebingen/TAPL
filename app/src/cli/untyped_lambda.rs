@@ -53,7 +53,7 @@ pub fn exec(args: Args) -> Result<(), Box<dyn Error>> {
         let parsed_str = display_or_debug(&parsed, args.debug);
         println!("parsed: {parsed_str}");
     }
-    let evaled = parsed.eval(&mut args.eo.to_lam_eval_order()).unwrap();
+    let evaled = parsed.eval(args.eo.to_lam_eval_order()).unwrap();
     let evaled_str = display_or_debug(&evaled, args.debug);
     println!("evaluated: {evaled_str}");
     Ok(())

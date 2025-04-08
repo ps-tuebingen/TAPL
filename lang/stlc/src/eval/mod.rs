@@ -27,7 +27,7 @@ mod var_tests {
 
     #[test]
     fn eval_var() {
-        let result = Term::Var("x".to_owned()).eval(&mut Default::default());
+        let result = Term::Var("x".to_owned()).eval(Default::default());
         assert!(result.is_err())
     }
 }

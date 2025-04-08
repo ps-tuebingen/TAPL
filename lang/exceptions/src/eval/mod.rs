@@ -23,14 +23,14 @@ mod eval_tests {
 
     #[test]
     fn eval1() {
-        let result = example_term1().eval(&mut Default::default()).unwrap();
+        let result = example_term1().eval(Default::default()).unwrap();
         let expected = Value::Unit;
         assert_eq!(result, expected)
     }
 
     #[test]
     fn eval2() {
-        let result = example_term2().eval(&mut Default::default()).unwrap();
+        let result = example_term2().eval(Default::default()).unwrap();
         let expected = Value::Unit;
         assert_eq!(result, expected)
     }

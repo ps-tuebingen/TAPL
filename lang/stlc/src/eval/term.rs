@@ -1,11 +1,11 @@
 use super::{errors::Error, Eval, Value};
 use crate::syntax::Term;
 
-impl Eval for Term {
+impl<'a> Eval<'a> for Term {
     type Value = Value;
     type Error = Error;
     type Env = ();
-    fn eval(self, env: &mut Self::Env) -> Result<Value, Error> {
+    fn eval(self, env: Self::Env) -> Result<Value, Error> {
         match self {
             Term::Var(v) => Err(Error::FreeVariable { var: v }),
             Term::Lambda(lam) => lam.eval(env),

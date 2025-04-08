@@ -5,32 +5,32 @@ use crate::{
 };
 use common::Eval;
 
-impl Eval for Something {
+impl<'a> Eval<'a> for Something {
     type Value = Value;
     type Error = Error;
     type Env = ();
-    fn eval(self, env: &mut Self::Env) -> Result<Value, Error> {
+    fn eval(self, env: Self::Env) -> Result<Value, Error> {
         let val = self.term.eval(env)?;
         Ok(Value::Something(Box::new(val)))
     }
 }
 
-impl Eval for Nothing {
+impl<'a> Eval<'a> for Nothing {
     type Value = Value;
     type Error = Error;
     type Env = ();
-    fn eval(self, _: &mut Self::Env) -> Result<Value, Error> {
+    fn eval(self, _: Self::Env) -> Result<Value, Error> {
         Ok(Value::Nothing {
             inner_type: self.inner_type,
         })
     }
 }
 
-impl Eval for SomeCase {
+impl<'a> Eval<'a> for SomeCase {
     type Value = Value;
     type Error = Error;
     type Env = ();
-    fn eval(self, env: &mut Self::Env) -> Result<Value, Error> {
+    fn eval(self, env: Self::Env) -> Result<Value, Error> {
         let bound_res = self.bound_term.eval(env)?;
         match bound_res {
             Value::Nothing { .. } => self.none_rhs.eval(env),
@@ -50,7 +50,7 @@ mod optional_tests {
         let result = Nothing {
             inner_type: Type::Bool,
         }
-        .eval(&mut Default::default())
+        .eval(Default::default())
         .unwrap();
         let expected = Value::Nothing {
             inner_type: Type::Bool,
@@ -63,7 +63,7 @@ mod optional_tests {
         let result = Something {
             term: Box::new(Zero.into()),
         }
-        .eval(&mut Default::default())
+        .eval(Default::default())
         .unwrap();
         let expected = Value::Something(Box::new(Value::Zero));
         assert_eq!(result, expected)

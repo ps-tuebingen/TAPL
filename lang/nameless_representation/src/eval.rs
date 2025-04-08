@@ -2,11 +2,11 @@ use super::nameless_terms::Term;
 use common::Eval;
 use std::convert::Infallible;
 
-impl Eval for Term {
+impl<'a> Eval<'a> for Term {
     type Value = Term;
     type Error = Infallible;
     type Env = ();
-    fn eval(self, _env: &mut Self::Env) -> Result<Self::Value, Self::Error> {
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Error> {
         let evaled = eval_once(self.clone());
         if evaled == self {
             Ok(evaled)

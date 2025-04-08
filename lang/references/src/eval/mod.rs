@@ -17,10 +17,10 @@ pub fn fresh_loc(st: &Store) -> Loc {
     next_loc
 }
 
-impl Eval for Term {
+impl<'a> Eval<'a> for Term {
     type Value = Value;
     type Error = Error;
-    type Env = Store;
+    type Env = &'a mut Store;
 
     fn eval(self, st: &mut Store) -> Result<Value, Error> {
         match self {

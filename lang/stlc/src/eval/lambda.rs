@@ -5,11 +5,11 @@ use crate::{
 };
 use common::Eval;
 
-impl Eval for Lambda {
+impl<'a> Eval<'a> for Lambda {
     type Value = Value;
     type Error = Error;
     type Env = ();
-    fn eval(self, _: &mut Self::Env) -> Result<Value, Error> {
+    fn eval(self, _: Self::Env) -> Result<Value, Error> {
         Ok(Value::Lambda {
             var: self.var.clone(),
             annot: self.annot.clone(),
@@ -18,11 +18,11 @@ impl Eval for Lambda {
     }
 }
 
-impl Eval for App {
+impl<'a> Eval<'a> for App {
     type Value = Value;
     type Error = Error;
     type Env = ();
-    fn eval(self, env: &mut Self::Env) -> Result<Value, Error> {
+    fn eval(self, env: Self::Env) -> Result<Value, Error> {
         let val1 = self.fun.eval(env)?;
         match val1 {
             Value::Lambda {
@@ -50,7 +50,7 @@ mod lambda_tests {
             annot: Type::Bool,
             body: Box::new("x".to_owned().into()),
         }
-        .eval(&mut Default::default())
+        .eval(Default::default())
         .unwrap();
         let expected = Value::Lambda {
             var: "x".to_owned(),
@@ -73,7 +73,7 @@ mod lambda_tests {
             ),
             arg: Box::new(True.into()),
         }
-        .eval(&mut Default::default())
+        .eval(Default::default())
         .unwrap();
         let expected = Value::True;
         assert_eq!(result, expected)

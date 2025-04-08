@@ -2,11 +2,11 @@ use super::{errors::Error, Value};
 use crate::{syntax::Let, traits::subst::Subst};
 use common::Eval;
 
-impl Eval for Let {
+impl<'a> Eval<'a> for Let {
     type Value = Value;
     type Error = Error;
     type Env = ();
-    fn eval(self, env: &mut Self::Env) -> Result<Value, Error> {
+    fn eval(self, env: Self::Env) -> Result<Value, Error> {
         let bound_val = self.bound_term.eval(env)?;
         self.in_term.subst(&self.var, bound_val.into()).eval(env)
     }
@@ -36,7 +36,7 @@ mod let_tests {
                 .into(),
             ),
         }
-        .eval(&mut Default::default())
+        .eval(Default::default())
         .unwrap();
         let expected = Value::Zero;
         assert_eq!(result, expected)

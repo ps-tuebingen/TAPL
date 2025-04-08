@@ -2,11 +2,11 @@ use super::{errors::Error, Value};
 use crate::syntax::Ascribe;
 use common::Eval;
 
-impl Eval for Ascribe {
+impl<'a> Eval<'a> for Ascribe {
     type Value = Value;
     type Error = Error;
     type Env = ();
-    fn eval(self, env: &mut Self::Env) -> Result<Value, Error> {
+    fn eval(self, env: Self::Env) -> Result<Value, Error> {
         self.term.eval(env)
     }
 }
@@ -22,7 +22,7 @@ mod ascribe_tests {
             term: Box::new(True.into()),
             ty: Type::Bool,
         }
-        .eval(&mut Default::default())
+        .eval(Default::default())
         .unwrap();
         let expected = Value::True;
         assert_eq!(result, expected)

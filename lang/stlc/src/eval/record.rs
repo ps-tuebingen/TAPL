@@ -3,11 +3,11 @@ use crate::syntax::{Record, RecordProj};
 use common::Eval;
 use std::collections::HashMap;
 
-impl Eval for Record {
+impl<'a> Eval<'a> for Record {
     type Value = Value;
     type Error = Error;
     type Env = ();
-    fn eval(self, env: &mut Self::Env) -> Result<Value, Error> {
+    fn eval(self, env: Self::Env) -> Result<Value, Error> {
         let mut vals = HashMap::new();
         for (label, term) in self.records.into_iter() {
             let val = term.eval(env)?;
@@ -17,11 +17,11 @@ impl Eval for Record {
     }
 }
 
-impl Eval for RecordProj {
+impl<'a> Eval<'a> for RecordProj {
     type Value = Value;
     type Error = Error;
     type Env = ();
-    fn eval(self, env: &mut Self::Env) -> Result<Value, Error> {
+    fn eval(self, env: Self::Env) -> Result<Value, Error> {
         match self.record.eval(env)? {
             Value::Record(records) => {
                 records
@@ -50,7 +50,7 @@ mod record_tests {
                 ("label2".to_owned(), True.into()),
             ]),
         }
-        .eval(&mut Default::default())
+        .eval(Default::default())
         .unwrap();
         let expected = Value::Record(HashMap::from([
             ("label1".to_owned(), Value::Zero),
@@ -73,7 +73,7 @@ mod record_tests {
             ),
             label: "label1".to_owned(),
         }
-        .eval(&mut Default::default())
+        .eval(Default::default())
         .unwrap();
         let expected = Value::Zero;
         assert_eq!(result, expected)

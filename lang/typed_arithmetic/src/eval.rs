@@ -22,12 +22,12 @@ impl Value {
     }
 }
 
-impl Eval for Term {
+impl<'a> Eval<'a> for Term {
     type Value = Value;
     type Error = Error;
     type Env = ();
 
-    fn eval(self, _env: &mut Self::Env) -> Result<Self::Value, Self::Error> {
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Error> {
         match self {
             Term::Zero => Ok(Value::Numerical(0)),
             Term::True => Ok(Value::True),

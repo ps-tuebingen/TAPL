@@ -29,7 +29,7 @@ impl Test for EvalTest {
             Ok(p) => p,
             Err(err) => return TestResult::from_err(err),
         };
-        let evaled = parsed.eval(&mut Default::default()).unwrap();
+        let evaled = parsed.eval(Default::default()).unwrap();
         TestResult::from_eq(&evaled, &self.expected)
     }
 }

@@ -41,12 +41,12 @@ impl From<Value> for Term {
     }
 }
 
-impl Eval for Term {
+impl<'a> Eval<'a> for Term {
     type Value = Value;
     type Error = Error;
-    type Env = ClassTable;
+    type Env = &'a ClassTable;
 
-    fn eval(self, ct: &mut ClassTable) -> Result<Value, Error> {
+    fn eval(self, ct: &'a ClassTable) -> Result<Value, Error> {
         match self {
             Term::Var(v) => Err(Error::FreeVar(v)),
             Term::Const(i) => Ok(Value::Const(i)),

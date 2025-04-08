@@ -5,11 +5,11 @@ use crate::{
 };
 use common::Eval;
 
-impl Eval for Fix {
+impl<'a> Eval<'a> for Fix {
     type Value = Value;
     type Error = Error;
     type Env = ();
-    fn eval(self, env: &mut Self::Env) -> Result<Value, Error> {
+    fn eval(self, env: Self::Env) -> Result<Value, Error> {
         let fix_val = self.term.eval(env)?;
         if let Value::Lambda { var, annot, body } = fix_val {
             body.clone()
@@ -117,7 +117,7 @@ mod fix_tests {
             ),
             arg: Box::new(Zero.into()),
         }
-        .eval(&mut Default::default())
+        .eval(Default::default())
         .unwrap();
         let expected = Value::True;
         assert_eq!(result, expected)

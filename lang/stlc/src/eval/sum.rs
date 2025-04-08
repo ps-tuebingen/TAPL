@@ -4,11 +4,11 @@ use crate::{
     traits::subst::Subst,
 };
 
-impl Eval for Left {
+impl<'a> Eval<'a> for Left {
     type Value = Value;
     type Error = Error;
     type Env = ();
-    fn eval(self, env: &mut Self::Env) -> Result<Value, Error> {
+    fn eval(self, env: Self::Env) -> Result<Value, Error> {
         let left_val = self.left_term.eval(env)?;
         Ok(Value::Left {
             left_term: Box::new(left_val),
@@ -17,11 +17,11 @@ impl Eval for Left {
     }
 }
 
-impl Eval for Right {
+impl<'a> Eval<'a> for Right {
     type Value = Value;
     type Error = Error;
     type Env = ();
-    fn eval(self, env: &mut Self::Env) -> Result<Value, Error> {
+    fn eval(self, env: Self::Env) -> Result<Value, Error> {
         let right_val = self.right_term.eval(env)?;
         Ok(Value::Right {
             right_term: Box::new(right_val),
@@ -30,11 +30,11 @@ impl Eval for Right {
     }
 }
 
-impl Eval for SumCase {
+impl<'a> Eval<'a> for SumCase {
     type Value = Value;
     type Error = Error;
     type Env = ();
-    fn eval(self, env: &mut Self::Env) -> Result<Value, Error> {
+    fn eval(self, env: Self::Env) -> Result<Value, Error> {
         let bound_val = self.bound_term.eval(env)?;
         match bound_val {
             Value::Left {
@@ -70,7 +70,7 @@ mod sum_tests {
             left_term: Box::new(Zero.into()),
             ty: Type::Bool,
         }
-        .eval(&mut Default::default())
+        .eval(Default::default())
         .unwrap();
         let expected = Value::Left {
             left_term: Box::new(Value::Zero),
@@ -85,7 +85,7 @@ mod sum_tests {
             right_term: Box::new(True.into()),
             ty: Type::Nat,
         }
-        .eval(&mut Default::default())
+        .eval(Default::default())
         .unwrap();
         let expected = Value::Right {
             right_term: Box::new(Value::True),
@@ -114,7 +114,7 @@ mod sum_tests {
             right_var: "x".to_owned(),
             right_term: Box::new("x".to_owned().into()),
         }
-        .eval(&mut Default::default())
+        .eval(Default::default())
         .unwrap();
         let expected = Value::True;
         assert_eq!(result, expected)
@@ -140,7 +140,7 @@ mod sum_tests {
             right_var: "x".to_owned(),
             right_term: Box::new("x".to_owned().into()),
         }
-        .eval(&mut Default::default())
+        .eval(Default::default())
         .unwrap();
         let expected = Value::True;
         assert_eq!(result, expected)

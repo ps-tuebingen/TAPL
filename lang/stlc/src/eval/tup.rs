@@ -1,11 +1,11 @@
 use super::{errors::Error, Eval, Value};
 use crate::syntax::{Proj, Tup};
 
-impl Eval for Tup {
+impl<'a> Eval<'a> for Tup {
     type Value = Value;
     type Error = Error;
     type Env = ();
-    fn eval(self, env: &mut Self::Env) -> Result<Value, Error> {
+    fn eval(self, env: Self::Env) -> Result<Value, Error> {
         let mut vals = vec![];
         for term in self.terms.into_iter() {
             let val = term.eval(env)?;
@@ -15,11 +15,11 @@ impl Eval for Tup {
     }
 }
 
-impl Eval for Proj {
+impl<'a> Eval<'a> for Proj {
     type Value = Value;
     type Error = Error;
     type Env = ();
-    fn eval(self, env: &mut Self::Env) -> Result<Value, Error> {
+    fn eval(self, env: Self::Env) -> Result<Value, Error> {
         let tup_val = self.tup.eval(env)?;
         if let Value::Tup(vals) = tup_val {
             vals.get(self.ind)
@@ -55,7 +55,7 @@ mod tup_tests {
                 .into(),
             ],
         }
-        .eval(&mut Default::default())
+        .eval(Default::default())
         .unwrap();
         let expected = Value::Tup(vec![
             Value::Zero,
@@ -87,7 +87,7 @@ mod tup_tests {
             ),
             ind: 0,
         }
-        .eval(&mut Default::default())
+        .eval(Default::default())
         .unwrap();
         let expected = Value::Zero;
         assert_eq!(result, expected)
