@@ -5,7 +5,7 @@ use crate::{
 };
 use common::Eval;
 
-impl<'a> Eval<'a> for Something {
+impl Eval<'_> for Something {
     type Value = Value;
     type Error = Error;
     type Env = ();
@@ -15,7 +15,7 @@ impl<'a> Eval<'a> for Something {
     }
 }
 
-impl<'a> Eval<'a> for Nothing {
+impl Eval<'_> for Nothing {
     type Value = Value;
     type Error = Error;
     type Env = ();
@@ -26,7 +26,7 @@ impl<'a> Eval<'a> for Nothing {
     }
 }
 
-impl<'a> Eval<'a> for SomeCase {
+impl Eval<'_> for SomeCase {
     type Value = Value;
     type Error = Error;
     type Env = ();

@@ -5,7 +5,7 @@ use crate::{
     traits::subst::SubstTerm,
 };
 use common::Eval;
-impl<'a> Eval<'a> for Variant {
+impl Eval<'_> for Variant {
     type Value = Value;
     type Error = Error;
     type Env = ();
@@ -18,7 +18,7 @@ impl<'a> Eval<'a> for Variant {
         })
     }
 }
-impl<'a> Eval<'a> for VariantCase {
+impl Eval<'_> for VariantCase {
     type Value = Value;
     type Error = Error;
     type Env = ();

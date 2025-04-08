@@ -138,8 +138,7 @@ mod counter_tests {
             Fun::new(OpApp::new(object(), "M"), Type::Nat),
         ))
         .eval(&mut Default::default())
-        .unwrap()
-        .into();
+        .unwrap();
         result.check_equal(&expected).unwrap();
     }
 

@@ -1,7 +1,7 @@
 use super::{errors::Error, Eval, Value};
 use crate::syntax::Unit;
 
-impl<'a> Eval<'a> for Unit {
+impl Eval<'_> for Unit {
     type Value = Value;
     type Error = Error;
     type Env = ();

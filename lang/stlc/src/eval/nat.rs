@@ -2,7 +2,7 @@ use super::{errors::Error, Value};
 use crate::syntax::{IsZero, Pred, Succ, Zero};
 use common::Eval;
 
-impl<'a> Eval<'a> for Zero {
+impl Eval<'_> for Zero {
     type Value = Value;
     type Error = Error;
     type Env = ();
@@ -11,7 +11,7 @@ impl<'a> Eval<'a> for Zero {
     }
 }
 
-impl<'a> Eval<'a> for Succ {
+impl Eval<'_> for Succ {
     type Value = Value;
     type Error = Error;
     type Env = ();
@@ -26,7 +26,7 @@ impl<'a> Eval<'a> for Succ {
     }
 }
 
-impl<'a> Eval<'a> for Pred {
+impl Eval<'_> for Pred {
     type Value = Value;
     type Error = Error;
     type Env = ();
@@ -41,7 +41,7 @@ impl<'a> Eval<'a> for Pred {
     }
 }
 
-impl<'a> Eval<'a> for IsZero {
+impl Eval<'_> for IsZero {
     type Value = Value;
     type Error = Error;
     type Env = ();

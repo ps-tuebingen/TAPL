@@ -4,7 +4,7 @@ use crate::{
     terms::{Fst, Pair, Snd},
 };
 use common::Eval;
-impl<'a> Eval<'a> for Pair {
+impl Eval<'_> for Pair {
     type Value = Value;
     type Error = Error;
     type Env = ();
@@ -17,7 +17,7 @@ impl<'a> Eval<'a> for Pair {
         })
     }
 }
-impl<'a> Eval<'a> for Fst {
+impl Eval<'_> for Fst {
     type Value = Value;
     type Error = Error;
     type Env = ();
@@ -30,7 +30,7 @@ impl<'a> Eval<'a> for Fst {
     }
 }
 
-impl<'a> Eval<'a> for Snd {
+impl Eval<'_> for Snd {
     type Value = Value;
     type Error = Error;
     type Env = ();

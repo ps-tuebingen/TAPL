@@ -2,7 +2,7 @@ use super::nameless_terms::Term;
 use common::Eval;
 use std::convert::Infallible;
 
-impl<'a> Eval<'a> for Term {
+impl Eval<'_> for Term {
     type Value = Term;
     type Error = Infallible;
     type Env = ();

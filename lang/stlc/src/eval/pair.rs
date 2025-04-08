@@ -2,7 +2,7 @@ use super::{errors::Error, Value};
 use crate::syntax::{Pair, Proj1, Proj2};
 use common::Eval;
 
-impl<'a> Eval<'a> for Pair {
+impl Eval<'_> for Pair {
     type Value = Value;
     type Error = Error;
     type Env = ();
@@ -16,7 +16,7 @@ impl<'a> Eval<'a> for Pair {
     }
 }
 
-impl<'a> Eval<'a> for Proj1 {
+impl Eval<'_> for Proj1 {
     type Value = Value;
     type Error = Error;
     type Env = ();
@@ -28,7 +28,7 @@ impl<'a> Eval<'a> for Proj1 {
     }
 }
 
-impl<'a> Eval<'a> for Proj2 {
+impl Eval<'_> for Proj2 {
     type Value = Value;
     type Error = Error;
     type Env = ();

@@ -43,7 +43,7 @@ impl fmt::Display for Value {
     }
 }
 
-impl<'a> Eval<'a> for Term {
+impl Eval<'_> for Term {
     type Value = Value;
     type Error = String;
     type Env = ();

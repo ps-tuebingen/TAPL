@@ -5,7 +5,7 @@ use crate::{
 };
 use common::Eval;
 
-impl<'a> Eval<'a> for Fold {
+impl Eval<'_> for Fold {
     type Value = Value;
     type Error = Error;
     type Env = ();
@@ -18,7 +18,7 @@ impl<'a> Eval<'a> for Fold {
     }
 }
 
-impl<'a> Eval<'a> for Unfold {
+impl Eval<'_> for Unfold {
     type Value = Value;
     type Error = Error;
     type Env = ();

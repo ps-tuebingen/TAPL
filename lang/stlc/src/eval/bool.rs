@@ -2,7 +2,7 @@ use super::{errors::Error, Value};
 use crate::syntax::{False, If, True};
 use common::Eval;
 
-impl<'a> Eval<'a> for True {
+impl Eval<'_> for True {
     type Value = Value;
     type Error = Error;
     type Env = ();
@@ -11,7 +11,7 @@ impl<'a> Eval<'a> for True {
     }
 }
 
-impl<'a> Eval<'a> for False {
+impl Eval<'_> for False {
     type Value = Value;
     type Error = Error;
     type Env = ();
@@ -20,7 +20,7 @@ impl<'a> Eval<'a> for False {
     }
 }
 
-impl<'a> Eval<'a> for If {
+impl Eval<'_> for If {
     type Value = Value;
     type Error = Error;
     type Env = ();

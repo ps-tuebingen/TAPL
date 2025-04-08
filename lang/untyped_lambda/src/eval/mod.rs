@@ -33,7 +33,7 @@ pub fn is_value(t: &Term) -> bool {
     matches!(t, Term::Lambda(_, _))
 }
 
-impl<'a> Eval<'a> for Term {
+impl Eval<'_> for Term {
     type Value = Term;
     type Error = Infallible;
     type Env = EvalOrder;

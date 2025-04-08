@@ -5,7 +5,7 @@ use crate::{
 };
 use common::Eval;
 
-impl<'a> Eval<'a> for Fix {
+impl Eval<'_> for Fix {
     type Value = Value;
     type Error = Error;
     type Env = ();

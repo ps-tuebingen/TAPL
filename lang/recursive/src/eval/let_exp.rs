@@ -2,7 +2,7 @@ use super::Value;
 use crate::{errors::Error, terms::Let, traits::subst::SubstTerm};
 use common::Eval;
 
-impl<'a> Eval<'a> for Let {
+impl Eval<'_> for Let {
     type Value = Value;
     type Error = Error;
     type Env = ();

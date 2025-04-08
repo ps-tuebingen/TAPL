@@ -1,7 +1,7 @@
 use super::{errors::Error, Eval, Value};
 use crate::syntax::{Proj, Tup};
 
-impl<'a> Eval<'a> for Tup {
+impl Eval<'_> for Tup {
     type Value = Value;
     type Error = Error;
     type Env = ();
@@ -15,7 +15,7 @@ impl<'a> Eval<'a> for Tup {
     }
 }
 
-impl<'a> Eval<'a> for Proj {
+impl Eval<'_> for Proj {
     type Value = Value;
     type Error = Error;
     type Env = ();

@@ -2,7 +2,7 @@ use super::{errors::Error, Value};
 use crate::syntax::{Cons, Head, IsNil, Nil, Tail};
 use common::Eval;
 
-impl<'a> Eval<'a> for Nil {
+impl Eval<'_> for Nil {
     type Value = Value;
     type Error = Error;
     type Env = ();
@@ -13,7 +13,7 @@ impl<'a> Eval<'a> for Nil {
     }
 }
 
-impl<'a> Eval<'a> for Cons {
+impl Eval<'_> for Cons {
     type Value = Value;
     type Error = Error;
     type Env = ();
@@ -28,7 +28,7 @@ impl<'a> Eval<'a> for Cons {
     }
 }
 
-impl<'a> Eval<'a> for IsNil {
+impl Eval<'_> for IsNil {
     type Value = Value;
     type Error = Error;
     type Env = ();
@@ -41,7 +41,7 @@ impl<'a> Eval<'a> for IsNil {
     }
 }
 
-impl<'a> Eval<'a> for Head {
+impl Eval<'_> for Head {
     type Value = Value;
     type Error = Error;
     type Env = ();
@@ -54,7 +54,7 @@ impl<'a> Eval<'a> for Head {
     }
 }
 
-impl<'a> Eval<'a> for Tail {
+impl Eval<'_> for Tail {
     type Value = Value;
     type Error = Error;
     type Env = ();

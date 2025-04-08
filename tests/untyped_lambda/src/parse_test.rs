@@ -24,7 +24,7 @@ impl Test for ParseTest {
         let mut src = self.source_contents.clone();
         match parse(&mut src) {
             Ok(_) => TestResult::Success,
-            Err(err) => return TestResult::from_err(err),
+            Err(err) => TestResult::from_err(err),
         }
     }
 }

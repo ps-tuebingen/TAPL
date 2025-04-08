@@ -3,7 +3,7 @@ use crate::syntax::{Record, RecordProj};
 use common::Eval;
 use std::collections::HashMap;
 
-impl<'a> Eval<'a> for Record {
+impl Eval<'_> for Record {
     type Value = Value;
     type Error = Error;
     type Env = ();
@@ -17,7 +17,7 @@ impl<'a> Eval<'a> for Record {
     }
 }
 
-impl<'a> Eval<'a> for RecordProj {
+impl Eval<'_> for RecordProj {
     type Value = Value;
     type Error = Error;
     type Env = ();

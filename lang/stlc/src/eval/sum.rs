@@ -4,7 +4,7 @@ use crate::{
     traits::subst::Subst,
 };
 
-impl<'a> Eval<'a> for Left {
+impl Eval<'_> for Left {
     type Value = Value;
     type Error = Error;
     type Env = ();
@@ -17,7 +17,7 @@ impl<'a> Eval<'a> for Left {
     }
 }
 
-impl<'a> Eval<'a> for Right {
+impl Eval<'_> for Right {
     type Value = Value;
     type Error = Error;
     type Env = ();
@@ -30,7 +30,7 @@ impl<'a> Eval<'a> for Right {
     }
 }
 
-impl<'a> Eval<'a> for SumCase {
+impl Eval<'_> for SumCase {
     type Value = Value;
     type Error = Error;
     type Env = ();

@@ -5,7 +5,7 @@ use crate::{
 };
 use common::Eval;
 
-impl<'a> Eval<'a> for Lambda {
+impl Eval<'_> for Lambda {
     type Value = Value;
     type Error = Error;
     type Env = ();
@@ -18,7 +18,7 @@ impl<'a> Eval<'a> for Lambda {
     }
 }
 
-impl<'a> Eval<'a> for App {
+impl Eval<'_> for App {
     type Value = Value;
     type Error = Error;
     type Env = ();

@@ -2,7 +2,7 @@ use super::{Error, Value};
 use crate::{syntax::App, traits::subst::Subst};
 use common::Eval;
 
-impl<'a> Eval<'a> for App {
+impl Eval<'_> for App {
     type Value = Value;
     type Error = Error;
     type Env = ();

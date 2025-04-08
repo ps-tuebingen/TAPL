@@ -5,7 +5,7 @@ use crate::{
 };
 use common::Eval;
 
-impl<'a> Eval<'a> for Term {
+impl Eval<'_> for Term {
     type Value = Value;
     type Error = Error;
     type Env = ();

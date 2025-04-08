@@ -2,7 +2,7 @@ use super::{errors::Error, Value};
 use crate::syntax::{Subst, TyApp, TyLambda};
 use common::Eval;
 
-impl<'a> Eval<'a> for TyLambda {
+impl Eval<'_> for TyLambda {
     type Value = Value;
     type Error = Error;
     type Env = ();
@@ -14,7 +14,7 @@ impl<'a> Eval<'a> for TyLambda {
     }
 }
 
-impl<'a> Eval<'a> for TyApp {
+impl Eval<'_> for TyApp {
     type Value = Value;
     type Error = Error;
     type Env = ();
