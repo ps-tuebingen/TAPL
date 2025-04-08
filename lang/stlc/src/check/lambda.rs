@@ -1,20 +1,27 @@
-use super::{errors::Error, Check, TypingEnv};
+use super::{errors::Error, TypingEnv};
 use crate::{
     syntax::{App, Lambda},
     types::Type,
 };
+use common::Typecheck;
 
-impl Check for Lambda {
-    fn check(&self, env: &mut TypingEnv) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for Lambda {
+    type Type = Type;
+    type Error = Error;
+    type Env = &'a mut TypingEnv;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
         env.used_vars.insert(self.var.clone(), self.annot.clone());
         let ty = self.body.check(env)?;
         Ok(Type::Fun(Box::new(self.annot.clone()), Box::new(ty)))
     }
 }
 
-impl Check for App {
-    fn check(&self, env: &mut TypingEnv) -> Result<Type, Error> {
-        let ty1 = self.fun.check_local(env)?;
+impl<'a> Typecheck<'a> for App {
+    type Type = Type;
+    type Error = Error;
+    type Env = &'a mut TypingEnv;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
+        let ty1 = self.fun.check(&mut env.clone())?;
         if let Type::Fun(ty11, ty12) = ty1 {
             let ty2 = self.arg.check(env)?;
             if ty2 == *ty11 {
@@ -35,8 +42,9 @@ impl Check for App {
 
 #[cfg(test)]
 mod lambda_tests {
-    use super::{App, Check, Lambda};
+    use super::{App, Lambda};
     use crate::{syntax::Zero, types::Type};
+    use common::Typecheck;
 
     #[test]
     fn check_lam() {

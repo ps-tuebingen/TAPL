@@ -1,22 +1,29 @@
-use super::{errors::Error, Check, TypingEnv};
+use super::{errors::Error, TypingEnv};
 use crate::{
     syntax::{Proj, Tup},
     types::Type,
 };
+use common::Typecheck;
 
-impl Check for Tup {
-    fn check(&self, env: &mut TypingEnv) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for Tup {
+    type Type = Type;
+    type Error = Error;
+    type Env = &'a mut TypingEnv;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
         let mut tys = vec![];
         for term in self.terms.iter() {
-            let ty = term.check_local(env)?;
+            let ty = term.check(&mut env.clone())?;
             tys.push(ty);
         }
         Ok(Type::Tup(tys))
     }
 }
 
-impl Check for Proj {
-    fn check(&self, env: &mut TypingEnv) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for Proj {
+    type Type = Type;
+    type Error = Error;
+    type Env = &'a mut TypingEnv;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
         let tup_ty = self.tup.check(env)?;
         if let Type::Tup(tys) = tup_ty {
             tys.get(self.ind)
@@ -36,11 +43,12 @@ impl Check for Proj {
 
 #[cfg(test)]
 mod tup_tests {
-    use super::{Check, Proj, Tup};
+    use super::{Proj, Tup};
     use crate::{
         syntax::{Nil, Nothing, True, Zero},
         types::Type,
     };
+    use common::Typecheck;
 
     #[test]
     fn check_tup() {

@@ -1,8 +1,12 @@
-use super::{errors::Error, Check, TypingEnv};
+use super::{errors::Error, TypingEnv};
 use crate::{syntax::Fix, types::Type};
+use common::Typecheck;
 
-impl Check for Fix {
-    fn check(&self, env: &mut TypingEnv) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for Fix {
+    type Type = Type;
+    type Error = Error;
+    type Env = &'a mut TypingEnv;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
         let ty = self.term.check(env)?;
         if let Type::Fun(ty1, ty2) = ty {
             if *ty1 == *ty2 {
@@ -23,8 +27,9 @@ impl Check for Fix {
 
 #[cfg(test)]
 mod fix_tests {
-    use super::{Check, Fix};
+    use super::Fix;
     use crate::{syntax::Lambda, types::Type};
+    use common::Typecheck;
 
     #[test]
     fn check_fix() {

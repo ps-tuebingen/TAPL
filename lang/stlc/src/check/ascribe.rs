@@ -1,8 +1,12 @@
-use super::{errors::Error, Check, TypingEnv};
+use super::{errors::Error, TypingEnv};
 use crate::{syntax::Ascribe, types::Type};
+use common::Typecheck;
 
-impl Check for Ascribe {
-    fn check(&self, env: &mut TypingEnv) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for Ascribe {
+    type Type = Type;
+    type Error = Error;
+    type Env = &'a mut TypingEnv;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
         let ty1 = self.term.check(env)?;
         if self.ty == ty1 {
             Ok(ty1)
@@ -17,8 +21,9 @@ impl Check for Ascribe {
 
 #[cfg(test)]
 mod ascribe_tests {
-    use super::{Ascribe, Check};
+    use super::Ascribe;
     use crate::{syntax::Zero, types::Type};
+    use common::Typecheck;
 
     #[test]
     fn check_ascribe() {

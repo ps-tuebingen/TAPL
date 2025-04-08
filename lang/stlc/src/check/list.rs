@@ -1,18 +1,25 @@
-use super::{errors::Error, Check, TypingEnv};
+use super::{errors::Error, TypingEnv};
 use crate::{
     syntax::{Cons, Head, IsNil, Nil, Tail},
     types::Type,
 };
+use common::Typecheck;
 
-impl Check for Nil {
-    fn check(&self, _: &mut TypingEnv) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for Nil {
+    type Type = Type;
+    type Error = Error;
+    type Env = &'a mut TypingEnv;
+    fn check(&self, _: Self::Env) -> Result<Self::Type, Self::Error> {
         Ok(Type::List(Box::new(self.inner_type.clone())))
     }
 }
 
-impl Check for Cons {
-    fn check(&self, env: &mut TypingEnv) -> Result<Type, Error> {
-        let fst_ty = self.fst.check_local(env)?;
+impl<'a> Typecheck<'a> for Cons {
+    type Type = Type;
+    type Error = Error;
+    type Env = &'a mut TypingEnv;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
+        let fst_ty = self.fst.check(&mut env.clone())?;
         if fst_ty == self.inner_type {
             Ok(())
         } else {
@@ -42,8 +49,11 @@ impl Check for Cons {
     }
 }
 
-impl Check for IsNil {
-    fn check(&self, env: &mut TypingEnv) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for IsNil {
+    type Type = Type;
+    type Error = Error;
+    type Env = &'a mut TypingEnv;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
         let lst_ty = self.list.check(env)?;
         if let Type::List(ty1) = lst_ty {
             if *ty1 == self.inner_type {
@@ -63,8 +73,11 @@ impl Check for IsNil {
     }
 }
 
-impl Check for Head {
-    fn check(&self, env: &mut TypingEnv) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for Head {
+    type Type = Type;
+    type Error = Error;
+    type Env = &'a mut TypingEnv;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
         let lst_ty = self.list.check(env)?;
         if let Type::List(ty1) = lst_ty {
             if *ty1 == self.inner_type {
@@ -84,8 +97,11 @@ impl Check for Head {
     }
 }
 
-impl Check for Tail {
-    fn check(&self, env: &mut TypingEnv) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for Tail {
+    type Type = Type;
+    type Error = Error;
+    type Env = &'a mut TypingEnv;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
         let lst_ty = self.list.check(env)?;
         if let Type::List(ty1) = lst_ty {
             if self.inner_type == *ty1 {
@@ -107,8 +123,9 @@ impl Check for Tail {
 
 #[cfg(test)]
 mod list_tests {
-    use super::{Check, Cons, Head, IsNil, Nil, Tail};
+    use super::{Cons, Head, IsNil, Nil, Tail};
     use crate::{syntax::Zero, types::Type};
+    use common::Typecheck;
 
     #[test]
     fn check_nil() {

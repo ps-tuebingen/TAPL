@@ -1,11 +1,15 @@
-use super::{errors::Error, Check, TypingEnv};
+use super::{errors::Error, TypingEnv};
 use crate::{
     syntax::{Left, Right, SumCase},
     types::Type,
 };
+use common::Typecheck;
 
-impl Check for Left {
-    fn check(&self, env: &mut TypingEnv) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for Left {
+    type Type = Type;
+    type Error = Error;
+    type Env = &'a mut TypingEnv;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
         let ty = self.left_term.check(env)?;
         let (annot_l, annot_r) = if let Type::Sum(annot_left, annot_right) = self.ty.clone() {
             (annot_left, annot_right)
@@ -25,8 +29,11 @@ impl Check for Left {
     }
 }
 
-impl Check for Right {
-    fn check(&self, env: &mut TypingEnv) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for Right {
+    type Type = Type;
+    type Error = Error;
+    type Env = &'a mut TypingEnv;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
         let ty = self.right_term.check(env)?;
         let (annot_l, annot_r) = if let Type::Sum(annot_left, annot_right) = self.ty.clone() {
             (annot_left, annot_right)
@@ -47,12 +54,15 @@ impl Check for Right {
     }
 }
 
-impl Check for SumCase {
-    fn check(&self, env: &mut TypingEnv) -> Result<Type, Error> {
-        let bound_ty = self.bound_term.check_local(env)?;
+impl<'a> Typecheck<'a> for SumCase {
+    type Type = Type;
+    type Error = Error;
+    type Env = &'a mut TypingEnv;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
+        let bound_ty = self.bound_term.check(&mut env.clone())?;
         if let Type::Sum(left_ty, right_ty) = bound_ty {
             env.used_vars.insert(self.left_var.clone(), *left_ty);
-            let left_checked = self.left_term.check_local(env)?;
+            let left_checked = self.left_term.check(&mut env.clone())?;
             env.used_vars.remove(&self.left_var);
 
             env.used_vars.insert(self.right_var.clone(), *right_ty);
@@ -76,11 +86,12 @@ impl Check for SumCase {
 
 #[cfg(test)]
 mod sum_tests {
-    use super::{Check, Left, Right, SumCase};
+    use super::{Left, Right, SumCase};
     use crate::{
         syntax::{IsZero, True, Zero},
         types::Type,
     };
+    use common::Typecheck;
 
     #[test]
     fn check_left() {

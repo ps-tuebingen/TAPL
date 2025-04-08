@@ -1,7 +1,7 @@
 use super::{display_or_debug, Source};
-use common::Eval;
+use common::{Eval, Typecheck};
 use std::error::Error;
-use stlc::{check::Check, eval_context::eval_with_context, parser::parse};
+use stlc::{eval_context::eval_with_context, parser::parse};
 
 #[derive(clap::Args)]
 pub struct Args {

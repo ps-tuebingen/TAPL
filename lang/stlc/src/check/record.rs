@@ -1,23 +1,30 @@
-use super::{errors::Error, Check, TypingEnv};
+use super::{errors::Error, TypingEnv};
 use crate::{
     syntax::{Record, RecordProj},
     types::Type,
 };
+use common::Typecheck;
 use std::collections::HashMap;
 
-impl Check for Record {
-    fn check(&self, env: &mut TypingEnv) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for Record {
+    type Type = Type;
+    type Error = Error;
+    type Env = &'a mut TypingEnv;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
         let mut tys = HashMap::new();
         for (label, term) in self.records.iter() {
-            let ty = term.check_local(env)?;
+            let ty = term.check(&mut env.clone())?;
             tys.insert(label.clone(), ty);
         }
         Ok(Type::Record(tys))
     }
 }
 
-impl Check for RecordProj {
-    fn check(&self, env: &mut TypingEnv) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for RecordProj {
+    type Type = Type;
+    type Error = Error;
+    type Env = &'a mut TypingEnv;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
         let rec_ty = self.record.check(env)?;
         if let Type::Record(tys) = rec_ty {
             tys.get(&self.label)
@@ -36,11 +43,12 @@ impl Check for RecordProj {
 
 #[cfg(test)]
 mod record_tests {
-    use super::{Check, Record, RecordProj};
+    use super::{Record, RecordProj};
     use crate::{
         syntax::{Unit, Zero},
         types::Type,
     };
+    use common::Typecheck;
     use std::collections::HashMap;
 
     #[test]

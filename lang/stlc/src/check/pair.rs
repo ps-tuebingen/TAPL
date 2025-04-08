@@ -1,19 +1,26 @@
-use super::{errors::Error, Check, TypingEnv};
+use super::{errors::Error, TypingEnv};
 use crate::{
     syntax::{Pair, Proj1, Proj2},
     types::Type,
 };
+use common::Typecheck;
 
-impl Check for Pair {
-    fn check(&self, env: &mut TypingEnv) -> Result<Type, Error> {
-        let ty1 = self.fst.check_local(env)?;
+impl<'a> Typecheck<'a> for Pair {
+    type Type = Type;
+    type Error = Error;
+    type Env = &'a mut TypingEnv;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
+        let ty1 = self.fst.check(&mut env.clone())?;
         let ty2 = self.snd.check(env)?;
         Ok(Type::Prod(Box::new(ty1), Box::new(ty2)))
     }
 }
 
-impl Check for Proj1 {
-    fn check(&self, env: &mut TypingEnv) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for Proj1 {
+    type Type = Type;
+    type Error = Error;
+    type Env = &'a mut TypingEnv;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
         let ty = self.pair.check(env)?;
         if let Type::Prod(ty1, _) = ty {
             Ok(*ty1)
@@ -26,8 +33,11 @@ impl Check for Proj1 {
     }
 }
 
-impl Check for Proj2 {
-    fn check(&self, env: &mut TypingEnv) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for Proj2 {
+    type Type = Type;
+    type Error = Error;
+    type Env = &'a mut TypingEnv;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
         let ty = self.pair.check(env)?;
         if let Type::Prod(_, ty2) = ty {
             Ok(*ty2)
@@ -42,11 +52,12 @@ impl Check for Proj2 {
 
 #[cfg(test)]
 mod pair_tests {
-    use super::{Check, Pair, Proj1, Proj2};
+    use super::{Pair, Proj1, Proj2};
     use crate::{
         syntax::{True, Zero},
         types::Type,
     };
+    use common::Typecheck;
 
     #[test]
     fn check_pair() {

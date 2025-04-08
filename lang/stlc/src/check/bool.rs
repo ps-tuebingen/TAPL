@@ -1,24 +1,34 @@
-use super::{errors::Error, Check, TypingEnv};
+use super::{errors::Error, TypingEnv};
 use crate::{
     syntax::{False, If, True},
     types::Type,
 };
+use common::Typecheck;
 
-impl Check for True {
-    fn check(&self, _: &mut TypingEnv) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for True {
+    type Type = Type;
+    type Error = Error;
+    type Env = &'a mut TypingEnv;
+    fn check(&self, _: Self::Env) -> Result<Self::Type, Self::Error> {
         Ok(Type::Bool)
     }
 }
 
-impl Check for False {
-    fn check(&self, _: &mut TypingEnv) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for False {
+    type Type = Type;
+    type Error = Error;
+    type Env = &'a mut TypingEnv;
+    fn check(&self, _: Self::Env) -> Result<Self::Type, Self::Error> {
         Ok(Type::Bool)
     }
 }
 
-impl Check for If {
-    fn check(&self, env: &mut TypingEnv) -> Result<Type, Error> {
-        let ifc_ty = self.ifc.check_local(env)?;
+impl<'a> Typecheck<'a> for If {
+    type Type = Type;
+    type Error = Error;
+    type Env = &'a mut TypingEnv;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
+        let ifc_ty = self.ifc.check(&mut env.clone())?;
         if let Type::Bool = ifc_ty {
             Ok(())
         } else {
@@ -28,7 +38,7 @@ impl Check for If {
             })
         }?;
 
-        let then_ty = self.thenc.check_local(env)?;
+        let then_ty = self.thenc.check(&mut env.clone())?;
         let else_ty = self.elsec.check(env)?;
         if then_ty == else_ty {
             Ok(then_ty)
@@ -42,8 +52,9 @@ impl Check for If {
 
 #[cfg(test)]
 mod bool_tests {
-    use super::{Check, False, If, True};
+    use super::{False, If, True};
     use crate::types::Type;
+    use common::Typecheck;
 
     #[test]
     fn check_true() {

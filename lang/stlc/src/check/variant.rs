@@ -1,11 +1,15 @@
-use super::{errors::Error, Check, TypingEnv};
+use super::{errors::Error, TypingEnv};
 use crate::{
     syntax::{Variant, VariantCase, VariantPattern},
     types::Type,
 };
+use common::Typecheck;
 
-impl Check for Variant {
-    fn check(&self, env: &mut TypingEnv) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for Variant {
+    type Type = Type;
+    type Error = Error;
+    type Env = &'a mut TypingEnv;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
         let term_ty = self.term.check(env)?;
         match &self.ty {
             Type::Variant(labels) => {
@@ -25,9 +29,12 @@ impl Check for Variant {
     }
 }
 
-impl Check for VariantCase {
-    fn check(&self, env: &mut TypingEnv) -> Result<Type, Error> {
-        let bound_ty = self.bound_term.check_local(env)?;
+impl<'a> Typecheck<'a> for VariantCase {
+    type Type = Type;
+    type Error = Error;
+    type Env = &'a mut TypingEnv;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
+        let bound_ty = self.bound_term.check(&mut env.clone())?;
         let var_ty = if let Type::Variant(vars) = bound_ty {
             Ok(vars)
         } else {
@@ -57,7 +64,7 @@ impl Check for VariantCase {
                 label: label.clone(),
             })?;
             env.used_vars.insert(bound_var.clone(), var_ty.clone());
-            let rhs_ty = rhs.check_local(env)?;
+            let rhs_ty = rhs.check(&mut env.clone())?;
             env.used_vars.remove(bound_var);
             rhs_types.push(rhs_ty);
         }
@@ -74,11 +81,12 @@ impl Check for VariantCase {
 
 #[cfg(test)]
 mod variant_tests {
-    use super::{Check, Variant, VariantCase, VariantPattern};
+    use super::{Variant, VariantCase, VariantPattern};
     use crate::{
         syntax::{IsZero, Zero},
         types::Type,
     };
+    use common::Typecheck;
     use std::collections::HashMap;
 
     #[test]

@@ -1,4 +1,5 @@
-use stlc::{check::Check, parser::parse};
+use common::Typecheck;
+use stlc::parser::parse;
 use test_common::testsuite::{Test, TestResult};
 
 pub struct TypecheckTest {

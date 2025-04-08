@@ -1,9 +1,13 @@
-use super::{errors::Error, Check, TypingEnv};
+use super::{errors::Error, TypingEnv};
 use crate::{syntax::Let, types::Type};
+use common::Typecheck;
 
-impl Check for Let {
-    fn check(&self, env: &mut TypingEnv) -> Result<Type, Error> {
-        let bound_ty = self.bound_term.check_local(env)?;
+impl<'a> Typecheck<'a> for Let {
+    type Type = Type;
+    type Error = Error;
+    type Env = &'a mut TypingEnv;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
+        let bound_ty = self.bound_term.check(&mut env.clone())?;
         env.used_vars.insert(self.var.clone(), bound_ty);
         self.in_term.check(env)
     }
@@ -11,8 +15,9 @@ impl Check for Let {
 
 #[cfg(test)]
 mod let_tests {
-    use super::{Check, Let};
+    use super::Let;
     use crate::{syntax::Zero, types::Type};
+    use common::Typecheck;
 
     #[test]
     fn check_let() {

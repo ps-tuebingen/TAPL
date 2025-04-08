@@ -1,17 +1,24 @@
-use super::{errors::Error, Check, TypingEnv};
+use super::{errors::Error, TypingEnv};
 use crate::{
     syntax::{IsZero, Pred, Succ, Zero},
     types::Type,
 };
+use common::Typecheck;
 
-impl Check for Zero {
-    fn check(&self, _: &mut TypingEnv) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for Zero {
+    type Type = Type;
+    type Error = Error;
+    type Env = &'a mut TypingEnv;
+    fn check(&self, _: Self::Env) -> Result<Self::Type, Self::Error> {
         Ok(Type::Nat)
     }
 }
 
-impl Check for Pred {
-    fn check(&self, env: &mut TypingEnv) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for Pred {
+    type Type = Type;
+    type Error = Error;
+    type Env = &'a mut TypingEnv;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
         let inner_ty = self.term.check(env)?;
         if let Type::Nat = inner_ty {
             Ok(Type::Nat)
@@ -24,8 +31,11 @@ impl Check for Pred {
     }
 }
 
-impl Check for Succ {
-    fn check(&self, env: &mut TypingEnv) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for Succ {
+    type Type = Type;
+    type Error = Error;
+    type Env = &'a mut TypingEnv;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
         let inner_ty = self.term.check(env)?;
         if let Type::Nat = inner_ty {
             Ok(Type::Nat)
@@ -38,8 +48,11 @@ impl Check for Succ {
     }
 }
 
-impl Check for IsZero {
-    fn check(&self, env: &mut TypingEnv) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for IsZero {
+    type Type = Type;
+    type Error = Error;
+    type Env = &'a mut TypingEnv;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
         let inner_ty = self.term.check(env)?;
         if let Type::Nat = inner_ty {
             Ok(Type::Bool)
@@ -53,7 +66,8 @@ impl Check for IsZero {
 }
 #[cfg(test)]
 mod nat_tests {
-    use super::{Check, Pred, Succ, Type, Zero};
+    use super::{Pred, Succ, Type, Zero};
+    use common::Typecheck;
 
     #[test]
     fn check_zero() {

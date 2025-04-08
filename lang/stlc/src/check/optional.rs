@@ -1,26 +1,36 @@
-use super::{errors::Error, Check, TypingEnv};
+use super::{errors::Error, TypingEnv};
 use crate::{
     syntax::{Nothing, SomeCase, Something},
     types::Type,
 };
+use common::Typecheck;
 
-impl Check for Nothing {
-    fn check(&self, _: &mut TypingEnv) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for Nothing {
+    type Type = Type;
+    type Error = Error;
+    type Env = &'a mut TypingEnv;
+    fn check(&self, _: Self::Env) -> Result<Self::Type, Self::Error> {
         Ok(Type::Optional(Box::new(self.inner_type.clone())))
     }
 }
 
-impl Check for Something {
-    fn check(&self, env: &mut TypingEnv) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for Something {
+    type Type = Type;
+    type Error = Error;
+    type Env = &'a mut TypingEnv;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
         let ty = self.term.check(env)?;
         Ok(Type::Optional(Box::new(ty)))
     }
 }
-impl Check for SomeCase {
-    fn check(&self, env: &mut TypingEnv) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for SomeCase {
+    type Type = Type;
+    type Error = Error;
+    type Env = &'a mut TypingEnv;
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Error> {
         let bound_ty = self.bound_term.check(env)?;
         if let Type::Optional(ty) = bound_ty {
-            let none_ty = self.none_rhs.check_local(env)?;
+            let none_ty = self.none_rhs.check(&mut env.clone())?;
             env.used_vars.insert(self.some_var.clone(), *ty);
             let some_ty = self.some_rhs.check(env)?;
             if none_ty == some_ty {
@@ -41,8 +51,9 @@ impl Check for SomeCase {
 
 #[cfg(test)]
 mod optional_tests {
-    use super::{Check, Nothing, SomeCase, Something};
+    use super::{Nothing, SomeCase, Something};
     use crate::{syntax::Zero, types::Type};
+    use common::Typecheck;
 
     #[test]
     fn check_nothing() {
