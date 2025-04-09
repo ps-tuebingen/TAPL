@@ -99,7 +99,8 @@ pub fn counter_class() -> Term {
 #[cfg(test)]
 mod counter_tests {
     use super::{counter, counter_class, counter_rep, new_counter, ty_counter};
-    use crate::{types::Type, typing::Typecheck};
+    use crate::types::Type;
+    use common::Typecheck;
 
     #[test]
     fn check_counter() {

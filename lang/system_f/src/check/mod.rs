@@ -8,7 +8,6 @@ pub mod errors;
 pub mod lambda;
 pub mod terms;
 pub mod tylambda;
-use errors::Error;
 
 #[derive(Default, Clone)]
 pub struct Env {
@@ -16,17 +15,13 @@ pub struct Env {
     pub ty_vars: Vec<TyVar>,
 }
 
-pub trait Check {
-    fn check(self, env: &mut Env) -> Result<Type, Error>;
-}
-
 #[cfg(test)]
 mod check_tests {
-    use super::Check;
     use crate::{
         examples::{double, id, quadruple, self_app},
         types::Type,
     };
+    use common::Typecheck;
 
     #[test]
     fn check_id() {

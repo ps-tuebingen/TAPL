@@ -48,7 +48,8 @@ pub fn lambda_to_term(t: LambdaTerm) -> Term {
 #[cfg(test)]
 mod lambda_tests {
     use super::{ap, d, lam};
-    use crate::{check::Check, types::Type};
+    use crate::types::Type;
+    use common::Typecheck;
 
     #[test]
     fn ty_lam() {

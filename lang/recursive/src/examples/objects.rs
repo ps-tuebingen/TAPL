@@ -86,7 +86,7 @@ pub fn new_counter() -> Term {
 #[cfg(test)]
 mod counter_tests {
     use super::{new_counter, ty_counter};
-    use crate::check::Check;
+    use common::Typecheck;
 
     #[test]
     fn check_new() {

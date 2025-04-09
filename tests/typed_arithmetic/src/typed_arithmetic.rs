@@ -6,10 +6,8 @@ use test_common::{
     testsuite::TestSuite,
 };
 
-mod check_test;
 mod suite;
 
-use check_test::TypecheckTest;
 use suite::TypedArithTests;
 
 fn main() -> Result<(), Error> {

@@ -126,7 +126,8 @@ pub fn flip_flop() -> Term {
 #[cfg(test)]
 mod adt_tests {
     use super::{counter_adt, counter_adt_rec, flip_flop};
-    use crate::{check::Check, types::Type};
+    use crate::types::Type;
+    use common::Typecheck;
 
     #[test]
     fn check_counter() {

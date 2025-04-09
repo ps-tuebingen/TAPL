@@ -1,8 +1,4 @@
-use super::{
-    errors::{Error, ErrorKind},
-    terms::Var,
-    types::Type,
-};
+use super::{errors::ErrorKind, terms::Var, types::Type};
 use std::collections::HashMap;
 
 pub mod bool;
@@ -27,8 +23,4 @@ impl Env {
     pub fn insert(&mut self, v: Var, ty: Type) {
         self.0.insert(v, ty);
     }
-}
-
-pub trait Check {
-    fn check(&self, env: &mut Env) -> Result<Type, Error>;
 }

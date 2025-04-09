@@ -61,7 +61,8 @@ pub fn quadruple() -> Term {
 #[cfg(test)]
 mod examples_tests {
     use super::{double, id, quadruple, self_app};
-    use crate::{check::Check, types::Type};
+    use crate::types::Type;
+    use common::Typecheck;
 
     #[test]
     fn ty_id() {

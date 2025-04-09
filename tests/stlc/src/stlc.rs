@@ -6,11 +6,9 @@ use test_common::{
     testsuite::TestSuite,
 };
 
-mod check_test;
 mod eval_ctx_test;
 mod suite;
 
-use check_test::TypecheckTest;
 use eval_ctx_test::EvalCtxTest;
 use suite::StlcTests;
 

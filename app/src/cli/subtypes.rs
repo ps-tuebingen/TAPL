@@ -1,6 +1,7 @@
 use super::{display_or_debug, Source};
+use common::Typecheck;
 use std::error::Error;
-use subtypes::{parser::parse, typing::Typecheck};
+use subtypes::parser::parse;
 
 #[derive(clap::Args)]
 pub struct Args {

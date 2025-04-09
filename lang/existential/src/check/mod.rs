@@ -20,24 +20,18 @@ pub struct Env {
 }
 
 impl Env {
+    pub fn get_var(&self, v: &Var) -> Result<Type, ErrorKind> {
+        self.vars
+            .get(v)
+            .cloned()
+            .ok_or(ErrorKind::FreeVar(v.clone()))
+    }
+
     pub fn add_var(&mut self, v: Var, ty: Type) {
         self.vars.insert(v, ty);
     }
 
     pub fn add_tyvar(&mut self, ty: TypeVar) {
         self.ty_vars.insert(ty);
-    }
-}
-
-pub trait Check {
-    fn check(&self, env: &mut Env) -> Result<Type, Error>;
-}
-
-impl Check for Var {
-    fn check(&self, env: &mut Env) -> Result<Type, Error> {
-        env.vars
-            .get(self)
-            .ok_or(Error::check(ErrorKind::var(self), &self.as_str()))
-            .cloned()
     }
 }

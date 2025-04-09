@@ -65,7 +65,8 @@ pub fn upfrom0() -> Term {
 #[cfg(test)]
 mod stream_tests {
     use super::{hd, tl, ty_stream, upfrom0};
-    use crate::{check::Check, types::Type};
+    use crate::types::Type;
+    use common::Typecheck;
 
     #[test]
     fn check_hd() {

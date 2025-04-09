@@ -86,7 +86,8 @@ pub fn send_inc() -> Term {
 #[cfg(test)]
 mod object_tests {
     use super::{counter_ex, send_get, send_inc, ty_counter};
-    use crate::{check::Check, types::Type};
+    use crate::types::Type;
+    use common::Typecheck;
 
     #[test]
     fn check_counter() {

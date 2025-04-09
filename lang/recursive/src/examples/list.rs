@@ -109,7 +109,8 @@ pub fn tl() -> Term {
 #[cfg(test)]
 mod list_tests {
     use super::{cons, hd, is_nil, nat_list, nil, tl};
-    use crate::{check::Check, types::Type};
+    use crate::types::Type;
+    use common::Typecheck;
 
     #[test]
     fn ty_nil() {

@@ -7,9 +7,7 @@ use test_common::{
 };
 
 mod suite;
-mod typecheck_test;
 use suite::ExceptionTests;
-use typecheck_test::TypecheckTest;
 
 fn main() -> Result<(), Error> {
     setup()?;

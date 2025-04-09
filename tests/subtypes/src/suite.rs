@@ -1,6 +1,6 @@
-use super::TypecheckTest;
 use std::path::PathBuf;
 use test_common::{
+    check_test::CheckTest,
     errors::Error,
     load_tests::{load_dir, TestContents},
     parse_test::ParseTest,
@@ -38,8 +38,11 @@ impl TestSuite for SubtypesTests {
             let reparse_test =
                 ReparseTest::<subtypes::syntax::Term>::new(&tst.source_name, &tst.source_contents);
             tests.push(Box::new(reparse_test) as Box<dyn Test>);
-            let check_test =
-                TypecheckTest::new(&tst.source_name, &tst.source_contents, &tst.conf.ty);
+            let check_test = CheckTest::<subtypes::syntax::Term>::new(
+                &tst.source_name,
+                &tst.source_contents,
+                &tst.conf.ty,
+            );
             tests.push(Box::new(check_test) as Box<dyn Test>);
         }
         Ok(tests)

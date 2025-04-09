@@ -1,5 +1,6 @@
 use std::env::{current_dir, set_current_dir};
 
+pub mod check_test;
 pub mod errors;
 pub mod eval_test;
 pub mod load_tests;

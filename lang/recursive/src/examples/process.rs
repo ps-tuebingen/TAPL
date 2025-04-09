@@ -74,7 +74,8 @@ pub fn send() -> Term {
 #[cfg(test)]
 mod process_tests {
     use super::{curr, proc, send, ty_process};
-    use crate::{check::Check, types::Type};
+    use crate::types::Type;
+    use common::Typecheck;
 
     #[test]
     fn check_proc() {

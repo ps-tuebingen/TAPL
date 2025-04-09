@@ -34,24 +34,18 @@ pub struct TypingContext {
 }
 
 impl TypingContext {
+    pub fn get_var(&self, v: &str) -> Result<Type, Error> {
+        self.var_env
+            .get(v)
+            .cloned()
+            .ok_or(Error::FreeVar(v.to_owned()))
+    }
+
     pub fn add_var(&mut self, var: &str, ty: &Type) {
         self.var_env.insert(var.to_owned(), ty.clone());
     }
 
     pub fn lookup_location(&self, loc: Loc) -> Option<Type> {
         self.store_typing.get(&loc).cloned()
-    }
-}
-
-pub trait Typecheck {
-    fn check(&self, env: &mut TypingContext) -> Result<Type, Error>;
-}
-
-impl Typecheck for Var {
-    fn check(&self, env: &mut TypingContext) -> Result<Type, Error> {
-        env.var_env
-            .get(self)
-            .cloned()
-            .ok_or(Error::FreeVar(self.clone()))
     }
 }

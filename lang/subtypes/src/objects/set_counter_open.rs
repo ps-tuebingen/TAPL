@@ -89,7 +89,8 @@ pub fn new_set_counter() -> Term {
 #[cfg(test)]
 mod set_counter_open_tests {
     use super::{new_set_counter, set_counter_class, ty_set_counter};
-    use crate::{objects::counter::counter_rep, types::Type, typing::Typecheck};
+    use crate::{objects::counter::counter_rep, types::Type};
+    use common::Typecheck;
 
     #[test]
     fn ty_set_class() {

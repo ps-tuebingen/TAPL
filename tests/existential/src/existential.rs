@@ -6,8 +6,6 @@ use test_common::{
     testsuite::TestSuite,
 };
 
-mod check_test;
-use check_test::TypecheckTest;
 mod suite;
 
 use suite::ExistentialTests;

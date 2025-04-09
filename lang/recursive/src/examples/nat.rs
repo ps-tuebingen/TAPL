@@ -37,7 +37,8 @@ pub fn plus() -> Term {
 #[cfg(test)]
 mod nat_tests {
     use super::plus;
-    use crate::{check::Check, types::Type};
+    use crate::types::Type;
+    use common::Typecheck;
 
     #[test]
     fn check_plus() {

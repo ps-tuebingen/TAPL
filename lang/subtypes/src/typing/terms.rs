@@ -1,10 +1,17 @@
-use super::{errors::Error, Typecheck, TypingContext};
+use super::{errors::Error, TypingContext};
 use crate::{syntax::Term, types::Type};
+use common::Typecheck;
 
-impl Typecheck for Term {
-    fn check(&self, env: &mut TypingContext) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for Term {
+    type Type = Type;
+    type Err = Error;
+    type Env = &'a mut TypingContext;
+    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+        self.check(&mut Default::default())
+    }
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         match self {
-            Term::Var(v) => v.check(env),
+            Term::Var(v) => env.get_var(v),
             Term::Lambda(lambda) => lambda.check(env),
             Term::App(app) => app.check(env),
             Term::Unit(unit) => unit.check(env),

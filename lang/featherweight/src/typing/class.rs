@@ -1,44 +1,59 @@
-use super::methods::method_is_ok;
 use crate::{
+    errors::Error,
     lookup::lookup_fields,
     syntax::{ClassDeclaration, ClassTable},
 };
+use common::Typecheck;
 
-pub fn class_ok(class: ClassDeclaration, ct: &ClassTable) -> bool {
-    let ctor_name_correct = class.constructor.name == class.name;
+impl<'a> Typecheck<'a> for ClassDeclaration {
+    type Type = ();
+    type Err = Error;
+    type Env = &'a ClassTable;
 
-    let parent_fields = if let Ok(fields) = lookup_fields(&class.parent, ct) {
-        fields
-    } else {
-        return false;
-    };
-
-    let ctor_super_args = parent_fields
-        .iter()
-        .all(|field| class.constructor.self_args.contains(field));
-
-    let mut all_ok = true;
-    for method in class.methods {
-        all_ok = all_ok && method_is_ok(&method, &class.name, ct);
+    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+        self.check(&Default::default())
     }
 
-    ctor_name_correct && ctor_super_args && all_ok
+    fn check(&self, ct: Self::Env) -> Result<Self::Type, Self::Err> {
+        if self.constructor.name != self.name {
+            return Err(Error::NameMismatch {
+                found: self.constructor.name.clone(),
+                expected: self.name.clone(),
+                name: "Constructor Name".to_owned(),
+            });
+        }
+
+        let parent_fields = lookup_fields(&self.parent, ct)?;
+        for field in parent_fields.iter() {
+            if !self.constructor.self_args.contains(field) {
+                return Err(Error::FieldNotFound {
+                    class: self.parent.clone(),
+                    field: field.1.clone(),
+                });
+            }
+        }
+
+        for method in self.methods.iter() {
+            method.check((&self.name, ct))?;
+        }
+        Ok(())
+    }
 }
 
 #[cfg(test)]
 mod class_tests {
-    use super::class_ok;
     use crate::test_common::{example_a, example_pair, example_table};
+    use common::Typecheck;
 
     #[test]
     fn a_ok() {
-        let result = class_ok(example_a(), &example_table());
-        assert!(result)
+        let result = example_a().check(&example_table());
+        assert!(result.is_ok())
     }
 
     #[test]
     fn pair_ok() {
-        let result = class_ok(example_pair(), &example_table());
-        assert!(result)
+        let result = example_pair().check(&example_table());
+        assert!(result.is_ok())
     }
 }

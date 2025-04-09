@@ -1,18 +1,31 @@
-use super::{errors::Error, is_subtype, Typecheck, TypingContext};
+use super::{errors::Error, is_subtype, TypingContext};
 use crate::{
     syntax::{Assign, Deref, Location, Ref},
     types::Type,
 };
+use common::Typecheck;
 
-impl Typecheck for Ref {
-    fn check(&self, env: &mut TypingContext) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for Ref {
+    type Type = Type;
+    type Err = Error;
+    type Env = &'a mut TypingContext;
+    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+        self.check(&mut Default::default())
+    }
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let inner = self.term.check(env)?;
         Ok(Type::Ref(Box::new(inner)))
     }
 }
 
-impl Typecheck for Deref {
-    fn check(&self, env: &mut TypingContext) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for Deref {
+    type Type = Type;
+    type Err = Error;
+    type Env = &'a mut TypingContext;
+    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+        self.check(&mut Default::default())
+    }
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let inner = self.term.check(env)?;
         match inner {
             Type::Ref(ty) => Ok(*ty),
@@ -23,8 +36,14 @@ impl Typecheck for Deref {
     }
 }
 
-impl Typecheck for Assign {
-    fn check(&self, env: &mut TypingContext) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for Assign {
+    type Type = Type;
+    type Err = Error;
+    type Env = &'a mut TypingContext;
+    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+        self.check(&mut Default::default())
+    }
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let left_ty = self.to.check(&mut env.clone())?;
         let right_ty = self.content.check(env)?;
         match left_ty {
@@ -47,8 +66,14 @@ impl Typecheck for Assign {
     }
 }
 
-impl Typecheck for Location {
-    fn check(&self, env: &mut TypingContext) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for Location {
+    type Type = Type;
+    type Err = Error;
+    type Env = &'a mut TypingContext;
+    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+        self.check(&mut Default::default())
+    }
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let stored = env
             .lookup_location(self.loc)
             .ok_or(Error::UnassignedLocation(self.loc))?;

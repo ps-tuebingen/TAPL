@@ -66,8 +66,9 @@ mod dec_counter_tests {
     use crate::{
         objects::{counter::ty_counter, reset_counter::ty_reset_counter},
         types::Type,
-        typing::{is_subtype, Typecheck},
+        typing::is_subtype,
     };
+    use common::Typecheck;
 
     #[test]
     fn subtype_reset() {

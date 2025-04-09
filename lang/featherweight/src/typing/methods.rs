@@ -1,53 +1,76 @@
-use super::{check, is_subtype};
+use super::is_subtype;
 use crate::{
+    errors::Error,
     lookup::{lookup_method_type, valid_override},
     syntax::{ClassName, ClassTable, MethodDeclaration},
 };
+use common::Typecheck;
 use std::collections::HashMap;
 
-pub fn method_is_ok(mdecl: &MethodDeclaration, in_class: &ClassName, ct: &ClassTable) -> bool {
-    let mut env = HashMap::new();
-    for (ty, arg) in mdecl.args.iter().cloned() {
-        env.insert(arg, ty);
-    }
-    env.insert("this".to_owned(), in_class.clone());
-    let ret_ty = if let Ok(ty) = check(&mdecl.ret, &mut env, ct) {
-        ty
-    } else {
-        return false;
-    };
+impl<'a> Typecheck<'a> for MethodDeclaration {
+    type Type = ();
+    type Err = Error;
+    type Env = (&'a ClassName, &'a ClassTable);
 
-    if !is_subtype(&ret_ty, &mdecl.class, ct) {
-        return false;
+    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+        self.check((&"Object".to_owned(), &Default::default()))
     }
 
-    let decl = if let Some(decl) = ct.classes.get(in_class) {
-        decl
-    } else {
-        return false;
-    };
+    fn check(&self, (in_class, ct): Self::Env) -> Result<Self::Type, Self::Err> {
+        let mut env = HashMap::new();
+        for (ty, arg) in self.args.iter().cloned() {
+            env.insert(arg, ty);
+        }
+        env.insert("this".to_owned(), in_class.clone());
 
-    if lookup_method_type(&mdecl.name, &decl.parent, ct).is_ok() {
-        valid_override(&mdecl.name, &decl.parent, &mdecl.get_type(), ct)
-    } else {
-        lookup_method_type(&mdecl.name, in_class, ct).is_ok()
+        let ret_ty = self.ret.check((&mut env, ct))?;
+
+        if !is_subtype(&ret_ty, &self.class, ct) {
+            return Err(Error::NotASubClass {
+                sub: ret_ty,
+                sup: self.class.clone(),
+            });
+        }
+
+        let decl = ct
+            .classes
+            .get(in_class)
+            .ok_or(Error::ClassNotFound(in_class.clone()))?;
+
+        if lookup_method_type(&self.name, &decl.parent, ct).is_ok() {
+            valid_override(&self.name, &decl.parent, &self.get_type(), ct)
+                .then_some(())
+                .ok_or(Error::BadOverride {
+                    class: decl.name.clone(),
+                    sup: decl.parent.clone(),
+                    method: self.name.clone(),
+                })
+        } else {
+            lookup_method_type(&self.name, in_class, ct)
+                .is_ok()
+                .then_some(())
+                .ok_or(Error::MethodNotFound {
+                    method: self.name.clone(),
+                    class: decl.name.clone(),
+                })
+        }
     }
 }
 
 #[cfg(test)]
 mod method_tests {
-    use super::method_is_ok;
     use crate::test_common::{example_method, example_table};
+    use common::Typecheck;
 
     #[test]
     fn setfst_ok() {
-        let result = method_is_ok(&example_method(), &"Pair".to_owned(), &example_table());
-        assert!(result)
+        let result = &example_method().check((&"Pair".to_owned(), &example_table()));
+        assert!(result.is_ok())
     }
 
     #[test]
     fn setfst_notok() {
-        let result = method_is_ok(&example_method(), &"A".to_owned(), &example_table());
-        assert!(!result)
+        let result = &example_method().check((&"A".to_owned(), &example_table()));
+        assert!(result.is_err())
     }
 }

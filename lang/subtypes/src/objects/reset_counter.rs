@@ -56,11 +56,8 @@ pub fn reset_counter_class() -> Term {
 #[cfg(test)]
 mod reset_counter_tests {
     use super::{counter_rep, new_reset_counter, reset_counter_class, ty_reset_counter};
-    use crate::{
-        objects::counter::ty_counter,
-        types::Type,
-        typing::{is_subtype, Typecheck},
-    };
+    use crate::{objects::counter::ty_counter, types::Type, typing::is_subtype};
+    use common::Typecheck;
 
     #[test]
     fn subty_reset() {

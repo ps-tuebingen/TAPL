@@ -12,7 +12,7 @@ pub use terms::Term;
 
 pub type Var = String;
 
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub struct ClassTable {
     pub classes: HashMap<ClassName, ClassDeclaration>,
 }

@@ -1,6 +1,6 @@
 use super::{display_or_debug, Source};
-use common::Eval;
-use existential::{check::Check, parser::parse};
+use common::{Eval, Typecheck};
+use existential::parser::parse;
 use std::error::Error;
 
 #[derive(clap::Args)]

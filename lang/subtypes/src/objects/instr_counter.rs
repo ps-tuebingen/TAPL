@@ -114,11 +114,8 @@ pub fn new_instr_counter() -> Term {
 #[cfg(test)]
 mod instr_counter_tests {
     use super::{instr_counter_class, instr_counter_rep, new_instr_counter, ty_instr_counter};
-    use crate::{
-        objects::set_counter::ty_set_counter,
-        types::Type,
-        typing::{is_subtype, Typecheck},
-    };
+    use crate::{objects::set_counter::ty_set_counter, types::Type, typing::is_subtype};
+    use common::Typecheck;
 
     #[test]
     fn subtype_setcounter() {

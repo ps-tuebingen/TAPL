@@ -1,18 +1,31 @@
-use super::{errors::Error, is_subtype, Typecheck, TypingContext};
+use super::{errors::Error, is_subtype, TypingContext};
 use crate::{
     syntax::{Variant, VariantCase},
     types::Type,
 };
+use common::Typecheck;
 
-impl Typecheck for Variant {
-    fn check(&self, env: &mut TypingContext) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for Variant {
+    type Type = Type;
+    type Err = Error;
+    type Env = &'a mut TypingContext;
+    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+        self.check(&mut Default::default())
+    }
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let ty = self.term.check(env)?;
         Ok(Type::Variant(vec![(self.label.clone(), ty)]))
     }
 }
 
-impl Typecheck for VariantCase {
-    fn check(&self, env: &mut TypingContext) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for VariantCase {
+    type Type = Type;
+    type Err = Error;
+    type Env = &'a mut TypingContext;
+    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+        self.check(&mut Default::default())
+    }
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let mut var_tys = vec![];
         let mut rhs_tys = vec![];
         for pt in self.patterns.iter() {

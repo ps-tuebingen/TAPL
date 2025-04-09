@@ -1,11 +1,18 @@
-use super::{errors::Error, is_subtype, Typecheck, TypingContext};
+use super::{errors::Error, is_subtype, TypingContext};
 use crate::{
     syntax::{App, Lambda},
     types::Type,
 };
+use common::Typecheck;
 
-impl Typecheck for Lambda {
-    fn check(&self, env: &mut TypingContext) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for Lambda {
+    type Type = Type;
+    type Err = Error;
+    type Env = &'a mut TypingContext;
+    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+        self.check(&mut Default::default())
+    }
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         env.add_var(&self.var, &self.annot);
         let body_ty = self.body.check(env)?;
         Ok(Type::Fun {
@@ -15,8 +22,14 @@ impl Typecheck for Lambda {
     }
 }
 
-impl Typecheck for App {
-    fn check(&self, env: &mut TypingContext) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for App {
+    type Type = Type;
+    type Err = Error;
+    type Env = &'a mut TypingContext;
+    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+        self.check(&mut Default::default())
+    }
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let fun_ty = self.fun.check(&mut env.clone())?;
         let (from, to) = if let Type::Fun { from, to } = fun_ty {
             (*from, *to)

@@ -61,7 +61,8 @@ pub fn diverge_t(t: Type) -> Term {
 #[cfg(test)]
 mod example_tests {
     use super::{diverge_t, fix_t, hungry, ty_hungry};
-    use crate::{check::Check, types::Type};
+    use crate::types::Type;
+    use common::Typecheck;
 
     #[test]
     fn check_hungry() {

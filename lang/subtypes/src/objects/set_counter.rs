@@ -89,8 +89,9 @@ mod set_counter_tests {
     use crate::{
         objects::counter::{counter_rep, ty_counter},
         types::Type,
-        typing::{is_subtype, Typecheck},
+        typing::is_subtype,
     };
+    use common::Typecheck;
 
     #[test]
     fn subtype_counter() {

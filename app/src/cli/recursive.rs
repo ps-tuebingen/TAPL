@@ -1,6 +1,6 @@
 use super::{display_or_debug, Source};
-use common::Eval;
-use recursive::{check::Check, parser::parse};
+use common::{Eval, Typecheck};
+use recursive::parser::parse;
 use std::error::Error;
 
 #[derive(clap::Args)]

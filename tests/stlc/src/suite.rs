@@ -1,6 +1,7 @@
-use super::{EvalCtxTest, TypecheckTest};
+use super::EvalCtxTest;
 use std::path::PathBuf;
 use test_common::{
+    check_test::CheckTest,
     errors::Error,
     eval_test::EvalTest,
     load_tests::{load_dir, TestContents},
@@ -44,7 +45,7 @@ impl TestSuite for StlcTests {
                 &content.source_contents,
             );
             tests.push(Box::new(reparse_test) as Box<dyn Test>);
-            let check_test = TypecheckTest::new(
+            let check_test = CheckTest::<stlc::syntax::Term>::new(
                 &content.source_name,
                 &content.source_contents,
                 &content.conf.ty,

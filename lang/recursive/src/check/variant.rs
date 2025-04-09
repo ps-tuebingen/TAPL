@@ -1,12 +1,19 @@
-use super::{Check, Env};
+use super::Env;
 use crate::{
     errors::{Error, ErrorKind},
     terms::{Variant, VariantCase},
     types::Type,
 };
+use common::Typecheck;
 
-impl Check for Variant {
-    fn check(&self, env: &mut Env) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for Variant {
+    type Type = Type;
+    type Err = Error;
+    type Env = &'a mut Env;
+    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+        self.check(&mut Default::default())
+    }
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let vars = self
             .annot
             .as_variant()
@@ -24,8 +31,14 @@ impl Check for Variant {
     }
 }
 
-impl Check for VariantCase {
-    fn check(&self, env: &mut Env) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for VariantCase {
+    type Type = Type;
+    type Err = Error;
+    type Env = &'a mut Env;
+    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+        self.check(&mut Default::default())
+    }
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let term_ty = self.bound_term.check(env)?;
         let variants = term_ty
             .as_variant()

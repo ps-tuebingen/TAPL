@@ -1,6 +1,6 @@
-use super::TypecheckTest;
 use std::path::PathBuf;
 use test_common::{
+    check_test::CheckTest,
     errors::Error,
     load_tests::{load_dir, TestContents},
     parse_test::ParseTest,
@@ -40,7 +40,11 @@ impl TestSuite for FeatherweightTests {
                 &tst.source_contents,
             );
             tests.push(Box::new(reparse_test) as Box<dyn Test>);
-            let check_test = TypecheckTest::new(&tst.source_name, &tst.source_contents);
+            let check_test = CheckTest::<featherweight::syntax::ClassTable>::new(
+                &tst.source_name,
+                &tst.source_contents,
+                "OK",
+            );
             tests.push(Box::new(check_test) as Box<dyn Test>);
         }
         Ok(tests)

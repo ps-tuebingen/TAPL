@@ -66,7 +66,8 @@ pub fn not() -> Term {
 #[cfg(test)]
 mod bool_tests {
     use super::{c_bool, fls, not, tru};
-    use crate::{check::Check, types::Type};
+    use crate::types::Type;
+    use common::Typecheck;
 
     #[test]
     fn ty_tru() {

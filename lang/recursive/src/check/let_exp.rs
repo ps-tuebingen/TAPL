@@ -1,8 +1,15 @@
-use super::{Check, Env};
+use super::Env;
 use crate::{errors::Error, terms::Let, types::Type};
+use common::Typecheck;
 
-impl Check for Let {
-    fn check(&self, env: &mut Env) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for Let {
+    type Type = Type;
+    type Err = Error;
+    type Env = &'a mut Env;
+    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+        self.check(&mut Default::default())
+    }
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let bound_ty = self.bound_term.check(&mut env.clone())?;
         env.insert(self.var.clone(), bound_ty);
         self.in_term.check(env)

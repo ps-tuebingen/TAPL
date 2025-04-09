@@ -1,6 +1,6 @@
-use super::TypecheckTest;
 use std::path::PathBuf;
 use test_common::{
+    check_test::CheckTest,
     errors::Error,
     eval_test::EvalTest,
     load_tests::{load_dir, TestContents},
@@ -40,8 +40,11 @@ impl TestSuite for ReferencesTests {
             let reparse_test =
                 ReparseTest::<references::terms::Term>::new(&tst.source_name, &tst.source_contents);
             tests.push(Box::new(reparse_test) as Box<dyn Test>);
-            let check_test =
-                TypecheckTest::new(&tst.source_name, &tst.source_contents, &tst.conf.ty);
+            let check_test = CheckTest::<references::terms::Term>::new(
+                &tst.source_name,
+                &tst.source_contents,
+                &tst.conf.ty,
+            );
             tests.push(Box::new(check_test) as Box<dyn Test>);
             let eval_test = EvalTest::<references::terms::Term>::new(
                 &tst.source_name,

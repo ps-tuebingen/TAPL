@@ -1,13 +1,20 @@
-use super::{Check, Env};
+use super::Env;
 use crate::{
     errors::Error,
     terms::{Pack, Unpack},
     traits::SubstTy,
     types::Type,
 };
+use common::Typecheck;
 
-impl Check for Pack {
-    fn check(&self, env: &mut Env) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for Pack {
+    type Type = Type;
+    type Err = Error;
+    type Env = &'a mut Env;
+    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+        self.check(&mut Default::default())
+    }
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let (var, ty) = self
             .outer_ty
             .clone()
@@ -21,8 +28,14 @@ impl Check for Pack {
     }
 }
 
-impl Check for Unpack {
-    fn check(&self, env: &mut Env) -> Result<Type, Error> {
+impl<'a> Typecheck<'a> for Unpack {
+    type Type = Type;
+    type Err = Error;
+    type Env = &'a mut Env;
+    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+        self.check(&mut Default::default())
+    }
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let bound_ty = self.bound_term.check(&mut env.clone())?;
         let (inner_var, inner) = bound_ty.as_pack().map_err(|knd| Error::check(knd, self))?;
         let inner_subst = inner.subst_ty(&inner_var, self.ty_var.clone().into());

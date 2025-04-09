@@ -158,7 +158,8 @@ pub fn cexp() -> Term {
 #[cfg(test)]
 mod nat_tests {
     use super::{c0, c1, c2, c_nat, cexp, cplus, csucc, ctimes};
-    use crate::{check::Check, types::Type};
+    use crate::types::Type;
+    use common::Typecheck;
 
     #[test]
     fn ty_c0() {

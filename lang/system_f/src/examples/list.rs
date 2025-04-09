@@ -99,7 +99,8 @@ pub fn isnil() -> Term {
 #[cfg(test)]
 mod list_tests {
     use super::{c_bool, cons, isnil, list, nil};
-    use crate::{check::Check, types::Type};
+    use crate::types::Type;
+    use common::Typecheck;
 
     #[test]
     fn ty_nil() {
