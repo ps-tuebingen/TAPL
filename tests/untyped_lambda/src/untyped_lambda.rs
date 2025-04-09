@@ -6,10 +6,8 @@ use test_common::{
     testsuite::TestSuite,
 };
 
-mod eval_test;
 mod suite;
 
-use eval_test::EvalTest;
 use suite::UntypedLambdaTests;
 
 fn main() -> Result<(), Error> {

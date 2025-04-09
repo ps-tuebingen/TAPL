@@ -7,9 +7,7 @@ use test_common::{
 };
 
 mod check_test;
-mod eval_test;
 use check_test::TypecheckTest;
-use eval_test::EvalTest;
 mod suite;
 
 use suite::ExistentialTests;

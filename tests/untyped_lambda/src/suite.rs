@@ -1,7 +1,7 @@
-use super::EvalTest;
 use std::path::PathBuf;
 use test_common::{
     errors::Error,
+    eval_test::EvalTest,
     load_tests::{load_dir, TestContents},
     parse_test::ParseTest,
     reparse_test::ReparseTest,
@@ -42,7 +42,7 @@ impl TestSuite for UntypedLambdaTests {
                 &content.source_contents,
             );
             tests.push(Box::new(reparse_test) as Box<dyn Test>);
-            let eval_test = EvalTest::new(
+            let eval_test = EvalTest::<untyped_lambda::terms::Term>::new(
                 &content.source_name,
                 &content.source_contents,
                 &content.conf.evaluated,

@@ -1,7 +1,8 @@
-use super::{EvalTest, TypecheckTest};
+use super::TypecheckTest;
 use std::path::PathBuf;
 use test_common::{
     errors::Error,
+    eval_test::EvalTest,
     load_tests::{load_dir, TestContents},
     parse_test::ParseTest,
     reparse_test::ReparseTest,
@@ -46,8 +47,11 @@ impl TestSuite for FOmegaTests {
             let check_test =
                 TypecheckTest::new(&tst.source_name, &tst.source_contents, &tst.conf.ty);
             tests.push(Box::new(check_test) as Box<dyn Test>);
-            let eval_test =
-                EvalTest::new(&tst.source_name, &tst.source_contents, &tst.conf.evaluated);
+            let eval_test = EvalTest::<f_omega::syntax::terms::Term>::new(
+                &tst.source_name,
+                &tst.source_contents,
+                &tst.conf.evaluated,
+            );
             tests.push(Box::new(eval_test) as Box<dyn Test>);
         }
         Ok(tests)

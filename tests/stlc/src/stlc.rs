@@ -8,12 +8,10 @@ use test_common::{
 
 mod check_test;
 mod eval_ctx_test;
-mod eval_test;
 mod suite;
 
 use check_test::TypecheckTest;
 use eval_ctx_test::EvalCtxTest;
-use eval_test::EvalTest;
 use suite::StlcTests;
 
 fn main() -> Result<(), Error> {

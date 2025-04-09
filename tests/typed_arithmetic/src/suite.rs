@@ -1,7 +1,8 @@
-use super::{EvalTest, TypecheckTest};
+use super::TypecheckTest;
 use std::path::PathBuf;
 use test_common::{
     errors::Error,
+    eval_test::EvalTest,
     load_tests::{load_dir, TestContents},
     parse_test::ParseTest,
     reparse_test::ReparseTest,
@@ -43,7 +44,7 @@ impl TestSuite for TypedArithTests {
                 &content.source_contents,
             );
             tests.push(Box::new(reparse_test) as Box<dyn Test>);
-            let eval_test = EvalTest::new(
+            let eval_test = EvalTest::<typed_arithmetic::syntax::Term>::new(
                 &content.source_name,
                 &content.source_contents,
                 &content.conf.expected,

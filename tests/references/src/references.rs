@@ -6,11 +6,9 @@ use test_common::{
     testsuite::TestSuite,
 };
 
-mod eval_test;
 mod suite;
 mod typecheck_test;
 
-use eval_test::EvalTest;
 use suite::ReferencesTests;
 use typecheck_test::TypecheckTest;
 
