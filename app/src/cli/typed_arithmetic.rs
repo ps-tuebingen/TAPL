@@ -1,7 +1,6 @@
 use super::{display_or_debug, Source};
-use common::{Eval, Typecheck};
+use common::{Eval, Parse, Typecheck};
 use std::error::Error;
-use typed_arithmetic::parser::parse;
 
 #[derive(clap::Args)]
 pub struct Args {
@@ -17,7 +16,7 @@ pub struct Args {
 
 pub fn exec(args: Args) -> Result<(), Box<dyn Error>> {
     let src = args.source.get_source()?;
-    let parsed = parse(src)?;
+    let parsed = typed_arithmetic::syntax::Term::parse(src)?;
     if args.verbose {
         let parsed_str = display_or_debug(&parsed, args.debug);
         println!("parsed: {parsed_str}")

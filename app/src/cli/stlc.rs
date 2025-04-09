@@ -1,7 +1,7 @@
 use super::{display_or_debug, Source};
-use common::{Eval, Typecheck};
+use common::{Eval, Parse, Typecheck};
 use std::error::Error;
-use stlc::{eval_context::eval_with_context, parser::parse};
+use stlc::eval_context::eval_with_context;
 
 #[derive(clap::Args)]
 pub struct Args {
@@ -20,7 +20,7 @@ pub struct Args {
 
 pub fn exec(args: Args) -> Result<(), Box<dyn Error>> {
     let src = args.source.get_source()?;
-    let parsed = parse(src)?;
+    let parsed = stlc::syntax::Term::parse(src)?;
     if args.verbose {
         let parsed_str = display_or_debug(&parsed, args.debug);
         println!("parsed term: {parsed_str}");

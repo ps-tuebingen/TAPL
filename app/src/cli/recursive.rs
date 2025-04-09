@@ -1,6 +1,5 @@
 use super::{display_or_debug, Source};
-use common::{Eval, Typecheck};
-use recursive::parser::parse;
+use common::{Eval, Parse, Typecheck};
 use std::error::Error;
 
 #[derive(clap::Args)]
@@ -17,7 +16,7 @@ pub struct Args {
 
 pub fn exec(args: Args) -> Result<(), Box<dyn Error>> {
     let src = args.source.get_source()?;
-    let parsed = parse(src)?;
+    let parsed = recursive::terms::Term::parse(src)?;
     if args.verbose {
         let parsed_str = display_or_debug(&parsed, args.debug);
         println!("parsed: {parsed_str}");

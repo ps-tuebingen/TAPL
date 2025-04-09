@@ -1,7 +1,7 @@
 use super::{display_or_debug, Source};
-use common::Eval;
+use common::{Eval, Parse};
 use std::error::Error;
-use untyped_lambda::{eval::EvalOrder as EvalOrd, parse::parse};
+use untyped_lambda::eval::EvalOrder as EvalOrd;
 
 #[derive(clap::Args)]
 pub struct Args {
@@ -47,8 +47,8 @@ impl EvalOrder {
 }
 
 pub fn exec(args: Args) -> Result<(), Box<dyn Error>> {
-    let mut source = args.source.get_source()?;
-    let parsed = parse(&mut source)?;
+    let source = args.source.get_source()?;
+    let parsed = untyped_lambda::terms::Term::parse(source)?;
     if args.verbose {
         let parsed_str = display_or_debug(&parsed, args.debug);
         println!("parsed: {parsed_str}");

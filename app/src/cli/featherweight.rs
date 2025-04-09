@@ -1,6 +1,5 @@
 use super::{display_or_debug, Source};
-use common::Typecheck;
-use featherweight::parser::parse;
+use common::{Parse, Typecheck};
 use std::error::Error;
 
 #[derive(clap::Args)]
@@ -17,7 +16,7 @@ pub struct Args {
 
 pub fn exec(args: Args) -> Result<(), Box<dyn Error>> {
     let src = args.source.get_source()?;
-    let parsed = parse(src)?;
+    let parsed = featherweight::syntax::ClassTable::parse(src)?;
     if args.verbose {
         let parsed_str = display_or_debug(&parsed, args.debug);
         println!("parsed: {parsed_str}")
