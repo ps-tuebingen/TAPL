@@ -13,6 +13,10 @@ impl Eval<'_> for Raise {
 
     fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
         let exc_val = self.exception.eval(env)?;
-        Err(Error::ExceptionVal(exc_val))
+        Ok(Value::Raise {
+            val: Box::new(exc_val),
+            cont_ty: self.cont_ty,
+            ex_ty: self.ex_ty,
+        })
     }
 }

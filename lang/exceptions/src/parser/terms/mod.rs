@@ -1,5 +1,6 @@
-use super::{errors::Error, pair_to_n_inner, Rule};
+use super::{pair_to_n_inner, to_parse_err, Rule};
 use crate::syntax::{App, Term, Unit};
+use common::errors::{Error, ErrorKind};
 use pest::iterators::Pair;
 
 mod bool;
@@ -13,9 +14,9 @@ use nat::{pair_to_isz, pair_to_pred, pair_to_succ};
 
 pub fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
     let mut inner = p.into_inner();
-    let prim_pair = inner
-        .next()
-        .ok_or(Error::MissingInput("Non left-recursive Term".to_owned()))?;
+    let prim_pair = inner.next().ok_or(to_parse_err(ErrorKind::MissingInput(
+        "Non left-recursive Term".to_owned(),
+    )))?;
     let prim_rule = pair_to_n_inner(prim_pair, vec!["Prim Term"])?.remove(0);
     let prim_term = pair_to_prim_term(prim_rule)?;
 
@@ -28,7 +29,10 @@ pub fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
     };
 
     if let Some(n) = inner.next() {
-        return Err(Error::RemainingInput(n.as_rule()));
+        return Err(to_parse_err(ErrorKind::RemainingInput(format!(
+            "{:?}",
+            n.as_rule()
+        ))));
     }
     Ok(term)
 }
@@ -40,7 +44,7 @@ pub fn pair_to_prim_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
                 .as_str()
                 .trim()
                 .parse::<i64>()
-                .map_err(|_| Error::NotANumber(p.as_str().to_owned()))?;
+                .map_err(|_| to_parse_err(ErrorKind::UnknownKeyword(p.as_str().to_owned())))?;
             Ok(Term::Const(num))
         }
         Rule::variable => Ok(Term::Var(p.as_str().trim().to_owned())),
@@ -58,7 +62,10 @@ pub fn pair_to_prim_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
             let inner = pair_to_n_inner(p, vec!["Term"])?.remove(0);
             pair_to_term(inner)
         }
-        r => Err(Error::unexpected(r, "Non Left-recursive Term")),
+        r => Err(to_parse_err(ErrorKind::UnexpectedRule {
+            found: format!("{r:?}"),
+            expected: "Non Left-recursive Term".to_owned(),
+        })),
     }
 }
 
@@ -72,7 +79,10 @@ pub fn pair_to_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
             }
             .into())
         }
-        r => Err(Error::unexpected(r, "Term")),
+        r => Err(to_parse_err(ErrorKind::UnexpectedRule {
+            found: format!("{r:?}"),
+            expected: "Term".to_owned(),
+        })),
     }
 }
 
@@ -81,6 +91,6 @@ fn str_to_term(s: &str) -> Result<Term, Error> {
         "unit" => Ok(Unit.into()),
         "true" => Ok(Term::True),
         "false" => Ok(Term::False),
-        s => Err(Error::UnknownKw(s.to_owned())),
+        s => Err(to_parse_err(ErrorKind::UnknownKeyword(s.to_owned()))),
     }
 }

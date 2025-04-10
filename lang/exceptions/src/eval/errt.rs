@@ -12,6 +12,6 @@ impl Eval<'_> for ErrT {
     }
 
     fn eval(self, _: Self::Env) -> Result<Self::Value, Self::Err> {
-        Err(Error::Exception)
+        Ok(Value::Exception(self.ty))
     }
 }

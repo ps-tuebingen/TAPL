@@ -1,5 +1,4 @@
 pub mod app;
-pub mod errors;
 pub mod errt;
 pub mod ift;
 pub mod iszero;
@@ -12,8 +11,13 @@ pub mod tryt;
 pub mod tryval;
 pub mod unit;
 pub mod values;
-use errors::Error;
+use super::to_err;
+use common::errors::{Error, ErrorKind, ErrorLocation};
 use values::Value;
+
+pub fn to_eval_err(knd: ErrorKind) -> Error {
+    to_err(knd, ErrorLocation::Eval)
+}
 
 #[cfg(test)]
 mod eval_tests {

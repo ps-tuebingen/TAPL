@@ -1,4 +1,4 @@
-use super::{Error, Value};
+use super::{to_eval_err, Error, Value};
 use crate::syntax::Succ;
 use common::Eval;
 
@@ -13,7 +13,7 @@ impl Eval<'_> for Succ {
 
     fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
         let val = self.term.eval(env)?;
-        let num = val.into_num()?;
+        let num = val.into_num().map_err(to_eval_err)?;
         Ok(Value::Const(num + 1))
     }
 }

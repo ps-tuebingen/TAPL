@@ -1,5 +1,6 @@
-use super::{errors::Error, pair_to_n_inner, Rule};
+use super::{pair_to_n_inner, to_parse_err, Rule};
 use crate::types::Type;
+use common::errors::{Error, ErrorKind};
 use pest::iterators::Pair;
 
 pub fn pair_to_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
@@ -10,7 +11,10 @@ pub fn pair_to_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
             let inner_rule = pair_to_n_inner(p, vec!["Type"])?.remove(0);
             pair_to_type(inner_rule)
         }
-        r => Err(Error::unexpected(r, "Type")),
+        r => Err(to_parse_err(ErrorKind::UnexpectedRule {
+            found: format!("{:?}", r),
+            expected: "Type".to_owned(),
+        })),
     }
 }
 
@@ -19,7 +23,7 @@ fn str_to_type(s: &str) -> Result<Type, Error> {
         "unit" => Ok(Type::Unit),
         "nat" => Ok(Type::Nat),
         "bool" => Ok(Type::Bool),
-        s => Err(Error::UnknownKw(s.to_owned())),
+        s => Err(to_parse_err(ErrorKind::UnknownKeyword(s.to_owned()))),
     }
 }
 

@@ -2,15 +2,20 @@ use super::{
     syntax::{
         App, Error as ErrT, If, IsZero, Lambda, Pred, Raise, Succ, Term, Try, TryWithVal, Unit, Var,
     },
+    to_err,
     types::Type,
 };
-use common::Typecheck;
+use common::{
+    errors::{Error, ErrorKind, ErrorLocation},
+    Typecheck,
+};
 use std::collections::HashMap;
 
-pub mod errors;
-use errors::Error;
-
 pub type Env = HashMap<Var, Type>;
+
+fn to_check_err(knd: ErrorKind) -> Error {
+    to_err(knd, ErrorLocation::Check)
+}
 
 impl<'a> Typecheck<'a> for Term {
     type Type = Type;
@@ -23,7 +28,11 @@ impl<'a> Typecheck<'a> for Term {
 
     fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         match self {
-            Term::Var(v) => env.get(v).ok_or(Error::FreeVar(v.clone())).cloned(),
+            Term::Var(v) => env
+                .get(v)
+                .ok_or(ErrorKind::FreeVariable(v.clone()))
+                .map_err(to_check_err)
+                .cloned(),
             Term::Const(_) => Ok(Type::Nat),
             Term::True => Ok(Type::Bool),
             Term::False => Ok(Type::Bool),
@@ -77,13 +86,16 @@ impl<'a> Typecheck<'a> for App {
             if *from == arg_ty {
                 Ok(*to)
             } else {
-                Err(Error::TypeMismatch {
-                    found: arg_ty,
-                    expected: *from,
-                })
+                Err(to_check_err(ErrorKind::TypeMismatch {
+                    found: arg_ty.to_string(),
+                    expected: from.to_string(),
+                }))
             }
         } else {
-            Err(Error::NotAFunctionType(fun_ty))
+            Err(to_check_err(ErrorKind::TypeMismatch {
+                found: fun_ty.to_string(),
+                expected: "Function Type".to_owned(),
+            }))
         }
     }
 }
@@ -117,10 +129,10 @@ impl<'a> Typecheck<'a> for Try {
         if term_ty == handler_ty {
             Ok(term_ty)
         } else {
-            Err(Error::TypeMismatch {
-                found: term_ty,
-                expected: handler_ty,
-            })
+            Err(to_check_err(ErrorKind::TypeMismatch {
+                found: term_ty.to_string(),
+                expected: handler_ty.to_string(),
+            }))
         }
     }
 }
@@ -139,10 +151,10 @@ impl<'a> Typecheck<'a> for Raise {
         if err_ty == self.ex_ty {
             Ok(self.cont_ty.clone())
         } else {
-            Err(Error::TypeMismatch {
-                found: err_ty,
-                expected: self.ex_ty.clone(),
-            })
+            Err(to_check_err(ErrorKind::TypeMismatch {
+                found: err_ty.to_string(),
+                expected: self.ex_ty.to_string(),
+            }))
         }
     }
 }
@@ -163,13 +175,16 @@ impl<'a> Typecheck<'a> for TryWithVal {
             if t_ty == *to {
                 Ok(t_ty)
             } else {
-                Err(Error::TypeMismatch {
-                    found: t_ty,
-                    expected: *to,
-                })
+                Err(to_check_err(ErrorKind::TypeMismatch {
+                    found: t_ty.to_string(),
+                    expected: to.to_string(),
+                }))
             }
         } else {
-            Err(Error::NotAFunctionType(handler_ty))
+            Err(to_check_err(ErrorKind::TypeMismatch {
+                found: handler_ty.to_string(),
+                expected: "Function Type".to_owned(),
+            }))
         }
     }
 }
@@ -202,10 +217,10 @@ impl<'a> Typecheck<'a> for Succ {
         if inner_ty == Type::Nat {
             Ok(Type::Nat)
         } else {
-            Err(Error::TypeMismatch {
-                found: inner_ty,
-                expected: Type::Nat,
-            })
+            Err(to_check_err(ErrorKind::TypeMismatch {
+                found: inner_ty.to_string(),
+                expected: Type::Nat.to_string(),
+            }))
         }
     }
 }
@@ -224,10 +239,10 @@ impl<'a> Typecheck<'a> for Pred {
         if inner_ty == Type::Nat {
             Ok(Type::Nat)
         } else {
-            Err(Error::TypeMismatch {
-                found: inner_ty,
-                expected: Type::Nat,
-            })
+            Err(to_check_err(ErrorKind::TypeMismatch {
+                found: inner_ty.to_string(),
+                expected: Type::Nat.to_string(),
+            }))
         }
     }
 }
@@ -246,10 +261,10 @@ impl<'a> Typecheck<'a> for IsZero {
         if inner_ty == Type::Nat {
             Ok(Type::Bool)
         } else {
-            Err(Error::TypeMismatch {
-                found: inner_ty,
-                expected: Type::Nat,
-            })
+            Err(to_check_err(ErrorKind::TypeMismatch {
+                found: inner_ty.to_string(),
+                expected: Type::Nat.to_string(),
+            }))
         }
     }
 }
@@ -266,18 +281,18 @@ impl<'a> Typecheck<'a> for If {
     fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let if_ty = self.ift.check(&mut env.clone())?;
         if if_ty != Type::Bool {
-            return Err(Error::TypeMismatch {
-                found: if_ty,
-                expected: Type::Bool,
-            });
+            return Err(to_check_err(ErrorKind::TypeMismatch {
+                found: if_ty.to_string(),
+                expected: Type::Bool.to_string(),
+            }));
         }
         let then_ty = self.thent.check(&mut env.clone())?;
         let else_ty = self.elset.check(env)?;
         if then_ty != else_ty {
-            Err(Error::TypeMismatch {
-                found: then_ty,
-                expected: else_ty,
-            })
+            Err(to_check_err(ErrorKind::TypeMismatch {
+                found: then_ty.to_string(),
+                expected: else_ty.to_string(),
+            }))
         } else {
             Ok(then_ty)
         }

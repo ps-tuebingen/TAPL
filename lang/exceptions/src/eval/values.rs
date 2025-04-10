@@ -1,33 +1,49 @@
-use super::Error;
 use crate::{
-    syntax::{Lambda, Term, Unit, Var},
+    syntax::{Error, Lambda, Raise, Term, Unit, Var},
     types::Type,
 };
+use common::errors::ErrorKind;
 use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Value {
-    Lambda { var: Var, annot: Type, body: Term },
+    Lambda {
+        var: Var,
+        annot: Type,
+        body: Term,
+    },
     Const(i64),
     Unit,
     True,
     False,
+    Exception(Type),
+    Raise {
+        val: Box<Value>,
+        cont_ty: Type,
+        ex_ty: Type,
+    },
 }
 
 impl Value {
-    pub fn into_lambda(self) -> Result<(Var, Type, Term), Error> {
+    pub fn into_lambda(self) -> Result<(Var, Type, Term), ErrorKind> {
         if let Value::Lambda { var, annot, body } = self {
             Ok((var, annot, body))
         } else {
-            Err(Error::NotAFunction(self))
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
+                expected: "Lambda Abstraction".to_owned(),
+            })
         }
     }
 
-    pub fn into_num(self) -> Result<i64, Error> {
+    pub fn into_num(self) -> Result<i64, ErrorKind> {
         if let Value::Const(i) = self {
             Ok(i)
         } else {
-            Err(Error::NotANumber(self))
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
+                expected: "Number".to_owned(),
+            })
         }
     }
 }
@@ -61,6 +77,17 @@ impl From<Value> for Term {
             Value::True => Term::True,
             Value::False => Term::False,
             Value::Const(i) => Term::Const(i),
+            Value::Exception(ty) => Error { ty }.into(),
+            Value::Raise {
+                val,
+                cont_ty,
+                ex_ty,
+            } => Raise {
+                exception: Box::new((*val).into()),
+                cont_ty,
+                ex_ty,
+            }
+            .into(),
         }
     }
 }
