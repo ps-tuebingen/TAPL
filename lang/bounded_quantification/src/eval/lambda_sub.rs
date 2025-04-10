@@ -1,10 +1,9 @@
-use super::Value;
+use super::{to_eval_err, Value};
 use crate::{
-    errors::Error,
     syntax::{LambdaSub, TyApp},
     traits::SubstTy,
 };
-use common::Eval;
+use common::{errors::Error, Eval};
 
 impl Eval<'_> for LambdaSub {
     type Value = Value;
@@ -35,7 +34,7 @@ impl Eval<'_> for TyApp {
 
     fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Err> {
         let fun_val = self.term.clone().eval(_env)?;
-        let (var, _, body) = fun_val.as_lamsub().map_err(|knd| Error::eval(knd, &self))?;
+        let (var, _, body) = fun_val.as_lamsub().map_err(to_eval_err)?;
         body.subst_ty(&var, self.ty).eval(_env)
     }
 }

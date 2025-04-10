@@ -1,8 +1,8 @@
 use crate::{
-    errors::ErrorKind,
     syntax::{Const, Label, Lambda, LambdaSub, Pack, Record, Term, Var},
     types::Type,
 };
+use common::errors::ErrorKind;
 use std::{collections::HashMap, fmt};
 
 #[derive(Debug, Clone)]
@@ -31,8 +31,8 @@ impl Value {
         if let Value::Lambda { var, annot, body } = self {
             Ok((var, annot, body))
         } else {
-            Err(ErrorKind::BadValue {
-                found: self,
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
                 expected: "Lambda Abstraction".to_owned(),
             })
         }
@@ -42,8 +42,8 @@ impl Value {
         if let Value::LambdaSub { var, sup_ty, body } = self {
             Ok((var, sup_ty, body))
         } else {
-            Err(ErrorKind::BadValue {
-                found: self,
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
                 expected: "Lambda Abstraction (subtype)".to_owned(),
             })
         }
@@ -58,8 +58,8 @@ impl Value {
         {
             Ok((inner_ty, *val, outer_ty))
         } else {
-            Err(ErrorKind::BadValue {
-                found: self,
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
                 expected: "Existential Pack".to_owned(),
             })
         }
@@ -69,8 +69,8 @@ impl Value {
         if let Value::Const(i) = self {
             Ok(i)
         } else {
-            Err(ErrorKind::BadValue {
-                found: self,
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
                 expected: "Number".to_owned(),
             })
         }
@@ -80,8 +80,8 @@ impl Value {
         if let Value::Record(recs) = self {
             Ok(recs)
         } else {
-            Err(ErrorKind::BadValue {
-                found: self,
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
                 expected: "Record".to_owned(),
             })
         }

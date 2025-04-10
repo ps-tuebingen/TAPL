@@ -1,5 +1,6 @@
-use super::{pair_to_n_inner, pair_to_type, Error, Rule};
+use super::{pair_to_n_inner, pair_to_type, to_parse_err, Rule};
 use crate::syntax::{App, Const, Term};
+use common::errors::{Error, ErrorKind};
 use pest::iterators::Pair;
 
 mod lambda;
@@ -17,7 +18,10 @@ pub fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
     let mut inner = p.into_inner();
     let prim_rule = inner
         .next()
-        .ok_or(Error::MissingInput("Non Left-Recursive Term".to_owned()))?;
+        .ok_or(ErrorKind::MissingInput(
+            "Non Left-Recursive Term".to_owned(),
+        ))
+        .map_err(to_parse_err)?;
     let prim_inner = pair_to_n_inner(prim_rule, vec!["Non Left-Recursive Term"])?.remove(0);
     let prim_term = pair_to_prim_term(prim_inner)?;
 
@@ -30,7 +34,7 @@ pub fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
     };
 
     if let Some(n) = inner.next() {
-        return Err(Error::RemainingInput(n.as_rule()));
+        return Err(to_parse_err(ErrorKind::RemainingInput(format!("{n:?}"))));
     }
     Ok(term)
 }
@@ -54,11 +58,15 @@ fn pair_to_prim_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
                 .as_str()
                 .trim()
                 .parse::<i64>()
-                .map_err(|_| Error::UnknownKw(p.as_str().to_owned()))?;
+                .map_err(|_| ErrorKind::UnknownKeyword(p.as_str().to_owned()))
+                .map_err(to_parse_err)?;
             Ok(Const { i: num }.into())
         }
         Rule::variable => Ok(Term::Var(p.as_str().trim().to_owned())),
-        r => Err(Error::unexpected(r, "Non Left-Recursive Term")),
+        r => Err(to_parse_err(ErrorKind::UnexpectedRule {
+            found: format!("{r:?}"),
+            expected: "Non Left-Recursive Term".to_owned(),
+        })),
     }
 }
 
@@ -78,6 +86,9 @@ fn pair_to_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
             }
             .into())
         }
-        r => Err(Error::unexpected(r, "Type or Term Application")),
+        r => Err(to_parse_err(ErrorKind::UnexpectedRule {
+            found: format!("{r:?}"),
+            expected: "Type or Term Application".to_owned(),
+        })),
     }
 }

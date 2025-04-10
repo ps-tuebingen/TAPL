@@ -1,4 +1,4 @@
-use super::{Env, Error};
+use super::{to_check_err, Env, Error};
 use crate::{
     syntax::{Const, Pred, Succ},
     types::Type,
@@ -30,9 +30,7 @@ impl<'a> Typecheck<'a> for Succ {
 
     fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let inner_ty = self.term.check(env)?;
-        inner_ty
-            .check_equal(&Type::Nat)
-            .map_err(|knd| Error::check(knd, self))?;
+        inner_ty.check_equal(&Type::Nat).map_err(to_check_err)?;
         Ok(Type::Nat)
     }
 }
@@ -48,9 +46,7 @@ impl<'a> Typecheck<'a> for Pred {
 
     fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let inner_ty = self.term.check(env)?;
-        inner_ty
-            .check_equal(&Type::Nat)
-            .map_err(|knd| Error::check(knd, self))?;
+        inner_ty.check_equal(&Type::Nat).map_err(to_check_err)?;
         Ok(Type::Nat)
     }
 }

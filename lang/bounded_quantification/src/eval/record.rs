@@ -1,9 +1,9 @@
-use super::Value;
-use crate::{
+use super::{to_eval_err, Value};
+use crate::syntax::{Projection, Record};
+use common::{
     errors::{Error, ErrorKind},
-    syntax::{Projection, Record},
+    Eval,
 };
-use common::Eval;
 use std::collections::HashMap;
 
 impl Eval<'_> for Record {
@@ -36,10 +36,11 @@ impl Eval<'_> for Projection {
 
     fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Err> {
         let rec_val = self.record.clone().eval(_env)?;
-        let records = rec_val.as_record().map_err(|knd| Error::eval(knd, &self))?;
-        records.get(&self.label).cloned().ok_or(Error::eval(
-            ErrorKind::UndefinedLabel(self.label.clone()),
-            &self,
-        ))
+        let records = rec_val.as_record().map_err(to_eval_err)?;
+        records
+            .get(&self.label)
+            .cloned()
+            .ok_or(ErrorKind::UndefinedLabel(self.label.clone()))
+            .map_err(to_eval_err)
     }
 }

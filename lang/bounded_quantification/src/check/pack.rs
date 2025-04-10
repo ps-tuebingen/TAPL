@@ -1,11 +1,10 @@
-use super::{check_subtype, Env};
+use super::{check_subtype, to_check_err, Env};
 use crate::{
-    errors::Error,
     syntax::{Pack, Unpack},
     traits::SubstTy,
     types::Type,
 };
-use common::Typecheck;
+use common::{errors::Error, Typecheck};
 
 impl<'a> Typecheck<'a> for Pack {
     type Type = Type;
@@ -17,15 +16,10 @@ impl<'a> Typecheck<'a> for Pack {
     }
 
     fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
-        let (var, sup_ty, ty) = self
-            .outer_ty
-            .clone()
-            .as_exists()
-            .map_err(|knd| Error::check(knd, self))?;
+        let (var, sup_ty, ty) = self.outer_ty.clone().as_exists().map_err(to_check_err)?;
         let t_ty = self.term.check(&mut env.clone())?;
         let ty_subst = ty.subst_ty(&var, self.inner_ty.clone());
-        t_ty.check_equal(&ty_subst)
-            .map_err(|knd| Error::check(knd, self))?;
+        t_ty.check_equal(&ty_subst).map_err(to_check_err)?;
         check_subtype(self.inner_ty.clone(), sup_ty, env)?;
         Ok(self.outer_ty.clone())
     }
@@ -42,9 +36,7 @@ impl<'a> Typecheck<'a> for Unpack {
 
     fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let bound_ty = self.bound_term.check(&mut env.clone())?;
-        let (var, sup_ty, ty) = bound_ty
-            .as_exists()
-            .map_err(|knd| Error::check(knd, self))?;
+        let (var, sup_ty, ty) = bound_ty.as_exists().map_err(to_check_err)?;
         let sup_subst = sup_ty.subst_ty(&var, self.ty_var.as_str().into());
         env.add_tyvar(&self.ty_var, &sup_subst);
         env.add_var(&self.bound_var, &ty);

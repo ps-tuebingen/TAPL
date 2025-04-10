@@ -1,9 +1,12 @@
-use super::{Env, Error, ErrorKind};
+use super::{to_check_err, Env};
 use crate::{
     syntax::{Projection, Record},
     types::Type,
 };
-use common::Typecheck;
+use common::{
+    errors::{Error, ErrorKind},
+    Typecheck,
+};
 use std::collections::HashMap;
 
 impl<'a> Typecheck<'a> for Record {
@@ -38,15 +41,15 @@ impl<'a> Typecheck<'a> for Projection {
         let rec_ty = self.record.check(env)?;
         let recs = if let Type::Var(v) = rec_ty {
             env.get_tyvar(&v)
-                .map_err(|knd| Error::check(knd, self))?
+                .map_err(to_check_err)?
                 .as_record()
-                .map_err(|knd| Error::check(knd, self))?
+                .map_err(to_check_err)?
         } else {
-            rec_ty.as_record().map_err(|knd| Error::check(knd, self))?
+            rec_ty.as_record().map_err(to_check_err)?
         };
-        recs.get(&self.label).cloned().ok_or(Error::check(
-            ErrorKind::UndefinedLabel(self.label.clone()),
-            self,
-        ))
+        recs.get(&self.label)
+            .cloned()
+            .ok_or(ErrorKind::UndefinedLabel(self.label.clone()))
+            .map_err(to_check_err)
     }
 }

@@ -1,4 +1,5 @@
-use crate::{errors::ErrorKind, syntax::Label};
+use crate::syntax::Label;
+use common::errors::kind::ErrorKind;
 use std::{
     collections::{HashMap, HashSet},
     fmt,
@@ -57,7 +58,7 @@ impl Type {
             Ok((*from, *to))
         } else {
             Err(ErrorKind::TypeMismatch {
-                found: self,
+                found: self.to_string(),
                 expected: "Function Type".to_owned(),
             })
         }
@@ -68,7 +69,7 @@ impl Type {
             Ok((var, *sup_ty, *ty))
         } else {
             Err(ErrorKind::TypeMismatch {
-                found: self,
+                found: self.to_string(),
                 expected: "Universal Type".to_owned(),
             })
         }
@@ -79,7 +80,7 @@ impl Type {
             Ok((var, *sup_ty, *ty))
         } else {
             Err(ErrorKind::TypeMismatch {
-                found: self,
+                found: self.to_string(),
                 expected: "Existential Type".to_owned(),
             })
         }
@@ -90,7 +91,7 @@ impl Type {
             Ok(recs)
         } else {
             Err(ErrorKind::TypeMismatch {
-                found: self,
+                found: self.to_string(),
                 expected: "Record Type".to_owned(),
             })
         }
@@ -101,7 +102,7 @@ impl Type {
             Ok(())
         } else {
             Err(ErrorKind::TypeMismatch {
-                found: self.clone(),
+                found: self.to_string(),
                 expected: other.to_string(),
             })
         }

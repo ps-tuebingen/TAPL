@@ -1,4 +1,14 @@
 use std::error::Error;
+pub mod errors;
+pub mod langs;
+
+pub type Var = String;
+pub type TypeVar = String;
+pub type Label = String;
+
+// change to common types later
+pub type Type = String;
+pub type Value = String;
 
 pub trait Eval<'a> {
     type Value;

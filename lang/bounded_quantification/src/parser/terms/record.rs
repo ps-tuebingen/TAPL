@@ -1,5 +1,6 @@
-use super::{pair_to_n_inner, pair_to_term, Error, Rule};
+use super::{pair_to_n_inner, pair_to_term, to_parse_err, Error, Rule};
 use crate::syntax::{Projection, Record, Term};
+use common::errors::ErrorKind;
 use pest::iterators::Pair;
 use std::collections::HashMap;
 
@@ -10,7 +11,8 @@ pub fn pair_to_rec(p: Pair<'_, Rule>) -> Result<Record, Error> {
         let label = label_rule.as_str().trim().to_owned();
         let term_rule = inner
             .next()
-            .ok_or(Error::MissingInput("Record Term".to_owned()))?;
+            .ok_or(ErrorKind::MissingInput("Record Term".to_owned()))
+            .map_err(to_parse_err)?;
         let term = pair_to_term(term_rule)?;
         recs.insert(label, term);
     }

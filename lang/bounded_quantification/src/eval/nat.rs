@@ -1,4 +1,4 @@
-use super::{Error, Value};
+use super::{to_eval_err, Error, Value};
 use crate::syntax::{Const, Pred, Succ};
 use common::Eval;
 
@@ -27,7 +27,7 @@ impl Eval<'_> for Succ {
 
     fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Err> {
         let arg_val = self.term.clone().eval(_env)?;
-        let num = arg_val.as_const().map_err(|knd| Error::eval(knd, &self))?;
+        let num = arg_val.as_const().map_err(to_eval_err)?;
         Ok(Value::Const(num + 1))
     }
 }
@@ -43,7 +43,7 @@ impl Eval<'_> for Pred {
 
     fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Err> {
         let arg_val = self.term.clone().eval(_env)?;
-        let num = arg_val.as_const().map_err(|knd| Error::eval(knd, &self))?;
+        let num = arg_val.as_const().map_err(to_eval_err)?;
         Ok(Value::Const(num - 1))
     }
 }

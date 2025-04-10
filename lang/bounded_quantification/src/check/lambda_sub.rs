@@ -1,11 +1,10 @@
-use super::{check_subtype, Env};
+use super::{check_subtype, to_check_err, Env};
 use crate::{
-    errors::Error,
     syntax::{LambdaSub, TyApp},
     traits::SubstTy,
     types::Type,
 };
-use common::Typecheck;
+use common::{errors::Error, Typecheck};
 
 impl<'a> Typecheck<'a> for LambdaSub {
     type Type = Type;
@@ -37,7 +36,7 @@ impl<'a> Typecheck<'a> for TyApp {
 
     fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let t_ty = self.term.check(&mut env.clone())?;
-        let (var, sup_ty, ty) = t_ty.as_forall().map_err(|knd| Error::check(knd, self))?;
+        let (var, sup_ty, ty) = t_ty.as_forall().map_err(to_check_err)?;
         check_subtype(self.ty.clone(), sup_ty, env)?;
         Ok(ty.subst_ty(&var, self.ty.clone()))
     }

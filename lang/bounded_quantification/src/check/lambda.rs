@@ -1,10 +1,9 @@
-use super::{check_subtype, Env};
+use super::{check_subtype, to_check_err, Env};
 use crate::{
-    errors::Error,
     syntax::{App, Lambda},
     types::Type,
 };
-use common::Typecheck;
+use common::{errors::Error, Typecheck};
 
 impl<'a> Typecheck<'a> for Lambda {
     type Type = Type;
@@ -36,7 +35,7 @@ impl<'a> Typecheck<'a> for App {
 
     fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let fun_ty = self.fun.check(&mut env.clone())?;
-        let (from, to) = fun_ty.as_fun().map_err(|knd| Error::check(knd, self))?;
+        let (from, to) = fun_ty.as_fun().map_err(to_check_err)?;
         let arg_ty = self.arg.check(&mut env.clone())?;
         check_subtype(arg_ty, from, env)?;
         Ok(to)
