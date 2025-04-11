@@ -1,10 +1,12 @@
-use super::Env;
-use crate::errors::{Error, ErrorKind};
+use super::{to_check_err, Env};
 use crate::syntax::{
     terms::{False, If, True},
     types::Type,
 };
-use common::Typecheck;
+use common::{
+    errors::{Error, ErrorKind},
+    Typecheck,
+};
 
 impl<'a> Typecheck<'a> for True {
     type Type = Type;
@@ -46,20 +48,15 @@ impl<'a> Typecheck<'a> for If {
     fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let cond_ty = self.ifc.check(&mut env.clone())?;
         if cond_ty != Type::Bool {
-            return Err(Error::check(
-                ErrorKind::TypeMismatch {
-                    found: cond_ty,
-                    expected: "Bool".to_owned(),
-                },
-                self,
-            ));
+            return Err(to_check_err(ErrorKind::TypeMismatch {
+                found: cond_ty.to_string(),
+                expected: "Bool".to_owned(),
+            }));
         }
 
         let then_ty = self.thent.check(&mut env.clone())?;
         let else_ty = self.elset.check(env)?;
-        then_ty
-            .check_equal(&else_ty)
-            .map_err(|knd| Error::check(knd, self))?;
+        then_ty.check_equal(&else_ty).map_err(to_check_err)?;
         Ok(then_ty)
     }
 }

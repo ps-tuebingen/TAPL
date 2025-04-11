@@ -1,5 +1,6 @@
 use super::{Type, TypeVar};
-use crate::{errors::ErrorKind, syntax::Label, traits::SubstTy};
+use crate::{syntax::Label, traits::SubstTy};
+use common::errors::ErrorKind;
 use std::{collections::HashMap, fmt};
 
 #[derive(Debug, Clone, PartialEq, Eq)]

@@ -1,9 +1,6 @@
-use crate::{
-    check::Env,
-    errors::Error,
-    syntax::{kinds::Kind, types::Existential},
-};
-use common::Typecheck;
+use super::{to_kind_err, Env};
+use crate::syntax::{kinds::Kind, types::Existential};
+use common::{errors::Error, Typecheck};
 
 impl<'a> Typecheck<'a> for Existential {
     type Type = Kind;
@@ -17,9 +14,7 @@ impl<'a> Typecheck<'a> for Existential {
     fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         env.add_tyvar(&self.ty_var, &self.kind);
         let ty_kind = self.ty.check(env)?;
-        ty_kind
-            .check_equal(&Kind::Star)
-            .map_err(|knd| Error::kinding(knd, self))?;
+        ty_kind.check_equal(&Kind::Star).map_err(to_kind_err)?;
         Ok(Kind::Star)
     }
 }

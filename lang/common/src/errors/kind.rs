@@ -1,4 +1,4 @@
-use crate::{Label, Type, TypeVar, Value, Var};
+use crate::{Kind, Label, Type, TypeVar, Value, Var};
 use pest::{error::Error as PestErr, RuleType};
 use std::fmt;
 
@@ -12,6 +12,7 @@ pub enum ErrorKind {
     Subtype { sub: Type, sup: Type },
     NameMismatch { found: String, expected: String },
     TypeMismatch { found: Type, expected: String },
+    KindMismatch { found: Kind, expected: String },
     ValueMismatch { found: Value, expected: String },
     Arity { found: usize, expected: usize },
     // Parsing Errors
@@ -31,6 +32,9 @@ impl fmt::Display for ErrorKind {
             ErrorKind::UndefinedName(name) => write!(f, "Name {name} was not defined"),
             ErrorKind::DefinedMultipleTimes(name) => write!(f, "{name} was defined multiple times"),
             ErrorKind::Subtype { sub, sup } => write!(f, "{sub} is not a subtype of {sup}"),
+            ErrorKind::KindMismatch { found, expected } => {
+                write!(f, "Kind Mismatch: found {found}, expected {expected}")
+            }
             ErrorKind::NameMismatch { found, expected } => {
                 write!(f, "Names {found} and {expected} should be equal")
             }

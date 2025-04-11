@@ -1,10 +1,6 @@
-use crate::{
-    check::Env,
-    errors::Error,
-    syntax::{terms::RecordProj, types::Type},
-};
-
-use common::Typecheck;
+use super::{to_check_err, Env};
+use crate::syntax::{terms::RecordProj, types::Type};
+use common::{errors::Error, Typecheck};
 impl<'a> Typecheck<'a> for RecordProj {
     type Type = Type;
     type Err = Error;
@@ -16,8 +12,7 @@ impl<'a> Typecheck<'a> for RecordProj {
 
     fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let rec_ty = self.term.check(env)?;
-        let recs = rec_ty.as_rec().map_err(|knd| Error::check(knd, self))?;
-        recs.lookup(&self.label)
-            .map_err(|knd| Error::check(knd, self))
+        let recs = rec_ty.as_rec().map_err(to_check_err)?;
+        recs.lookup(&self.label).map_err(to_check_err)
     }
 }

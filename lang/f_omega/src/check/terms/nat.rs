@@ -1,12 +1,12 @@
-use super::Env;
-use crate::{
-    errors::{Error, ErrorKind},
-    syntax::{
-        terms::{IsZero, Pred, Succ, Zero},
-        types::Type,
-    },
+use super::{to_check_err, Env};
+use crate::syntax::{
+    terms::{IsZero, Pred, Succ, Zero},
+    types::Type,
 };
-use common::Typecheck;
+use common::{
+    errors::{Error, ErrorKind},
+    Typecheck,
+};
 
 impl<'a> Typecheck<'a> for Zero {
     type Type = Type;
@@ -34,13 +34,10 @@ impl<'a> Typecheck<'a> for Succ {
     fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let inner = self.term.check(env)?;
         if inner != Type::Nat {
-            return Err(Error::check(
-                ErrorKind::TypeMismatch {
-                    found: inner,
-                    expected: "Nat".to_owned(),
-                },
-                self,
-            ));
+            return Err(to_check_err(ErrorKind::TypeMismatch {
+                found: inner.to_string(),
+                expected: "Nat".to_owned(),
+            }));
         }
         Ok(Type::Nat)
     }
@@ -58,13 +55,10 @@ impl<'a> Typecheck<'a> for Pred {
     fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let inner = self.term.check(env)?;
         if inner != Type::Nat {
-            return Err(Error::check(
-                ErrorKind::TypeMismatch {
-                    found: inner,
-                    expected: "Nat".to_owned(),
-                },
-                self,
-            ));
+            return Err(to_check_err(ErrorKind::TypeMismatch {
+                found: inner.to_string(),
+                expected: "Nat".to_owned(),
+            }));
         }
         Ok(Type::Nat)
     }
@@ -82,13 +76,10 @@ impl<'a> Typecheck<'a> for IsZero {
     fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let inner = self.term.check(env)?;
         if inner != Type::Nat {
-            return Err(Error::check(
-                ErrorKind::TypeMismatch {
-                    found: inner,
-                    expected: "Nat".to_owned(),
-                },
-                self,
-            ));
+            return Err(to_check_err(ErrorKind::TypeMismatch {
+                found: inner.to_string(),
+                expected: "Nat".to_owned(),
+            }));
         }
         Ok(Type::Nat)
     }

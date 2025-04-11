@@ -1,12 +1,11 @@
 use crate::{
     check::Env,
-    errors::Error,
     syntax::{
         terms::Record,
         types::{RecTy, Type},
     },
 };
-use common::Typecheck;
+use common::{errors::Error, Typecheck};
 use std::collections::HashMap;
 
 impl<'a> Typecheck<'a> for Record {

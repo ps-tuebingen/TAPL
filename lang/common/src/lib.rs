@@ -5,6 +5,7 @@ pub mod langs;
 pub type Var = String;
 pub type TypeVar = String;
 pub type Label = String;
+pub type Kind = String;
 
 // change to common types later
 pub type Type = String;

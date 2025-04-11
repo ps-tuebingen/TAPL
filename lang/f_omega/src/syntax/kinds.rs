@@ -1,4 +1,4 @@
-use crate::errors::ErrorKind;
+use common::errors::ErrorKind;
 use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -17,7 +17,7 @@ impl Kind {
             Ok((*from, *to))
         } else {
             Err(ErrorKind::KindMismatch {
-                found: self,
+                found: self.to_string(),
                 expected: "Arrow Kind".to_owned(),
             })
         }
@@ -28,7 +28,7 @@ impl Kind {
             Ok(())
         } else {
             Err(ErrorKind::KindMismatch {
-                found: self.clone(),
+                found: self.to_string(),
                 expected: other.to_string(),
             })
         }

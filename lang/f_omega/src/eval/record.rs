@@ -1,6 +1,6 @@
 use super::Value;
-use crate::{errors::Error, syntax::terms::Record};
-use common::Eval;
+use crate::syntax::terms::Record;
+use common::{errors::Error, Eval};
 use std::collections::HashMap;
 
 impl Eval<'_> for Record {

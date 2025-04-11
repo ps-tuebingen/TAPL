@@ -1,9 +1,8 @@
 use crate::{
     check::Env,
-    errors::Error,
     syntax::{kinds::Kind, types::Universal},
 };
-use common::Typecheck;
+use common::{errors::Error, Typecheck};
 
 impl<'a> Typecheck<'a> for Universal {
     type Type = Kind;

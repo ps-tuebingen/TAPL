@@ -1,6 +1,6 @@
 use super::Value;
-use crate::{errors::Error, syntax::terms::Lambda};
-use common::Eval;
+use crate::syntax::terms::Lambda;
+use common::{errors::Error, Eval};
 
 impl Eval<'_> for Lambda {
     type Value = Value;

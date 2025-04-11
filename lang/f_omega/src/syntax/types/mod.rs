@@ -1,4 +1,5 @@
-use crate::{errors::ErrorKind, traits::SubstTy};
+use crate::traits::SubstTy;
+use common::errors::ErrorKind;
 use std::fmt;
 
 pub type TypeVar = String;
@@ -37,7 +38,7 @@ impl Type {
             Ok(fun)
         } else {
             Err(ErrorKind::TypeMismatch {
-                found: self,
+                found: self.to_string(),
                 expected: "Function Type".to_owned(),
             })
         }
@@ -48,7 +49,7 @@ impl Type {
             Ok(uni)
         } else {
             Err(ErrorKind::TypeMismatch {
-                found: self,
+                found: self.to_string(),
                 expected: "Universal Type".to_owned(),
             })
         }
@@ -59,7 +60,7 @@ impl Type {
             Ok(lam)
         } else {
             Err(ErrorKind::TypeMismatch {
-                found: self,
+                found: self.to_string(),
                 expected: "Type Operator".to_owned(),
             })
         }
@@ -70,7 +71,7 @@ impl Type {
             Ok(ex)
         } else {
             Err(ErrorKind::TypeMismatch {
-                found: self,
+                found: self.to_string(),
                 expected: "Existential Type".to_owned(),
             })
         }
@@ -81,7 +82,7 @@ impl Type {
             Ok(rec)
         } else {
             Err(ErrorKind::TypeMismatch {
-                found: self,
+                found: self.to_string(),
                 expected: "Record Type".to_owned(),
             })
         }
@@ -155,7 +156,7 @@ impl Type {
             }
             (ty1, ty2 @ Type::OpApp(_)) => ty2.check_equal(ty1),
             _ => Err(ErrorKind::TypeMismatch {
-                found: self.clone(),
+                found: self.to_string(),
                 expected: other.to_string(),
             }),
         }

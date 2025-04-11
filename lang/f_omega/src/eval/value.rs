@@ -1,12 +1,10 @@
-use crate::{
-    errors::ErrorKind,
-    syntax::{
-        kinds::Kind,
-        terms::{False, Lambda, Pack, Record, Term, True, TyLambda, Var},
-        types::{Type, TypeVar},
-        Label,
-    },
+use crate::syntax::{
+    kinds::Kind,
+    terms::{False, Lambda, Pack, Record, Term, True, TyLambda, Var},
+    types::{Type, TypeVar},
+    Label,
 };
+use common::errors::ErrorKind;
 use std::{collections::HashMap, fmt};
 
 #[derive(Debug, Clone)]
@@ -40,8 +38,8 @@ impl Value {
         if let Value::Lambda { var, annot, body } = self {
             Ok((var, annot, body))
         } else {
-            Err(ErrorKind::BadValue {
-                found: self,
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
                 expected: "Lambda Abstraction".to_owned(),
             })
         }
@@ -51,8 +49,8 @@ impl Value {
         if let Value::TyLambda { var, annot, body } = self {
             Ok((var, annot, body))
         } else {
-            Err(ErrorKind::BadValue {
-                found: self,
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
                 expected: "Type Abstraction".to_owned(),
             })
         }
@@ -67,8 +65,8 @@ impl Value {
         {
             Ok((inner_ty, *val, outer_ty))
         } else {
-            Err(ErrorKind::BadValue {
-                found: self,
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
                 expected: "Package".to_owned(),
             })
         }
@@ -78,8 +76,8 @@ impl Value {
         if let Value::Record { records } = self {
             Ok(records)
         } else {
-            Err(ErrorKind::BadValue {
-                found: self,
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
                 expected: "Record".to_owned(),
             })
         }
@@ -89,8 +87,8 @@ impl Value {
         if let Value::Const(i) = self {
             Ok(i)
         } else {
-            Err(ErrorKind::BadValue {
-                found: self,
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
                 expected: "Constant".to_owned(),
             })
         }
