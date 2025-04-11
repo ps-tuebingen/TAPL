@@ -1,26 +1,29 @@
-use super::{errors::Error, pair_to_n_inner, Rule};
+use super::{pair_to_n_inner, to_parse_err, Rule};
 use crate::syntax::{ClassName, ConstructorDeclaration, FieldName};
+use common::errors::{Error, ErrorKind};
 use pest::iterators::Pair;
 
 pub fn pair_to_ctor(p: Pair<'_, Rule>) -> Result<ConstructorDeclaration, Error> {
     let mut inner = p.into_inner();
     let class_name = inner
         .next()
-        .ok_or(Error::MissingInput("Ctor Class Name".to_owned()))?
+        .ok_or(to_parse_err(ErrorKind::MissingInput(
+            "Ctor Class Name".to_owned(),
+        )))?
         .as_str()
         .trim()
         .to_owned();
 
-    let args_or_super = inner
-        .next()
-        .ok_or(Error::MissingInput("Super Call".to_owned()))?;
+    let args_or_super = inner.next().ok_or(to_parse_err(ErrorKind::MissingInput(
+        "Super Call".to_owned(),
+    )))?;
     let mut args = vec![];
     let super_rule;
     if args_or_super.as_rule() == Rule::decl_args {
         args = pair_to_ctor_args(args_or_super)?;
-        super_rule = inner
-            .next()
-            .ok_or(Error::MissingInput("Super Call".to_owned()))?;
+        super_rule = inner.next().ok_or(to_parse_err(ErrorKind::MissingInput(
+            "Super Call".to_owned(),
+        )))?;
     } else {
         super_rule = args_or_super;
     }
@@ -30,7 +33,7 @@ pub fn pair_to_ctor(p: Pair<'_, Rule>) -> Result<ConstructorDeclaration, Error> 
     for field_rule in inner {
         let (this_field, assigned) = pair_to_field_assignment(field_rule)?;
         if !args.iter().any(|(_, name)| *name == assigned) {
-            return Err(Error::UnknownVariable(assigned));
+            return Err(to_parse_err(ErrorKind::FreeVariable(assigned)));
         }
         fields.push(this_field);
     }
@@ -56,9 +59,9 @@ fn pair_to_ctor_args(p: Pair<'_, Rule>) -> Result<Vec<(ClassName, FieldName)>, E
 
 fn pair_to_super_args(p: Pair<'_, Rule>) -> Result<Vec<FieldName>, Error> {
     let mut inner = p.into_inner();
-    inner
-        .next()
-        .ok_or(Error::MissingInput("Super Call".to_owned()))?;
+    inner.next().ok_or(to_parse_err(ErrorKind::MissingInput(
+        "Super Call".to_owned(),
+    )))?;
     let method_args = if let Some(n) = inner.next() {
         n
     } else {

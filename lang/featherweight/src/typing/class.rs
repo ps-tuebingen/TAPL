@@ -1,9 +1,12 @@
+use super::to_check_err;
 use crate::{
-    errors::Error,
     lookup::lookup_fields,
     syntax::{ClassDeclaration, ClassTable},
 };
-use common::Typecheck;
+use common::{
+    errors::{Error, ErrorKind},
+    Typecheck,
+};
 
 impl<'a> Typecheck<'a> for ClassDeclaration {
     type Type = ();
@@ -16,20 +19,16 @@ impl<'a> Typecheck<'a> for ClassDeclaration {
 
     fn check(&self, ct: Self::Env) -> Result<Self::Type, Self::Err> {
         if self.constructor.name != self.name {
-            return Err(Error::NameMismatch {
+            return Err(to_check_err(ErrorKind::NameMismatch {
                 found: self.constructor.name.clone(),
                 expected: self.name.clone(),
-                name: "Constructor Name".to_owned(),
-            });
+            }));
         }
 
-        let parent_fields = lookup_fields(&self.parent, ct)?;
+        let parent_fields = lookup_fields(&self.parent, ct).map_err(to_check_err)?;
         for field in parent_fields.iter() {
             if !self.constructor.self_args.contains(field) {
-                return Err(Error::FieldNotFound {
-                    class: self.parent.clone(),
-                    field: field.1.clone(),
-                });
+                return Err(to_check_err(ErrorKind::UndefinedName(field.1.clone())));
             }
         }
 

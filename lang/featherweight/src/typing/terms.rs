@@ -1,10 +1,12 @@
-use super::{is_subtype, Env};
+use super::{is_subtype, to_check_err, Env};
 use crate::{
-    errors::Error,
     lookup::{lookup_fields, lookup_method_type},
     syntax::{ClassName, ClassTable, Term},
 };
-use common::Typecheck;
+use common::{
+    errors::{Error, ErrorKind},
+    Typecheck,
+};
 
 impl<'a> Typecheck<'a> for Term {
     type Type = ClassName;
@@ -17,30 +19,28 @@ impl<'a> Typecheck<'a> for Term {
 
     fn check(&self, (env, ct): Self::Env) -> Result<Self::Type, Self::Err> {
         match self {
-            Term::Var(v) => env.get(v).cloned().ok_or(Error::FreeVar(v.clone())),
+            Term::Var(v) => env
+                .get(v)
+                .cloned()
+                .ok_or(to_check_err(ErrorKind::FreeVariable(v.clone()))),
             Term::Const(_) => Ok("Int".to_owned()),
             Term::FieldProjection(t, field) => {
                 let ty = t.check((env, ct))?;
-                let fields = lookup_fields(&ty, ct)?;
+                let fields = lookup_fields(&ty, ct).map_err(to_check_err)?;
                 let (ret_ty, _) = fields
                     .iter()
                     .find(|(_, field_name)| field_name == field)
-                    .ok_or(Error::FieldNotFound {
-                        class: ty,
-                        field: field.clone(),
-                    })?;
+                    .ok_or(to_check_err(ErrorKind::UndefinedName(field.clone())))?;
                 Ok(ret_ty.clone())
             }
             Term::MethodCall(t, method, args) => {
                 let obj_ty = t.check((&mut env.clone(), ct))?;
-                let method_ty = lookup_method_type(method, &obj_ty, ct)?;
+                let method_ty = lookup_method_type(method, &obj_ty, ct).map_err(to_check_err)?;
                 if args.len() != method_ty.args.len() {
-                    return Err(Error::MethodArity {
-                        class: obj_ty,
-                        method: method.clone(),
+                    return Err(to_check_err(ErrorKind::Arity {
                         found: args.len(),
                         expected: method_ty.args.len(),
-                    });
+                    }));
                 }
                 let arg_tys = args
                     .iter()
@@ -48,22 +48,21 @@ impl<'a> Typecheck<'a> for Term {
                     .collect::<Result<Vec<ClassName>, Error>>()?;
                 for (found_ty, expected_ty) in arg_tys.into_iter().zip(method_ty.args.into_iter()) {
                     if !is_subtype(&found_ty, &expected_ty, ct) {
-                        return Err(Error::NotASubClass {
+                        return Err(to_check_err(ErrorKind::Subtype {
                             sub: found_ty,
                             sup: expected_ty,
-                        });
+                        }));
                     }
                 }
                 Ok(method_ty.ret)
             }
             Term::New(class, args) => {
-                let fields = lookup_fields(class, ct)?;
+                let fields = lookup_fields(class, ct).map_err(to_check_err)?;
                 if fields.len() != args.len() {
-                    return Err(Error::ConstructorArity {
-                        class: class.clone(),
+                    return Err(to_check_err(ErrorKind::Arity {
                         found: args.len(),
                         expected: fields.len(),
-                    });
+                    }));
                 }
                 let arg_tys = args
                     .iter()
@@ -71,10 +70,10 @@ impl<'a> Typecheck<'a> for Term {
                     .collect::<Result<Vec<ClassName>, Error>>()?;
                 for ((expected_ty, _), found_ty) in fields.into_iter().zip(arg_tys.into_iter()) {
                     if !is_subtype(&found_ty, &expected_ty, ct) {
-                        return Err(Error::NotASubClass {
+                        return Err(to_check_err(ErrorKind::Subtype {
                             sub: found_ty,
                             sup: expected_ty,
-                        });
+                        }));
                     }
                 }
                 Ok(class.clone())

@@ -1,9 +1,21 @@
-pub mod errors;
 pub mod eval;
 pub mod lookup;
 pub mod parser;
 pub mod syntax;
 pub mod typing;
+
+use common::{
+    errors::{Error, ErrorKind, ErrorLocation},
+    langs::Lang,
+};
+
+pub fn to_err(knd: ErrorKind, loc: ErrorLocation) -> Error {
+    Error {
+        kind: knd,
+        loc,
+        lang: Lang::Featherweight,
+    }
+}
 
 #[cfg(test)]
 pub mod test_common {

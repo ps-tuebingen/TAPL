@@ -1,12 +1,19 @@
 use super::{
-    errors::Error,
     lookup::lookup_method_body,
     syntax::{ClassName, ClassTable, Term},
+    to_err,
     typing::is_subtype,
 };
-use common::Eval;
+use common::{
+    errors::{Error, ErrorKind, ErrorLocation},
+    Eval,
+};
 use std::collections::HashMap;
 use std::fmt;
+
+pub fn to_eval_err(knd: ErrorKind) -> Error {
+    to_err(knd, ErrorLocation::Eval)
+}
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Value {
@@ -18,12 +25,12 @@ pub enum Value {
 }
 
 impl Value {
-    pub fn into_object(self) -> Result<(String, Vec<Value>), Error> {
+    pub fn into_object(self) -> Result<(String, Vec<Value>), ErrorKind> {
         if let Value::Object { class_name, args } = self {
             Ok((class_name, args))
         } else {
-            Err(Error::BadValue {
-                found: self,
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
                 expected: "Object Creation".to_owned(),
             })
         }
@@ -52,30 +59,29 @@ impl<'a> Eval<'a> for Term {
 
     fn eval(self, ct: &'a ClassTable) -> Result<Self::Value, Self::Err> {
         match self {
-            Term::Var(v) => Err(Error::FreeVar(v)),
+            Term::Var(v) => Err(to_eval_err(ErrorKind::FreeVariable(v))),
             Term::Const(i) => Ok(Value::Const(i)),
             Term::FieldProjection(t, field) => {
                 let obj_val = t.eval(ct)?;
-                let (class_name, args) = obj_val.into_object()?;
+                let (class_name, args) = obj_val.into_object().map_err(to_eval_err)?;
                 let decl = ct
                     .classes
                     .get(&class_name)
-                    .ok_or(Error::ClassNotFound(class_name.clone()))?;
+                    .ok_or(ErrorKind::UndefinedName(class_name.clone()))
+                    .map_err(to_eval_err)?;
                 let (index, _) = decl
                     .fields
                     .iter()
                     .enumerate()
                     .find(|(_, (_, name))| *name == field)
-                    .ok_or(Error::FieldNotFound {
-                        class: class_name.clone(),
-                        field,
-                    })?;
+                    .ok_or(ErrorKind::UndefinedName(field.clone()))
+                    .map_err(to_eval_err)?;
                 args.get(index)
-                    .ok_or(Error::ConstructorArity {
-                        class: class_name,
+                    .ok_or(ErrorKind::Arity {
                         found: args.len(),
                         expected: decl.constructor.num_args(),
                     })
+                    .map_err(to_eval_err)
                     .cloned()
             }
             Term::MethodCall(t, name, args) => {
@@ -85,15 +91,14 @@ impl<'a> Eval<'a> for Term {
                     arg_vals.push(arg.eval(ct)?);
                 }
                 let arg_terms: Vec<Term> = arg_vals.into_iter().map(|arg| arg.into()).collect();
-                let (class_name, ctor_args) = obj_val.into_object()?;
-                let (arg_names, method_body) = lookup_method_body(&name, &class_name, ct)?;
+                let (class_name, ctor_args) = obj_val.into_object().map_err(to_eval_err)?;
+                let (arg_names, method_body) =
+                    lookup_method_body(&name, &class_name, ct).map_err(to_eval_err)?;
                 if arg_names.len() != arg_terms.len() {
-                    return Err(Error::MethodArity {
-                        method: name,
-                        class: class_name,
+                    return Err(to_eval_err(ErrorKind::Arity {
                         found: arg_terms.len(),
                         expected: arg_names.len(),
-                    });
+                    }));
                 }
 
                 let mut subst_map = HashMap::from_iter(arg_names.into_iter().zip(arg_terms));
@@ -119,14 +124,14 @@ impl<'a> Eval<'a> for Term {
             }
             Term::Cast(to_class, t) => {
                 let obj_val = t.eval(ct)?;
-                let (class_name, args) = obj_val.into_object()?;
+                let (class_name, args) = obj_val.into_object().map_err(to_eval_err)?;
                 if is_subtype(&class_name, &to_class, ct) {
                     Ok(Value::Object { class_name, args })
                 } else {
-                    Err(Error::NotASubClass {
+                    Err(to_eval_err(ErrorKind::Subtype {
                         sub: class_name,
                         sup: to_class,
-                    })
+                    }))
                 }
             }
         }

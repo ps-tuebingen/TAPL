@@ -1,10 +1,12 @@
-use super::is_subtype;
+use super::{is_subtype, to_check_err};
 use crate::{
-    errors::Error,
     lookup::{lookup_method_type, valid_override},
     syntax::{ClassName, ClassTable, MethodDeclaration},
 };
-use common::Typecheck;
+use common::{
+    errors::{Error, ErrorKind},
+    Typecheck,
+};
 use std::collections::HashMap;
 
 impl<'a> Typecheck<'a> for MethodDeclaration {
@@ -26,33 +28,25 @@ impl<'a> Typecheck<'a> for MethodDeclaration {
         let ret_ty = self.ret.check((&mut env, ct))?;
 
         if !is_subtype(&ret_ty, &self.class, ct) {
-            return Err(Error::NotASubClass {
+            return Err(to_check_err(ErrorKind::Subtype {
                 sub: ret_ty,
                 sup: self.class.clone(),
-            });
+            }));
         }
 
         let decl = ct
             .classes
             .get(in_class)
-            .ok_or(Error::ClassNotFound(in_class.clone()))?;
+            .ok_or(ErrorKind::UndefinedName(in_class.clone()))
+            .map_err(to_check_err)?;
 
         if lookup_method_type(&self.name, &decl.parent, ct).is_ok() {
-            valid_override(&self.name, &decl.parent, &self.get_type(), ct)
-                .then_some(())
-                .ok_or(Error::BadOverride {
-                    class: decl.name.clone(),
-                    sup: decl.parent.clone(),
-                    method: self.name.clone(),
-                })
+            valid_override(&self.name, &decl.parent, &self.get_type(), ct).map_err(to_check_err)
         } else {
             lookup_method_type(&self.name, in_class, ct)
                 .is_ok()
                 .then_some(())
-                .ok_or(Error::MethodNotFound {
-                    method: self.name.clone(),
-                    class: decl.name.clone(),
-                })
+                .ok_or(to_check_err(ErrorKind::UndefinedName(self.name.clone())))
         }
     }
 }

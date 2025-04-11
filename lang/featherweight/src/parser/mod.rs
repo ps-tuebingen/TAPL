@@ -1,15 +1,23 @@
-use crate::syntax::ClassTable;
-use common::Parse;
+use crate::{syntax::ClassTable, to_err};
+use common::{
+    errors::{Error, ErrorKind, ErrorLocation},
+    Parse,
+};
 use pest::{iterators::Pair, Parser};
 use pest_derive::Parser;
 
 mod class;
 mod constructor;
-pub mod errors;
 mod methods;
 mod terms;
 use class::pair_to_classdecl;
-use errors::Error;
+
+pub fn to_parse_err<T>(knd: T) -> Error
+where
+    T: Into<ErrorKind>,
+{
+    to_err(knd.into(), ErrorLocation::Parse)
+}
 
 #[derive(Parser)]
 #[grammar = "parser/featherweight.pest"]
@@ -23,12 +31,15 @@ impl Parse for ClassTable {
 }
 
 pub fn parse(input: String) -> Result<ClassTable, Error> {
-    let mut parsed = FeatherweightParser::parse(Rule::program, &input)?;
+    let mut parsed = FeatherweightParser::parse(Rule::program, &input).map_err(to_parse_err)?;
     let prog_rule = parsed
         .next()
-        .ok_or(Error::MissingInput("Program".to_owned()))?;
+        .ok_or(to_parse_err(ErrorKind::MissingInput("Program".to_owned())))?;
     if let Some(n) = parsed.next() {
-        return Err(Error::RemainingInput(n.as_rule()));
+        return Err(to_parse_err(ErrorKind::RemainingInput(format!(
+            "{:?}",
+            n.as_rule()
+        ))));
     }
 
     let mut classes = ClassTable::default();
@@ -49,12 +60,17 @@ pub fn pair_to_n_inner<'a>(
     let mut pairs = vec![];
     let mut inner = p.into_inner();
     for name in names {
-        let next = inner.next().ok_or(Error::MissingInput(name.to_owned()))?;
+        let next = inner
+            .next()
+            .ok_or(to_parse_err(ErrorKind::MissingInput(name.to_owned())))?;
         pairs.push(next);
     }
 
     if let Some(n) = inner.next() {
-        return Err(Error::RemainingInput(n.as_rule()));
+        return Err(to_parse_err(ErrorKind::RemainingInput(format!(
+            "{:?}",
+            n.as_rule()
+        ))));
     }
     Ok(pairs)
 }

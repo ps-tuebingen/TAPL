@@ -5,6 +5,7 @@ pub enum Lang {
     BoundedQuantification,
     Exceptions,
     Existential,
+    Featherweight,
 }
 
 impl fmt::Display for Lang {
@@ -13,6 +14,7 @@ impl fmt::Display for Lang {
             Lang::BoundedQuantification => f.write_str("Bounded Quantification"),
             Lang::Exceptions => f.write_str("Exceptions"),
             Lang::Existential => f.write_str("Existential"),
+            Lang::Featherweight => f.write_str("Featherweight"),
         }
     }
 }

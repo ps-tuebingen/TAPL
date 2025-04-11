@@ -1,12 +1,13 @@
-use super::{errors::Error, pair_to_n_inner, Rule};
+use super::{pair_to_n_inner, to_parse_err, Rule};
 use crate::syntax::Term;
+use common::errors::{Error, ErrorKind};
 use pest::iterators::Pair;
 
 pub fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
     let mut inner = p.into_inner();
-    let prim_rule = inner
-        .next()
-        .ok_or(Error::MissingInput("Non Left-Recursive Term".to_owned()))?;
+    let prim_rule = inner.next().ok_or(to_parse_err(ErrorKind::MissingInput(
+        "Non Left-Recursive Term".to_owned(),
+    )))?;
     let prim_inner = pair_to_n_inner(prim_rule, vec!["Non Left-Recursive Term"])?.remove(0);
     let prim_term = pair_to_prim_term(prim_inner)?;
     let term = if let Some(n) = inner.next() {
@@ -16,7 +17,10 @@ pub fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
         prim_term
     };
     if let Some(n) = inner.next() {
-        return Err(Error::RemainingInput(n.as_rule()));
+        return Err(to_parse_err(ErrorKind::RemainingInput(format!(
+            "{:?}",
+            n.as_rule()
+        ))));
     }
     Ok(term)
 }
@@ -34,11 +38,14 @@ fn pair_to_prim_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
                 .as_str()
                 .trim()
                 .parse::<i64>()
-                .map_err(|_| Error::NotANumber(p.as_str().to_owned()))?;
+                .map_err(|_| to_parse_err(ErrorKind::UnknownKeyword(p.as_str().to_owned())))?;
             Ok(Term::Const(num))
         }
         Rule::variable => Ok(Term::Var(p.as_str().trim().to_owned())),
-        r => Err(Error::unexpected(r, "Non Left-Recursive Term")),
+        r => Err(to_parse_err(ErrorKind::UnexpectedRule {
+            found: format!("{:?}", r),
+            expected: "Non Left-Recursive Term".to_owned(),
+        })),
     }
 }
 
@@ -46,18 +53,23 @@ fn pair_to_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
     match p.as_rule() {
         Rule::field_access => pair_to_field_access(p, t),
         Rule::method_invocation => pair_to_method_invocation(p, t),
-        r => Err(Error::unexpected(r, "Field Access or Method Invocation")),
+        r => Err(to_parse_err(ErrorKind::UnexpectedRule {
+            found: format!("{:?}", r),
+            expected: "Field Access or Method Invocation".to_owned(),
+        })),
     }
 }
 
 fn pair_to_object_creation(p: Pair<'_, Rule>) -> Result<Term, Error> {
     let mut inner = p.into_inner();
-    inner
-        .next()
-        .ok_or(Error::MissingInput("New Keyword".to_owned()))?;
+    inner.next().ok_or(to_parse_err(ErrorKind::MissingInput(
+        "New Keyword".to_owned(),
+    )))?;
     let class_name = inner
         .next()
-        .ok_or(Error::MissingInput("Class Name".to_owned()))?
+        .ok_or(to_parse_err(ErrorKind::MissingInput(
+            "Class Name".to_owned(),
+        )))?
         .as_str()
         .trim()
         .to_owned();
@@ -92,7 +104,9 @@ fn pair_to_method_invocation(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> 
     let mut inner = p.into_inner();
     let method_name = inner
         .next()
-        .ok_or(Error::MissingInput("Method Name".to_owned()))?
+        .ok_or(to_parse_err(ErrorKind::MissingInput(
+            "Method Name".to_owned(),
+        )))?
         .as_str()
         .trim()
         .to_owned();

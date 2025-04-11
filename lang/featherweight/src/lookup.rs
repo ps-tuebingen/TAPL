@@ -1,12 +1,10 @@
-use crate::{
-    errors::Error,
-    syntax::{ClassName, ClassTable, FieldName, MethodName, MethodType, Term, Var},
-};
+use crate::syntax::{ClassName, ClassTable, FieldName, MethodName, MethodType, Term, Var};
+use common::errors::ErrorKind;
 
 pub fn lookup_fields(
     class: &ClassName,
     ct: &ClassTable,
-) -> Result<Vec<(ClassName, FieldName)>, Error> {
+) -> Result<Vec<(ClassName, FieldName)>, ErrorKind> {
     if class == "Object" {
         return Ok(vec![]);
     }
@@ -14,7 +12,7 @@ pub fn lookup_fields(
     let decl = ct
         .classes
         .get(class)
-        .ok_or(Error::ClassNotFound(class.clone()))?;
+        .ok_or(ErrorKind::UndefinedName(class.clone()))?;
 
     let mut fields = decl.fields.clone();
     fields.extend(lookup_fields(&decl.parent, ct)?);
@@ -25,11 +23,11 @@ pub fn lookup_method_type(
     method: &MethodName,
     class: &ClassName,
     ct: &ClassTable,
-) -> Result<MethodType, Error> {
+) -> Result<MethodType, ErrorKind> {
     let decl = ct
         .classes
         .get(class)
-        .ok_or(Error::ClassNotFound(class.clone()))?;
+        .ok_or(ErrorKind::UndefinedName(class.clone()))?;
     match decl.methods.iter().find(|mdecl| mdecl.name == *method) {
         None => lookup_method_type(method, &decl.parent, ct),
         Some(mdecl) => Ok(mdecl.get_type()),
@@ -40,11 +38,11 @@ pub fn lookup_method_body(
     method: &MethodName,
     class: &ClassName,
     ct: &ClassTable,
-) -> Result<(Vec<Var>, Term), Error> {
+) -> Result<(Vec<Var>, Term), ErrorKind> {
     let decl = ct
         .classes
         .get(class)
-        .ok_or(Error::ClassNotFound(class.clone()))?;
+        .ok_or(ErrorKind::UndefinedName(class.clone()))?;
     match decl.methods.iter().find(|mdecl| mdecl.name == *method) {
         None => lookup_method_body(method, &decl.parent, ct),
         Some(mdecl) => Ok((
@@ -59,20 +57,34 @@ pub fn valid_override(
     class: &ClassName,
     new_ty: &MethodType,
     ct: &ClassTable,
-) -> bool {
-    let m_type = if let Ok(ty) = lookup_method_type(method, class, ct) {
-        ty
-    } else {
-        return false;
-    };
-    let args_eq = m_type
+) -> Result<(), ErrorKind> {
+    let m_type = lookup_method_type(method, class, ct)?;
+    if let Some((ty1, ty2)) = m_type
         .args
         .iter()
         .zip(new_ty.args.iter())
-        .all(|next| next.0 == next.1);
-    let arg_lens_eq = m_type.args.len() == new_ty.args.len();
-    let ret_eq = m_type.ret == new_ty.ret;
-    ret_eq && arg_lens_eq && args_eq
+        .find(|next| next.0 != next.1)
+    {
+        return Err(ErrorKind::TypeMismatch {
+            found: ty1.clone(),
+            expected: ty2.clone(),
+        });
+    }
+
+    if m_type.args.len() != new_ty.args.len() {
+        return Err(ErrorKind::Arity {
+            found: new_ty.args.len(),
+            expected: m_type.args.len(),
+        });
+    }
+
+    if m_type.ret != new_ty.ret {
+        return Err(ErrorKind::TypeMismatch {
+            found: new_ty.ret.clone(),
+            expected: m_type.ret,
+        });
+    }
+    Ok(())
 }
 
 #[cfg(test)]

@@ -1,28 +1,29 @@
-use super::{errors::Error, pair_to_n_inner, terms::pair_to_term, Rule};
+use super::{pair_to_n_inner, terms::pair_to_term, to_parse_err, Rule};
 use crate::syntax::{ClassName, MethodDeclaration, MethodName, Var};
+use common::errors::{Error, ErrorKind};
 use pest::iterators::Pair;
 
 pub fn pair_to_method_decl(p: Pair<'_, Rule>) -> Result<MethodDeclaration, Error> {
     let mut inner = p.into_inner();
-    let head = inner
-        .next()
-        .ok_or(Error::MissingInput("Methd Head".to_owned()))?;
+    let head = inner.next().ok_or(to_parse_err(ErrorKind::MissingInput(
+        "Methd Head".to_owned(),
+    )))?;
     let (class_name, method_name) = pair_to_method_head(head)?;
 
-    let args_or_return = inner
-        .next()
-        .ok_or(Error::MissingInput("Method Return".to_owned()))?;
+    let args_or_return = inner.next().ok_or(to_parse_err(ErrorKind::MissingInput(
+        "Method Return".to_owned(),
+    )))?;
 
     let mut args = vec![];
     if args_or_return.as_rule() == Rule::decl_args {
         args = pair_to_method_args(args_or_return)?;
-        inner
-            .next()
-            .ok_or(Error::MissingInput("Method Return".to_owned()))?;
+        inner.next().ok_or(to_parse_err(ErrorKind::MissingInput(
+            "Method Return".to_owned(),
+        )))?;
     }
-    let return_rule = inner
-        .next()
-        .ok_or(Error::MissingInput("Method Return".to_owned()))?;
+    let return_rule = inner.next().ok_or(to_parse_err(ErrorKind::MissingInput(
+        "Method Return".to_owned(),
+    )))?;
     let ret = pair_to_term(return_rule)?;
     Ok(MethodDeclaration {
         class: class_name,

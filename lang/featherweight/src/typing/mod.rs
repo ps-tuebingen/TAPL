@@ -1,8 +1,11 @@
 use crate::{
-    errors::Error,
     syntax::{ClassName, ClassTable, Var},
+    to_err,
 };
-use common::Typecheck;
+use common::{
+    errors::{Error, ErrorKind, ErrorLocation},
+    Typecheck,
+};
 use std::{collections::HashMap, fmt};
 
 pub mod class;
@@ -10,6 +13,10 @@ pub mod methods;
 pub mod subtyping;
 pub mod terms;
 pub use subtyping::is_subtype;
+
+pub fn to_check_err(knd: ErrorKind) -> Error {
+    to_err(knd, ErrorLocation::Check)
+}
 
 pub type Env = HashMap<Var, ClassName>;
 

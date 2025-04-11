@@ -1,9 +1,10 @@
 use super::{
-    constructor::pair_to_ctor, errors::Error, methods::pair_to_method_decl, pair_to_n_inner, Rule,
+    constructor::pair_to_ctor, methods::pair_to_method_decl, pair_to_n_inner, to_parse_err, Rule,
 };
 use crate::syntax::{
     ClassDeclaration, ClassName, ConstructorDeclaration, FieldName, MethodDeclaration,
 };
+use common::errors::{Error, ErrorKind};
 use pest::iterators::Pair;
 
 struct ClassBody {
@@ -56,9 +57,9 @@ fn pair_to_classbody(p: Pair<'_, Rule>) -> Result<ClassBody, Error> {
                 match mctor {
                     None => mctor = Some(ctor),
                     Some(_) => {
-                        return Err(Error::MultipleConstructors {
-                            class_name: ctor.name,
-                        })
+                        return Err(to_parse_err(ErrorKind::DefinedMultipleTimes(
+                            ctor.name.clone(),
+                        )))
                     }
                 }
             }
@@ -66,11 +67,20 @@ fn pair_to_classbody(p: Pair<'_, Rule>) -> Result<ClassBody, Error> {
                 let method_decl = pair_to_method_decl(r)?;
                 methods.push(method_decl);
             }
-            r => return Err(Error::unexpected(r, "Field, Constructor or Method")),
+            r => {
+                return Err(to_parse_err(ErrorKind::UnexpectedRule {
+                    found: format!("{r:?}"),
+                    expected: "Field, Constructor or Method".to_owned(),
+                }))
+            }
         }
     }
     let ctor = match mctor {
-        None => return Err(Error::MissingInput("Constructor Declaration".to_owned())),
+        None => {
+            return Err(to_parse_err(ErrorKind::MissingInput(
+                "Constructor Declaration".to_owned(),
+            )))
+        }
         Some(c) => c,
     };
     Ok(ClassBody {
