@@ -1,9 +1,8 @@
 use crate::{
-    errors::ErrorKind,
     terms::{False, Lambda, Pack, Pred, Record, Succ, Term, True, Var, Zero},
     types::Type,
-    Label,
 };
+use common::{errors::ErrorKind, Label};
 use std::{collections::HashMap, fmt};
 
 #[derive(Debug, Clone)]
@@ -32,7 +31,10 @@ impl Value {
         if let Value::Lambda { var, annot, body } = self {
             Ok((var, annot, body))
         } else {
-            Err(ErrorKind::value(&self, "Lambda Abstraction"))
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
+                expected: "Lambda Abstraction".to_owned(),
+            })
         }
     }
 
@@ -45,7 +47,10 @@ impl Value {
         {
             Ok((inner_ty, *val, outer_ty))
         } else {
-            Err(ErrorKind::value(&self, "Pack Value"))
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
+                expected: "Pack Value".to_owned(),
+            })
         }
     }
 
@@ -53,7 +58,10 @@ impl Value {
         if let Value::Record(recs) = self {
             Ok(recs)
         } else {
-            Err(ErrorKind::value(&self, "Record Value"))
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
+                expected: "Record Value".to_owned(),
+            })
         }
     }
 }

@@ -1,5 +1,5 @@
 use super::Term;
-use crate::Label;
+use common::Label;
 use std::{collections::HashMap, fmt};
 
 #[derive(Debug, Clone)]

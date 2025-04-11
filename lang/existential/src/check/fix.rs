@@ -1,6 +1,9 @@
-use super::{Env, Error, ErrorKind};
+use super::{to_check_err, Env};
 use crate::{terms::Fix, types::Type};
-use common::Typecheck;
+use common::{
+    errors::{Error, ErrorKind},
+    Typecheck,
+};
 
 impl<'a> Typecheck<'a> for Fix {
     type Type = Type;
@@ -11,14 +14,14 @@ impl<'a> Typecheck<'a> for Fix {
     }
     fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let inner_ty = self.term.check(env)?;
-        let (from, to) = inner_ty.as_fun().map_err(|knd| Error::check(knd, self))?;
+        let (from, to) = inner_ty.as_fun().map_err(to_check_err)?;
         if from == to {
             Ok(from)
         } else {
-            Err(Error::check(
-                ErrorKind::ty_mismatch(&from, &to.to_string()),
-                self,
-            ))
+            Err(to_check_err(ErrorKind::TypeMismatch {
+                found: from.to_string(),
+                expected: to.to_string(),
+            }))
         }
     }
 }

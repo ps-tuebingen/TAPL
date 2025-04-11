@@ -1,9 +1,9 @@
-use super::Value;
-use crate::{
+use super::{to_eval_err, Value};
+use crate::terms::{Record, RecordProj};
+use common::{
     errors::{Error, ErrorKind},
-    terms::{Record, RecordProj},
+    Eval,
 };
-use common::Eval;
 use std::collections::HashMap;
 
 impl Eval<'_> for Record {
@@ -36,9 +36,9 @@ impl Eval<'_> for RecordProj {
 
     fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Err> {
         let val = self.term.clone().eval(_env)?;
-        let recs = val.as_rec().map_err(|knd| Error::eval(knd, &self))?;
+        let recs = val.as_rec().map_err(to_eval_err)?;
         recs.get(&self.label)
-            .ok_or(Error::eval(ErrorKind::label(&self.label), &self))
+            .ok_or(to_eval_err(ErrorKind::UndefinedLabel(self.label.clone())))
             .cloned()
     }
 }

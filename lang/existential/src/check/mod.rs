@@ -1,8 +1,9 @@
 use crate::{
-    errors::{Error, ErrorKind},
     terms::Var,
+    to_err,
     types::{Type, TypeVar},
 };
+use common::errors::{Error, ErrorKind, ErrorLocation};
 use std::collections::{HashMap, HashSet};
 
 pub mod bool;
@@ -12,6 +13,10 @@ pub mod nat;
 pub mod pack;
 pub mod record;
 pub mod term;
+
+pub fn to_check_err(knd: ErrorKind) -> Error {
+    to_err(knd, ErrorLocation::Check)
+}
 
 #[derive(Clone, Default)]
 pub struct Env {
@@ -24,7 +29,7 @@ impl Env {
         self.vars
             .get(v)
             .cloned()
-            .ok_or(ErrorKind::FreeVar(v.clone()))
+            .ok_or(ErrorKind::FreeVariable(v.clone()))
     }
 
     pub fn add_var(&mut self, v: Var, ty: Type) {

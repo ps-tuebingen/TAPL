@@ -1,9 +1,9 @@
-use super::Value;
-use crate::{
+use super::{to_eval_err, Value};
+use crate::terms::{False, If, True};
+use common::{
     errors::{Error, ErrorKind},
-    terms::{False, If, True},
+    Eval,
 };
-use common::Eval;
 
 impl Eval<'_> for True {
     type Value = Value;
@@ -47,7 +47,10 @@ impl Eval<'_> for If {
         match if_val {
             Value::True => self.thenc.eval(_env),
             Value::False => self.elsec.eval(_env),
-            val => Err(Error::eval(ErrorKind::value(&val, "Boolean Value"), &self)),
+            val => Err(to_eval_err(ErrorKind::ValueMismatch {
+                found: val.to_string(),
+                expected: "Boolean Value".to_owned(),
+            })),
         }
     }
 }

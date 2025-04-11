@@ -1,9 +1,9 @@
-use super::Value;
-use crate::{
+use super::{to_eval_err, Value};
+use crate::terms::{IsZero, Pred, Succ, Zero};
+use common::{
     errors::{Error, ErrorKind},
-    terms::{IsZero, Pred, Succ, Zero},
+    Eval,
 };
-use common::Eval;
 
 impl Eval<'_> for Zero {
     type Value = Value;
@@ -34,10 +34,10 @@ impl Eval<'_> for Succ {
             Value::Zero => Ok(Value::Succ(Box::new(Value::Zero))),
             Value::Succ(v) => Ok(Value::Succ(Box::new(Value::Succ(v)))),
             Value::Pred(v) => Ok(*v),
-            _ => Err(Error::eval(
-                ErrorKind::value(&t_evaled, "Natural Number"),
-                &self,
-            )),
+            _ => Err(to_eval_err(ErrorKind::ValueMismatch {
+                found: t_evaled.to_string(),
+                expected: "Natural Number".to_string(),
+            })),
         }
     }
 }
@@ -57,10 +57,10 @@ impl Eval<'_> for Pred {
             Value::Zero => Ok(Value::Pred(Box::new(Value::Zero))),
             Value::Succ(v) => Ok(*v),
             Value::Pred(v) => Ok(Value::Pred(Box::new(Value::Pred(v)))),
-            _ => Err(Error::eval(
-                ErrorKind::value(&t_evaled, "Natural Number"),
-                &self,
-            )),
+            _ => Err(to_eval_err(ErrorKind::ValueMismatch {
+                found: t_evaled.to_string(),
+                expected: "Natural Number".to_owned(),
+            })),
         }
     }
 }
@@ -80,7 +80,10 @@ impl Eval<'_> for IsZero {
             Value::Zero => Ok(Value::True),
             Value::Succ(_) => Ok(Value::False),
             Value::Pred(_) => Ok(Value::False),
-            val => Err(Error::eval(ErrorKind::value(&val, "Natural Number"), &self)),
+            val => Err(to_eval_err(ErrorKind::ValueMismatch {
+                found: val.to_string(),
+                expected: "Natural Number".to_string(),
+            })),
         }
     }
 }

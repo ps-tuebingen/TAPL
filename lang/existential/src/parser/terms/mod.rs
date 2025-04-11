@@ -1,5 +1,6 @@
-use super::{pair_to_n_inner, pair_to_type, Error, Rule};
+use super::{pair_to_n_inner, pair_to_type, to_parse_err, Rule};
 use crate::terms::{App, False, RecordProj, Term, True, Zero};
+use common::errors::{Error, ErrorKind};
 use pest::iterators::Pair;
 
 mod bool;
@@ -19,7 +20,10 @@ pub fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
     let mut inner = p.into_inner();
     let prim_rule = inner
         .next()
-        .ok_or(Error::missing("Non Left-Recursive Term"))?;
+        .ok_or(ErrorKind::MissingInput(
+            "Non Left-Recursive Term".to_owned(),
+        ))
+        .map_err(to_parse_err)?;
     let prim_inner = pair_to_n_inner(prim_rule, vec!["Non Left-Recursive Term"])?.remove(0);
     let prim_term = pair_to_primterm(prim_inner)?;
 
@@ -54,11 +58,15 @@ fn pair_to_primterm(p: Pair<'_, Rule>) -> Result<Term, Error> {
                 .as_str()
                 .trim()
                 .parse::<i64>()
-                .map_err(|_| Error::unknown(p.as_str()))?;
+                .map_err(|_| ErrorKind::UnknownKeyword(p.as_str().to_owned()))
+                .map_err(to_parse_err)?;
             Ok(num.into())
         }
         Rule::variable => Ok(Term::Var(p.as_str().trim().to_owned())),
-        _ => Err(Error::unexpected(&p, "Non Left-Recursive Term")),
+        _ => Err(to_parse_err(ErrorKind::UnexpectedRule {
+            found: format!("{p:}"),
+            expected: "Non Left-Recursive Term".to_owned(),
+        })),
     }
 }
 
@@ -84,7 +92,10 @@ fn pair_to_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
             }
             .into())
         }
-        _ => Err(Error::unexpected(&p, "Left Recursive Term")),
+        _ => Err(to_parse_err(ErrorKind::UnexpectedRule {
+            found: format!("{p:?}"),
+            expected: "Left Recursive Term".to_owned(),
+        })),
     }
 }
 
@@ -94,6 +105,6 @@ fn str_to_term(s: &str) -> Result<Term, Error> {
         "zero" => Ok(Zero.into()),
         "true" => Ok(True.into()),
         "false" => Ok(False.into()),
-        s => Err(Error::unknown(s)),
+        s => Err(to_parse_err(ErrorKind::UnknownKeyword(s.to_owned()))),
     }
 }

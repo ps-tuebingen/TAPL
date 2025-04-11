@@ -4,6 +4,7 @@ use std::fmt;
 pub enum Lang {
     BoundedQuantification,
     Exceptions,
+    Existential,
 }
 
 impl fmt::Display for Lang {
@@ -11,6 +12,7 @@ impl fmt::Display for Lang {
         match self {
             Lang::BoundedQuantification => f.write_str("Bounded Quantification"),
             Lang::Exceptions => f.write_str("Exceptions"),
+            Lang::Existential => f.write_str("Existential"),
         }
     }
 }

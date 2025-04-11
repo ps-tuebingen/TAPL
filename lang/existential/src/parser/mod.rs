@@ -1,14 +1,22 @@
-use crate::terms::Term;
-use common::Parse;
+use crate::{terms::Term, to_err};
+use common::{
+    errors::{Error, ErrorKind, ErrorLocation},
+    Parse,
+};
 use pest::{iterators::Pair, Parser};
 use pest_derive::Parser;
 
-pub mod errors;
 pub mod terms;
 pub mod types;
-use errors::Error;
 use terms::pair_to_term;
 use types::pair_to_type;
+
+pub fn to_parse_err<T>(knd: T) -> Error
+where
+    T: Into<ErrorKind>,
+{
+    to_err(knd.into(), ErrorLocation::Parse)
+}
 
 impl Parse for Term {
     type Err = Error;
@@ -22,16 +30,24 @@ impl Parse for Term {
 struct ExistentialParser;
 
 pub fn parse(input: String) -> Result<Term, Error> {
-    let mut parsed = ExistentialParser::parse(Rule::program, &input)?
+    let mut parsed = ExistentialParser::parse(Rule::program, &input)
+        .map_err(to_parse_err)?
         .next()
-        .ok_or(Error::missing("Program"))?
+        .ok_or(ErrorKind::MissingInput("Program".to_owned()))
+        .map_err(to_parse_err)?
         .into_inner();
-    let term_rule = parsed.next().ok_or(Error::missing("Term"))?;
+    let term_rule = parsed
+        .next()
+        .ok_or(ErrorKind::MissingInput("Term".to_owned()))
+        .map_err(to_parse_err)?;
     let term = pair_to_term(term_rule)?;
 
-    parsed.next().ok_or(Error::missing("EOI"))?;
+    parsed
+        .next()
+        .ok_or(ErrorKind::MissingInput("EOI".to_string()))
+        .map_err(to_parse_err)?;
     if let Some(n) = parsed.next() {
-        return Err(Error::remaining(&n));
+        return Err(to_parse_err(ErrorKind::RemainingInput(format!("{:?}", n))));
     }
     Ok(term)
 }
@@ -43,11 +59,14 @@ pub fn pair_to_n_inner<'a>(
     let mut inner = p.into_inner();
     let mut pairs = vec![];
     for name in names {
-        let pair = inner.next().ok_or(Error::missing(name))?;
+        let pair = inner
+            .next()
+            .ok_or(ErrorKind::MissingInput(name.to_owned()))
+            .map_err(to_parse_err)?;
         pairs.push(pair);
     }
     if let Some(n) = inner.next() {
-        return Err(Error::remaining(&n));
+        return Err(to_parse_err(ErrorKind::RemainingInput(format!("{:?}", n))));
     }
     Ok(pairs)
 }

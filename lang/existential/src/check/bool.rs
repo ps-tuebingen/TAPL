@@ -1,10 +1,9 @@
-use super::Env;
+use super::{to_check_err, Env};
 use crate::{
-    errors::Error,
     terms::{False, If, True},
     types::Type,
 };
-use common::Typecheck;
+use common::{errors::Error, Typecheck};
 
 impl<'a> Typecheck<'a> for True {
     type Type = Type;
@@ -37,14 +36,10 @@ impl<'a> Typecheck<'a> for If {
     }
     fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let if_ty = self.ifc.check(&mut env.clone())?;
-        if_ty
-            .check_equal(&Type::Bool)
-            .map_err(|knd| Error::check(knd, self))?;
+        if_ty.check_equal(&Type::Bool).map_err(to_check_err)?;
         let then_ty = self.thenc.check(&mut env.clone())?;
         let else_ty = self.elsec.check(env)?;
-        then_ty
-            .check_equal(&else_ty)
-            .map_err(|knd| Error::check(knd, self))?;
+        then_ty.check_equal(&else_ty).map_err(to_check_err)?;
         Ok(then_ty)
     }
 }

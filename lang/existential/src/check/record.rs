@@ -1,10 +1,12 @@
-use super::Env;
+use super::{to_check_err, Env};
 use crate::{
-    errors::{Error, ErrorKind},
     terms::{Record, RecordProj},
     types::Type,
 };
-use common::Typecheck;
+use common::{
+    errors::{Error, ErrorKind},
+    Typecheck,
+};
 use std::collections::HashMap;
 
 impl<'a> Typecheck<'a> for Record {
@@ -33,9 +35,9 @@ impl<'a> Typecheck<'a> for RecordProj {
     }
     fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let rec_ty = self.term.check(env)?;
-        let recs = rec_ty.as_rec().map_err(|knd| Error::check(knd, self))?;
+        let recs = rec_ty.as_rec().map_err(to_check_err)?;
         recs.get(&self.label)
-            .ok_or(Error::check(ErrorKind::label(&self.label), self))
+            .ok_or(to_check_err(ErrorKind::UndefinedLabel(self.label.clone())))
             .cloned()
     }
 }

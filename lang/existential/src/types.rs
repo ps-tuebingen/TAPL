@@ -1,4 +1,4 @@
-use crate::{errors::ErrorKind, Label};
+use common::{errors::ErrorKind, Label};
 use std::{collections::HashMap, fmt};
 
 pub type TypeVar = String;
@@ -41,7 +41,10 @@ impl Type {
         if let Type::Fun { from, to } = self {
             Ok((*from, *to))
         } else {
-            Err(ErrorKind::ty_mismatch(&self, "Function Type"))
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Function Type".to_owned(),
+            })
         }
     }
 
@@ -49,7 +52,10 @@ impl Type {
         if let Type::Package { ty_var, ty } = self {
             Ok((ty_var, *ty))
         } else {
-            Err(ErrorKind::ty_mismatch(&self, "Package Type"))
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Package Type".to_owned(),
+            })
         }
     }
 
@@ -57,7 +63,10 @@ impl Type {
         if let Type::Record(recs) = self {
             Ok(recs)
         } else {
-            Err(ErrorKind::ty_mismatch(&self, "Record Type"))
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Record Type".to_owned(),
+            })
         }
     }
 
@@ -65,7 +74,10 @@ impl Type {
         if self == other {
             Ok(())
         } else {
-            Err(ErrorKind::ty_mismatch(&self.clone(), &other.to_string()))
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: other.to_string(),
+            })
         }
     }
 }
