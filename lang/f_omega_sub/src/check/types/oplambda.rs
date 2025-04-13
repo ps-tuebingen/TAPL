@@ -9,14 +9,13 @@ use common::{errors::Error, Typecheck};
 
 impl<'a> Typecheck<'a> for OpLambda {
     type Type = Kind;
-    type Err = Error;
     type Env = &'a mut Env;
 
-    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+    fn check_start(&self) -> Result<Self::Type, Error> {
         self.check(&mut Default::default())
     }
 
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Error> {
         env.add_tyvar(&self.var, &Type::Top(self.annot.clone()))?;
         let body_kind = self.body.check(env)?;
         Ok(Kind::Arrow(

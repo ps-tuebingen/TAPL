@@ -10,14 +10,13 @@ use common::{
 
 impl<'a> Typecheck<'a> for Term {
     type Type = ClassName;
-    type Err = Error;
     type Env = (&'a mut Env, &'a ClassTable);
 
-    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+    fn check_start(&self) -> Result<Self::Type, Error> {
         self.check((&mut Default::default(), &Default::default()))
     }
 
-    fn check(&self, (env, ct): Self::Env) -> Result<Self::Type, Self::Err> {
+    fn check(&self, (env, ct): Self::Env) -> Result<Self::Type, Error> {
         match self {
             Term::Var(v) => env
                 .get(v)

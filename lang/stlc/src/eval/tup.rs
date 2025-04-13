@@ -7,14 +7,13 @@ use common::{
 
 impl Eval<'_> for Tup {
     type Value = Value;
-    type Err = Error;
     type Env = ();
 
-    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+    fn eval_start(self) -> Result<Self::Value, Error> {
         self.eval(())
     }
 
-    fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
+    fn eval(self, env: Self::Env) -> Result<Self::Value, Error> {
         let mut vals = vec![];
         for term in self.terms.into_iter() {
             let val = term.eval(env)?;
@@ -26,14 +25,13 @@ impl Eval<'_> for Tup {
 
 impl Eval<'_> for Proj {
     type Value = Value;
-    type Err = Error;
     type Env = ();
 
-    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+    fn eval_start(self) -> Result<Self::Value, Error> {
         self.eval(())
     }
 
-    fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
+    fn eval(self, env: Self::Env) -> Result<Self::Value, Error> {
         let tup_val = self.tup.clone().eval(env)?;
         if let Value::Tup(vals) = tup_val {
             vals.get(self.ind)

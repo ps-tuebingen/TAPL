@@ -8,14 +8,13 @@ use std::collections::HashMap;
 
 impl<'a> Eval<'a> for Type {
     type Value = Self;
-    type Err = Error;
     type Env = &'a mut Env;
 
-    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+    fn eval_start(self) -> Result<Self::Value, Error> {
         self.eval(&mut Default::default())
     }
 
-    fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
+    fn eval(self, env: Self::Env) -> Result<Self::Value, Error> {
         match self {
             Type::Var(ref v) => env.get_tyvar(v).map_err(to_eval_err),
             Type::OpApp(app) => {

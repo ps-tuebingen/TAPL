@@ -7,14 +7,13 @@ use common::{
 
 impl Eval<'_> for Nil {
     type Value = Value;
-    type Err = Error;
     type Env = ();
 
-    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+    fn eval_start(self) -> Result<Self::Value, Error> {
         self.eval(())
     }
 
-    fn eval(self, _: Self::Env) -> Result<Self::Value, Self::Err> {
+    fn eval(self, _: Self::Env) -> Result<Self::Value, Error> {
         Ok(Value::Nil {
             inner_type: self.inner_type,
         })
@@ -23,14 +22,13 @@ impl Eval<'_> for Nil {
 
 impl Eval<'_> for Cons {
     type Value = Value;
-    type Err = Error;
     type Env = ();
 
-    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+    fn eval_start(self) -> Result<Self::Value, Error> {
         self.eval(())
     }
 
-    fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
+    fn eval(self, env: Self::Env) -> Result<Self::Value, Error> {
         let fst_val = self.fst.eval(env)?;
         let rst_val = self.rst.eval(env)?;
         Ok(Value::Cons {
@@ -43,14 +41,13 @@ impl Eval<'_> for Cons {
 
 impl Eval<'_> for IsNil {
     type Value = Value;
-    type Err = Error;
     type Env = ();
 
-    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+    fn eval_start(self) -> Result<Self::Value, Error> {
         self.eval(())
     }
 
-    fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
+    fn eval(self, env: Self::Env) -> Result<Self::Value, Error> {
         match self.list.eval(env)? {
             Value::Nil { .. } => Ok(Value::True),
             Value::Cons { .. } => Ok(Value::False),
@@ -64,14 +61,13 @@ impl Eval<'_> for IsNil {
 
 impl Eval<'_> for Head {
     type Value = Value;
-    type Err = Error;
     type Env = ();
 
-    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+    fn eval_start(self) -> Result<Self::Value, Error> {
         self.eval(())
     }
 
-    fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
+    fn eval(self, env: Self::Env) -> Result<Self::Value, Error> {
         match self.list.eval(env)? {
             Value::Cons { fst, .. } => Ok(*fst),
             Value::Nil { inner_type } => Err(to_eval_err(ErrorKind::TermMismatch {
@@ -88,14 +84,13 @@ impl Eval<'_> for Head {
 
 impl Eval<'_> for Tail {
     type Value = Value;
-    type Err = Error;
     type Env = ();
 
-    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+    fn eval_start(self) -> Result<Self::Value, Error> {
         self.eval(())
     }
 
-    fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
+    fn eval(self, env: Self::Env) -> Result<Self::Value, Error> {
         match self.list.eval(env)? {
             Value::Cons { rst, .. } => Ok(*rst),
             Value::Nil { inner_type } => Err(to_eval_err(ErrorKind::TermMismatch {

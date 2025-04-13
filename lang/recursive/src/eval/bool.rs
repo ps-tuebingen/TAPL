@@ -7,42 +7,39 @@ use common::{
 
 impl Eval<'_> for True {
     type Value = Value;
-    type Err = Error;
     type Env = ();
 
-    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+    fn eval_start(self) -> Result<Self::Value, Error> {
         self.eval(())
     }
 
-    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Err> {
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Error> {
         Ok(Value::True)
     }
 }
 
 impl Eval<'_> for False {
     type Value = Value;
-    type Err = Error;
     type Env = ();
 
-    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+    fn eval_start(self) -> Result<Self::Value, Error> {
         self.eval(())
     }
 
-    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Err> {
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Error> {
         Ok(Value::False)
     }
 }
 
 impl Eval<'_> for If {
     type Value = Value;
-    type Err = Error;
     type Env = ();
 
-    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+    fn eval_start(self) -> Result<Self::Value, Error> {
         self.eval(())
     }
 
-    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Err> {
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Error> {
         let cond_val = self.ifc.clone().eval(_env)?;
         match cond_val {
             Value::True => self.thenc.clone().eval(_env),

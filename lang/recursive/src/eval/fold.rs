@@ -4,14 +4,13 @@ use common::{errors::Error, Eval};
 
 impl Eval<'_> for Fold {
     type Value = Value;
-    type Err = Error;
     type Env = ();
 
-    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+    fn eval_start(self) -> Result<Self::Value, Error> {
         self.eval(())
     }
 
-    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Err> {
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Error> {
         let val = self.term.eval(_env)?;
         Ok(Value::Fold {
             ty: self.ty,
@@ -22,14 +21,13 @@ impl Eval<'_> for Fold {
 
 impl Eval<'_> for Unfold {
     type Value = Value;
-    type Err = Error;
     type Env = ();
 
-    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+    fn eval_start(self) -> Result<Self::Value, Error> {
         self.eval(())
     }
 
-    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Err> {
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Error> {
         let val = self.term.clone().eval(_env)?;
         let (_, val) = val.into_fold().map_err(to_eval_err)?;
         Ok(val)

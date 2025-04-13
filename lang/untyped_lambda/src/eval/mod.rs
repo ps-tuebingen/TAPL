@@ -1,6 +1,5 @@
 use super::terms::Term;
-use common::Eval;
-use std::convert::Infallible;
+use common::{errors::Error, Eval};
 
 pub mod big;
 pub mod cbn;
@@ -35,14 +34,13 @@ pub fn is_value(t: &Term) -> bool {
 
 impl Eval<'_> for Term {
     type Value = Term;
-    type Err = Infallible;
     type Env = EvalOrder;
 
-    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+    fn eval_start(self) -> Result<Self::Value, Error> {
         self.eval(EvalOrder::CBV)
     }
 
-    fn eval(self, eo: EvalOrder) -> Result<Self::Value, Self::Err> {
+    fn eval(self, eo: EvalOrder) -> Result<Self::Value, Error> {
         let eval_once = eo.get_eval_fun();
         let evaled = eval_once(self.clone());
         if self == evaled {

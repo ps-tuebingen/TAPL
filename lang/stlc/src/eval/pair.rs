@@ -7,14 +7,13 @@ use common::{
 
 impl Eval<'_> for Pair {
     type Value = Value;
-    type Err = Error;
     type Env = ();
 
-    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+    fn eval_start(self) -> Result<Self::Value, Error> {
         self.eval(())
     }
 
-    fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
+    fn eval(self, env: Self::Env) -> Result<Self::Value, Error> {
         let val_1 = self.fst.eval(env)?;
         let val_2 = self.snd.eval(env)?;
         Ok(Value::Pair {
@@ -26,14 +25,13 @@ impl Eval<'_> for Pair {
 
 impl Eval<'_> for Proj1 {
     type Value = Value;
-    type Err = Error;
     type Env = ();
 
-    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+    fn eval_start(self) -> Result<Self::Value, Error> {
         self.eval(())
     }
 
-    fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
+    fn eval(self, env: Self::Env) -> Result<Self::Value, Error> {
         match self.pair.eval(env)? {
             Value::Pair { fst: v1, .. } => Ok(*v1),
             val => Err(to_eval_err(ErrorKind::ValueMismatch {
@@ -46,14 +44,13 @@ impl Eval<'_> for Proj1 {
 
 impl Eval<'_> for Proj2 {
     type Value = Value;
-    type Err = Error;
     type Env = ();
 
-    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+    fn eval_start(self) -> Result<Self::Value, Error> {
         self.eval(())
     }
 
-    fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
+    fn eval(self, env: Self::Env) -> Result<Self::Value, Error> {
         match self.pair.eval(env)? {
             Value::Pair { snd: v2, .. } => Ok(*v2),
             val => Err(to_eval_err(ErrorKind::ValueMismatch {

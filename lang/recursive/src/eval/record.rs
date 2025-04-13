@@ -8,14 +8,13 @@ use std::collections::HashMap;
 
 impl Eval<'_> for Record {
     type Value = Value;
-    type Err = Error;
     type Env = ();
 
-    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+    fn eval_start(self) -> Result<Self::Value, Error> {
         self.eval(())
     }
 
-    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Err> {
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Error> {
         let mut vals = HashMap::new();
         for (lb, term) in self.records {
             let val = term.eval(_env)?;
@@ -26,14 +25,13 @@ impl Eval<'_> for Record {
 }
 impl Eval<'_> for RecordProj {
     type Value = Value;
-    type Err = Error;
     type Env = ();
 
-    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+    fn eval_start(self) -> Result<Self::Value, Error> {
         self.eval(())
     }
 
-    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Err> {
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Error> {
         let rec_val = self.record.clone().eval(_env)?;
         let records = rec_val.into_record().map_err(to_eval_err)?;
         records

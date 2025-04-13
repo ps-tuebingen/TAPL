@@ -7,12 +7,11 @@ use common::{
 
 impl<'a> Typecheck<'a> for Fix {
     type Type = Type;
-    type Err = Error;
     type Env = &'a mut TypingContext;
-    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+    fn check_start(&self) -> Result<Self::Type, Error> {
         self.check(&mut Default::default())
     }
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Error> {
         let inner = self.term.check(env)?;
         if let Type::Fun { from, to } = inner {
             if from == to {

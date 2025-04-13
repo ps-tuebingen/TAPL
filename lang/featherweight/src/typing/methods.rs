@@ -11,14 +11,13 @@ use std::collections::HashMap;
 
 impl<'a> Typecheck<'a> for MethodDeclaration {
     type Type = ();
-    type Err = Error;
     type Env = (&'a ClassName, &'a ClassTable);
 
-    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+    fn check_start(&self) -> Result<Self::Type, Error> {
         self.check((&"Object".to_owned(), &Default::default()))
     }
 
-    fn check(&self, (in_class, ct): Self::Env) -> Result<Self::Type, Self::Err> {
+    fn check(&self, (in_class, ct): Self::Env) -> Result<Self::Type, Error> {
         let mut env = HashMap::new();
         for (ty, arg) in self.args.iter().cloned() {
             env.insert(arg, ty);

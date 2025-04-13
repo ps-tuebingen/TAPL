@@ -24,13 +24,12 @@ pub struct Checked;
 
 impl Typecheck<'_> for ClassTable {
     type Type = Checked;
-    type Err = Error;
     type Env = ();
-    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+    fn check_start(&self) -> Result<Self::Type, Error> {
         self.check(())
     }
 
-    fn check(&self, _: Self::Env) -> Result<Self::Type, Self::Err> {
+    fn check(&self, _: Self::Env) -> Result<Self::Type, Error> {
         for (_, decl) in self.classes.iter() {
             decl.check(self)?;
         }

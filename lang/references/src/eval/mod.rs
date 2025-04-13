@@ -27,14 +27,13 @@ pub fn fresh_loc(st: &Store) -> Loc {
 
 impl<'a> Eval<'a> for Term {
     type Value = Value;
-    type Err = Error;
     type Env = &'a mut Store;
 
-    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+    fn eval_start(self) -> Result<Self::Value, Error> {
         self.eval(&mut Default::default())
     }
 
-    fn eval(self, st: &mut Store) -> Result<Self::Value, Self::Err> {
+    fn eval(self, st: &mut Store) -> Result<Self::Value, Error> {
         match self {
             Term::Var(v) => Err(to_eval_err(ErrorKind::FreeVariable(v))),
             Term::Const(i) => Ok(Value::Const(i)),

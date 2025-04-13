@@ -10,14 +10,13 @@ use common::{
 
 impl Eval<'_> for Variant {
     type Value = Value;
-    type Err = Error;
     type Env = ();
 
-    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+    fn eval_start(self) -> Result<Self::Value, Error> {
         self.eval(())
     }
 
-    fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
+    fn eval(self, env: Self::Env) -> Result<Self::Value, Error> {
         let val = self.term.eval(env)?;
         Ok(Value::Variant {
             label: self.label,
@@ -29,14 +28,13 @@ impl Eval<'_> for Variant {
 
 impl Eval<'_> for VariantCase {
     type Value = Value;
-    type Err = Error;
     type Env = ();
 
-    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+    fn eval_start(self) -> Result<Self::Value, Error> {
         self.eval(())
     }
 
-    fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
+    fn eval(self, env: Self::Env) -> Result<Self::Value, Error> {
         let bound_val = self.bound_term.eval(env)?;
         let (lb, val) = if let Value::Variant { label, ty: _, val } = bound_val {
             Ok((label, val))

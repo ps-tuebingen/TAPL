@@ -1,17 +1,15 @@
 use super::nameless_terms::Term;
-use common::Eval;
-use std::convert::Infallible;
+use common::{errors::Error, Eval};
 
 impl Eval<'_> for Term {
     type Value = Term;
-    type Err = Infallible;
     type Env = ();
 
-    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+    fn eval_start(self) -> Result<Self::Value, Error> {
         self.eval(())
     }
 
-    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Err> {
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Error> {
         let evaled = eval_once(self.clone());
         if evaled == self {
             Ok(evaled)

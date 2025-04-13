@@ -8,14 +8,13 @@ use common::{errors::Error, Eval, Typecheck};
 
 impl<'a> Typecheck<'a> for Pack {
     type Type = Type;
-    type Err = Error;
     type Env = &'a mut Env;
 
-    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+    fn check_start(&self) -> Result<Self::Type, Error> {
         self.check(&mut Default::default())
     }
 
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Error> {
         let outer_evaled = self.outer_ty.clone().eval(&mut env.clone())?;
         let ex = outer_evaled.as_existential().map_err(to_check_err)?;
         let sup_evaled = ex.sup_ty.clone().eval(&mut env.clone())?;

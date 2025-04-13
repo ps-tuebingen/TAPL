@@ -10,24 +10,22 @@ use common::{
 
 impl<'a> Typecheck<'a> for Nil {
     type Type = Type;
-    type Err = Error;
     type Env = &'a mut TypingContext;
-    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+    fn check_start(&self) -> Result<Self::Type, Error> {
         self.check(&mut Default::default())
     }
-    fn check(&self, _: Self::Env) -> Result<Self::Type, Self::Err> {
+    fn check(&self, _: Self::Env) -> Result<Self::Type, Error> {
         Ok(self.ty.clone())
     }
 }
 
 impl<'a> Typecheck<'a> for Cons {
     type Type = Type;
-    type Err = Error;
     type Env = &'a mut TypingContext;
-    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+    fn check_start(&self) -> Result<Self::Type, Error> {
         self.check(&mut Default::default())
     }
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Error> {
         let fst_ty = self.fst.check(&mut env.clone())?;
         let rst_ty = self.rst.check(env)?;
         if let Type::List(ty) = rst_ty {
@@ -44,12 +42,11 @@ impl<'a> Typecheck<'a> for Cons {
 
 impl<'a> Typecheck<'a> for ListCase {
     type Type = Type;
-    type Err = Error;
     type Env = &'a mut TypingContext;
-    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+    fn check_start(&self) -> Result<Self::Type, Error> {
         self.check(&mut Default::default())
     }
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Error> {
         let nil_ty = self.nil_rhs.check(&mut env.clone())?;
         let list_inner = if let Type::List(inner) = self.list_ty.clone() {
             *inner

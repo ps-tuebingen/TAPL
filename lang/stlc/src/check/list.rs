@@ -10,28 +10,26 @@ use common::{
 
 impl<'a> Typecheck<'a> for Nil {
     type Type = Type;
-    type Err = Error;
     type Env = &'a mut TypingEnv;
 
-    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+    fn check_start(&self) -> Result<Self::Type, Error> {
         self.check(&mut Default::default())
     }
 
-    fn check(&self, _: Self::Env) -> Result<Self::Type, Self::Err> {
+    fn check(&self, _: Self::Env) -> Result<Self::Type, Error> {
         Ok(Type::List(Box::new(self.inner_type.clone())))
     }
 }
 
 impl<'a> Typecheck<'a> for Cons {
     type Type = Type;
-    type Err = Error;
     type Env = &'a mut TypingEnv;
 
-    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+    fn check_start(&self) -> Result<Self::Type, Error> {
         self.check(&mut Default::default())
     }
 
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Error> {
         let fst_ty = self.fst.check(&mut env.clone())?;
         if fst_ty == self.inner_type {
             Ok(())
@@ -64,14 +62,13 @@ impl<'a> Typecheck<'a> for Cons {
 
 impl<'a> Typecheck<'a> for IsNil {
     type Type = Type;
-    type Err = Error;
     type Env = &'a mut TypingEnv;
 
-    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+    fn check_start(&self) -> Result<Self::Type, Error> {
         self.check(&mut Default::default())
     }
 
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Error> {
         let lst_ty = self.list.check(env)?;
         if let Type::List(ty1) = lst_ty {
             if *ty1 == self.inner_type {
@@ -93,14 +90,13 @@ impl<'a> Typecheck<'a> for IsNil {
 
 impl<'a> Typecheck<'a> for Head {
     type Type = Type;
-    type Err = Error;
     type Env = &'a mut TypingEnv;
 
-    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+    fn check_start(&self) -> Result<Self::Type, Error> {
         self.check(&mut Default::default())
     }
 
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Error> {
         let lst_ty = self.list.check(env)?;
         if let Type::List(ty1) = lst_ty {
             if *ty1 == self.inner_type {
@@ -122,14 +118,13 @@ impl<'a> Typecheck<'a> for Head {
 
 impl<'a> Typecheck<'a> for Tail {
     type Type = Type;
-    type Err = Error;
     type Env = &'a mut TypingEnv;
 
-    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+    fn check_start(&self) -> Result<Self::Type, Error> {
         self.check(&mut Default::default())
     }
 
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Error> {
         let lst_ty = self.list.check(env)?;
         if let Type::List(ty1) = lst_ty {
             if self.inner_type == *ty1 {

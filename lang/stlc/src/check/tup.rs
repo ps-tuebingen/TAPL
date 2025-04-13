@@ -10,14 +10,13 @@ use common::{
 
 impl<'a> Typecheck<'a> for Tup {
     type Type = Type;
-    type Err = Error;
     type Env = &'a mut TypingEnv;
 
-    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+    fn check_start(&self) -> Result<Self::Type, Error> {
         self.check(&mut Default::default())
     }
 
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Error> {
         let mut tys = vec![];
         for term in self.terms.iter() {
             let ty = term.check(&mut env.clone())?;
@@ -29,14 +28,13 @@ impl<'a> Typecheck<'a> for Tup {
 
 impl<'a> Typecheck<'a> for Proj {
     type Type = Type;
-    type Err = Error;
     type Env = &'a mut TypingEnv;
 
-    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+    fn check_start(&self) -> Result<Self::Type, Error> {
         self.check(&mut Default::default())
     }
 
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Error> {
         let tup_ty = self.tup.check(env)?;
         if let Type::Tup(tys) = tup_ty {
             tys.get(self.ind)

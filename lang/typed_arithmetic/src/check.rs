@@ -14,13 +14,12 @@ pub fn to_check_err(knd: ErrorKind) -> Error {
 impl Typecheck<'_> for Term {
     type Type = Type;
     type Env = ();
-    type Err = Error;
 
-    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+    fn check_start(&self) -> Result<Self::Type, Error> {
         self.check(())
     }
 
-    fn check(&self, _env: Self::Env) -> Result<Self::Type, Self::Err> {
+    fn check(&self, _env: Self::Env) -> Result<Self::Type, Error> {
         match self {
             Term::True => Ok(Type::Bool),
             Term::False => Ok(Type::Bool),

@@ -10,14 +10,13 @@ use common::{
 
 impl<'a> Typecheck<'a> for Variant {
     type Type = Type;
-    type Err = Error;
     type Env = &'a mut TypingEnv;
 
-    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+    fn check_start(&self) -> Result<Self::Type, Error> {
         self.check(&mut Default::default())
     }
 
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Error> {
         let term_ty = self.term.check(env)?;
         match &self.ty {
             Type::Variant(labels) => {
@@ -37,14 +36,13 @@ impl<'a> Typecheck<'a> for Variant {
 
 impl<'a> Typecheck<'a> for VariantCase {
     type Type = Type;
-    type Err = Error;
     type Env = &'a mut TypingEnv;
 
-    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+    fn check_start(&self) -> Result<Self::Type, Error> {
         self.check(&mut Default::default())
     }
 
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Error> {
         let bound_ty = self.bound_term.check(&mut env.clone())?;
         let var_ty = if let Type::Variant(vars) = bound_ty {
             Ok(vars)

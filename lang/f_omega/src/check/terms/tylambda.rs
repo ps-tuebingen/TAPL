@@ -7,14 +7,13 @@ use common::{errors::Error, Typecheck};
 
 impl<'a> Typecheck<'a> for TyLambda {
     type Type = Type;
-    type Err = Error;
     type Env = &'a mut Env;
 
-    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+    fn check_start(&self) -> Result<Self::Type, Error> {
         self.check(&mut Default::default())
     }
 
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Error> {
         env.add_tyvar(&self.var, &self.annot);
         let body_ty = self.body.check(env)?;
         Ok(Universal {

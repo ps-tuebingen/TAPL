@@ -7,14 +7,13 @@ use common::{
 
 impl<'a> Typecheck<'a> for Fix {
     type Type = Type;
-    type Err = Error;
     type Env = &'a mut TypingEnv;
 
-    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+    fn check_start(&self) -> Result<Self::Type, Error> {
         self.check(&mut Default::default())
     }
 
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Error> {
         let ty = self.term.check(env)?;
         if let Type::Fun(ty1, ty2) = ty {
             if *ty1 == *ty2 {

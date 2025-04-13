@@ -10,42 +10,39 @@ use common::{
 
 impl<'a> Typecheck<'a> for True {
     type Type = Type;
-    type Err = Error;
     type Env = &'a mut TypingEnv;
 
-    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+    fn check_start(&self) -> Result<Self::Type, Error> {
         self.check(&mut Default::default())
     }
 
-    fn check(&self, _: Self::Env) -> Result<Self::Type, Self::Err> {
+    fn check(&self, _: Self::Env) -> Result<Self::Type, Error> {
         Ok(Type::Bool)
     }
 }
 
 impl<'a> Typecheck<'a> for False {
     type Type = Type;
-    type Err = Error;
     type Env = &'a mut TypingEnv;
 
-    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+    fn check_start(&self) -> Result<Self::Type, Error> {
         self.check(&mut Default::default())
     }
 
-    fn check(&self, _: Self::Env) -> Result<Self::Type, Self::Err> {
+    fn check(&self, _: Self::Env) -> Result<Self::Type, Error> {
         Ok(Type::Bool)
     }
 }
 
 impl<'a> Typecheck<'a> for If {
     type Type = Type;
-    type Err = Error;
     type Env = &'a mut TypingEnv;
 
-    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+    fn check_start(&self) -> Result<Self::Type, Error> {
         self.check(&mut Default::default())
     }
 
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Error> {
         let ifc_ty = self.ifc.check(&mut env.clone())?;
         if let Type::Bool = ifc_ty {
             Ok(())

@@ -16,14 +16,13 @@ pub mod unpack;
 
 impl<'a> Typecheck<'a> for Term {
     type Type = Type;
-    type Err = Error;
     type Env = &'a mut Env;
 
-    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+    fn check_start(&self) -> Result<Self::Type, Error> {
         self.check(&mut Default::default())
     }
 
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Error> {
         match self {
             Term::Var(v) => env.get_var(v).map_err(to_check_err),
             Term::Lambda(lam) => lam.check(env),

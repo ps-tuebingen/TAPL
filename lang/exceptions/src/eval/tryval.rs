@@ -7,14 +7,13 @@ use common::{
 
 impl Eval<'_> for TryWithVal {
     type Value = Value;
-    type Err = Error;
     type Env = ();
 
-    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+    fn eval_start(self) -> Result<Self::Value, Error> {
         self.eval(())
     }
 
-    fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
+    fn eval(self, env: Self::Env) -> Result<Self::Value, Error> {
         let term_evaled = self.term.eval(env)?;
         if let Value::Raise {
             val,

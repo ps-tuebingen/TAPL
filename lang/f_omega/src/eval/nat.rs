@@ -4,28 +4,26 @@ use common::{errors::Error, Eval};
 
 impl Eval<'_> for Zero {
     type Value = Value;
-    type Err = Error;
     type Env = ();
 
-    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+    fn eval_start(self) -> Result<Self::Value, Error> {
         self.eval(())
     }
 
-    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Err> {
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Error> {
         Ok(Value::Const(0))
     }
 }
 
 impl Eval<'_> for Succ {
     type Value = Value;
-    type Err = Error;
     type Env = ();
 
-    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+    fn eval_start(self) -> Result<Self::Value, Error> {
         self.eval(())
     }
 
-    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Err> {
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Error> {
         let inner = self.term.clone().eval(_env)?;
         let i = inner.as_const().map_err(to_eval_err)?;
         Ok(Value::Const(i + 1))
@@ -34,14 +32,13 @@ impl Eval<'_> for Succ {
 
 impl Eval<'_> for Pred {
     type Value = Value;
-    type Err = Error;
     type Env = ();
 
-    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+    fn eval_start(self) -> Result<Self::Value, Error> {
         self.eval(())
     }
 
-    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Err> {
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Error> {
         let inner = self.term.clone().eval(_env)?;
         let i = inner.as_const().map_err(to_eval_err)?;
         Ok(Value::Const(i - 1))
@@ -50,14 +47,13 @@ impl Eval<'_> for Pred {
 
 impl Eval<'_> for IsZero {
     type Value = Value;
-    type Err = Error;
     type Env = ();
 
-    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+    fn eval_start(self) -> Result<Self::Value, Error> {
         self.eval(())
     }
 
-    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Err> {
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Error> {
         let inner = self.term.clone().eval(_env)?;
         let i = inner.as_const().map_err(to_eval_err)?;
         if i == 0 {

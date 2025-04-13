@@ -23,8 +23,7 @@ where
 struct SystemFParser;
 
 impl Parse for Term {
-    type Err = Error;
-    fn parse(input: String) -> Result<Self, Self::Err> {
+    fn parse(input: String) -> Result<Self, Error> {
         parse(input)
     }
 }

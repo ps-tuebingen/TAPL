@@ -10,14 +10,13 @@ use common::{
 
 impl Eval<'_> for Fix {
     type Value = Value;
-    type Err = Error;
     type Env = ();
 
-    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+    fn eval_start(self) -> Result<Self::Value, Error> {
         self.eval(())
     }
 
-    fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
+    fn eval(self, env: Self::Env) -> Result<Self::Value, Error> {
         let fix_val = self.term.eval(env)?;
         if let Value::Lambda { var, annot, body } = fix_val {
             body.clone()

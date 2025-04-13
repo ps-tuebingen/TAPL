@@ -7,14 +7,13 @@ use common::{
 
 impl Eval<'_> for Term {
     type Value = Value;
-    type Err = Error;
     type Env = ();
 
-    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+    fn eval_start(self) -> Result<Self::Value, Error> {
         self.eval(())
     }
 
-    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Err> {
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Error> {
         match self {
             Term::Var(v) => Err(to_eval_err(ErrorKind::FreeVariable(v.clone()))),
             Term::Lambda(lam) => lam.eval(_env),

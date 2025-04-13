@@ -10,12 +10,11 @@ use common::{
 
 impl<'a> Typecheck<'a> for Ref {
     type Type = Type;
-    type Err = Error;
     type Env = &'a mut TypingContext;
-    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+    fn check_start(&self) -> Result<Self::Type, Error> {
         self.check(&mut Default::default())
     }
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Error> {
         let inner = self.term.check(env)?;
         Ok(Type::Ref(Box::new(inner)))
     }
@@ -23,12 +22,11 @@ impl<'a> Typecheck<'a> for Ref {
 
 impl<'a> Typecheck<'a> for Deref {
     type Type = Type;
-    type Err = Error;
     type Env = &'a mut TypingContext;
-    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+    fn check_start(&self) -> Result<Self::Type, Error> {
         self.check(&mut Default::default())
     }
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Error> {
         let inner = self.term.check(env)?;
         match inner {
             Type::Ref(ty) => Ok(*ty),
@@ -44,12 +42,11 @@ impl<'a> Typecheck<'a> for Deref {
 
 impl<'a> Typecheck<'a> for Assign {
     type Type = Type;
-    type Err = Error;
     type Env = &'a mut TypingContext;
-    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+    fn check_start(&self) -> Result<Self::Type, Error> {
         self.check(&mut Default::default())
     }
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Error> {
         let left_ty = self.to.check(&mut env.clone())?;
         let right_ty = self.content.check(env)?;
         match left_ty {
@@ -83,12 +80,11 @@ impl<'a> Typecheck<'a> for Assign {
 
 impl<'a> Typecheck<'a> for Location {
     type Type = Type;
-    type Err = Error;
     type Env = &'a mut TypingContext;
-    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+    fn check_start(&self) -> Result<Self::Type, Error> {
         self.check(&mut Default::default())
     }
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Error> {
         let stored = env
             .lookup_location(self.loc)
             .ok_or(to_check_err(ErrorKind::UndefinedLocation(self.loc)))?;

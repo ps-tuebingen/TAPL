@@ -7,42 +7,42 @@ use common::{
 
 impl Eval<'_> for True {
     type Value = Value;
-    type Err = Error;
+
     type Env = ();
 
-    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+    fn eval_start(self) -> Result<Self::Value, Error> {
         self.eval(())
     }
 
-    fn eval(self, _: Self::Env) -> Result<Self::Value, Self::Err> {
+    fn eval(self, _: Self::Env) -> Result<Self::Value, Error> {
         Ok(Value::True)
     }
 }
 
 impl Eval<'_> for False {
     type Value = Value;
-    type Err = Error;
+
     type Env = ();
 
-    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+    fn eval_start(self) -> Result<Self::Value, Error> {
         self.eval(())
     }
 
-    fn eval(self, _: Self::Env) -> Result<Self::Value, Self::Err> {
+    fn eval(self, _: Self::Env) -> Result<Self::Value, Error> {
         Ok(Value::False)
     }
 }
 
 impl Eval<'_> for If {
     type Value = Value;
-    type Err = Error;
+
     type Env = ();
 
-    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+    fn eval_start(self) -> Result<Self::Value, Error> {
         self.eval(())
     }
 
-    fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
+    fn eval(self, env: Self::Env) -> Result<Self::Value, Error> {
         let if_v = self.ifc.eval(env)?;
         match if_v {
             Value::True => self.thenc.eval(env),

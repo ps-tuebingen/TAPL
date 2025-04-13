@@ -7,14 +7,13 @@ use common::{
 
 impl Eval<'_> for If {
     type Value = Value;
-    type Err = Error;
     type Env = ();
 
-    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+    fn eval_start(self) -> Result<Self::Value, Error> {
         self.eval(())
     }
 
-    fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
+    fn eval(self, env: Self::Env) -> Result<Self::Value, Error> {
         let cond_val = self.ift.eval(env)?;
         match cond_val {
             Value::True => self.thent.eval(env),

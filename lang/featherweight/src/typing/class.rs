@@ -10,14 +10,13 @@ use common::{
 
 impl<'a> Typecheck<'a> for ClassDeclaration {
     type Type = ();
-    type Err = Error;
     type Env = &'a ClassTable;
 
-    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+    fn check_start(&self) -> Result<Self::Type, Error> {
         self.check(&Default::default())
     }
 
-    fn check(&self, ct: Self::Env) -> Result<Self::Type, Self::Err> {
+    fn check(&self, ct: Self::Env) -> Result<Self::Type, Error> {
         if self.constructor.name != self.name {
             return Err(to_check_err(ErrorKind::NameMismatch {
                 found: self.constructor.name.clone(),

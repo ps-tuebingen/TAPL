@@ -10,12 +10,11 @@ use common::{
 
 impl<'a> Typecheck<'a> for Variant {
     type Type = Type;
-    type Err = Error;
     type Env = &'a mut Env;
-    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+    fn check_start(&self) -> Result<Self::Type, Error> {
         self.check(&mut Default::default())
     }
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Error> {
         let vars = self.annot.as_variant().map_err(to_check_err)?;
         let term_ty = self.term.check(env)?;
         let (_, ty) = vars
@@ -29,12 +28,11 @@ impl<'a> Typecheck<'a> for Variant {
 
 impl<'a> Typecheck<'a> for VariantCase {
     type Type = Type;
-    type Err = Error;
     type Env = &'a mut Env;
-    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+    fn check_start(&self) -> Result<Self::Type, Error> {
         self.check(&mut Default::default())
     }
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Error> {
         let term_ty = self.bound_term.check(env)?;
         let variants = term_ty.as_variant().map_err(to_check_err)?;
 

@@ -10,14 +10,13 @@ use common::{
 
 impl<'a> Typecheck<'a> for RecordProj {
     type Type = Type;
-    type Err = Error;
     type Env = &'a mut Env;
 
-    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+    fn check_start(&self) -> Result<Self::Type, Error> {
         self.check(&mut Default::default())
     }
 
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Error> {
         let rec_ty = self.term.check(&mut env.clone())?.eval(env)?;
         let rec = rec_ty.as_rec().map_err(to_check_err)?;
         rec.records

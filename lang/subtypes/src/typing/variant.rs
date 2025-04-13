@@ -10,12 +10,11 @@ use common::{
 
 impl<'a> Typecheck<'a> for Variant {
     type Type = Type;
-    type Err = Error;
     type Env = &'a mut TypingContext;
-    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+    fn check_start(&self) -> Result<Self::Type, Error> {
         self.check(&mut Default::default())
     }
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Error> {
         let ty = self.term.check(env)?;
         Ok(Type::Variant(vec![(self.label.clone(), ty)]))
     }
@@ -23,12 +22,11 @@ impl<'a> Typecheck<'a> for Variant {
 
 impl<'a> Typecheck<'a> for VariantCase {
     type Type = Type;
-    type Err = Error;
     type Env = &'a mut TypingContext;
-    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+    fn check_start(&self) -> Result<Self::Type, Error> {
         self.check(&mut Default::default())
     }
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Error> {
         let mut var_tys = vec![];
         let mut rhs_tys = vec![];
         for pt in self.patterns.iter() {

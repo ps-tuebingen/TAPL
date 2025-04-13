@@ -4,14 +4,13 @@ use common::Eval;
 
 impl Eval<'_> for App {
     type Value = Value;
-    type Err = Error;
     type Env = ();
 
-    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+    fn eval_start(self) -> Result<Self::Value, Error> {
         self.eval(())
     }
 
-    fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
+    fn eval(self, env: Self::Env) -> Result<Self::Value, Error> {
         let fun_val = self.fun.eval(env)?;
         let arg_val = self.arg.eval(env)?;
         let (var, _, body) = fun_val.into_lambda().map_err(to_eval_err)?;

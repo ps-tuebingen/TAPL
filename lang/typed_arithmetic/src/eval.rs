@@ -31,14 +31,13 @@ impl Value {
 
 impl Eval<'_> for Term {
     type Value = Value;
-    type Err = Error;
     type Env = ();
 
-    fn eval_start(self) -> Result<Self::Value, Self::Err> {
+    fn eval_start(self) -> Result<Self::Value, Error> {
         self.eval(())
     }
 
-    fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Err> {
+    fn eval(self, _env: Self::Env) -> Result<Self::Value, Error> {
         match self {
             Term::Zero => Ok(Value::Numerical(0)),
             Term::True => Ok(Value::True),

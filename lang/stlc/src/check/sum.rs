@@ -10,14 +10,13 @@ use common::{
 
 impl<'a> Typecheck<'a> for Left {
     type Type = Type;
-    type Err = Error;
     type Env = &'a mut TypingEnv;
 
-    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+    fn check_start(&self) -> Result<Self::Type, Error> {
         self.check(&mut Default::default())
     }
 
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Error> {
         let ty = self.left_term.check(env)?;
         let (annot_l, annot_r) = if let Type::Sum(annot_left, annot_right) = self.ty.clone() {
             (annot_left, annot_right)
@@ -40,14 +39,13 @@ impl<'a> Typecheck<'a> for Left {
 
 impl<'a> Typecheck<'a> for Right {
     type Type = Type;
-    type Err = Error;
     type Env = &'a mut TypingEnv;
 
-    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+    fn check_start(&self) -> Result<Self::Type, Error> {
         self.check(&mut Default::default())
     }
 
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Error> {
         let ty = self.right_term.check(env)?;
         let (annot_l, annot_r) = if let Type::Sum(annot_left, annot_right) = self.ty.clone() {
             (annot_left, annot_right)
@@ -71,14 +69,13 @@ impl<'a> Typecheck<'a> for Right {
 
 impl<'a> Typecheck<'a> for SumCase {
     type Type = Type;
-    type Err = Error;
     type Env = &'a mut TypingEnv;
 
-    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+    fn check_start(&self) -> Result<Self::Type, Error> {
         self.check(&mut Default::default())
     }
 
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Error> {
         let bound_ty = self.bound_term.check(&mut env.clone())?;
         if let Type::Sum(left_ty, right_ty) = bound_ty {
             env.used_vars.insert(self.left_var.clone(), *left_ty);

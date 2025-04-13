@@ -24,8 +24,7 @@ where
 struct FeatherweightParser;
 
 impl Parse for ClassTable {
-    type Err = Error;
-    fn parse(input: String) -> Result<Self, Self::Err> {
+    fn parse(input: String) -> Result<Self, Error> {
         parse(input)
     }
 }

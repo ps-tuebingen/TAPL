@@ -7,14 +7,13 @@ use common::{errors::Error, Typecheck};
 
 impl<'a> Typecheck<'a> for Pack {
     type Type = Type;
-    type Err = Error;
     type Env = &'a mut Env;
 
-    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+    fn check_start(&self) -> Result<Self::Type, Error> {
         self.check(&mut Default::default())
     }
 
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Error> {
         let outer_kind = self.outer_ty.check(&mut env.clone())?;
         outer_kind.check_equal(&Kind::Star).map_err(to_check_err)?;
         let ex = self

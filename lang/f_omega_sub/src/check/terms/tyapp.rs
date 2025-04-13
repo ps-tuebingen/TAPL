@@ -8,14 +8,13 @@ use common::{errors::Error, Eval, Typecheck};
 
 impl<'a> Typecheck<'a> for TyApp {
     type Type = Type;
-    type Err = Error;
     type Env = &'a mut Env;
 
-    fn check_start(&self) -> Result<Self::Type, Self::Err> {
+    fn check_start(&self) -> Result<Self::Type, Error> {
         self.check(&mut Default::default())
     }
 
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
+    fn check(&self, env: Self::Env) -> Result<Self::Type, Error> {
         let t_ty = self.term.check(&mut env.clone())?.eval(&mut env.clone())?;
         let uni = t_ty.as_universal().map_err(to_check_err)?;
         let ty_evaled = self.ty.clone().eval(&mut env.clone())?;

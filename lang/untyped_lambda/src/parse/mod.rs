@@ -19,8 +19,7 @@ pub fn to_err(knd: ErrorKind) -> Error {
 use lexer::{lex, Token};
 
 impl Parse for Term {
-    type Err = Error;
-    fn parse(mut input: String) -> Result<Self, Self::Err> {
+    fn parse(mut input: String) -> Result<Self, Error> {
         parse(&mut input)
     }
 }

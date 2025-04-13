@@ -22,7 +22,6 @@ where
     to_err(knd.into(), ErrorLocation::Parse)
 }
 impl Parse for Term {
-    type Err = Error;
     fn parse(input: String) -> Result<Self, Error> {
         parse(input)
     }
