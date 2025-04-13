@@ -1,6 +1,6 @@
-use super::{errors::Error, Value};
+use super::Value;
 use crate::{syntax::Let, traits::subst::Subst};
-use common::Eval;
+use common::{errors::Error, Eval};
 
 impl Eval<'_> for Let {
     type Value = Value;

@@ -1,5 +1,9 @@
-use super::{errors::Error, ComputationRule, CongruenceRule, Eval, Value};
-use crate::Var;
+use super::{ComputationRule, CongruenceRule, Eval, Value};
+use crate::eval::to_eval_err;
+use common::{
+    errors::{Error, ErrorKind},
+    Var,
+};
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum EvalContext {
@@ -13,7 +17,7 @@ impl Eval for EvalContext {
     fn eval(self) -> Result<Value, Error> {
         match self {
             EvalContext::Value(val) => Ok(val),
-            EvalContext::Var(v) => Err(Error::FreeVariable { var: v }),
+            EvalContext::Var(v) => Err(to_eval_err(ErrorKind::FreeVariable(v))),
             EvalContext::Computation(rule) => rule.eval(),
             EvalContext::Congruence(rule) => rule.eval(),
         }

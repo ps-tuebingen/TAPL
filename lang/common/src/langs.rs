@@ -12,6 +12,7 @@ pub enum Lang {
     LambdaOmega,
     Recursive,
     References,
+    Stlc,
 }
 
 impl fmt::Display for Lang {
@@ -27,6 +28,7 @@ impl fmt::Display for Lang {
             Lang::LambdaOmega => f.write_str("LambdaOmega"),
             Lang::Recursive => f.write_str("Recursive"),
             Lang::References => f.write_str("References"),
+            Lang::Stlc => f.write_str("STLC"),
         }
     }
 }

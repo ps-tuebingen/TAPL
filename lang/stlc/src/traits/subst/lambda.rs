@@ -2,8 +2,8 @@ use super::Subst;
 use crate::{
     syntax::{App, Lambda, Term},
     traits::free_vars::{fresh_var, FreeVars},
-    Var,
 };
+use common::Var;
 
 impl Subst for Lambda {
     type Target = Lambda;

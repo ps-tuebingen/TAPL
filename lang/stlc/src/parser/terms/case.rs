@@ -1,9 +1,12 @@
-use super::pair_to_term;
+use super::{pair_to_term, to_parse_err};
 use crate::{
-    parser::{errors::Error, get_n_inner, next_rule, Rule},
+    parser::{get_n_inner, next_rule, Rule},
     syntax::{SomeCase, SumCase, Term, VariantCase, VariantPattern},
 };
+use common::errors::{Error, ErrorKind};
 use pest::iterators::Pair;
+
+#[derive(Debug)]
 enum PatternBinding {
     Inl { var: String },
     Inr { var: String },
@@ -17,9 +20,10 @@ impl PatternBinding {
         if let PatternBinding::Inl { var } = self {
             Ok(var)
         } else {
-            Err(Error::WrongPattern {
+            Err(to_parse_err(ErrorKind::NameMismatch {
+                found: format!("{self:?}"),
                 expected: "inl".to_owned(),
-            })
+            }))
         }
     }
 
@@ -27,9 +31,10 @@ impl PatternBinding {
         if let PatternBinding::Inr { var } = self {
             Ok(var)
         } else {
-            Err(Error::WrongPattern {
+            Err(to_parse_err(ErrorKind::NameMismatch {
+                found: format!("{self:?}"),
                 expected: "inr".to_owned(),
-            })
+            }))
         }
     }
 
@@ -37,9 +42,10 @@ impl PatternBinding {
         if let PatternBinding::Variant { label, var } = self {
             Ok((label, var))
         } else {
-            Err(Error::WrongPattern {
+            Err(to_parse_err(ErrorKind::NameMismatch {
+                found: format!("{self:?}"),
                 expected: "variant".to_owned(),
-            })
+            }))
         }
     }
 
@@ -47,9 +53,10 @@ impl PatternBinding {
         if let PatternBinding::Something { var } = self {
             Ok(var)
         } else {
-            Err(Error::WrongPattern {
+            Err(to_parse_err(ErrorKind::NameMismatch {
+                found: format!("{self:?}"),
                 expected: "Something".to_owned(),
-            })
+            }))
         }
     }
 
@@ -57,9 +64,10 @@ impl PatternBinding {
         if let PatternBinding::Nothing = self {
             Ok(())
         } else {
-            Err(Error::WrongPattern {
+            Err(to_parse_err(ErrorKind::NameMismatch {
+                found: format!("{self:?}"),
                 expected: "Nothing".to_owned(),
-            })
+            }))
         }
     }
 }
@@ -72,9 +80,9 @@ struct Pattern {
 pub fn pair_to_case(p: Pair<'_, Rule>) -> Result<Term, Error> {
     let mut inner = p.into_inner();
 
-    let bound_pair = inner
-        .next()
-        .ok_or(Error::MissingInput("Case Bound Term".to_owned()))?;
+    let bound_pair = inner.next().ok_or(to_parse_err(ErrorKind::MissingInput(
+        "Case Bound Term".to_owned(),
+    )))?;
     let bound_term = pair_to_term(bound_pair)?;
 
     let mut patterns = vec![];
@@ -134,10 +142,10 @@ fn pair_to_binding(p: Pair<'_, Rule>) -> Result<PatternBinding, Error> {
             let _ = get_n_inner(p, vec![]);
             Ok(PatternBinding::Nothing)
         }
-        r => Err(Error::UnexpectedRule {
-            found: r,
+        r => Err(to_parse_err(ErrorKind::UnexpectedRule {
+            found: format!("{r:?}"),
             expected: "Pattern Binding".to_owned(),
-        }),
+        })),
     }
 }
 
@@ -213,7 +221,10 @@ fn patterns_to_term(mut pts: Vec<Pattern>, bound: Term) -> Result<Term, Error> {
     };
 
     if !pts.is_empty() {
-        return Err(Error::RemainingInput(Rule::pattern));
+        return Err(to_parse_err(ErrorKind::RemainingInput(format!(
+            "{:?}",
+            Rule::pattern
+        ))));
     }
     Ok(term)
 }

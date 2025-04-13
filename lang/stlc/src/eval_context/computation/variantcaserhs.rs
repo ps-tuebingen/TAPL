@@ -1,5 +1,8 @@
-use super::{ComputationRule, Error, Eval, EvalContext, Value};
-use crate::{eval_context::AsContext, syntax::VariantPattern, traits::subst::Subst};
+use super::{ComputationRule, Eval, EvalContext, Value};
+use crate::{
+    eval::to_eval_err, eval_context::AsContext, syntax::VariantPattern, traits::subst::Subst,
+};
+use common::errors::{Error, ErrorKind};
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct VariantCaseRhs {
@@ -14,14 +17,15 @@ impl Eval for VariantCaseRhs {
                 .patterns
                 .into_iter()
                 .find(|pt| pt.label == label)
-                .ok_or(Error::MissingPattern { label })?;
+                .ok_or(to_eval_err(ErrorKind::UndefinedLabel(label)))?;
             let t = matching.rhs.subst(&matching.bound_var, (*val).into());
             let ctx: EvalContext = (*t).to_context()?;
             ctx.eval()
         } else {
-            Err(Error::BadValue {
-                val: self.bound_val,
-            })
+            Err(to_eval_err(ErrorKind::ValueMismatch {
+                found: self.bound_val.to_string(),
+                expected: "Variant".to_owned(),
+            }))
         }
     }
 }

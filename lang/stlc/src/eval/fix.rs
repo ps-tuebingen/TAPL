@@ -1,9 +1,12 @@
-use super::{errors::Error, Value};
+use super::{to_eval_err, Value};
 use crate::{
     syntax::{Fix, Lambda},
     traits::subst::Subst,
 };
-use common::Eval;
+use common::{
+    errors::{Error, ErrorKind},
+    Eval,
+};
 
 impl Eval<'_> for Fix {
     type Value = Value;
@@ -34,7 +37,10 @@ impl Eval<'_> for Fix {
                 )
                 .eval(env)
         } else {
-            Err(Error::BadValue { val: fix_val })
+            Err(to_eval_err(ErrorKind::ValueMismatch {
+                found: fix_val.to_string(),
+                expected: "Function".to_owned(),
+            }))
         }
     }
 }

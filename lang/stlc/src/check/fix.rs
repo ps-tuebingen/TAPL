@@ -1,6 +1,9 @@
-use super::{errors::Error, TypingEnv};
+use super::{to_check_err, TypingEnv};
 use crate::{syntax::Fix, types::Type};
-use common::Typecheck;
+use common::{
+    errors::{Error, ErrorKind},
+    Typecheck,
+};
 
 impl<'a> Typecheck<'a> for Fix {
     type Type = Type;
@@ -17,15 +20,16 @@ impl<'a> Typecheck<'a> for Fix {
             if *ty1 == *ty2 {
                 Ok(*ty1)
             } else {
-                Err(Error::TypeMismatch {
-                    types: vec![*ty1, *ty2],
-                })
+                Err(to_check_err(ErrorKind::TypeMismatch {
+                    found: ty1.to_string(),
+                    expected: ty2.to_string(),
+                }))
             }
         } else {
-            Err(Error::UnexpectedType {
-                ty,
-                term: self.clone().into(),
-            })
+            Err(to_check_err(ErrorKind::TypeMismatch {
+                found: ty.to_string(),
+                expected: "Function Type".to_owned(),
+            }))
         }
     }
 }

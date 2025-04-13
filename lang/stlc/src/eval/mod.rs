@@ -1,8 +1,8 @@
-use common::Eval;
+use super::to_err;
+use common::errors::{Error, ErrorKind, ErrorLocation};
 
 pub mod ascription;
 pub mod bool;
-pub mod errors;
 pub mod fix;
 pub mod lambda;
 pub mod let_exp;
@@ -20,10 +20,14 @@ pub mod variant;
 
 pub use value::Value;
 
+pub fn to_eval_err(knd: ErrorKind) -> Error {
+    to_err(knd, ErrorLocation::Eval)
+}
+
 #[cfg(test)]
 mod var_tests {
-    use super::Eval;
     use crate::syntax::Term;
+    use common::Eval;
 
     #[test]
     fn eval_var() {

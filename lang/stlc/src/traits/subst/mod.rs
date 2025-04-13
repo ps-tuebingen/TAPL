@@ -1,5 +1,5 @@
 use crate::syntax::Term;
-use crate::Var;
+use common::Var;
 
 pub mod ascription;
 pub mod bool;

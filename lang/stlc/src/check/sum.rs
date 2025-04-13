@@ -1,9 +1,12 @@
-use super::{errors::Error, TypingEnv};
+use super::{to_check_err, TypingEnv};
 use crate::{
     syntax::{Left, Right, SumCase},
     types::Type,
 };
-use common::Typecheck;
+use common::{
+    errors::{Error, ErrorKind},
+    Typecheck,
+};
 
 impl<'a> Typecheck<'a> for Left {
     type Type = Type;
@@ -19,15 +22,16 @@ impl<'a> Typecheck<'a> for Left {
         let (annot_l, annot_r) = if let Type::Sum(annot_left, annot_right) = self.ty.clone() {
             (annot_left, annot_right)
         } else {
-            return Err(Error::UnexpectedType {
-                term: self.clone().into(),
-                ty: self.ty.clone(),
-            });
+            return Err(to_check_err(ErrorKind::TypeMismatch {
+                found: self.ty.to_string(),
+                expected: "Sum Type".to_owned(),
+            }));
         };
         if ty != *annot_l {
-            return Err(Error::TypeMismatch {
-                types: vec![ty, *annot_l],
-            });
+            return Err(to_check_err(ErrorKind::TypeMismatch {
+                found: ty.to_string(),
+                expected: annot_l.to_string(),
+            }));
         }
 
         Ok(Type::Sum(annot_l, annot_r))
@@ -48,16 +52,17 @@ impl<'a> Typecheck<'a> for Right {
         let (annot_l, annot_r) = if let Type::Sum(annot_left, annot_right) = self.ty.clone() {
             (annot_left, annot_right)
         } else {
-            return Err(Error::UnexpectedType {
-                term: self.clone().into(),
-                ty: self.ty.clone(),
-            });
+            return Err(to_check_err(ErrorKind::TypeMismatch {
+                found: self.ty.to_string(),
+                expected: "Sum Type".to_owned(),
+            }));
         };
 
         if ty != *annot_r {
-            return Err(Error::TypeMismatch {
-                types: vec![ty, *annot_r],
-            });
+            return Err(to_check_err(ErrorKind::TypeMismatch {
+                found: ty.to_string(),
+                expected: annot_r.to_string(),
+            }));
         }
 
         Ok(Type::Sum(annot_l, Box::new(ty)))
@@ -86,15 +91,16 @@ impl<'a> Typecheck<'a> for SumCase {
             if left_checked == right_checked {
                 Ok(left_checked)
             } else {
-                Err(Error::TypeMismatch {
-                    types: vec![left_checked, right_checked],
-                })
+                Err(to_check_err(ErrorKind::TypeMismatch {
+                    found: left_checked.to_string(),
+                    expected: right_checked.to_string(),
+                }))
             }
         } else {
-            Err(Error::UnexpectedType {
-                ty: bound_ty.clone(),
-                term: self.clone().into(),
-            })
+            Err(to_check_err(ErrorKind::TypeMismatch {
+                found: bound_ty.to_string(),
+                expected: "Sum Type".to_owned(),
+            }))
         }
     }
 }

@@ -2,8 +2,8 @@ use super::Subst;
 use crate::{
     syntax::{Left, Right, SumCase, Term},
     traits::free_vars::{fresh_var, FreeVars},
-    Var,
 };
+use common::Var;
 
 impl Subst for Left {
     type Target = Left;

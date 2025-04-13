@@ -1,9 +1,12 @@
-use super::{errors::Error, TypingEnv};
+use super::{to_check_err, TypingEnv};
 use crate::{
     syntax::{App, Lambda},
     types::Type,
 };
-use common::Typecheck;
+use common::{
+    errors::{Error, ErrorKind},
+    Typecheck,
+};
 
 impl<'a> Typecheck<'a> for Lambda {
     type Type = Type;
@@ -37,15 +40,16 @@ impl<'a> Typecheck<'a> for App {
             if ty2 == *ty11 {
                 Ok(*ty12)
             } else {
-                Err(Error::TypeMismatch {
-                    types: vec![*ty11, ty2],
-                })
+                Err(to_check_err(ErrorKind::TypeMismatch {
+                    found: ty11.to_string(),
+                    expected: ty2.to_string(),
+                }))
             }
         } else {
-            Err(Error::UnexpectedType {
-                ty: ty1,
-                term: self.clone().into(),
-            })
+            Err(to_check_err(ErrorKind::TypeMismatch {
+                found: ty1.to_string(),
+                expected: "Function Type".to_owned(),
+            }))
         }
     }
 }

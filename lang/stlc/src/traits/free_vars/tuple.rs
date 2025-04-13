@@ -1,8 +1,6 @@
 use super::FreeVars;
-use crate::{
-    syntax::{Proj, Tup},
-    Var,
-};
+use crate::syntax::{Proj, Tup};
+use common::Var;
 use std::collections::HashSet;
 
 impl FreeVars for Tup {

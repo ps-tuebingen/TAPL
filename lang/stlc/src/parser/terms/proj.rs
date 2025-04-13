@@ -1,7 +1,8 @@
 use crate::{
-    parser::{errors::Error, Rule},
+    parser::Rule,
     syntax::{Proj, RecordProj, Term},
 };
+use common::errors::Error;
 use pest::iterators::Pair;
 
 pub fn pair_to_proj(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {

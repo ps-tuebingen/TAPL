@@ -1,7 +1,8 @@
 use crate::{
-    parser::{errors::Error, get_n_inner, types::pair_to_type, Rule},
+    parser::{get_n_inner, types::pair_to_type, Rule},
     syntax::{Ascribe, Term},
 };
+use common::errors::Error;
 use pest::iterators::Pair;
 
 pub fn pair_to_ascribe(p: Pair<'_, Rule>, t: Term) -> Result<Ascribe, Error> {

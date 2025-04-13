@@ -1,8 +1,6 @@
 use super::Subst;
-use crate::{
-    syntax::{Fix, Term},
-    Var,
-};
+use crate::syntax::{Fix, Term};
+use common::Var;
 
 impl Subst for Fix {
     type Target = Fix;

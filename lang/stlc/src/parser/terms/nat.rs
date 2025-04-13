@@ -1,15 +1,16 @@
-use super::pair_to_term;
+use super::{pair_to_term, to_parse_err};
 use crate::{
-    parser::{errors::Error, get_n_inner, next_rule, Rule},
+    parser::{get_n_inner, next_rule, Rule},
     syntax::{IsZero, Pred, Succ, Term},
 };
+use common::errors::{Error, ErrorKind};
 use pest::iterators::Pair;
 
 pub fn pair_to_num(p: Pair<'_, Rule>) -> Result<Term, Error> {
     let num_str = p.as_str().trim();
     let num = num_str
         .parse::<i64>()
-        .map_err(|_| Error::BadTerm(num_str.to_owned()))?;
+        .map_err(|_| to_parse_err(ErrorKind::UnknownKeyword(num_str.to_owned())))?;
     Ok(num.into())
 }
 

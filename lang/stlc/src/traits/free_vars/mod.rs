@@ -1,4 +1,4 @@
-use crate::Var;
+use common::Var;
 use std::collections::HashSet;
 
 pub mod ascription;

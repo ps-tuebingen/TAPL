@@ -1,5 +1,6 @@
 use super::{CongruenceRule, Error, Eval, EvalContext, Value};
-use crate::{eval_context::AsContext, syntax::Term, Label};
+use crate::{eval_context::AsContext, syntax::Term};
+use common::Label;
 use std::collections::HashMap;
 
 #[derive(Debug, PartialEq, Eq)]

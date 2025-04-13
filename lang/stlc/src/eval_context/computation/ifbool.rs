@@ -1,5 +1,6 @@
-use super::{ComputationRule, Error, Eval, EvalContext, Value};
-use crate::{eval_context::AsContext, syntax::Term};
+use super::{ComputationRule, Eval, EvalContext, Value};
+use crate::{eval::to_eval_err, eval_context::AsContext, syntax::Term};
+use common::errors::{Error, ErrorKind};
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct IfBool {
@@ -19,7 +20,10 @@ impl Eval for IfBool {
                 let ctx: EvalContext = self.elsec.to_context()?;
                 ctx.eval()
             }
-            val => Err(Error::BadValue { val }),
+            val => Err(to_eval_err(ErrorKind::ValueMismatch {
+                found: val.to_string(),
+                expected: "Boolean".to_owned(),
+            })),
         }
     }
 }

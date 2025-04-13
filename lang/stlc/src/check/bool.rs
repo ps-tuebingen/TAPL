@@ -1,9 +1,12 @@
-use super::{errors::Error, TypingEnv};
+use super::{to_check_err, TypingEnv};
 use crate::{
     syntax::{False, If, True},
     types::Type,
 };
-use common::Typecheck;
+use common::{
+    errors::{Error, ErrorKind},
+    Typecheck,
+};
 
 impl<'a> Typecheck<'a> for True {
     type Type = Type;
@@ -47,10 +50,10 @@ impl<'a> Typecheck<'a> for If {
         if let Type::Bool = ifc_ty {
             Ok(())
         } else {
-            Err(Error::UnexpectedType {
-                ty: ifc_ty,
-                term: (*self.ifc).clone(),
-            })
+            Err(to_check_err(ErrorKind::TypeMismatch {
+                found: ifc_ty.to_string(),
+                expected: "Bool".to_owned(),
+            }))
         }?;
 
         let then_ty = self.thenc.check(&mut env.clone())?;
@@ -58,9 +61,10 @@ impl<'a> Typecheck<'a> for If {
         if then_ty == else_ty {
             Ok(then_ty)
         } else {
-            Err(Error::TypeMismatch {
-                types: vec![then_ty, else_ty],
-            })
+            Err(to_check_err(ErrorKind::TypeMismatch {
+                found: then_ty.to_string(),
+                expected: else_ty.to_string(),
+            }))
         }
     }
 }

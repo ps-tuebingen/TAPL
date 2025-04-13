@@ -1,5 +1,9 @@
-use super::{errors::Error, Eval, Value};
+use super::{to_eval_err, Value};
 use crate::syntax::{Proj, Tup};
+use common::{
+    errors::{Error, ErrorKind},
+    Eval,
+};
 
 impl Eval<'_> for Tup {
     type Value = Value;
@@ -30,16 +34,19 @@ impl Eval<'_> for Proj {
     }
 
     fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
-        let tup_val = self.tup.eval(env)?;
+        let tup_val = self.tup.clone().eval(env)?;
         if let Value::Tup(vals) = tup_val {
             vals.get(self.ind)
                 .cloned()
-                .ok_or(Error::ProjectionOutOfBounds {
-                    found: vals.len(),
-                    expected: self.ind,
-                })
+                .ok_or(to_eval_err(ErrorKind::TermMismatch {
+                    found: self.to_string(),
+                    expected: format!("Tuple projection less than {}", vals.len()),
+                }))
         } else {
-            Err(Error::BadValue { val: tup_val })
+            Err(to_eval_err(ErrorKind::ValueMismatch {
+                found: tup_val.to_string(),
+                expected: "Tuple".to_owned(),
+            }))
         }
     }
 }

@@ -1,5 +1,6 @@
 use super::Term;
-use crate::{types::Type, Var};
+use crate::types::Type;
+use common::Var;
 use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]

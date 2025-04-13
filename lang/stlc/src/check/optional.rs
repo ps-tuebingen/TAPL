@@ -1,9 +1,12 @@
-use super::{errors::Error, TypingEnv};
+use super::{to_check_err, TypingEnv};
 use crate::{
     syntax::{Nothing, SomeCase, Something},
     types::Type,
 };
-use common::Typecheck;
+use common::{
+    errors::{Error, ErrorKind},
+    Typecheck,
+};
 
 impl<'a> Typecheck<'a> for Nothing {
     type Type = Type;
@@ -51,15 +54,16 @@ impl<'a> Typecheck<'a> for SomeCase {
             if none_ty == some_ty {
                 Ok(none_ty)
             } else {
-                Err(Error::TypeMismatch {
-                    types: vec![none_ty, some_ty],
-                })
+                Err(to_check_err(ErrorKind::TypeMismatch {
+                    found: none_ty.to_string(),
+                    expected: some_ty.to_string(),
+                }))
             }
         } else {
-            Err(Error::UnexpectedType {
-                ty: bound_ty.clone(),
-                term: self.clone().into(),
-            })
+            Err(to_check_err(ErrorKind::TypeMismatch {
+                found: bound_ty.to_string(),
+                expected: "Option Type".to_owned(),
+            }))
         }
     }
 }

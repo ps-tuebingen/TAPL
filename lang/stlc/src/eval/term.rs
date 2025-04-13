@@ -1,5 +1,9 @@
-use super::{errors::Error, Eval, Value};
+use super::{to_eval_err, Value};
 use crate::syntax::Term;
+use common::{
+    errors::{Error, ErrorKind},
+    Eval,
+};
 
 impl Eval<'_> for Term {
     type Value = Value;
@@ -12,7 +16,7 @@ impl Eval<'_> for Term {
 
     fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
         match self {
-            Term::Var(v) => Err(Error::FreeVariable { var: v }),
+            Term::Var(v) => Err(to_eval_err(ErrorKind::FreeVariable(v))),
             Term::Lambda(lam) => lam.eval(env),
             Term::App(app) => app.eval(env),
             Term::Unit(unit) => unit.eval(env),

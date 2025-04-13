@@ -2,8 +2,8 @@ use super::Subst;
 use crate::{
     syntax::{Let, Term},
     traits::free_vars::{fresh_var, FreeVars},
-    Var,
 };
+use common::Var;
 
 impl Subst for Let {
     type Target = Let;

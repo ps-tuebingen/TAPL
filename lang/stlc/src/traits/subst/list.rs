@@ -1,8 +1,6 @@
 use super::Subst;
-use crate::{
-    syntax::{Cons, Head, IsNil, Nil, Tail, Term},
-    Var,
-};
+use crate::syntax::{Cons, Head, IsNil, Nil, Tail, Term};
+use common::Var;
 
 impl Subst for Nil {
     type Target = Nil;

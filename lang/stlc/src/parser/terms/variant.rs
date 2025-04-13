@@ -1,8 +1,9 @@
 use super::pair_to_term;
 use crate::{
-    parser::{errors::Error, get_n_inner, next_rule, types::pair_to_type, Rule},
+    parser::{get_n_inner, next_rule, types::pair_to_type, Rule},
     syntax::Variant,
 };
+use common::errors::Error;
 use pest::iterators::Pair;
 
 pub fn pair_to_variant(p: Pair<'_, Rule>) -> Result<Variant, Error> {

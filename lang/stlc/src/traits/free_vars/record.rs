@@ -1,8 +1,6 @@
 use super::FreeVars;
-use crate::{
-    syntax::{Record, RecordProj},
-    Var,
-};
+use crate::syntax::{Record, RecordProj};
+use common::Var;
 use std::collections::HashSet;
 
 impl FreeVars for Record {

@@ -1,6 +1,9 @@
-use super::{errors::Error, Value};
+use super::{to_eval_err, Value};
 use crate::syntax::{False, If, True};
-use common::Eval;
+use common::{
+    errors::{Error, ErrorKind},
+    Eval,
+};
 
 impl Eval<'_> for True {
     type Value = Value;
@@ -44,7 +47,10 @@ impl Eval<'_> for If {
         match if_v {
             Value::True => self.thenc.eval(env),
             Value::False => self.elsec.eval(env),
-            _ => Err(Error::BadValue { val: if_v }),
+            _ => Err(to_eval_err(ErrorKind::ValueMismatch {
+                found: if_v.to_string(),
+                expected: "Bool".to_owned(),
+            })),
         }
     }
 }

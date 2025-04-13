@@ -1,8 +1,6 @@
 use super::FreeVars;
-use crate::{
-    syntax::{IsZero, Pred, Succ, Zero},
-    Var,
-};
+use crate::syntax::{IsZero, Pred, Succ, Zero};
+use common::Var;
 use std::collections::HashSet;
 
 impl FreeVars for Zero {

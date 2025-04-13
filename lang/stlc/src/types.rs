@@ -1,4 +1,4 @@
-use super::Var;
+use common::Var;
 use std::collections::HashMap;
 use std::fmt;
 

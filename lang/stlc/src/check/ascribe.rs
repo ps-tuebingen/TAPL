@@ -1,6 +1,9 @@
-use super::{errors::Error, TypingEnv};
+use super::{to_check_err, TypingEnv};
 use crate::{syntax::Ascribe, types::Type};
-use common::Typecheck;
+use common::{
+    errors::{Error, ErrorKind},
+    Typecheck,
+};
 
 impl<'a> Typecheck<'a> for Ascribe {
     type Type = Type;
@@ -16,10 +19,10 @@ impl<'a> Typecheck<'a> for Ascribe {
         if self.ty == ty1 {
             Ok(ty1)
         } else {
-            Err(Error::WrongAscription {
-                found: ty1,
-                expected: self.ty.clone(),
-            })
+            Err(to_check_err(ErrorKind::TypeMismatch {
+                found: ty1.to_string(),
+                expected: self.ty.to_string(),
+            }))
         }
     }
 }

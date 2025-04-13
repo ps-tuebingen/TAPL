@@ -1,8 +1,6 @@
 use super::FreeVars;
-use crate::{
-    syntax::{False, If, True},
-    Var,
-};
+use crate::syntax::{False, If, True};
+use common::Var;
 use std::collections::HashSet;
 
 impl FreeVars for True {

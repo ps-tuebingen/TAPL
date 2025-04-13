@@ -1,5 +1,6 @@
 use super::Subst;
-use crate::{syntax::Term, Var};
+use crate::syntax::Term;
+use common::Var;
 
 impl Subst for Term {
     type Target = Term;

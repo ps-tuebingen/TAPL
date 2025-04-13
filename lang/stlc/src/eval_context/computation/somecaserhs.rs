@@ -1,5 +1,7 @@
-use super::{ComputationRule, Error, Eval, EvalContext, Value};
-use crate::{eval_context::AsContext, syntax::Term, traits::subst::Subst, Var};
+use super::{ComputationRule, Eval, EvalContext, Value};
+use crate::{eval::to_eval_err, eval_context::AsContext, syntax::Term, traits::subst::Subst};
+use common::errors::{Error, ErrorKind};
+use common::Var;
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct SomeCaseRhs {
@@ -21,7 +23,10 @@ impl Eval for SomeCaseRhs {
                 let ctx = t.to_context()?;
                 ctx.eval()
             }
-            val => Err(Error::BadValue { val }),
+            val => Err(to_eval_err(ErrorKind::ValueMismatch {
+                found: val.to_string(),
+                expected: "Option".to_owned(),
+            })),
         }
     }
 }

@@ -1,6 +1,9 @@
-use super::{errors::Error, Value};
+use super::{to_eval_err, Value};
 use crate::syntax::{Pair, Proj1, Proj2};
-use common::Eval;
+use common::{
+    errors::{Error, ErrorKind},
+    Eval,
+};
 
 impl Eval<'_> for Pair {
     type Value = Value;
@@ -33,7 +36,10 @@ impl Eval<'_> for Proj1 {
     fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
         match self.pair.eval(env)? {
             Value::Pair { fst: v1, .. } => Ok(*v1),
-            val => Err(Error::BadValue { val }),
+            val => Err(to_eval_err(ErrorKind::ValueMismatch {
+                found: val.to_string(),
+                expected: "Pair".to_owned(),
+            })),
         }
     }
 }
@@ -50,7 +56,10 @@ impl Eval<'_> for Proj2 {
     fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
         match self.pair.eval(env)? {
             Value::Pair { snd: v2, .. } => Ok(*v2),
-            val => Err(Error::BadValue { val }),
+            val => Err(to_eval_err(ErrorKind::ValueMismatch {
+                found: val.to_string(),
+                expected: "Pair".to_owned(),
+            })),
         }
     }
 }

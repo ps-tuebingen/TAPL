@@ -1,9 +1,12 @@
-use super::{errors::Error, TypingEnv};
+use super::{to_check_err, TypingEnv};
 use crate::{
     syntax::{IsZero, Pred, Succ, Zero},
     types::Type,
 };
-use common::Typecheck;
+use common::{
+    errors::{Error, ErrorKind},
+    Typecheck,
+};
 
 impl<'a> Typecheck<'a> for Zero {
     type Type = Type;
@@ -33,10 +36,10 @@ impl<'a> Typecheck<'a> for Pred {
         if let Type::Nat = inner_ty {
             Ok(Type::Nat)
         } else {
-            Err(Error::UnexpectedType {
-                ty: inner_ty,
-                term: self.clone().into(),
-            })
+            Err(to_check_err(ErrorKind::TypeMismatch {
+                found: inner_ty.to_string(),
+                expected: "Nat".to_owned(),
+            }))
         }
     }
 }
@@ -55,10 +58,10 @@ impl<'a> Typecheck<'a> for Succ {
         if let Type::Nat = inner_ty {
             Ok(Type::Nat)
         } else {
-            Err(Error::UnexpectedType {
-                ty: inner_ty,
-                term: self.clone().into(),
-            })
+            Err(to_check_err(ErrorKind::TypeMismatch {
+                found: inner_ty.to_string(),
+                expected: "Nat".to_owned(),
+            }))
         }
     }
 }
@@ -77,10 +80,10 @@ impl<'a> Typecheck<'a> for IsZero {
         if let Type::Nat = inner_ty {
             Ok(Type::Bool)
         } else {
-            Err(Error::UnexpectedType {
-                ty: inner_ty,
-                term: self.clone().into(),
-            })
+            Err(to_check_err(ErrorKind::TypeMismatch {
+                found: inner_ty.to_string(),
+                expected: "Nat".to_owned(),
+            }))
         }
     }
 }

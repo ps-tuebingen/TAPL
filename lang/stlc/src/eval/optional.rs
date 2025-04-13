@@ -1,9 +1,12 @@
-use super::{errors::Error, Value};
+use super::{to_eval_err, Value};
 use crate::{
     syntax::{Nothing, SomeCase, Something},
     traits::subst::Subst,
 };
-use common::Eval;
+use common::{
+    errors::{Error, ErrorKind},
+    Eval,
+};
 
 impl Eval<'_> for Something {
     type Value = Value;
@@ -50,7 +53,10 @@ impl Eval<'_> for SomeCase {
         match bound_res {
             Value::Nothing { .. } => self.none_rhs.eval(env),
             Value::Something(val) => self.some_rhs.subst(&self.some_var, (*val).into()).eval(env),
-            _ => Err(Error::BadValue { val: bound_res }),
+            _ => Err(to_eval_err(ErrorKind::ValueMismatch {
+                found: bound_res.to_string(),
+                expected: "Option".to_owned(),
+            })),
         }
     }
 }

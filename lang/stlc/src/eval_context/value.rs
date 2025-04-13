@@ -4,8 +4,8 @@ use crate::{
         True, Tup, Unit, Variant, Zero,
     },
     types::Type,
-    Var,
 };
+use common::Var;
 
 use std::collections::HashMap;
 use std::fmt;

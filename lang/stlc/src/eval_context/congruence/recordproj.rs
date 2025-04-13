@@ -1,5 +1,6 @@
 use super::{CongruenceRule, Error, Eval, EvalContext, Value};
-use crate::{eval_context::computation::RecordProjBeta, Label};
+use crate::eval_context::computation::RecordProjBeta;
+use common::Label;
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct RecordProj {

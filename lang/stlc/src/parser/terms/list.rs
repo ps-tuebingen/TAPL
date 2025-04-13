@@ -1,8 +1,9 @@
-use super::pair_to_term;
+use super::{pair_to_term, to_parse_err};
 use crate::{
-    parser::{errors::Error, get_n_inner, next_rule, types::pair_to_type, Rule},
+    parser::{get_n_inner, next_rule, types::pair_to_type, Rule},
     syntax::{Cons, Head, IsNil, Nil, Tail},
 };
+use common::errors::{Error, ErrorKind};
 use pest::iterators::Pair;
 
 pub fn pair_to_nil(p: Pair<'_, Rule>) -> Result<Nil, Error> {
@@ -54,19 +55,22 @@ pub fn pair_to_head(p: Pair<'_, Rule>) -> Result<Head, Error> {
 
 pub fn pair_to_tail(p: Pair<'_, Rule>) -> Result<Tail, Error> {
     let mut inner = p.into_inner();
-    let ty_rule = inner
-        .next()
-        .ok_or(Error::MissingInput("Head Type".to_owned()))?;
+    let ty_rule = inner.next().ok_or(to_parse_err(ErrorKind::MissingInput(
+        "Head Type".to_owned(),
+    )))?;
     let ty_pair = next_rule(ty_rule, Rule::r#type)?;
     let ty = pair_to_type(ty_pair)?;
 
-    let term_pair = inner
-        .next()
-        .ok_or(Error::MissingInput("Head Argument".to_owned()))?;
+    let term_pair = inner.next().ok_or(to_parse_err(ErrorKind::MissingInput(
+        "Head Argument".to_owned(),
+    )))?;
     let term = pair_to_term(term_pair)?;
 
     if let Some(next) = inner.next() {
-        return Err(Error::RemainingInput(next.as_rule()));
+        return Err(to_parse_err(ErrorKind::RemainingInput(format!(
+            "{:?}",
+            next.as_rule()
+        ))));
     }
     Ok(Tail {
         inner_type: ty,

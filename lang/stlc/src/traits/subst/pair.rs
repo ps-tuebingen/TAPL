@@ -1,8 +1,6 @@
 use super::Subst;
-use crate::{
-    syntax::{Pair, Proj1, Proj2, Term},
-    Var,
-};
+use crate::syntax::{Pair, Proj1, Proj2, Term};
+use common::Var;
 
 impl Subst for Pair {
     type Target = Pair;

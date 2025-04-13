@@ -2,13 +2,13 @@ pub mod as_context;
 pub mod computation;
 pub mod congruence;
 pub mod context;
-pub mod errors;
 pub mod value;
+
+use common::errors::Error;
 
 use computation::ComputationRule;
 use congruence::CongruenceRule;
 use context::EvalContext;
-use errors::Error;
 use value::Value;
 
 pub use as_context::AsContext;

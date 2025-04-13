@@ -1,5 +1,6 @@
 use super::{CongruenceRule, Error, Eval, EvalContext, Value};
-use crate::{eval_context::computation::LetSubst, syntax::Term, Var};
+use crate::{eval_context::computation::LetSubst, syntax::Term};
+use common::Var;
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Let {

@@ -1,5 +1,7 @@
-use super::{ComputationRule, Error, Eval, EvalContext, Value};
-use crate::Label;
+use super::{ComputationRule, Eval, EvalContext, Value};
+use crate::eval::to_eval_err;
+use common::errors::{Error, ErrorKind};
+use common::Label;
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct RecordProjBeta {
@@ -12,9 +14,12 @@ impl Eval for RecordProjBeta {
         if let Value::Record(recs) = self.record {
             recs.get(&self.label)
                 .cloned()
-                .ok_or(Error::UndefinedLabel { label: self.label })
+                .ok_or(to_eval_err(ErrorKind::UndefinedLabel(self.label)))
         } else {
-            Err(Error::BadValue { val: self.record })
+            Err(to_eval_err(ErrorKind::ValueMismatch {
+                found: self.record.to_string(),
+                expected: "Record".to_owned(),
+            }))
         }
     }
 }

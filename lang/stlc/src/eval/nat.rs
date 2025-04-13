@@ -1,6 +1,9 @@
-use super::{errors::Error, Value};
+use super::{to_eval_err, Value};
 use crate::syntax::{IsZero, Pred, Succ, Zero};
-use common::Eval;
+use common::{
+    errors::{Error, ErrorKind},
+    Eval,
+};
 
 impl Eval<'_> for Zero {
     type Value = Value;
@@ -31,7 +34,10 @@ impl Eval<'_> for Succ {
             Value::Zero => Ok(Value::Succ(Box::new(Value::Zero))),
             Value::Succ(nv) => Ok(Value::Succ(Box::new(Value::Succ(nv)))),
             Value::Pred(nv) => Ok(*nv),
-            _ => Err(Error::BadValue { val: inner_res }),
+            _ => Err(to_eval_err(ErrorKind::ValueMismatch {
+                found: inner_res.to_string(),
+                expected: "Number".to_owned(),
+            })),
         }
     }
 }
@@ -51,7 +57,10 @@ impl Eval<'_> for Pred {
             Value::Zero => Ok(Value::Pred(Box::new(Value::Zero))),
             Value::Succ(nv) => Ok(*nv),
             Value::Pred(nv) => Ok(Value::Pred(Box::new(Value::Pred(nv)))),
-            _ => Err(Error::BadValue { val: inner_res }),
+            _ => Err(to_eval_err(ErrorKind::ValueMismatch {
+                found: inner_res.to_string(),
+                expected: "Number".to_owned(),
+            })),
         }
     }
 }
@@ -71,7 +80,10 @@ impl Eval<'_> for IsZero {
             Value::Zero => Ok(Value::True),
             Value::Succ(_) => Ok(Value::False),
             Value::Pred(_) => Ok(Value::False),
-            _ => Err(Error::BadValue { val: inner_res }),
+            _ => Err(to_eval_err(ErrorKind::ValueMismatch {
+                found: inner_res.to_string(),
+                expected: "Number".to_owned(),
+            })),
         }
     }
 }

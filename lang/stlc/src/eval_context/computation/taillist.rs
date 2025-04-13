@@ -1,4 +1,6 @@
-use super::{ComputationRule, Error, Eval, EvalContext, Value};
+use super::{ComputationRule, Eval, EvalContext, Value};
+use crate::eval::to_eval_err;
+use common::errors::{Error, ErrorKind};
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct TailList {
@@ -8,9 +10,15 @@ pub struct TailList {
 impl Eval for TailList {
     fn eval(self) -> Result<Value, Error> {
         match self.list {
-            Value::Nil { .. } => Err(Error::TailOfEmptyList),
+            Value::Nil { .. } => Err(to_eval_err(ErrorKind::TermMismatch {
+                found: self.list.to_string(),
+                expected: "Non-Empty List".to_owned(),
+            })),
             Value::Cons { rst, .. } => Ok(*rst),
-            val => Err(Error::BadValue { val }),
+            val => Err(to_eval_err(ErrorKind::ValueMismatch {
+                found: val.to_string(),
+                expected: "List".to_owned(),
+            })),
         }
     }
 }

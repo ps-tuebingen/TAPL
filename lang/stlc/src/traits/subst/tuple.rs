@@ -1,8 +1,6 @@
 use super::Subst;
-use crate::{
-    syntax::{Proj, Term, Tup},
-    Var,
-};
+use crate::syntax::{Proj, Term, Tup};
+use common::Var;
 
 impl Subst for Tup {
     type Target = Tup;

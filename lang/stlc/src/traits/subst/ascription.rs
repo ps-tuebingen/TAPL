@@ -1,8 +1,6 @@
 use super::Subst;
-use crate::{
-    syntax::{Ascribe, Term},
-    Var,
-};
+use crate::syntax::{Ascribe, Term};
+use common::Var;
 
 impl Subst for Ascribe {
     type Target = Ascribe;

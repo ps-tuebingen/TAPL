@@ -1,5 +1,6 @@
 use super::{CongruenceRule, Error, Eval, EvalContext, Value};
-use crate::{eval_context::computation::SumCaseRhs, syntax::Term, Var};
+use crate::{eval_context::computation::SumCaseRhs, syntax::Term};
+use common::Var;
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct SumCase {

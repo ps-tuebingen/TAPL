@@ -1,9 +1,12 @@
-use super::{errors::Error, TypingEnv};
+use super::{to_check_err, TypingEnv};
 use crate::{
     syntax::{Variant, VariantCase, VariantPattern},
     types::Type,
 };
-use common::Typecheck;
+use common::{
+    errors::{Error, ErrorKind},
+    Typecheck,
+};
 
 impl<'a> Typecheck<'a> for Variant {
     type Type = Type;
@@ -21,15 +24,13 @@ impl<'a> Typecheck<'a> for Variant {
                 if labels.get(&self.label) == Some(&term_ty) {
                     Ok(self.ty.clone())
                 } else {
-                    Err(Error::UndefinedLabel {
-                        label: self.label.clone(),
-                    })
+                    Err(to_check_err(ErrorKind::UndefinedLabel(self.label.clone())))
                 }
             }
-            _ => Err(Error::UnexpectedType {
-                ty: self.ty.clone(),
-                term: self.clone().into(),
-            }),
+            _ => Err(to_check_err(ErrorKind::TypeMismatch {
+                found: self.ty.to_string(),
+                expected: "Variant Type".to_owned(),
+            })),
         }
     }
 }
@@ -48,17 +49,17 @@ impl<'a> Typecheck<'a> for VariantCase {
         let var_ty = if let Type::Variant(vars) = bound_ty {
             Ok(vars)
         } else {
-            Err(Error::UnexpectedType {
-                ty: bound_ty,
-                term: self.clone().into(),
-            })
+            Err(to_check_err(ErrorKind::TypeMismatch {
+                found: bound_ty.to_string(),
+                expected: "Variant Type".to_owned(),
+            }))
         }?;
 
         if var_ty.keys().len() != self.cases.len() {
-            Err(Error::WrongNumberOfCases {
+            Err(to_check_err(ErrorKind::Arity {
                 found: self.cases.len(),
                 expected: var_ty.keys().len(),
-            })
+            }))
         } else {
             Ok(())
         }?;
@@ -70,9 +71,9 @@ impl<'a> Typecheck<'a> for VariantCase {
             rhs,
         } in self.cases.iter()
         {
-            let var_ty = var_ty.get(label).ok_or(Error::UndefinedLabel {
-                label: label.clone(),
-            })?;
+            let var_ty = var_ty
+                .get(label)
+                .ok_or(to_check_err(ErrorKind::UndefinedLabel(label.clone())))?;
             env.used_vars.insert(bound_var.clone(), var_ty.clone());
             let rhs_ty = rhs.check(&mut env.clone())?;
             env.used_vars.remove(bound_var);
@@ -84,7 +85,17 @@ impl<'a> Typecheck<'a> for VariantCase {
             let mut tys_unique = rhs_types.clone();
             tys_unique.sort_by_key(|ty| ty.to_string());
             tys_unique.dedup();
-            Err(Error::TypeMismatch { types: tys_unique })
+            let (fst, rst) = tys_unique.split_at(1);
+            Err(to_check_err(ErrorKind::TypeMismatch {
+                found: fst[0].to_string(),
+                expected: format!(
+                    "Types {} need to be equal",
+                    rst.iter()
+                        .map(|ty| ty.to_string())
+                        .collect::<Vec<String>>()
+                        .join(", ")
+                ),
+            }))
         }
     }
 }

@@ -1,8 +1,6 @@
 use super::Subst;
-use crate::{
-    syntax::{Term, Unit},
-    Var,
-};
+use crate::syntax::{Term, Unit};
+use common::Var;
 
 impl Subst for Unit {
     type Target = Unit;

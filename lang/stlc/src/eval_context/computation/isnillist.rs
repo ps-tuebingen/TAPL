@@ -1,4 +1,6 @@
-use super::{ComputationRule, Error, Eval, EvalContext, Value};
+use super::{ComputationRule, Eval, EvalContext, Value};
+use crate::eval::to_eval_err;
+use common::errors::{Error, ErrorKind};
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct IsNilList {
@@ -10,7 +12,10 @@ impl Eval for IsNilList {
         match self.list {
             Value::Nil { .. } => Ok(Value::True),
             Value::Cons { .. } => Ok(Value::False),
-            val => Err(Error::BadValue { val }),
+            val => Err(to_eval_err(ErrorKind::ValueMismatch {
+                found: val.to_string(),
+                expected: "List".to_owned(),
+            })),
         }
     }
 }

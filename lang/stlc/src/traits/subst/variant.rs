@@ -2,8 +2,8 @@ use super::Subst;
 use crate::{
     syntax::{Term, Variant, VariantCase, VariantPattern},
     traits::free_vars::{fresh_var, FreeVars},
-    Var,
 };
+use common::Var;
 
 impl Subst for Variant {
     type Target = Variant;

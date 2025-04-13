@@ -1,5 +1,6 @@
 use super::FreeVars;
-use crate::{syntax::Let, Var};
+use crate::syntax::Let;
+use common::Var;
 use std::collections::HashSet;
 
 impl FreeVars for Let {

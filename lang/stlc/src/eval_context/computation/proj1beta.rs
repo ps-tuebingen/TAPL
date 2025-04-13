@@ -1,4 +1,6 @@
-use super::{ComputationRule, Error, Eval, EvalContext, Value};
+use super::{ComputationRule, Eval, EvalContext, Value};
+use crate::eval::to_eval_err;
+use common::errors::{Error, ErrorKind};
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Proj1Beta {
@@ -10,7 +12,10 @@ impl Eval for Proj1Beta {
         if let Value::Pair { fst, .. } = self.pair {
             Ok(*fst)
         } else {
-            Err(Error::BadValue { val: self.pair })
+            Err(to_eval_err(ErrorKind::ValueMismatch {
+                found: self.pair.to_string(),
+                expected: "Pair".to_owned(),
+            }))
         }
     }
 }

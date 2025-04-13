@@ -1,6 +1,9 @@
-use super::{errors::Error, TypingEnv};
+use super::{to_check_err, TypingEnv};
 use crate::{syntax::Term, types::Type};
-use common::Typecheck;
+use common::{
+    errors::{Error, ErrorKind},
+    Typecheck,
+};
 
 impl<'a> Typecheck<'a> for Term {
     type Type = Type;
@@ -17,7 +20,7 @@ impl<'a> Typecheck<'a> for Term {
                 .used_vars
                 .get(v)
                 .cloned()
-                .ok_or(Error::UnboundVariable { var: v.clone() }),
+                .ok_or(to_check_err(ErrorKind::FreeVariable(v.clone()))),
             Term::Lambda(lam) => lam.check(env),
             Term::App(app) => app.check(env),
             Term::Unit(unit) => unit.check(env),

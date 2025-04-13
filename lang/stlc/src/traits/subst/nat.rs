@@ -1,8 +1,6 @@
 use super::Subst;
-use crate::{
-    syntax::{IsZero, Pred, Succ, Term, Zero},
-    Var,
-};
+use crate::syntax::{IsZero, Pred, Succ, Term, Zero};
+use common::Var;
 
 impl Subst for Zero {
     type Target = Zero;

@@ -1,8 +1,6 @@
 use super::FreeVars;
-use crate::{
-    syntax::{Nothing, SomeCase, Something},
-    Var,
-};
+use crate::syntax::{Nothing, SomeCase, Something};
+use common::Var;
 use std::collections::HashSet;
 
 impl FreeVars for Nothing {

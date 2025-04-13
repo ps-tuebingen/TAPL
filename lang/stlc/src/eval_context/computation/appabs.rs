@@ -1,5 +1,6 @@
-use super::{ComputationRule, Error, Eval, EvalContext, Value};
-use crate::{eval_context::AsContext, traits::subst::Subst};
+use super::{ComputationRule, Eval, EvalContext, Value};
+use crate::{eval::to_eval_err, eval_context::AsContext, traits::subst::Subst};
+use common::errors::{Error, ErrorKind};
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct AppAbs {
@@ -19,7 +20,10 @@ impl Eval for AppAbs {
             let ctx: EvalContext = term.to_context()?;
             ctx.eval()
         } else {
-            Err(Error::BadValue { val: self.fun })
+            Err(to_eval_err(ErrorKind::ValueMismatch {
+                found: self.fun.to_string(),
+                expected: "Function".to_owned(),
+            }))
         }
     }
 }

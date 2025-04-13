@@ -1,4 +1,6 @@
-use super::{ComputationRule, Error, Eval, EvalContext, Value};
+use super::{ComputationRule, Eval, EvalContext, Value};
+use crate::eval::to_eval_err;
+use common::errors::{Error, ErrorKind};
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct IsZeroNum {
@@ -11,7 +13,10 @@ impl Eval for IsZeroNum {
             Value::Zero => Ok(Value::True),
             Value::Pred(_) => Ok(Value::False),
             Value::Succ(_) => Ok(Value::False),
-            val => Err(Error::BadValue { val }),
+            val => Err(to_eval_err(ErrorKind::ValueMismatch {
+                found: val.to_string(),
+                expected: "Number".to_owned(),
+            })),
         }
     }
 }

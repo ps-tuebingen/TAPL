@@ -1,6 +1,9 @@
-use super::{errors::Error, Value};
+use super::{to_eval_err, Value};
 use crate::syntax::{Cons, Head, IsNil, Nil, Tail};
-use common::Eval;
+use common::{
+    errors::{Error, ErrorKind},
+    Eval,
+};
 
 impl Eval<'_> for Nil {
     type Value = Value;
@@ -51,7 +54,10 @@ impl Eval<'_> for IsNil {
         match self.list.eval(env)? {
             Value::Nil { .. } => Ok(Value::True),
             Value::Cons { .. } => Ok(Value::False),
-            val => Err(Error::BadValue { val }),
+            val => Err(to_eval_err(ErrorKind::ValueMismatch {
+                found: val.to_string(),
+                expected: "List".to_owned(),
+            })),
         }
     }
 }
@@ -68,8 +74,14 @@ impl Eval<'_> for Head {
     fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
         match self.list.eval(env)? {
             Value::Cons { fst, .. } => Ok(*fst),
-            Value::Nil { .. } => Err(Error::HeadOfEmptyList),
-            val => Err(Error::BadValue { val }),
+            Value::Nil { inner_type } => Err(to_eval_err(ErrorKind::TermMismatch {
+                found: Value::Nil { inner_type }.to_string(),
+                expected: "Non-Empty List".to_owned(),
+            })),
+            val => Err(to_eval_err(ErrorKind::ValueMismatch {
+                found: val.to_string(),
+                expected: "List".to_owned(),
+            })),
         }
     }
 }
@@ -86,8 +98,14 @@ impl Eval<'_> for Tail {
     fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
         match self.list.eval(env)? {
             Value::Cons { rst, .. } => Ok(*rst),
-            Value::Nil { .. } => Err(Error::TailOfEmptyList),
-            val => Err(Error::BadValue { val }),
+            Value::Nil { inner_type } => Err(to_eval_err(ErrorKind::TermMismatch {
+                found: Value::Nil { inner_type }.to_string(),
+                expected: "Non-emtpy list".to_owned(),
+            })),
+            val => Err(to_eval_err(ErrorKind::ValueMismatch {
+                found: val.to_string(),
+                expected: "List".to_owned(),
+            })),
         }
     }
 }

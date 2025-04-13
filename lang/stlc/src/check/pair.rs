@@ -1,9 +1,12 @@
-use super::{errors::Error, TypingEnv};
+use super::{to_check_err, TypingEnv};
 use crate::{
     syntax::{Pair, Proj1, Proj2},
     types::Type,
 };
-use common::Typecheck;
+use common::{
+    errors::{Error, ErrorKind},
+    Typecheck,
+};
 
 impl<'a> Typecheck<'a> for Pair {
     type Type = Type;
@@ -35,10 +38,10 @@ impl<'a> Typecheck<'a> for Proj1 {
         if let Type::Prod(ty1, _) = ty {
             Ok(*ty1)
         } else {
-            Err(Error::UnexpectedType {
-                ty,
-                term: self.clone().into(),
-            })
+            Err(to_check_err(ErrorKind::TypeMismatch {
+                found: ty.to_string(),
+                expected: "Product Type".to_owned(),
+            }))
         }
     }
 }
@@ -57,10 +60,10 @@ impl<'a> Typecheck<'a> for Proj2 {
         if let Type::Prod(_, ty2) = ty {
             Ok(*ty2)
         } else {
-            Err(Error::UnexpectedType {
-                ty,
-                term: self.clone().into(),
-            })
+            Err(to_check_err(ErrorKind::TypeMismatch {
+                found: ty.to_string(),
+                expected: "Product Type".to_owned(),
+            }))
         }
     }
 }

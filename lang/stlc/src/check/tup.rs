@@ -1,9 +1,12 @@
-use super::{errors::Error, TypingEnv};
+use super::{to_check_err, TypingEnv};
 use crate::{
     syntax::{Proj, Tup},
     types::Type,
 };
-use common::Typecheck;
+use common::{
+    errors::{Error, ErrorKind},
+    Typecheck,
+};
 
 impl<'a> Typecheck<'a> for Tup {
     type Type = Type;
@@ -37,16 +40,16 @@ impl<'a> Typecheck<'a> for Proj {
         let tup_ty = self.tup.check(env)?;
         if let Type::Tup(tys) = tup_ty {
             tys.get(self.ind)
-                .ok_or(Error::ProjectionOutOfBounds {
-                    proj_ty: Type::Tup(tys.clone()),
-                    ind: self.ind,
-                })
+                .ok_or(to_check_err(ErrorKind::TermMismatch {
+                    found: self.to_string(),
+                    expected: format!("Projection index less than {}", tys.len()),
+                }))
                 .cloned()
         } else {
-            Err(Error::UnexpectedType {
-                ty: tup_ty.clone(),
-                term: self.clone().into(),
-            })
+            Err(to_check_err(ErrorKind::TypeMismatch {
+                found: tup_ty.to_string(),
+                expected: "Tuple Type".to_owned(),
+            }))
         }
     }
 }

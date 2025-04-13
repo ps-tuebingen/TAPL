@@ -1,9 +1,12 @@
-use super::{errors::Error, TypingEnv};
+use super::{to_check_err, TypingEnv};
 use crate::{
     syntax::{Record, RecordProj},
     types::Type,
 };
-use common::Typecheck;
+use common::{
+    errors::{Error, ErrorKind},
+    Typecheck,
+};
 use std::collections::HashMap;
 
 impl<'a> Typecheck<'a> for Record {
@@ -38,15 +41,13 @@ impl<'a> Typecheck<'a> for RecordProj {
         let rec_ty = self.record.check(env)?;
         if let Type::Record(tys) = rec_ty {
             tys.get(&self.label)
-                .ok_or(Error::UndefinedLabel {
-                    label: self.label.clone(),
-                })
+                .ok_or(to_check_err(ErrorKind::UndefinedLabel(self.label.clone())))
                 .cloned()
         } else {
-            Err(Error::UnexpectedType {
-                ty: rec_ty.clone(),
-                term: self.clone().into(),
-            })
+            Err(to_check_err(ErrorKind::TypeMismatch {
+                found: rec_ty.to_string(),
+                expected: "Record Type".to_owned(),
+            }))
         }
     }
 }

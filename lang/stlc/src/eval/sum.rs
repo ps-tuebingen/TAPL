@@ -1,7 +1,11 @@
-use super::{errors::Error, Eval, Value};
+use super::{to_eval_err, Value};
 use crate::{
     syntax::{Left, Right, SumCase},
     traits::subst::Subst,
+};
+use common::{
+    errors::{Error, ErrorKind},
+    Eval,
 };
 
 impl Eval<'_> for Left {
@@ -66,7 +70,10 @@ impl Eval<'_> for SumCase {
                 .right_term
                 .subst(&self.right_var, (*val).into())
                 .eval(env),
-            _ => Err(Error::BadValue { val: bound_val }),
+            _ => Err(to_eval_err(ErrorKind::ValueMismatch {
+                found: bound_val.to_string(),
+                expected: "Sum".to_owned(),
+            })),
         }
     }
 }

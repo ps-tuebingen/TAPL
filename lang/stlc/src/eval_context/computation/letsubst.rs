@@ -1,5 +1,6 @@
 use super::{ComputationRule, Error, Eval, EvalContext, Value};
-use crate::{eval_context::AsContext, syntax::Term, traits::subst::Subst, Var};
+use crate::{eval_context::AsContext, syntax::Term, traits::subst::Subst};
+use common::Var;
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct LetSubst {

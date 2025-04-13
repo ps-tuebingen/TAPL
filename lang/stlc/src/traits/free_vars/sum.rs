@@ -1,8 +1,6 @@
 use super::FreeVars;
-use crate::{
-    syntax::{Left, Right, SumCase},
-    Var,
-};
+use crate::syntax::{Left, Right, SumCase};
+use common::Var;
 use std::collections::HashSet;
 
 impl FreeVars for Left {

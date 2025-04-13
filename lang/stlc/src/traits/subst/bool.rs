@@ -1,8 +1,6 @@
 use super::Subst;
-use crate::{
-    syntax::{False, If, Term, True},
-    Var,
-};
+use crate::syntax::{False, If, Term, True};
+use common::Var;
 
 impl Subst for True {
     type Target = True;

@@ -1,8 +1,6 @@
 use super::Subst;
-use crate::{
-    syntax::{Record, RecordProj, Term},
-    Var,
-};
+use crate::syntax::{Record, RecordProj, Term};
+use common::Var;
 
 impl Subst for Record {
     type Target = Record;

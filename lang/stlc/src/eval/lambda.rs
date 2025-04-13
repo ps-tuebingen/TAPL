@@ -1,9 +1,12 @@
-use super::{errors::Error, Value};
+use super::{to_eval_err, Value};
 use crate::{
     syntax::{App, Lambda},
     traits::subst::Subst,
 };
-use common::Eval;
+use common::{
+    errors::{Error, ErrorKind},
+    Eval,
+};
 
 impl Eval<'_> for Lambda {
     type Value = Value;
@@ -43,7 +46,10 @@ impl Eval<'_> for App {
                 let body_subst = body.subst(&var, *self.arg);
                 body_subst.eval(env)
             }
-            _ => Err(Error::BadValue { val: val1 }),
+            _ => Err(to_eval_err(ErrorKind::ValueMismatch {
+                found: val1.to_string(),
+                expected: "Function".to_owned(),
+            })),
         }
     }
 }

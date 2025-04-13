@@ -1,7 +1,11 @@
-use super::{errors::Error, Eval, Value};
+use super::{to_eval_err, Value};
 use crate::{
     syntax::{Variant, VariantCase, VariantPattern},
     traits::subst::Subst,
+};
+use common::{
+    errors::{Error, ErrorKind},
+    Eval,
 };
 
 impl Eval<'_> for Variant {
@@ -37,7 +41,10 @@ impl Eval<'_> for VariantCase {
         let (lb, val) = if let Value::Variant { label, ty: _, val } = bound_val {
             Ok((label, val))
         } else {
-            Err(Error::BadValue { val: bound_val })
+            Err(to_eval_err(ErrorKind::ValueMismatch {
+                found: bound_val.to_string(),
+                expected: "Variant".to_owned(),
+            }))
         }?;
         let VariantPattern {
             label: _,
@@ -53,7 +60,7 @@ impl Eval<'_> for VariantCase {
                      rhs: _,
                  }| *label == lb,
             )
-            .ok_or(Error::MissingPattern { label: lb })?;
+            .ok_or(to_eval_err(ErrorKind::UndefinedLabel(lb)))?;
         rhs.subst(&bound_var, (*val).into()).eval(env)
     }
 }

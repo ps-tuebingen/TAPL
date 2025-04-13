@@ -6,5 +6,15 @@ pub mod syntax;
 pub mod traits;
 pub mod types;
 
-pub type Var = String;
-pub type Label = String;
+use common::{
+    errors::{Error, ErrorKind, ErrorLocation},
+    langs::Lang,
+};
+
+pub fn to_err(knd: ErrorKind, loc: ErrorLocation) -> Error {
+    Error {
+        kind: knd,
+        loc,
+        lang: Lang::Stlc,
+    }
+}

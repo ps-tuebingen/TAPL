@@ -1,9 +1,12 @@
-use super::{errors::Error, TypingEnv};
+use super::{to_check_err, TypingEnv};
 use crate::{
     syntax::{Cons, Head, IsNil, Nil, Tail},
     types::Type,
 };
-use common::Typecheck;
+use common::{
+    errors::{Error, ErrorKind},
+    Typecheck,
+};
 
 impl<'a> Typecheck<'a> for Nil {
     type Type = Type;
@@ -33,10 +36,10 @@ impl<'a> Typecheck<'a> for Cons {
         if fst_ty == self.inner_type {
             Ok(())
         } else {
-            Err(Error::WrongAscription {
-                found: fst_ty,
-                expected: self.inner_type.clone(),
-            })
+            Err(to_check_err(ErrorKind::TypeMismatch {
+                found: fst_ty.to_string(),
+                expected: self.inner_type.to_string(),
+            }))
         }?;
 
         let rst_ty = self.rst.check(env)?;
@@ -45,16 +48,16 @@ impl<'a> Typecheck<'a> for Cons {
                 if self.inner_type == *ty1 {
                     Ok(Type::List(ty1))
                 } else {
-                    Err(Error::WrongAscription {
-                        found: *ty1,
-                        expected: self.inner_type.clone(),
-                    })
+                    Err(to_check_err(ErrorKind::TypeMismatch {
+                        found: ty1.to_string(),
+                        expected: self.inner_type.to_string(),
+                    }))
                 }
             }
-            _ => Err(Error::UnexpectedType {
-                ty: rst_ty,
-                term: (*self.rst).clone(),
-            }),
+            _ => Err(to_check_err(ErrorKind::TypeMismatch {
+                found: rst_ty.to_string(),
+                expected: "List Type".to_owned(),
+            })),
         }
     }
 }
@@ -74,16 +77,16 @@ impl<'a> Typecheck<'a> for IsNil {
             if *ty1 == self.inner_type {
                 Ok(Type::Bool)
             } else {
-                Err(Error::WrongAscription {
-                    found: *ty1.clone(),
-                    expected: self.inner_type.clone(),
-                })
+                Err(to_check_err(ErrorKind::TypeMismatch {
+                    found: ty1.to_string(),
+                    expected: self.inner_type.to_string(),
+                }))
             }
         } else {
-            Err(Error::UnexpectedType {
-                ty: lst_ty.clone(),
-                term: self.clone().into(),
-            })
+            Err(to_check_err(ErrorKind::TypeMismatch {
+                found: lst_ty.to_string(),
+                expected: "List Type".to_owned(),
+            }))
         }
     }
 }
@@ -103,16 +106,16 @@ impl<'a> Typecheck<'a> for Head {
             if *ty1 == self.inner_type {
                 Ok(*ty1)
             } else {
-                Err(Error::WrongAscription {
-                    found: *ty1.clone(),
-                    expected: self.inner_type.clone(),
-                })
+                Err(to_check_err(ErrorKind::TypeMismatch {
+                    found: ty1.to_string(),
+                    expected: self.inner_type.to_string(),
+                }))
             }
         } else {
-            Err(Error::UnexpectedType {
-                ty: lst_ty.clone(),
-                term: self.clone().into(),
-            })
+            Err(to_check_err(ErrorKind::TypeMismatch {
+                found: lst_ty.to_string(),
+                expected: "List Type".to_owned(),
+            }))
         }
     }
 }
@@ -132,16 +135,16 @@ impl<'a> Typecheck<'a> for Tail {
             if self.inner_type == *ty1 {
                 Ok(Type::List(ty1))
             } else {
-                Err(Error::WrongAscription {
-                    found: *ty1.clone(),
-                    expected: self.inner_type.clone(),
-                })
+                Err(to_check_err(ErrorKind::TypeMismatch {
+                    found: ty1.to_string(),
+                    expected: self.inner_type.to_string(),
+                }))
             }
         } else {
-            Err(Error::UnexpectedType {
-                ty: lst_ty.clone(),
-                term: self.clone().into(),
-            })
+            Err(to_check_err(ErrorKind::TypeMismatch {
+                found: lst_ty.to_string(),
+                expected: "List Type".to_owned(),
+            }))
         }
     }
 }

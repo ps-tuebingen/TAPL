@@ -1,5 +1,6 @@
 use super::{CongruenceRule, Error, Eval, EvalContext, Value};
-use crate::{types::Type, Label};
+use crate::types::Type;
+use common::Label;
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Variant {

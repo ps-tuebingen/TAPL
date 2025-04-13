@@ -2,8 +2,8 @@ use super::Subst;
 use crate::{
     syntax::{Nothing, SomeCase, Something, Term},
     traits::free_vars::{fresh_var, FreeVars},
-    Var,
 };
+use common::Var;
 
 impl Subst for Nothing {
     type Target = Nothing;

@@ -1,8 +1,6 @@
 use super::FreeVars;
-use crate::{
-    syntax::{Variant, VariantCase, VariantPattern},
-    Var,
-};
+use crate::syntax::{Variant, VariantCase, VariantPattern};
+use common::Var;
 use std::collections::HashSet;
 
 impl FreeVars for Variant {

@@ -1,6 +1,6 @@
-use super::{errors::Error, Value};
+use super::Value;
 use crate::syntax::Ascribe;
-use common::Eval;
+use common::{errors::Error, Eval};
 
 impl Eval<'_> for Ascribe {
     type Value = Value;

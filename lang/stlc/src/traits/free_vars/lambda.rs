@@ -1,8 +1,6 @@
 use super::FreeVars;
-use crate::{
-    syntax::{App, Lambda},
-    Var,
-};
+use crate::syntax::{App, Lambda};
+use common::Var;
 use std::collections::HashSet;
 
 impl FreeVars for Lambda {

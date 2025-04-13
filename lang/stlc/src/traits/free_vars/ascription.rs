@@ -1,5 +1,6 @@
 use super::FreeVars;
-use crate::{syntax::Ascribe, Var};
+use crate::syntax::Ascribe;
+use common::Var;
 use std::collections::HashSet;
 
 impl FreeVars for Ascribe {

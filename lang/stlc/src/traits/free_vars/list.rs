@@ -1,8 +1,6 @@
 use super::FreeVars;
-use crate::{
-    syntax::{Cons, Head, IsNil, Nil, Tail},
-    Var,
-};
+use crate::syntax::{Cons, Head, IsNil, Nil, Tail};
+use common::Var;
 use std::collections::HashSet;
 
 impl FreeVars for Nil {

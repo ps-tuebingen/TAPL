@@ -1,8 +1,6 @@
 use super::FreeVars;
-use crate::{
-    syntax::{Pair, Proj1, Proj2},
-    Var,
-};
+use crate::syntax::{Pair, Proj1, Proj2};
+use common::Var;
 use std::collections::HashSet;
 
 impl FreeVars for Pair {

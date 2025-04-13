@@ -1,5 +1,6 @@
 use super::FreeVars;
-use crate::{syntax::Term, Var};
+use crate::syntax::Term;
+use common::Var;
 use std::collections::HashSet;
 
 impl FreeVars for Term {

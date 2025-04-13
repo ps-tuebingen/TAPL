@@ -1,5 +1,6 @@
 use super::FreeVars;
-use crate::{syntax::Unit, Var};
+use crate::syntax::Unit;
+use common::Var;
 use std::collections::HashSet;
 
 impl FreeVars for Unit {

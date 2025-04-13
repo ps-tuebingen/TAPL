@@ -1,6 +1,6 @@
-use super::{errors::Error, TypingEnv};
+use super::TypingEnv;
 use crate::{syntax::Let, types::Type};
-use common::Typecheck;
+use common::{errors::Error, Typecheck};
 
 impl<'a> Typecheck<'a> for Let {
     type Type = Type;

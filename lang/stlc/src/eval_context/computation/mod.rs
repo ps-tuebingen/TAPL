@@ -16,7 +16,8 @@ pub mod sumcaserhs;
 pub mod taillist;
 pub mod variantcaserhs;
 
-use super::{errors::Error, Eval, EvalContext, Value};
+use super::{Eval, EvalContext, Value};
+use common::errors::Error;
 pub use {
     appabs::AppAbs, fixbeta::FixBeta, headlist::HeadList, ifbool::IfBool, isnillist::IsNilList,
     iszeronum::IsZeroNum, letsubst::LetSubst, predsucc::PredSucc, proj1beta::Proj1Beta,

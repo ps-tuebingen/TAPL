@@ -1,9 +1,12 @@
-use super::{types::Type, Var};
+use super::{to_err, types::Type};
+use common::{
+    errors::{Error, ErrorKind, ErrorLocation},
+    Var,
+};
 use std::collections::HashMap;
 
 pub mod ascribe;
 pub mod bool;
-pub mod errors;
 pub mod fix;
 pub mod lambda;
 pub mod let_exp;
@@ -17,6 +20,10 @@ pub mod term;
 pub mod tup;
 pub mod unit;
 pub mod variant;
+
+pub fn to_check_err(knd: ErrorKind) -> Error {
+    to_err(knd, ErrorLocation::Check)
+}
 
 #[derive(Default, Clone)]
 pub struct TypingEnv {

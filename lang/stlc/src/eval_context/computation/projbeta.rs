@@ -1,4 +1,6 @@
-use super::{ComputationRule, Error, Eval, EvalContext, Value};
+use super::{ComputationRule, Eval, EvalContext, Value};
+use crate::eval::to_eval_err;
+use common::errors::{Error, ErrorKind};
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct ProjBeta {
@@ -8,15 +10,18 @@ pub struct ProjBeta {
 
 impl Eval for ProjBeta {
     fn eval(self) -> Result<Value, Error> {
-        if let Value::Tup(vals) = self.tup {
+        if let Value::Tup(ref vals) = self.tup {
             vals.get(self.ind)
                 .cloned()
-                .ok_or(Error::ProjectionOutOfBounds {
-                    expected: self.ind,
-                    found: vals.len(),
-                })
+                .ok_or(to_eval_err(ErrorKind::ValueMismatch {
+                    expected: format!("Tuple with at least {} terms", self.ind),
+                    found: self.tup.to_string(),
+                }))
         } else {
-            Err(Error::BadValue { val: self.tup })
+            Err(to_eval_err(ErrorKind::ValueMismatch {
+                found: self.tup.to_string(),
+                expected: "Tuple".to_owned(),
+            }))
         }
     }
 }

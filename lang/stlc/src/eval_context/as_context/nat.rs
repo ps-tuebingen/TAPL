@@ -1,11 +1,13 @@
-use super::{AsContext, Error, EvalContext};
+use super::{AsContext, EvalContext};
 use crate::{
+    eval::to_eval_err,
     eval_context::{
         computation::{IsZeroNum, PredSucc, SuccPred},
         congruence, Value,
     },
     syntax::{IsZero, Pred, Succ, Zero},
 };
+use common::errors::{Error, ErrorKind};
 
 impl AsContext for Zero {
     fn to_context(self) -> Result<EvalContext, Error> {
@@ -19,7 +21,10 @@ impl AsContext for Succ {
             Ok(Value::Succ(val)) => Ok(EvalContext::Value(Value::Succ(Box::new(Value::Succ(val))))),
             Ok(Value::Pred(val)) => Ok(SuccPred { val: *val }.into()),
             Ok(Value::Zero) => Ok(EvalContext::Value(Value::Succ(Box::new(Value::Zero)))),
-            Ok(val) => Err(Error::BadValue { val }),
+            Ok(val) => Err(to_eval_err(ErrorKind::ValueMismatch {
+                found: val.to_string(),
+                expected: "Number".to_owned(),
+            })),
             Err(_) => {
                 let inner = self.term.to_context()?;
                 Ok(congruence::Succ {
@@ -37,7 +42,10 @@ impl AsContext for Pred {
             Ok(Value::Succ(val)) => Ok(PredSucc { val: *val }.into()),
             Ok(Value::Pred(val)) => Ok(EvalContext::Value(Value::Pred(Box::new(Value::Pred(val))))),
             Ok(Value::Zero) => Ok(EvalContext::Value(Value::Pred(Box::new(Value::Zero)))),
-            Ok(val) => Err(Error::BadValue { val }),
+            Ok(val) => Err(to_eval_err(ErrorKind::ValueMismatch {
+                found: val.to_string(),
+                expected: "Number".to_owned(),
+            })),
             Err(_) => {
                 let inner = self.term.to_context()?;
                 Ok(congruence::Pred {

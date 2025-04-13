@@ -1,5 +1,6 @@
-use super::{errors::Error, EvalContext};
-use crate::Var;
+use super::EvalContext;
+use common::errors::Error;
+use common::Var;
 
 pub mod ascription;
 pub mod bool;
