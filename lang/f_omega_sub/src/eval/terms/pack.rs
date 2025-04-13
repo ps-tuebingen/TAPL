@@ -1,6 +1,6 @@
 use super::{Env, Value};
-use crate::{errors::Error, syntax::terms::Pack};
-use common::Eval;
+use crate::syntax::terms::Pack;
+use common::{errors::Error, Eval};
 
 impl<'a> Eval<'a> for Pack {
     type Value = Value;

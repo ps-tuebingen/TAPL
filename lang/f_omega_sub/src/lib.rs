@@ -1,5 +1,4 @@
 pub mod check;
-pub mod errors;
 pub mod eval;
 pub mod objects;
 pub mod parser;
@@ -7,14 +6,23 @@ pub mod syntax;
 pub mod traits;
 
 use check::check_subtype;
-use errors::{Error, ErrorKind};
+use common::{
+    errors::{Error, ErrorKind, ErrorLocation},
+    langs::Lang,
+};
 use std::collections::HashMap;
 use syntax::{
     terms::Var,
     types::{Type, TypeVar},
 };
 
-pub type Label = String;
+pub fn to_err(knd: ErrorKind, loc: ErrorLocation) -> Error {
+    Error {
+        kind: knd,
+        loc,
+        lang: Lang::FOmegaSub,
+    }
+}
 
 #[derive(Clone, Default)]
 pub struct Env {
@@ -30,7 +38,7 @@ impl Env {
     pub fn get_var(&self, v: &Var) -> Result<Type, ErrorKind> {
         self.vars
             .get(v)
-            .ok_or(ErrorKind::FreeVar(v.clone()))
+            .ok_or(ErrorKind::FreeVariable(v.clone()))
             .cloned()
     }
 
@@ -57,7 +65,7 @@ impl Env {
     pub fn get_tyvar(&self, v: &TypeVar) -> Result<Type, ErrorKind> {
         self.ty_vars
             .get(v)
-            .ok_or(ErrorKind::FreeTypeVar(v.clone()))
+            .ok_or(ErrorKind::FreeTypeVariable(v.clone()))
             .cloned()
     }
 }

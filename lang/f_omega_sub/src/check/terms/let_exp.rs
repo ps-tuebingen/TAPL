@@ -1,10 +1,8 @@
 use crate::{
     check::Env,
-    errors::Error,
     syntax::{terms::Let, types::Type},
 };
-use common::Eval;
-use common::Typecheck;
+use common::{errors::Error, Eval, Typecheck};
 
 impl<'a> Typecheck<'a> for Let {
     type Type = Type;

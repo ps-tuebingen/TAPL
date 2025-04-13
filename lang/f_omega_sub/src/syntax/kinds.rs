@@ -1,4 +1,4 @@
-use crate::errors::ErrorKind;
+use common::errors::ErrorKind;
 use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -16,8 +16,8 @@ impl Kind {
         if let Kind::Arrow(left, right) = self {
             Ok((*left, *right))
         } else {
-            Err(ErrorKind::BadKind {
-                found: self,
+            Err(ErrorKind::KindMismatch {
+                found: self.to_string(),
                 expected: "Arrow Kind".to_owned(),
             })
         }
@@ -27,8 +27,8 @@ impl Kind {
         if self == other {
             Ok(())
         } else {
-            Err(ErrorKind::BadKind {
-                found: self.clone(),
+            Err(ErrorKind::KindMismatch {
+                found: self.to_string(),
                 expected: other.to_string(),
             })
         }

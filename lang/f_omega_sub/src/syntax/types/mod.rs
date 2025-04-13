@@ -1,9 +1,5 @@
-use crate::{
-    errors::{Error, ErrorKind},
-    syntax::kinds::Kind,
-    traits::SubstTy,
-};
-use common::Eval;
+use crate::{syntax::kinds::Kind, traits::SubstTy};
+use common::{errors::ErrorKind, Eval};
 use std::{collections::HashSet, fmt};
 pub type TypeVar = String;
 
@@ -38,8 +34,8 @@ impl Type {
         if let Type::OpLambda(lam) = self {
             Ok(lam)
         } else {
-            Err(ErrorKind::BadType {
-                found: self,
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
                 expected: "Lambda Abstraction".to_owned(),
             })
         }
@@ -49,8 +45,8 @@ impl Type {
         if let Type::Fun(fun) = self {
             Ok(fun)
         } else {
-            Err(ErrorKind::BadType {
-                found: self,
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
                 expected: "Function Type".to_owned(),
             })
         }
@@ -60,8 +56,8 @@ impl Type {
         if let Type::Universal(uni) = self {
             Ok(uni)
         } else {
-            Err(ErrorKind::BadType {
-                found: self,
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
                 expected: "Universal Type".to_owned(),
             })
         }
@@ -71,8 +67,8 @@ impl Type {
         if let Type::OpApp(app) = self {
             Ok(app)
         } else {
-            Err(ErrorKind::BadType {
-                found: self,
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
                 expected: "Operator Application".to_owned(),
             })
         }
@@ -82,8 +78,8 @@ impl Type {
         if let Type::Top(knd) = self {
             Ok(knd)
         } else {
-            Err(ErrorKind::BadType {
-                found: self,
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
                 expected: "Top".to_owned(),
             })
         }
@@ -93,8 +89,8 @@ impl Type {
         if let Type::Record(rec) = self {
             Ok(rec)
         } else {
-            Err(ErrorKind::BadType {
-                found: self,
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
                 expected: "Record Type".to_owned(),
             })
         }
@@ -104,41 +100,36 @@ impl Type {
         if let Type::Existential(ex) = self {
             Ok(ex)
         } else {
-            Err(ErrorKind::BadType {
-                found: self,
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
                 expected: "Existential Type".to_owned(),
             })
         }
     }
 
-    pub fn check_equal(&self, other: &Type) -> Result<(), Error> {
-        let error_fun = |knd: ErrorKind| Error::equiv(knd, self.clone(), other.clone());
+    pub fn check_equal(&self, other: &Type) -> Result<(), ErrorKind> {
         match self {
             Type::Var(_) => {
                 if matches!(other, Type::Var(_)) {
                     Ok(())
                 } else {
-                    Err(Error::equiv(
-                        ErrorKind::BadType {
-                            found: other.clone(),
-                            expected: "Type Variable".to_owned(),
-                        },
-                        self.clone(),
-                        other.clone(),
-                    ))
+                    Err(ErrorKind::TypeMismatch {
+                        found: other.to_string(),
+                        expected: "Type Variable".to_owned(),
+                    })
                 }
             }
             Type::Top(knd1) => {
-                let knd2 = other.clone().as_top().map_err(error_fun)?;
-                knd1.check_equal(&knd2).map_err(error_fun)
+                let knd2 = other.clone().as_top()?;
+                knd1.check_equal(&knd2)
             }
             Type::Fun(fun1) => {
-                let fun2 = other.clone().as_fun().map_err(error_fun)?;
+                let fun2 = other.clone().as_fun()?;
                 fun1.from.check_equal(&fun2.from)?;
                 fun1.to.check_equal(&fun2.to)
             }
             Type::Universal(uni1) => {
-                let uni2 = other.clone().as_universal().map_err(error_fun)?;
+                let uni2 = other.clone().as_universal()?;
                 uni1.sup_ty.check_equal(&uni2.sup_ty)?;
                 let body_subst = uni1
                     .ty
@@ -147,8 +138,8 @@ impl Type {
                 body_subst.check_equal(&uni2.ty)
             }
             Type::OpLambda(lam1) => {
-                let lam2 = other.clone().as_oplambda().map_err(error_fun)?;
-                lam1.annot.check_equal(&lam2.annot).map_err(error_fun)?;
+                let lam2 = other.clone().as_oplambda()?;
+                lam1.annot.check_equal(&lam2.annot)?;
                 let body_subst = lam1
                     .body
                     .clone()
@@ -156,38 +147,39 @@ impl Type {
                 body_subst.check_equal(&lam2.body)
             }
             Type::OpApp(app1) => {
-                let app2 = other.clone().as_opapp().map_err(error_fun)?;
+                let app2 = other.clone().as_opapp()?;
                 app1.fun.check_equal(&app2.fun)?;
                 app1.arg.check_equal(&app2.arg)
             }
             Type::Existential(ex1) => {
-                let other_evaled = other.clone().eval(&mut Default::default())?;
-                let ex2 = other_evaled.as_existential().map_err(error_fun)?;
+                let other_evaled = other
+                    .clone()
+                    .eval(&mut Default::default())
+                    .map_err(|err| err.kind)?;
+                let ex2 = other_evaled.as_existential()?;
                 ex1.sup_ty.check_equal(&ex2.sup_ty)?;
                 let body_subst = ex1.ty.clone().subst_ty(&ex1.var, ex2.var.as_str().into());
                 body_subst.check_equal(&ex2.ty)
             }
             Type::Record(rec) => {
-                let rec2 = other.clone().as_rec().map_err(error_fun)?;
+                let rec2 = other.clone().as_rec()?;
                 let rec_labels = rec.records.keys().collect::<HashSet<&String>>();
                 let rec2_labels = rec2.records.keys().collect::<HashSet<&String>>();
                 let diff: HashSet<&&String> = rec_labels.difference(&rec2_labels).collect();
                 if !diff.is_empty() {
-                    return Err(error_fun(ErrorKind::UndefinedLabel(
+                    return Err(ErrorKind::UndefinedLabel(
                         (**diff.iter().next().unwrap()).clone(),
-                    )));
+                    ));
                 }
                 for label in rec_labels {
                     let ty1 = rec
                         .records
                         .get(label)
-                        .ok_or(ErrorKind::UndefinedLabel(label.clone()))
-                        .map_err(error_fun)?;
+                        .ok_or(ErrorKind::UndefinedLabel(label.clone()))?;
                     let ty2 = rec2
                         .records
                         .get(label)
-                        .ok_or(ErrorKind::UndefinedLabel(label.clone()))
-                        .map_err(error_fun)?;
+                        .ok_or(ErrorKind::UndefinedLabel(label.clone()))?;
                     ty1.check_equal(ty2)?;
                 }
                 Ok(())
@@ -196,10 +188,10 @@ impl Type {
                 if matches!(other, Type::Nat) {
                     Ok(())
                 } else {
-                    Err(error_fun(ErrorKind::BadType {
-                        found: other.clone(),
+                    Err(ErrorKind::TypeMismatch {
+                        found: other.to_string(),
                         expected: "Nat".to_owned(),
-                    }))
+                    })
                 }
             }
         }

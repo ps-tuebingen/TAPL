@@ -1,5 +1,6 @@
 use super::{Type, TypeVar};
-use crate::{traits::SubstTy, Label};
+use crate::traits::SubstTy;
+use common::Label;
 use std::{collections::HashMap, fmt};
 
 #[derive(Debug, Clone, PartialEq, Eq)]

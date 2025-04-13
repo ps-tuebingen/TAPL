@@ -1,9 +1,9 @@
-use super::{Env, Value};
-use crate::{
+use super::{to_eval_err, Env, Value};
+use crate::syntax::terms::RecordProj;
+use common::{
     errors::{Error, ErrorKind},
-    syntax::terms::RecordProj,
+    Eval,
 };
-use common::Eval;
 
 impl<'a> Eval<'a> for RecordProj {
     type Value = Value;
@@ -16,10 +16,9 @@ impl<'a> Eval<'a> for RecordProj {
 
     fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
         let val = self.term.clone().eval(env)?;
-        let rec = val.as_rec().map_err(|knd| Error::eval(knd, self.clone()))?;
-        rec.get(&self.label).cloned().ok_or(Error::eval(
-            ErrorKind::UndefinedLabel(self.label.clone()),
-            self,
-        ))
+        let rec = val.as_rec().map_err(to_eval_err)?;
+        rec.get(&self.label)
+            .cloned()
+            .ok_or(to_eval_err(ErrorKind::UndefinedLabel(self.label.clone())))
     }
 }

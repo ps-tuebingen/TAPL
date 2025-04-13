@@ -1,9 +1,9 @@
+use super::to_kind_err;
 use crate::{
     check::Env,
-    errors::Error,
     syntax::{kinds::Kind, types::Fun},
 };
-use common::Typecheck;
+use common::{errors::Error, Typecheck};
 
 impl<'a> Typecheck<'a> for Fun {
     type Type = Kind;
@@ -16,13 +16,9 @@ impl<'a> Typecheck<'a> for Fun {
 
     fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let from_kind = self.from.check(&mut env.clone())?;
-        from_kind
-            .check_equal(&Kind::Star)
-            .map_err(|knd| Error::kind(knd, self))?;
+        from_kind.check_equal(&Kind::Star).map_err(to_kind_err)?;
         let to_kind = self.to.check(env)?;
-        to_kind
-            .check_equal(&Kind::Star)
-            .map_err(|knd| Error::kind(knd, self))?;
+        to_kind.check_equal(&Kind::Star).map_err(to_kind_err)?;
         Ok(Kind::Star)
     }
 }

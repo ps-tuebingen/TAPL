@@ -2,8 +2,8 @@ use super::{Term, Var};
 use crate::{
     syntax::types::{Type, TypeVar},
     traits::{SubstTerm, SubstTy},
-    Label,
 };
+use common::Label;
 use std::fmt;
 
 #[derive(Debug, Clone)]

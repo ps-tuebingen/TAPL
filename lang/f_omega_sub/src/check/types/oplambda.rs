@@ -1,12 +1,11 @@
 use crate::{
     check::Env,
-    errors::Error,
     syntax::{
         kinds::Kind,
         types::{OpLambda, Type},
     },
 };
-use common::Typecheck;
+use common::{errors::Error, Typecheck};
 
 impl<'a> Typecheck<'a> for OpLambda {
     type Type = Kind;

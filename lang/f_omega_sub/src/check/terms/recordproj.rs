@@ -1,10 +1,12 @@
+use super::to_check_err;
 use crate::{
     check::Env,
-    errors::{Error, ErrorKind},
     syntax::{terms::RecordProj, types::Type},
 };
-use common::Eval;
-use common::Typecheck;
+use common::{
+    errors::{Error, ErrorKind},
+    Eval, Typecheck,
+};
 
 impl<'a> Typecheck<'a> for RecordProj {
     type Type = Type;
@@ -17,13 +19,10 @@ impl<'a> Typecheck<'a> for RecordProj {
 
     fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let rec_ty = self.term.check(&mut env.clone())?.eval(env)?;
-        let rec = rec_ty.as_rec().map_err(|knd| Error::check(knd, self))?;
+        let rec = rec_ty.as_rec().map_err(to_check_err)?;
         rec.records
             .get(&self.label)
-            .ok_or(Error::check(
-                ErrorKind::UndefinedLabel(self.label.clone()),
-                self,
-            ))
             .cloned()
+            .ok_or(to_check_err(ErrorKind::UndefinedLabel(self.label.clone())))
     }
 }

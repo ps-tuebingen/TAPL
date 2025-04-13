@@ -7,6 +7,7 @@ pub enum Lang {
     Existential,
     Featherweight,
     FOmega,
+    FOmegaSub,
 }
 
 impl fmt::Display for Lang {
@@ -17,6 +18,7 @@ impl fmt::Display for Lang {
             Lang::Existential => f.write_str("Existential"),
             Lang::Featherweight => f.write_str("Featherweight"),
             Lang::FOmega => f.write_str("FOmega"),
+            Lang::FOmegaSub => f.write_str("FOmegaSub"),
         }
     }
 }

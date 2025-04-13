@@ -1,9 +1,6 @@
-use super::Env;
-use crate::{
-    errors::Error,
-    syntax::{kinds::Kind, types::Type},
-};
-use common::Typecheck;
+use super::{to_kind_err, Env};
+use crate::syntax::{kinds::Kind, types::Type};
+use common::{errors::Error, Typecheck};
 
 pub mod existential;
 pub mod fun;
@@ -25,7 +22,7 @@ impl<'a> Typecheck<'a> for Type {
     fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         match self {
             Type::Var(v) => {
-                let ty = env.get_tyvar(v).map_err(|knd| Error::kind(knd, self))?;
+                let ty = env.get_tyvar(v).map_err(to_kind_err)?;
                 ty.check(env)
             }
             Type::Top(knd) => Ok(knd.clone()),

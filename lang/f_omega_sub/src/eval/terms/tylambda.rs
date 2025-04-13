@@ -1,6 +1,6 @@
 use super::{Env, Value};
-use crate::{errors::Error, syntax::terms::TyLambda};
-use common::Eval;
+use crate::syntax::terms::TyLambda;
+use common::{errors::Error, Eval};
 
 impl<'a> Eval<'a> for TyLambda {
     type Value = Value;

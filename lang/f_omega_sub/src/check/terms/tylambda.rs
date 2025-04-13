@@ -1,13 +1,11 @@
 use crate::{
     check::Env,
-    errors::Error,
     syntax::{
         terms::TyLambda,
         types::{Type, Universal},
     },
 };
-use common::Eval;
-use common::Typecheck;
+use common::{errors::Error, Eval, Typecheck};
 
 impl<'a> Typecheck<'a> for TyLambda {
     type Type = Type;

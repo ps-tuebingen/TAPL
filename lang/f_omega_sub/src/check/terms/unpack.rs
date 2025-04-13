@@ -1,10 +1,9 @@
+use super::to_check_err;
 use crate::{
     check::Env,
-    errors::Error,
     syntax::{terms::Unpack, types::Type},
 };
-use common::Eval;
-use common::Typecheck;
+use common::{errors::Error, Eval, Typecheck};
 
 impl<'a> Typecheck<'a> for Unpack {
     type Type = Type;
@@ -20,9 +19,7 @@ impl<'a> Typecheck<'a> for Unpack {
             .bound_term
             .check(&mut env.clone())?
             .eval(&mut env.clone())?;
-        let ex = bound_ty
-            .as_existential()
-            .map_err(|knd| Error::check(knd, self))?;
+        let ex = bound_ty.as_existential().map_err(to_check_err)?;
         env.add_tyvar(&self.ty_var, &ex.sup_ty)?;
         env.add_var(&self.bound_var, &ex.ty);
         self.in_term.check(env)

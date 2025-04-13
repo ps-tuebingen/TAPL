@@ -1,9 +1,12 @@
+use super::to_kind_err;
 use crate::{
     check::Env,
-    errors::{Error, ErrorKind},
     syntax::{kinds::Kind, types::RecordTy},
 };
-use common::Typecheck;
+use common::{
+    errors::{Error, ErrorKind},
+    Typecheck,
+};
 
 impl<'a> Typecheck<'a> for RecordTy {
     type Type = Kind;
@@ -24,7 +27,7 @@ impl<'a> Typecheck<'a> for RecordTy {
             .iter()
             .map(|knd| knd.check_equal(&Kind::Star))
             .collect::<Result<Vec<()>, ErrorKind>>()
-            .map_err(|knd| Error::kind(knd, self))?;
+            .map_err(to_kind_err)?;
         Ok(Kind::Star)
     }
 }

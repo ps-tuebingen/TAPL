@@ -1,10 +1,9 @@
-use super::Env;
+use super::{to_eval_err, Env};
 use crate::{
-    errors::Error,
     syntax::types::{Fun, RecordTy, Type},
     traits::SubstTy,
 };
-use common::Eval;
+use common::{errors::Error, Eval};
 use std::collections::HashMap;
 
 impl<'a> Eval<'a> for Type {
@@ -18,12 +17,10 @@ impl<'a> Eval<'a> for Type {
 
     fn eval(self, env: Self::Env) -> Result<Self::Value, Self::Err> {
         match self {
-            Type::Var(ref v) => env.get_tyvar(v).map_err(|knd| Error::ty_red(knd, self)),
+            Type::Var(ref v) => env.get_tyvar(v).map_err(to_eval_err),
             Type::OpApp(app) => {
                 let fun_evaled = app.fun.clone().eval(env)?;
-                let lam = fun_evaled
-                    .as_oplambda()
-                    .map_err(|knd| Error::ty_red(knd, app.clone()))?;
+                let lam = fun_evaled.as_oplambda().map_err(to_eval_err)?;
                 lam.body.subst_ty(&lam.var, *app.arg).eval(env)
             }
             Type::Fun(fun) => {

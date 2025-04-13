@@ -1,9 +1,9 @@
-use super::{Env, Value};
-use crate::{
+use super::{to_eval_err, Env, Value};
+use crate::syntax::terms::Pred;
+use common::{
     errors::{Error, ErrorKind},
-    syntax::terms::Pred,
+    Eval,
 };
-use common::Eval;
 
 impl<'a> Eval<'a> for Pred {
     type Value = Value;
@@ -24,13 +24,10 @@ impl<'a> Eval<'a> for Pred {
                 term: Box::new(Value::Pred { term }),
             }),
             Value::Succ { term } => Ok(*term),
-            _ => Err(Error::eval(
-                ErrorKind::BadValue {
-                    found: val,
-                    expected: "Natural Number".to_owned(),
-                },
-                self,
-            )),
+            _ => Err(to_eval_err(ErrorKind::ValueMismatch {
+                found: val.to_string(),
+                expected: "Natural Number".to_owned(),
+            })),
         }
     }
 }

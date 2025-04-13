@@ -1,14 +1,14 @@
+use super::to_check_err;
 use crate::{
     check::Env,
-    errors::Error,
     syntax::{
         kinds::Kind,
         terms::Lambda,
         types::{Fun, Type},
     },
 };
-use common::Eval;
-use common::Typecheck;
+use common::{errors::Error, Eval, Typecheck};
+
 impl<'a> Typecheck<'a> for Lambda {
     type Type = Type;
     type Err = Error;
@@ -20,9 +20,7 @@ impl<'a> Typecheck<'a> for Lambda {
 
     fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let annot_kind = self.annot.check(&mut env.clone())?;
-        annot_kind
-            .check_equal(&Kind::Star)
-            .map_err(|err| Error::check(err, self))?;
+        annot_kind.check_equal(&Kind::Star).map_err(to_check_err)?;
         let annot_evaled = self.annot.clone().eval(&mut env.clone())?;
         env.add_var(&self.var, &annot_evaled);
         let body_ty = self.body.check(&mut env.clone())?.eval(env)?;
