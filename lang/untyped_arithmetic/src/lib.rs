@@ -1,9 +1,21 @@
-use common::Eval;
+use common::{
+    errors::{Error, ErrorKind, ErrorLocation},
+    langs::Lang,
+    Eval,
+};
 use std::fmt;
 
 pub mod bool;
 pub mod inductive_definitions;
 pub mod parse;
+
+pub fn to_err(knd: ErrorKind) -> Error {
+    Error {
+        kind: knd,
+        loc: ErrorLocation::Eval,
+        lang: Lang::UntypedArithmetic,
+    }
+}
 
 #[derive(Clone, Debug, Hash, PartialEq, Eq)]
 pub enum Term {
@@ -23,23 +35,15 @@ pub enum Value {
     Numerical(i64),
 }
 
-#[derive(Debug)]
-pub struct Error(String);
-
-impl fmt::Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        f.write_str(&self.0)
-    }
-}
-
-impl std::error::Error for Error {}
-
 impl Value {
-    fn into_numerical(self) -> Result<i64, Error> {
+    fn into_numerical(self) -> Result<i64, ErrorKind> {
         if let Value::Numerical(i) = self {
             Ok(i)
         } else {
-            Err(Error(format!("Bad Value {self:?}")))
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
+                expected: "Number".to_owned(),
+            })
         }
     }
 }
@@ -70,7 +74,7 @@ impl Eval<'_> for Term {
             Term::Zero => Ok(Value::Numerical(0)),
             Term::IsZero(t) => {
                 let val = t.eval(_env)?;
-                let num = val.into_numerical()?;
+                let num = val.into_numerical().map_err(to_err)?;
                 if num == 0 {
                     Ok(Value::True)
                 } else {
@@ -79,12 +83,12 @@ impl Eval<'_> for Term {
             }
             Term::Succ(t) => {
                 let val = t.eval(_env)?;
-                let num = val.into_numerical()?;
+                let num = val.into_numerical().map_err(to_err)?;
                 Ok(Value::Numerical(num + 1))
             }
             Term::Pred(t) => {
                 let val = t.eval(_env)?;
-                let num = val.into_numerical()?;
+                let num = val.into_numerical().map_err(to_err)?;
                 Ok(Value::Numerical(num - 1))
             }
             Term::If(ifc, thent, elset) => {
@@ -92,7 +96,10 @@ impl Eval<'_> for Term {
                 match val {
                     Value::True => thent.eval(_env),
                     Value::False => elset.eval(_env),
-                    _ => Err(Error("If Condition needs to be boolean".to_owned())),
+                    _ => Err(to_err(ErrorKind::ValueMismatch {
+                        found: val.to_string(),
+                        expected: "Boolean Value".to_owned(),
+                    })),
                 }
             }
         }

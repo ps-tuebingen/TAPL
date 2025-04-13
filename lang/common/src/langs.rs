@@ -16,6 +16,7 @@ pub enum Lang {
     Subtypes,
     SystemF,
     TypedArithmetic,
+    UntypedArithmetic,
 }
 
 impl fmt::Display for Lang {
@@ -35,6 +36,7 @@ impl fmt::Display for Lang {
             Lang::Subtypes => f.write_str("Subtypes"),
             Lang::SystemF => f.write_str("SystemF"),
             Lang::TypedArithmetic => f.write_str("TypedArithmetic"),
+            Lang::UntypedArithmetic => f.write_str("UntypedArithmetic"),
         }
     }
 }
