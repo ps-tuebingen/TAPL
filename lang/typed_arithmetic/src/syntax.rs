@@ -1,4 +1,4 @@
-use crate::errors::Error;
+use common::errors::ErrorKind;
 use std::fmt;
 
 #[derive(Debug)]
@@ -23,13 +23,13 @@ pub enum Type {
 }
 
 impl Type {
-    pub fn check_equal(self, other: Type) -> Result<(), Error> {
+    pub fn check_equal(self, other: Type) -> Result<(), ErrorKind> {
         if self == other {
             Ok(())
         } else {
-            Err(Error::TypeMismatch {
-                found: self,
-                expected: other,
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: other.to_string(),
             })
         }
     }

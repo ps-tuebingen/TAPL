@@ -1,11 +1,21 @@
-use crate::{errors::Error, syntax::Term};
-use common::Parse;
+use crate::{syntax::Term, to_err};
+use common::{
+    errors::{Error, ErrorKind, ErrorLocation},
+    Parse,
+};
 use pest::{iterators::Pair, Parser};
 use pest_derive::Parser;
 
 #[derive(Parser)]
 #[grammar = "typed_arith.pest"]
 struct TypedArithParser;
+
+pub fn to_parse_err<T>(knd: T) -> Error
+where
+    T: Into<ErrorKind>,
+{
+    to_err(knd.into(), ErrorLocation::Parse)
+}
 
 impl Parse for Term {
     type Err = Error;
@@ -15,13 +25,16 @@ impl Parse for Term {
 }
 
 pub fn parse(input: String) -> Result<Term, Error> {
-    let mut parsed = TypedArithParser::parse(Rule::term, &input)?;
+    let mut parsed = TypedArithParser::parse(Rule::term, &input).map_err(to_parse_err)?;
     let term_rule = parsed
         .next()
-        .ok_or(Error::MissingInput("Program".to_owned()))?;
+        .ok_or(to_parse_err(ErrorKind::MissingInput("Program".to_owned())))?;
     let term_inner = pair_to_n_inner(term_rule, vec!["Term"])?.remove(0);
     if let Some(n) = parsed.next() {
-        return Err(Error::RemainingInput(n.as_rule()));
+        return Err(to_parse_err(ErrorKind::RemainingInput(format!(
+            "{:?}",
+            n.as_rule()
+        ))));
     }
     pair_to_term(term_inner)
 }
@@ -30,11 +43,16 @@ fn pair_to_n_inner<'a>(p: Pair<'a, Rule>, names: Vec<&str>) -> Result<Vec<Pair<'
     let mut inner = p.into_inner();
     let mut pairs = vec![];
     for name in names {
-        let next = inner.next().ok_or(Error::MissingInput(name.to_owned()))?;
+        let next = inner
+            .next()
+            .ok_or(to_parse_err(ErrorKind::MissingInput(name.to_owned())))?;
         pairs.push(next);
     }
     if let Some(n) = inner.next() {
-        return Err(Error::RemainingInput(n.as_rule()));
+        return Err(to_parse_err(ErrorKind::RemainingInput(format!(
+            "{:?}",
+            n.as_rule()
+        ))));
     }
     Ok(pairs)
 }
@@ -79,12 +97,12 @@ fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
                 .as_str()
                 .trim()
                 .parse::<i64>()
-                .map_err(|_| Error::UnknownKeyword(p.as_str().to_owned()))?;
+                .map_err(|_| to_parse_err(ErrorKind::UnknownKeyword(p.as_str().to_owned())))?;
             Ok(num.into())
         }
-        r => Err(Error::UnexpectedRule {
-            found: r,
+        r => Err(to_parse_err(ErrorKind::UnexpectedRule {
+            found: format!("{r:?}"),
             expected: "Term".to_owned(),
-        }),
+        })),
     }
 }

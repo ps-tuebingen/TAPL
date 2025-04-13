@@ -1,6 +1,13 @@
-use crate::{errors::Error, syntax::Term};
-use common::Eval;
+use crate::{syntax::Term, to_err};
+use common::{
+    errors::{Error, ErrorKind, ErrorLocation},
+    Eval,
+};
 use std::fmt;
+
+pub fn to_eval_err(knd: ErrorKind) -> Error {
+    to_err(knd, ErrorLocation::Eval)
+}
 
 #[derive(Debug)]
 pub enum Value {
@@ -10,12 +17,12 @@ pub enum Value {
 }
 
 impl Value {
-    pub fn as_numerical(self) -> Result<i64, Error> {
+    pub fn as_numerical(self) -> Result<i64, ErrorKind> {
         if let Value::Numerical(i) = self {
             Ok(i)
         } else {
-            Err(Error::BadValue {
-                found: self,
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
                 expected: "Number".to_owned(),
             })
         }
@@ -38,17 +45,17 @@ impl Eval<'_> for Term {
             Term::False => Ok(Value::False),
             Term::Succ(t) => {
                 let inner_val = t.eval(_env)?;
-                let nv = inner_val.as_numerical()?;
+                let nv = inner_val.as_numerical().map_err(to_eval_err)?;
                 Ok(Value::Numerical(nv + 1))
             }
             Term::Pred(t) => {
                 let inner_val = t.eval(_env)?;
-                let nv = inner_val.as_numerical()?;
+                let nv = inner_val.as_numerical().map_err(to_eval_err)?;
                 Ok(Value::Numerical(nv - 1))
             }
             Term::IsZero(t) => {
                 let inner_val = t.eval(_env)?;
-                let nv = inner_val.as_numerical()?;
+                let nv = inner_val.as_numerical().map_err(to_eval_err)?;
                 if nv == 0 {
                     Ok(Value::True)
                 } else {
@@ -60,10 +67,10 @@ impl Eval<'_> for Term {
                 match cond_val {
                     Value::True => thent.eval(_env),
                     Value::False => elset.eval(_env),
-                    Value::Numerical(_) => Err(Error::BadValue {
-                        found: cond_val,
+                    Value::Numerical(_) => Err(to_eval_err(ErrorKind::ValueMismatch {
+                        found: cond_val.to_string(),
                         expected: "Boolean Value".to_owned(),
-                    }),
+                    })),
                 }
             }
         }
