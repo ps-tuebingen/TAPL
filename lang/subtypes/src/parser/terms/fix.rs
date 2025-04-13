@@ -1,8 +1,9 @@
 use super::pair_to_prim_term;
 use crate::{
-    parser::{errors::Error, pair_to_n_inner, Rule},
+    parser::{pair_to_n_inner, Rule},
     syntax::Fix,
 };
+use common::errors::Error;
 use pest::iterators::Pair;
 
 pub fn pair_to_fix(p: Pair<'_, Rule>) -> Result<Fix, Error> {

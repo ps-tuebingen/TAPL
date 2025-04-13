@@ -1,9 +1,12 @@
-use super::{errors::Error, meet, TypingContext};
+use super::{meet, to_check_err, TypingContext};
 use crate::{
     syntax::{Cons, ListCase, Nil},
     types::Type,
 };
-use common::Typecheck;
+use common::{
+    errors::{Error, ErrorKind},
+    Typecheck,
+};
 
 impl<'a> Typecheck<'a> for Nil {
     type Type = Type;
@@ -31,7 +34,10 @@ impl<'a> Typecheck<'a> for Cons {
             let combined = meet(*ty, fst_ty);
             Ok(Type::List(Box::new(combined)))
         } else {
-            Err(Error::NoList(rst_ty))
+            Err(to_check_err(ErrorKind::TypeMismatch {
+                found: rst_ty.to_string(),
+                expected: "List Type".to_owned(),
+            }))
         }
     }
 }
@@ -48,7 +54,10 @@ impl<'a> Typecheck<'a> for ListCase {
         let list_inner = if let Type::List(inner) = self.list_ty.clone() {
             *inner
         } else {
-            return Err(Error::NoList(self.list_ty.clone()));
+            return Err(to_check_err(ErrorKind::TypeMismatch {
+                found: self.list_ty.to_string(),
+                expected: "List Type".to_owned(),
+            }));
         };
         env.add_var(&self.cons_fst, &list_inner);
         env.add_var(&self.cons_rst, &self.list_ty.clone());

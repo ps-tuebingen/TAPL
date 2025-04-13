@@ -1,7 +1,6 @@
-use crate::{
-    parser::{errors::Error, pair_to_n_inner, Rule},
-    types::Type,
-};
+use super::{pair_to_n_inner, to_parse_err, Rule};
+use crate::types::Type;
+use common::errors::{Error, ErrorKind};
 use pest::iterators::Pair;
 use std::collections::HashMap;
 
@@ -20,7 +19,10 @@ pub fn pair_to_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
             let ty_pair = pair_to_n_inner(ty_rule, vec!["Type"])?.remove(0);
             pair_to_type(ty_pair)
         }
-        r => Err(Error::unexpected(r, "Type")),
+        r => Err(to_parse_err(ErrorKind::UnexpectedRule {
+            found: format!("{r:?}"),
+            expected: "Type".to_owned(),
+        })),
     }
 }
 
@@ -31,7 +33,7 @@ fn str_to_type(s: &str) -> Result<Type, Error> {
         "nat" => Ok(Type::Nat),
         "unit" => Ok(Type::Unit),
         "bool" => Ok(Type::Bool),
-        s => Err(Error::UnknownKw(s.to_owned())),
+        s => Err(to_parse_err(ErrorKind::UnknownKeyword(s.to_owned()))),
     }
 }
 
@@ -54,9 +56,9 @@ fn pair_to_rec_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
     let mut records = HashMap::new();
     while let Some(next) = inner.next() {
         let var = next.as_str().trim().to_owned();
-        let ty_rule = inner
-            .next()
-            .ok_or(Error::MissingInput("Record Type".to_owned()))?;
+        let ty_rule = inner.next().ok_or(to_parse_err(ErrorKind::MissingInput(
+            "Record Type".to_owned(),
+        )))?;
         let ty_pair = pair_to_n_inner(ty_rule, vec!["Type"])?.remove(0);
         let ty = pair_to_type(ty_pair)?;
         records.insert(var, ty);
@@ -70,9 +72,9 @@ fn pair_to_variant_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
     let mut inner = p.into_inner();
     while let Some(next) = inner.next() {
         let label = next.as_str().trim().to_owned();
-        let ty_rule = inner
-            .next()
-            .ok_or(Error::MissingInput("Variant Type".to_owned()))?;
+        let ty_rule = inner.next().ok_or(to_parse_err(ErrorKind::MissingInput(
+            "Variant Type".to_owned(),
+        )))?;
         let ty_pair = pair_to_n_inner(ty_rule, vec!["Type"])?.remove(0);
         let ty = pair_to_type(ty_pair)?;
         variants.push((label, ty));

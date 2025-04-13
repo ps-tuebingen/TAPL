@@ -1,8 +1,6 @@
-use super::pair_to_term;
-use crate::{
-    parser::{errors::Error, pair_to_n_inner, types::pair_to_type, Rule},
-    syntax::{Cons, ListCase, Nil, Term, Var},
-};
+use super::{super::types::pair_to_type, pair_to_n_inner, pair_to_term, to_parse_err, Rule};
+use crate::syntax::{Cons, ListCase, Nil, Term, Var};
+use common::errors::{Error, ErrorKind};
 use pest::iterators::Pair;
 
 enum ListPattern {
@@ -100,12 +98,12 @@ pub fn pair_to_listcase(p: Pair<'_, Rule>) -> Result<ListCase, Error> {
             cons_rst: rst_var,
             cons_rhs: Box::new(cons_rhs),
         }),
-        (ListPattern::NilPattern { .. }, ListPattern::NilPattern { .. }) => {
-            Err(Error::MissingCtor("Cons".to_owned()))
-        }
-        (ListPattern::ConsPattern { .. }, ListPattern::ConsPattern { .. }) => {
-            Err(Error::MissingCtor("Nil".to_owned()))
-        }
+        (ListPattern::NilPattern { .. }, ListPattern::NilPattern { .. }) => Err(to_parse_err(
+            ErrorKind::MissingInput("Cons Pattern".to_owned()),
+        )),
+        (ListPattern::ConsPattern { .. }, ListPattern::ConsPattern { .. }) => Err(to_parse_err(
+            ErrorKind::MissingInput("Nil Pattern".to_owned()),
+        )),
     }
 }
 
@@ -113,7 +111,10 @@ fn pair_to_list_pattern(p: Pair<'_, Rule>) -> Result<ListPattern, Error> {
     match p.as_rule() {
         Rule::nil_pt => pair_to_nil_pattern(p),
         Rule::cons_pt => pair_to_cons_pattern(p),
-        r => Err(Error::unexpected(r, "Nil or Cons Pattern")),
+        r => Err(to_parse_err(ErrorKind::UnexpectedRule {
+            found: format!("{r:?}"),
+            expected: "Nil or Cons Pattern".to_owned(),
+        })),
     }
 }
 

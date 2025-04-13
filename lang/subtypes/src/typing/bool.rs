@@ -1,9 +1,12 @@
-use super::{errors::Error, meet, TypingContext};
+use super::{meet, to_check_err, TypingContext};
 use crate::{
     syntax::{False, If, True},
     types::Type,
 };
-use common::Typecheck;
+use common::{
+    errors::{Error, ErrorKind},
+    Typecheck,
+};
 
 impl<'a> Typecheck<'a> for True {
     type Type = Type;
@@ -39,7 +42,10 @@ impl<'a> Typecheck<'a> for If {
     fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let ifc_ty = self.ifc.check(&mut env.clone())?;
         if ifc_ty != Type::Bool {
-            return Err(Error::TypeMismatch(Type::Bool, ifc_ty));
+            return Err(to_check_err(ErrorKind::TypeMismatch {
+                expected: Type::Bool.to_string(),
+                found: ifc_ty.to_string(),
+            }));
         }
 
         let thenc_ty = self.thenc.check(&mut env.clone())?;

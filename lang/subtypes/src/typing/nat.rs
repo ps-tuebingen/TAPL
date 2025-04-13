@@ -1,9 +1,12 @@
-use super::{errors::Error, TypingContext};
+use super::{to_check_err, TypingContext};
 use crate::{
     syntax::{Pred, Succ, Zero},
     types::Type,
 };
-use common::Typecheck;
+use common::{
+    errors::{Error, ErrorKind},
+    Typecheck,
+};
 
 impl<'a> Typecheck<'a> for Zero {
     type Type = Type;
@@ -29,7 +32,10 @@ impl<'a> Typecheck<'a> for Succ {
         if inner_ty == Type::Nat {
             Ok(Type::Nat)
         } else {
-            Err(Error::TypeMismatch(Type::Nat, inner_ty))
+            Err(to_check_err(ErrorKind::TypeMismatch {
+                expected: Type::Nat.to_string(),
+                found: inner_ty.to_string(),
+            }))
         }
     }
 }
@@ -46,7 +52,10 @@ impl<'a> Typecheck<'a> for Pred {
         if inner_ty == Type::Nat {
             Ok(Type::Nat)
         } else {
-            Err(Error::TypeMismatch(Type::Nat, inner_ty))
+            Err(to_check_err(ErrorKind::TypeMismatch {
+                expected: Type::Nat.to_string(),
+                found: inner_ty.to_string(),
+            }))
         }
     }
 }

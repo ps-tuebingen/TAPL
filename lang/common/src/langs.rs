@@ -13,6 +13,7 @@ pub enum Lang {
     Recursive,
     References,
     Stlc,
+    Subtypes,
 }
 
 impl fmt::Display for Lang {
@@ -29,6 +30,7 @@ impl fmt::Display for Lang {
             Lang::Recursive => f.write_str("Recursive"),
             Lang::References => f.write_str("References"),
             Lang::Stlc => f.write_str("STLC"),
+            Lang::Subtypes => f.write_str("Subtypes"),
         }
     }
 }

@@ -1,9 +1,12 @@
-use super::{errors::Error, TypingContext};
+use super::{to_check_err, TypingContext};
 use crate::{
     syntax::{Projection, Record},
     types::Type,
 };
-use common::Typecheck;
+use common::{
+    errors::{Error, ErrorKind},
+    Typecheck,
+};
 use std::collections::HashMap;
 
 impl<'a> Typecheck<'a> for Record {
@@ -35,11 +38,14 @@ impl<'a> Typecheck<'a> for Projection {
         let records = if let Type::Record(recs) = rec_ty {
             recs
         } else {
-            return Err(Error::NoRecord(rec_ty));
+            return Err(to_check_err(ErrorKind::TypeMismatch {
+                found: rec_ty.to_string(),
+                expected: "Record Type".to_owned(),
+            }));
         };
         records
             .get(&self.label)
             .cloned()
-            .ok_or(Error::UndefinedLabel(self.label.clone()))
+            .ok_or(to_check_err(ErrorKind::UndefinedLabel(self.label.clone())))
     }
 }

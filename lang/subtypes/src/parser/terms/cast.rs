@@ -1,7 +1,8 @@
 use crate::{
-    parser::{errors::Error, pair_to_n_inner, types::pair_to_type, Rule},
+    parser::{pair_to_n_inner, types::pair_to_type, Rule},
     syntax::{Cast, Term},
 };
+use common::errors::Error;
 use pest::iterators::Pair;
 
 pub fn pair_to_cast(p: Pair<'_, Rule>, t: Term) -> Result<Cast, Error> {

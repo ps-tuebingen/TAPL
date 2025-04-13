@@ -1,6 +1,9 @@
-use super::{errors::Error, TypingContext};
+use super::{to_check_err, TypingContext};
 use crate::{syntax::Fix, types::Type};
-use common::Typecheck;
+use common::{
+    errors::{Error, ErrorKind},
+    Typecheck,
+};
 
 impl<'a> Typecheck<'a> for Fix {
     type Type = Type;
@@ -15,10 +18,16 @@ impl<'a> Typecheck<'a> for Fix {
             if from == to {
                 Ok(*from)
             } else {
-                Err(Error::TypeMismatch(*from, *to))
+                Err(to_check_err(ErrorKind::TypeMismatch {
+                    found: from.to_string(),
+                    expected: to.to_string(),
+                }))
             }
         } else {
-            Err(Error::NoFunction(inner))
+            Err(to_check_err(ErrorKind::TypeMismatch {
+                found: inner.to_string(),
+                expected: "Function Type".to_owned(),
+            }))
         }
     }
 }

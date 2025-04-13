@@ -1,9 +1,12 @@
-use super::{errors::Error, is_subtype, TypingContext};
+use super::{is_subtype, to_check_err, TypingContext};
 use crate::{
     syntax::{Variant, VariantCase},
     types::Type,
 };
-use common::Typecheck;
+use common::{
+    errors::{Error, ErrorKind},
+    Typecheck,
+};
 
 impl<'a> Typecheck<'a> for Variant {
     type Type = Type;
@@ -41,14 +44,20 @@ impl<'a> Typecheck<'a> for VariantCase {
         if is_subtype(&bound_ty, &variant_ty) {
             Ok(rhs_ty)
         } else {
-            Err(Error::TypeMismatch(bound_ty, variant_ty))
+            Err(to_check_err(ErrorKind::TypeMismatch {
+                found: bound_ty.to_string(),
+                expected: variant_ty.to_string(),
+            }))
         }
     }
 }
 
 fn combine_rhs(tys: Vec<Type>) -> Result<Type, Error> {
     if tys.is_empty() {
-        return Err(Error::EmptyCase);
+        return Err(to_check_err(ErrorKind::Arity {
+            found: 0,
+            expected: 1,
+        }));
     }
     let mut ret_ty = tys.first().unwrap();
     for ty in tys.iter() {
@@ -57,7 +66,10 @@ fn combine_rhs(tys: Vec<Type>) -> Result<Type, Error> {
         } else if is_subtype(ret_ty, ty) {
             continue;
         } else {
-            return Err(Error::TypeMismatch(ty.clone(), ret_ty.clone()));
+            return Err(to_check_err(ErrorKind::TypeMismatch {
+                found: ty.to_string(),
+                expected: ret_ty.to_string(),
+            }));
         }
     }
     Ok(ret_ty.clone())

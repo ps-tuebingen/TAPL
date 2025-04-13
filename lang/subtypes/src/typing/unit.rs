@@ -1,6 +1,6 @@
-use super::{errors::Error, TypingContext};
+use super::TypingContext;
 use crate::{syntax::Unit, types::Type};
-use common::Typecheck;
+use common::{errors::Error, Typecheck};
 
 impl<'a> Typecheck<'a> for Unit {
     type Type = Type;

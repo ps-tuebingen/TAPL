@@ -1,9 +1,12 @@
-use super::{errors::Error, is_subtype, TypingContext};
+use super::{is_subtype, to_check_err, TypingContext};
 use crate::{
     syntax::{Assign, Deref, Location, Ref},
     types::Type,
 };
-use common::Typecheck;
+use common::{
+    errors::{Error, ErrorKind},
+    Typecheck,
+};
 
 impl<'a> Typecheck<'a> for Ref {
     type Type = Type;
@@ -31,7 +34,10 @@ impl<'a> Typecheck<'a> for Deref {
             Type::Ref(ty) => Ok(*ty),
             Type::Sink(ty) => Ok(*ty),
             Type::Source(ty) => Ok(*ty),
-            ty => Err(Error::NoReference(ty)),
+            ty => Err(to_check_err(ErrorKind::TypeMismatch {
+                found: ty.to_string(),
+                expected: "Reference".to_owned(),
+            })),
         }
     }
 }
@@ -51,17 +57,26 @@ impl<'a> Typecheck<'a> for Assign {
                 if right_ty == *ty {
                     Ok(Type::Unit)
                 } else {
-                    Err(Error::TypeMismatch(*ty, right_ty))
+                    Err(to_check_err(ErrorKind::TypeMismatch {
+                        found: ty.to_string(),
+                        expected: right_ty.to_string(),
+                    }))
                 }
             }
             Type::Sink(ty) => {
                 if is_subtype(&right_ty, &ty) {
                     Ok(Type::Unit)
                 } else {
-                    Err(Error::TypeMismatch(*ty, right_ty))
+                    Err(to_check_err(ErrorKind::TypeMismatch {
+                        found: ty.to_string(),
+                        expected: right_ty.to_string(),
+                    }))
                 }
             }
-            ty => Err(Error::TypeMismatch(right_ty, ty)),
+            ty => Err(to_check_err(ErrorKind::TypeMismatch {
+                found: right_ty.to_string(),
+                expected: ty.to_string(),
+            })),
         }
     }
 }
@@ -76,12 +91,15 @@ impl<'a> Typecheck<'a> for Location {
     fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let stored = env
             .lookup_location(self.loc)
-            .ok_or(Error::UnassignedLocation(self.loc))?;
+            .ok_or(to_check_err(ErrorKind::UndefinedLocation(self.loc)))?;
         match stored {
             Type::Ref(ty) => Ok(*ty),
             Type::Sink(ty) => Ok(*ty),
             Type::Source(ty) => Ok(*ty),
-            ty => Err(Error::NoReference(ty)),
+            ty => Err(to_check_err(ErrorKind::TypeMismatch {
+                found: ty.to_string(),
+                expected: "Reference Type".to_owned(),
+            })),
         }
     }
 }

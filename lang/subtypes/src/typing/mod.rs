@@ -1,10 +1,11 @@
+use crate::to_err;
 use crate::{
     syntax::{Loc, Var},
     types::Type,
 };
+use common::errors::{Error, ErrorKind, ErrorLocation};
 use std::collections::HashMap;
 
-pub mod errors;
 pub mod join;
 pub mod meet;
 pub mod subtyping;
@@ -22,10 +23,13 @@ pub mod terms;
 pub mod unit;
 pub mod variant;
 
-use errors::Error;
 pub use join::join;
 pub use meet::meet;
 pub use subtyping::is_subtype;
+
+pub fn to_check_err(knd: ErrorKind) -> Error {
+    to_err(knd, ErrorLocation::Check)
+}
 
 #[derive(Clone, Default)]
 pub struct TypingContext {
@@ -34,11 +38,11 @@ pub struct TypingContext {
 }
 
 impl TypingContext {
-    pub fn get_var(&self, v: &str) -> Result<Type, Error> {
+    pub fn get_var(&self, v: &str) -> Result<Type, ErrorKind> {
         self.var_env
             .get(v)
             .cloned()
-            .ok_or(Error::FreeVar(v.to_owned()))
+            .ok_or(ErrorKind::FreeVariable(v.to_owned()))
     }
 
     pub fn add_var(&mut self, var: &str, ty: &Type) {

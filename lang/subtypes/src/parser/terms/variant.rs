@@ -1,8 +1,9 @@
-use super::pair_to_term;
+use super::{pair_to_term, to_parse_err};
 use crate::{
-    parser::{errors::Error, pair_to_n_inner, types::pair_to_type, Rule},
+    parser::{pair_to_n_inner, types::pair_to_type, Rule},
     syntax::{variant::VariantPattern, Variant, VariantCase},
 };
+use common::errors::{Error, ErrorKind};
 use pest::iterators::Pair;
 
 pub fn pair_to_variant(p: Pair<'_, Rule>) -> Result<Variant, Error> {
@@ -18,16 +19,16 @@ pub fn pair_to_variant(p: Pair<'_, Rule>) -> Result<Variant, Error> {
 
 pub fn pair_to_variantcase(p: Pair<'_, Rule>) -> Result<VariantCase, Error> {
     let mut inner = p.into_inner();
-    inner
-        .next()
-        .ok_or(Error::MissingInput("Case Keyword".to_owned()))?;
-    let term_rule = inner
-        .next()
-        .ok_or(Error::MissingInput("Variant Case Bound Term".to_owned()))?;
+    inner.next().ok_or(to_parse_err(ErrorKind::MissingInput(
+        "Case Keyword".to_owned(),
+    )))?;
+    let term_rule = inner.next().ok_or(to_parse_err(ErrorKind::MissingInput(
+        "Variant Case Bound Term".to_owned(),
+    )))?;
     let term = pair_to_term(term_rule)?;
-    inner
-        .next()
-        .ok_or(Error::MissingInput("Of Keyword".to_owned()))?;
+    inner.next().ok_or(to_parse_err(ErrorKind::MissingInput(
+        "Of Keyword".to_owned(),
+    )))?;
 
     let mut patterns = vec![];
     for next in inner {

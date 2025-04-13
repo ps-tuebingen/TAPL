@@ -1,6 +1,6 @@
-use super::{errors::Error, TypingContext};
+use super::{to_check_err, TypingContext};
 use crate::{syntax::Term, types::Type};
-use common::Typecheck;
+use common::{errors::Error, Typecheck};
 
 impl<'a> Typecheck<'a> for Term {
     type Type = Type;
@@ -11,7 +11,7 @@ impl<'a> Typecheck<'a> for Term {
     }
     fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         match self {
-            Term::Var(v) => env.get_var(v),
+            Term::Var(v) => env.get_var(v).map_err(to_check_err),
             Term::Lambda(lambda) => lambda.check(env),
             Term::App(app) => app.check(env),
             Term::Unit(unit) => unit.check(env),
