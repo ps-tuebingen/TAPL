@@ -1,9 +1,12 @@
 pub mod check;
 pub mod errors;
 pub mod eval;
+pub mod kinds;
 pub mod langs;
 pub mod parse;
 pub mod subst;
+pub mod terms;
+pub mod types;
 pub use check::Typecheck;
 pub use eval::Eval;
 pub use parse::Parse;
