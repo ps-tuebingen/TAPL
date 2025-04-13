@@ -1,11 +1,21 @@
 use super::terms::{Term, Var};
-use common::Parse;
+use common::{
+    errors::{Error, ErrorKind, ErrorLocation},
+    langs::Lang,
+    Parse,
+};
 use std::collections::VecDeque;
 
-pub mod errors;
 pub mod lexer;
 
-use errors::Error;
+pub fn to_err(knd: ErrorKind) -> Error {
+    Error {
+        kind: knd,
+        loc: ErrorLocation::Parse,
+        lang: Lang::UntypedLambda,
+    }
+}
+
 use lexer::{lex, Token};
 
 impl Parse for Term {
@@ -24,7 +34,11 @@ fn split_parensc(
     let mut next_token = tokens.pop_front();
     loop {
         match next_token {
-            None => return Err(Error::UnexpectedEOI),
+            None => {
+                return Err(to_err(ErrorKind::MissingInput(
+                    "Closing Parenthesis".to_string(),
+                )))
+            }
             Some(Token::ParensO) => {
                 open_parens += 1;
                 front.push_back(Token::ParensO);
@@ -47,12 +61,15 @@ fn split_parensc(
 
 fn check_next(tokens: &mut VecDeque<Token>, expected: &Token) -> Result<Token, Error> {
     match tokens.pop_front() {
-        None => Err(Error::UnexpectedEOI),
+        None => Err(to_err(ErrorKind::MissingInput(format!("Token {expected}")))),
         Some(tok) => {
             if tok == *expected {
                 Ok(tok)
             } else {
-                Err(Error::UnexpectedToken(tok))
+                Err(to_err(ErrorKind::UnexpectedRule {
+                    found: format!("Token {tok}"),
+                    expected: expected.to_string(),
+                }))
             }
         }
     }
@@ -65,7 +82,7 @@ fn parse_var(tokens: &mut VecDeque<Token>) -> Result<Var, Error> {
         match next_token {
             None => {
                 return if var.is_empty() {
-                    Err(Error::UnexpectedEOI)
+                    Err(to_err(ErrorKind::MissingInput("Variable".to_owned())))
                 } else {
                     Ok(var)
                 }
@@ -79,7 +96,7 @@ fn parse_var(tokens: &mut VecDeque<Token>) -> Result<Var, Error> {
         next_token = tokens.pop_front();
     }
     if var.is_empty() {
-        Err(Error::UnexpectedEOI)
+        Err(to_err(ErrorKind::MissingInput("Variable".to_owned())))
     } else {
         Ok(var)
     }
@@ -116,7 +133,10 @@ fn parse_lambda(tokens: &mut VecDeque<Token>) -> Result<Term, Error> {
 }
 
 fn parse_tokens(tokens: &mut VecDeque<Token>) -> Result<Term, Error> {
-    match tokens.pop_front().ok_or(Error::UnexpectedEOI)? {
+    match tokens
+        .pop_front()
+        .ok_or(to_err(ErrorKind::MissingInput("Term".to_owned())))?
+    {
         Token::Lambda => parse_lambda(tokens),
         Token::Char(c) => {
             tokens.insert(0, Token::Char(c));
@@ -143,9 +163,18 @@ fn parse_tokens(tokens: &mut VecDeque<Token>) -> Result<Term, Error> {
                 Ok(Term::App(Box::new(inner_term), Box::new(remaining_term)))
             }
         }
-        Token::ParensC => Err(Error::ParenMismatch),
-        Token::Dot => Err(Error::UnexpectedToken(Token::Dot)),
-        Token::Space => Err(Error::UnexpectedToken(Token::Space)),
+        Token::ParensC => Err(to_err(ErrorKind::UnexpectedRule {
+            found: "Token )".to_owned(),
+            expected: "Term".to_owned(),
+        })),
+        Token::Dot => Err(to_err(ErrorKind::UnexpectedRule {
+            found: "Token .".to_owned(),
+            expected: "Term".to_owned(),
+        })),
+        Token::Space => Err(to_err(ErrorKind::UnexpectedRule {
+            found: "Token Space".to_owned(),
+            expected: "Term".to_owned(),
+        })),
     }
 }
 

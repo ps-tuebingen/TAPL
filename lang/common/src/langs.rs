@@ -17,6 +17,7 @@ pub enum Lang {
     SystemF,
     TypedArithmetic,
     UntypedArithmetic,
+    UntypedLambda,
 }
 
 impl fmt::Display for Lang {
@@ -37,6 +38,7 @@ impl fmt::Display for Lang {
             Lang::SystemF => f.write_str("SystemF"),
             Lang::TypedArithmetic => f.write_str("TypedArithmetic"),
             Lang::UntypedArithmetic => f.write_str("UntypedArithmetic"),
+            Lang::UntypedLambda => f.write_str("UntypedLabmda"),
         }
     }
 }

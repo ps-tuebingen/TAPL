@@ -1,11 +1,21 @@
-use common::Parse;
-pub mod errors;
+use common::{
+    errors::{Error, ErrorKind, ErrorLocation},
+    langs::Lang,
+    Parse,
+};
 pub mod lexer;
 
 use super::Term;
-use errors::Error;
 use lexer::{lex, Token};
 use std::collections::VecDeque;
+
+pub fn to_parse_err(knd: ErrorKind) -> Error {
+    Error {
+        kind: knd,
+        loc: ErrorLocation::Parse,
+        lang: Lang::UntypedArithmetic,
+    }
+}
 
 impl Parse for Term {
     type Err = Error;
@@ -21,7 +31,13 @@ pub fn parse(source: String) -> Result<Term, Error> {
     if tokens.is_empty() {
         Ok(t)
     } else {
-        Err(Error::RemainingInput(tokens.into()))
+        Err(to_parse_err(ErrorKind::RemainingInput(
+            tokens
+                .iter()
+                .map(|tok| tok.to_string())
+                .collect::<Vec<String>>()
+                .join(","),
+        )))
     }
 }
 
@@ -30,10 +46,13 @@ fn consume_token(tokens: &mut VecDeque<Token>, token: Token) -> Result<(), Error
         if tok == token {
             Ok(())
         } else {
-            Err(Error::UnexpectedToken(tok))
+            Err(to_parse_err(ErrorKind::UnexpectedRule {
+                found: format!("Token {tok}"),
+                expected: format!("{token}"),
+            }))
         }
     } else {
-        Err(Error::UnexpectedEOI)
+        Err(to_parse_err(ErrorKind::MissingInput(token.to_string())))
     }
 }
 
@@ -41,7 +60,7 @@ fn parse_term(tokens: &mut VecDeque<Token>) -> Result<Term, Error> {
     let fst = if let Some(tok) = tokens.pop_front() {
         tok
     } else {
-        return Err(Error::UnexpectedEOI);
+        return Err(to_parse_err(ErrorKind::MissingInput("Term".to_owned())));
     };
 
     match fst {
@@ -94,7 +113,10 @@ fn parse_term(tokens: &mut VecDeque<Token>) -> Result<Term, Error> {
             }
             Ok(digits_to_term(digits))
         }
-        _ => Err(Error::UnexpectedToken(fst)),
+        _ => Err(to_parse_err(ErrorKind::UnexpectedRule {
+            found: format!("Token {fst}"),
+            expected: "Term".to_owned(),
+        })),
     }
 }
 
