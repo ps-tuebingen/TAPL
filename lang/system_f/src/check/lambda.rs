@@ -1,9 +1,12 @@
-use super::{errors::Error, Env};
+use super::{to_check_err, Env};
 use crate::{
     syntax::{App, Lambda},
     types::Type,
 };
-use common::Typecheck;
+use common::{
+    errors::{Error, ErrorKind},
+    Typecheck,
+};
 
 impl<'a> Typecheck<'a> for Lambda {
     type Type = Type;
@@ -37,10 +40,16 @@ impl<'a> Typecheck<'a> for App {
             if arg_ty == *from {
                 Ok(*to)
             } else {
-                Err(Error::TypeMismatch(arg_ty, *from))
+                Err(to_check_err(ErrorKind::TypeMismatch {
+                    found: arg_ty.to_string(),
+                    expected: from.to_string(),
+                }))
             }
         } else {
-            Err(Error::NotAFunctionType(fun_ty))
+            Err(to_check_err(ErrorKind::TypeMismatch {
+                found: fun_ty.to_string(),
+                expected: "Function Type".to_owned(),
+            }))
         }
     }
 }

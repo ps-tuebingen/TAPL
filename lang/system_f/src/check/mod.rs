@@ -1,13 +1,18 @@
 use crate::{
     syntax::Var,
+    to_err,
     types::{TyVar, Type},
 };
+use common::errors::{Error, ErrorKind, ErrorLocation};
 use std::collections::HashMap;
 
-pub mod errors;
 pub mod lambda;
 pub mod terms;
 pub mod tylambda;
+
+pub fn to_check_err(knd: ErrorKind) -> Error {
+    to_err(knd, ErrorLocation::Check)
+}
 
 #[derive(Default, Clone)]
 pub struct Env {

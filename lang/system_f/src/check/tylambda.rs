@@ -1,9 +1,12 @@
-use super::{errors::Error, Env};
+use super::{to_check_err, Env};
 use crate::{
     syntax::{TyApp, TyLambda},
     types::Type,
 };
-use common::Typecheck;
+use common::{
+    errors::{Error, ErrorKind},
+    Typecheck,
+};
 
 impl<'a> Typecheck<'a> for TyLambda {
     type Type = Type;
@@ -35,7 +38,10 @@ impl<'a> Typecheck<'a> for TyApp {
         if let Type::Forall(v, ty) = gen_ty {
             Ok(ty.subst(&v, self.ty.clone()))
         } else {
-            Err(Error::NotUniversal(gen_ty))
+            Err(to_check_err(ErrorKind::TypeMismatch {
+                found: gen_ty.to_string(),
+                expected: "Generalied Type".to_owned(),
+            }))
         }
     }
 }

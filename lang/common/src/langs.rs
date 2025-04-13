@@ -14,6 +14,7 @@ pub enum Lang {
     References,
     Stlc,
     Subtypes,
+    SystemF,
 }
 
 impl fmt::Display for Lang {
@@ -31,6 +32,7 @@ impl fmt::Display for Lang {
             Lang::References => f.write_str("References"),
             Lang::Stlc => f.write_str("STLC"),
             Lang::Subtypes => f.write_str("Subtypes"),
+            Lang::SystemF => f.write_str("SystemF"),
         }
     }
 }

@@ -1,12 +1,13 @@
-use super::{pair_to_n_inner, Error, Rule};
+use super::{pair_to_n_inner, to_parse_err, Rule};
 use crate::types::Type;
+use common::errors::{Error, ErrorKind};
 use pest::iterators::Pair;
 
 pub fn pair_to_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
     let mut inner = p.into_inner();
-    let prim_rule = inner
-        .next()
-        .ok_or(Error::MissingInput("Non Left-Recursie Type".to_owned()))?;
+    let prim_rule = inner.next().ok_or(to_parse_err(ErrorKind::MissingInput(
+        "Non Left-Recursie Type".to_owned(),
+    )))?;
     let prim_inner = pair_to_n_inner(prim_rule, vec!["Non Left-Recursive Type"])?.remove(0);
     let prim_ty = pair_to_prim_type(prim_inner)?;
 
@@ -19,7 +20,10 @@ pub fn pair_to_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
     };
 
     if let Some(n) = inner.next() {
-        return Err(Error::RemainingInput(n.as_rule()));
+        return Err(to_parse_err(ErrorKind::RemainingInput(format!(
+            "{:?}",
+            n.as_rule()
+        ))));
     }
     Ok(ty)
 }
@@ -32,14 +36,20 @@ fn pair_to_prim_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
             let ty_rule = pair_to_n_inner(p, vec!["Type"])?.remove(0);
             pair_to_type(ty_rule)
         }
-        r => Err(Error::unexpected(r, "Forall Type or Type Variable")),
+        r => Err(to_parse_err(ErrorKind::UnexpectedRule {
+            found: format!("{r:?}"),
+            expected: "Forall Type or Type Variable".to_owned(),
+        })),
     }
 }
 
 fn pair_to_leftrec_ty(p: Pair<'_, Rule>, ty: Type) -> Result<Type, Error> {
     match p.as_rule() {
         Rule::fun_ty => pair_to_fun_type(p, ty),
-        r => Err(Error::unexpected(r, "Function Type")),
+        r => Err(to_parse_err(ErrorKind::UnexpectedRule {
+            found: format!("{r:?}"),
+            expected: "Function Type".to_owned(),
+        })),
     }
 }
 
