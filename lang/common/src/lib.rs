@@ -7,8 +7,7 @@ pub type TypeVar = String;
 pub type Label = String;
 pub type Kind = String;
 pub type Term = String;
-
-// change to common types later
+pub type Location = usize;
 pub type Type = String;
 pub type Value = String;
 

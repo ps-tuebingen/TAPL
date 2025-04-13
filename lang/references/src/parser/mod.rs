@@ -1,13 +1,21 @@
-use crate::terms::Term;
-use common::Parse;
+use crate::{terms::Term, to_err};
+use common::{
+    errors::{Error, ErrorKind, ErrorLocation},
+    Parse,
+};
 use pest::{iterators::Pair, Parser};
 use pest_derive::Parser;
 
-pub mod errors;
 mod terms;
 mod types;
-use errors::Error;
 use terms::pair_to_term;
+
+pub fn to_parse_err<T>(knd: T) -> Error
+where
+    T: Into<ErrorKind>,
+{
+    to_err(knd.into(), ErrorLocation::Parse)
+}
 
 #[derive(Parser)]
 #[grammar = "parser/references.pest"]
@@ -21,17 +29,29 @@ impl Parse for Term {
 }
 
 pub fn parse(input: String) -> Result<Term, Error> {
-    let mut parsed = ReferencesParser::parse(Rule::program, &input)?;
-    let prog_rule = parsed.next().ok_or(Error::missing("Program"))?;
+    let mut parsed = ReferencesParser::parse(Rule::program, &input).map_err(to_parse_err)?;
+    let prog_rule = parsed
+        .next()
+        .ok_or(to_parse_err(ErrorKind::MissingInput("Program".to_owned())))?;
     if let Some(n) = parsed.next() {
-        return Err(Error::remaining(n.as_rule()));
+        return Err(to_parse_err(ErrorKind::RemainingInput(format!(
+            "{:?}",
+            n.as_rule()
+        ))));
     }
 
     let mut prog_inner = prog_rule.into_inner();
-    let term_rule = prog_inner.next().ok_or(Error::missing("Term"))?;
-    prog_inner.next().ok_or(Error::missing("EOI"))?;
+    let term_rule = prog_inner
+        .next()
+        .ok_or(to_parse_err(ErrorKind::MissingInput("Term".to_owned())))?;
+    prog_inner
+        .next()
+        .ok_or(to_parse_err(ErrorKind::MissingInput("EOI".to_owned())))?;
     if let Some(n) = parsed.next() {
-        return Err(Error::remaining(n.as_rule()));
+        return Err(to_parse_err(ErrorKind::RemainingInput(format!(
+            "{:?}",
+            n.as_rule()
+        ))));
     }
     pair_to_term(term_rule)
 }
@@ -43,11 +63,16 @@ pub fn pair_to_n_inner<'a>(
     let mut p_inner = p.into_inner();
     let mut pairs = vec![];
     for name in names {
-        let p_next = p_inner.next().ok_or(Error::missing(name))?;
+        let p_next = p_inner
+            .next()
+            .ok_or(to_parse_err(ErrorKind::MissingInput(name.to_owned())))?;
         pairs.push(p_next);
     }
     if let Some(n) = p_inner.next() {
-        return Err(Error::remaining(n.as_rule()));
+        return Err(to_parse_err(ErrorKind::RemainingInput(format!(
+            "{:?}",
+            n.as_rule()
+        ))));
     }
     Ok(pairs)
 }

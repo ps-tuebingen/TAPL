@@ -1,8 +1,8 @@
-use super::errors::Error;
 use crate::{
     terms::{Loc, Term, Var},
     types::Type,
 };
+use common::errors::ErrorKind;
 use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -14,7 +14,7 @@ pub enum Value {
 }
 
 impl Value {
-    pub fn from_term(t: Term) -> Result<Value, Error> {
+    pub fn from_term(t: Term) -> Result<Value, ErrorKind> {
         t.try_into()
     }
 }
@@ -35,8 +35,8 @@ impl From<Value> for Term {
 }
 
 impl TryFrom<Term> for Value {
-    type Error = Error;
-    fn try_from(t: Term) -> Result<Value, Error> {
+    type Error = ErrorKind;
+    fn try_from(t: Term) -> Result<Value, Self::Error> {
         match t {
             Term::Lambda { var, annot, body } => Ok(Value::Lambda {
                 var,
@@ -46,7 +46,10 @@ impl TryFrom<Term> for Value {
             Term::Const(i) => Ok(Value::Const(i)),
             Term::Unit => Ok(Value::Unit),
             Term::Loc(loc) => Ok(Value::Loc(loc)),
-            _ => Err(Error::NotAValue(t)),
+            _ => Err(ErrorKind::TermMismatch {
+                found: t.to_string(),
+                expected: "Value".to_owned(),
+            }),
         }
     }
 }

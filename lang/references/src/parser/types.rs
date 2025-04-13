@@ -1,10 +1,14 @@
-use super::{errors::Error, pair_to_n_inner, Rule};
+use super::{pair_to_n_inner, to_parse_err, Rule};
 use crate::types::Type;
+use common::errors::{Error, ErrorKind};
 use pest::iterators::Pair;
 
 pub fn pair_to_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
     if p.as_rule() != Rule::r#type {
-        return Err(Error::unexpected(p.as_rule(), "Type"));
+        return Err(to_parse_err(ErrorKind::UnexpectedRule {
+            found: format!("{:?}", p.as_rule()),
+            expected: "Type".to_owned(),
+        }));
     }
     let inner = pair_to_n_inner(p, vec!["Type"])?.remove(0);
     match inner.as_rule() {
@@ -15,7 +19,10 @@ pub fn pair_to_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
             let inner = pair_to_n_inner(inner, vec!["Type"])?.remove(0);
             pair_to_type(inner)
         }
-        r => Err(Error::unexpected(r, "Type")),
+        r => Err(to_parse_err(ErrorKind::UnexpectedRule {
+            found: format!("{r:?}"),
+            expected: "Type".to_owned(),
+        })),
     }
 }
 
@@ -23,7 +30,7 @@ fn str_to_prim_type(s: &str) -> Result<Type, Error> {
     match s.to_lowercase().trim() {
         "unit" => Ok(Type::Unit),
         "nat" => Ok(Type::Nat),
-        s => Err(Error::kw(s)),
+        s => Err(to_parse_err(ErrorKind::UnknownKeyword(s.to_owned()))),
     }
 }
 

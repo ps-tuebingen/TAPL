@@ -1,11 +1,19 @@
-use super::terms::{Cmp, Loc, Term};
-use common::Eval;
+use super::{
+    terms::{Cmp, Loc, Term},
+    to_err,
+};
+use common::{
+    errors::{Error, ErrorKind, ErrorLocation},
+    Eval,
+};
 use std::collections::HashMap;
 
-pub mod errors;
 pub mod values;
-use errors::Error;
 use values::Value;
+
+pub fn to_eval_err(knd: ErrorKind) -> Error {
+    to_err(knd, ErrorLocation::Eval)
+}
 
 pub type Store = HashMap<Loc, Value>;
 
@@ -28,14 +36,17 @@ impl<'a> Eval<'a> for Term {
 
     fn eval(self, st: &mut Store) -> Result<Self::Value, Self::Err> {
         match self {
-            Term::Var(v) => Err(Error::FreeVar(v)),
+            Term::Var(v) => Err(to_eval_err(ErrorKind::FreeVariable(v))),
             Term::Const(i) => Ok(Value::Const(i)),
             Term::Succ(t) => {
                 let val = t.eval(st)?;
                 if let Value::Const(i) = val {
                     Ok(Value::Const(i + 1))
                 } else {
-                    Err(Error::NotANumber(val))
+                    Err(to_eval_err(ErrorKind::ValueMismatch {
+                        found: val.to_string(),
+                        expected: "Number".to_owned(),
+                    }))
                 }
             }
             Term::Pred(t) => {
@@ -43,7 +54,10 @@ impl<'a> Eval<'a> for Term {
                 if let Value::Const(i) = val {
                     Ok(Value::Const(i - 1))
                 } else {
-                    Err(Error::NotANumber(val))
+                    Err(to_eval_err(ErrorKind::ValueMismatch {
+                        found: val.to_string(),
+                        expected: "Number".to_owned(),
+                    }))
                 }
             }
             Term::Lambda { var, annot, body } => Ok(Value::Lambda {
@@ -75,7 +89,10 @@ impl<'a> Eval<'a> for Term {
                     }
                     .eval(st)
                 }
-                (Ok(val), _) => Err(Error::NotAFunction(val)),
+                (Ok(val), _) => Err(to_eval_err(ErrorKind::ValueMismatch {
+                    found: val.to_string(),
+                    expected: "Function".to_owned(),
+                })),
                 (Err(_), _) => {
                     let fun_evaled = fun.eval(st)?;
                     Term::App {
@@ -98,8 +115,14 @@ impl<'a> Eval<'a> for Term {
                 }
             },
             Term::Deref(t) => match Value::from_term((*t).clone()) {
-                Ok(Value::Loc(loc)) => st.get(&loc).ok_or(Error::LocationNotFound(loc)).cloned(),
-                Ok(val) => Err(Error::NotALocation(val)),
+                Ok(Value::Loc(loc)) => st
+                    .get(&loc)
+                    .ok_or(to_eval_err(ErrorKind::UndefinedLocation(loc)))
+                    .cloned(),
+                Ok(val) => Err(to_eval_err(ErrorKind::ValueMismatch {
+                    found: val.to_string(),
+                    expected: "Location".to_owned(),
+                })),
                 Err(_) => {
                     let t_evaled = t.eval(st)?;
                     Term::Deref(Box::new(t_evaled.into())).eval(st)
@@ -113,7 +136,10 @@ impl<'a> Eval<'a> for Term {
                     st.insert(loc, val2);
                     Ok(Value::Unit)
                 }
-                (Ok(val1), Ok(_)) => Err(Error::NotALocation(val1)),
+                (Ok(val1), Ok(_)) => Err(to_eval_err(ErrorKind::ValueMismatch {
+                    found: val1.to_string(),
+                    expected: "Location".to_owned(),
+                })),
                 (Err(_), _) => {
                     let to_evaled = to.eval(st)?;
                     Term::Assign {
@@ -152,13 +178,19 @@ impl<'a> Eval<'a> for Term {
                 let left_num = if let Value::Const(i) = left_val {
                     i
                 } else {
-                    return Err(Error::NotANumber(left_val));
+                    return Err(to_eval_err(ErrorKind::ValueMismatch {
+                        found: left_val.to_string(),
+                        expected: "Number".to_owned(),
+                    }));
                 };
                 let right_val = right.eval(st)?;
                 let right_num = if let Value::Const(i) = right_val {
                     i
                 } else {
-                    return Err(Error::NotANumber(right_val));
+                    return Err(to_eval_err(ErrorKind::ValueMismatch {
+                        found: right_val.to_string(),
+                        expected: "Number".to_owned(),
+                    }));
                 };
 
                 let cmp_fun = |l, r| match cmp {

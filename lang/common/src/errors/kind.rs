@@ -1,4 +1,4 @@
-use crate::{Kind, Label, Term, Type, TypeVar, Value, Var};
+use crate::{Kind, Label, Location, Term, Type, TypeVar, Value, Var};
 use pest::{error::Error as PestErr, RuleType};
 use std::fmt;
 
@@ -7,6 +7,7 @@ pub enum ErrorKind {
     FreeVariable(Var),
     FreeTypeVariable(TypeVar),
     UndefinedLabel(Label),
+    UndefinedLocation(Location),
     UndefinedName(String),
     DefinedMultipleTimes(String),
     Subtype { sub: Type, sup: Type },
@@ -32,6 +33,7 @@ impl fmt::Display for ErrorKind {
             ErrorKind::FreeTypeVariable(v) => write!(f, "Type Variable {v} appears free"),
             ErrorKind::UndefinedLabel(lb) => write!(f, "Label {lb} was not defined"),
             ErrorKind::UndefinedName(name) => write!(f, "Name {name} was not defined"),
+            ErrorKind::UndefinedLocation(loc) => write!(f, "Location {loc} was never defined"),
             ErrorKind::DefinedMultipleTimes(name) => write!(f, "{name} was defined multiple times"),
             ErrorKind::Subtype { sub, sup } => write!(f, "{sub} is not a subtype of {sup}"),
             ErrorKind::KindMismatch { found, expected } => {

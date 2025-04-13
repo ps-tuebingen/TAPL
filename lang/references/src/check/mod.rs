@@ -1,12 +1,17 @@
 use super::{
     terms::{Loc, Term, Var},
+    to_err,
     types::Type,
 };
-use common::Typecheck;
+use common::{
+    errors::{Error, ErrorKind, ErrorLocation},
+    Typecheck,
+};
 use std::collections::HashMap;
 
-pub mod errors;
-use errors::Error;
+pub fn to_check_err(knd: ErrorKind) -> Error {
+    to_err(knd, ErrorLocation::Check)
+}
 
 pub type Env = HashMap<Var, Type>;
 pub type StoreTy = HashMap<Loc, Type>;
@@ -19,13 +24,16 @@ pub struct Environment {
 
 impl Environment {
     pub fn get_var(&self, v: &Var) -> Result<Type, Error> {
-        self.env.get(v).ok_or(Error::FreeVar(v.clone())).cloned()
+        self.env
+            .get(v)
+            .ok_or(to_check_err(ErrorKind::FreeVariable(v.clone())))
+            .cloned()
     }
 
     pub fn get_loc(&self, loc: &Loc) -> Result<Type, Error> {
         self.store_ty
             .get(loc)
-            .ok_or(Error::UnknownLocation(*loc))
+            .ok_or(to_check_err(ErrorKind::UndefinedLocation(*loc)))
             .cloned()
     }
 
@@ -50,10 +58,10 @@ impl<'a> Typecheck<'a> for Term {
             Term::Succ(t) => {
                 let ty = t.check(env)?;
                 if ty != Type::Nat {
-                    Err(Error::TypeMismatch {
-                        found: ty,
-                        expected: Type::Nat,
-                    })
+                    Err(to_check_err(ErrorKind::TypeMismatch {
+                        found: ty.to_string(),
+                        expected: Type::Nat.to_string(),
+                    }))
                 } else {
                     Ok(Type::Nat)
                 }
@@ -61,10 +69,10 @@ impl<'a> Typecheck<'a> for Term {
             Term::Pred(t) => {
                 let ty = t.check(env)?;
                 if ty != Type::Nat {
-                    Err(Error::TypeMismatch {
-                        found: ty,
-                        expected: Type::Nat,
-                    })
+                    Err(to_check_err(ErrorKind::TypeMismatch {
+                        found: ty.to_string(),
+                        expected: Type::Nat.to_string(),
+                    }))
                 } else {
                     Ok(Type::Nat)
                 }
@@ -84,13 +92,16 @@ impl<'a> Typecheck<'a> for Term {
                     if *from == arg_ty {
                         Ok(*to)
                     } else {
-                        Err(Error::TypeMismatch {
-                            found: arg_ty,
-                            expected: *from,
-                        })
+                        Err(to_check_err(ErrorKind::TypeMismatch {
+                            found: arg_ty.to_string(),
+                            expected: from.to_string(),
+                        }))
                     }
                 } else {
-                    Err(Error::NotAFunctionType(fun_ty))
+                    Err(to_check_err(ErrorKind::TypeMismatch {
+                        found: fun_ty.to_string(),
+                        expected: "Function Type".to_owned(),
+                    }))
                 }
             }
             Term::Unit => Ok(Type::Unit),
@@ -103,7 +114,10 @@ impl<'a> Typecheck<'a> for Term {
                 if let Type::Ref(ty) = inner {
                     Ok(*ty)
                 } else {
-                    Err(Error::NotAReference(inner))
+                    Err(to_check_err(ErrorKind::TypeMismatch {
+                        found: inner.to_string(),
+                        expected: "Reference Type".to_owned(),
+                    }))
                 }
             }
             Term::Assign { to, body } => {
@@ -111,16 +125,19 @@ impl<'a> Typecheck<'a> for Term {
                 let ref_inner = if let Type::Ref(ty) = ty1 {
                     ty
                 } else {
-                    return Err(Error::NotAReference(ty1));
+                    return Err(to_check_err(ErrorKind::TypeMismatch {
+                        found: ty1.to_string(),
+                        expected: "Reference Type".to_owned(),
+                    }));
                 };
                 let ty2 = body.check(env)?;
                 if ty2 == *ref_inner {
                     Ok(Type::Unit)
                 } else {
-                    Err(Error::TypeMismatch {
-                        found: ty2,
-                        expected: *ref_inner,
-                    })
+                    Err(to_check_err(ErrorKind::TypeMismatch {
+                        found: ty2.to_string(),
+                        expected: ref_inner.to_string(),
+                    }))
                 }
             }
             Term::Loc(loc) => env.get_loc(loc).map(|ty| Type::Ref(Box::new(ty.clone()))),
@@ -142,25 +159,25 @@ impl<'a> Typecheck<'a> for Term {
             } => {
                 let left_ty = left.check(&mut env.clone())?;
                 if left_ty != Type::Nat {
-                    return Err(Error::TypeMismatch {
-                        found: left_ty,
-                        expected: Type::Nat,
-                    });
+                    return Err(to_check_err(ErrorKind::TypeMismatch {
+                        found: left_ty.to_string(),
+                        expected: Type::Nat.to_string(),
+                    }));
                 }
                 let right_ty = right.check(&mut env.clone())?;
                 if right_ty != Type::Nat {
-                    return Err(Error::TypeMismatch {
-                        found: right_ty,
-                        expected: Type::Nat,
-                    });
+                    return Err(to_check_err(ErrorKind::TypeMismatch {
+                        found: right_ty.to_string(),
+                        expected: Type::Nat.to_string(),
+                    }));
                 }
                 let then_ty = then_term.check(&mut env.clone())?;
                 let else_ty = else_term.check(env)?;
                 if then_ty != else_ty {
-                    return Err(Error::TypeMismatch {
-                        found: then_ty,
-                        expected: else_ty,
-                    });
+                    return Err(to_check_err(ErrorKind::TypeMismatch {
+                        found: then_ty.to_string(),
+                        expected: else_ty.to_string(),
+                    }));
                 }
                 Ok(then_ty)
             }

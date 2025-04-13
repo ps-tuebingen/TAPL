@@ -1,32 +1,42 @@
-use super::{errors::Error, pair_to_n_inner, types::pair_to_type, Rule};
+use super::{pair_to_n_inner, to_parse_err, types::pair_to_type, Rule};
 use crate::{
     terms::{Cmp, Term},
     types::Type,
 };
+use common::errors::{Error, ErrorKind};
 use pest::iterators::Pair;
 
 pub fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
     if p.as_rule() != Rule::term {
-        return Err(Error::unexpected(p.as_rule(), "Term"));
+        return Err(to_parse_err(ErrorKind::UnexpectedRule {
+            found: format!("{:?}", p.as_rule()),
+            expected: "Term".to_owned(),
+        }));
     }
     let mut inner = p.into_inner();
-    let prim_pair = inner
-        .next()
-        .ok_or(Error::missing("Term (non-left recursive)"))?;
+    let prim_pair = inner.next().ok_or(to_parse_err(ErrorKind::MissingInput(
+        "Term (non-left recursive)".to_owned(),
+    )))?;
     let prim_term = pair_to_prim_term(prim_pair)?;
     let term = match inner.next() {
         Some(p) => pair_to_leftrec(p, prim_term)?,
         None => prim_term,
     };
     if let Some(n) = inner.next() {
-        return Err(Error::remaining(n.as_rule()));
+        return Err(to_parse_err(ErrorKind::RemainingInput(format!(
+            "{:?}",
+            n.as_rule()
+        ))));
     }
     Ok(term)
 }
 
 fn pair_to_prim_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
     if p.as_rule() != Rule::prim_term {
-        return Err(Error::unexpected(p.as_rule(), "Term (non-left recursive)"));
+        return Err(to_parse_err(ErrorKind::UnexpectedRule {
+            found: format!("{:?}", p.as_rule()),
+            expected: "Term (non-left recursive)".to_owned(),
+        }));
     }
     let inner_rule = pair_to_n_inner(p, vec!["Term (non-left recursive)"])?.remove(0);
     prim_rule_to_term(inner_rule)
@@ -40,7 +50,7 @@ fn prim_rule_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
                 .as_str()
                 .trim()
                 .parse::<i64>()
-                .map_err(|_| Error::num(p.as_str()))?;
+                .map_err(|_| to_parse_err(ErrorKind::UnknownKeyword(p.as_str().to_owned())))?;
             Ok(Term::Const(num))
         }
         Rule::paren_term => {
@@ -55,7 +65,10 @@ fn prim_rule_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
         Rule::deref_term => pair_to_deref(p),
         Rule::let_term => pair_to_let(p),
         Rule::if_term => pair_to_if(p),
-        r => Err(Error::unexpected(r, "Term (non-left recursive)")),
+        r => Err(to_parse_err(ErrorKind::UnexpectedRule {
+            found: format!("{r:?}"),
+            expected: "Term (non-left recursive)".to_owned(),
+        })),
     }
 }
 
@@ -89,14 +102,17 @@ fn pair_to_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
                 arg: Box::new(arg),
             })
         }
-        r => Err(Error::unexpected(r, "Assign or Application")),
+        r => Err(to_parse_err(ErrorKind::UnexpectedRule {
+            found: format!("{r:?}"),
+            expected: "Assign or Application".to_owned(),
+        })),
     }
 }
 
 fn const_to_term(c: &str) -> Result<Term, Error> {
     match c.to_lowercase().trim() {
         "unit" => Ok(Term::Unit),
-        s => Err(Error::kw(s)),
+        s => Err(to_parse_err(ErrorKind::UnknownKeyword(s.to_owned()))),
     }
 }
 
@@ -200,7 +216,7 @@ fn pair_to_cmp(p: Pair<'_, Rule>) -> Result<Cmp, Error> {
         ">" => Ok(Cmp::Greater),
         ">=" => Ok(Cmp::GreaterEqual),
         "==" => Ok(Cmp::Equal),
-        s => Err(Error::kw(s)),
+        s => Err(to_parse_err(ErrorKind::UnknownKeyword(s.to_owned()))),
     }
 }
 
