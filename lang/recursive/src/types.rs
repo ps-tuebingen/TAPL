@@ -1,4 +1,5 @@
-use crate::{errors::ErrorKind, traits::subst::SubstTy, Label};
+use crate::traits::subst::SubstTy;
+use common::{errors::ErrorKind, Label};
 use std::{collections::HashMap, fmt};
 
 pub type TypeVar = String;
@@ -28,8 +29,8 @@ impl Type {
         if let Type::Fun { from, to } = self {
             Ok((*from.clone(), *to.clone()))
         } else {
-            Err(ErrorKind::UnexpectedType {
-                found: self.clone(),
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
                 expected: "Function Type".to_owned(),
             })
         }
@@ -43,7 +44,10 @@ impl Type {
         if let Type::Mu(v, ty) = self {
             Ok((v.clone(), *ty.clone()))
         } else {
-            Err(ErrorKind::unexpected_type(self, "Recursive Type"))
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Recursive Type".to_owned(),
+            })
         }
     }
 
@@ -59,7 +63,10 @@ impl Type {
         if let Type::Variant(vars) = self {
             Ok(vars.clone())
         } else {
-            Err(ErrorKind::unexpected_type(self, "Variant Type"))
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Variant Type".to_owned(),
+            })
         }
     }
 
@@ -71,7 +78,10 @@ impl Type {
         if let Type::Pair(fst, snd) = self {
             Ok((*fst.clone(), *snd.clone()))
         } else {
-            Err(ErrorKind::unexpected_type(self, "Pair Type"))
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Pair Type".to_owned(),
+            })
         }
     }
 
@@ -87,7 +97,10 @@ impl Type {
         if let Type::Record(recs) = self {
             Ok(recs.clone())
         } else {
-            Err(ErrorKind::unexpected_type(self, "Record Type"))
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Record Type".to_owned(),
+            })
         }
     }
 
@@ -95,7 +108,10 @@ impl Type {
         if self == ty {
             Ok(self.clone())
         } else {
-            Err(ErrorKind::unexpected_type(self, &ty.to_string()))
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: ty.to_string(),
+            })
         }
     }
 }

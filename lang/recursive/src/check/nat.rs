@@ -1,10 +1,9 @@
-use super::Env;
+use super::{to_check_err, Env};
 use crate::{
-    errors::Error,
     terms::{IsZero, Pred, Succ, Zero},
     types::Type,
 };
-use common::Typecheck;
+use common::{errors::Error, Typecheck};
 
 impl<'a> Typecheck<'a> for Zero {
     type Type = Type;
@@ -27,9 +26,7 @@ impl<'a> Typecheck<'a> for Succ {
     }
     fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let inner = self.term.check(env)?;
-        inner
-            .equal(&Type::Nat)
-            .map_err(|knd| Error::check(knd, self))
+        inner.equal(&Type::Nat).map_err(to_check_err)
     }
 }
 
@@ -42,9 +39,7 @@ impl<'a> Typecheck<'a> for Pred {
     }
     fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let inner = self.term.check(env)?;
-        inner
-            .equal(&Type::Nat)
-            .map_err(|knd| Error::check(knd, self))
+        inner.equal(&Type::Nat).map_err(to_check_err)
     }
 }
 
@@ -57,9 +52,7 @@ impl<'a> Typecheck<'a> for IsZero {
     }
     fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let inner = self.term.check(env)?;
-        inner
-            .equal(&Type::Nat)
-            .map_err(|knd| Error::check(knd, self))?;
+        inner.equal(&Type::Nat).map_err(to_check_err)?;
         Ok(Type::Bool)
     }
 }

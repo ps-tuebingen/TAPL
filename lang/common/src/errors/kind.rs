@@ -12,6 +12,7 @@ pub enum ErrorKind {
     Subtype { sub: Type, sup: Type },
     NameMismatch { found: String, expected: String },
     TypeMismatch { found: Type, expected: String },
+    TermMismatch { found: Term, expected: String },
     KindMismatch { found: Kind, expected: String },
     ValueMismatch { found: Value, expected: String },
     Arity { found: usize, expected: usize },
@@ -47,6 +48,9 @@ impl fmt::Display for ErrorKind {
             }
             ErrorKind::TypeMismatch { found, expected } => {
                 write!(f, "Unexpected type {found}, expected {expected}")
+            }
+            ErrorKind::TermMismatch { found, expected } => {
+                write!(f, "Unexpected term {found}, expected {expected}")
             }
             ErrorKind::ValueMismatch { found, expected } => {
                 write!(f, "Unexpected value {found}, expected {expected}")

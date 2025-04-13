@@ -1,12 +1,13 @@
-use crate::terms::Term;
-use common::Parse;
+use crate::{terms::Term, to_err};
+use common::{
+    errors::{Error, ErrorKind, ErrorLocation},
+    Parse,
+};
 use pest::{iterators::Pair, Parser};
 use pest_derive::Parser;
 
-pub mod errors;
 mod terms;
 mod types;
-use errors::Error;
 use terms::pair_to_term;
 use types::pair_to_type;
 
@@ -21,13 +22,23 @@ impl Parse for Term {
     }
 }
 
+pub fn to_parse_err<T>(knd: T) -> Error
+where
+    T: Into<ErrorKind>,
+{
+    to_err(knd.into(), ErrorLocation::Parse)
+}
+
 pub fn parse(input: String) -> Result<Term, Error> {
-    let mut parsed = RecursiveParser::parse(Rule::program, &input)?;
+    let mut parsed = RecursiveParser::parse(Rule::program, &input).map_err(to_parse_err)?;
     let prog_rule = parsed
         .next()
-        .ok_or(Error::MissingInput("Program".to_owned()))?;
+        .ok_or(to_parse_err(ErrorKind::MissingInput("Program".to_owned())))?;
     if let Some(n) = parsed.next() {
-        return Err(Error::RemainingInput(n.as_rule()));
+        return Err(to_parse_err(ErrorKind::RemainingInput(format!(
+            "{:?}",
+            n.as_rule()
+        ))));
     }
 
     let term_rule = pair_to_n_inner(prog_rule, vec!["Term", "EOI"])?.remove(0);
@@ -42,12 +53,17 @@ pub fn pair_to_n_inner<'a>(
     let mut inner = p.into_inner();
     let mut pairs = vec![];
     for name in names {
-        let next = inner.next().ok_or(Error::MissingInput(name.to_owned()))?;
+        let next = inner
+            .next()
+            .ok_or(to_parse_err(ErrorKind::MissingInput(name.to_owned())))?;
         pairs.push(next);
     }
 
     if let Some(n) = inner.next() {
-        return Err(Error::RemainingInput(n.as_rule()));
+        return Err(to_parse_err(ErrorKind::RemainingInput(format!(
+            "{:?}",
+            n.as_rule()
+        ))));
     }
 
     Ok(pairs)

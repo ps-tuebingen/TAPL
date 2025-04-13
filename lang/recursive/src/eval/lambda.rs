@@ -1,10 +1,9 @@
-use super::Value;
+use super::{to_eval_err, Value};
 use crate::{
-    errors::Error,
     terms::{App, Lambda},
     traits::subst::SubstTerm,
 };
-use common::Eval;
+use common::{errors::Error, Eval};
 
 impl Eval<'_> for Lambda {
     type Value = Value;
@@ -35,9 +34,7 @@ impl Eval<'_> for App {
 
     fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Err> {
         let fun_val = self.fun.clone().eval(_env)?;
-        let lam = fun_val
-            .into_lambda()
-            .map_err(|knd| Error::eval(knd, &self))?;
+        let lam = fun_val.into_lambda().map_err(to_eval_err)?;
         let arg_val = self.arg.eval(_env)?;
         lam.body.subst(lam.var, arg_val.into()).eval(_env)
     }

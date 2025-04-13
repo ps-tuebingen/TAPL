@@ -1,11 +1,11 @@
 use crate::{
-    errors::ErrorKind,
     traits::{
         is_value::IsValue,
         subst::{SubstTerm, SubstTy},
     },
     types::{Type, TypeVar},
 };
+use common::errors::ErrorKind;
 use std::fmt;
 
 pub mod bool;
@@ -61,7 +61,10 @@ impl Term {
         if let Term::Var(v) = self {
             Ok(v.clone())
         } else {
-            Err(ErrorKind::unexpected_term(self, "Variable"))
+            Err(ErrorKind::TermMismatch {
+                found: self.to_string(),
+                expected: "Variable".to_owned(),
+            })
         }
     }
 
@@ -69,7 +72,10 @@ impl Term {
         if let Term::Lambda(lam) = self {
             Ok(lam.clone())
         } else {
-            Err(ErrorKind::unexpected_term(self, "Lambda Abstraction"))
+            Err(ErrorKind::TermMismatch {
+                found: self.to_string(),
+                expected: "Lambda Abstraction".to_owned(),
+            })
         }
     }
 
@@ -77,7 +83,10 @@ impl Term {
         if let Term::App(app) = self {
             Ok(app.clone())
         } else {
-            Err(ErrorKind::unexpected_term(self, "Application"))
+            Err(ErrorKind::TermMismatch {
+                found: self.to_string(),
+                expected: "Application".to_owned(),
+            })
         }
     }
 
@@ -85,7 +94,10 @@ impl Term {
         if let Term::Unit = self {
             Ok(())
         } else {
-            Err(ErrorKind::unexpected_term(self, "Unit"))
+            Err(ErrorKind::TermMismatch {
+                found: self.to_string(),
+                expected: "Unit".to_owned(),
+            })
         }
     }
 
@@ -93,7 +105,10 @@ impl Term {
         if let Term::Fold(fold) = self {
             Ok(fold.clone())
         } else {
-            Err(ErrorKind::unexpected_term(self, "Fold"))
+            Err(ErrorKind::TermMismatch {
+                found: self.to_string(),
+                expected: "Fold".to_owned(),
+            })
         }
     }
 
@@ -101,7 +116,10 @@ impl Term {
         if let Term::Unfold(unfold) = self {
             Ok(unfold.clone())
         } else {
-            Err(ErrorKind::unexpected_term(self, "Unfold"))
+            Err(ErrorKind::TermMismatch {
+                found: self.to_string(),
+                expected: "Unfold".to_owned(),
+            })
         }
     }
 
@@ -109,7 +127,10 @@ impl Term {
         if let Term::Variant(var) = self {
             Ok(var.clone())
         } else {
-            Err(ErrorKind::unexpected_term(self, "Variant"))
+            Err(ErrorKind::TermMismatch {
+                found: self.to_string(),
+                expected: "Variant".to_owned(),
+            })
         }
     }
 
@@ -117,14 +138,20 @@ impl Term {
         if let Term::VariantCase(case) = self {
             Ok(case.clone())
         } else {
-            Err(ErrorKind::unexpected_term(self, "Variant Case"))
+            Err(ErrorKind::TermMismatch {
+                found: self.to_string(),
+                expected: "Variant Case".to_owned(),
+            })
         }
     }
     pub fn as_pair(&self) -> Result<Pair, ErrorKind> {
         if let Term::Pair(pair) = self {
             Ok(pair.clone())
         } else {
-            Err(ErrorKind::unexpected_term(self, "Pair"))
+            Err(ErrorKind::TermMismatch {
+                found: self.to_string(),
+                expected: "Pair".to_owned(),
+            })
         }
     }
 
@@ -132,7 +159,10 @@ impl Term {
         if let Term::Fst(fst) = self {
             Ok(fst.clone())
         } else {
-            Err(ErrorKind::unexpected_term(self, "Fst"))
+            Err(ErrorKind::TermMismatch {
+                found: self.to_string(),
+                expected: "Fst".to_owned(),
+            })
         }
     }
 
@@ -140,7 +170,10 @@ impl Term {
         if let Term::Snd(snd) = self {
             Ok(snd.clone())
         } else {
-            Err(ErrorKind::unexpected_term(self, "Snd"))
+            Err(ErrorKind::TermMismatch {
+                found: self.to_string(),
+                expected: "Snd".to_owned(),
+            })
         }
     }
 
@@ -148,7 +181,10 @@ impl Term {
         if let Term::Zero(zero) = self {
             Ok(zero.clone())
         } else {
-            Err(ErrorKind::unexpected_term(self, "Zero"))
+            Err(ErrorKind::TermMismatch {
+                found: self.to_string(),
+                expected: "Zero".to_owned(),
+            })
         }
     }
 
@@ -156,7 +192,10 @@ impl Term {
         if let Term::Succ(succ) = self {
             Ok(succ.clone())
         } else {
-            Err(ErrorKind::unexpected_term(self, "Succ"))
+            Err(ErrorKind::TermMismatch {
+                found: self.to_string(),
+                expected: "Succ".to_owned(),
+            })
         }
     }
 
@@ -164,7 +203,10 @@ impl Term {
         if let Term::Pred(pred) = self {
             Ok(pred.clone())
         } else {
-            Err(ErrorKind::unexpected_term(self, "Pred"))
+            Err(ErrorKind::TermMismatch {
+                found: self.to_string(),
+                expected: "Pred".to_owned(),
+            })
         }
     }
 
@@ -172,7 +214,10 @@ impl Term {
         if let Term::IsZero(isz) = self {
             Ok(isz.clone())
         } else {
-            Err(ErrorKind::unexpected_term(self, "IsZero"))
+            Err(ErrorKind::TermMismatch {
+                found: self.to_string(),
+                expected: "IsZero".to_owned(),
+            })
         }
     }
 
@@ -180,7 +225,10 @@ impl Term {
         if let Term::True(tru) = self {
             Ok(tru.clone())
         } else {
-            Err(ErrorKind::unexpected_term(self, "True"))
+            Err(ErrorKind::TermMismatch {
+                found: self.to_string(),
+                expected: "True".to_owned(),
+            })
         }
     }
 
@@ -188,7 +236,10 @@ impl Term {
         if let Term::False(fls) = self {
             Ok(fls.clone())
         } else {
-            Err(ErrorKind::unexpected_term(self, "False"))
+            Err(ErrorKind::TermMismatch {
+                found: self.to_string(),
+                expected: "False".to_owned(),
+            })
         }
     }
 
@@ -196,7 +247,10 @@ impl Term {
         if let Term::If(ift) = self {
             Ok(ift.clone())
         } else {
-            Err(ErrorKind::unexpected_term(self, "If"))
+            Err(ErrorKind::TermMismatch {
+                found: self.to_string(),
+                expected: "If".to_owned(),
+            })
         }
     }
 
@@ -204,7 +258,10 @@ impl Term {
         if let Term::Fix(fix) = self {
             Ok(fix.clone())
         } else {
-            Err(ErrorKind::unexpected_term(self, "Fix"))
+            Err(ErrorKind::TermMismatch {
+                found: self.to_string(),
+                expected: "Fix".to_owned(),
+            })
         }
     }
 
@@ -212,7 +269,10 @@ impl Term {
         if let Term::Let(lt) = self {
             Ok(lt.clone())
         } else {
-            Err(ErrorKind::unexpected_term(self, "Let"))
+            Err(ErrorKind::TermMismatch {
+                found: self.to_string(),
+                expected: "Let".to_owned(),
+            })
         }
     }
 
@@ -220,7 +280,10 @@ impl Term {
         if let Term::Record(rec) = self {
             Ok(rec.clone())
         } else {
-            Err(ErrorKind::unexpected_term(self, "Record"))
+            Err(ErrorKind::TermMismatch {
+                found: self.to_string(),
+                expected: "Record".to_owned(),
+            })
         }
     }
 
@@ -228,7 +291,10 @@ impl Term {
         if let Term::RecordProj(proj) = self {
             Ok(proj.clone())
         } else {
-            Err(ErrorKind::unexpected_term(self, "Record Projection"))
+            Err(ErrorKind::TermMismatch {
+                found: self.to_string(),
+                expected: "Record Projection".to_owned(),
+            })
         }
     }
 }

@@ -1,10 +1,9 @@
-use super::Env;
+use super::{to_check_err, Env};
 use crate::{
-    errors::Error,
     terms::{App, Lambda},
     types::Type,
 };
-use common::Typecheck;
+use common::{errors::Error, Typecheck};
 
 impl<'a> Typecheck<'a> for Lambda {
     type Type = Type;
@@ -32,9 +31,9 @@ impl<'a> Typecheck<'a> for App {
     }
     fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let fun_ty = self.fun.check(&mut env.clone())?;
-        let (from, to) = fun_ty.as_fun().map_err(|knd| Error::check(knd, self))?;
+        let (from, to) = fun_ty.as_fun().map_err(to_check_err)?;
         let arg_ty = self.arg.check(env)?;
-        let _ = from.equal(&arg_ty).map_err(|knd| Error::check(knd, self))?;
+        let _ = from.equal(&arg_ty).map_err(to_check_err)?;
         Ok(to)
     }
 }

@@ -1,9 +1,6 @@
-use super::Value;
-use crate::{
-    errors::Error,
-    terms::{Fold, Unfold},
-};
-use common::Eval;
+use super::{to_eval_err, Value};
+use crate::terms::{Fold, Unfold};
+use common::{errors::Error, Eval};
 
 impl Eval<'_> for Fold {
     type Value = Value;
@@ -34,7 +31,7 @@ impl Eval<'_> for Unfold {
 
     fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Err> {
         let val = self.term.clone().eval(_env)?;
-        let (_, val) = val.into_fold().map_err(|knd| Error::eval(knd, &self))?;
+        let (_, val) = val.into_fold().map_err(to_eval_err)?;
         Ok(val)
     }
 }

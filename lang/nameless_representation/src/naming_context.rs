@@ -1,4 +1,5 @@
-use super::{named_terms::Term as NamedTerm, Var};
+use super::named_terms::Term as NamedTerm;
+use common::Var;
 use std::collections::HashSet;
 
 #[derive(Debug, Clone, Default)]

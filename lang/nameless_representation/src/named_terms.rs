@@ -1,4 +1,4 @@
-use super::Var;
+use common::Var;
 use std::fmt;
 use untyped_lambda::terms::Term as UnTerm;
 

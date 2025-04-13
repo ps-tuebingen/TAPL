@@ -1,7 +1,10 @@
 use crate::{
-    errors::ErrorKind,
     terms::{False, Fold, Lambda, Pair, Record, Term, True, Var, Variant},
+    to_err,
     types::Type,
+};
+use common::{
+    errors::{Error, ErrorKind, ErrorLocation},
     Label,
 };
 use std::{collections::HashMap, fmt};
@@ -16,6 +19,10 @@ pub mod pair;
 pub mod record;
 pub mod terms;
 pub mod variant;
+
+pub fn to_eval_err(knd: ErrorKind) -> Error {
+    to_err(knd, ErrorLocation::Eval)
+}
 
 #[derive(Debug, Clone)]
 pub enum Value {
@@ -53,7 +60,10 @@ impl Value {
                 body: Box::new(body),
             })
         } else {
-            Err(ErrorKind::value(self, "Lambda Abstraction"))
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
+                expected: "Lambda Abstraction".to_owned(),
+            })
         }
     }
 
@@ -61,7 +71,10 @@ impl Value {
         if let Value::Fold { ty, val } = self {
             Ok((ty, *val))
         } else {
-            Err(ErrorKind::value(self, "Fold Term"))
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
+                expected: "Fold Term".to_owned(),
+            })
         }
     }
 
@@ -69,7 +82,10 @@ impl Value {
         if let Value::Const(i) = self {
             Ok(i)
         } else {
-            Err(ErrorKind::value(self, "Numerical Value"))
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
+                expected: "Numerical Value".to_owned(),
+            })
         }
     }
 
@@ -77,7 +93,10 @@ impl Value {
         if let Value::Pair { fst, snd } = self {
             Ok((*fst, *snd))
         } else {
-            Err(ErrorKind::value(self, "Pair"))
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
+                expected: "Pair".to_owned(),
+            })
         }
     }
 
@@ -85,7 +104,10 @@ impl Value {
         if let Value::Record(recs) = self {
             Ok(recs)
         } else {
-            Err(ErrorKind::value(self, "Record"))
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
+                expected: "Record".to_owned(),
+            })
         }
     }
 
@@ -93,7 +115,10 @@ impl Value {
         if let Value::Variant { label, val, annot } = self {
             Ok((label, *val, annot))
         } else {
-            Err(ErrorKind::value(self, "Variant"))
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
+                expected: "Variant".to_owned(),
+            })
         }
     }
 }

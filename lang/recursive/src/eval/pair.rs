@@ -1,9 +1,7 @@
-use super::Value;
-use crate::{
-    errors::Error,
-    terms::{Fst, Pair, Snd},
-};
-use common::Eval;
+use super::{to_eval_err, Value};
+use crate::terms::{Fst, Pair, Snd};
+use common::{errors::Error, Eval};
+
 impl Eval<'_> for Pair {
     type Value = Value;
     type Err = Error;
@@ -33,9 +31,7 @@ impl Eval<'_> for Fst {
 
     fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Err> {
         let pair_val = self.term.clone().eval(_env)?;
-        let (fst, _) = pair_val
-            .into_pair()
-            .map_err(|knd| Error::eval(knd, &self))?;
+        let (fst, _) = pair_val.into_pair().map_err(to_eval_err)?;
         Ok(fst)
     }
 }
@@ -51,9 +47,7 @@ impl Eval<'_> for Snd {
 
     fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Err> {
         let pair_val = self.term.clone().eval(_env)?;
-        let (_, snd) = pair_val
-            .into_pair()
-            .map_err(|knd| Error::check(knd, &self))?;
+        let (_, snd) = pair_val.into_pair().map_err(to_eval_err)?;
         Ok(snd)
     }
 }

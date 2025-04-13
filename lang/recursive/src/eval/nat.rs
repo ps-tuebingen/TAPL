@@ -1,9 +1,6 @@
-use super::Value;
-use crate::{
-    errors::Error,
-    terms::{IsZero, Pred, Succ, Zero},
-};
-use common::Eval;
+use super::{to_eval_err, Value};
+use crate::terms::{IsZero, Pred, Succ, Zero};
+use common::{errors::Error, Eval};
 
 impl Eval<'_> for Zero {
     type Value = Value;
@@ -30,7 +27,7 @@ impl Eval<'_> for Succ {
 
     fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Err> {
         let val = self.term.clone().eval(_env)?;
-        let num = val.into_const().map_err(|knd| Error::eval(knd, &self))?;
+        let num = val.into_const().map_err(to_eval_err)?;
         Ok(Value::Const(num + 1))
     }
 }
@@ -45,7 +42,7 @@ impl Eval<'_> for Pred {
 
     fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Err> {
         let val = self.term.clone().eval(_env)?;
-        let num = val.into_const().map_err(|knd| Error::eval(knd, &self))?;
+        let num = val.into_const().map_err(to_eval_err)?;
         Ok(Value::Const(num - 1))
     }
 }
@@ -61,7 +58,7 @@ impl Eval<'_> for IsZero {
 
     fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Err> {
         let val = self.term.clone().eval(_env)?;
-        let num = val.into_const().map_err(|knd| Error::eval(knd, &self))?;
+        let num = val.into_const().map_err(to_eval_err)?;
         if num == 0 {
             Ok(Value::True)
         } else {

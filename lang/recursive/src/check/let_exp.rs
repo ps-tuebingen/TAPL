@@ -1,6 +1,6 @@
 use super::Env;
-use crate::{errors::Error, terms::Let, types::Type};
-use common::Typecheck;
+use crate::{terms::Let, types::Type};
+use common::{errors::Error, Typecheck};
 
 impl<'a> Typecheck<'a> for Let {
     type Type = Type;

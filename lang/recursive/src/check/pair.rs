@@ -1,10 +1,10 @@
-use super::Env;
+use super::{to_check_err, Env};
 use crate::{
-    errors::Error,
     terms::{Fst, Pair, Snd},
     types::Type,
 };
-use common::Typecheck;
+
+use common::{errors::Error, Typecheck};
 
 impl<'a> Typecheck<'a> for Pair {
     type Type = Type;
@@ -29,7 +29,7 @@ impl<'a> Typecheck<'a> for Fst {
     }
     fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let ty = self.term.check(env)?;
-        let (fst, _) = ty.as_pair().map_err(|knd| Error::check(knd, self))?;
+        let (fst, _) = ty.as_pair().map_err(to_check_err)?;
         Ok(fst)
     }
 }
@@ -43,7 +43,7 @@ impl<'a> Typecheck<'a> for Snd {
     }
     fn check(&self, env: Self::Env) -> Result<Self::Type, Self::Err> {
         let ty = self.term.check(env)?;
-        let (_, snd) = ty.as_pair().map_err(|knd| Error::check(knd, self))?;
+        let (_, snd) = ty.as_pair().map_err(to_check_err)?;
         Ok(snd)
     }
 }

@@ -1,5 +1,4 @@
 pub mod check;
-pub mod errors;
 pub mod eval;
 pub mod examples;
 pub mod parser;
@@ -7,4 +6,15 @@ pub mod terms;
 pub mod traits;
 pub mod types;
 
-pub type Label = String;
+use common::{
+    errors::{Error, ErrorKind, ErrorLocation},
+    langs::Lang,
+};
+
+pub fn to_err(knd: ErrorKind, loc: ErrorLocation) -> Error {
+    Error {
+        kind: knd,
+        loc,
+        lang: Lang::Recursive,
+    }
+}

@@ -10,6 +10,7 @@ pub enum Lang {
     FOmegaSub,
     Inference,
     LambdaOmega,
+    Recursive,
 }
 
 impl fmt::Display for Lang {
@@ -23,6 +24,7 @@ impl fmt::Display for Lang {
             Lang::FOmegaSub => f.write_str("FOmegaSub"),
             Lang::Inference => f.write_str("Inference"),
             Lang::LambdaOmega => f.write_str("LambdaOmega"),
+            Lang::Recursive => f.write_str("Recursive"),
         }
     }
 }

@@ -5,8 +5,8 @@ use crate::{
         subst::{SubstTerm, SubstTy},
     },
     types::{Type, TypeVar},
-    Label,
 };
+use common::Label;
 use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]

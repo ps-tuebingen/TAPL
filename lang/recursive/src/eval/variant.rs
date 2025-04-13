@@ -1,10 +1,13 @@
-use super::Value;
+use super::{to_eval_err, Value};
 use crate::{
-    errors::{Error, ErrorKind},
     terms::{Variant, VariantCase},
     traits::subst::SubstTerm,
 };
-use common::Eval;
+use common::{
+    errors::{Error, ErrorKind},
+    Eval,
+};
+
 impl Eval<'_> for Variant {
     type Value = Value;
     type Err = Error;
@@ -34,23 +37,14 @@ impl Eval<'_> for VariantCase {
 
     fn eval(self, _env: Self::Env) -> Result<Self::Value, Self::Err> {
         let bound_val = self.bound_term.clone().eval(_env)?;
-        let (label, val, _) = bound_val
-            .clone()
-            .into_variant()
-            .map_err(|knd| Error::eval(knd, &self))?;
+        let (label, val, _) = bound_val.clone().into_variant().map_err(to_eval_err)?;
 
         let matching_pattern = self
             .patterns
             .clone()
             .into_iter()
             .find(|pt| pt.label == label)
-            .ok_or(Error::eval(
-                ErrorKind::UndefinedLabel(label.clone()),
-                &VariantCase {
-                    bound_term: Box::new(bound_val.clone().into()),
-                    patterns: self.patterns,
-                },
-            ))?;
+            .ok_or(to_eval_err(ErrorKind::UndefinedLabel(label.clone())))?;
         matching_pattern
             .rhs
             .subst(matching_pattern.bound_var, val.into())
