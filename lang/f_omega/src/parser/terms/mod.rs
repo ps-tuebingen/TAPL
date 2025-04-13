@@ -1,5 +1,6 @@
-use super::{pair_to_kind, pair_to_n_inner, pair_to_type, Error, Rule};
+use super::{pair_to_kind, pair_to_n_inner, pair_to_type, to_parse_err, Rule};
 use crate::syntax::terms::{App, False, Fix, RecordProj, Term, True, Zero};
+use common::errors::{Error, ErrorKind};
 use pest::iterators::Pair;
 
 mod ift;
@@ -17,9 +18,9 @@ use ty_lambda::{pair_to_ty_lambda, pair_to_ty_lambda_star, pair_to_tyapp};
 
 pub fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
     let mut inner = p.into_inner();
-    let prim_rule = inner
-        .next()
-        .ok_or(Error::missing("Non Left-Recursive Term"))?;
+    let prim_rule = inner.next().ok_or(to_parse_err(ErrorKind::MissingInput(
+        "Non Left-Recursive Term".to_owned(),
+    )))?;
     let prim_inner = pair_to_n_inner(prim_rule, vec!["Non Left-Recursive Term"])?.remove(0);
     let prim_term = pair_to_primterm(prim_inner)?;
 
@@ -32,7 +33,7 @@ pub fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
     };
 
     if let Some(n) = inner.next() {
-        return Err(Error::remaining(&n));
+        return Err(to_parse_err(ErrorKind::RemainingInput(format!("{n:?}"))));
     }
 
     Ok(term)
@@ -69,10 +70,13 @@ fn pair_to_primterm(p: Pair<'_, Rule>) -> Result<Term, Error> {
                 .as_str()
                 .trim()
                 .parse::<i64>()
-                .map_err(|_| Error::unknown(p.as_str()))?;
+                .map_err(|_| to_parse_err(ErrorKind::UnknownKeyword(p.as_str().to_owned())))?;
             Ok(num.into())
         }
-        _ => Err(Error::unexpected(&p, "Non Left-Recursive Term")),
+        _ => Err(to_parse_err(ErrorKind::UnexpectedRule {
+            found: format!("{p:?}"),
+            expected: "Non Left-Recursive Term".to_owned(),
+        })),
     }
 }
 
@@ -96,7 +100,10 @@ fn pair_to_leftrec_term(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
             }
             .into())
         }
-        _ => Err(Error::unexpected(&p, "Left Recursive Term")),
+        _ => Err(to_parse_err(ErrorKind::UnexpectedRule {
+            found: format!("{p:?}"),
+            expected: "Left Recursive Term".to_owned(),
+        })),
     }
 }
 
@@ -106,6 +113,6 @@ fn str_to_term(s: &str) -> Result<Term, Error> {
         "false" => Ok(False.into()),
         "unit" => Ok(Term::Unit),
         "zero" => Ok(Zero.into()),
-        s => Err(Error::unknown(s)),
+        s => Err(to_parse_err(ErrorKind::UnknownKeyword(s.to_owned()))),
     }
 }
