@@ -1,10 +1,13 @@
-use super::{pair_to_n_inner, Error, Rule};
+use super::{pair_to_n_inner, to_parse_err, Rule};
 use crate::kinds::Kind;
+use common::errors::{Error, ErrorKind};
 use pest::iterators::Pair;
 
 pub fn pair_to_kind(p: Pair<'_, Rule>) -> Result<Kind, Error> {
     let mut inner = p.into_inner();
-    let prim_rule = inner.next().ok_or(Error::MissingInput("Kind".to_owned()))?;
+    let prim_rule = inner
+        .next()
+        .ok_or(to_parse_err(ErrorKind::MissingInput("Kind".to_owned())))?;
     let prim_inner = pair_to_n_inner(prim_rule, vec!["Kind"])?.remove(0);
     let prim_kind = pair_to_prim_kind(prim_inner)?;
 
@@ -17,7 +20,10 @@ pub fn pair_to_kind(p: Pair<'_, Rule>) -> Result<Kind, Error> {
     };
 
     if let Some(n) = inner.next() {
-        return Err(Error::RemainingInput(n.as_rule()));
+        return Err(to_parse_err(ErrorKind::RemainingInput(format!(
+            "{:?}",
+            n.as_rule()
+        ))));
     }
     Ok(kind)
 }
@@ -29,7 +35,10 @@ fn pair_to_prim_kind(p: Pair<'_, Rule>) -> Result<Kind, Error> {
             let inner = pair_to_n_inner(p, vec!["Kind"])?.remove(0);
             pair_to_kind(inner)
         }
-        r => Err(Error::unexpected(r, "Kind")),
+        r => Err(to_parse_err(ErrorKind::UnexpectedRule {
+            found: format!("{r:?}"),
+            expected: "Kind".to_owned(),
+        })),
     }
 }
 

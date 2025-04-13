@@ -9,6 +9,7 @@ pub enum Lang {
     FOmega,
     FOmegaSub,
     Inference,
+    LambdaOmega,
 }
 
 impl fmt::Display for Lang {
@@ -21,6 +22,7 @@ impl fmt::Display for Lang {
             Lang::FOmega => f.write_str("FOmega"),
             Lang::FOmegaSub => f.write_str("FOmegaSub"),
             Lang::Inference => f.write_str("Inference"),
+            Lang::LambdaOmega => f.write_str("LambdaOmega"),
         }
     }
 }

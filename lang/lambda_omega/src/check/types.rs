@@ -1,5 +1,6 @@
-use super::Env;
-use crate::{errors::Error, kinds::Kind, syntax::Term, types::Type};
+use super::{to_check_err, Env};
+use crate::{kinds::Kind, syntax::Term, types::Type};
+use common::errors::{Error, ErrorKind};
 use common::Typecheck;
 
 impl<'a> Typecheck<'a> for Term {
@@ -28,23 +29,23 @@ impl<'a> Typecheck<'a> for Term {
                         to: Box::new(body_ty),
                     })
                 } else {
-                    Err(Error::KindMismatch {
-                        found: annot_kind,
+                    Err(to_check_err(ErrorKind::KindMismatch {
+                        found: annot_kind.to_string(),
                         expected: "*".to_owned(),
-                    })
+                    }))
                 }
             }
             Term::App { fun, arg } => {
                 let fun_ty = fun.check(&mut env.clone())?;
-                let (from, to) = fun_ty.as_fun()?;
+                let (from, to) = fun_ty.as_fun().map_err(to_check_err)?;
                 let arg_ty = arg.check(env)?;
                 if from == arg_ty {
                     Ok(to)
                 } else {
-                    Err(Error::TypeMismatch {
-                        found: arg_ty,
+                    Err(to_check_err(ErrorKind::TypeMismatch {
+                        found: arg_ty.to_string(),
                         expected: from.to_string(),
-                    })
+                    }))
                 }
             }
             Term::TyLambda { var, kind, body } => {
@@ -57,7 +58,7 @@ impl<'a> Typecheck<'a> for Term {
             }
             Term::TyApp { fun, arg } => {
                 let fun_ty = fun.check(env)?;
-                let (var, ty) = fun_ty.as_forall()?;
+                let (var, ty) = fun_ty.as_forall().map_err(to_check_err)?;
                 Ok(ty.subst(&var, arg.clone()))
             }
         }

@@ -1,4 +1,5 @@
-use crate::{errors::Error, kinds::Kind};
+use crate::kinds::Kind;
+use common::errors::ErrorKind;
 use std::fmt;
 
 pub type TypeVar = String;
@@ -29,23 +30,23 @@ pub enum Type {
 }
 
 impl Type {
-    pub fn as_fun(self) -> Result<(Type, Type), Error> {
+    pub fn as_fun(self) -> Result<(Type, Type), ErrorKind> {
         if let Type::Fun { from, to } = self {
             Ok((*from, *to))
         } else {
-            Err(Error::TypeMismatch {
-                found: self,
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
                 expected: "Function Type".to_owned(),
             })
         }
     }
 
-    pub fn as_forall(self) -> Result<(TypeVar, Type), Error> {
+    pub fn as_forall(self) -> Result<(TypeVar, Type), ErrorKind> {
         if let Type::Forall { var, ty } = self {
             Ok((var, *ty))
         } else {
-            Err(Error::TypeMismatch {
-                found: self,
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
                 expected: "Forall Type".to_owned(),
             })
         }

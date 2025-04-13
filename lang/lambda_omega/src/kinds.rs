@@ -1,4 +1,4 @@
-use crate::errors::Error;
+use common::errors::ErrorKind;
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -8,12 +8,12 @@ pub enum Kind {
 }
 
 impl Kind {
-    pub fn as_arrow(self) -> Result<(Kind, Kind), Error> {
+    pub fn as_arrow(self) -> Result<(Kind, Kind), ErrorKind> {
         if let Kind::Arrow(left, right) = self {
             Ok((*left, *right))
         } else {
-            Err(Error::KindMismatch {
-                found: self,
+            Err(ErrorKind::KindMismatch {
+                found: self.to_string(),
                 expected: "Arrow Kind".to_owned(),
             })
         }

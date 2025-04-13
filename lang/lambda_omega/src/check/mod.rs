@@ -1,13 +1,18 @@
 use crate::{
-    errors::Error,
     kinds::Kind,
     syntax::Var,
+    to_err,
     types::{Type, TypeVar},
 };
+use common::errors::{Error, ErrorKind, ErrorLocation};
 use std::collections::HashMap;
 
 pub mod kind;
 pub mod types;
+
+pub fn to_check_err(knd: ErrorKind) -> Error {
+    to_err(knd, ErrorLocation::Eval)
+}
 
 #[derive(Clone, Default)]
 pub struct Env {
@@ -23,7 +28,7 @@ impl Env {
     pub fn get_tyvar(&mut self, var: &TypeVar) -> Result<Kind, Error> {
         self.ty_vars
             .get(var)
-            .ok_or(Error::FreeTypeVar(var.clone()))
+            .ok_or(to_check_err(ErrorKind::FreeTypeVariable(var.clone())))
             .cloned()
     }
 
@@ -35,6 +40,6 @@ impl Env {
         self.vars
             .get(var)
             .cloned()
-            .ok_or(Error::FreeVar(var.clone()))
+            .ok_or(to_check_err(ErrorKind::FreeVariable(var.clone())))
     }
 }

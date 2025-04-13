@@ -1,9 +1,9 @@
 use crate::{
-    errors::Error,
     kinds::Kind,
     syntax::{Term, Var},
     types::{Type, TypeVar},
 };
+use common::errors::ErrorKind;
 use std::fmt;
 
 #[derive(Clone, Debug)]
@@ -25,23 +25,23 @@ pub enum Value {
 }
 
 impl Value {
-    pub fn as_lambda(self) -> Result<(Var, Type, Term), Error> {
+    pub fn as_lambda(self) -> Result<(Var, Type, Term), ErrorKind> {
         if let Value::Lambda { var, annot, body } = self {
             Ok((var, annot, body))
         } else {
-            Err(Error::BadValue {
-                found: self,
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
                 expected: "Lambda Abstraction".to_owned(),
             })
         }
     }
 
-    pub fn as_tylambda(self) -> Result<(TypeVar, Kind, Term), Error> {
+    pub fn as_tylambda(self) -> Result<(TypeVar, Kind, Term), ErrorKind> {
         if let Value::TyLambda { var, annot, body } = self {
             Ok((var, annot, body))
         } else {
-            Err(Error::BadValue {
-                found: self,
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
                 expected: "Type Abstraction".to_owned(),
             })
         }

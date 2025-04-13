@@ -1,5 +1,6 @@
-use super::Env;
-use crate::{errors::Error, kinds::Kind, types::Type};
+use super::{to_check_err, Env};
+use crate::{kinds::Kind, types::Type};
+use common::errors::{Error, ErrorKind};
 use common::Typecheck;
 
 impl<'a> Typecheck<'a> for Type {
@@ -19,15 +20,15 @@ impl<'a> Typecheck<'a> for Type {
             Type::Bool => Ok(Kind::Star),
             Type::App { fun, arg } => {
                 let fun_kind = fun.check(&mut env.clone())?;
-                let (from, to) = fun_kind.as_arrow()?;
+                let (from, to) = fun_kind.as_arrow().map_err(to_check_err)?;
                 let arg_kind = arg.check(env)?;
                 if from == arg_kind {
                     Ok(to)
                 } else {
-                    Err(Error::KindMismatch {
-                        found: arg_kind,
+                    Err(to_check_err(ErrorKind::KindMismatch {
+                        found: arg_kind.to_string(),
                         expected: from.to_string(),
-                    })
+                    }))
                 }
             }
             Type::Lambda { var, annot, body } => {
@@ -46,10 +47,10 @@ impl<'a> Typecheck<'a> for Type {
                     } else {
                         from_kind
                     };
-                    Err(Error::KindMismatch {
-                        found: non_star,
+                    Err(to_check_err(ErrorKind::KindMismatch {
+                        found: non_star.to_string(),
                         expected: "*".to_owned(),
-                    })
+                    }))
                 }
             }
             Type::Forall { var, ty } => {
@@ -58,10 +59,10 @@ impl<'a> Typecheck<'a> for Type {
                 if let Kind::Star = ty_knd {
                     Ok(Kind::Star)
                 } else {
-                    Err(Error::KindMismatch {
-                        found: ty_knd,
+                    Err(to_check_err(ErrorKind::KindMismatch {
+                        found: ty_knd.to_string(),
                         expected: "*".to_owned(),
-                    })
+                    }))
                 }
             }
         }
