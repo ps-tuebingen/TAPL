@@ -1,24 +1,26 @@
-use super::{errors::Error, Environment, Infer};
+use super::{to_infer_err, Environment, Infer};
 use crate::{
     syntax::{Nothing, SomeCase, Something},
     types::Type,
 };
+use common::errors::{Error, ErrorKind};
 
 impl Infer for Nothing {
     fn infer(&self, _: &mut Environment) -> Result<Type, Error> {
-        Err(Error::CannotInfer {
-            t: self.clone().into(),
-        })
+        Err(to_infer_err(ErrorKind::Infer {
+            term: self.to_string(),
+            reason: "Cannot find option type for Nothing".to_owned(),
+        }))
     }
 
     fn check(&self, target: Type, _: &mut Environment) -> Result<(), Error> {
         if let Type::Optional(_) = target {
             Ok(())
         } else {
-            Err(Error::BadTarget {
-                t: self.clone().into(),
-                ty: target,
-            })
+            Err(to_infer_err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: target.to_string(),
+            }))
         }
     }
 }
@@ -32,10 +34,10 @@ impl Infer for Something {
         if let Type::Optional(ty) = target {
             self.term.check(*ty, env)
         } else {
-            Err(Error::BadTarget {
-                ty: target,
-                t: self.clone().into(),
-            })
+            Err(to_infer_err(ErrorKind::TypeMismatch {
+                expected: target.to_string(),
+                found: self.to_string(),
+            }))
         }
     }
 }
@@ -49,16 +51,16 @@ impl Infer for SomeCase {
             if none_ty == some_ty {
                 Ok(none_ty)
             } else {
-                Err(Error::TypeMismatch {
-                    ty1: none_ty,
-                    ty2: some_ty,
-                })
+                Err(to_infer_err(ErrorKind::TypeMismatch {
+                    found: none_ty.to_string(),
+                    expected: some_ty.to_string(),
+                }))
             }
         } else {
-            Err(Error::TypeMismatch {
-                ty1: bound_ty,
-                ty2: Type::Optional(Box::new("X".to_owned().into())),
-            })
+            Err(to_infer_err(ErrorKind::TypeMismatch {
+                found: bound_ty.to_string(),
+                expected: "Option Type".to_owned(),
+            }))
         }
     }
     fn check(&self, target: Type, env: &mut Environment) -> Result<(), Error> {
@@ -68,10 +70,10 @@ impl Infer for SomeCase {
                 .check_with(self.some_var.clone(), (*ty).clone(), target.clone(), env)?;
             self.none_rhs.check(target, env)
         } else {
-            Err(Error::TypeMismatch {
-                ty1: bound_ty,
-                ty2: Type::Optional(Box::new("X".to_owned().into())),
-            })
+            Err(to_infer_err(ErrorKind::TypeMismatch {
+                found: bound_ty.to_string(),
+                expected: "Option Type".to_owned(),
+            }))
         }
     }
 }

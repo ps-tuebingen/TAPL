@@ -1,9 +1,10 @@
 use super::{
     constraint::{subst_constrs, Constraint},
-    errors::Error,
+    to_infer_err,
 };
-use crate::{
-    types::{Type, TypeVar},
+use crate::types::{Type, TypeVar};
+use common::{
+    errors::{Error, ErrorKind},
     Var,
 };
 use std::collections::{HashMap, VecDeque};
@@ -99,7 +100,10 @@ fn unify_equality_constraint(ty1: Type, ty2: Type, state: &mut UnifyState) -> Re
             state.add_constraint(*ty1, *ty2);
             Ok(())
         }
-        (ty1, ty2) => Err(Error::CannotUnify { ty1, ty2 }),
+        (ty1, ty2) => Err(to_infer_err(ErrorKind::TypeMismatch {
+            found: ty1.to_string(),
+            expected: ty2.to_string(),
+        })),
     }
 }
 

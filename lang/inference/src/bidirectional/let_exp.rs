@@ -1,5 +1,6 @@
-use super::{errors::Error, Environment, Infer};
+use super::{Environment, Infer};
 use crate::{syntax::Let, types::Type};
+use common::errors::Error;
 
 impl Infer for Let {
     fn infer(&self, env: &mut Environment) -> Result<Type, Error> {

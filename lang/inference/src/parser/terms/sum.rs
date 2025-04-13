@@ -1,8 +1,6 @@
-use super::{pair_to_n_inner, pair_to_prim_term, pair_to_term, Error, Rule};
-use crate::{
-    syntax::{Left, Right, SumCase, Term},
-    Var,
-};
+use super::{pair_to_n_inner, pair_to_prim_term, pair_to_term, to_parse_err, Error, Rule};
+use crate::syntax::{Left, Right, SumCase, Term};
+use common::{errors::ErrorKind, Var};
 use pest::iterators::Pair;
 
 pub fn pair_to_left(p: Pair<'_, Rule>) -> Result<Left, Error> {
@@ -70,7 +68,10 @@ fn pair_to_sumcase_patterns(p: Pair<'_, Rule>, t: Term) -> Result<SumCase, Error
                 left_term: Box::new(left_rhs),
             })
         }
-        (r, _) => Err(Error::unexpected(r, "Sum Case Patterns")),
+        (r, _) => Err(to_parse_err(ErrorKind::UnexpectedRule {
+            found: format!("{r:?}"),
+            expected: "Sum Case Patterns".to_owned(),
+        })),
     }
 }
 

@@ -8,6 +8,7 @@ pub enum Lang {
     Featherweight,
     FOmega,
     FOmegaSub,
+    Inference,
 }
 
 impl fmt::Display for Lang {
@@ -19,6 +20,7 @@ impl fmt::Display for Lang {
             Lang::Featherweight => f.write_str("Featherweight"),
             Lang::FOmega => f.write_str("FOmega"),
             Lang::FOmegaSub => f.write_str("FOmegaSub"),
+            Lang::Inference => f.write_str("Inference"),
         }
     }
 }

@@ -1,8 +1,6 @@
-use super::{pair_to_n_inner, pair_to_prim_term, pair_to_term, Error, Rule};
-use crate::{
-    syntax::{SomeCase, Something, Term},
-    Var,
-};
+use super::{pair_to_n_inner, pair_to_prim_term, pair_to_term, to_parse_err, Error, Rule};
+use crate::syntax::{SomeCase, Something, Term};
+use common::{errors::ErrorKind, Var};
 use pest::iterators::Pair;
 
 pub fn pair_to_something(p: Pair<'_, Rule>) -> Result<Something, Error> {
@@ -61,7 +59,10 @@ fn pair_to_somepatterns(p: Pair<'_, Rule>, t: Term) -> Result<SomeCase, Error> {
                 some_rhs: Box::new(some_rhs),
             })
         }
-        (r, _) => Err(Error::unexpected(r, "Something Patterns")),
+        (r, _) => Err(to_parse_err(ErrorKind::UnexpectedRule {
+            found: format!("{r:?}"),
+            expected: "Something Patterns".to_owned(),
+        })),
     }
 }
 

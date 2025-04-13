@@ -1,14 +1,19 @@
-use crate::{syntax::Term, types::Type, Var};
+use crate::{syntax::Term, to_err, types::Type};
+use common::{
+    errors::{Error, ErrorKind, ErrorLocation},
+    Var,
+};
 use std::collections::HashMap;
-
 pub mod constraint;
-pub mod errors;
 pub mod gen_constraints;
 pub mod unify;
 
-use errors::Error;
 use gen_constraints::{GenConstraints, GenState};
 use unify::{unify, Unifier};
+
+pub fn to_infer_err(knd: ErrorKind) -> Error {
+    to_err(knd, ErrorLocation::Inference)
+}
 
 pub type TypingEnv = HashMap<Var, Type>;
 
@@ -24,7 +29,7 @@ pub fn typecheck(term: Term) -> Result<Type, Error> {
         }
         subst = apply_unifier(&unified, subst);
     }
-    Err(Error::FreeTypevar(subst))
+    Err(to_infer_err(ErrorKind::FreeTypeVariable(subst.to_string())))
 }
 
 pub fn apply_unifier(unifier: &Unifier, ty: Type) -> Type {

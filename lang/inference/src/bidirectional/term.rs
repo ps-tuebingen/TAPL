@@ -1,5 +1,6 @@
-use super::{errors::Error, Environment, Infer};
+use super::{Environment, Infer};
 use crate::{syntax::Term, types::Type};
+use common::errors::Error;
 
 impl Infer for Term {
     fn infer(&self, env: &mut Environment) -> Result<Type, Error> {

@@ -1,9 +1,12 @@
-use crate::{types::Type, Var};
+use crate::{to_err, types::Type};
+use common::{
+    errors::{Error, ErrorKind, ErrorLocation},
+    Var,
+};
 use std::collections::HashMap;
 
 pub mod ascription;
 pub mod bool;
-pub mod errors;
 pub mod fix;
 pub mod lambda;
 pub mod let_exp;
@@ -15,7 +18,9 @@ pub mod sum;
 pub mod term;
 pub mod unit;
 
-use errors::Error;
+pub fn to_infer_err(knd: ErrorKind) -> Error {
+    to_err(knd, ErrorLocation::Inference)
+}
 
 type Environment = HashMap<Var, Type>;
 
@@ -46,7 +51,7 @@ impl Infer for Var {
     fn infer(&self, env: &mut Environment) -> Result<Type, Error> {
         env.get(self)
             .cloned()
-            .ok_or(Error::FreeVariable { var: self.clone() })
+            .ok_or(to_infer_err(ErrorKind::FreeVariable(self.clone())))
     }
 
     fn check(&self, target: Type, env: &mut Environment) -> Result<(), Error> {
@@ -54,10 +59,10 @@ impl Infer for Var {
         if ty_inferred == target {
             Ok(())
         } else {
-            Err(Error::BadTarget {
-                ty: target,
-                t: self.clone().into(),
-            })
+            Err(to_infer_err(ErrorKind::TypeMismatch {
+                expected: target.to_string(),
+                found: self.to_string(),
+            }))
         }
     }
 }

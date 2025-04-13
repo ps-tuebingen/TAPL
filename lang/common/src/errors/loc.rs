@@ -7,6 +7,7 @@ pub enum ErrorLocation {
     Subtyping,
     Parse,
     Kind,
+    Inference,
 }
 
 impl fmt::Display for ErrorLocation {
@@ -17,6 +18,7 @@ impl fmt::Display for ErrorLocation {
             ErrorLocation::Subtyping => f.write_str("Subtyping"),
             ErrorLocation::Parse => f.write_str("Parsing"),
             ErrorLocation::Kind => f.write_str("Kinding"),
+            ErrorLocation::Inference => f.write_str("Inference"),
         }
     }
 }

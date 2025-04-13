@@ -1,8 +1,9 @@
-use super::{errors::Error, Environment, Infer};
+use super::{to_infer_err, Environment, Infer};
 use crate::{
     syntax::{False, If, True},
     types::Type,
 };
+use common::errors::{Error, ErrorKind};
 
 impl Infer for True {
     fn infer(&self, _: &mut Environment) -> Result<Type, Error> {
@@ -13,10 +14,10 @@ impl Infer for True {
         if target == Type::Bool {
             Ok(())
         } else {
-            Err(Error::BadTarget {
-                t: self.clone().into(),
-                ty: target,
-            })
+            Err(to_infer_err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: target.to_string(),
+            }))
         }
     }
 }
@@ -30,10 +31,10 @@ impl Infer for False {
         if target == Type::Bool {
             Ok(())
         } else {
-            Err(Error::BadTarget {
-                t: self.clone().into(),
-                ty: target,
-            })
+            Err(to_infer_err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: target.to_string(),
+            }))
         }
     }
 }
@@ -46,10 +47,10 @@ impl Infer for If {
         if then_ty == else_ty {
             Ok(then_ty)
         } else {
-            Err(Error::TypeMismatch {
-                ty1: then_ty,
-                ty2: else_ty,
-            })
+            Err(to_infer_err(ErrorKind::TypeMismatch {
+                found: then_ty.to_string(),
+                expected: else_ty.to_string(),
+            }))
         }
     }
 

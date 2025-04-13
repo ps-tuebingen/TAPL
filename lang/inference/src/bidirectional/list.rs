@@ -1,23 +1,25 @@
-use super::{errors::Error, Environment, Infer};
+use super::{to_infer_err, Environment, Infer};
 use crate::{
     syntax::{Cons, Head, IsNil, Nil, Tail},
     types::Type,
 };
+use common::errors::{Error, ErrorKind};
 
 impl Infer for Nil {
     fn infer(&self, _: &mut Environment) -> Result<Type, Error> {
-        Err(Error::CannotInfer {
-            t: self.clone().into(),
-        })
+        Err(to_infer_err(ErrorKind::Infer {
+            term: self.to_string(),
+            reason: "Unknonwn List Type for Nil".to_owned(),
+        }))
     }
     fn check(&self, target: Type, _: &mut Environment) -> Result<(), Error> {
         if let Type::List(_) = target {
             Ok(())
         } else {
-            Err(Error::BadTarget {
-                ty: target,
-                t: self.clone().into(),
-            })
+            Err(to_infer_err(ErrorKind::TypeMismatch {
+                expected: target.to_string(),
+                found: self.to_string(),
+            }))
         }
     }
 }
@@ -33,10 +35,10 @@ impl Infer for Cons {
             self.fst.check_local((*ty).clone(), env)?;
             self.rst.check(Type::List(ty), env)
         } else {
-            Err(Error::BadTarget {
-                ty: target,
-                t: self.clone().into(),
-            })
+            Err(to_infer_err(ErrorKind::TypeMismatch {
+                expected: target.to_string(),
+                found: self.to_string(),
+            }))
         }
     }
 }
@@ -47,10 +49,10 @@ impl Infer for IsNil {
         if let Type::List(_) = inner_ty {
             Ok(Type::Bool)
         } else {
-            Err(Error::TypeMismatch {
-                ty1: inner_ty,
-                ty2: Type::List(Box::new("X".to_owned().into())),
-            })
+            Err(to_infer_err(ErrorKind::TypeMismatch {
+                found: inner_ty.to_string(),
+                expected: "List Type".to_owned(),
+            }))
         }
     }
     fn check(&self, target: Type, env: &mut Environment) -> Result<(), Error> {
@@ -59,16 +61,16 @@ impl Infer for IsNil {
             if let Type::List(_) = list_ty {
                 Ok(())
             } else {
-                Err(Error::TypeMismatch {
-                    ty1: list_ty,
-                    ty2: Type::List(Box::new("X".to_owned().into())),
-                })
+                Err(to_infer_err(ErrorKind::TypeMismatch {
+                    found: list_ty.to_string(),
+                    expected: "List Type".to_owned(),
+                }))
             }
         } else {
-            Err(Error::BadTarget {
-                ty: target,
-                t: self.clone().into(),
-            })
+            Err(to_infer_err(ErrorKind::TypeMismatch {
+                expected: target.to_string(),
+                found: self.to_string(),
+            }))
         }
     }
 }
@@ -79,10 +81,10 @@ impl Infer for Head {
         if let Type::List(ty) = inner_ty {
             Ok(*ty)
         } else {
-            Err(Error::TypeMismatch {
-                ty1: inner_ty,
-                ty2: Type::List(Box::new("X".to_owned().into())),
-            })
+            Err(to_infer_err(ErrorKind::TypeMismatch {
+                found: inner_ty.to_string(),
+                expected: "List Type".to_owned(),
+            }))
         }
     }
     fn check(&self, target: Type, env: &mut Environment) -> Result<(), Error> {
@@ -96,20 +98,20 @@ impl Infer for Tail {
         if let Type::List(_) = inner_ty {
             Ok(inner_ty)
         } else {
-            Err(Error::TypeMismatch {
-                ty1: inner_ty,
-                ty2: Type::List(Box::new("X".to_owned().into())),
-            })
+            Err(to_infer_err(ErrorKind::TypeMismatch {
+                found: inner_ty.to_string(),
+                expected: "List Type".to_owned(),
+            }))
         }
     }
     fn check(&self, target: Type, env: &mut Environment) -> Result<(), Error> {
         if let Type::List(_) = target {
             self.list.check(target, env)
         } else {
-            Err(Error::BadTarget {
-                t: self.clone().into(),
-                ty: target,
-            })
+            Err(to_infer_err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: target.to_string(),
+            }))
         }
     }
 }

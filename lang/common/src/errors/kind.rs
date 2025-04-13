@@ -1,4 +1,4 @@
-use crate::{Kind, Label, Type, TypeVar, Value, Var};
+use crate::{Kind, Label, Term, Type, TypeVar, Value, Var};
 use pest::{error::Error as PestErr, RuleType};
 use std::fmt;
 
@@ -15,6 +15,7 @@ pub enum ErrorKind {
     KindMismatch { found: Kind, expected: String },
     ValueMismatch { found: Value, expected: String },
     Arity { found: usize, expected: usize },
+    Infer { term: Term, reason: String },
     // Parsing Errors
     Pest(String),
     MissingInput(String),
@@ -40,6 +41,9 @@ impl fmt::Display for ErrorKind {
             }
             ErrorKind::Arity { found, expected } => {
                 write!(f, "Arity mismatch, expected {expected}, found {found}")
+            }
+            ErrorKind::Infer { term, reason } => {
+                write!(f, "Could not infer type for {term}, {reason}")
             }
             ErrorKind::TypeMismatch { found, expected } => {
                 write!(f, "Unexpected type {found}, expected {expected}")

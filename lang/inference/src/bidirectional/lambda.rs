@@ -1,14 +1,16 @@
-use super::{errors::Error, Environment, Infer};
+use super::{to_infer_err, Environment, Infer};
 use crate::{
     syntax::{App, Lambda},
     types::Type,
 };
+use common::errors::{Error, ErrorKind};
 
 impl Infer for Lambda {
     fn infer(&self, _: &mut Environment) -> Result<Type, Error> {
-        Err(Error::CannotInfer {
-            t: self.clone().into(),
-        })
+        Err(to_infer_err(ErrorKind::Infer {
+            term: self.to_string(),
+            reason: format!("Unknown Type for variable {}", self.var),
+        }))
     }
 
     fn check(&self, target: Type, env: &mut Environment) -> Result<(), Error> {
@@ -16,10 +18,10 @@ impl Infer for Lambda {
             env.insert(self.var.clone(), *ty1);
             self.body.check(*ty2, env)
         } else {
-            Err(Error::BadTarget {
-                t: self.clone().into(),
-                ty: target,
-            })
+            Err(to_infer_err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: target.to_string(),
+            }))
         }
     }
 }
@@ -31,13 +33,10 @@ impl Infer for App {
             self.arg.check(*ty1, env)?;
             Ok(*ty2)
         } else {
-            Err(Error::UnexpectedType {
-                found: fun_ty,
-                expected: Type::Fun(
-                    Box::new("X".to_owned().into()),
-                    Box::new("Y".to_owned().into()),
-                ),
-            })
+            Err(to_infer_err(ErrorKind::TypeMismatch {
+                found: fun_ty.to_string(),
+                expected: "Function Type".to_owned(),
+            }))
         }
     }
     fn check(&self, target: Type, env: &mut Environment) -> Result<(), Error> {

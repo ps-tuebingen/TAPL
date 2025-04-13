@@ -1,8 +1,6 @@
 use super::{constraint::Constraint, TypingEnv};
-use crate::{
-    types::{Type, TypeVar},
-    Var,
-};
+use crate::types::{Type, TypeVar};
+use common::Var;
 use std::collections::HashSet;
 
 pub mod ascription;

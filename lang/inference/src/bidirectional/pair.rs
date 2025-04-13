@@ -1,8 +1,9 @@
-use super::{errors::Error, Environment, Infer};
+use super::{to_infer_err, Environment, Infer};
 use crate::{
     syntax::{Pair, Proj1, Proj2},
     types::Type,
 };
+use common::errors::{Error, ErrorKind};
 
 impl Infer for Pair {
     fn infer(&self, env: &mut Environment) -> Result<Type, Error> {
@@ -15,10 +16,10 @@ impl Infer for Pair {
             self.fst.check_local(*ty1, env)?;
             self.snd.check(*ty2, env)
         } else {
-            Err(Error::BadTarget {
-                ty: target,
-                t: self.clone().into(),
-            })
+            Err(to_infer_err(ErrorKind::TypeMismatch {
+                expected: target.to_string(),
+                found: self.to_string(),
+            }))
         }
     }
 }
@@ -29,13 +30,10 @@ impl Infer for Proj1 {
         if let Type::Prod(ty1, _) = pair_ty {
             Ok(*ty1)
         } else {
-            Err(Error::TypeMismatch {
-                ty1: pair_ty,
-                ty2: Type::Prod(
-                    Box::new("X".to_owned().into()),
-                    Box::new("Y".to_owned().into()),
-                ),
-            })
+            Err(to_infer_err(ErrorKind::TypeMismatch {
+                found: pair_ty.to_string(),
+                expected: "Product Type".to_owned(),
+            }))
         }
     }
     fn check(&self, target: Type, env: &mut Environment) -> Result<(), Error> {
@@ -44,19 +42,16 @@ impl Infer for Proj1 {
             if target == *ty1 {
                 Ok(())
             } else {
-                Err(Error::TypeMismatch {
-                    ty1: target,
-                    ty2: *ty1,
-                })
+                Err(to_infer_err(ErrorKind::TypeMismatch {
+                    expected: target.to_string(),
+                    found: ty1.to_string(),
+                }))
             }
         } else {
-            Err(Error::TypeMismatch {
-                ty1: pair_ty,
-                ty2: Type::Prod(
-                    Box::new("X".to_owned().into()),
-                    Box::new("Y".to_owned().into()),
-                ),
-            })
+            Err(to_infer_err(ErrorKind::TypeMismatch {
+                found: pair_ty.to_string(),
+                expected: "Product Type".to_owned(),
+            }))
         }
     }
 }
@@ -67,13 +62,10 @@ impl Infer for Proj2 {
         if let Type::Prod(_, ty2) = pair_ty {
             Ok(*ty2)
         } else {
-            Err(Error::TypeMismatch {
-                ty1: pair_ty,
-                ty2: Type::Prod(
-                    Box::new("X".to_owned().into()),
-                    Box::new("Y".to_owned().into()),
-                ),
-            })
+            Err(to_infer_err(ErrorKind::TypeMismatch {
+                found: pair_ty.to_string(),
+                expected: "Product Type".to_owned(),
+            }))
         }
     }
     fn check(&self, target: Type, env: &mut Environment) -> Result<(), Error> {
@@ -82,19 +74,16 @@ impl Infer for Proj2 {
             if target == *ty2 {
                 Ok(())
             } else {
-                Err(Error::TypeMismatch {
-                    ty1: target,
-                    ty2: *ty2,
-                })
+                Err(to_infer_err(ErrorKind::TypeMismatch {
+                    expected: target.to_string(),
+                    found: ty2.to_string(),
+                }))
             }
         } else {
-            Err(Error::TypeMismatch {
-                ty1: pair_ty,
-                ty2: Type::Prod(
-                    Box::new("X".to_owned().into()),
-                    Box::new("Y".to_owned().into()),
-                ),
-            })
+            Err(to_infer_err(ErrorKind::TypeMismatch {
+                found: pair_ty.to_string(),
+                expected: "Product Type".to_owned(),
+            }))
         }
     }
 }

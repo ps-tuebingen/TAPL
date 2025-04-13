@@ -1,5 +1,6 @@
-use super::{errors::Error, Environment, Infer};
+use super::{to_infer_err, Environment, Infer};
 use crate::{syntax::Unit, types::Type};
+use common::errors::{Error, ErrorKind};
 
 impl Infer for Unit {
     fn infer(&self, _: &mut Environment) -> Result<Type, Error> {
@@ -10,10 +11,10 @@ impl Infer for Unit {
         if Type::Unit == target {
             Ok(())
         } else {
-            Err(Error::BadTarget {
-                ty: target,
-                t: self.clone().into(),
-            })
+            Err(to_infer_err(ErrorKind::TypeMismatch {
+                expected: target.to_string(),
+                found: self.to_string(),
+            }))
         }
     }
 }

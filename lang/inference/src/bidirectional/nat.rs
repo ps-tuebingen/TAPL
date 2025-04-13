@@ -1,8 +1,9 @@
-use super::{errors::Error, Environment, Infer};
+use super::{to_infer_err, Environment, Infer};
 use crate::{
     syntax::{IsZero, Pred, Succ, Zero},
     types::Type,
 };
+use common::errors::{Error, ErrorKind};
 
 impl Infer for Zero {
     fn infer(&self, _: &mut Environment) -> Result<Type, Error> {
@@ -12,10 +13,10 @@ impl Infer for Zero {
         if let Type::Nat = target {
             Ok(())
         } else {
-            Err(Error::BadTarget {
-                t: self.clone().into(),
-                ty: target,
-            })
+            Err(to_infer_err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: target.to_string(),
+            }))
         }
     }
 }
@@ -28,10 +29,10 @@ impl Infer for Succ {
         if let Type::Nat = target {
             self.term.check(Type::Nat, env)
         } else {
-            Err(Error::BadTarget {
-                ty: target,
-                t: self.clone().into(),
-            })
+            Err(to_infer_err(ErrorKind::TypeMismatch {
+                expected: target.to_string(),
+                found: self.to_string(),
+            }))
         }
     }
 }
@@ -44,10 +45,10 @@ impl Infer for Pred {
         if let Type::Nat = target {
             self.term.check(Type::Nat, env)
         } else {
-            Err(Error::BadTarget {
-                ty: target,
-                t: self.clone().into(),
-            })
+            Err(to_infer_err(ErrorKind::TypeMismatch {
+                expected: target.to_string(),
+                found: self.to_string(),
+            }))
         }
     }
 }
@@ -61,10 +62,10 @@ impl Infer for IsZero {
         if let Type::Bool = target {
             self.term.check(Type::Nat, env)
         } else {
-            Err(Error::BadTarget {
-                ty: target,
-                t: self.clone().into(),
-            })
+            Err(to_infer_err(ErrorKind::TypeMismatch {
+                expected: target.to_string(),
+                found: self.to_string(),
+            }))
         }
     }
 }

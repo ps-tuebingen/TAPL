@@ -1,42 +1,45 @@
-use super::{errors::Error, Environment, Infer};
+use super::{to_infer_err, Environment, Infer};
 use crate::{
     syntax::{Left, Right, SumCase},
     types::Type,
 };
+use common::errors::{Error, ErrorKind};
 
 impl Infer for Left {
     fn infer(&self, _: &mut Environment) -> Result<Type, Error> {
-        Err(Error::CannotInfer {
-            t: self.clone().into(),
-        })
+        Err(to_infer_err(ErrorKind::Infer {
+            term: self.to_string(),
+            reason: "Cannot find right type of sum".to_owned(),
+        }))
     }
     fn check(&self, target: Type, env: &mut Environment) -> Result<(), Error> {
         if let Type::Sum(ty1, _) = target {
             self.left_term.check(*ty1, env)
         } else {
-            Err(Error::BadTarget {
-                ty: target,
-                t: self.clone().into(),
-            })
+            Err(to_infer_err(ErrorKind::TypeMismatch {
+                expected: target.to_string(),
+                found: self.to_string(),
+            }))
         }
     }
 }
 
 impl Infer for Right {
     fn infer(&self, _: &mut Environment) -> Result<Type, Error> {
-        Err(Error::CannotInfer {
-            t: self.clone().into(),
-        })
+        Err(to_infer_err(ErrorKind::Infer {
+            term: self.to_string(),
+            reason: "Cannot find left type of sum".to_owned(),
+        }))
     }
 
     fn check(&self, target: Type, env: &mut Environment) -> Result<(), Error> {
         if let Type::Sum(_, ty2) = target {
             self.right_term.check(*ty2, env)
         } else {
-            Err(Error::BadTarget {
-                ty: target,
-                t: self.clone().into(),
-            })
+            Err(to_infer_err(ErrorKind::TypeMismatch {
+                expected: target.to_string(),
+                found: self.to_string(),
+            }))
         }
     }
 }
@@ -54,19 +57,16 @@ impl Infer for SumCase {
             if left_ty == right_ty {
                 Ok(left_ty)
             } else {
-                Err(Error::TypeMismatch {
-                    ty1: left_ty,
-                    ty2: right_ty,
-                })
+                Err(to_infer_err(ErrorKind::TypeMismatch {
+                    found: left_ty.to_string(),
+                    expected: right_ty.to_string(),
+                }))
             }
         } else {
-            Err(Error::TypeMismatch {
-                ty1: bound_ty,
-                ty2: Type::Sum(
-                    Box::new("X".to_owned().into()),
-                    Box::new("Y".to_owned().into()),
-                ),
-            })
+            Err(to_infer_err(ErrorKind::TypeMismatch {
+                found: bound_ty.to_string(),
+                expected: "Sum Type".to_owned(),
+            }))
         }
     }
     fn check(&self, target: Type, env: &mut Environment) -> Result<(), Error> {
@@ -77,13 +77,10 @@ impl Infer for SumCase {
             self.right_term
                 .check_with(self.right_var.clone(), *ty2, target, env)
         } else {
-            Err(Error::TypeMismatch {
-                ty1: bound_ty,
-                ty2: Type::Sum(
-                    Box::new("X".to_owned().into()),
-                    Box::new("Y".to_owned().into()),
-                ),
-            })
+            Err(to_infer_err(ErrorKind::TypeMismatch {
+                found: bound_ty.to_string(),
+                expected: "Sum Type".to_owned(),
+            }))
         }
     }
 }

@@ -1,5 +1,6 @@
-use super::{errors::Error, Environment, Infer};
+use super::{to_infer_err, Environment, Infer};
 use crate::{syntax::Fix, types::Type};
+use common::errors::{Error, ErrorKind};
 
 impl Infer for Fix {
     fn infer(&self, env: &mut Environment) -> Result<Type, Error> {
@@ -8,19 +9,16 @@ impl Infer for Fix {
             if *ty1 == *ty2 {
                 Ok(*ty1)
             } else {
-                Err(Error::TypeMismatch {
-                    ty1: *ty1,
-                    ty2: *ty2,
-                })
+                Err(to_infer_err(ErrorKind::TypeMismatch {
+                    found: ty1.to_string(),
+                    expected: ty2.to_string(),
+                }))
             }
         } else {
-            Err(Error::TypeMismatch {
-                ty1: inner_ty,
-                ty2: Type::Fun(
-                    Box::new("X".to_owned().into()),
-                    Box::new("Y".to_owned().into()),
-                ),
-            })
+            Err(to_infer_err(ErrorKind::TypeMismatch {
+                found: inner_ty.to_string(),
+                expected: "FUnction Type".to_owned(),
+            }))
         }
     }
 

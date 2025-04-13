@@ -1,5 +1,6 @@
-use super::{errors::Error, Environment, Infer};
+use super::{to_infer_err, Environment, Infer};
 use crate::{syntax::Ascribe, types::Type};
+use common::errors::{Error, ErrorKind};
 
 impl Infer for Ascribe {
     fn infer(&self, env: &mut Environment) -> Result<Type, Error> {
@@ -10,10 +11,10 @@ impl Infer for Ascribe {
         if target == self.ty {
             self.term.check(self.ty.clone(), env)
         } else {
-            Err(Error::BadTarget {
-                t: self.clone().into(),
-                ty: target,
-            })
+            Err(to_infer_err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: target.to_string(),
+            }))
         }
     }
 }
