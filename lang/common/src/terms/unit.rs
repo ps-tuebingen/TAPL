@@ -1,12 +1,33 @@
 use super::Term;
-use std::fmt;
+use crate::{subst::SubstType, types::Type, TypeVar};
+use std::{fmt, marker::PhantomData};
 
 #[derive(Clone, Debug)]
-pub struct Unit {}
+pub struct Unit<T>
+where
+    T: Term,
+{
+    phantom: PhantomData<T>,
+}
 
-impl Term for Unit {}
+impl<T> Term for Unit<T> where T: Term {}
 
-impl fmt::Display for Unit {
+impl<T, Ty> SubstType<Ty> for Unit<T>
+where
+    T: Term,
+    Ty: Type,
+    Self: Into<T>,
+{
+    type Target = T;
+    fn subst_type(self, _: &TypeVar, _: &Ty) -> Self::Target {
+        self.into()
+    }
+}
+
+impl<T> fmt::Display for Unit<T>
+where
+    T: Term,
+{
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.write_str("unit")
     }
