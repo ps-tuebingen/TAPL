@@ -1,5 +1,9 @@
 use super::Term;
-use crate::{subst::SubstType, types::Type, Label, TypeVar, Var};
+use crate::{
+    subst::{SubstTerm, SubstType},
+    types::Type,
+    Label, TypeVar, Var,
+};
 use std::fmt;
 
 #[derive(Clone, Debug)]
@@ -23,6 +27,21 @@ where
 
 impl<T> Term for VariantCase<T> where T: Term {}
 
+impl<T> SubstTerm<T> for VariantCase<T>
+where
+    T: Term + SubstTerm<T, Target = T>,
+    Self: Into<T>,
+{
+    type Target = T;
+    fn subst(self, v: &Var, t: &T) -> T {
+        VariantCase {
+            bound_term: Box::new(self.bound_term.subst(v, t)),
+            patterns: self.patterns.into_iter().map(|pt| pt.subst(v, t)).collect(),
+        }
+        .into()
+    }
+}
+
 impl<T, Ty> SubstType<Ty> for VariantCase<T>
 where
     T: Term + SubstType<Ty, Target = T>,
@@ -40,6 +59,28 @@ where
                 .collect(),
         }
         .into()
+    }
+}
+
+impl<T> SubstTerm<T> for VariantPattern<T>
+where
+    T: Term + SubstTerm<T, Target = T>,
+{
+    type Target = Self;
+    fn subst(self, v: &Var, t: &T) -> Self::Target {
+        if *v == self.bound_var {
+            VariantPattern {
+                label: self.label,
+                bound_var: self.bound_var,
+                rhs: self.rhs,
+            }
+        } else {
+            VariantPattern {
+                label: self.label,
+                bound_var: self.bound_var,
+                rhs: Box::new(self.rhs.subst(v, t)),
+            }
+        }
     }
 }
 

@@ -1,5 +1,9 @@
 use super::Term;
-use crate::{subst::SubstType, types::Type, TypeVar};
+use crate::{
+    subst::{SubstTerm, SubstType},
+    types::Type,
+    TypeVar, Var,
+};
 use std::fmt;
 
 #[derive(Clone, Debug)]
@@ -11,6 +15,20 @@ where
 }
 
 impl<T> Term for Tuple<T> where T: Term {}
+
+impl<T> SubstTerm<T> for Tuple<T>
+where
+    T: Term + SubstTerm<T, Target = T>,
+    Self: Into<T>,
+{
+    type Target = T;
+    fn subst(self, v: &Var, t: &T) -> T {
+        Tuple {
+            terms: self.terms.into_iter().map(|t1| t1.subst(v, t)).collect(),
+        }
+        .into()
+    }
+}
 
 impl<T, Ty> SubstType<Ty> for Tuple<T>
 where

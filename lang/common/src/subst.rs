@@ -1,8 +1,11 @@
 use super::{terms::Term, types::Type, TypeVar, Var};
 
-pub trait SubstTerm {
-    type Term: Term;
-    fn subst(self, v: &Var, t: Self::Term) -> Self::Term;
+pub trait SubstTerm<T>
+where
+    T: Term,
+{
+    type Target;
+    fn subst(self, v: &Var, t: &T) -> Self::Target;
 }
 
 pub trait SubstType<Ty>

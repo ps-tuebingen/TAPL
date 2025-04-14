@@ -1,5 +1,9 @@
 use super::Term;
-use crate::{subst::SubstType, types::Type, TypeVar};
+use crate::{
+    subst::{SubstTerm, SubstType},
+    types::Type,
+    TypeVar, Var,
+};
 use std::{fmt, marker::PhantomData};
 
 #[derive(Clone, Debug)]
@@ -17,6 +21,18 @@ where
     Ty: Type,
     T: Term,
 {
+}
+
+impl<T, Ty> SubstTerm<T> for Nothing<T, Ty>
+where
+    T: Term,
+    Self: Into<T>,
+    Ty: Type,
+{
+    type Target = T;
+    fn subst(self, _: &Var, _: &T) -> T {
+        self.into()
+    }
 }
 
 impl<T, Ty> SubstType<Ty> for Nothing<T, Ty>

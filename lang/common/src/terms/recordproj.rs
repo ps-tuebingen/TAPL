@@ -1,5 +1,9 @@
 use super::Term;
-use crate::{subst::SubstType, types::Type, Label, TypeVar};
+use crate::{
+    subst::{SubstTerm, SubstType},
+    types::Type,
+    Label, TypeVar, Var,
+};
 use std::fmt;
 
 #[derive(Clone, Debug)]
@@ -12,6 +16,21 @@ where
 }
 
 impl<T> Term for RecordProj<T> where T: Term {}
+
+impl<T> SubstTerm<T> for RecordProj<T>
+where
+    T: Term + SubstTerm<T, Target = T>,
+    Self: Into<T>,
+{
+    type Target = T;
+    fn subst(self, v: &Var, t: &T) -> T {
+        RecordProj {
+            record: Box::new(self.record.subst(v, t)),
+            label: self.label,
+        }
+        .into()
+    }
+}
 
 impl<T, Ty> SubstType<Ty> for RecordProj<T>
 where

@@ -1,5 +1,9 @@
 use super::Term;
-use crate::{subst::SubstType, types::Type, Label, TypeVar};
+use crate::{
+    subst::{SubstTerm, SubstType},
+    types::Type,
+    Label, TypeVar, Var,
+};
 use std::{collections::HashMap, fmt};
 
 #[derive(Clone, Debug)]
@@ -11,6 +15,24 @@ where
 }
 
 impl<T> Term for Record<T> where T: Term {}
+
+impl<T> SubstTerm<T> for Record<T>
+where
+    T: Term + SubstTerm<T, Target = T>,
+    Self: Into<T>,
+{
+    type Target = T;
+    fn subst(self, v: &Var, t: &T) -> T {
+        Record {
+            records: self
+                .records
+                .into_iter()
+                .map(|(lb, t1)| (lb, t1.subst(v, t)))
+                .collect(),
+        }
+        .into()
+    }
+}
 
 impl<T, Ty> SubstType<Ty> for Record<T>
 where

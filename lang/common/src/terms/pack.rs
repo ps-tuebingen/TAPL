@@ -1,5 +1,9 @@
 use super::Term;
-use crate::{subst::SubstType, types::Type, TypeVar};
+use crate::{
+    subst::{SubstTerm, SubstType},
+    types::Type,
+    TypeVar, Var,
+};
 use std::fmt;
 
 #[derive(Clone, Debug)]
@@ -18,6 +22,23 @@ where
     T: Term,
     Ty: Type,
 {
+}
+
+impl<T, Ty> SubstTerm<T> for Pack<T, Ty>
+where
+    T: Term + SubstTerm<T, Target = T>,
+    Self: Into<T>,
+    Ty: Type,
+{
+    type Target = T;
+    fn subst(self, v: &Var, t: &T) -> T {
+        Pack {
+            inner_ty: self.inner_ty,
+            term: Box::new(self.term.subst(v, t)),
+            outer_ty: self.outer_ty,
+        }
+        .into()
+    }
 }
 
 impl<T, Ty> SubstType<Ty> for Pack<T, Ty>
