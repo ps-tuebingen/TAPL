@@ -1,3 +1,5 @@
+use std::fmt;
+
 pub mod bool;
 pub mod bot;
 pub mod exists;
@@ -9,7 +11,6 @@ pub mod nat;
 pub mod opapp;
 pub mod oplambda;
 pub mod optional;
-pub mod pack;
 pub mod product;
 pub mod record;
 pub mod reference;
@@ -22,4 +23,4 @@ pub mod unit;
 pub mod variable;
 pub mod variant;
 
-pub trait Type {}
+pub trait Type: fmt::Display + fmt::Debug + Clone {}

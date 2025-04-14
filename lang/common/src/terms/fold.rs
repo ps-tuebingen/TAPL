@@ -1,12 +1,23 @@
 use super::Term;
 use crate::types::Type;
+use std::fmt;
 
+#[derive(Clone, Debug)]
 pub struct Fold<T, Ty>
 where
     T: Term,
     Ty: Type,
 {
-    inner_type: Ty,
     term: T,
-    outer_type: Ty,
+    ty: Ty,
+}
+
+impl<T, Ty> fmt::Display for Fold<T, Ty>
+where
+    T: Term,
+    Ty: Type,
+{
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "fold[{}]({})", self.ty, self.term)
+    }
 }

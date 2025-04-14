@@ -1,3 +1,5 @@
+use std::fmt;
+
 pub mod app;
 pub mod ascribe;
 pub mod assign;
@@ -50,4 +52,4 @@ pub mod variable;
 pub mod variant;
 pub mod variantcase;
 
-pub trait Term {}
+pub trait Term: fmt::Display + fmt::Debug + Clone {}

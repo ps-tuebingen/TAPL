@@ -1,6 +1,8 @@
 use super::Term;
 use crate::Var;
+use std::fmt;
 
+#[derive(Clone, Debug)]
 pub struct SomeCase<T>
 where
     T: Term,
@@ -12,3 +14,16 @@ where
 }
 
 impl<T> Term for SomeCase<T> where T: Term {}
+
+impl<T> fmt::Display for SomeCase<T>
+where
+    T: Term,
+{
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(
+            f,
+            "case {} of {{ nothing => {} | something({}) => {} }}",
+            self.bound_term, self.none_term, self.some_var, self.some_term
+        )
+    }
+}
