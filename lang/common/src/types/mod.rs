@@ -23,4 +23,8 @@ pub mod unit;
 pub mod variable;
 pub mod variant;
 
-pub trait Type: fmt::Display + fmt::Debug + Clone {}
+pub trait Type
+where
+    Self: fmt::Display + fmt::Debug + Clone,
+{
+}

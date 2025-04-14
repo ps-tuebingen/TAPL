@@ -1,5 +1,5 @@
 use super::Type;
-use crate::Label;
+use crate::{subst::SubstType, Label, TypeVar};
 use std::collections::HashMap;
 use std::fmt;
 
@@ -12,6 +12,24 @@ where
 }
 
 impl<Ty> Type for Record<Ty> where Ty: Type {}
+
+impl<Ty> SubstType<Ty> for Record<Ty>
+where
+    Ty: Type + SubstType<Ty, Target = Ty>,
+    Self: Into<Ty>,
+{
+    type Target = Ty;
+    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+        Record {
+            records: self
+                .records
+                .into_iter()
+                .map(|(lb, ty1)| (lb, ty1.subst_type(v, ty)))
+                .collect(),
+        }
+        .into()
+    }
+}
 
 impl<Ty> fmt::Display for Record<Ty>
 where

@@ -1,5 +1,5 @@
 use super::Type;
-use crate::{kinds::Kind, TypeVar};
+use crate::{kinds::Kind, subst::SubstType, TypeVar};
 use std::fmt;
 
 #[derive(Clone, Debug)]
@@ -13,6 +13,26 @@ where
 }
 
 impl<Ty> Type for OpLambda<Ty> where Ty: Type {}
+
+impl<Ty> SubstType<Ty> for OpLambda<Ty>
+where
+    Ty: Type + SubstType<Ty, Target = Ty>,
+    Self: Into<Ty>,
+{
+    type Target = Ty;
+    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+        if *v == self.var {
+            self.into()
+        } else {
+            OpLambda {
+                var: self.var,
+                annot: self.annot,
+                body: Box::new(self.body.subst_type(v, ty)),
+            }
+            .into()
+        }
+    }
+}
 
 impl<Ty> fmt::Display for OpLambda<Ty>
 where

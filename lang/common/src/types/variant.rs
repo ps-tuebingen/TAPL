@@ -1,9 +1,8 @@
 use super::Type;
-use crate::Label;
-use std::collections::HashMap;
-use std::fmt;
-#[derive(Clone, Debug)]
+use crate::{subst::SubstType, Label, TypeVar};
+use std::{collections::HashMap, fmt};
 
+#[derive(Clone, Debug)]
 pub struct Variant<Ty>
 where
     Ty: Type,
@@ -12,6 +11,24 @@ where
 }
 
 impl<Ty> Type for Variant<Ty> where Ty: Type {}
+
+impl<Ty> SubstType<Ty> for Variant<Ty>
+where
+    Ty: Type + SubstType<Ty, Target = Ty>,
+    Self: Into<Ty>,
+{
+    type Target = Ty;
+    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+        Variant {
+            variants: self
+                .variants
+                .into_iter()
+                .map(|(lb, ty1)| (lb, ty1.subst_type(v, ty)))
+                .collect(),
+        }
+        .into()
+    }
+}
 
 impl<Ty> fmt::Display for Variant<Ty>
 where

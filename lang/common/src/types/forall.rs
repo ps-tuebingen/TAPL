@@ -1,5 +1,5 @@
 use super::Type;
-use crate::TypeVar;
+use crate::{subst::SubstType, TypeVar};
 use std::fmt;
 
 #[derive(Clone, Debug)]
@@ -12,6 +12,25 @@ where
 }
 
 impl<Ty> Type for Forall<Ty> where Ty: Type {}
+
+impl<Ty> SubstType<Ty> for Forall<Ty>
+where
+    Ty: Type + SubstType<Ty, Target = Ty>,
+    Self: Into<Ty>,
+{
+    type Target = Ty;
+    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+        if *v == self.var {
+            self.into()
+        } else {
+            Forall {
+                var: self.var,
+                ty: Box::new(self.ty.subst_type(v, ty)),
+            }
+            .into()
+        }
+    }
+}
 
 impl<Ty> fmt::Display for Forall<Ty>
 where

@@ -1,4 +1,5 @@
 use super::Type;
+use crate::{subst::SubstType, TypeVar};
 use std::fmt;
 
 #[derive(Clone, Debug)]
@@ -10,6 +11,20 @@ where
 }
 
 impl<Ty> Type for Source<Ty> where Ty: Type {}
+
+impl<Ty> SubstType<Ty> for Source<Ty>
+where
+    Ty: Type + SubstType<Ty, Target = Ty>,
+    Self: Into<Ty>,
+{
+    type Target = Ty;
+    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+        Source {
+            ty: Box::new(self.ty.subst_type(v, ty)),
+        }
+        .into()
+    }
+}
 
 impl<Ty> fmt::Display for Source<Ty>
 where
