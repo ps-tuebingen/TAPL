@@ -1,12 +1,14 @@
 use super::Term;
 use crate::{
+    check::{to_check_err, CheckEnvironment, Typecheck},
+    errors::{Error, ErrorKind},
     subst::{SubstTerm, SubstType},
     types::Type,
     TypeVar, Var,
 };
 use std::fmt;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct TryWithVal<T>
 where
     T: Term,
@@ -45,6 +47,31 @@ where
             handler: Box::new(self.handler.subst_type(v, ty)),
         }
         .into()
+    }
+}
+
+impl<Env, Ty, T> Typecheck<Env, Ty> for TryWithVal<T>
+where
+    T: Term + Typecheck<Env, Ty>,
+    Ty: Type,
+    Env: CheckEnvironment<Ty>,
+{
+    fn check_start(&self) -> Result<Ty, Error> {
+        self.check(&mut Env::default())
+    }
+
+    fn check(&self, env: &mut Env) -> Result<Ty, Error> {
+        let t_ty = self.term.check(&mut env.clone())?;
+        let handler_ty = self.handler.check(env)?;
+        let fun = handler_ty.into_fun().map_err(to_check_err)?;
+        if t_ty == *fun.to {
+            Ok(t_ty)
+        } else {
+            Err(to_check_err(ErrorKind::TypeMismatch {
+                found: t_ty.to_string(),
+                expected: fun.to.to_string(),
+            }))
+        }
     }
 }
 

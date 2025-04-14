@@ -2,6 +2,9 @@ use super::Value;
 use crate::Label;
 use std::collections::HashMap;
 
-pub struct Record {
-    records: HashMap<Label, Value>,
+pub struct Record<V>
+where
+    V: Value,
+{
+    records: HashMap<Label, V>,
 }

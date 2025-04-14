@@ -7,8 +7,8 @@ pub mod parse;
 pub mod subst;
 pub mod terms;
 pub mod types;
+pub mod values;
 
-pub use check::Typecheck;
 pub use eval::Eval;
 pub use parse::Parse;
 

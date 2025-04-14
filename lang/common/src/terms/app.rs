@@ -1,18 +1,32 @@
 use super::Term;
 use crate::{
+    check::{to_check_err, CheckEnvironment, Typecheck},
+    errors::{Error, ErrorKind},
     subst::{SubstTerm, SubstType},
     types::Type,
     TypeVar, Var,
 };
 use std::fmt;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct App<T>
 where
     T: Term,
 {
     pub fun: Box<T>,
     pub arg: Box<T>,
+}
+
+impl<T> App<T>
+where
+    T: Term,
+{
+    pub fn new<F: Into<T>, A: Into<T>>(f: F, a: A) -> App<T> {
+        App {
+            fun: Box::new(f.into()),
+            arg: Box::new(a.into()),
+        }
+    }
 }
 
 impl<T> Term for App<T> where T: Term {}
@@ -44,6 +58,31 @@ where
             arg: Box::new(self.arg.subst_type(v, ty)),
         }
         .into()
+    }
+}
+
+impl<Env, Ty, T> Typecheck<Env, Ty> for App<T>
+where
+    Env: CheckEnvironment<Ty>,
+    Ty: Type,
+    T: Term + Typecheck<Env, Ty>,
+{
+    fn check_start(&self) -> Result<Ty, Error> {
+        self.check(&mut Env::default())
+    }
+
+    fn check(&self, env: &mut Env) -> Result<Ty, Error> {
+        let fun_ty = self.fun.check(&mut env.clone())?;
+        let fun = fun_ty.into_fun().map_err(to_check_err)?;
+        let arg_ty = self.arg.check(env)?;
+        if *fun.from == arg_ty {
+            Ok(*fun.to)
+        } else {
+            Err(to_check_err(ErrorKind::TypeMismatch {
+                found: arg_ty.to_string(),
+                expected: fun.from.to_string(),
+            }))
+        }
     }
 }
 

@@ -1,12 +1,14 @@
 use super::Term;
 use crate::{
+    check::{to_check_err, CheckEnvironment, Typecheck},
+    errors::{Error, ErrorKind},
     subst::{SubstTerm, SubstType},
     types::Type,
     TypeVar, Var,
 };
 use std::fmt;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Raise<T, Ty>
 where
     T: Term,
@@ -55,6 +57,29 @@ where
             cont_ty: self.cont_ty.subst_type(v, ty),
         }
         .into()
+    }
+}
+
+impl<Env, Ty, T> Typecheck<Env, Ty> for Raise<T, Ty>
+where
+    T: Term + Typecheck<Env, Ty>,
+    Ty: Type,
+    Env: CheckEnvironment<Ty>,
+{
+    fn check_start(&self) -> Result<Ty, Error> {
+        self.check(&mut Env::default())
+    }
+
+    fn check(&self, env: &mut Env) -> Result<Ty, Error> {
+        let err_ty = self.exception.check(env)?;
+        if err_ty == self.exception_ty {
+            Ok(self.cont_ty.clone())
+        } else {
+            Err(to_check_err(ErrorKind::TypeMismatch {
+                found: err_ty.to_string(),
+                expected: self.exception_ty.to_string(),
+            }))
+        }
     }
 }
 

@@ -6,7 +6,7 @@ use crate::{
 };
 use std::fmt;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct VariantCase<T>
 where
     T: Term,
@@ -15,7 +15,7 @@ where
     patterns: Vec<VariantPattern<T>>,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct VariantPattern<T>
 where
     T: Term,

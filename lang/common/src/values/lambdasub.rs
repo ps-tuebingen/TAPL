@@ -8,7 +8,7 @@ where
 {
     var: Var,
     ty: Ty,
-    t: Term,
+    t: T,
 }
 
 impl<T, Ty> Value for LambdaSub<T, Ty>

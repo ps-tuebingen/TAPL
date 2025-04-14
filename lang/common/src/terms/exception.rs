@@ -1,12 +1,14 @@
 use super::Term;
 use crate::{
+    check::{CheckEnvironment, Typecheck},
+    errors::Error,
     subst::{SubstTerm, SubstType},
     types::Type,
     TypeVar, Var,
 };
 use std::{fmt, marker::PhantomData};
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Exception<T, Ty>
 where
     Ty: Type,
@@ -48,6 +50,21 @@ where
             phantom: PhantomData,
         }
         .into()
+    }
+}
+
+impl<Env, T, Ty> Typecheck<Env, Ty> for Exception<T, Ty>
+where
+    Env: CheckEnvironment<Ty>,
+    Ty: Type,
+    T: Term,
+{
+    fn check_start(&self) -> Result<Ty, Error> {
+        self.check(&mut Env::default())
+    }
+
+    fn check(&self, _: &mut Env) -> Result<Ty, Error> {
+        Ok(self.ty.clone())
     }
 }
 

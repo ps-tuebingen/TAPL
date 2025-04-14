@@ -6,7 +6,7 @@ use crate::{
 };
 use std::fmt;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Tail<T, Ty>
 where
     T: Term,

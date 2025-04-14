@@ -1,17 +1,30 @@
 use super::Term;
 use crate::{
+    check::{CheckEnvironment, Typecheck},
+    errors::Error,
     subst::{SubstTerm, SubstType},
-    types::Type,
+    types::{Type, Unit as UnitTy},
     TypeVar, Var,
 };
 use std::{fmt, marker::PhantomData};
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Unit<T>
 where
     T: Term,
 {
     phantom: PhantomData<T>,
+}
+
+impl<T> Unit<T>
+where
+    T: Term,
+{
+    pub fn new() -> Unit<T> {
+        Unit {
+            phantom: PhantomData,
+        }
+    }
 }
 
 impl<T> Term for Unit<T> where T: Term {}
@@ -36,6 +49,22 @@ where
     type Target = T;
     fn subst_type(self, _: &TypeVar, _: &Ty) -> Self::Target {
         self.into()
+    }
+}
+
+impl<Env, Ty, T> Typecheck<Env, Ty> for Unit<T>
+where
+    T: Term,
+    Ty: Type,
+    UnitTy: Into<Ty>,
+    Env: CheckEnvironment<Ty>,
+{
+    fn check_start(&self) -> Result<Ty, Error> {
+        self.check(&mut Env::default())
+    }
+
+    fn check(&self, _: &mut Env) -> Result<Ty, Error> {
+        Ok(UnitTy.into())
     }
 }
 

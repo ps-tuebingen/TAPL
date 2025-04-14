@@ -2,7 +2,7 @@ use super::Type;
 use crate::{subst::SubstType, TypeVar};
 use std::fmt;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Bot;
 
 impl Type for Bot {}

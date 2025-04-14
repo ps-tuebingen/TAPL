@@ -3,7 +3,7 @@ use crate::{subst::SubstType, Label, TypeVar};
 use std::collections::HashMap;
 use std::fmt;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Record<Ty>
 where
     Ty: Type,

@@ -6,7 +6,7 @@ use crate::{
 };
 use std::fmt;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct ListCase<T>
 where
     T: Term,

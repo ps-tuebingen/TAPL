@@ -2,7 +2,7 @@ use super::Type;
 use crate::{subst::SubstType, Label, TypeVar};
 use std::{collections::HashMap, fmt};
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Variant<Ty>
 where
     Ty: Type,

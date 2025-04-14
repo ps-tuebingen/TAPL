@@ -1,11 +1,15 @@
 use super::Type;
-use crate::{subst::SubstType, TypeVar};
+use crate::{errors::ErrorKind, subst::SubstType, TypeVar};
 use std::fmt;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Bool;
 
-impl Type for Bool {}
+impl Type for Bool {
+    fn into_bool(self) -> Result<Bool, ErrorKind> {
+        Ok(self)
+    }
+}
 
 impl<Ty> SubstType<Ty> for Bool
 where

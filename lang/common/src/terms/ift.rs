@@ -1,12 +1,14 @@
 use super::Term;
 use crate::{
+    check::{to_check_err, CheckEnvironment, Typecheck},
+    errors::{Error, ErrorKind},
     subst::{SubstTerm, SubstType},
     types::Type,
     TypeVar, Var,
 };
 use std::fmt;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct If<T>
 where
     T: Term,
@@ -48,6 +50,32 @@ where
             else_term: Box::new(self.else_term.subst_type(v, ty)),
         }
         .into()
+    }
+}
+
+impl<Env, Ty, T> Typecheck<Env, Ty> for If<T>
+where
+    T: Term + Typecheck<Env, Ty>,
+    Ty: Type,
+    Env: CheckEnvironment<Ty>,
+{
+    fn check_start(&self) -> Result<Ty, Error> {
+        self.check(&mut Default::default())
+    }
+
+    fn check(&self, env: &mut Env) -> Result<Ty, Error> {
+        let if_ty = self.if_cond.check(&mut env.clone())?;
+        if_ty.into_bool().map_err(to_check_err)?;
+        let then_ty = self.then_term.check(&mut env.clone())?;
+        let else_ty = self.else_term.check(env)?;
+        if then_ty != else_ty {
+            Err(to_check_err(ErrorKind::TypeMismatch {
+                found: then_ty.to_string(),
+                expected: else_ty.to_string(),
+            }))
+        } else {
+            Ok(then_ty)
+        }
     }
 }
 

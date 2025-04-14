@@ -2,7 +2,7 @@ use super::Type;
 use crate::{kinds::Kind, subst::SubstType, TypeVar};
 use std::fmt;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct OpLambda<Ty>
 where
     Ty: Type,

@@ -11,4 +11,9 @@ where
     ty: Ty,
 }
 
-impl<V, Ty> Value for Variant<V, Ty> {}
+impl<V, Ty> Value for Variant<V, Ty>
+where
+    V: Value,
+    Ty: Type,
+{
+}

@@ -8,4 +8,4 @@ where
     ty: Ty,
 }
 
-impl<Ty> Value for Nil<Ty> {}
+impl<Ty> Value for Nil<Ty> where Ty: Type {}

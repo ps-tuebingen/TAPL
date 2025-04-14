@@ -6,7 +6,7 @@ use crate::{
 };
 use std::{collections::HashMap, fmt};
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Record<T>
 where
     T: Term,

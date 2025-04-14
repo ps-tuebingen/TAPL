@@ -1,18 +1,32 @@
 use super::Term;
 use crate::{
+    check::{to_check_err, CheckEnvironment, Typecheck},
+    errors::{Error, ErrorKind},
     subst::{SubstTerm, SubstType},
     types::Type,
     TypeVar, Var,
 };
 use std::fmt;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Try<T>
 where
     T: Term,
 {
     term: Box<T>,
     handler: Box<T>,
+}
+
+impl<T> Try<T>
+where
+    T: Term,
+{
+    pub fn new<T1: Into<T>, T2: Into<T>>(t: T1, h: T2) -> Try<T> {
+        Try {
+            term: Box::new(t.into()),
+            handler: Box::new(h.into()),
+        }
+    }
 }
 
 impl<T> Term for Try<T> where T: Term {}
@@ -45,6 +59,30 @@ where
             handler: Box::new(self.handler.subst_type(v, ty)),
         }
         .into()
+    }
+}
+
+impl<Env, Ty, T> Typecheck<Env, Ty> for Try<T>
+where
+    Env: CheckEnvironment<Ty>,
+    Ty: Type,
+    T: Term + Typecheck<Env, Ty>,
+{
+    fn check_start(&self) -> Result<Ty, Error> {
+        self.check(&mut Env::default())
+    }
+
+    fn check(&self, env: &mut Env) -> Result<Ty, Error> {
+        let term_ty = self.term.check(&mut env.clone())?;
+        let handler_ty = self.handler.check(env)?;
+        if term_ty == handler_ty {
+            Ok(term_ty)
+        } else {
+            Err(to_check_err(ErrorKind::TypeMismatch {
+                found: term_ty.to_string(),
+                expected: handler_ty.to_string(),
+            }))
+        }
     }
 }
 

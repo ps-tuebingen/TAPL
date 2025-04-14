@@ -6,7 +6,7 @@ use crate::{
 };
 use std::{fmt, marker::PhantomData};
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct True<T>
 where
     T: Term,

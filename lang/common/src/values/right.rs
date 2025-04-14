@@ -10,4 +10,9 @@ where
     ty: Ty,
 }
 
-impl<V, Ty> Value for Right<V, Ty> {}
+impl<V, Ty> Value for Right<V, Ty>
+where
+    V: Value,
+    Ty: Type,
+{
+}

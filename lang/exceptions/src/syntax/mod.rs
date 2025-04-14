@@ -1,55 +1,38 @@
+use crate::types::Type;
+use common::terms::{
+    App, Exception, False, If, IsZero, Lambda, Num, Pred, Raise, Succ, Term as TermTrait, True,
+    Try, TryWithVal, Unit, Variable,
+};
 use std::fmt;
-
-pub type Var = String;
-
-pub mod bool;
-pub mod exception;
-pub mod exception_val;
-pub mod lambda;
-pub mod nat;
-pub mod unit;
-
-pub use bool::If;
-pub use exception::{Error, Try};
-pub use exception_val::{Raise, TryWithVal};
-pub use lambda::{App, Lambda};
-pub use nat::{IsZero, Pred, Succ};
-pub use unit::Unit;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Term {
-    Var(Var),
-    Const(i64),
-    True,
-    False,
-    Succ(Succ),
-    Pred(Pred),
-    IsZero(IsZero),
-    If(If),
-    Lambda(Lambda),
-    App(App),
-    Unit(Unit),
-    Error(Error),
-    Try(Try),
-    Raise(Raise),
-    TryWithVal(TryWithVal),
+    Var(Variable<Term>),
+    Num(Num<Term>),
+    True(True<Term>),
+    False(False<Term>),
+    Succ(Succ<Term>),
+    Pred(Pred<Term>),
+    IsZero(IsZero<Term>),
+    If(If<Term>),
+    Lambda(Lambda<Term, Type>),
+    App(App<Term>),
+    Unit(Unit<Term>),
+    Exception(Exception<Term, Type>),
+    Try(Try<Term>),
+    Raise(Raise<Term, Type>),
+    TryWithVal(TryWithVal<Term>),
 }
 
-impl Term {
-    pub fn is_value(&self) -> bool {
-        matches!(
-            self,
-            Term::Lambda(_) | Term::Unit(_) | Term::Const(_) | Term::True | Term::False
-        )
-    }
-}
+impl TermTrait for Term {}
+
 impl fmt::Display for Term {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Term::Var(v) => write!(f, "{v}"),
-            Term::Const(i) => write!(f, "{i}"),
-            Term::True => f.write_str("true"),
-            Term::False => f.write_str("false"),
+            Term::Var(v) => v.fmt(f),
+            Term::Num(num) => num.fmt(f),
+            Term::True(tru) => tru.fmt(f),
+            Term::False(fls) => fls.fmt(f),
             Term::Succ(s) => s.fmt(f),
             Term::Pred(p) => p.fmt(f),
             Term::IsZero(isz) => isz.fmt(f),
@@ -57,23 +40,11 @@ impl fmt::Display for Term {
             Term::Lambda(lam) => lam.fmt(f),
             Term::App(app) => app.fmt(f),
             Term::Unit(u) => u.fmt(f),
-            Term::Error(err) => err.fmt(f),
+            Term::Exception(exc) => exc.fmt(f),
             Term::Try(t) => t.fmt(f),
             Term::Raise(r) => r.fmt(f),
             Term::TryWithVal(t) => t.fmt(f),
         }
-    }
-}
-
-impl From<Var> for Term {
-    fn from(v: Var) -> Term {
-        Term::Var(v)
-    }
-}
-
-impl From<&str> for Term {
-    fn from(s: &str) -> Term {
-        Term::Var(s.to_owned())
     }
 }
 
@@ -84,8 +55,12 @@ pub mod term_tests {
 
     pub fn example_term1() -> Term {
         Try::new(
-            App::new(Lambda::new("x", Type::Unit, "x".into()).into(), Unit.into()).into(),
-            Unit.into(),
+            App::new(
+                Lambda::new("x", Type::Unit, "x".into()).into(),
+                Unit::new().into(),
+            )
+            .into(),
+            Unit::new().into(),
         )
         .into()
     }

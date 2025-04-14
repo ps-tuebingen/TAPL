@@ -1,12 +1,15 @@
 use super::Term;
 use crate::{
+    check::{CheckEnvironment, Typecheck},
+    errors::Error,
     subst::{SubstTerm, SubstType},
+    types::Fun,
     types::Type,
     TypeVar, Var,
 };
 use std::fmt;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Lambda<T, Ty>
 where
     T: Term,
@@ -15,6 +18,38 @@ where
     pub var: Var,
     pub annot: Ty,
     pub body: Box<T>,
+}
+
+impl<T, Ty> Lambda<T, Ty>
+where
+    T: Term,
+    Ty: Type,
+{
+    pub fn new<A: Into<Ty>, B: Into<T>>(v: &str, a: A, b: B) -> Lambda<T, Ty> {
+        Lambda {
+            var: v.to_owned(),
+            annot: a.into(),
+            body: Box::new(b.into()),
+        }
+    }
+}
+
+impl<'a, Env, T, Ty> Typecheck<Env, Ty> for Lambda<T, Ty>
+where
+    Env: CheckEnvironment<Ty>,
+    Ty: Type,
+    T: Term + Typecheck<Env, Ty>,
+    Fun<Ty>: Into<Ty>,
+{
+    fn check_start(&self) -> Result<Ty, Error> {
+        self.check(&mut Env::default())
+    }
+
+    fn check(&self, env: &mut Env) -> Result<Ty, Error> {
+        env.add_var(self.var.clone(), self.annot.clone());
+        let body_ty = self.body.check(env)?;
+        Ok(Fun::new(self.annot.clone(), body_ty).into())
+    }
 }
 
 impl<T, Ty> SubstTerm<T> for Lambda<T, Ty>

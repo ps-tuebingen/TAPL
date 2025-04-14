@@ -1,11 +1,15 @@
 use super::Type;
-use crate::{subst::SubstType, TypeVar};
+use crate::{errors::ErrorKind, subst::SubstType, TypeVar};
 use std::fmt;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Nat;
 
-impl Type for Nat {}
+impl Type for Nat {
+    fn into_nat(self) -> Result<Nat, ErrorKind> {
+        Ok(self)
+    }
+}
 
 impl<Ty> SubstType<Ty> for Nat
 where

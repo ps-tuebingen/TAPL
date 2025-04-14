@@ -2,7 +2,7 @@ use super::Type;
 use crate::{subst::SubstType, TypeVar};
 use std::fmt;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Tuple<Ty>
 where
     Ty: Type,
