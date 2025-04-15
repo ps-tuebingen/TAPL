@@ -174,34 +174,19 @@ pub mod term_tests {
     pub fn example_term1() -> Term {
         Try::<Term>::new(
             App::<Term>::new(
-                Lambda::<Term, Type>::new("x", UnitTy.into(), Variable::<Term>::new("x").into())
-                    .into(),
-                Unit::<Term>::new().into(),
-            )
-            .into(),
-            Unit::<Term>::new().into(),
+                Lambda::<Term, Type>::new("x", UnitTy, Variable::<Term>::new("x")),
+                Unit::<Term>::new(),
+            ),
+            Unit::<Term>::new(),
         )
         .into()
     }
 
     pub fn example_term2() -> Term {
         TryWithVal::<Term>::new(
-            Raise::<Term, Type>::new(Unit::<Term>::new().into(), UnitTy.into(), UnitTy.into())
-                .into(),
-            Lambda::<Term, Type>::new("x", UnitTy::new().into(), Unit::new().into()).into(),
+            Raise::<Term, Type>::new(Unit::<Term>::new(), UnitTy, UnitTy),
+            Lambda::<Term, Type>::new("x", UnitTy, Unit::new()),
         )
         .into()
-    }
-
-    #[test]
-    fn is_val1() {
-        let result = example_term1().is_value();
-        assert!(!result)
-    }
-
-    #[test]
-    fn is_val2() {
-        let result = example_term2().is_value();
-        assert!(!result)
     }
 }

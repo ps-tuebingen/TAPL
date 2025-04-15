@@ -40,21 +40,20 @@ impl Eval<Value, (), Term, Type> for Term {
 
 #[cfg(test)]
 mod eval_tests {
-    use super::Value;
     use crate::syntax::term_tests::{example_term1, example_term2};
-    use common::Eval;
+    use common::{values::Unit, Eval};
 
     #[test]
     fn eval1() {
-        let result = example_term1().eval(Env::default()).unwrap();
-        let expected = Value::Unit;
+        let result = example_term1().eval_start().unwrap();
+        let expected = Unit.into();
         assert_eq!(result, expected)
     }
 
     #[test]
     fn eval2() {
-        let result = example_term2().eval(Default::default()).unwrap();
-        let expected = Value::Unit;
+        let result = example_term2().eval_start().unwrap();
+        let expected = Unit.into();
         assert_eq!(result, expected)
     }
 }
