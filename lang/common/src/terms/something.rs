@@ -14,6 +14,20 @@ where
     term: Box<T>,
 }
 
+impl<T> Something<T>
+where
+    T: Term,
+{
+    pub fn new<T1>(t: T1) -> Something<T>
+    where
+        T1: Into<T>,
+    {
+        Something {
+            term: Box::new(t.into()),
+        }
+    }
+}
+
 impl<T> Term for Something<T> where T: Term {}
 
 impl<T> SubstTerm<T> for Something<T>

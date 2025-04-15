@@ -14,6 +14,20 @@ where
     terms: Vec<T>,
 }
 
+impl<T> Tuple<T>
+where
+    T: Term,
+{
+    pub fn new<T1>(ts: Vec<T1>) -> Tuple<T>
+    where
+        T1: Into<T>,
+    {
+        Tuple {
+            terms: ts.into_iter().map(|t| t.into()).collect(),
+        }
+    }
+}
+
 impl<T> Term for Tuple<T> where T: Term {}
 
 impl<T> SubstTerm<T> for Tuple<T>

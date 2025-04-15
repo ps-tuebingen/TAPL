@@ -14,6 +14,17 @@ where
     phantom: PhantomData<T>,
 }
 
+impl<T> False<T>
+where
+    T: Term,
+{
+    pub fn new() -> False<T> {
+        False {
+            phantom: PhantomData,
+        }
+    }
+}
+
 impl<T> Term for False<T> where T: Term {}
 
 impl<T> SubstTerm<T> for False<T>

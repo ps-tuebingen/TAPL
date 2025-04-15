@@ -16,6 +16,26 @@ where
     ty: Ty,
 }
 
+impl<T, Ty> Fold<T, Ty>
+where
+    T: Term,
+    Ty: Type,
+{
+    pub fn new<T1: Into<T>, Typ: Into<Ty>>(t: T1, ty: Typ) -> Fold<T, Ty> {
+        Fold {
+            term: Box::new(t.into()),
+            ty: ty.into(),
+        }
+    }
+}
+
+impl<T, Ty> Term for Fold<T, Ty>
+where
+    T: Term,
+    Ty: Type,
+{
+}
+
 impl<T, Ty> SubstTerm<T> for Fold<T, Ty>
 where
     T: Term + SubstTerm<T, Target = T>,

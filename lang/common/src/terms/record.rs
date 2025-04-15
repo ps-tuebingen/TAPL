@@ -14,6 +14,20 @@ where
     records: HashMap<Label, T>,
 }
 
+impl<T> Record<T>
+where
+    T: Term,
+{
+    pub fn new<T1>(recs: HashMap<Label, T1>) -> Record<T>
+    where
+        T1: Into<T>,
+    {
+        Record {
+            records: recs.into_iter().map(|(lb, t)| (lb, t.into())).collect(),
+        }
+    }
+}
+
 impl<T> Term for Record<T> where T: Term {}
 
 impl<T> SubstTerm<T> for Record<T>

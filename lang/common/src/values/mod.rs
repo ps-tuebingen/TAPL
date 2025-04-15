@@ -1,4 +1,11 @@
-pub trait Value {}
+use crate::terms::Term;
+pub trait Value<T>
+where
+    T: Term,
+    Self: Sized,
+{
+    type Term: Term + From<Self>;
+}
 
 pub mod cons;
 pub mod exception;
@@ -22,3 +29,26 @@ pub mod tuple;
 pub mod tylambda;
 pub mod unit;
 pub mod variant;
+
+pub use cons::Cons;
+pub use exception::Exception;
+pub use fls::False;
+pub use fold::Fold;
+pub use lambda::Lambda;
+pub use lambdasub::LambdaSub;
+pub use left::Left;
+pub use loc::Loc;
+pub use nil::Nil;
+pub use nothing::Nothing;
+pub use num::Num;
+pub use pack::Pack;
+pub use pair::Pair;
+pub use raise::Raise;
+pub use record::Record;
+pub use right::Right;
+pub use something::Something;
+pub use tru::True;
+pub use tuple::Tuple;
+pub use tylambda::TyLambda;
+pub use unit::Unit;
+pub use variant::Variant;

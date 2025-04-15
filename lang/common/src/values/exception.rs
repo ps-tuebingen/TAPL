@@ -1,5 +1,8 @@
 use super::Value;
-use crate::types::Type;
+use crate::{
+    terms::{Exception as ExceptionT, Term},
+    types::Type,
+};
 
 pub struct Exception<Ty>
 where
@@ -8,4 +11,20 @@ where
     ty: Ty,
 }
 
-impl<Ty> Value for Exception<Ty> where Ty: Type {}
+impl<T, Ty> Value<T> for Exception<Ty>
+where
+    Ty: Type,
+    T: Term,
+{
+    type Term = ExceptionT<T, Ty>;
+}
+
+impl<T, Ty> From<Exception<Ty>> for ExceptionT<T, Ty>
+where
+    T: Term,
+    Ty: Type,
+{
+    fn from(ex: Exception<Ty>) -> ExceptionT<T, Ty> {
+        ExceptionT::new(ex.ty)
+    }
+}

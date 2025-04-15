@@ -15,6 +15,18 @@ where
     phantom: PhantomData<T>,
 }
 
+impl<T> Num<T>
+where
+    T: Term,
+{
+    pub fn new(num: i64) -> Num<T> {
+        Num {
+            num,
+            phantom: PhantomData,
+        }
+    }
+}
+
 impl<T> Term for Num<T> where T: Term {}
 
 impl<T> SubstTerm<T> for Num<T>

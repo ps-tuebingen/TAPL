@@ -1,68 +1,22 @@
-use crate::{
-    syntax::{Error, Lambda, Raise, Term, Unit, Var},
-    types::Type,
+use crate::{syntax::Term, types::Type};
+use common::{
+    errors::ErrorKind,
+    values::{Exception, False, Lambda, Num, Raise, True, Unit, Value as ValueTrait},
 };
-use common::errors::ErrorKind;
 use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Value {
-    Lambda {
-        var: Var,
-        annot: Type,
-        body: Term,
-    },
-    Const(i64),
-    Unit,
-    True,
-    False,
-    Exception(Type),
-    Raise {
-        val: Box<Value>,
-        cont_ty: Type,
-        ex_ty: Type,
-    },
+    Lambda(Lambda<Term, Type>),
+    Num(Num),
+    Unit(Unit),
+    True(True),
+    False(False),
+    Exception(Exception<Type>),
+    Raise(Raise<Value, Type>),
 }
 
-impl Value {
-    pub fn into_lambda(self) -> Result<(Var, Type, Term), ErrorKind> {
-        if let Value::Lambda { var, annot, body } = self {
-            Ok((var, annot, body))
-        } else {
-            Err(ErrorKind::ValueMismatch {
-                found: self.to_string(),
-                expected: "Lambda Abstraction".to_owned(),
-            })
-        }
-    }
-
-    pub fn into_num(self) -> Result<i64, ErrorKind> {
-        if let Value::Const(i) = self {
-            Ok(i)
-        } else {
-            Err(ErrorKind::ValueMismatch {
-                found: self.to_string(),
-                expected: "Number".to_owned(),
-            })
-        }
-    }
-}
-
-impl From<Lambda> for Value {
-    fn from(lam: Lambda) -> Value {
-        Value::Lambda {
-            var: lam.var,
-            annot: lam.annot,
-            body: *lam.body,
-        }
-    }
-}
-
-impl From<Unit> for Value {
-    fn from(_: Unit) -> Value {
-        Value::Unit
-    }
-}
+impl ValueTrait for Value {}
 
 impl From<Value> for Term {
     fn from(val: Value) -> Term {

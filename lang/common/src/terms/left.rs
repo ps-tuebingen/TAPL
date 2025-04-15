@@ -16,6 +16,19 @@ where
     ty: Ty,
 }
 
+impl<T, Ty> Left<T, Ty>
+where
+    T: Term,
+    Ty: Type,
+{
+    pub fn new<L: Into<T>, Typ: Into<Ty>>(left_t: L, ty: Typ) -> Left<T, Ty> {
+        Left {
+            left_term: Box::new(left_t.into()),
+            ty: ty.into(),
+        }
+    }
+}
+
 impl<T, Ty> Term for Left<T, Ty>
 where
     T: Term,

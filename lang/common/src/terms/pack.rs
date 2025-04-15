@@ -17,6 +17,25 @@ where
     outer_ty: Ty,
 }
 
+impl<T, Ty> Pack<T, Ty>
+where
+    T: Term,
+    Ty: Type,
+{
+    pub fn new<Ty1, Ty2, T1>(inner: Ty1, t: T1, outer: Ty2) -> Pack<T, Ty>
+    where
+        Ty1: Into<Ty>,
+        Ty2: Into<Ty>,
+        T1: Into<T>,
+    {
+        Pack {
+            inner_ty: inner.into(),
+            term: Box::new(t.into()),
+            outer_ty: outer.into(),
+        }
+    }
+}
+
 impl<T, Ty> Term for Pack<T, Ty>
 where
     T: Term,

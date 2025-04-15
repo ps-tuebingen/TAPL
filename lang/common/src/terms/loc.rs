@@ -15,6 +15,18 @@ where
     phantom: PhantomData<T>,
 }
 
+impl<T> Loc<T>
+where
+    T: Term,
+{
+    pub fn new(loc: usize) -> Loc<T> {
+        Loc {
+            loc,
+            phantom: PhantomData,
+        }
+    }
+}
+
 impl<T> Term for Loc<T> where T: Term {}
 
 impl<T> SubstTerm<T> for Loc<T>

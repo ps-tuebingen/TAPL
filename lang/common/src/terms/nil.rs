@@ -16,6 +16,19 @@ where
     phantom: PhantomData<T>,
 }
 
+impl<T, Ty> Nil<T, Ty>
+where
+    T: Term,
+    Ty: Type,
+{
+    pub fn new<Typ: Into<Ty>>(ty: Typ) -> Nil<T, Ty> {
+        Nil {
+            ty: ty.into(),
+            phantom: PhantomData,
+        }
+    }
+}
+
 impl<T, Ty> Term for Nil<T, Ty>
 where
     Ty: Type,

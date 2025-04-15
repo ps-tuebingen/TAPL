@@ -1,5 +1,6 @@
 use super::Term;
 use crate::{
+    kinds::Kind,
     subst::{SubstTerm, SubstType},
     types::Type,
     TypeVar, Var,
@@ -12,7 +13,24 @@ where
     T: Term,
 {
     var: TypeVar,
+    annot: Kind,
     term: Box<T>,
+}
+
+impl<T> TyLambda<T>
+where
+    T: Term,
+{
+    pub fn new<T1>(v: &str, knd: Kind, t: T1) -> TyLambda<T>
+    where
+        T1: Into<T>,
+    {
+        TyLambda {
+            var: v.into(),
+            annot: knd,
+            term: Box::new(t.into()),
+        }
+    }
 }
 
 impl<T> Term for TyLambda<T> where T: Term {}
@@ -26,6 +44,7 @@ where
     fn subst(self, v: &Var, t: &T) -> T {
         TyLambda {
             var: self.var,
+            annot: self.annot,
             term: Box::new(self.term.subst(v, t)),
         }
         .into()
@@ -45,6 +64,7 @@ where
         } else {
             TyLambda {
                 var: self.var,
+                annot: self.annot,
                 term: Box::new(self.term.subst_type(v, ty)),
             }
             .into()

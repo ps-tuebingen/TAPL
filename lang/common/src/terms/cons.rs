@@ -17,6 +17,20 @@ where
     ty: Ty,
 }
 
+impl<T, Ty> Cons<T, Ty>
+where
+    T: Term,
+    Ty: Type,
+{
+    pub fn new<H: Into<T>, Tl: Into<T>, Typ: Into<Ty>>(h: H, tl: Tl, ty: Typ) -> Cons<T, Ty> {
+        Cons {
+            head: Box::new(h.into()),
+            tail: Box::new(tl.into()),
+            ty: ty.into(),
+        }
+    }
+}
+
 impl<T, Ty> Term for Cons<T, Ty>
 where
     T: Term,

@@ -1,5 +1,8 @@
 use super::Value;
-use crate::types::Type;
+use crate::{
+    terms::{Nothing as NothingT, Term},
+    types::Type,
+};
 
 pub struct Nothing<Ty>
 where
@@ -8,4 +11,20 @@ where
     ty: Ty,
 }
 
-impl<Ty> Value for Nothing<Ty> where Ty: Type {}
+impl<Ty, T> Value<T> for Nothing<Ty>
+where
+    Ty: Type,
+    T: Term,
+{
+    type Term = NothingT<T, Ty>;
+}
+
+impl<T, Ty> From<Nothing<Ty>> for NothingT<T, Ty>
+where
+    T: Term,
+    Ty: Type,
+{
+    fn from(not: Nothing<Ty>) -> NothingT<T, Ty> {
+        NothingT::new(not.ty)
+    }
+}

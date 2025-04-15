@@ -18,6 +18,19 @@ where
     phantom: PhantomData<T>,
 }
 
+impl<T, Ty> Exception<T, Ty>
+where
+    T: Term,
+    Ty: Type,
+{
+    pub fn new<Typ: Into<Ty>>(ty: Typ) -> Exception<T, Ty> {
+        Exception {
+            ty: ty.into(),
+            phantom: PhantomData,
+        }
+    }
+}
+
 impl<T, Ty> Term for Exception<T, Ty>
 where
     Ty: Type,

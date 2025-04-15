@@ -16,6 +16,23 @@ where
     ty: Ty,
 }
 
+impl<T, Ty> Right<T, Ty>
+where
+    T: Term,
+    Ty: Type,
+{
+    pub fn new<T1, Ty1>(right_t: T1, ty: Ty1) -> Right<T, Ty>
+    where
+        T1: Into<T>,
+        Ty1: Into<Ty>,
+    {
+        Right {
+            right_term: Box::new(right_t.into()),
+            ty: ty.into(),
+        }
+    }
+}
+
 impl<T, Ty> Term for Right<T, Ty>
 where
     T: Term,

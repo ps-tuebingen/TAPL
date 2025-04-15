@@ -17,6 +17,27 @@ where
     body: Box<T>,
 }
 
+impl<T, Ty> LambdaSub<T, Ty>
+where
+    T: Term,
+    Ty: Type,
+{
+    pub fn new<Typ: Into<Ty>, B: Into<T>>(v: &str, sup: Typ, bod: B) -> LambdaSub<T, Ty> {
+        LambdaSub {
+            var: v.to_owned(),
+            sup_ty: sup.into(),
+            body: Box::new(bod.into()),
+        }
+    }
+}
+
+impl<T, Ty> Term for LambdaSub<T, Ty>
+where
+    T: Term,
+    Ty: Type,
+{
+}
+
 impl<T, Ty> SubstTerm<T> for LambdaSub<T, Ty>
 where
     T: Term + SubstTerm<T, Target = T>,

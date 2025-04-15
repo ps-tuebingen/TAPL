@@ -16,6 +16,19 @@ where
     phantom: PhantomData<T>,
 }
 
+impl<T, Ty> Nothing<T, Ty>
+where
+    T: Term,
+    Ty: Type,
+{
+    pub fn new<Typ: Into<Ty>>(ty: Typ) -> Nothing<T, Ty> {
+        Nothing {
+            ty: ty.into(),
+            phantom: PhantomData,
+        }
+    }
+}
+
 impl<T, Ty> Term for Nothing<T, Ty>
 where
     Ty: Type,

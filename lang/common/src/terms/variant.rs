@@ -17,6 +17,24 @@ where
     ty: Ty,
 }
 
+impl<T, Ty> Variant<T, Ty>
+where
+    T: Term,
+    Ty: Type,
+{
+    pub fn new<T1, Ty1>(lb: &str, t: T1, ty: Ty1) -> Variant<T, Ty>
+    where
+        T1: Into<T>,
+        Ty1: Into<Ty>,
+    {
+        Variant {
+            label: lb.to_owned(),
+            term: Box::new(t.into()),
+            ty: ty.into(),
+        }
+    }
+}
+
 impl<T, Ty> Term for Variant<T, Ty>
 where
     T: Term,

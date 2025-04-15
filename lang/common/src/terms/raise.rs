@@ -19,6 +19,25 @@ where
     cont_ty: Ty,
 }
 
+impl<T, Ty> Raise<T, Ty>
+where
+    T: Term,
+    Ty: Type,
+{
+    pub fn new<E, Ty1, Ty2>(ex: E, ex_ty: Ty1, cont_ty: Ty2) -> Raise<T, Ty>
+    where
+        E: Into<T>,
+        Ty1: Into<Ty>,
+        Ty2: Into<Ty>,
+    {
+        Raise {
+            exception: Box::new(ex.into()),
+            exception_ty: ex_ty.into(),
+            cont_ty: cont_ty.into(),
+        }
+    }
+}
+
 impl<T, Ty> Term for Raise<T, Ty>
 where
     T: Term,

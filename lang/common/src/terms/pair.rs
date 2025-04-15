@@ -15,6 +15,22 @@ where
     snd: Box<T>,
 }
 
+impl<T> Pair<T>
+where
+    T: Term,
+{
+    pub fn new<T1, T2>(fst: T1, snd: T2) -> Pair<T>
+    where
+        T1: Into<T>,
+        T2: Into<T>,
+    {
+        Pair {
+            fst: Box::new(fst.into()),
+            snd: Box::new(snd.into()),
+        }
+    }
+}
+
 impl<T> Term for Pair<T> where T: Term {}
 
 impl<T> SubstTerm<T> for Pair<T>
