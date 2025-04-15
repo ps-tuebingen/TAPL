@@ -2,8 +2,10 @@ use super::Term;
 use crate::{
     check::{CheckEnvironment, Typecheck},
     errors::Error,
+    eval::{Eval, EvalEnvironment},
     subst::{SubstTerm, SubstType},
     types::{Type, Unit as UnitTy},
+    values::{Unit as UnitVal, Value},
     TypeVar, Var,
 };
 use std::{fmt, marker::PhantomData};
@@ -61,6 +63,19 @@ where
 {
     fn check(&self, _: &mut Env) -> Result<Ty, Error> {
         Ok(UnitTy.into())
+    }
+}
+
+impl<Val, Env, T, Ty> Eval<Val, Env, T, Ty> for Unit<T>
+where
+    T: Term + SubstTerm<T, Target = T>,
+    Ty: Type,
+    Val: Value<T>,
+    Env: EvalEnvironment,
+    UnitVal: Into<Val>,
+{
+    fn eval(self, _: &mut Env) -> Result<Val, Error> {
+        Ok(UnitVal.into())
     }
 }
 

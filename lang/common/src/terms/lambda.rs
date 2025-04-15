@@ -2,9 +2,11 @@ use super::Term;
 use crate::{
     check::{CheckEnvironment, Typecheck},
     errors::Error,
+    eval::{Eval, EvalEnvironment},
     subst::{SubstTerm, SubstType},
     types::Fun,
     types::Type,
+    values::{Lambda as LambdaVal, Value},
     TypeVar, Var,
 };
 use std::fmt;
@@ -45,6 +47,19 @@ where
         env.add_var(self.var.clone(), self.annot.clone());
         let body_ty = self.body.check(env)?;
         Ok(Fun::new(self.annot.clone(), body_ty).into())
+    }
+}
+
+impl<Val, Env, T, Ty> Eval<Val, Env, T, Ty> for Lambda<T, Ty>
+where
+    T: Term + SubstTerm<T, Target = T>,
+    Ty: Type,
+    Val: Value<T>,
+    Env: EvalEnvironment,
+    LambdaVal<T, Ty>: Into<Val>,
+{
+    fn eval(self, _: &mut Env) -> Result<Val, Error> {
+        Ok(LambdaVal::new(&self.var, self.annot, *self.body).into())
     }
 }
 

@@ -21,12 +21,38 @@ where
     pub body: T,
 }
 
+impl<T, Ty> Lambda<T, Ty>
+where
+    T: Term,
+    Ty: Type,
+{
+    pub fn new<Ty1, T1>(v: &str, ty: Ty1, bd: T1) -> Lambda<T, Ty>
+    where
+        T1: Into<T>,
+        Ty1: Into<Ty>,
+    {
+        Lambda {
+            var: v.to_owned(),
+            annot: ty.into(),
+            body: bd.into(),
+        }
+    }
+}
+
 impl<T, Ty> Value<T> for Lambda<T, Ty>
 where
     T: Term + From<LambdaT<T, Ty>>,
     Ty: Type,
 {
     type Term = LambdaT<T, Ty>;
+
+    fn into_lambda<Ty1>(self) -> Result<Lambda<T, Ty1>, ErrorKind>
+    where
+        Ty1: Type,
+    {
+        let boxed = Box::new(self) as Box<dyn Any>;
+        boxed.try_into()
+    }
 }
 
 impl<T, Ty> From<Lambda<T, Ty>> for LambdaT<T, Ty>
@@ -51,7 +77,7 @@ where
             .downcast::<Lambda<T, Ty>>()
             .map_err(|_| ErrorKind::TypeMismatch {
                 found: ty_name,
-                expected: "Function Type".to_owned(),
+                expected: "Lambda Abstraction".to_owned(),
             })
             .map(|lam| *lam)
     }

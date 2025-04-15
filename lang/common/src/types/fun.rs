@@ -26,7 +26,18 @@ where
     }
 }
 
-impl<Ty> Type for Fun<Ty> where Ty: Type {}
+impl<Ty> Type for Fun<Ty>
+where
+    Ty: Type,
+{
+    fn into_fun<Ty1>(self) -> Result<Fun<Ty1>, ErrorKind>
+    where
+        Ty1: Type,
+    {
+        let boxed = Box::new(self) as Box<dyn Any>;
+        boxed.try_into()
+    }
+}
 
 impl<Ty> SubstType<Ty> for Fun<Ty>
 where

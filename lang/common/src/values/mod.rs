@@ -31,6 +31,24 @@ where
             expected: "False".to_owned(),
         })
     }
+
+    fn into_num(self) -> Result<Num, ErrorKind> {
+        Err(ErrorKind::ValueMismatch {
+            found: self.to_string(),
+            expected: "Number".to_owned(),
+        })
+    }
+
+    fn into_raise<V, Ty>(self) -> Result<Raise<V, Ty, T>, ErrorKind>
+    where
+        V: Value<T>,
+        Ty: Type,
+    {
+        Err(ErrorKind::ValueMismatch {
+            found: self.to_string(),
+            expected: "Raise".to_owned(),
+        })
+    }
 }
 
 pub mod cons;

@@ -2,8 +2,10 @@ use super::Term;
 use crate::{
     check::{to_check_err, CheckEnvironment, Typecheck},
     errors::Error,
+    eval::{to_eval_err, Eval, EvalEnvironment},
     subst::{SubstTerm, SubstType},
     types::{Nat, Type},
+    values::{Num as NumVal, Value},
     TypeVar, Var,
 };
 use std::fmt;
@@ -58,6 +60,21 @@ where
         let inner_ty = self.term.check(env)?;
         let nat = inner_ty.into_nat().map_err(to_check_err)?;
         Ok(nat.into())
+    }
+}
+
+impl<Env, Val, T, Ty> Eval<Val, Env, T, Ty> for Succ<T>
+where
+    T: Term + Eval<Val, Env, T, Ty> + SubstTerm<T, Target = T>,
+    Ty: Type,
+    Val: Value<T>,
+    Env: EvalEnvironment,
+    NumVal: Into<Val>,
+{
+    fn eval(self, env: &mut Env) -> Result<Val, Error> {
+        let val = self.term.eval(env)?;
+        let num = val.into_num().map_err(to_eval_err)?;
+        Ok(NumVal::new(num.num + 1).into())
     }
 }
 

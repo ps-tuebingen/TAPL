@@ -9,8 +9,10 @@ where
     where
         Ty: Type,
     {
-        let boxed = Box::new(self) as Box<dyn Any>;
-        boxed.try_into()
+        Err(ErrorKind::TypeMismatch {
+            found: self.to_string(),
+            expected: "Function Type".to_owned(),
+        })
     }
 
     fn into_nat(self) -> Result<Nat, ErrorKind> {

@@ -1,12 +1,3 @@
-pub mod ift;
-pub mod iszero;
-pub mod lambda;
-pub mod pred;
-pub mod raise;
-pub mod succ;
-pub mod tryt;
-pub mod tryval;
-pub mod unit;
 pub mod values;
 use super::to_err;
 use crate::syntax::Term;

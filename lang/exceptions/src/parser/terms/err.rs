@@ -1,12 +1,15 @@
 use super::pair_to_term;
 use crate::{
     parser::{pair_to_n_inner, types::pair_to_type, Rule},
-    syntax::{Error as ErrTerm, Raise, Try, TryWithVal},
+    syntax::Term,
 };
-use common::errors::Error;
+use common::{
+    errors::Error,
+    terms::{Raise, Try},
+};
 use pest::iterators::Pair;
 
-pub fn pair_to_try_with(p: Pair<'_, Rule>) -> Result<Try, Error> {
+pub fn pair_to_try_with(p: Pair<'_, Rule>) -> Result<Try<Term>, Error> {
     let mut inner = pair_to_n_inner(
         p,
         vec!["Try Keyword", "Try Term", "With Keyword", "With Term"],

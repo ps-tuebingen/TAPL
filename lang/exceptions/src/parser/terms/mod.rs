@@ -1,6 +1,9 @@
 use super::{pair_to_n_inner, to_parse_err, Rule};
-use crate::syntax::{App, Term, Unit};
-use common::errors::{Error, ErrorKind};
+use crate::syntax::Term;
+use common::{
+    errors::{Error, ErrorKind},
+    terms::{App, Unit},
+};
 use pest::iterators::Pair;
 
 mod bool;

@@ -2,8 +2,10 @@ use super::Term;
 use crate::{
     check::{to_check_err, CheckEnvironment, Typecheck},
     errors::{Error, ErrorKind},
+    eval::{Eval, EvalEnvironment},
     subst::{SubstTerm, SubstType},
     types::Type,
+    values::Value,
     TypeVar, Var,
 };
 use std::fmt;
@@ -78,6 +80,23 @@ where
                 found: term_ty.to_string(),
                 expected: handler_ty.to_string(),
             }))
+        }
+    }
+}
+
+impl<Val, Env, T, Ty> Eval<Val, Env, T, Ty> for Try<T>
+where
+    T: Term + Eval<Val, Env, T, Ty> + SubstTerm<T, Target = T>,
+    Ty: Type,
+    Val: Value<T>,
+    Env: EvalEnvironment,
+{
+    fn eval(self, env: &mut Env) -> Result<Val, Error> {
+        let term_val = self.term.eval(env);
+        if term_val.is_err() {
+            self.handler.eval(env)
+        } else {
+            term_val
         }
     }
 }

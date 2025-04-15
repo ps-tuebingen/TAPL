@@ -2,8 +2,11 @@ use super::Term;
 use crate::{
     check::{to_check_err, CheckEnvironment, Typecheck},
     errors::{Error, ErrorKind},
+    eval::{to_eval_err, Eval, EvalEnvironment},
     subst::{SubstTerm, SubstType},
+    terms::{App, Raise},
     types::Type,
+    values::Value,
     TypeVar, Var,
 };
 use std::fmt;
@@ -68,6 +71,25 @@ where
                 expected: fun.to.to_string(),
             }))
         }
+    }
+}
+
+impl<Val, Env, T, Ty> Eval<Val, Env, T, Ty> for TryWithVal<T>
+where
+    T: Term + Eval<Val, Env, T, Ty> + SubstTerm<T, Target = T>,
+    Ty: Type,
+    Val: Value<T> + Into<T>,
+    Env: EvalEnvironment,
+    Raise<T, Ty>: Into<T>,
+{
+    fn eval(self, env: &mut Env) -> Result<Val, Error> {
+        let term_evaled = self.term.eval(env)?;
+        let raise: Raise<T, Ty> = term_evaled
+            .into_raise::<Val, Ty>()
+            .map_err(to_eval_err)?
+            .into();
+
+        App::new(*self.handler, raise).eval(env)
     }
 }
 

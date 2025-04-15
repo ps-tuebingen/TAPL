@@ -2,8 +2,10 @@ use super::Term;
 use crate::{
     check::{to_check_err, CheckEnvironment, Typecheck},
     errors::{Error, ErrorKind},
+    eval::{Eval, EvalEnvironment},
     subst::{SubstTerm, SubstType},
     types::Type,
+    values::{Raise as RaiseVal, Value},
     TypeVar, Var,
 };
 use std::fmt;
@@ -95,6 +97,20 @@ where
                 expected: self.exception_ty.to_string(),
             }))
         }
+    }
+}
+
+impl<Env, Val, T, Ty> Eval<Val, Env, T, Ty> for Raise<T, Ty>
+where
+    T: Term + Eval<Val, Env, T, Ty> + SubstTerm<T, Target = T>,
+    Ty: Type,
+    Val: Value<T>,
+    Env: EvalEnvironment,
+    RaiseVal<Val, Ty, T>: Into<Val>,
+{
+    fn eval(self, env: &mut Env) -> Result<Val, Error> {
+        let exc_val = self.exception.eval(env)?;
+        Ok(RaiseVal::new(exc_val, self.cont_ty, self.exception_ty).into())
     }
 }
 

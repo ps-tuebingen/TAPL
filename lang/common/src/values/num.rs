@@ -1,10 +1,19 @@
 use super::Value;
-use crate::terms::{Num as NumT, Term};
+use crate::{
+    errors::ErrorKind,
+    terms::{Num as NumT, Term},
+};
 use std::fmt;
 
 #[derive(Debug, Clone)]
 pub struct Num {
-    num: i64,
+    pub num: i64,
+}
+
+impl Num {
+    pub fn new(i: i64) -> Num {
+        Num { num: i }
+    }
 }
 
 impl<T> Value<T> for Num
@@ -12,6 +21,10 @@ where
     T: Term + From<NumT<T>>,
 {
     type Term = NumT<T>;
+
+    fn into_num(self) -> Result<Num, ErrorKind> {
+        Ok(self)
+    }
 }
 
 impl<T> From<Num> for NumT<T>
