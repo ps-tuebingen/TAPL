@@ -1,13 +1,15 @@
 use super::Value;
 use crate::terms::{Loc as LocT, Term};
+use std::fmt;
 
+#[derive(Debug)]
 pub struct Loc {
     loc: usize,
 }
 
 impl<T> Value<T> for Loc
 where
-    T: Term,
+    T: Term + From<LocT<T>>,
 {
     type Term = LocT<T>;
 }
@@ -18,5 +20,11 @@ where
 {
     fn from(loc: Loc) -> LocT<T> {
         LocT::new(loc.loc)
+    }
+}
+
+impl fmt::Display for Loc {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.loc)
     }
 }

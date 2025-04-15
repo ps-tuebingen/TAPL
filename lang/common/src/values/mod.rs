@@ -1,10 +1,22 @@
-use crate::terms::Term;
+use crate::{errors::ErrorKind, terms::Term, types::Type};
+use std::fmt;
+
 pub trait Value<T>
 where
     T: Term,
-    Self: Sized,
+    Self: Sized + fmt::Display + fmt::Debug,
 {
-    type Term: Term + From<Self>;
+    type Term: Term + From<Self> + Into<T>;
+
+    fn into_lambda<Ty>(self) -> Result<Lambda<T, Ty>, ErrorKind>
+    where
+        Ty: Type,
+    {
+        Err(ErrorKind::ValueMismatch {
+            found: self.to_string(),
+            expected: "Lambda Abstraction".to_owned(),
+        })
+    }
 }
 
 pub mod cons;

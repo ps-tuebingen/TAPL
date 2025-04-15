@@ -3,8 +3,10 @@ use crate::{
     terms::{Cons as ConsT, Term},
     types::Type,
 };
+use std::fmt;
 use std::marker::PhantomData;
 
+#[derive(Debug)]
 pub struct Cons<V, Ty, T>
 where
     V: Value<T>,
@@ -20,7 +22,7 @@ where
 impl<V, Ty, T> Value<T> for Cons<V, Ty, T>
 where
     V: Value<T> + Into<T>,
-    T: Term,
+    T: Term + From<ConsT<T, Ty>>,
     Ty: Type,
 {
     type Term = ConsT<T, Ty>;
@@ -34,5 +36,16 @@ where
 {
     fn from(c: Cons<V, Ty, T>) -> ConsT<T, Ty> {
         ConsT::new(c.head, c.tail, c.ty)
+    }
+}
+
+impl<V, Ty, T> fmt::Display for Cons<V, Ty, T>
+where
+    V: Value<T>,
+    T: Term,
+    Ty: Type,
+{
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "cons[{}]({},{})", self.ty, self.head, self.tail)
     }
 }

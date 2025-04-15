@@ -3,7 +3,9 @@ use crate::{
     terms::{Exception as ExceptionT, Term},
     types::Type,
 };
+use std::fmt;
 
+#[derive(Debug)]
 pub struct Exception<Ty>
 where
     Ty: Type,
@@ -14,7 +16,7 @@ where
 impl<T, Ty> Value<T> for Exception<Ty>
 where
     Ty: Type,
-    T: Term,
+    T: Term + From<ExceptionT<T, Ty>>,
 {
     type Term = ExceptionT<T, Ty>;
 }
@@ -26,5 +28,14 @@ where
 {
     fn from(ex: Exception<Ty>) -> ExceptionT<T, Ty> {
         ExceptionT::new(ex.ty)
+    }
+}
+
+impl<Ty> fmt::Display for Exception<Ty>
+where
+    Ty: Type,
+{
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "error[{}]", self.ty)
     }
 }

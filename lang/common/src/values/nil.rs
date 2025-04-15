@@ -3,7 +3,8 @@ use crate::{
     terms::{Nil as NilT, Term},
     types::Type,
 };
-
+use std::fmt;
+#[derive(Debug)]
 pub struct Nil<Ty>
 where
     Ty: Type,
@@ -14,7 +15,7 @@ where
 impl<Ty, T> Value<T> for Nil<Ty>
 where
     Ty: Type,
-    T: Term,
+    T: Term + From<NilT<T, Ty>>,
 {
     type Term = NilT<T, Ty>;
 }
@@ -26,5 +27,14 @@ where
 {
     fn from(nil: Nil<Ty>) -> NilT<T, Ty> {
         NilT::new(nil.ty)
+    }
+}
+
+impl<Ty> fmt::Display for Nil<Ty>
+where
+    Ty: Type,
+{
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "nil[{}]", self.ty)
     }
 }

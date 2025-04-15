@@ -2,8 +2,10 @@ use super::Term;
 use crate::{
     check::{to_check_err, CheckEnvironment, Typecheck},
     errors::{Error, ErrorKind},
+    eval::{to_eval_err, Eval, EvalEnvironment},
     subst::{SubstTerm, SubstType},
     types::Type,
+    values::Value,
     TypeVar, Var,
 };
 use std::fmt;
@@ -83,6 +85,25 @@ where
                 expected: fun.from.to_string(),
             }))
         }
+    }
+}
+
+impl<V, Env, T, Ty> Eval<V, Env, T, Ty> for App<T>
+where
+    V: Value<T>,
+    T: Term + SubstTerm<T, Target = T> + Eval<V, Env, T, Ty>,
+    Env: EvalEnvironment,
+    Ty: Type,
+{
+    fn eval_start(self) -> Result<V, Error> {
+        self.eval(&mut Env::default())
+    }
+
+    fn eval(self, env: &mut Env) -> Result<V, Error> {
+        let fun_val = self.fun.eval(env)?;
+        let arg_val: V::Term = self.arg.eval(env)?.into();
+        let lam = fun_val.into_lambda::<Ty>().map_err(to_eval_err)?;
+        lam.body.subst(&lam.var, &arg_val.into()).eval(env)
     }
 }
 

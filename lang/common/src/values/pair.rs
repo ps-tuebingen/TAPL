@@ -1,7 +1,8 @@
 use super::Value;
 use crate::terms::{Pair as PairT, Term};
+use std::fmt;
 use std::marker::PhantomData;
-
+#[derive(Debug)]
 pub struct Pair<V, T>
 where
     V: Value<T>,
@@ -15,7 +16,7 @@ where
 impl<V, T> Value<T> for Pair<V, T>
 where
     V: Value<T> + Into<T>,
-    T: Term,
+    T: Term + From<PairT<T>>,
 {
     type Term = PairT<T>;
 }
@@ -27,5 +28,15 @@ where
 {
     fn from(p: Pair<V, T>) -> PairT<T> {
         PairT::new(*p.fst, *p.snd)
+    }
+}
+
+impl<V, T> fmt::Display for Pair<V, T>
+where
+    V: Value<T>,
+    T: Term,
+{
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{{ {}, {} }}", self.fst, self.snd)
     }
 }

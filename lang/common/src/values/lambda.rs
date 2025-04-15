@@ -4,20 +4,22 @@ use crate::{
     types::Type,
     Var,
 };
+use std::fmt;
 
+#[derive(Debug)]
 pub struct Lambda<T, Ty>
 where
     T: Term,
     Ty: Type,
 {
-    var: Var,
-    annot: Ty,
-    body: T,
+    pub var: Var,
+    pub annot: Ty,
+    pub body: T,
 }
 
 impl<T, Ty> Value<T> for Lambda<T, Ty>
 where
-    T: Term,
+    T: Term + From<LambdaT<T, Ty>>,
     Ty: Type,
 {
     type Term = LambdaT<T, Ty>;
@@ -30,5 +32,15 @@ where
 {
     fn from(lam: Lambda<T, Ty>) -> LambdaT<T, Ty> {
         LambdaT::new(&lam.var, lam.annot, lam.body)
+    }
+}
+
+impl<T, Ty> fmt::Display for Lambda<T, Ty>
+where
+    T: Term,
+    Ty: Type,
+{
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "\\{}:{}.{}", self.var, self.annot, self.body)
     }
 }

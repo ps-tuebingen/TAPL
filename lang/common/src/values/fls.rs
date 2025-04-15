@@ -1,11 +1,13 @@
 use super::Value;
 use crate::terms::{False as FalseT, Term};
+use std::fmt;
 
+#[derive(Debug)]
 pub struct False;
 
 impl<T> Value<T> for False
 where
-    T: Term,
+    T: Term + From<FalseT<T>>,
 {
     type Term = FalseT<T>;
 }
@@ -16,5 +18,11 @@ where
 {
     fn from(_: False) -> FalseT<T> {
         FalseT::new()
+    }
+}
+
+impl fmt::Display for False {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        f.write_str("false")
     }
 }

@@ -4,8 +4,9 @@ use crate::{
     types::Type,
     Label,
 };
+use std::fmt;
 use std::marker::PhantomData;
-
+#[derive(Debug)]
 pub struct Variant<V, Ty, T>
 where
     V: Value<T>,
@@ -22,7 +23,7 @@ impl<V, Ty, T> Value<T> for Variant<V, Ty, T>
 where
     V: Value<T> + Into<T>,
     Ty: Type,
-    T: Term,
+    T: Term + From<VariantT<T, Ty>>,
 {
     type Term = VariantT<T, Ty>;
 }
@@ -35,5 +36,16 @@ where
 {
     fn from(var: Variant<V, Ty, T>) -> VariantT<T, Ty> {
         VariantT::new(&var.label, *var.val, var.ty)
+    }
+}
+
+impl<V, Ty, T> fmt::Display for Variant<V, Ty, T>
+where
+    V: Value<T>,
+    T: Term,
+    Ty: Type,
+{
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "<{} = {}> as {}", self.label, self.val, self.ty)
     }
 }

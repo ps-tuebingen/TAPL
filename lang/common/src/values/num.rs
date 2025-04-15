@@ -1,13 +1,15 @@
 use super::Value;
 use crate::terms::{Num as NumT, Term};
+use std::fmt;
 
+#[derive(Debug)]
 pub struct Num {
     num: i64,
 }
 
 impl<T> Value<T> for Num
 where
-    T: Term,
+    T: Term + From<NumT<T>>,
 {
     type Term = NumT<T>;
 }
@@ -18,5 +20,11 @@ where
 {
     fn from(n: Num) -> NumT<T> {
         NumT::new(n.num)
+    }
+}
+
+impl fmt::Display for Num {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.num)
     }
 }
