@@ -1,5 +1,3 @@
-pub mod app;
-pub mod errt;
 pub mod ift;
 pub mod iszero;
 pub mod lambda;

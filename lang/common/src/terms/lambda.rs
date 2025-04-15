@@ -41,10 +41,6 @@ where
     T: Term + Typecheck<Env, Ty>,
     Fun<Ty>: Into<Ty>,
 {
-    fn check_start(&self) -> Result<Ty, Error> {
-        self.check(&mut Env::default())
-    }
-
     fn check(&self, env: &mut Env) -> Result<Ty, Error> {
         env.add_var(self.var.clone(), self.annot.clone());
         let body_ty = self.body.check(env)?;

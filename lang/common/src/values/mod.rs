@@ -1,10 +1,10 @@
 use crate::{errors::ErrorKind, terms::Term, types::Type};
-use std::fmt;
+use std::{any::Any, fmt};
 
 pub trait Value<T>
 where
     T: Term,
-    Self: Sized + fmt::Display + fmt::Debug,
+    Self: Any + Sized + Clone + fmt::Display + fmt::Debug,
 {
     type Term: Term + From<Self> + Into<T>;
 
@@ -15,6 +15,20 @@ where
         Err(ErrorKind::ValueMismatch {
             found: self.to_string(),
             expected: "Lambda Abstraction".to_owned(),
+        })
+    }
+
+    fn into_true(self) -> Result<True, ErrorKind> {
+        Err(ErrorKind::ValueMismatch {
+            found: self.to_string(),
+            expected: "True".to_owned(),
+        })
+    }
+
+    fn into_false(self) -> Result<False, ErrorKind> {
+        Err(ErrorKind::ValueMismatch {
+            found: self.to_string(),
+            expected: "False".to_owned(),
         })
     }
 }

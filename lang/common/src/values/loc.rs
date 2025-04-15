@@ -2,7 +2,7 @@ use super::Value;
 use crate::terms::{Loc as LocT, Term};
 use std::fmt;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Loc {
     loc: usize,
 }

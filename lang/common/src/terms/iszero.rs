@@ -53,10 +53,6 @@ where
     Nat: Into<Ty>,
     Env: CheckEnvironment<Ty>,
 {
-    fn check_start(&self) -> Result<Ty, Error> {
-        self.check(&mut Env::default())
-    }
-
     fn check(&self, env: &mut Env) -> Result<Ty, Error> {
         let inner_ty = self.term.check(env)?;
         let nat = inner_ty.into_nat().map_err(to_check_err)?;

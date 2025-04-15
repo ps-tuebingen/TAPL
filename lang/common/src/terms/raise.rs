@@ -85,10 +85,6 @@ where
     Ty: Type,
     Env: CheckEnvironment<Ty>,
 {
-    fn check_start(&self) -> Result<Ty, Error> {
-        self.check(&mut Env::default())
-    }
-
     fn check(&self, env: &mut Env) -> Result<Ty, Error> {
         let err_ty = self.exception.check(env)?;
         if err_ty == self.exception_ty {

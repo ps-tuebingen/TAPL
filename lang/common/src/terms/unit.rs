@@ -59,10 +59,6 @@ where
     UnitTy: Into<Ty>,
     Env: CheckEnvironment<Ty>,
 {
-    fn check_start(&self) -> Result<Ty, Error> {
-        self.check(&mut Env::default())
-    }
-
     fn check(&self, _: &mut Env) -> Result<Ty, Error> {
         Ok(UnitTy.into())
     }

@@ -5,12 +5,24 @@ use crate::{
 };
 use std::fmt;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Exception<Ty>
 where
     Ty: Type,
 {
     ty: Ty,
+}
+
+impl<Ty> Exception<Ty>
+where
+    Ty: Type,
+{
+    pub fn new<Ty1>(ty: Ty1) -> Exception<Ty>
+    where
+        Ty1: Into<Ty>,
+    {
+        Exception { ty: ty.into() }
+    }
 }
 
 impl<T, Ty> Value<T> for Exception<Ty>

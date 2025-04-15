@@ -2,7 +2,7 @@ use super::Value;
 use crate::terms::{Pair as PairT, Term};
 use std::fmt;
 use std::marker::PhantomData;
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Pair<V, T>
 where
     V: Value<T>,

@@ -15,8 +15,12 @@ where
     Env: EvalEnvironment,
     T: Term + SubstTerm<T, Target = T>,
     Ty: Type,
+    Self: Sized,
 {
-    fn eval_start(self) -> Result<Val, Error>;
+    fn eval_start(self) -> Result<Val, Error> {
+        self.eval(&mut Env::default())
+    }
+
     fn eval(self, env: &mut Env) -> Result<Val, Error>;
 }
 

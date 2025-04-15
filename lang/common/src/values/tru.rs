@@ -1,8 +1,11 @@
 use super::Value;
-use crate::terms::{Term, True as TrueT};
+use crate::{
+    errors::ErrorKind,
+    terms::{Term, True as TrueT},
+};
 use std::fmt;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct True;
 
 impl<T> Value<T> for True
@@ -10,6 +13,10 @@ where
     T: Term + From<TrueT<T>>,
 {
     type Term = TrueT<T>;
+
+    fn into_true(self) -> Result<True, ErrorKind> {
+        Ok(self)
+    }
 }
 
 impl<T> From<True> for TrueT<T>

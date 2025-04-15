@@ -18,7 +18,10 @@ where
     Env: CheckEnvironment<Ty>,
     Ty: Type,
 {
-    fn check_start(&self) -> Result<Ty, Error>;
+    fn check_start(&self) -> Result<Ty, Error> {
+        self.check(&mut Env::default())
+    }
+
     fn check(&self, env: &mut Env) -> Result<Ty, Error>;
 }
 

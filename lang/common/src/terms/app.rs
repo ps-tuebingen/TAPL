@@ -69,10 +69,6 @@ where
     Ty: Type,
     T: Term + Typecheck<Env, Ty>,
 {
-    fn check_start(&self) -> Result<Ty, Error> {
-        self.check(&mut Env::default())
-    }
-
     fn check(&self, env: &mut Env) -> Result<Ty, Error> {
         let fun_ty = self.fun.check(&mut env.clone())?;
         let fun = fun_ty.into_fun().map_err(to_check_err)?;
@@ -95,10 +91,6 @@ where
     Env: EvalEnvironment,
     Ty: Type,
 {
-    fn eval_start(self) -> Result<V, Error> {
-        self.eval(&mut Env::default())
-    }
-
     fn eval(self, env: &mut Env) -> Result<V, Error> {
         let fun_val = self.fun.eval(env)?;
         let arg_val: V::Term = self.arg.eval(env)?.into();

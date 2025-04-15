@@ -1,8 +1,11 @@
 use super::Value;
-use crate::terms::{False as FalseT, Term};
+use crate::{
+    errors::ErrorKind,
+    terms::{False as FalseT, Term},
+};
 use std::fmt;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct False;
 
 impl<T> Value<T> for False
@@ -10,6 +13,10 @@ where
     T: Term + From<FalseT<T>>,
 {
     type Term = FalseT<T>;
+
+    fn into_false(self) -> Result<False, ErrorKind> {
+        Ok(self)
+    }
 }
 
 impl<T> From<False> for FalseT<T>

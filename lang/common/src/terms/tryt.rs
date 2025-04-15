@@ -68,10 +68,6 @@ where
     Ty: Type,
     T: Term + Typecheck<Env, Ty>,
 {
-    fn check_start(&self) -> Result<Ty, Error> {
-        self.check(&mut Env::default())
-    }
-
     fn check(&self, env: &mut Env) -> Result<Ty, Error> {
         let term_ty = self.term.check(&mut env.clone())?;
         let handler_ty = self.handler.check(env)?;

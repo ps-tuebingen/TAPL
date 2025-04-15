@@ -2,7 +2,7 @@ use super::Value;
 use crate::terms::{Num as NumT, Term};
 use std::fmt;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Num {
     num: i64,
 }

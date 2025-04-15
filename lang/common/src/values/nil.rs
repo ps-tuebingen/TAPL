@@ -4,7 +4,7 @@ use crate::{
     types::Type,
 };
 use std::fmt;
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Nil<Ty>
 where
     Ty: Type,

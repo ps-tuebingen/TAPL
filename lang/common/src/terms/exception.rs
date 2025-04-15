@@ -2,8 +2,10 @@ use super::Term;
 use crate::{
     check::{CheckEnvironment, Typecheck},
     errors::Error,
+    eval::{Eval, EvalEnvironment},
     subst::{SubstTerm, SubstType},
     types::Type,
+    values::{Exception as ExceptionVal, Value},
     TypeVar, Var,
 };
 use std::{fmt, marker::PhantomData};
@@ -72,12 +74,21 @@ where
     Ty: Type,
     T: Term,
 {
-    fn check_start(&self) -> Result<Ty, Error> {
-        self.check(&mut Env::default())
-    }
-
     fn check(&self, _: &mut Env) -> Result<Ty, Error> {
         Ok(self.ty.clone())
+    }
+}
+
+impl<Val, Env, T, Ty> Eval<Val, Env, T, Ty> for Exception<T, Ty>
+where
+    Val: Value<T>,
+    T: Term + SubstTerm<T, Target = T>,
+    Ty: Type,
+    Env: EvalEnvironment,
+    ExceptionVal<Ty>: Into<Val>,
+{
+    fn eval(self, _: &mut Env) -> Result<Val, Error> {
+        Ok(ExceptionVal::new(self.ty).into())
     }
 }
 

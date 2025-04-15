@@ -56,10 +56,6 @@ where
     Ty: Type,
     Env: CheckEnvironment<Ty>,
 {
-    fn check_start(&self) -> Result<Ty, Error> {
-        self.check(&mut Env::default())
-    }
-
     fn check(&self, env: &mut Env) -> Result<Ty, Error> {
         let t_ty = self.term.check(&mut env.clone())?;
         let handler_ty = self.handler.check(env)?;

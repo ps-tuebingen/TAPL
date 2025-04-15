@@ -6,7 +6,7 @@ use crate::{
 use std::fmt;
 use std::{collections::HashMap, marker::PhantomData};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Record<V, T>
 where
     V: Value<T>,

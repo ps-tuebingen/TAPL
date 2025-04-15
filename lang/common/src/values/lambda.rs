@@ -1,12 +1,16 @@
 use super::Value;
 use crate::{
+    errors::ErrorKind,
     terms::{Lambda as LambdaT, Term},
     types::Type,
     Var,
 };
-use std::fmt;
+use std::{
+    any::{type_name_of_val, Any},
+    fmt,
+};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Lambda<T, Ty>
 where
     T: Term,
@@ -32,6 +36,24 @@ where
 {
     fn from(lam: Lambda<T, Ty>) -> LambdaT<T, Ty> {
         LambdaT::new(&lam.var, lam.annot, lam.body)
+    }
+}
+
+impl<T, Ty> TryFrom<Box<dyn Any>> for Lambda<T, Ty>
+where
+    T: Term,
+    Ty: Type,
+{
+    type Error = ErrorKind;
+    fn try_from(boxed: Box<dyn Any>) -> Result<Lambda<T, Ty>, Self::Error> {
+        let ty_name = type_name_of_val(&(*boxed)).to_owned();
+        boxed
+            .downcast::<Lambda<T, Ty>>()
+            .map_err(|_| ErrorKind::TypeMismatch {
+                found: ty_name,
+                expected: "Function Type".to_owned(),
+            })
+            .map(|lam| *lam)
     }
 }
 

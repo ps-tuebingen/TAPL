@@ -2,7 +2,7 @@ use super::Value;
 use crate::terms::{Something as SomethingT, Term};
 use std::fmt;
 use std::marker::PhantomData;
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Something<V, T>
 where
     V: Value<T>,
