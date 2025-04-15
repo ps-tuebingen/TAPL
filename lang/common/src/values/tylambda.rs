@@ -5,7 +5,7 @@ use crate::{
     TypeVar,
 };
 use std::fmt;
-#[derive(Debug, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct TyLambda<T>
 where
     T: Term,

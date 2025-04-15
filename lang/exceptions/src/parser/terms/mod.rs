@@ -2,7 +2,7 @@ use super::{pair_to_n_inner, to_parse_err, Rule};
 use crate::syntax::Term;
 use common::{
     errors::{Error, ErrorKind},
-    terms::{App, Unit},
+    terms::{App, False, Num, True, Unit, Variable},
 };
 use pest::iterators::Pair;
 
@@ -48,9 +48,9 @@ pub fn pair_to_prim_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
                 .trim()
                 .parse::<i64>()
                 .map_err(|_| to_parse_err(ErrorKind::UnknownKeyword(p.as_str().to_owned())))?;
-            Ok(Term::Const(num))
+            Ok(Term::Num(Num::new(num)))
         }
-        Rule::variable => Ok(Term::Var(p.as_str().trim().to_owned())),
+        Rule::variable => Ok(Variable::new(p.as_str().trim()).into()),
         Rule::r#const => str_to_term(p.as_str()),
         Rule::lambda_term => pair_to_lambda(p).map(|lam| lam.into()),
         Rule::succ_term => pair_to_succ(p).map(|succ| succ.into()),
@@ -91,9 +91,9 @@ pub fn pair_to_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
 
 fn str_to_term(s: &str) -> Result<Term, Error> {
     match s.to_lowercase().trim() {
-        "unit" => Ok(Unit.into()),
-        "true" => Ok(Term::True),
-        "false" => Ok(Term::False),
+        "unit" => Ok(Unit::new().into()),
+        "true" => Ok(True::new().into()),
+        "false" => Ok(False::new().into()),
         s => Err(to_parse_err(ErrorKind::UnknownKeyword(s.to_owned()))),
     }
 }

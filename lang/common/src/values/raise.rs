@@ -10,7 +10,7 @@ use std::{
     marker::PhantomData,
 };
 
-#[derive(Debug, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Raise<V, Ty, T>
 where
     V: Value<T>,

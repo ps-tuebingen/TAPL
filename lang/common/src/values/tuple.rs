@@ -2,7 +2,7 @@ use super::Value;
 use crate::terms::{Term, Tuple as TupleT};
 use std::fmt;
 use std::marker::PhantomData;
-#[derive(Debug, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Tuple<V, T>
 where
     V: Value<T>,

@@ -5,7 +5,7 @@ use crate::{
 };
 use std::fmt;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Exception<Ty>
 where
     Ty: Type,

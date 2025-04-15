@@ -5,7 +5,7 @@ use crate::{
 };
 use std::fmt;
 use std::marker::PhantomData;
-#[derive(Debug, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Right<V, Ty, T>
 where
     V: Value<T>,

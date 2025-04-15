@@ -1,12 +1,12 @@
 use super::pair_to_term;
 use crate::{
     parser::{pair_to_n_inner, Rule},
-    syntax::If,
+    syntax::Term,
 };
-use common::errors::Error;
+use common::{errors::Error, terms::If};
 use pest::iterators::Pair;
 
-pub fn pair_to_if(p: Pair<'_, Rule>) -> Result<If, Error> {
+pub fn pair_to_if(p: Pair<'_, Rule>) -> Result<If<Term>, Error> {
     let mut inner = pair_to_n_inner(
         p,
         vec![
@@ -26,9 +26,5 @@ pub fn pair_to_if(p: Pair<'_, Rule>) -> Result<If, Error> {
     inner.remove(0);
     let elset_rule = inner.remove(0);
     let elset = pair_to_term(elset_rule)?;
-    Ok(If {
-        ift: Box::new(ift),
-        thent: Box::new(thent),
-        elset: Box::new(elset),
-    })
+    Ok(If::new(ift, thent, elset))
 }

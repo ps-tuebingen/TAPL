@@ -2,7 +2,7 @@ use super::Value;
 use crate::terms::{Term, Unit as UnitT};
 use std::fmt;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Unit;
 
 impl<T> Value<T> for Unit

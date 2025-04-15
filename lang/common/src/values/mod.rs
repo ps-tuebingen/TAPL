@@ -4,9 +4,13 @@ use std::{any::Any, fmt};
 pub trait Value<T>
 where
     T: Term,
-    Self: Any + Sized + Clone + fmt::Display + fmt::Debug,
+    Self: Any + Sized + Clone + fmt::Display + fmt::Debug + PartialEq + Eq,
 {
     type Term: Term + From<Self> + Into<T>;
+
+    fn into_term(self) -> Self::Term {
+        self.into()
+    }
 
     fn into_lambda<Ty>(self) -> Result<Lambda<T, Ty>, ErrorKind>
     where

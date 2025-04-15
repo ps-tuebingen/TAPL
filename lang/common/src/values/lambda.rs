@@ -10,7 +10,7 @@ use std::{
     fmt,
 };
 
-#[derive(Debug, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Lambda<T, Ty>
 where
     T: Term,

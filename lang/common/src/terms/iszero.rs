@@ -18,6 +18,20 @@ where
     term: Box<T>,
 }
 
+impl<T> IsZero<T>
+where
+    T: Term,
+{
+    pub fn new<T1>(t: T1) -> IsZero<T>
+    where
+        T1: Into<T>,
+    {
+        IsZero {
+            term: Box::new(t.into()),
+        }
+    }
+}
+
 impl<T> Term for IsZero<T> where T: Term {}
 
 impl<T> SubstTerm<T> for IsZero<T>

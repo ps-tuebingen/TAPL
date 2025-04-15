@@ -20,6 +20,24 @@ where
     else_term: Box<T>,
 }
 
+impl<T> If<T>
+where
+    T: Term,
+{
+    pub fn new<T1, T2, T3>(cond: T1, th: T2, els: T3) -> If<T>
+    where
+        T1: Into<T>,
+        T2: Into<T>,
+        T3: Into<T>,
+    {
+        If {
+            if_cond: Box::new(cond.into()),
+            then_term: Box::new(th.into()),
+            else_term: Box::new(els.into()),
+        }
+    }
+}
+
 impl<T> Term for If<T> where T: Term {}
 
 impl<T> SubstTerm<T> for If<T>

@@ -20,6 +20,22 @@ where
     handler: Box<T>,
 }
 
+impl<T> TryWithVal<T>
+where
+    T: Term,
+{
+    pub fn new<T1, T2>(t: T1, h: T2) -> TryWithVal<T>
+    where
+        T1: Into<T>,
+        T2: Into<T>,
+    {
+        TryWithVal {
+            term: Box::new(t.into()),
+            handler: Box::new(h.into()),
+        }
+    }
+}
+
 impl<T> Term for TryWithVal<T> where T: Term {}
 
 impl<T> SubstTerm<T> for TryWithVal<T>

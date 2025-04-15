@@ -1,9 +1,10 @@
 pub mod values;
 use super::to_err;
-use crate::syntax::Term;
+use crate::{syntax::Term, types::Type};
 use common::{
     errors::{Error, ErrorKind, ErrorLocation},
     eval::Eval,
+    terms::{False, Num, True, Unit, Variable},
 };
 use values::Value;
 
@@ -11,24 +12,24 @@ pub fn to_eval_err(knd: ErrorKind) -> Error {
     to_err(knd, ErrorLocation::Eval)
 }
 
-impl Eval<Value, (), Term> for Term {
+impl Eval<Value, (), Term, Type> for Term {
     fn eval_start(self) -> Result<Value, Error> {
         self.eval(&mut ())
     }
 
     fn eval(self, env: &mut ()) -> Result<Value, Error> {
         match self {
-            Term::Var(v) => v.eval(env),
+            Term::Var(v) => <Variable<Term> as Eval<Value, (), Term, Type>>::eval(v, env),
             Term::Lambda(lam) => lam.eval(env),
             Term::App(app) => app.eval(env),
-            Term::Unit(u) => u.eval(env),
-            Term::True(tru) => tru.eval(env),
-            Term::False(fls) => fls.eval(env),
+            Term::Unit(u) => <Unit<Term> as Eval<Value, (), Term, Type>>::eval(u, env),
+            Term::True(tru) => <True<Term> as Eval<Value, (), Term, Type>>::eval(tru, env),
+            Term::False(fls) => <False<Term> as Eval<Value, (), Term, Type>>::eval(fls, env),
             Term::Succ(s) => s.eval(env),
             Term::Pred(p) => p.eval(env),
             Term::If(ift) => ift.eval(env),
             Term::IsZero(isz) => isz.eval(env),
-            Term::Num(num) => num.eval(env),
+            Term::Num(num) => <Num<Term> as Eval<Value, (), Term, Type>>::eval(num, env),
             Term::Exception(exc) => exc.eval(env),
             Term::Try(tr) => tr.eval(env),
             Term::TryWithVal(tr) => tr.eval(env),
@@ -45,7 +46,7 @@ mod eval_tests {
 
     #[test]
     fn eval1() {
-        let result = example_term1().eval(Default::default()).unwrap();
+        let result = example_term1().eval(Env::default()).unwrap();
         let expected = Value::Unit;
         assert_eq!(result, expected)
     }

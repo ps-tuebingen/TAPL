@@ -5,7 +5,7 @@ use crate::{
     Var,
 };
 use std::fmt;
-#[derive(Debug, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct LambdaSub<T, Ty>
 where
     T: Term,

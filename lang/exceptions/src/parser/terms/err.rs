@@ -2,10 +2,11 @@ use super::pair_to_term;
 use crate::{
     parser::{pair_to_n_inner, types::pair_to_type, Rule},
     syntax::Term,
+    types::Type,
 };
 use common::{
     errors::Error,
-    terms::{Raise, Try},
+    terms::{Exception, Raise, Try, TryWithVal},
 };
 use pest::iterators::Pair;
 
@@ -22,13 +23,10 @@ pub fn pair_to_try_with(p: Pair<'_, Rule>) -> Result<Try<Term>, Error> {
     let with_rule = inner.remove(0);
     let witht = pair_to_term(with_rule)?;
 
-    Ok(Try {
-        term: Box::new(try_t),
-        handler: Box::new(witht),
-    })
+    Ok(Try::new(try_t, witht))
 }
 
-pub fn pair_to_try_catch(p: Pair<'_, Rule>) -> Result<TryWithVal, Error> {
+pub fn pair_to_try_catch(p: Pair<'_, Rule>) -> Result<TryWithVal<Term>, Error> {
     let mut inner = pair_to_n_inner(
         p,
         vec!["Try Keyword", "Try Term", "Catch Keyword", "Catch Term"],
@@ -40,13 +38,10 @@ pub fn pair_to_try_catch(p: Pair<'_, Rule>) -> Result<TryWithVal, Error> {
     inner.remove(0);
     let catch_rule = inner.remove(0);
     let catch_term = pair_to_term(catch_rule)?;
-    Ok(TryWithVal {
-        term: Box::new(tryt),
-        handler: Box::new(catch_term),
-    })
+    Ok(TryWithVal::new(tryt, catch_term))
 }
 
-pub fn pair_to_raise(p: Pair<'_, Rule>) -> Result<Raise, Error> {
+pub fn pair_to_raise(p: Pair<'_, Rule>) -> Result<Raise<Term, Type>, Error> {
     let mut inner = pair_to_n_inner(
         p,
         vec![
@@ -65,18 +60,14 @@ pub fn pair_to_raise(p: Pair<'_, Rule>) -> Result<Raise, Error> {
     let ex_ty_rule = inner.remove(0);
     let ex_ty_pair = pair_to_n_inner(ex_ty_rule, vec!["Type"])?.remove(0);
     let ex_ty = pair_to_type(ex_ty_pair)?;
-    Ok(Raise {
-        exception: Box::new(catch_term),
-        cont_ty,
-        ex_ty,
-    })
+    Ok(Raise::new(catch_term, cont_ty, ex_ty))
 }
 
-pub fn pair_to_err(p: Pair<'_, Rule>) -> Result<ErrTerm, Error> {
+pub fn pair_to_err(p: Pair<'_, Rule>) -> Result<Exception<Term, Type>, Error> {
     let mut inner = pair_to_n_inner(p, vec!["Error Keyword", "Error Type"])?;
     inner.remove(0);
     let ty_rule = inner.remove(0);
     let ty_pair = pair_to_n_inner(ty_rule, vec!["Type"])?.remove(0);
     let ty = pair_to_type(ty_pair)?;
-    Ok(ErrTerm { ty })
+    Ok(Exception::new(ty))
 }

@@ -1,6 +1,9 @@
 use super::{pair_to_n_inner, to_parse_err, Rule};
 use crate::types::Type;
-use common::errors::{Error, ErrorKind};
+use common::{
+    errors::{Error, ErrorKind},
+    types::{Bool, Fun, Nat, Unit},
+};
 use pest::iterators::Pair;
 
 pub fn pair_to_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
@@ -20,9 +23,9 @@ pub fn pair_to_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
 
 fn str_to_type(s: &str) -> Result<Type, Error> {
     match s.to_lowercase().trim() {
-        "unit" => Ok(Type::Unit),
-        "nat" => Ok(Type::Nat),
-        "bool" => Ok(Type::Bool),
+        "unit" => Ok(Unit.into()),
+        "nat" => Ok(Nat.into()),
+        "bool" => Ok(Bool.into()),
         s => Err(to_parse_err(ErrorKind::UnknownKeyword(s.to_owned()))),
     }
 }
@@ -36,8 +39,5 @@ fn pair_to_fun_ty(p: Pair<'_, Rule>) -> Result<Type, Error> {
     let to_rule = pair_to_n_inner(to_pair, vec!["Type"])?.remove(0);
     let to_ty = pair_to_type(to_rule)?;
 
-    Ok(Type::Fun {
-        from: Box::new(from_ty),
-        to: Box::new(to_ty),
-    })
+    Ok(Fun::new(from_ty, to_ty).into())
 }

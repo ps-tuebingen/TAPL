@@ -1,7 +1,11 @@
 use crate::types::Type;
-use common::terms::{
-    App, Exception, False, If, IsZero, Lambda, Num, Pred, Raise, Succ, Term as TermTrait, True,
-    Try, TryWithVal, Unit, Variable,
+use common::{
+    subst::SubstTerm,
+    terms::{
+        App, Exception, False, If, IsZero, Lambda, Num, Pred, Raise, Succ, Term as TermTrait, True,
+        Try, TryWithVal, Unit, Variable,
+    },
+    Var,
 };
 use std::fmt;
 
@@ -44,6 +48,29 @@ impl fmt::Display for Term {
             Term::Try(t) => t.fmt(f),
             Term::Raise(r) => r.fmt(f),
             Term::TryWithVal(t) => t.fmt(f),
+        }
+    }
+}
+
+impl SubstTerm<Term> for Term {
+    type Target = Term;
+    fn subst(self, v: &Var, t: &Term) -> Self::Target {
+        match self {
+            Term::Var(var) => var.subst(v, t),
+            Term::Num(num) => num.subst(v, t),
+            Term::True(tru) => tru.subst(v, t),
+            Term::False(fls) => fls.subst(v, t),
+            Term::Succ(succ) => succ.subst(v, t),
+            Term::Pred(pred) => pred.subst(v, t),
+            Term::IsZero(isz) => isz.subst(v, t),
+            Term::If(ift) => ift.subst(v, t),
+            Term::Lambda(lam) => lam.subst(v, t),
+            Term::App(app) => app.subst(v, t),
+            Term::Unit(u) => u.subst(v, t),
+            Term::Exception(exc) => exc.subst(v, t),
+            Term::Try(tryt) => tryt.subst(v, t),
+            Term::Raise(raise) => raise.subst(v, t),
+            Term::TryWithVal(tryval) => tryval.subst(v, t),
         }
     }
 }

@@ -18,6 +18,20 @@ where
     term: Box<T>,
 }
 
+impl<T> Succ<T>
+where
+    T: Term,
+{
+    pub fn new<T1>(t: T1) -> Succ<T>
+    where
+        T1: Into<T>,
+    {
+        Succ {
+            term: Box::new(t.into()),
+        }
+    }
+}
+
 impl<T> Term for Succ<T> where T: Term {}
 
 impl<T> SubstTerm<T> for Succ<T>
