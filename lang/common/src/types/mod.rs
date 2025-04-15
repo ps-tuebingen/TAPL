@@ -1,19 +1,13 @@
 use crate::errors::ErrorKind;
-use std::{any::Any, fmt};
+use std::fmt;
 
 pub trait Type
 where
-    Self: Any + fmt::Display + fmt::Debug + Clone + PartialEq + Eq,
+    Self: fmt::Display + fmt::Debug + Clone + PartialEq + Eq,
 {
     fn into_fun<Ty>(self) -> Result<Fun<Ty>, ErrorKind>
     where
-        Ty: Type,
-    {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "Function Type".to_owned(),
-        })
-    }
+        Ty: Type;
 
     fn into_nat(self) -> Result<Nat, ErrorKind> {
         Err(ErrorKind::TypeMismatch {

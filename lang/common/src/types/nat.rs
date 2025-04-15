@@ -1,4 +1,4 @@
-use super::Type;
+use super::{Fun, Type};
 use crate::{errors::ErrorKind, subst::SubstType, TypeVar};
 use std::fmt;
 
@@ -8,6 +8,15 @@ pub struct Nat;
 impl Type for Nat {
     fn into_nat(self) -> Result<Nat, ErrorKind> {
         Ok(self)
+    }
+    fn into_fun<Ty1>(self) -> Result<Fun<Ty1>, ErrorKind>
+    where
+        Ty1: Type,
+    {
+        Err(ErrorKind::TypeMismatch {
+            found: self.to_string(),
+            expected: "Function Type".to_owned(),
+        })
     }
 }
 

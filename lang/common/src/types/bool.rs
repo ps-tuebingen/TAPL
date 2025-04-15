@@ -1,4 +1,4 @@
-use super::Type;
+use super::{Fun, Type};
 use crate::{errors::ErrorKind, subst::SubstType, TypeVar};
 use std::fmt;
 
@@ -8,6 +8,16 @@ pub struct Bool;
 impl Type for Bool {
     fn into_bool(self) -> Result<Bool, ErrorKind> {
         Ok(self)
+    }
+
+    fn into_fun<Ty>(self) -> Result<Fun<Ty>, ErrorKind>
+    where
+        Ty: Type,
+    {
+        Err(ErrorKind::TypeMismatch {
+            found: self.to_string(),
+            expected: "Function Type".to_owned(),
+        })
     }
 }
 

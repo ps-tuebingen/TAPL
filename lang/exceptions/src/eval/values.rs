@@ -1,5 +1,8 @@
 use crate::{syntax::Term, types::Type};
-use common::values::{Exception, False, Lambda, Num, Raise, True, Unit, Value as ValueTrait};
+use common::{
+    errors::ErrorKind,
+    values::{Exception, False, Lambda, Num, Raise, True, Unit, Value as ValueTrait},
+};
 use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -15,6 +18,28 @@ pub enum Value {
 
 impl ValueTrait<Term> for Value {
     type Term = Term;
+
+    fn into_lambda(self) -> Result<Lambda<Term, Type>, ErrorKind> {
+        if let Value::Lambda(lam) = self {
+            Ok(lam)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Lambda Abstraction".to_owned(),
+            })
+        }
+    }
+
+    fn into_raise(self) -> Result<Raise<Value, Type, Term>, ErrorKind> {
+        if let Value::Raise(raise) = self {
+            Ok(raise)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Raise".to_owned(),
+            })
+        }
+    }
 }
 
 impl From<Value> for Term {

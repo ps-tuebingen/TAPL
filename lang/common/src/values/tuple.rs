@@ -1,5 +1,9 @@
-use super::Value;
-use crate::terms::{Term, Tuple as TupleT};
+use super::{Lambda, Raise, Value};
+use crate::{
+    errors::ErrorKind,
+    terms::{Term, Tuple as TupleT},
+    types::Type,
+};
 use std::fmt;
 use std::marker::PhantomData;
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -18,6 +22,26 @@ where
     T: Term + From<TupleT<T>>,
 {
     type Term = TupleT<T>;
+    fn into_lambda<Ty1>(self) -> Result<Lambda<T, Ty1>, ErrorKind>
+    where
+        Ty1: Type,
+    {
+        Err(ErrorKind::TypeMismatch {
+            found: self.to_string(),
+            expected: "Lambda Abstraction".to_owned(),
+        })
+    }
+
+    fn into_raise<Val, Ty1>(self) -> Result<Raise<Val, Ty1, T>, ErrorKind>
+    where
+        Val: Value<T>,
+        Ty1: Type,
+    {
+        Err(ErrorKind::TypeMismatch {
+            found: self.to_string(),
+            expected: "Raise".to_owned(),
+        })
+    }
 }
 
 impl<V, T> From<Tuple<V, T>> for TupleT<T>

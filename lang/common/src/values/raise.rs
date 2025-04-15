@@ -1,14 +1,10 @@
-use super::Value;
+use super::{Lambda, Value};
 use crate::{
     errors::ErrorKind,
     terms::{Raise as RaiseT, Term},
     types::Type,
 };
-use std::{
-    any::{type_name_of_val, Any},
-    fmt,
-    marker::PhantomData,
-};
+use std::{fmt, marker::PhantomData};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Raise<V, Ty, T>
@@ -51,14 +47,25 @@ where
     T: Term + From<RaiseT<T, Ty>>,
 {
     type Term = RaiseT<T, Ty>;
-
-    fn into_raise<V1, Ty1>(self) -> Result<Raise<V1, Ty1, T>, ErrorKind>
+    fn into_lambda<Ty1>(self) -> Result<Lambda<T, Ty1>, ErrorKind>
     where
         Ty1: Type,
-        V1: Value<T>,
     {
-        let boxed = Box::new(self) as Box<dyn Any>;
-        boxed.try_into()
+        Err(ErrorKind::TypeMismatch {
+            found: self.to_string(),
+            expected: "Lambda Abstraction".to_owned(),
+        })
+    }
+
+    fn into_raise<Val, Ty1>(self) -> Result<Raise<Val, Ty1, T>, ErrorKind>
+    where
+        Val: Value<T>,
+        Ty1: Type,
+    {
+        Err(ErrorKind::TypeMismatch {
+            found: self.to_string(),
+            expected: "Raise".to_owned(),
+        })
     }
 }
 
@@ -70,25 +77,6 @@ where
 {
     fn from(r: Raise<V, Ty, T>) -> RaiseT<T, Ty> {
         RaiseT::new(*r.val, r.exception_ty, r.cont_ty)
-    }
-}
-
-impl<V, Ty, T> TryFrom<Box<dyn Any>> for Raise<V, Ty, T>
-where
-    Ty: Type,
-    T: Term,
-    V: Value<T>,
-{
-    type Error = ErrorKind;
-    fn try_from(boxed: Box<dyn Any>) -> Result<Raise<V, Ty, T>, Self::Error> {
-        let ty_name = type_name_of_val(&(*boxed)).to_owned();
-        boxed
-            .downcast::<Raise<V, Ty, T>>()
-            .map_err(|_| ErrorKind::TypeMismatch {
-                found: ty_name,
-                expected: "Raise".to_owned(),
-            })
-            .map(|fun| *fun)
     }
 }
 

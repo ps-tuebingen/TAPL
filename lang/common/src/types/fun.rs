@@ -1,9 +1,6 @@
 use super::Type;
 use crate::{errors::ErrorKind, subst::SubstType, TypeVar};
-use std::{
-    any::{type_name_of_val, Any},
-    fmt,
-};
+use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Fun<Ty>
@@ -34,8 +31,10 @@ where
     where
         Ty1: Type,
     {
-        let boxed = Box::new(self) as Box<dyn Any>;
-        boxed.try_into()
+        Err(ErrorKind::TypeMismatch {
+            found: self.to_string(),
+            expected: "Function Type".to_owned(),
+        })
     }
 }
 
@@ -51,23 +50,6 @@ where
             to: Box::new(self.to.subst_type(v, ty)),
         }
         .into()
-    }
-}
-
-impl<Ty> TryFrom<Box<dyn Any>> for Fun<Ty>
-where
-    Ty: Type,
-{
-    type Error = ErrorKind;
-    fn try_from(boxed: Box<dyn Any>) -> Result<Fun<Ty>, Self::Error> {
-        let ty_name = type_name_of_val(&(*boxed)).to_owned();
-        boxed
-            .downcast::<Fun<Ty>>()
-            .map_err(|_| ErrorKind::TypeMismatch {
-                found: ty_name,
-                expected: "Function Type".to_owned(),
-            })
-            .map(|fun| *fun)
     }
 }
 

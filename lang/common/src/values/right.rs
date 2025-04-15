@@ -1,5 +1,6 @@
-use super::Value;
+use super::{Lambda, Raise, Value};
 use crate::{
+    errors::ErrorKind,
     terms::{Right as RightT, Term},
     types::Type,
 };
@@ -24,6 +25,26 @@ where
     T: Term + From<RightT<T, Ty>>,
 {
     type Term = RightT<T, Ty>;
+    fn into_lambda<Ty1>(self) -> Result<Lambda<T, Ty1>, ErrorKind>
+    where
+        Ty1: Type,
+    {
+        Err(ErrorKind::TypeMismatch {
+            found: self.to_string(),
+            expected: "Lambda Abstraction".to_owned(),
+        })
+    }
+
+    fn into_raise<Val, Ty1>(self) -> Result<Raise<Val, Ty1, T>, ErrorKind>
+    where
+        Val: Value<T>,
+        Ty1: Type,
+    {
+        Err(ErrorKind::TypeMismatch {
+            found: self.to_string(),
+            expected: "Raise".to_owned(),
+        })
+    }
 }
 
 impl<V, T, Ty> From<Right<V, Ty, T>> for RightT<T, Ty>

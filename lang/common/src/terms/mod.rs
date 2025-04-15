@@ -1,6 +1,6 @@
-use std::{any::Any, fmt};
+use std::fmt;
 
-pub trait Term: Any + fmt::Display + fmt::Debug + Clone + PartialEq + Eq {}
+pub trait Term: fmt::Display + fmt::Debug + Clone + PartialEq + Eq {}
 
 pub mod app;
 pub mod ascribe;

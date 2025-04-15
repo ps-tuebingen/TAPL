@@ -1,5 +1,5 @@
-use super::Type;
-use crate::{subst::SubstType, Label, TypeVar};
+use super::{Fun, Type};
+use crate::{errors::ErrorKind, subst::SubstType, Label, TypeVar};
 use std::{collections::HashMap, fmt};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -10,7 +10,20 @@ where
     variants: HashMap<Label, Ty>,
 }
 
-impl<Ty> Type for Variant<Ty> where Ty: Type {}
+impl<Ty> Type for Variant<Ty>
+where
+    Ty: Type,
+{
+    fn into_fun<Ty1>(self) -> Result<Fun<Ty1>, ErrorKind>
+    where
+        Ty1: Type,
+    {
+        Err(ErrorKind::TypeMismatch {
+            found: self.to_string(),
+            expected: "Function Type".to_owned(),
+        })
+    }
+}
 
 impl<Ty> SubstType<Ty> for Variant<Ty>
 where
