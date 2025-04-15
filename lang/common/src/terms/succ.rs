@@ -52,7 +52,7 @@ where
 impl<Env, Ty, T> Typecheck<Env, Ty> for Succ<T>
 where
     Env: CheckEnvironment<Ty>,
-    Ty: Type + Typecheck<Env, Ty>,
+    Ty: Type,
     T: Term + Typecheck<Env, Ty>,
     Nat: Into<Ty>,
 {

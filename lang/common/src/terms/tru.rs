@@ -1,7 +1,11 @@
 use super::Term;
 use crate::{
+    check::{CheckEnvironment, Typecheck},
+    errors::Error,
+    eval::{Eval, EvalEnvironment},
     subst::{SubstTerm, SubstType},
-    types::Type,
+    types::{Bool, Type},
+    values::{True as TrueVal, Value},
     TypeVar, Var,
 };
 use std::{fmt, marker::PhantomData};
@@ -47,6 +51,31 @@ where
     type Target = T;
     fn subst_type(self, _: &TypeVar, _: &Ty) -> Self::Target {
         self.into()
+    }
+}
+
+impl<Env, Ty, T> Typecheck<Env, Ty> for True<T>
+where
+    T: Term,
+    Ty: Type,
+    Env: CheckEnvironment<Ty>,
+    Bool: Into<Ty>,
+{
+    fn check(&self, _: &mut Env) -> Result<Ty, Error> {
+        Ok(Bool.into())
+    }
+}
+
+impl<Val, Env, T, Ty> Eval<Val, Env, T, Ty> for True<T>
+where
+    T: Term + SubstTerm<T, Target = T>,
+    Ty: Type,
+    Val: Value<T>,
+    Env: EvalEnvironment,
+    TrueVal: Into<Val>,
+{
+    fn eval(self, _: &mut Env) -> Result<Val, Error> {
+        Ok(TrueVal.into())
     }
 }
 

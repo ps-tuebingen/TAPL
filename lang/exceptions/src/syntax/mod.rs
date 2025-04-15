@@ -48,27 +48,120 @@ impl fmt::Display for Term {
     }
 }
 
+impl From<Variable<Term>> for Term {
+    fn from(var: Variable<Term>) -> Term {
+        Term::Var(var)
+    }
+}
+
+impl From<Num<Term>> for Term {
+    fn from(num: Num<Term>) -> Term {
+        Term::Num(num)
+    }
+}
+
+impl From<True<Term>> for Term {
+    fn from(tru: True<Term>) -> Term {
+        Term::True(tru)
+    }
+}
+
+impl From<False<Term>> for Term {
+    fn from(fls: False<Term>) -> Term {
+        Term::False(fls)
+    }
+}
+
+impl From<Succ<Term>> for Term {
+    fn from(succ: Succ<Term>) -> Term {
+        Term::Succ(succ)
+    }
+}
+
+impl From<Pred<Term>> for Term {
+    fn from(pred: Pred<Term>) -> Term {
+        Term::Pred(pred)
+    }
+}
+
+impl From<IsZero<Term>> for Term {
+    fn from(isz: IsZero<Term>) -> Term {
+        Term::IsZero(isz)
+    }
+}
+
+impl From<If<Term>> for Term {
+    fn from(ift: If<Term>) -> Term {
+        Term::If(ift)
+    }
+}
+
+impl From<Lambda<Term, Type>> for Term {
+    fn from(lam: Lambda<Term, Type>) -> Term {
+        Term::Lambda(lam)
+    }
+}
+
+impl From<App<Term>> for Term {
+    fn from(app: App<Term>) -> Term {
+        Term::App(app)
+    }
+}
+
+impl From<Unit<Term>> for Term {
+    fn from(unit: Unit<Term>) -> Term {
+        Term::Unit(unit)
+    }
+}
+
+impl From<Exception<Term, Type>> for Term {
+    fn from(exc: Exception<Term, Type>) -> Term {
+        Term::Exception(exc)
+    }
+}
+
+impl From<Try<Term>> for Term {
+    fn from(tryt: Try<Term>) -> Term {
+        Term::Try(tryt)
+    }
+}
+
+impl From<Raise<Term, Type>> for Term {
+    fn from(raise: Raise<Term, Type>) -> Term {
+        Term::Raise(raise)
+    }
+}
+
+impl From<TryWithVal<Term>> for Term {
+    fn from(tryval: TryWithVal<Term>) -> Term {
+        Term::TryWithVal(tryval)
+    }
+}
+
 #[cfg(test)]
 pub mod term_tests {
-    use super::{App, Lambda, Raise, Term, Try, TryWithVal, Unit};
+    use super::{App, Lambda, Raise, Term, Try, TryWithVal, Unit, Variable};
     use crate::types::Type;
+    use common::types::Unit as UnitTy;
 
     pub fn example_term1() -> Term {
-        Try::new(
-            App::new(
-                Lambda::new("x", Type::Unit, "x".into()).into(),
-                Unit::new().into(),
+        Try::<Term>::new(
+            App::<Term>::new(
+                Lambda::<Term, Type>::new("x", UnitTy.into(), Variable::<Term>::new("x").into())
+                    .into(),
+                Unit::<Term>::new().into(),
             )
             .into(),
-            Unit::new().into(),
+            Unit::<Term>::new().into(),
         )
         .into()
     }
 
     pub fn example_term2() -> Term {
-        TryWithVal::new(
-            Raise::new(Unit.into(), Type::Unit, Type::Unit).into(),
-            Lambda::new("x", Type::Unit, Unit.into()).into(),
+        TryWithVal::<Term>::new(
+            Raise::<Term, Type>::new(Unit::<Term>::new().into(), UnitTy.into(), UnitTy.into())
+                .into(),
+            Lambda::<Term, Type>::new("x", UnitTy::new().into(), Unit::new().into()).into(),
         )
         .into()
     }

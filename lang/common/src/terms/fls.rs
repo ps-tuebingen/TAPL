@@ -1,7 +1,11 @@
 use super::Term;
 use crate::{
+    check::{CheckEnvironment, Typecheck},
+    errors::Error,
+    eval::{Eval, EvalEnvironment},
     subst::{SubstTerm, SubstType},
-    types::Type,
+    types::{Bool, Type},
+    values::{False as FalseVal, Value},
     TypeVar, Var,
 };
 use std::{fmt, marker::PhantomData};
@@ -52,6 +56,32 @@ where
         .into()
     }
 }
+
+impl<T, Ty, Env> Typecheck<Env, Ty> for False<T>
+where
+    T: Term,
+    Ty: Type,
+    Env: CheckEnvironment<Ty>,
+    Bool: Into<Ty>,
+{
+    fn check(&self, _: &mut Env) -> Result<Ty, Error> {
+        Ok(Bool.into())
+    }
+}
+
+impl<Val, Env, T, Ty> Eval<Val, Env, T, Ty> for False<T>
+where
+    Val: Value<T>,
+    T: Term + SubstTerm<T, Target = T>,
+    Ty: Type,
+    Env: EvalEnvironment,
+    FalseVal: Into<Val>,
+{
+    fn eval(self, _: &mut Env) -> Result<Val, Error> {
+        Ok(FalseVal.into())
+    }
+}
+
 impl<T> fmt::Display for False<T>
 where
     T: Term,
