@@ -1,12 +1,10 @@
-pub mod values;
 use super::to_err;
-use crate::syntax::Term;
+use crate::{terms::Term, values::Value};
 use common::{
     errors::{Error, ErrorKind, ErrorLocation},
     eval::Eval,
     terms::{False, Num, True, Unit, Variable},
 };
-use values::Value;
 
 pub fn to_eval_err(knd: ErrorKind) -> Error {
     to_err(knd, ErrorLocation::Eval)
@@ -39,7 +37,7 @@ impl Eval for Term {
 
 #[cfg(test)]
 mod eval_tests {
-    use crate::syntax::term_tests::{example_term1, example_term2};
+    use crate::terms::term_tests::{example_term1, example_term2};
     use common::{values::Unit, Eval};
 
     #[test]

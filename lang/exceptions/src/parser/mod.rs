@@ -1,4 +1,4 @@
-use crate::{syntax::Term, to_err};
+use crate::{terms::Term, to_err};
 use common::{
     errors::{Error, ErrorKind, ErrorLocation},
     Parse,

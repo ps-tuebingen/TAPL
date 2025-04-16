@@ -1,4 +1,4 @@
-use crate::syntax::Term;
+use crate::terms::Term;
 use common::{
     errors::ErrorKind,
     language::LanguageValue,

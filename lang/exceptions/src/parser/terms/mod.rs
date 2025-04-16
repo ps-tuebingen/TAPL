@@ -1,5 +1,5 @@
 use super::{pair_to_n_inner, to_parse_err, Rule};
-use crate::syntax::Term;
+use crate::terms::Term;
 use common::{
     errors::{Error, ErrorKind},
     terms::{App, False, Num, True, Unit, Variable},

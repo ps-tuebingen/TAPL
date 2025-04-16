@@ -1,8 +1,9 @@
 pub mod check;
 pub mod eval;
 pub mod parser;
-pub mod syntax;
+pub mod terms;
 pub mod types;
+pub mod values;
 
 use common::errors::{Error, ErrorKind, ErrorLocation};
 

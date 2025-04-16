@@ -1,4 +1,4 @@
-use crate::{eval::values::Value, types::Type};
+use crate::{types::Type, values::Value};
 use common::{
     language::LanguageTerm,
     subst::{SubstTerm, SubstType},

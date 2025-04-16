@@ -1,4 +1,4 @@
-use crate::{syntax::Term, to_err, types::Type};
+use crate::{terms::Term, to_err, types::Type};
 use common::{
     check::{CheckEnvironment, Typecheck},
     errors::{Error, ErrorKind, ErrorLocation},
@@ -58,7 +58,7 @@ fn to_check_err(knd: ErrorKind) -> Error {
 #[cfg(test)]
 mod check_tests {
     use super::Type;
-    use crate::syntax::term_tests::{example_term1, example_term2};
+    use crate::terms::term_tests::{example_term1, example_term2};
     use common::{check::Typecheck, types::Unit};
 
     #[test]

@@ -1,7 +1,7 @@
 use super::pair_to_term;
 use crate::{
     parser::{pair_to_n_inner, types::pair_to_type, Rule},
-    syntax::Term,
+    terms::Term,
 };
 use common::{
     errors::Error,
