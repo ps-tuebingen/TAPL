@@ -64,55 +64,35 @@ impl From<App<Term>> for Term {
 #[cfg(test)]
 mod term_tests {
     use super::Term;
-    use std::collections::HashSet;
-
-    #[test]
-    fn free_v1() {
-        let result = Term::Lambda("x".to_owned(), Box::new(Term::Var("x".to_owned()))).free_vars();
-        let expected = HashSet::new();
-        assert_eq!(result, expected)
-    }
-
-    #[test]
-    fn free_v2() {
-        let result = Term::App(
-            Box::new(Term::Lambda(
-                "x".to_owned(),
-                Box::new(Term::Var("y".to_owned())),
-            )),
-            Box::new(Term::Var("x".to_owned())),
-        )
-        .free_vars();
-        let expected = HashSet::from(["x".to_owned(), "y".to_owned()]);
-        assert_eq!(result, expected)
-    }
+    use common::{
+        language::untyped::Untyped,
+        subst::SubstTerm,
+        terms::{App, Lambda, Variable},
+    };
 
     #[test]
     fn subst1() {
-        let result = Term::Lambda("x".to_owned(), Box::new(Term::Var("x".to_owned())))
-            .subst(&"x".to_owned(), Term::Var("y".to_owned()));
-        let expected = Term::Lambda("x".to_owned(), Box::new(Term::Var("x".to_owned())));
+        let result: Term = Lambda::new("x", Untyped, Variable::new("x"))
+            .subst(&"x".to_owned(), &Variable::new("y").into());
+        let expected = Lambda::new("x", Untyped, Variable::new("x")).into();
         assert_eq!(result, expected)
     }
 
     #[test]
     fn subst2() {
-        let result = Term::App(
-            Box::new(Term::Lambda(
-                "x".to_owned(),
-                Box::new(Term::Var("y".to_owned())),
-            )),
-            Box::new(Term::Var("x".to_owned())),
+        let term: Term = App::new(
+            Lambda::new("x", Untyped, Variable::new("y")),
+            Variable::new("x"),
         )
-        .subst(&"x".to_owned(), Term::Var("z".to_owned()))
-        .subst(&"y".to_owned(), Term::Var("z".to_owned()));
-        let expected = Term::App(
-            Box::new(Term::Lambda(
-                "x".to_owned(),
-                Box::new(Term::Var("z".to_owned())),
-            )),
-            Box::new(Term::Var("z".to_owned())),
-        );
+        .into();
+        let result: Term = term
+            .subst(&"x".to_owned(), &Variable::new("z").into())
+            .subst(&"y".to_owned(), &Variable::new("z").into());
+        let expected = App::new(
+            Lambda::new("x", Untyped, Variable::new("z")),
+            Variable::new("z"),
+        )
+        .into();
         assert_eq!(result, expected)
     }
 }

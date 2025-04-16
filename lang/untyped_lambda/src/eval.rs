@@ -54,24 +54,3 @@ impl Eval for Term {
         }
     }
 }
-
-#[cfg(test)]
-mod eval_tests {
-    use super::is_value;
-    use crate::terms::Term;
-
-    #[test]
-    fn is_value_lam() {
-        let result = is_value(&Term::Lambda(
-            "x".to_owned(),
-            Box::new(Term::Var("x".to_owned())),
-        ));
-        assert!(result)
-    }
-
-    #[test]
-    fn is_value_var() {
-        let result = is_value(&Term::Var("x".to_owned()));
-        assert!(!result)
-    }
-}
