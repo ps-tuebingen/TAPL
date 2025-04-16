@@ -10,9 +10,19 @@ where
 {
     type Term: LanguageTerm;
 
-    fn into_lambda(self) -> Result<Lambda<<Self as LanguageValue>::Term>, ErrorKind>;
+    fn into_lambda(self) -> Result<Lambda<<Self as LanguageValue>::Term>, ErrorKind> {
+        Err(ErrorKind::ValueMismatch {
+            found: self.to_string(),
+            expected: "Lambda Abstraction".to_owned(),
+        })
+    }
 
-    fn into_raise(self) -> Result<Raise<<Self as LanguageValue>::Term>, ErrorKind>;
+    fn into_raise(self) -> Result<Raise<<Self as LanguageValue>::Term>, ErrorKind> {
+        Err(ErrorKind::ValueMismatch {
+            found: self.to_string(),
+            expected: "Raise".to_owned(),
+        })
+    }
 
     fn into_true(self) -> Result<True<<Self as LanguageValue>::Term>, ErrorKind> {
         Err(ErrorKind::ValueMismatch {

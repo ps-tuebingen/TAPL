@@ -1,9 +1,10 @@
-use crate::types::Type;
+use crate::{eval::values::Value, types::Type};
 use common::{
-    subst::SubstTerm,
+    language::LanguageTerm,
+    subst::{SubstTerm, SubstType},
     terms::{
-        App, Exception, False, If, IsZero, Lambda, Num, Pred, Raise, Succ, Term as TermTrait, True,
-        Try, TryWithVal, Unit, Variable,
+        App, Exception, False, If, IsZero, Lambda, Num, Pred, Raise, Succ, True, Try, TryWithVal,
+        Unit, Variable,
     },
     Var,
 };
@@ -19,16 +20,21 @@ pub enum Term {
     Pred(Pred<Term>),
     IsZero(IsZero<Term>),
     If(If<Term>),
-    Lambda(Lambda<Term, Type>),
+    Lambda(Lambda<Term>),
     App(App<Term>),
     Unit(Unit<Term>),
-    Exception(Exception<Term, Type>),
+    Exception(Exception<Term>),
     Try(Try<Term>),
-    Raise(Raise<Term, Type>),
+    Raise(Raise<Term>),
     TryWithVal(TryWithVal<Term>),
 }
 
-impl TermTrait for Term {}
+impl common::terms::Term for Term {}
+
+impl LanguageTerm for Term {
+    type Type = Type;
+    type Value = Value;
+}
 
 impl fmt::Display for Term {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -71,6 +77,29 @@ impl SubstTerm<Term> for Term {
             Term::Try(tryt) => tryt.subst(v, t),
             Term::Raise(raise) => raise.subst(v, t),
             Term::TryWithVal(tryval) => tryval.subst(v, t),
+        }
+    }
+}
+
+impl SubstType<Type> for Term {
+    type Target = Term;
+    fn subst_type(self, v: &Var, t: &Type) -> Self::Target {
+        match self {
+            Term::Var(var) => var.subst_type(v, t),
+            Term::Num(num) => num.subst_type(v, t),
+            Term::True(tru) => tru.subst_type(v, t),
+            Term::False(fls) => fls.subst_type(v, t),
+            Term::Succ(succ) => succ.subst_type(v, t),
+            Term::Pred(pred) => pred.subst_type(v, t),
+            Term::IsZero(isz) => isz.subst_type(v, t),
+            Term::If(ift) => ift.subst_type(v, t),
+            Term::Lambda(lam) => lam.subst_type(v, t),
+            Term::App(app) => app.subst_type(v, t),
+            Term::Unit(u) => u.subst_type(v, t),
+            Term::Exception(exc) => exc.subst_type(v, t),
+            Term::Try(tryt) => tryt.subst_type(v, t),
+            Term::Raise(raise) => raise.subst_type(v, t),
+            Term::TryWithVal(tryval) => tryval.subst_type(v, t),
         }
     }
 }
@@ -123,8 +152,8 @@ impl From<If<Term>> for Term {
     }
 }
 
-impl From<Lambda<Term, Type>> for Term {
-    fn from(lam: Lambda<Term, Type>) -> Term {
+impl From<Lambda<Term>> for Term {
+    fn from(lam: Lambda<Term>) -> Term {
         Term::Lambda(lam)
     }
 }
@@ -141,8 +170,8 @@ impl From<Unit<Term>> for Term {
     }
 }
 
-impl From<Exception<Term, Type>> for Term {
-    fn from(exc: Exception<Term, Type>) -> Term {
+impl From<Exception<Term>> for Term {
+    fn from(exc: Exception<Term>) -> Term {
         Term::Exception(exc)
     }
 }
@@ -153,8 +182,8 @@ impl From<Try<Term>> for Term {
     }
 }
 
-impl From<Raise<Term, Type>> for Term {
-    fn from(raise: Raise<Term, Type>) -> Term {
+impl From<Raise<Term>> for Term {
+    fn from(raise: Raise<Term>) -> Term {
         Term::Raise(raise)
     }
 }
@@ -168,13 +197,12 @@ impl From<TryWithVal<Term>> for Term {
 #[cfg(test)]
 pub mod term_tests {
     use super::{App, Lambda, Raise, Term, Try, TryWithVal, Unit, Variable};
-    use crate::types::Type;
     use common::types::Unit as UnitTy;
 
     pub fn example_term1() -> Term {
         Try::<Term>::new(
             App::<Term>::new(
-                Lambda::<Term, Type>::new("x", UnitTy, Variable::<Term>::new("x")),
+                Lambda::<Term>::new("x", UnitTy, Variable::<Term>::new("x")),
                 Unit::<Term>::new(),
             ),
             Unit::<Term>::new(),
@@ -184,8 +212,8 @@ pub mod term_tests {
 
     pub fn example_term2() -> Term {
         TryWithVal::<Term>::new(
-            Raise::<Term, Type>::new(Unit::<Term>::new(), UnitTy, UnitTy),
-            Lambda::<Term, Type>::new("x", UnitTy, Unit::new()),
+            Raise::<Term>::new(Unit::<Term>::new(), UnitTy, UnitTy),
+            Lambda::<Term>::new("x", UnitTy, Unit::new()),
         )
         .into()
     }

@@ -2,12 +2,11 @@ use super::pair_to_term;
 use crate::{
     parser::{pair_to_n_inner, types::pair_to_type, Rule},
     syntax::Term,
-    types::Type,
 };
 use common::{errors::Error, terms::Lambda};
 use pest::iterators::Pair;
 
-pub fn pair_to_lambda(p: Pair<'_, Rule>) -> Result<Lambda<Term, Type>, Error> {
+pub fn pair_to_lambda(p: Pair<'_, Rule>) -> Result<Lambda<Term>, Error> {
     let mut inner = pair_to_n_inner(p, vec!["Lambda Variable", "Lambda Annot", "LambdaBody"])?;
     let var = inner.remove(0).as_str().trim().to_owned();
     let ty_pair = inner.remove(0);

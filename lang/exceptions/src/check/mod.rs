@@ -11,7 +11,9 @@ pub struct ExceptionEnv {
     env: HashMap<Var, Type>,
 }
 
-impl CheckEnvironment<Type> for ExceptionEnv {
+impl CheckEnvironment for ExceptionEnv {
+    type Type = Type;
+
     fn get_var(&self, v: &Var) -> Result<Type, Error> {
         self.env
             .get(v)
@@ -24,10 +26,9 @@ impl CheckEnvironment<Type> for ExceptionEnv {
     }
 }
 
-impl Typecheck<ExceptionEnv, Type> for Term {
-    fn check_start(&self) -> Result<Type, Error> {
-        self.check(&mut Default::default())
-    }
+impl Typecheck for Term {
+    type Type = Type;
+    type Env = ExceptionEnv;
 
     fn check(&self, env: &mut ExceptionEnv) -> Result<Type, Error> {
         match self {

@@ -1,25 +1,30 @@
-use crate::{syntax::Term, types::Type};
+use crate::syntax::Term;
 use common::{
     errors::ErrorKind,
+    language::LanguageValue,
     values::{Exception, False, Lambda, Num, Raise, True, Unit, Value as ValueTrait},
 };
 use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Value {
-    Lambda(Lambda<Term, Type>),
-    Num(Num),
-    Unit(Unit),
-    True(True),
-    False(False),
-    Exception(Exception<Type>),
-    Raise(Raise<Value, Type, Term>),
+    Lambda(Lambda<Term>),
+    Num(Num<Term>),
+    Unit(Unit<Term>),
+    True(True<Term>),
+    False(False<Term>),
+    Exception(Exception<Term>),
+    Raise(Raise<Term>),
 }
 
-impl ValueTrait<Term> for Value {
+impl common::values::Value for Value {
+    type Term = Term;
+}
+
+impl LanguageValue for Value {
     type Term = Term;
 
-    fn into_lambda(self) -> Result<Lambda<Term, Type>, ErrorKind> {
+    fn into_lambda(self) -> Result<Lambda<Term>, ErrorKind> {
         if let Value::Lambda(lam) = self {
             Ok(lam)
         } else {
@@ -30,7 +35,7 @@ impl ValueTrait<Term> for Value {
         }
     }
 
-    fn into_raise(self) -> Result<Raise<Value, Type, Term>, ErrorKind> {
+    fn into_raise(self) -> Result<Raise<Term>, ErrorKind> {
         if let Value::Raise(raise) = self {
             Ok(raise)
         } else {
@@ -70,44 +75,44 @@ impl fmt::Display for Value {
     }
 }
 
-impl From<Lambda<Term, Type>> for Value {
-    fn from(lam: Lambda<Term, Type>) -> Value {
+impl From<Lambda<Term>> for Value {
+    fn from(lam: Lambda<Term>) -> Value {
         Value::Lambda(lam)
     }
 }
 
-impl From<Num> for Value {
-    fn from(num: Num) -> Value {
+impl From<Num<Term>> for Value {
+    fn from(num: Num<Term>) -> Value {
         Value::Num(num)
     }
 }
 
-impl From<Unit> for Value {
-    fn from(unit: Unit) -> Value {
+impl From<Unit<Term>> for Value {
+    fn from(unit: Unit<Term>) -> Value {
         Value::Unit(unit)
     }
 }
 
-impl From<True> for Value {
-    fn from(tru: True) -> Value {
+impl From<True<Term>> for Value {
+    fn from(tru: True<Term>) -> Value {
         Value::True(tru)
     }
 }
 
-impl From<False> for Value {
-    fn from(fls: False) -> Value {
+impl From<False<Term>> for Value {
+    fn from(fls: False<Term>) -> Value {
         Value::False(fls)
     }
 }
 
-impl From<Exception<Type>> for Value {
-    fn from(exc: Exception<Type>) -> Value {
+impl From<Exception<Term>> for Value {
+    fn from(exc: Exception<Term>) -> Value {
         Value::Exception(exc)
     }
 }
 
-impl From<Raise<Value, Type, Term>> for Value {
-    fn from(raise: Raise<Value, Type, Term>) -> Value {
+impl From<Raise<Term>> for Value {
+    fn from(raise: Raise<Term>) -> Value {
         Value::Raise(raise)
     }
 }

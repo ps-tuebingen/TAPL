@@ -4,15 +4,8 @@ pub mod parser;
 pub mod syntax;
 pub mod types;
 
-use common::{
-    errors::{Error, ErrorKind, ErrorLocation},
-    langs::Lang,
-};
+use common::errors::{Error, ErrorKind, ErrorLocation};
 
 pub fn to_err(knd: ErrorKind, loc: ErrorLocation) -> Error {
-    Error {
-        kind: knd,
-        loc,
-        lang: Lang::Exceptions,
-    }
+    Error { kind: knd, loc }
 }
