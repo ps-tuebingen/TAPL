@@ -1,64 +1,36 @@
-use super::{Lambda, Raise, Value};
-use crate::{
-    errors::ErrorKind,
-    terms::{LambdaSub as LambdaSubT, Term},
-    types::Type,
-    Var,
-};
+use super::Value;
+use crate::{language::LanguageTerm, terms::LambdaSub as LambdaSubT, Var};
 use std::fmt;
+
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct LambdaSub<T, Ty>
+pub struct LambdaSub<T>
 where
-    T: Term,
-    Ty: Type,
+    T: LanguageTerm,
 {
     var: Var,
-    sup_ty: Ty,
+    sup_ty: <T as LanguageTerm>::Type,
     t: T,
 }
 
-impl<T, Ty> Value<T> for LambdaSub<T, Ty>
+impl<T> Value for LambdaSub<T>
 where
-    T: Term + From<LambdaSubT<T, Ty>>,
-    Ty: Type,
+    T: LanguageTerm,
 {
-    type Term = LambdaSubT<T, Ty>;
-    fn into_lambda<Ty1>(self) -> Result<Lambda<T, Ty1>, ErrorKind>
-    where
-        Ty1: Type,
-    {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "Lambda Abstraction".to_owned(),
-        })
-    }
-
-    fn into_raise<Val, Ty1>(self) -> Result<Raise<Val, Ty1, T>, ErrorKind>
-    where
-        Val: Value<T>,
-        Ty1: Type,
-    {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "Raise".to_owned(),
-        })
-    }
+    type Term = LambdaSubT<T>;
 }
 
-impl<T, Ty> From<LambdaSub<T, Ty>> for LambdaSubT<T, Ty>
+impl<T> From<LambdaSub<T>> for LambdaSubT<T>
 where
-    T: Term,
-    Ty: Type,
+    T: LanguageTerm,
 {
-    fn from(lam: LambdaSub<T, Ty>) -> LambdaSubT<T, Ty> {
+    fn from(lam: LambdaSub<T>) -> LambdaSubT<T> {
         LambdaSubT::new(&lam.var, lam.sup_ty, lam.t)
     }
 }
 
-impl<T, Ty> fmt::Display for LambdaSub<T, Ty>
+impl<T> fmt::Display for LambdaSub<T>
 where
-    T: Term,
-    Ty: Type,
+    T: LanguageTerm,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "\\{}<:{}.{}", self.var, self.sup_ty, self.t)

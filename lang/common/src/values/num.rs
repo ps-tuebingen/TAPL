@@ -1,63 +1,48 @@
-use super::{Lambda, Raise, Value};
-use crate::{
-    errors::ErrorKind,
-    terms::{Num as NumT, Term},
-    types::Type,
-};
-use std::fmt;
+use super::Value;
+use crate::{language::LanguageTerm, terms::Num as NumT};
+use std::{fmt, marker::PhantomData};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct Num {
+pub struct Num<T>
+where
+    T: LanguageTerm,
+{
     pub num: i64,
+    phantom: PhantomData<T>,
 }
 
-impl Num {
-    pub fn new(i: i64) -> Num {
-        Num { num: i }
+impl<T> Num<T>
+where
+    T: LanguageTerm,
+{
+    pub fn new(i: i64) -> Num<T> {
+        Num {
+            num: i,
+            phantom: PhantomData,
+        }
     }
 }
 
-impl<T> Value<T> for Num
+impl<T> Value for Num<T>
 where
-    T: Term + From<NumT<T>>,
+    T: LanguageTerm,
 {
     type Term = NumT<T>;
-
-    fn into_num(self) -> Result<Num, ErrorKind> {
-        Ok(self)
-    }
-    fn into_lambda<Ty1>(self) -> Result<Lambda<T, Ty1>, ErrorKind>
-    where
-        Ty1: Type,
-    {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "Lambda Abstraction".to_owned(),
-        })
-    }
-
-    fn into_raise<Val, Ty1>(self) -> Result<Raise<Val, Ty1, T>, ErrorKind>
-    where
-        Val: Value<T>,
-        Ty1: Type,
-    {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "Raise".to_owned(),
-        })
-    }
 }
 
-impl<T> From<Num> for NumT<T>
+impl<T> From<Num<T>> for NumT<T>
 where
-    T: Term,
+    T: LanguageTerm,
 {
-    fn from(n: Num) -> NumT<T> {
+    fn from(n: Num<T>) -> NumT<T> {
         NumT::new(n.num)
     }
 }
 
-impl fmt::Display for Num {
+impl<T> fmt::Display for Num<T>
+where
+    T: LanguageTerm,
+{
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.num)
     }

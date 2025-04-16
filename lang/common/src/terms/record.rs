@@ -1,7 +1,7 @@
 use super::Term;
 use crate::{
+    language::LanguageTerm,
     subst::{SubstTerm, SubstType},
-    types::Type,
     Label, TypeVar, Var,
 };
 use std::{collections::HashMap, fmt};
@@ -9,14 +9,14 @@ use std::{collections::HashMap, fmt};
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Record<T>
 where
-    T: Term,
+    T: LanguageTerm,
 {
     records: HashMap<Label, T>,
 }
 
 impl<T> Record<T>
 where
-    T: Term,
+    T: LanguageTerm,
 {
     pub fn new<T1>(recs: HashMap<Label, T1>) -> Record<T>
     where
@@ -28,11 +28,11 @@ where
     }
 }
 
-impl<T> Term for Record<T> where T: Term {}
+impl<T> Term for Record<T> where T: LanguageTerm {}
 
 impl<T> SubstTerm<T> for Record<T>
 where
-    T: Term + SubstTerm<T, Target = T>,
+    T: LanguageTerm,
     Self: Into<T>,
 {
     type Target = T;
@@ -48,14 +48,13 @@ where
     }
 }
 
-impl<T, Ty> SubstType<Ty> for Record<T>
+impl<T> SubstType<<T as LanguageTerm>::Type> for Record<T>
 where
-    T: Term + SubstType<Ty, Target = T>,
-    Ty: Type,
+    T: LanguageTerm,
     Self: Into<T>,
 {
     type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    fn subst_type(self, v: &TypeVar, ty: &<T as LanguageTerm>::Type) -> Self::Target {
         Record {
             records: self
                 .records
@@ -69,7 +68,7 @@ where
 
 impl<T> fmt::Display for Record<T>
 where
-    T: Term,
+    T: LanguageTerm,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let mut recs: Vec<(&Label, &T)> = self.records.iter().collect();

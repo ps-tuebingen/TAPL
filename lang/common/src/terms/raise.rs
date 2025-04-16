@@ -1,36 +1,34 @@
 use super::Term;
 use crate::{
-    check::{to_check_err, CheckEnvironment, Typecheck},
+    check::{to_check_err, Typecheck},
     errors::{Error, ErrorKind},
-    eval::{Eval, EvalEnvironment},
+    eval::Eval,
+    language::LanguageTerm,
     subst::{SubstTerm, SubstType},
-    types::Type,
-    values::{Raise as RaiseVal, Value},
+    values::Raise as RaiseVal,
     TypeVar, Var,
 };
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Raise<T, Ty>
+pub struct Raise<T>
 where
-    T: Term,
-    Ty: Type,
+    T: LanguageTerm,
 {
     exception: Box<T>,
-    exception_ty: Ty,
-    cont_ty: Ty,
+    exception_ty: <T as LanguageTerm>::Type,
+    cont_ty: <T as LanguageTerm>::Type,
 }
 
-impl<T, Ty> Raise<T, Ty>
+impl<T> Raise<T>
 where
-    T: Term,
-    Ty: Type,
+    T: LanguageTerm,
 {
-    pub fn new<E, Ty1, Ty2>(ex: E, ex_ty: Ty1, cont_ty: Ty2) -> Raise<T, Ty>
+    pub fn new<E, Ty1, Ty2>(ex: E, ex_ty: Ty1, cont_ty: Ty2) -> Raise<T>
     where
         E: Into<T>,
-        Ty1: Into<Ty>,
-        Ty2: Into<Ty>,
+        Ty1: Into<<T as LanguageTerm>::Type>,
+        Ty2: Into<<T as LanguageTerm>::Type>,
     {
         Raise {
             exception: Box::new(ex.into()),
@@ -40,18 +38,12 @@ where
     }
 }
 
-impl<T, Ty> Term for Raise<T, Ty>
-where
-    T: Term,
-    Ty: Type,
-{
-}
+impl<T> Term for Raise<T> where T: LanguageTerm {}
 
-impl<T, Ty> SubstTerm<T> for Raise<T, Ty>
+impl<T> SubstTerm<T> for Raise<T>
 where
-    T: Term + SubstTerm<T, Target = T>,
+    T: LanguageTerm,
     Self: Into<T>,
-    Ty: Type,
 {
     type Target = T;
     fn subst(self, v: &Var, t: &T) -> T {
@@ -64,14 +56,13 @@ where
     }
 }
 
-impl<T, Ty> SubstType<Ty> for Raise<T, Ty>
+impl<T> SubstType<<T as LanguageTerm>::Type> for Raise<T>
 where
-    T: Term + SubstType<Ty, Target = T>,
-    Ty: Type + SubstType<Ty, Target = Ty>,
+    T: LanguageTerm,
     Self: Into<T>,
 {
     type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    fn subst_type(self, v: &TypeVar, ty: &<T as LanguageTerm>::Type) -> Self::Target {
         Raise {
             exception: Box::new(self.exception.subst_type(v, ty)),
             exception_ty: self.exception_ty.subst_type(v, ty),
@@ -81,13 +72,14 @@ where
     }
 }
 
-impl<Env, Ty, T> Typecheck<Env, Ty> for Raise<T, Ty>
+impl<T> Typecheck for Raise<T>
 where
-    T: Term + Typecheck<Env, Ty>,
-    Ty: Type,
-    Env: CheckEnvironment<Ty>,
+    T: LanguageTerm,
 {
-    fn check(&self, env: &mut Env) -> Result<Ty, Error> {
+    type Type = <T as Typecheck>::Type;
+    type Env = <T as Typecheck>::Env;
+
+    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
         let err_ty = self.exception.check(env)?;
         if err_ty == self.exception_ty {
             Ok(self.cont_ty.clone())
@@ -100,24 +92,24 @@ where
     }
 }
 
-impl<Env, Val, T, Ty> Eval<Val, Env, T, Ty> for Raise<T, Ty>
+impl<T> Eval for Raise<T>
 where
-    T: Term + Eval<Val, Env, T, Ty> + SubstTerm<T, Target = T>,
-    Ty: Type,
-    Val: Value<T>,
-    Env: EvalEnvironment,
-    RaiseVal<Val, Ty, T>: Into<Val>,
+    T: LanguageTerm,
+    RaiseVal<T>: Into<<T as LanguageTerm>::Value>,
 {
-    fn eval(self, env: &mut Env) -> Result<Val, Error> {
+    type Value = <T as Eval>::Value;
+    type Env = <T as Eval>::Env;
+
+    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
         let exc_val = self.exception.eval(env)?;
-        Ok(RaiseVal::new(exc_val, self.cont_ty, self.exception_ty).into())
+        let raise_val = RaiseVal::<T>::new(exc_val, self.cont_ty, self.exception_ty);
+        Ok(raise_val.into())
     }
 }
 
-impl<T, Ty> fmt::Display for Raise<T, Ty>
+impl<T> fmt::Display for Raise<T>
 where
-    T: Term,
-    Ty: Type,
+    T: LanguageTerm,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(

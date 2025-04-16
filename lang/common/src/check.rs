@@ -1,34 +1,34 @@
 use crate::{
     errors::{Error, ErrorKind, ErrorLocation},
-    langs::Lang,
+    language::LanguageType,
     types::Type,
     Var,
 };
 
-pub trait CheckEnvironment<Ty>: Default + Clone
+pub trait CheckEnvironment
 where
-    Ty: Type,
+    Self: Default + Clone,
 {
-    fn get_var(&self, v: &Var) -> Result<Ty, Error>;
-    fn add_var(&mut self, v: Var, ty: Ty);
+    type Type: Type;
+
+    fn get_var(&self, v: &Var) -> Result<Self::Type, Error>;
+    fn add_var(&mut self, v: Var, ty: Self::Type);
 }
 
-pub trait Typecheck<Env, Ty>
-where
-    Env: CheckEnvironment<Ty>,
-    Ty: Type,
-{
-    fn check_start(&self) -> Result<Ty, Error> {
-        self.check(&mut Env::default())
+pub trait Typecheck {
+    type Type: LanguageType;
+    type Env: CheckEnvironment<Type = Self::Type>;
+
+    fn check_start(&self) -> Result<Self::Type, Error> {
+        self.check(&mut Self::Env::default())
     }
 
-    fn check(&self, env: &mut Env) -> Result<Ty, Error>;
+    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error>;
 }
 
 pub fn to_check_err(knd: ErrorKind) -> Error {
     Error {
         kind: knd,
         loc: ErrorLocation::Check,
-        lang: Lang::Unknown,
     }
 }

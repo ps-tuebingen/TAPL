@@ -1,11 +1,12 @@
 use super::Term;
 use crate::{
-    check::{to_check_err, CheckEnvironment, Typecheck},
+    check::{to_check_err, Typecheck},
     errors::Error,
-    eval::{to_eval_err, Eval, EvalEnvironment},
+    eval::{to_eval_err, Eval},
+    language::{LanguageTerm, LanguageType, LanguageValue},
     subst::{SubstTerm, SubstType},
-    types::{Nat, Type},
-    values::{False, True, Value},
+    types::Nat,
+    values::{False, True},
     TypeVar, Var,
 };
 use std::fmt;
@@ -13,14 +14,14 @@ use std::fmt;
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct IsZero<T>
 where
-    T: Term,
+    T: LanguageTerm,
 {
     term: Box<T>,
 }
 
 impl<T> IsZero<T>
 where
-    T: Term,
+    T: LanguageTerm,
 {
     pub fn new<T1>(t: T1) -> IsZero<T>
     where
@@ -32,11 +33,11 @@ where
     }
 }
 
-impl<T> Term for IsZero<T> where T: Term {}
+impl<T> Term for IsZero<T> where T: LanguageTerm {}
 
 impl<T> SubstTerm<T> for IsZero<T>
 where
-    T: Term + SubstTerm<T, Target = T>,
+    T: LanguageTerm,
     Self: Into<T>,
 {
     type Target = T;
@@ -47,14 +48,14 @@ where
         .into()
     }
 }
-impl<T, Ty> SubstType<Ty> for IsZero<T>
+
+impl<T> SubstType<<T as LanguageTerm>::Type> for IsZero<T>
 where
-    T: Term + SubstType<Ty, Target = T>,
-    Ty: Type,
+    T: LanguageTerm,
     Self: Into<T>,
 {
     type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    fn subst_type(self, v: &TypeVar, ty: &<T as LanguageTerm>::Type) -> Self::Target {
         IsZero {
             term: Box::new(self.term.subst_type(v, ty)),
         }
@@ -62,43 +63,44 @@ where
     }
 }
 
-impl<Env, Ty, T> Typecheck<Env, Ty> for IsZero<T>
+impl<T> Typecheck for IsZero<T>
 where
-    T: Term + Typecheck<Env, Ty>,
-    Ty: Type,
-    Nat: Into<Ty>,
-    Env: CheckEnvironment<Ty>,
+    T: LanguageTerm,
+    Nat: Into<<T as LanguageTerm>::Type>,
 {
-    fn check(&self, env: &mut Env) -> Result<Ty, Error> {
+    type Type = <T as Typecheck>::Type;
+    type Env = <T as Typecheck>::Env;
+
+    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
         let inner_ty = self.term.check(env)?;
         let nat = inner_ty.into_nat().map_err(to_check_err)?;
         Ok(nat.into())
     }
 }
 
-impl<Val, Env, T, Ty> Eval<Val, Env, T, Ty> for IsZero<T>
+impl<T> Eval for IsZero<T>
 where
-    T: Term + Eval<Val, Env, T, Ty> + SubstTerm<T, Target = T>,
-    Ty: Type,
-    Val: Value<T>,
-    Env: EvalEnvironment,
-    True: Into<Val>,
-    False: Into<Val>,
+    T: LanguageTerm,
+    True<T>: Into<<T as LanguageTerm>::Value>,
+    False<T>: Into<<T as LanguageTerm>::Value>,
 {
-    fn eval(self, env: &mut Env) -> Result<Val, Error> {
+    type Value = <T as Eval>::Value;
+    type Env = <T as Eval>::Env;
+
+    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
         let val = self.term.eval(env)?;
         let num = val.into_num().map_err(to_eval_err)?;
         if num.num == 0 {
-            Ok(True.into())
+            Ok(True::new().into())
         } else {
-            Ok(False.into())
+            Ok(False::new().into())
         }
     }
 }
 
 impl<T> fmt::Display for IsZero<T>
 where
-    T: Term,
+    T: LanguageTerm,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "iszero({})", self.term)

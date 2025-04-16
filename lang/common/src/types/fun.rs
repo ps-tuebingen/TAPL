@@ -1,5 +1,5 @@
 use super::Type;
-use crate::{errors::ErrorKind, subst::SubstType, TypeVar};
+use crate::{subst::SubstType, TypeVar};
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -23,20 +23,7 @@ where
     }
 }
 
-impl<Ty> Type for Fun<Ty>
-where
-    Ty: Type,
-{
-    fn into_fun<Ty1>(self) -> Result<Fun<Ty1>, ErrorKind>
-    where
-        Ty1: Type,
-    {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "Function Type".to_owned(),
-        })
-    }
-}
+impl<Ty> Type for Fun<Ty> where Ty: Type {}
 
 impl<Ty> SubstType<Ty> for Fun<Ty>
 where

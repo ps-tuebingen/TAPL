@@ -1,28 +1,31 @@
 use super::Term;
 use crate::{
+    language::LanguageTerm,
     subst::{SubstTerm, SubstType},
-    types::Type,
     TypeVar, Var,
 };
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Cons<T, Ty>
+pub struct Cons<T>
 where
-    T: Term,
-    Ty: Type,
+    T: LanguageTerm,
 {
     head: Box<T>,
     tail: Box<T>,
-    ty: Ty,
+    ty: <T as LanguageTerm>::Type,
 }
 
-impl<T, Ty> Cons<T, Ty>
+impl<T> Cons<T>
 where
-    T: Term,
-    Ty: Type,
+    T: LanguageTerm,
 {
-    pub fn new<H: Into<T>, Tl: Into<T>, Typ: Into<Ty>>(h: H, tl: Tl, ty: Typ) -> Cons<T, Ty> {
+    pub fn new<H, Tl, Typ>(h: H, tl: Tl, ty: Typ) -> Cons<T>
+    where
+        H: Into<T>,
+        Tl: Into<T>,
+        Typ: Into<<T as LanguageTerm>::Type>,
+    {
         Cons {
             head: Box::new(h.into()),
             tail: Box::new(tl.into()),
@@ -31,17 +34,11 @@ where
     }
 }
 
-impl<T, Ty> Term for Cons<T, Ty>
-where
-    T: Term,
-    Ty: Type,
-{
-}
+impl<T> Term for Cons<T> where T: LanguageTerm {}
 
-impl<T, Ty> SubstTerm<T> for Cons<T, Ty>
+impl<T> SubstTerm<T> for Cons<T>
 where
-    T: Term + SubstTerm<T, Target = T>,
-    Ty: Type,
+    T: LanguageTerm,
     Self: Into<T>,
 {
     type Target = T;
@@ -55,14 +52,13 @@ where
     }
 }
 
-impl<T, Ty> SubstType<Ty> for Cons<T, Ty>
+impl<T> SubstType<<T as LanguageTerm>::Type> for Cons<T>
 where
-    T: Term + SubstType<Ty, Target = T>,
-    Ty: Type + SubstType<Ty, Target = Ty>,
+    T: LanguageTerm,
     Self: Into<T>,
 {
     type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    fn subst_type(self, v: &TypeVar, ty: &<T as LanguageTerm>::Type) -> Self::Target {
         Cons {
             head: Box::new(self.head.subst_type(v, ty)),
             tail: Box::new(self.tail.subst_type(v, ty)),
@@ -72,10 +68,9 @@ where
     }
 }
 
-impl<T, Ty> fmt::Display for Cons<T, Ty>
+impl<T> fmt::Display for Cons<T>
 where
-    T: Term,
-    Ty: Type,
+    T: LanguageTerm,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "cons[{}]({},{})", self.ty, self.head, self.tail)

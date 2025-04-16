@@ -1,11 +1,12 @@
 use super::Term;
 use crate::{
-    check::{to_check_err, CheckEnvironment, Typecheck},
+    check::{to_check_err, Typecheck},
     errors::Error,
-    eval::{to_eval_err, Eval, EvalEnvironment},
+    eval::{to_eval_err, Eval},
+    language::{LanguageTerm, LanguageType, LanguageValue},
     subst::{SubstTerm, SubstType},
-    types::{Nat, Type},
-    values::{Num as NumVal, Value},
+    types::Nat,
+    values::Num as NumVal,
     TypeVar, Var,
 };
 use std::fmt;
@@ -13,14 +14,14 @@ use std::fmt;
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Pred<T>
 where
-    T: Term,
+    T: LanguageTerm,
 {
     term: Box<T>,
 }
 
 impl<T> Pred<T>
 where
-    T: Term,
+    T: LanguageTerm,
 {
     pub fn new<T1>(t: T1) -> Pred<T>
     where
@@ -32,11 +33,11 @@ where
     }
 }
 
-impl<T> Term for Pred<T> where T: Term {}
+impl<T> Term for Pred<T> where T: LanguageTerm {}
 
 impl<T> SubstTerm<T> for Pred<T>
 where
-    T: Term + SubstTerm<T, Target = T>,
+    T: LanguageTerm,
     Self: Into<T>,
 {
     type Target = T;
@@ -48,14 +49,13 @@ where
     }
 }
 
-impl<T, Ty> SubstType<Ty> for Pred<T>
+impl<T> SubstType<<T as LanguageTerm>::Type> for Pred<T>
 where
-    T: Term + SubstType<Ty, Target = T>,
-    Ty: Type,
+    T: LanguageTerm,
     Self: Into<T>,
 {
     type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    fn subst_type(self, v: &TypeVar, ty: &<T as LanguageTerm>::Type) -> Self::Target {
         Pred {
             term: Box::new(self.term.subst_type(v, ty)),
         }
@@ -63,29 +63,30 @@ where
     }
 }
 
-impl<Env, T, Ty> Typecheck<Env, Ty> for Pred<T>
+impl<T> Typecheck for Pred<T>
 where
-    Env: CheckEnvironment<Ty>,
-    T: Term + Typecheck<Env, Ty>,
-    Ty: Type,
-    Nat: Into<Ty>,
+    T: LanguageTerm,
+    Nat: Into<<T as LanguageTerm>::Type>,
 {
-    fn check(&self, env: &mut Env) -> Result<Ty, Error> {
+    type Type = <T as Typecheck>::Type;
+    type Env = <T as Typecheck>::Env;
+
+    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
         let inner_ty = self.term.check(env)?;
         let nat = inner_ty.into_nat().map_err(to_check_err)?;
         Ok(nat.into())
     }
 }
 
-impl<Val, Env, T, Ty> Eval<Val, Env, T, Ty> for Pred<T>
+impl<T> Eval for Pred<T>
 where
-    T: Term + Eval<Val, Env, T, Ty> + SubstTerm<T, Target = T>,
-    Ty: Type,
-    Val: Value<T>,
-    Env: EvalEnvironment,
-    NumVal: Into<Val>,
+    T: LanguageTerm,
+    NumVal<T>: Into<<T as LanguageTerm>::Value>,
 {
-    fn eval(self, env: &mut Env) -> Result<Val, Error> {
+    type Value = <T as Eval>::Value;
+    type Env = <T as Eval>::Env;
+
+    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
         let val = self.term.eval(env)?;
         let num = val.into_num().map_err(to_eval_err)?;
         Ok(NumVal::new(num.num - 1).into())
@@ -94,7 +95,7 @@ where
 
 impl<T> fmt::Display for Pred<T>
 where
-    T: Term,
+    T: LanguageTerm,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "pred({})", self.term)

@@ -1,64 +1,35 @@
-use super::{Lambda, Raise, Value};
-use crate::{
-    errors::ErrorKind,
-    terms::{Pair as PairT, Term},
-    types::Type,
-};
+use super::Value;
+use crate::{language::LanguageTerm, terms::Pair as PairT};
 use std::fmt;
-use std::marker::PhantomData;
+
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct Pair<V, T>
+pub struct Pair<T>
 where
-    V: Value<T>,
-    T: Term,
+    T: LanguageTerm,
 {
-    fst: Box<V>,
-    snd: Box<V>,
-    phantom: PhantomData<T>,
+    fst: Box<<T as LanguageTerm>::Value>,
+    snd: Box<<T as LanguageTerm>::Value>,
 }
 
-impl<V, T> Value<T> for Pair<V, T>
+impl<T> Value for Pair<T>
 where
-    V: Value<T> + Into<T>,
-    T: Term + From<PairT<T>>,
+    T: LanguageTerm,
 {
     type Term = PairT<T>;
-    fn into_lambda<Ty1>(self) -> Result<Lambda<T, Ty1>, ErrorKind>
-    where
-        Ty1: Type,
-    {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "Lambda Abstraction".to_owned(),
-        })
-    }
-
-    fn into_raise<Val, Ty1>(self) -> Result<Raise<Val, Ty1, T>, ErrorKind>
-    where
-        Val: Value<T>,
-        Ty1: Type,
-    {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "Raise".to_owned(),
-        })
-    }
 }
 
-impl<V, T> From<Pair<V, T>> for PairT<T>
+impl<T> From<Pair<T>> for PairT<T>
 where
-    T: Term,
-    V: Value<T> + Into<T>,
+    T: LanguageTerm,
 {
-    fn from(p: Pair<V, T>) -> PairT<T> {
+    fn from(p: Pair<T>) -> PairT<T> {
         PairT::new(*p.fst, *p.snd)
     }
 }
 
-impl<V, T> fmt::Display for Pair<V, T>
+impl<T> fmt::Display for Pair<T>
 where
-    V: Value<T>,
-    T: Term,
+    T: LanguageTerm,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{{ {}, {} }}", self.fst, self.snd)

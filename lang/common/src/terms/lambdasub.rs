@@ -1,28 +1,30 @@
 use super::Term;
 use crate::{
+    language::LanguageTerm,
     subst::{SubstTerm, SubstType},
-    types::Type,
     TypeVar, Var,
 };
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct LambdaSub<T, Ty>
+pub struct LambdaSub<T>
 where
-    T: Term,
-    Ty: Type,
+    T: LanguageTerm,
 {
     var: Var,
-    sup_ty: Ty,
+    sup_ty: <T as LanguageTerm>::Type,
     body: Box<T>,
 }
 
-impl<T, Ty> LambdaSub<T, Ty>
+impl<T> LambdaSub<T>
 where
-    T: Term,
-    Ty: Type,
+    T: LanguageTerm,
 {
-    pub fn new<Typ: Into<Ty>, B: Into<T>>(v: &str, sup: Typ, bod: B) -> LambdaSub<T, Ty> {
+    pub fn new<Typ, B>(v: &str, sup: Typ, bod: B) -> LambdaSub<T>
+    where
+        Typ: Into<<T as LanguageTerm>::Type>,
+        B: Into<T>,
+    {
         LambdaSub {
             var: v.to_owned(),
             sup_ty: sup.into(),
@@ -31,18 +33,12 @@ where
     }
 }
 
-impl<T, Ty> Term for LambdaSub<T, Ty>
-where
-    T: Term,
-    Ty: Type,
-{
-}
+impl<T> Term for LambdaSub<T> where T: LanguageTerm {}
 
-impl<T, Ty> SubstTerm<T> for LambdaSub<T, Ty>
+impl<T> SubstTerm<T> for LambdaSub<T>
 where
-    T: Term + SubstTerm<T, Target = T>,
+    T: LanguageTerm,
     Self: Into<T>,
-    Ty: Type,
 {
     type Target = T;
     fn subst(self, v: &Var, t: &T) -> T {
@@ -59,14 +55,13 @@ where
     }
 }
 
-impl<T, Ty> SubstType<Ty> for LambdaSub<T, Ty>
+impl<T> SubstType<<T as LanguageTerm>::Type> for LambdaSub<T>
 where
-    T: Term + SubstType<Ty, Target = T>,
-    Ty: Type + SubstType<Ty, Target = Ty>,
+    T: LanguageTerm,
     Self: Into<T>,
 {
     type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    fn subst_type(self, v: &TypeVar, ty: &<T as LanguageTerm>::Type) -> Self::Target {
         let sup_subst = self.sup_ty.subst_type(v, ty);
         if *v == self.var {
             LambdaSub {
@@ -86,10 +81,9 @@ where
     }
 }
 
-impl<T, Ty> fmt::Display for LambdaSub<T, Ty>
+impl<T> fmt::Display for LambdaSub<T>
 where
-    T: Term,
-    Ty: Type,
+    T: LanguageTerm,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "\\{}<:{}.{}", self.var, self.sup_ty, self.body)

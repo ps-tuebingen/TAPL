@@ -2,32 +2,34 @@ use super::Term;
 use crate::{
     check::{CheckEnvironment, Typecheck},
     errors::Error,
-    eval::{Eval, EvalEnvironment},
+    eval::Eval,
+    language::LanguageTerm,
     subst::{SubstTerm, SubstType},
     types::Fun,
-    types::Type,
-    values::{Lambda as LambdaVal, Value},
+    values::Lambda as LambdaVal,
     TypeVar, Var,
 };
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Lambda<T, Ty>
+pub struct Lambda<T>
 where
-    T: Term,
-    Ty: Type,
+    T: LanguageTerm,
 {
     pub var: Var,
-    pub annot: Ty,
+    pub annot: <T as LanguageTerm>::Type,
     pub body: Box<T>,
 }
 
-impl<T, Ty> Lambda<T, Ty>
+impl<T> Lambda<T>
 where
-    T: Term,
-    Ty: Type,
+    T: LanguageTerm,
 {
-    pub fn new<A: Into<Ty>, B: Into<T>>(v: &str, a: A, b: B) -> Lambda<T, Ty> {
+    pub fn new<A, B>(v: &str, a: A, b: B) -> Lambda<T>
+    where
+        A: Into<<T as LanguageTerm>::Type>,
+        B: Into<T>,
+    {
         Lambda {
             var: v.to_owned(),
             annot: a.into(),
@@ -36,38 +38,39 @@ where
     }
 }
 
-impl<'a, Env, T, Ty> Typecheck<Env, Ty> for Lambda<T, Ty>
+impl<T> Term for Lambda<T> where T: LanguageTerm {}
+impl<T> Typecheck for Lambda<T>
 where
-    Env: CheckEnvironment<Ty>,
-    Ty: Type,
-    T: Term + Typecheck<Env, Ty>,
-    Fun<Ty>: Into<Ty>,
+    T: LanguageTerm,
+    Fun<<T as LanguageTerm>::Type>: Into<<T as LanguageTerm>::Type>,
 {
-    fn check(&self, env: &mut Env) -> Result<Ty, Error> {
+    type Type = <T as Typecheck>::Type;
+    type Env = <T as Typecheck>::Env;
+
+    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
         env.add_var(self.var.clone(), self.annot.clone());
         let body_ty = self.body.check(env)?;
         Ok(Fun::new(self.annot.clone(), body_ty).into())
     }
 }
 
-impl<Val, Env, T, Ty> Eval<Val, Env, T, Ty> for Lambda<T, Ty>
+impl<T> Eval for Lambda<T>
 where
-    T: Term + SubstTerm<T, Target = T>,
-    Ty: Type,
-    Val: Value<T>,
-    Env: EvalEnvironment,
-    LambdaVal<T, Ty>: Into<Val>,
+    T: LanguageTerm,
+    LambdaVal<T>: Into<<T as LanguageTerm>::Value>,
 {
-    fn eval(self, _: &mut Env) -> Result<Val, Error> {
+    type Value = <T as Eval>::Value;
+    type Env = <T as Eval>::Env;
+
+    fn eval(self, _: &mut Self::Env) -> Result<Self::Value, Error> {
         Ok(LambdaVal::new(&self.var, self.annot, *self.body).into())
     }
 }
 
-impl<T, Ty> SubstTerm<T> for Lambda<T, Ty>
+impl<T> SubstTerm<T> for Lambda<T>
 where
-    T: Term + SubstTerm<T, Target = T>,
+    T: LanguageTerm,
     Self: Into<T>,
-    Ty: Type,
 {
     type Target = T;
     fn subst(self, v: &Var, t: &T) -> T {
@@ -84,14 +87,13 @@ where
     }
 }
 
-impl<T, Ty> SubstType<Ty> for Lambda<T, Ty>
+impl<T> SubstType<<T as LanguageTerm>::Type> for Lambda<T>
 where
-    T: Term + SubstType<Ty, Target = T>,
-    Ty: Type + SubstType<Ty, Target = Ty>,
+    T: LanguageTerm,
     Self: Into<T>,
 {
     type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    fn subst_type(self, v: &TypeVar, ty: &<T as LanguageTerm>::Type) -> Self::Target {
         Lambda {
             var: self.var,
             annot: self.annot.subst_type(v, ty),
@@ -101,17 +103,9 @@ where
     }
 }
 
-impl<T, Ty> Term for Lambda<T, Ty>
+impl<T> fmt::Display for Lambda<T>
 where
-    T: Term,
-    Ty: Type,
-{
-}
-
-impl<T, Ty> fmt::Display for Lambda<T, Ty>
-where
-    T: Term,
-    Ty: Type,
+    T: LanguageTerm,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "\\{}:{}.{}", self.var, self.annot, self.body)

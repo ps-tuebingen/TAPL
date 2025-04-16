@@ -1,90 +1,54 @@
-use super::{Lambda, Value};
-use crate::{
-    errors::ErrorKind,
-    terms::{Raise as RaiseT, Term},
-    types::Type,
-};
-use std::{fmt, marker::PhantomData};
+use super::Value;
+use crate::{language::LanguageTerm, terms::Raise as RaiseT};
+use std::fmt;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct Raise<V, Ty, T>
+pub struct Raise<T>
 where
-    V: Value<T>,
-    Ty: Type,
-    T: Term,
+    T: LanguageTerm,
 {
-    val: Box<V>,
-    cont_ty: Ty,
-    exception_ty: Ty,
-    phantom: PhantomData<T>,
+    val: Box<<T as LanguageTerm>::Value>,
+    cont_ty: <T as LanguageTerm>::Type,
+    exception_ty: <T as LanguageTerm>::Type,
 }
 
-impl<V, Ty, T> Raise<V, Ty, T>
+impl<T> Raise<T>
 where
-    V: Value<T>,
-    T: Term,
-    Ty: Type,
+    T: LanguageTerm,
 {
-    pub fn new<V1, Ty1, Ty2>(v: V1, cont_ty: Ty1, ex_ty: Ty2) -> Raise<V, Ty, T>
+    pub fn new<V1, Ty1, Ty2>(v: V1, cont_ty: Ty1, ex_ty: Ty2) -> Raise<T>
     where
-        V1: Into<V>,
-        Ty1: Into<Ty>,
-        Ty2: Into<Ty>,
+        V1: Into<<T as LanguageTerm>::Value>,
+        Ty1: Into<<T as LanguageTerm>::Type>,
+        Ty2: Into<<T as LanguageTerm>::Type>,
     {
         Raise {
             val: Box::new(v.into()),
             cont_ty: cont_ty.into(),
             exception_ty: ex_ty.into(),
-            phantom: PhantomData,
         }
     }
 }
 
-impl<V, Ty, T> Value<T> for Raise<V, Ty, T>
+impl<T> Value for Raise<T>
 where
-    V: Value<T> + Into<T>,
-    Ty: Type,
-    T: Term + From<RaiseT<T, Ty>>,
+    T: LanguageTerm,
 {
-    type Term = RaiseT<T, Ty>;
-    fn into_lambda<Ty1>(self) -> Result<Lambda<T, Ty1>, ErrorKind>
-    where
-        Ty1: Type,
-    {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "Lambda Abstraction".to_owned(),
-        })
-    }
-
-    fn into_raise<Val, Ty1>(self) -> Result<Raise<Val, Ty1, T>, ErrorKind>
-    where
-        Val: Value<T>,
-        Ty1: Type,
-    {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "Raise".to_owned(),
-        })
-    }
+    type Term = RaiseT<T>;
 }
 
-impl<V, Ty, T> From<Raise<V, Ty, T>> for RaiseT<T, Ty>
+impl<T> From<Raise<T>> for RaiseT<T>
 where
-    V: Value<T> + Into<T>,
-    T: Term,
-    Ty: Type,
+    T: LanguageTerm,
 {
-    fn from(r: Raise<V, Ty, T>) -> RaiseT<T, Ty> {
+    fn from(r: Raise<T>) -> RaiseT<T> {
         RaiseT::new(*r.val, r.exception_ty, r.cont_ty)
     }
 }
 
-impl<V, Ty, T> fmt::Display for Raise<V, Ty, T>
+impl<T> fmt::Display for Raise<T>
 where
-    V: Value<T>,
-    T: Term,
-    Ty: Type,
+    T: LanguageTerm,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(

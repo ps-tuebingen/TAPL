@@ -1,72 +1,46 @@
-use super::{Lambda, Raise, Value};
-use crate::{
-    errors::ErrorKind,
-    terms::{Exception as ExceptionT, Term},
-    types::Type,
-};
+use super::Value;
+use crate::{language::LanguageTerm, terms::Exception as ExceptionT};
 use std::fmt;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct Exception<Ty>
+pub struct Exception<T>
 where
-    Ty: Type,
+    T: LanguageTerm,
 {
-    ty: Ty,
+    ty: <T as LanguageTerm>::Type,
 }
 
-impl<Ty> Exception<Ty>
+impl<T> Exception<T>
 where
-    Ty: Type,
+    T: LanguageTerm,
 {
-    pub fn new<Ty1>(ty: Ty1) -> Exception<Ty>
+    pub fn new<Ty1>(ty: Ty1) -> Exception<T>
     where
-        Ty1: Into<Ty>,
+        Ty1: Into<<T as LanguageTerm>::Type>,
     {
         Exception { ty: ty.into() }
     }
 }
 
-impl<T, Ty> Value<T> for Exception<Ty>
+impl<T> Value for Exception<T>
 where
-    Ty: Type,
-    T: Term + From<ExceptionT<T, Ty>>,
+    T: LanguageTerm,
 {
-    type Term = ExceptionT<T, Ty>;
-    fn into_lambda<Ty1>(self) -> Result<Lambda<T, Ty1>, ErrorKind>
-    where
-        Ty1: Type,
-    {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "Lambda Abstraction".to_owned(),
-        })
-    }
-
-    fn into_raise<Val, Ty1>(self) -> Result<Raise<Val, Ty1, T>, ErrorKind>
-    where
-        Val: Value<T>,
-        Ty1: Type,
-    {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "Raise".to_owned(),
-        })
-    }
+    type Term = ExceptionT<T>;
 }
 
-impl<T, Ty> From<Exception<Ty>> for ExceptionT<T, Ty>
+impl<T> From<Exception<T>> for ExceptionT<T>
 where
-    T: Term,
-    Ty: Type,
+    T: LanguageTerm,
 {
-    fn from(ex: Exception<Ty>) -> ExceptionT<T, Ty> {
+    fn from(ex: Exception<T>) -> ExceptionT<T> {
         ExceptionT::new(ex.ty)
     }
 }
 
-impl<Ty> fmt::Display for Exception<Ty>
+impl<T> fmt::Display for Exception<T>
 where
-    Ty: Type,
+    T: LanguageTerm,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "error[{}]", self.ty)

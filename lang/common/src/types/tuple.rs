@@ -1,5 +1,5 @@
-use super::{Fun, Type};
-use crate::{errors::ErrorKind, subst::SubstType, TypeVar};
+use super::Type;
+use crate::{subst::SubstType, TypeVar};
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -10,20 +10,7 @@ where
     tys: Vec<Ty>,
 }
 
-impl<Ty> Type for Tuple<Ty>
-where
-    Ty: Type,
-{
-    fn into_fun<Ty1>(self) -> Result<Fun<Ty1>, ErrorKind>
-    where
-        Ty1: Type,
-    {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "Function Type".to_owned(),
-        })
-    }
-}
+impl<Ty> Type for Tuple<Ty> where Ty: Type {}
 
 impl<Ty> SubstType<Ty> for Tuple<Ty>
 where

@@ -1,32 +1,25 @@
-use super::{Raise, Value};
-use crate::{
-    errors::ErrorKind,
-    terms::{Lambda as LambdaT, Term},
-    types::Type,
-    Var,
-};
+use super::Value;
+use crate::{language::LanguageTerm, terms::Lambda as LambdaT, Var};
 use std::fmt;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct Lambda<T, Ty>
+pub struct Lambda<T>
 where
-    T: Term,
-    Ty: Type,
+    T: LanguageTerm,
 {
     pub var: Var,
-    pub annot: Ty,
+    pub annot: <T as LanguageTerm>::Type,
     pub body: T,
 }
 
-impl<T, Ty> Lambda<T, Ty>
+impl<T> Lambda<T>
 where
-    T: Term,
-    Ty: Type,
+    T: LanguageTerm,
 {
-    pub fn new<Ty1, T1>(v: &str, ty: Ty1, bd: T1) -> Lambda<T, Ty>
+    pub fn new<Ty1, T1>(v: &str, ty: Ty1, bd: T1) -> Lambda<T>
     where
         T1: Into<T>,
-        Ty1: Into<Ty>,
+        Ty1: Into<<T as LanguageTerm>::Type>,
     {
         Lambda {
             var: v.to_owned(),
@@ -36,48 +29,25 @@ where
     }
 }
 
-impl<T, Ty> Value<T> for Lambda<T, Ty>
+impl<T> Value for Lambda<T>
 where
-    T: Term + From<LambdaT<T, Ty>>,
-    Ty: Type,
+    T: LanguageTerm,
 {
-    type Term = LambdaT<T, Ty>;
-    fn into_lambda<Ty1>(self) -> Result<Lambda<T, Ty1>, ErrorKind>
-    where
-        Ty1: Type,
-    {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "Lambda Abstraction".to_owned(),
-        })
-    }
-
-    fn into_raise<Val, Ty1>(self) -> Result<Raise<Val, Ty1, T>, ErrorKind>
-    where
-        Val: Value<T>,
-        Ty1: Type,
-    {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "Raise".to_owned(),
-        })
-    }
+    type Term = LambdaT<T>;
 }
 
-impl<T, Ty> From<Lambda<T, Ty>> for LambdaT<T, Ty>
+impl<T> From<Lambda<T>> for LambdaT<T>
 where
-    T: Term,
-    Ty: Type,
+    T: LanguageTerm,
 {
-    fn from(lam: Lambda<T, Ty>) -> LambdaT<T, Ty> {
+    fn from(lam: Lambda<T>) -> LambdaT<T> {
         LambdaT::new(&lam.var, lam.annot, lam.body)
     }
 }
 
-impl<T, Ty> fmt::Display for Lambda<T, Ty>
+impl<T> fmt::Display for Lambda<T>
 where
-    T: Term,
-    Ty: Type,
+    T: LanguageTerm,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "\\{}:{}.{}", self.var, self.annot, self.body)

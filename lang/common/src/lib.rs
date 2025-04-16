@@ -2,7 +2,7 @@ pub mod check;
 pub mod errors;
 pub mod eval;
 pub mod kinds;
-pub mod langs;
+pub mod language;
 pub mod parse;
 pub mod subst;
 pub mod terms;

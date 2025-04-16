@@ -1,11 +1,11 @@
 use super::Term;
 use crate::{
-    check::{to_check_err, CheckEnvironment, Typecheck},
-    errors::{Error, ErrorKind},
-    eval::{to_eval_err, Eval, EvalEnvironment},
+    check::{to_check_err, Typecheck},
+    errors::Error,
+    eval::{to_eval_err, Eval},
+    language::{LanguageTerm, LanguageType, LanguageValue},
     subst::{SubstTerm, SubstType},
-    types::Type,
-    values::Value,
+    types::{Fun, Type},
     TypeVar, Var,
 };
 use std::fmt;
@@ -13,7 +13,7 @@ use std::fmt;
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct App<T>
 where
-    T: Term,
+    T: LanguageTerm,
 {
     pub fun: Box<T>,
     pub arg: Box<T>,
@@ -21,7 +21,7 @@ where
 
 impl<T> App<T>
 where
-    T: Term,
+    T: LanguageTerm,
 {
     pub fn new<F: Into<T>, A: Into<T>>(f: F, a: A) -> App<T> {
         App {
@@ -31,11 +31,11 @@ where
     }
 }
 
-impl<T> Term for App<T> where T: Term {}
+impl<T> Term for App<T> where T: LanguageTerm {}
 
 impl<T> SubstTerm<T> for App<T>
 where
-    T: Term + SubstTerm<T, Target = T>,
+    T: LanguageTerm,
     Self: Into<T>,
 {
     type Target = T;
@@ -50,7 +50,7 @@ where
 impl<Ty, T> SubstType<Ty> for App<T>
 where
     Ty: Type,
-    T: Term + SubstType<Ty, Target = T>,
+    T: LanguageTerm<Type = Ty>,
     Self: Into<T>,
 {
     type Target = T;
@@ -63,45 +63,41 @@ where
     }
 }
 
-impl<Env, Ty, T> Typecheck<Env, Ty> for App<T>
+impl<T> Typecheck for App<T>
 where
-    Env: CheckEnvironment<Ty>,
-    Ty: Type,
-    T: Term + Typecheck<Env, Ty>,
+    T: LanguageTerm,
 {
-    fn check(&self, env: &mut Env) -> Result<Ty, Error> {
+    type Type = <T as Typecheck>::Type;
+    type Env = <T as Typecheck>::Env;
+
+    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
         let fun_ty = self.fun.check(&mut env.clone())?;
-        let fun = fun_ty.into_fun().map_err(to_check_err)?;
+        let fun: Fun<<T as LanguageTerm>::Type> = fun_ty.into_fun().map_err(to_check_err)?;
         let arg_ty = self.arg.check(env)?;
-        if *fun.from == arg_ty {
-            Ok(*fun.to)
-        } else {
-            Err(to_check_err(ErrorKind::TypeMismatch {
-                found: arg_ty.to_string(),
-                expected: fun.from.to_string(),
-            }))
-        }
+        fun.from.check_equal(&arg_ty).map_err(to_check_err)?;
+        Ok(*fun.to)
     }
 }
 
-impl<V, Env, T, Ty> Eval<V, Env, T, Ty> for App<T>
+impl<T> Eval for App<T>
 where
-    V: Value<T>,
-    T: Term + SubstTerm<T, Target = T> + Eval<V, Env, T, Ty>,
-    Env: EvalEnvironment,
-    Ty: Type,
+    T: LanguageTerm,
 {
-    fn eval(self, env: &mut Env) -> Result<V, Error> {
+    type Env = <T as Eval>::Env;
+    type Value = <T as LanguageTerm>::Value;
+
+    fn eval(self, env: &mut <T as Eval>::Env) -> Result<<T as LanguageTerm>::Value, Error> {
         let fun_val = self.fun.eval(env)?;
-        let arg_val: V::Term = self.arg.eval(env)?.into();
-        let lam = fun_val.into_lambda::<Ty>().map_err(to_eval_err)?;
+
+        let lam = fun_val.into_lambda().map_err(to_eval_err)?;
+        let arg_val: <T as LanguageTerm>::Value = self.arg.eval(env)?;
         lam.body.subst(&lam.var, &arg_val.into()).eval(env)
     }
 }
 
 impl<T> fmt::Display for App<T>
 where
-    T: Term,
+    T: LanguageTerm,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "({}) ({})", self.fun, self.arg)

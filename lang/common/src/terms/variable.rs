@@ -2,10 +2,10 @@ use super::Term;
 use crate::{
     check::{CheckEnvironment, Typecheck},
     errors::{Error, ErrorKind},
-    eval::{to_eval_err, Eval, EvalEnvironment},
+    eval::{to_eval_err, Eval},
+    language::LanguageTerm,
     subst::{SubstTerm, SubstType},
     types::Type,
-    values::Value,
     TypeVar, Var,
 };
 use std::{fmt, marker::PhantomData};
@@ -13,13 +13,13 @@ use std::{fmt, marker::PhantomData};
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Variable<T>
 where
-    T: Term,
+    T: LanguageTerm,
 {
     var: Var,
     phantom: PhantomData<T>,
 }
 
-impl<T: Term> Variable<T> {
+impl<T: LanguageTerm> Variable<T> {
     pub fn new(v: &str) -> Variable<T> {
         Variable {
             var: v.to_owned(),
@@ -28,11 +28,11 @@ impl<T: Term> Variable<T> {
     }
 }
 
-impl<T> Term for Variable<T> where T: Term {}
+impl<T> Term for Variable<T> where T: LanguageTerm {}
 
 impl<T> SubstTerm<T> for Variable<T>
 where
-    T: Term,
+    T: LanguageTerm,
     Self: Into<T>,
 {
     type Target = T;
@@ -47,7 +47,7 @@ where
 
 impl<T, Ty> SubstType<Ty> for Variable<T>
 where
-    T: Term,
+    T: LanguageTerm,
     Ty: Type,
     Self: Into<T>,
 {
@@ -57,32 +57,33 @@ where
     }
 }
 
-impl<T, Ty, Env> Typecheck<Env, Ty> for Variable<T>
+impl<T> Typecheck for Variable<T>
 where
-    T: Term,
-    Ty: Type,
-    Env: CheckEnvironment<Ty>,
+    T: LanguageTerm,
 {
-    fn check(&self, env: &mut Env) -> Result<Ty, Error> {
+    type Type = <T as Typecheck>::Type;
+    type Env = <T as Typecheck>::Env;
+
+    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
         env.get_var(&self.var)
     }
 }
 
-impl<Val, Env, T, Ty> Eval<Val, Env, T, Ty> for Variable<T>
+impl<T> Eval for Variable<T>
 where
-    T: Term + SubstTerm<T, Target = T>,
-    Ty: Type,
-    Env: EvalEnvironment,
-    Val: Value<T>,
+    T: LanguageTerm,
 {
-    fn eval(self, _: &mut Env) -> Result<Val, Error> {
+    type Value = <T as Eval>::Value;
+    type Env = <T as Eval>::Env;
+
+    fn eval(self, _: &mut Self::Env) -> Result<Self::Value, Error> {
         Err(to_eval_err(ErrorKind::FreeVariable(self.var)))
     }
 }
 
 impl<T> fmt::Display for Variable<T>
 where
-    T: Term,
+    T: LanguageTerm,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.var)

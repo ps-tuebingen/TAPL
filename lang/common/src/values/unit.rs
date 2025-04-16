@@ -1,51 +1,46 @@
-use super::{Lambda, Raise, Value};
-use crate::{
-    errors::ErrorKind,
-    terms::{Term, Unit as UnitT},
-    types::Type,
-};
-use std::fmt;
+use super::Value;
+use crate::{language::LanguageTerm, terms::Unit as UnitT};
+use std::{fmt, marker::PhantomData};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct Unit;
-
-impl<T> Value<T> for Unit
+pub struct Unit<T>
 where
-    T: Term + From<UnitT<T>>,
+    T: LanguageTerm,
 {
-    type Term = UnitT<T>;
-    fn into_lambda<Ty1>(self) -> Result<Lambda<T, Ty1>, ErrorKind>
-    where
-        Ty1: Type,
-    {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "Lambda Abstraction".to_owned(),
-        })
-    }
+    phantom: PhantomData<T>,
+}
 
-    fn into_raise<Val, Ty1>(self) -> Result<Raise<Val, Ty1, T>, ErrorKind>
-    where
-        Val: Value<T>,
-        Ty1: Type,
-    {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "Raise".to_owned(),
-        })
+impl<T> Unit<T>
+where
+    T: LanguageTerm,
+{
+    pub fn new() -> Unit<T> {
+        Unit {
+            phantom: PhantomData,
+        }
     }
 }
 
-impl<T> From<Unit> for UnitT<T>
+impl<T> Value for Unit<T>
 where
-    T: Term + From<UnitT<T>>,
+    T: LanguageTerm,
 {
-    fn from(_: Unit) -> UnitT<T> {
+    type Term = UnitT<T>;
+}
+
+impl<T> From<Unit<T>> for UnitT<T>
+where
+    T: LanguageTerm,
+{
+    fn from(_: Unit<T>) -> UnitT<T> {
         UnitT::new()
     }
 }
 
-impl fmt::Display for Unit {
+impl<T> fmt::Display for Unit<T>
+where
+    T: LanguageTerm,
+{
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.write_str("unit")
     }

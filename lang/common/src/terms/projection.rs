@@ -1,7 +1,7 @@
 use super::Term;
 use crate::{
+    language::LanguageTerm,
     subst::{SubstTerm, SubstType},
-    types::Type,
     TypeVar, Var,
 };
 use std::fmt;
@@ -9,17 +9,17 @@ use std::fmt;
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Projection<T>
 where
-    T: Term,
+    T: LanguageTerm,
 {
     term: Box<T>,
     index: usize,
 }
 
-impl<T> Term for Projection<T> where T: Term {}
+impl<T> Term for Projection<T> where T: LanguageTerm {}
 
 impl<T> SubstTerm<T> for Projection<T>
 where
-    T: Term + SubstTerm<T, Target = T>,
+    T: LanguageTerm,
     Self: Into<T>,
 {
     type Target = T;
@@ -32,14 +32,13 @@ where
     }
 }
 
-impl<T, Ty> SubstType<Ty> for Projection<T>
+impl<T> SubstType<<T as LanguageTerm>::Type> for Projection<T>
 where
-    T: Term + SubstType<Ty, Target = T>,
-    Ty: Type,
+    T: LanguageTerm,
     Self: Into<T>,
 {
     type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    fn subst_type(self, v: &TypeVar, ty: &<T as LanguageTerm>::Type) -> Self::Target {
         Projection {
             term: Box::new(self.term.subst_type(v, ty)),
             index: self.index,
@@ -50,7 +49,7 @@ where
 
 impl<T> fmt::Display for Projection<T>
 where
-    T: Term,
+    T: LanguageTerm,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "({}).{}", self.term, self.index)

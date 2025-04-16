@@ -1,27 +1,9 @@
-use crate::errors::ErrorKind;
 use std::fmt;
 
 pub trait Type
 where
     Self: fmt::Display + fmt::Debug + Clone + PartialEq + Eq,
 {
-    fn into_fun<Ty>(self) -> Result<Fun<Ty>, ErrorKind>
-    where
-        Ty: Type;
-
-    fn into_nat(self) -> Result<Nat, ErrorKind> {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "Nat".to_owned(),
-        })
-    }
-
-    fn into_bool(self) -> Result<Bool, ErrorKind> {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "Bool".to_owned(),
-        })
-    }
 }
 
 pub mod bool;

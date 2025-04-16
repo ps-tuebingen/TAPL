@@ -1,11 +1,12 @@
 use super::Term;
 use crate::{
-    check::{CheckEnvironment, Typecheck},
+    check::Typecheck,
     errors::Error,
-    eval::{Eval, EvalEnvironment},
+    eval::Eval,
+    language::LanguageTerm,
     subst::{SubstTerm, SubstType},
     types::{Type, Unit as UnitTy},
-    values::{Unit as UnitVal, Value},
+    values::Unit as UnitVal,
     TypeVar, Var,
 };
 use std::{fmt, marker::PhantomData};
@@ -13,14 +14,14 @@ use std::{fmt, marker::PhantomData};
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Unit<T>
 where
-    T: Term,
+    T: LanguageTerm,
 {
     phantom: PhantomData<T>,
 }
 
 impl<T> Unit<T>
 where
-    T: Term,
+    T: LanguageTerm,
 {
     pub fn new() -> Unit<T> {
         Unit {
@@ -29,11 +30,11 @@ where
     }
 }
 
-impl<T> Term for Unit<T> where T: Term {}
+impl<T> Term for Unit<T> where T: LanguageTerm {}
 
 impl<T> SubstTerm<T> for Unit<T>
 where
-    T: Term,
+    T: LanguageTerm,
     Self: Into<T>,
 {
     type Target = T;
@@ -44,7 +45,7 @@ where
 
 impl<T, Ty> SubstType<Ty> for Unit<T>
 where
-    T: Term,
+    T: LanguageTerm,
     Ty: Type,
     Self: Into<T>,
 {
@@ -54,34 +55,35 @@ where
     }
 }
 
-impl<Env, Ty, T> Typecheck<Env, Ty> for Unit<T>
+impl<T> Typecheck for Unit<T>
 where
-    T: Term,
-    Ty: Type,
-    UnitTy: Into<Ty>,
-    Env: CheckEnvironment<Ty>,
+    T: LanguageTerm,
+    UnitTy: Into<<T as LanguageTerm>::Type>,
 {
-    fn check(&self, _: &mut Env) -> Result<Ty, Error> {
+    type Type = <T as Typecheck>::Type;
+    type Env = <T as Typecheck>::Env;
+
+    fn check(&self, _: &mut Self::Env) -> Result<Self::Type, Error> {
         Ok(UnitTy.into())
     }
 }
 
-impl<Val, Env, T, Ty> Eval<Val, Env, T, Ty> for Unit<T>
+impl<T> Eval for Unit<T>
 where
-    T: Term + SubstTerm<T, Target = T>,
-    Ty: Type,
-    Val: Value<T>,
-    Env: EvalEnvironment,
-    UnitVal: Into<Val>,
+    T: LanguageTerm,
+    UnitVal<T>: Into<<T as LanguageTerm>::Value>,
 {
-    fn eval(self, _: &mut Env) -> Result<Val, Error> {
-        Ok(UnitVal.into())
+    type Value = <T as Eval>::Value;
+    type Env = <T as Eval>::Env;
+
+    fn eval(self, _: &mut Self::Env) -> Result<Self::Value, Error> {
+        Ok(UnitVal::new().into())
     }
 }
 
 impl<T> fmt::Display for Unit<T>
 where
-    T: Term,
+    T: LanguageTerm,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.write_str("unit")

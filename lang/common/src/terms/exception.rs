@@ -1,31 +1,32 @@
 use super::Term;
 use crate::{
-    check::{CheckEnvironment, Typecheck},
+    check::Typecheck,
     errors::Error,
-    eval::{Eval, EvalEnvironment},
+    eval::Eval,
+    language::LanguageTerm,
     subst::{SubstTerm, SubstType},
-    types::Type,
-    values::{Exception as ExceptionVal, Value},
+    values::Exception as ExceptionVal,
     TypeVar, Var,
 };
 use std::{fmt, marker::PhantomData};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Exception<T, Ty>
+pub struct Exception<T>
 where
-    Ty: Type,
-    T: Term,
+    T: LanguageTerm,
 {
-    ty: Ty,
+    ty: <T as LanguageTerm>::Type,
     phantom: PhantomData<T>,
 }
 
-impl<T, Ty> Exception<T, Ty>
+impl<T> Exception<T>
 where
-    T: Term,
-    Ty: Type,
+    T: LanguageTerm,
 {
-    pub fn new<Typ: Into<Ty>>(ty: Typ) -> Exception<T, Ty> {
+    pub fn new<Typ>(ty: Typ) -> Exception<T>
+    where
+        Typ: Into<<T as LanguageTerm>::Type>,
+    {
         Exception {
             ty: ty.into(),
             phantom: PhantomData,
@@ -33,18 +34,12 @@ where
     }
 }
 
-impl<T, Ty> Term for Exception<T, Ty>
-where
-    Ty: Type,
-    T: Term,
-{
-}
+impl<T> Term for Exception<T> where T: LanguageTerm {}
 
-impl<T, Ty> SubstTerm<T> for Exception<T, Ty>
+impl<T> SubstTerm<T> for Exception<T>
 where
-    T: Term,
+    T: LanguageTerm,
     Self: Into<T>,
-    Ty: Type,
 {
     type Target = T;
     fn subst(self, _: &Var, _: &T) -> T {
@@ -52,14 +47,13 @@ where
     }
 }
 
-impl<Ty, T> SubstType<Ty> for Exception<T, Ty>
+impl<T> SubstType<<T as LanguageTerm>::Type> for Exception<T>
 where
-    Ty: Type + SubstType<Ty, Target = Ty>,
-    T: Term,
+    T: LanguageTerm,
     Self: Into<T>,
 {
     type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    fn subst_type(self, v: &TypeVar, ty: &<T as LanguageTerm>::Type) -> Self::Target {
         Exception {
             ty: self.ty.subst_type(v, ty),
             phantom: PhantomData,
@@ -68,34 +62,34 @@ where
     }
 }
 
-impl<Env, T, Ty> Typecheck<Env, Ty> for Exception<T, Ty>
+impl<T> Typecheck for Exception<T>
 where
-    Env: CheckEnvironment<Ty>,
-    Ty: Type,
-    T: Term,
+    T: LanguageTerm,
 {
-    fn check(&self, _: &mut Env) -> Result<Ty, Error> {
+    type Type = <T as Typecheck>::Type;
+    type Env = <T as Typecheck>::Env;
+
+    fn check(&self, _: &mut Self::Env) -> Result<Self::Type, Error> {
         Ok(self.ty.clone())
     }
 }
 
-impl<Val, Env, T, Ty> Eval<Val, Env, T, Ty> for Exception<T, Ty>
+impl<T> Eval for Exception<T>
 where
-    Val: Value<T>,
-    T: Term + SubstTerm<T, Target = T>,
-    Ty: Type,
-    Env: EvalEnvironment,
-    ExceptionVal<Ty>: Into<Val>,
+    T: LanguageTerm,
+    ExceptionVal<T>: Into<<T as LanguageTerm>::Value>,
 {
-    fn eval(self, _: &mut Env) -> Result<Val, Error> {
+    type Value = <T as Eval>::Value;
+    type Env = <T as Eval>::Env;
+
+    fn eval(self, _: &mut Self::Env) -> Result<Self::Value, Error> {
         Ok(ExceptionVal::new(self.ty).into())
     }
 }
 
-impl<T, Ty> fmt::Display for Exception<T, Ty>
+impl<T> fmt::Display for Exception<T>
 where
-    Ty: Type,
-    T: Term,
+    T: LanguageTerm,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "error[{}]", self.ty)

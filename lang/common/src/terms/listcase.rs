@@ -1,7 +1,7 @@
 use super::Term;
 use crate::{
+    language::LanguageTerm,
     subst::{SubstTerm, SubstType},
-    types::Type,
     TypeVar, Var,
 };
 use std::fmt;
@@ -9,7 +9,7 @@ use std::fmt;
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct ListCase<T>
 where
-    T: Term,
+    T: LanguageTerm,
 {
     bound_term: Box<T>,
     nil_rhs: Box<T>,
@@ -18,11 +18,11 @@ where
     cons_rhs: Box<T>,
 }
 
-impl<T> Term for ListCase<T> where T: Term {}
+impl<T> Term for ListCase<T> where T: LanguageTerm {}
 
 impl<T> SubstTerm<T> for ListCase<T>
 where
-    T: Term + SubstTerm<T, Target = T>,
+    T: LanguageTerm,
     Self: Into<T>,
 {
     type Target = T;
@@ -51,14 +51,13 @@ where
     }
 }
 
-impl<T, Ty> SubstType<Ty> for ListCase<T>
+impl<T> SubstType<<T as LanguageTerm>::Type> for ListCase<T>
 where
-    T: Term + SubstType<Ty, Target = T>,
-    Ty: Type,
+    T: LanguageTerm,
     Self: Into<T>,
 {
     type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    fn subst_type(self, v: &TypeVar, ty: &<T as LanguageTerm>::Type) -> Self::Target {
         ListCase {
             bound_term: Box::new(self.bound_term.subst_type(v, ty)),
             nil_rhs: Box::new(self.nil_rhs.subst_type(v, ty)),
@@ -72,7 +71,7 @@ where
 
 impl<T> fmt::Display for ListCase<T>
 where
-    T: Term,
+    T: LanguageTerm,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(

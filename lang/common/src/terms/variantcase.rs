@@ -1,7 +1,7 @@
 use super::Term;
 use crate::{
+    language::LanguageTerm,
     subst::{SubstTerm, SubstType},
-    types::Type,
     Label, TypeVar, Var,
 };
 use std::fmt;
@@ -9,7 +9,7 @@ use std::fmt;
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct VariantCase<T>
 where
-    T: Term,
+    T: LanguageTerm,
 {
     bound_term: Box<T>,
     patterns: Vec<VariantPattern<T>>,
@@ -18,18 +18,18 @@ where
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct VariantPattern<T>
 where
-    T: Term,
+    T: LanguageTerm,
 {
     label: Label,
     bound_var: Var,
     rhs: Box<T>,
 }
 
-impl<T> Term for VariantCase<T> where T: Term {}
+impl<T> Term for VariantCase<T> where T: LanguageTerm {}
 
 impl<T> SubstTerm<T> for VariantCase<T>
 where
-    T: Term + SubstTerm<T, Target = T>,
+    T: LanguageTerm,
     Self: Into<T>,
 {
     type Target = T;
@@ -42,14 +42,13 @@ where
     }
 }
 
-impl<T, Ty> SubstType<Ty> for VariantCase<T>
+impl<T> SubstType<<T as LanguageTerm>::Type> for VariantCase<T>
 where
-    T: Term + SubstType<Ty, Target = T>,
-    Ty: Type,
+    T: LanguageTerm,
     Self: Into<T>,
 {
     type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    fn subst_type(self, v: &TypeVar, ty: &<T as LanguageTerm>::Type) -> Self::Target {
         VariantCase {
             bound_term: Box::new(self.bound_term.subst_type(v, ty)),
             patterns: self
@@ -64,7 +63,7 @@ where
 
 impl<T> SubstTerm<T> for VariantPattern<T>
 where
-    T: Term + SubstTerm<T, Target = T>,
+    T: LanguageTerm,
 {
     type Target = Self;
     fn subst(self, v: &Var, t: &T) -> Self::Target {
@@ -84,13 +83,12 @@ where
     }
 }
 
-impl<T, Ty> SubstType<Ty> for VariantPattern<T>
+impl<T> SubstType<<T as LanguageTerm>::Type> for VariantPattern<T>
 where
-    T: Term + SubstType<Ty, Target = T>,
-    Ty: Type,
+    T: LanguageTerm,
 {
     type Target = Self;
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    fn subst_type(self, v: &TypeVar, ty: &<T as LanguageTerm>::Type) -> Self::Target {
         VariantPattern {
             label: self.label,
             bound_var: self.bound_var,
@@ -101,7 +99,7 @@ where
 
 impl<T> fmt::Display for VariantCase<T>
 where
-    T: Term,
+    T: LanguageTerm,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let mut pts: Vec<&VariantPattern<T>> = self.patterns.iter().collect();
@@ -121,7 +119,7 @@ where
 
 impl<T> fmt::Display for VariantPattern<T>
 where
-    T: Term,
+    T: LanguageTerm,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "<{} = {}> => {}", self.label, self.bound_var, self.rhs)

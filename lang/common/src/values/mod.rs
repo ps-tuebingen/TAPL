@@ -1,44 +1,14 @@
-use crate::{errors::ErrorKind, terms::Term, types::Type};
+use crate::terms::Term;
 use std::fmt;
 
-pub trait Value<T>
+pub trait Value
 where
-    T: Term,
     Self: Clone + fmt::Display + fmt::Debug + PartialEq + Eq,
 {
-    type Term: Term + From<Self> + Into<T>;
-
-    fn into_lambda<Ty>(self) -> Result<Lambda<T, Ty>, ErrorKind>
-    where
-        Ty: Type;
-    fn into_raise<V, Ty>(self) -> Result<Raise<V, Ty, T>, ErrorKind>
-    where
-        V: Value<T>,
-        Ty: Type;
+    type Term: Term + From<Self>;
 
     fn into_term(self) -> Self::Term {
         self.into()
-    }
-
-    fn into_true(self) -> Result<True, ErrorKind> {
-        Err(ErrorKind::ValueMismatch {
-            found: self.to_string(),
-            expected: "True".to_owned(),
-        })
-    }
-
-    fn into_false(self) -> Result<False, ErrorKind> {
-        Err(ErrorKind::ValueMismatch {
-            found: self.to_string(),
-            expected: "False".to_owned(),
-        })
-    }
-
-    fn into_num(self) -> Result<Num, ErrorKind> {
-        Err(ErrorKind::ValueMismatch {
-            found: self.to_string(),
-            expected: "Number".to_owned(),
-        })
     }
 }
 

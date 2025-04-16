@@ -1,32 +1,25 @@
 use super::Term;
 use crate::{
+    language::LanguageTerm,
     subst::{SubstTerm, SubstType},
-    types::Type,
     TypeVar, Var,
 };
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Ascribe<T, Ty>
+pub struct Ascribe<T>
 where
-    T: Term,
-    Ty: Type,
+    T: LanguageTerm,
 {
     term: Box<T>,
-    ty: Ty,
+    ty: <T as LanguageTerm>::Type,
 }
 
-impl<T, Ty> Term for Ascribe<T, Ty>
-where
-    T: Term,
-    Ty: Type,
-{
-}
+impl<T> Term for Ascribe<T> where T: LanguageTerm {}
 
-impl<T, Ty> SubstTerm<T> for Ascribe<T, Ty>
+impl<T> SubstTerm<T> for Ascribe<T>
 where
-    T: Term + SubstTerm<T, Target = T>,
-    Ty: Type,
+    T: LanguageTerm,
     Self: Into<T>,
 {
     type Target = T;
@@ -39,14 +32,13 @@ where
     }
 }
 
-impl<T, Ty> SubstType<Ty> for Ascribe<T, Ty>
+impl<T> SubstType<<T as LanguageTerm>::Type> for Ascribe<T>
 where
-    Ty: Type + SubstType<Ty, Target = Ty>,
-    T: Term + SubstType<Ty, Target = T>,
+    T: LanguageTerm,
     Self: Into<T>,
 {
     type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    fn subst_type(self, v: &TypeVar, ty: &<T as LanguageTerm>::Type) -> Self::Target {
         Ascribe {
             term: Box::new(self.term.subst_type(v, ty)),
             ty: self.ty.subst_type(v, ty),
@@ -55,10 +47,9 @@ where
     }
 }
 
-impl<T, Ty> fmt::Display for Ascribe<T, Ty>
+impl<T> fmt::Display for Ascribe<T>
 where
-    T: Term,
-    Ty: Type,
+    T: LanguageTerm,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{} as {}", self.term, self.ty)

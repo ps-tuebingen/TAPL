@@ -1,30 +1,28 @@
 use super::Term;
 use crate::{
+    language::LanguageTerm,
     subst::{SubstTerm, SubstType},
-    types::Type,
     TypeVar, Var,
 };
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Right<T, Ty>
+pub struct Right<T>
 where
-    T: Term,
-    Ty: Type,
+    T: LanguageTerm,
 {
     right_term: Box<T>,
-    ty: Ty,
+    ty: <T as LanguageTerm>::Type,
 }
 
-impl<T, Ty> Right<T, Ty>
+impl<T> Right<T>
 where
-    T: Term,
-    Ty: Type,
+    T: LanguageTerm,
 {
-    pub fn new<T1, Ty1>(right_t: T1, ty: Ty1) -> Right<T, Ty>
+    pub fn new<T1, Ty1>(right_t: T1, ty: Ty1) -> Right<T>
     where
         T1: Into<T>,
-        Ty1: Into<Ty>,
+        Ty1: Into<<T as LanguageTerm>::Type>,
     {
         Right {
             right_term: Box::new(right_t.into()),
@@ -33,18 +31,12 @@ where
     }
 }
 
-impl<T, Ty> Term for Right<T, Ty>
-where
-    T: Term,
-    Ty: Type,
-{
-}
+impl<T> Term for Right<T> where T: LanguageTerm {}
 
-impl<T, Ty> SubstTerm<T> for Right<T, Ty>
+impl<T> SubstTerm<T> for Right<T>
 where
-    T: Term + SubstTerm<T, Target = T>,
+    T: LanguageTerm,
     Self: Into<T>,
-    Ty: Type,
 {
     type Target = T;
     fn subst(self, v: &Var, t: &T) -> T {
@@ -56,14 +48,13 @@ where
     }
 }
 
-impl<T, Ty> SubstType<Ty> for Right<T, Ty>
+impl<T> SubstType<<T as LanguageTerm>::Type> for Right<T>
 where
-    T: Term + SubstType<Ty, Target = T>,
-    Ty: Type + SubstType<Ty, Target = Ty>,
+    T: LanguageTerm,
     Self: Into<T>,
 {
     type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    fn subst_type(self, v: &TypeVar, ty: &<T as LanguageTerm>::Type) -> Self::Target {
         Right {
             right_term: Box::new(self.right_term.subst_type(v, ty)),
             ty: self.ty.subst_type(v, ty),
@@ -72,10 +63,9 @@ where
     }
 }
 
-impl<T, Ty> fmt::Display for Right<T, Ty>
+impl<T> fmt::Display for Right<T>
 where
-    T: Term,
-    Ty: Type,
+    T: LanguageTerm,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "inl({}) as {}", self.right_term, self.ty)

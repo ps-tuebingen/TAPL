@@ -1,31 +1,29 @@
 use super::Term;
 use crate::{
+    language::LanguageTerm,
     subst::{SubstTerm, SubstType},
-    types::Type,
     TypeVar, Var,
 };
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Pack<T, Ty>
+pub struct Pack<T>
 where
-    T: Term,
-    Ty: Type,
+    T: LanguageTerm,
 {
-    inner_ty: Ty,
+    inner_ty: <T as LanguageTerm>::Type,
     term: Box<T>,
-    outer_ty: Ty,
+    outer_ty: <T as LanguageTerm>::Type,
 }
 
-impl<T, Ty> Pack<T, Ty>
+impl<T> Pack<T>
 where
-    T: Term,
-    Ty: Type,
+    T: LanguageTerm,
 {
-    pub fn new<Ty1, Ty2, T1>(inner: Ty1, t: T1, outer: Ty2) -> Pack<T, Ty>
+    pub fn new<Ty1, Ty2, T1>(inner: Ty1, t: T1, outer: Ty2) -> Pack<T>
     where
-        Ty1: Into<Ty>,
-        Ty2: Into<Ty>,
+        Ty1: Into<<T as LanguageTerm>::Type>,
+        Ty2: Into<<T as LanguageTerm>::Type>,
         T1: Into<T>,
     {
         Pack {
@@ -36,18 +34,12 @@ where
     }
 }
 
-impl<T, Ty> Term for Pack<T, Ty>
-where
-    T: Term,
-    Ty: Type,
-{
-}
+impl<T> Term for Pack<T> where T: LanguageTerm {}
 
-impl<T, Ty> SubstTerm<T> for Pack<T, Ty>
+impl<T> SubstTerm<T> for Pack<T>
 where
-    T: Term + SubstTerm<T, Target = T>,
+    T: LanguageTerm,
     Self: Into<T>,
-    Ty: Type,
 {
     type Target = T;
     fn subst(self, v: &Var, t: &T) -> T {
@@ -60,14 +52,13 @@ where
     }
 }
 
-impl<T, Ty> SubstType<Ty> for Pack<T, Ty>
+impl<T> SubstType<<T as LanguageTerm>::Type> for Pack<T>
 where
-    T: Term + SubstType<Ty, Target = T>,
-    Ty: Type + SubstType<Ty, Target = Ty>,
+    T: LanguageTerm,
     Self: Into<T>,
 {
     type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    fn subst_type(self, v: &TypeVar, ty: &<T as LanguageTerm>::Type) -> Self::Target {
         Pack {
             inner_ty: self.inner_ty.subst_type(v, ty),
             term: Box::new(self.term.subst_type(v, ty)),
@@ -76,10 +67,9 @@ where
         .into()
     }
 }
-impl<T, Ty> fmt::Display for Pack<T, Ty>
+impl<T> fmt::Display for Pack<T>
 where
-    T: Term,
-    Ty: Type,
+    T: LanguageTerm,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(

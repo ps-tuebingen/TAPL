@@ -1,5 +1,5 @@
-use super::{Fun, Type};
-use crate::{errors::ErrorKind, subst::SubstType, TypeVar};
+use super::Type;
+use crate::{subst::SubstType, TypeVar};
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -7,17 +7,7 @@ pub struct TypeVariable {
     v: TypeVar,
 }
 
-impl Type for TypeVariable {
-    fn into_fun<Ty1>(self) -> Result<Fun<Ty1>, ErrorKind>
-    where
-        Ty1: Type,
-    {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "Function Type".to_owned(),
-        })
-    }
-}
+impl Type for TypeVariable {}
 
 impl<Ty> SubstType<Ty> for TypeVariable
 where

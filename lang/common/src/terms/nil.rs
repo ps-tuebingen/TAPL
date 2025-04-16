@@ -1,46 +1,37 @@
 use super::Term;
 use crate::{
+    language::LanguageTerm,
     subst::{SubstTerm, SubstType},
-    types::Type,
     TypeVar, Var,
 };
-use std::{fmt, marker::PhantomData};
+use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Nil<T, Ty>
+pub struct Nil<T>
 where
-    Ty: Type,
-    T: Term,
+    T: LanguageTerm,
 {
-    ty: Ty,
-    phantom: PhantomData<T>,
+    ty: <T as LanguageTerm>::Type,
 }
 
-impl<T, Ty> Nil<T, Ty>
+impl<T> Nil<T>
 where
-    T: Term,
-    Ty: Type,
+    T: LanguageTerm,
 {
-    pub fn new<Typ: Into<Ty>>(ty: Typ) -> Nil<T, Ty> {
-        Nil {
-            ty: ty.into(),
-            phantom: PhantomData,
-        }
+    pub fn new<Typ>(ty: Typ) -> Nil<T>
+    where
+        Typ: Into<<T as LanguageTerm>::Type>,
+    {
+        Nil { ty: ty.into() }
     }
 }
 
-impl<T, Ty> Term for Nil<T, Ty>
-where
-    Ty: Type,
-    T: Term,
-{
-}
+impl<T> Term for Nil<T> where T: LanguageTerm {}
 
-impl<T, Ty> SubstTerm<T> for Nil<T, Ty>
+impl<T> SubstTerm<T> for Nil<T>
 where
-    T: Term,
+    T: LanguageTerm,
     Self: Into<T>,
-    Ty: Type,
 {
     type Target = T;
     fn subst(self, _: &Var, _: &T) -> T {
@@ -48,26 +39,23 @@ where
     }
 }
 
-impl<T, Ty> SubstType<Ty> for Nil<T, Ty>
+impl<T> SubstType<<T as LanguageTerm>::Type> for Nil<T>
 where
-    T: Term,
-    Ty: Type + SubstType<Ty, Target = Ty>,
+    T: LanguageTerm,
     Self: Into<T>,
 {
     type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    fn subst_type(self, v: &TypeVar, ty: &<T as LanguageTerm>::Type) -> Self::Target {
         Nil {
             ty: self.ty.subst_type(v, ty),
-            phantom: PhantomData,
         }
         .into()
     }
 }
 
-impl<T, Ty> fmt::Display for Nil<T, Ty>
+impl<T> fmt::Display for Nil<T>
 where
-    Ty: Type,
-    T: Term,
+    T: LanguageTerm,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "nil[{}]", self.ty)

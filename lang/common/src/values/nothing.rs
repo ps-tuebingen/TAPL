@@ -1,59 +1,34 @@
-use super::{Lambda, Raise, Value};
-use crate::{
-    errors::ErrorKind,
-    terms::{Nothing as NothingT, Term},
-    types::Type,
-};
+use super::Value;
+use crate::{language::LanguageTerm, terms::Nothing as NothingT};
 use std::fmt;
+
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct Nothing<Ty>
+pub struct Nothing<T>
 where
-    Ty: Type,
+    T: LanguageTerm,
 {
-    ty: Ty,
+    ty: <T as LanguageTerm>::Type,
 }
 
-impl<Ty, T> Value<T> for Nothing<Ty>
+impl<T> Value for Nothing<T>
 where
-    Ty: Type,
-    T: Term + From<NothingT<T, Ty>>,
+    T: LanguageTerm,
 {
-    type Term = NothingT<T, Ty>;
-    fn into_lambda<Ty1>(self) -> Result<Lambda<T, Ty1>, ErrorKind>
-    where
-        Ty1: Type,
-    {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "Lambda Abstraction".to_owned(),
-        })
-    }
-
-    fn into_raise<Val, Ty1>(self) -> Result<Raise<Val, Ty1, T>, ErrorKind>
-    where
-        Val: Value<T>,
-        Ty1: Type,
-    {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "Raise".to_owned(),
-        })
-    }
+    type Term = NothingT<T>;
 }
 
-impl<T, Ty> From<Nothing<Ty>> for NothingT<T, Ty>
+impl<T> From<Nothing<T>> for NothingT<T>
 where
-    T: Term,
-    Ty: Type,
+    T: LanguageTerm,
 {
-    fn from(not: Nothing<Ty>) -> NothingT<T, Ty> {
+    fn from(not: Nothing<T>) -> NothingT<T> {
         NothingT::new(not.ty)
     }
 }
 
-impl<Ty> fmt::Display for Nothing<Ty>
+impl<T> fmt::Display for Nothing<T>
 where
-    Ty: Type,
+    T: LanguageTerm,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "nothing[{}]", self.ty)

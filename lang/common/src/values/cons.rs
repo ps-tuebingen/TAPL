@@ -1,70 +1,39 @@
-use super::{Lambda, Raise, Value};
+use super::Value;
 use crate::{
-    errors::ErrorKind,
-    terms::{Cons as ConsT, Term},
-    types::Type,
+    language::{LanguageTerm, LanguageValue},
+    terms::Cons as ConsT,
 };
 use std::fmt;
-use std::marker::PhantomData;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct Cons<V, Ty, T>
+pub struct Cons<V>
 where
-    V: Value<T>,
-    Ty: Type,
-    T: Term,
+    V: LanguageValue,
 {
     head: V,
     tail: V,
-    ty: Ty,
-    phantom: PhantomData<T>,
+    ty: <<V as LanguageValue>::Term as LanguageTerm>::Type,
 }
 
-impl<V, Ty, T> Value<T> for Cons<V, Ty, T>
+impl<V> Value for Cons<V>
 where
-    V: Value<T> + Into<T>,
-    T: Term + From<ConsT<T, Ty>>,
-    Ty: Type,
+    V: LanguageValue,
 {
-    type Term = ConsT<T, Ty>;
-    fn into_lambda<Ty1>(self) -> Result<Lambda<T, Ty1>, ErrorKind>
-    where
-        Ty1: Type,
-    {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "Lambda Abstraction".to_owned(),
-        })
-    }
-
-    fn into_raise<Val, Ty1>(self) -> Result<Raise<Val, Ty1, T>, ErrorKind>
-    where
-        Val: Value<T>,
-        Ty1: Type,
-    {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "Raise".to_owned(),
-        })
-    }
+    type Term = ConsT<<V as LanguageValue>::Term>;
 }
 
-impl<V, Ty, T> From<Cons<V, Ty, T>> for ConsT<T, Ty>
+impl<V> From<Cons<V>> for ConsT<<V as LanguageValue>::Term>
 where
-    T: Term,
-    V: Value<T> + Into<T>,
-    Ty: Type,
+    V: LanguageValue,
 {
-    fn from(c: Cons<V, Ty, T>) -> ConsT<T, Ty> {
+    fn from(c: Cons<V>) -> ConsT<<V as LanguageValue>::Term> {
         ConsT::new(c.head, c.tail, c.ty)
     }
 }
 
-impl<V, Ty, T> fmt::Display for Cons<V, Ty, T>
+impl<V> fmt::Display for Cons<V>
 where
-    V: Value<T>,
-    T: Term,
-    Ty: Type,
+    V: LanguageValue,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "cons[{}]({},{})", self.ty, self.head, self.tail)

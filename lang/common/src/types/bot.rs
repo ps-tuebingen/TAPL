@@ -1,21 +1,11 @@
-use super::{Fun, Type};
-use crate::{errors::ErrorKind, subst::SubstType, TypeVar};
+use super::Type;
+use crate::{subst::SubstType, TypeVar};
 use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Bot;
 
-impl Type for Bot {
-    fn into_fun<Ty>(self) -> Result<Fun<Ty>, ErrorKind>
-    where
-        Ty: Type,
-    {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "Function Type".to_owned(),
-        })
-    }
-}
+impl Type for Bot {}
 
 impl<Ty> SubstType<Ty> for Bot
 where

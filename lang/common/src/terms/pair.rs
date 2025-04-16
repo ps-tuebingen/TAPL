@@ -1,7 +1,7 @@
 use super::Term;
 use crate::{
+    language::LanguageTerm,
     subst::{SubstTerm, SubstType},
-    types::Type,
     TypeVar, Var,
 };
 use std::fmt;
@@ -9,7 +9,7 @@ use std::fmt;
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Pair<T>
 where
-    T: Term,
+    T: LanguageTerm,
 {
     fst: Box<T>,
     snd: Box<T>,
@@ -17,7 +17,7 @@ where
 
 impl<T> Pair<T>
 where
-    T: Term,
+    T: LanguageTerm,
 {
     pub fn new<T1, T2>(fst: T1, snd: T2) -> Pair<T>
     where
@@ -31,11 +31,11 @@ where
     }
 }
 
-impl<T> Term for Pair<T> where T: Term {}
+impl<T> Term for Pair<T> where T: LanguageTerm {}
 
 impl<T> SubstTerm<T> for Pair<T>
 where
-    T: Term + SubstTerm<T, Target = T>,
+    T: LanguageTerm,
     Self: Into<T>,
 {
     type Target = T;
@@ -48,14 +48,13 @@ where
     }
 }
 
-impl<T, Ty> SubstType<Ty> for Pair<T>
+impl<T> SubstType<<T as LanguageTerm>::Type> for Pair<T>
 where
-    T: Term + SubstType<Ty, Target = T>,
-    Ty: Type,
+    T: LanguageTerm,
     Self: Into<T>,
 {
     type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    fn subst_type(self, v: &TypeVar, ty: &<T as LanguageTerm>::Type) -> Self::Target {
         Pair {
             fst: Box::new(self.fst.subst_type(v, ty)),
             snd: Box::new(self.snd.subst_type(v, ty)),
@@ -66,7 +65,7 @@ where
 
 impl<T> fmt::Display for Pair<T>
 where
-    T: Term,
+    T: LanguageTerm,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{{ {}, {} }}", self.fst, self.snd)
