@@ -1,4 +1,4 @@
-use super::eval::Value;
+use super::values::Value;
 use common::{
     language::{untyped::Untyped, LanguageTerm},
     subst::SubstTerm,
