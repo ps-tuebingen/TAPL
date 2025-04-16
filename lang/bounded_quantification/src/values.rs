@@ -2,19 +2,17 @@ use crate::terms::Term;
 use common::{
     errors::ErrorKind,
     language::LanguageValue,
-    values::{Exception, False, Lambda, Num, Raise, True, Unit, Value as ValueTrait},
+    values::{Lambda, LambdaSub, Num, Pack, Record, Value as ValueTrait},
 };
 use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Value {
     Lambda(Lambda<Term>),
+    LambdaSub(LambdaSub<Term>),
+    Pack(Pack<Term>),
     Num(Num<Term>),
-    Unit(Unit<Term>),
-    True(True<Term>),
-    False(False<Term>),
-    Exception(Exception<Term>),
-    Raise(Raise<Term>),
+    Record(Record<Term>),
 }
 
 impl common::values::Value for Value {
@@ -35,17 +33,6 @@ impl LanguageValue for Value {
         }
     }
 
-    fn into_raise(self) -> Result<Raise<Term>, ErrorKind> {
-        if let Value::Raise(raise) = self {
-            Ok(raise)
-        } else {
-            Err(ErrorKind::ValueMismatch {
-                found: self.to_string(),
-                expected: "Raise".to_owned(),
-            })
-        }
-    }
-
     fn into_num(self) -> Result<Num<Term>, ErrorKind> {
         if let Value::Num(num) = self {
             Ok(num)
@@ -62,12 +49,10 @@ impl From<Value> for Term {
     fn from(val: Value) -> Term {
         match val {
             Value::Lambda(lam) => lam.into_term().into(),
-            Value::Unit(u) => u.into_term().into(),
-            Value::True(tru) => tru.into_term().into(),
-            Value::False(fls) => fls.into_term().into(),
+            Value::LambdaSub(lam) => lam.into_term().into(),
+            Value::Pack(pack) => pack.into_term().into(),
             Value::Num(num) => num.into_term().into(),
-            Value::Exception(exc) => exc.into_term().into(),
-            Value::Raise(raise) => raise.into_term().into(),
+            Value::Record(rec) => rec.into_term().into(),
         }
     }
 }
@@ -76,12 +61,10 @@ impl fmt::Display for Value {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             Value::Lambda(lam) => lam.fmt(f),
-            Value::Unit(u) => u.fmt(f),
-            Value::True(tru) => tru.fmt(f),
-            Value::False(fls) => fls.fmt(f),
+            Value::LambdaSub(lam) => lam.fmt(f),
+            Value::Pack(pack) => pack.fmt(f),
             Value::Num(num) => num.fmt(f),
-            Value::Exception(exc) => exc.fmt(f),
-            Value::Raise(raise) => raise.fmt(f),
+            Value::Record(rec) => rec.fmt(f),
         }
     }
 }
@@ -98,32 +81,20 @@ impl From<Num<Term>> for Value {
     }
 }
 
-impl From<Unit<Term>> for Value {
-    fn from(unit: Unit<Term>) -> Value {
-        Value::Unit(unit)
+impl From<LambdaSub<Term>> for Value {
+    fn from(lam: LambdaSub<Term>) -> Value {
+        Value::LambdaSub(lam)
     }
 }
 
-impl From<True<Term>> for Value {
-    fn from(tru: True<Term>) -> Value {
-        Value::True(tru)
+impl From<Pack<Term>> for Value {
+    fn from(pack: Pack<Term>) -> Value {
+        Value::Pack(pack)
     }
 }
 
-impl From<False<Term>> for Value {
-    fn from(fls: False<Term>) -> Value {
-        Value::False(fls)
-    }
-}
-
-impl From<Exception<Term>> for Value {
-    fn from(exc: Exception<Term>) -> Value {
-        Value::Exception(exc)
-    }
-}
-
-impl From<Raise<Term>> for Value {
-    fn from(raise: Raise<Term>) -> Value {
-        Value::Raise(raise)
+impl From<Record<Term>> for Value {
+    fn from(rec: Record<Term>) -> Value {
+        Value::Record(rec)
     }
 }

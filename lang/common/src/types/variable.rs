@@ -7,6 +7,12 @@ pub struct TypeVariable {
     v: TypeVar,
 }
 
+impl TypeVariable {
+    pub fn new(v: &str) -> TypeVariable {
+        TypeVariable { v: v.to_owned() }
+    }
+}
+
 impl Type for TypeVariable {}
 
 impl<Ty> SubstType<Ty> for TypeVariable

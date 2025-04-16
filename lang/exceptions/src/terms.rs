@@ -6,7 +6,7 @@ use common::{
         App, Exception, False, If, IsZero, Lambda, Num, Pred, Raise, Succ, True, Try, TryWithVal,
         Unit, Variable,
     },
-    Var,
+    TypeVar, Var,
 };
 use std::fmt;
 
@@ -83,7 +83,7 @@ impl SubstTerm<Term> for Term {
 
 impl SubstType<Type> for Term {
     type Target = Term;
-    fn subst_type(self, v: &Var, t: &Type) -> Self::Target {
+    fn subst_type(self, v: &TypeVar, t: &Type) -> Self::Target {
         match self {
             Term::Var(var) => var.subst_type(v, t),
             Term::Num(num) => num.subst_type(v, t),

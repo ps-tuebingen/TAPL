@@ -2,6 +2,7 @@ use super::Term;
 use crate::{
     language::LanguageTerm,
     subst::{SubstTerm, SubstType},
+    types::Top,
     TypeVar, Var,
 };
 use std::fmt;
@@ -28,6 +29,18 @@ where
         LambdaSub {
             var: v.to_owned(),
             sup_ty: sup.into(),
+            body: Box::new(bod.into()),
+        }
+    }
+
+    pub fn new_unbounded<T1>(v: &str, bod: T1) -> LambdaSub<T>
+    where
+        T1: Into<T>,
+        Top: Into<<T as LanguageTerm>::Type>,
+    {
+        LambdaSub {
+            var: v.to_owned(),
+            sup_ty: Top.into(),
             body: Box::new(bod.into()),
         }
     }

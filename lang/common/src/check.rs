@@ -4,6 +4,7 @@ use crate::{
     types::Type,
     Var,
 };
+use std::collections::HashMap;
 
 pub trait CheckEnvironment
 where
@@ -30,5 +31,19 @@ pub fn to_check_err(knd: ErrorKind) -> Error {
     Error {
         kind: knd,
         loc: ErrorLocation::Check,
+    }
+}
+
+impl<Ty: LanguageType> CheckEnvironment for HashMap<Var, Ty> {
+    type Type = Ty;
+
+    fn get_var(&self, v: &Var) -> Result<Self::Type, Error> {
+        self.get(v)
+            .ok_or(to_check_err(ErrorKind::FreeVariable(v.clone())))
+            .cloned()
+    }
+
+    fn add_var(&mut self, v: Var, ty: Ty) {
+        self.insert(v, ty);
     }
 }

@@ -1,52 +1,56 @@
-use crate::{
-    syntax::{App, Lambda, LambdaSub, Term, TyApp},
-    types::Type,
+use crate::{terms::Term, types::Type};
+use common::{
+    terms::{App, Lambda, LambdaSub, TyApp, Variable},
+    types::{ForallBounded, Fun, TypeVariable},
 };
 
 pub fn c_nat() -> Type {
-    Type::forall_unbounded(
+    ForallBounded::new_unbounded(
         "X",
-        Type::fun(
-            Type::fun("X".into(), "X".into()),
-            Type::fun("X".into(), "X".into()),
+        Fun::new(
+            Fun::new(TypeVariable::new("X"), TypeVariable::new("X")),
+            Fun::new(TypeVariable::new("X"), TypeVariable::new("X")),
         ),
     )
+    .into()
 }
 
 pub fn s_nat() -> Type {
-    Type::forall_unbounded(
+    ForallBounded::new_unbounded(
         "X",
-        Type::forall(
+        ForallBounded::new(
             "S",
-            "X".into(),
-            Type::forall(
+            TypeVariable::new("X"),
+            ForallBounded::new(
                 "Z",
-                "X".into(),
-                Type::fun(
-                    Type::fun("X".into(), "S".into()),
-                    Type::fun("Z".into(), "X".into()),
+                TypeVariable::new("X"),
+                Fun::new(
+                    Fun::new(TypeVariable::new("X"), TypeVariable::new("S")),
+                    Fun::new(TypeVariable::new("Z"), TypeVariable::new("X")),
                 ),
             ),
         ),
     )
+    .into()
 }
 
 pub fn ty_s_zero() -> Type {
-    Type::forall_unbounded(
+    ForallBounded::new_unbounded(
         "X",
-        Type::forall(
+        ForallBounded::new(
             "S",
-            "X".into(),
-            Type::forall(
+            TypeVariable::new("X"),
+            ForallBounded::new(
                 "Z",
-                "X".into(),
-                Type::fun(
-                    Type::fun("X".into(), "S".into()),
-                    Type::fun("Z".into(), "Z".into()),
+                TypeVariable::new("X"),
+                Fun::new(
+                    Fun::new(TypeVariable::new("X"), TypeVariable::new("S")),
+                    Fun::new(TypeVariable::new("Z"), TypeVariable::new("Z")),
                 ),
             ),
         ),
     )
+    .into()
 }
 
 pub fn s_zero() -> Term {
@@ -54,13 +58,13 @@ pub fn s_zero() -> Term {
         "X",
         LambdaSub::new(
             "S",
-            "X".into(),
+            Variable::new("X"),
             LambdaSub::new(
                 "Z",
-                "X".into(),
+                Variable::new("X"),
                 Lambda::new(
                     "s",
-                    Type::fun("X".into(), "S".into()),
+                    Fun::new(TypeVariable::new("X"), TypeVariable::new("S")),
                     Lambda::new("z", "Z".into(), "z"),
                 ),
             ),
@@ -70,21 +74,22 @@ pub fn s_zero() -> Term {
 }
 
 pub fn s_pos() -> Type {
-    Type::forall_unbounded(
+    ForallBounded::new_unbounded(
         "X",
-        Type::forall(
+        ForallBounded::new(
             "S",
-            "X".into(),
-            Type::forall(
+            TypeVariable::new("X"),
+            ForallBounded::new(
                 "Z",
-                "X".into(),
-                Type::fun(
-                    Type::fun("X".into(), "S".into()),
-                    Type::fun("Z".into(), "S".into()),
+                TypeVariable::new("X"),
+                Fun::new(
+                    Fun::new(TypeVariable::new("X"), TypeVariable::new("S")),
+                    Fun::new(TypeVariable::new("Z"), TypeVariable::new("S")),
                 ),
             ),
         ),
     )
+    .into()
 }
 
 pub fn s_one() -> Term {
@@ -98,7 +103,7 @@ pub fn s_one() -> Term {
                 "X".into(),
                 Lambda::new(
                     "s",
-                    Type::fun("X".into(), "S".into()),
+                    Fun::new(TypeVariable::new("X"), TypeVariable::new("S")),
                     Lambda::new("z", "Z".into(), App::new("s", "z")),
                 ),
             ),
@@ -118,7 +123,7 @@ pub fn s_two() -> Term {
                 "X".into(),
                 Lambda::new(
                     "s",
-                    Type::fun("X".into(), "S".into()),
+                    Fun::new(TypeVariable::new("X"), TypeVariable::new("S")),
                     Lambda::new("z", "Z".into(), App::new("s", App::new("s", "z"))),
                 ),
             ),
@@ -138,7 +143,7 @@ pub fn s_three() -> Term {
                 "X".into(),
                 Lambda::new(
                     "s",
-                    Type::fun("X".into(), "S".into()),
+                    Fun::new("X".into(), "S".into()),
                     Lambda::new(
                         "z",
                         "Z".into(),
@@ -165,7 +170,7 @@ pub fn s_succ() -> Term {
                     "X".into(),
                     Lambda::new(
                         "s",
-                        Type::fun("X".into(), "S".into()),
+                        Fun::new("X".into(), "S".into()),
                         Lambda::new(
                             "z",
                             "Z".into(),
@@ -208,7 +213,7 @@ pub fn s_pluspp() -> Term {
                         "X".into(),
                         Lambda::new(
                             "s",
-                            Type::fun("X".into(), "S".into()),
+                            Fun::new("X".into(), "S".into()),
                             Lambda::new(
                                 "z",
                                 "Z".into(),
@@ -278,14 +283,14 @@ mod nat_tests {
     #[test]
     fn check_succ() {
         let result = s_succ().check(&mut Default::default()).unwrap();
-        let expected = Type::fun(s_nat(), s_pos());
+        let expected = Fun::new(s_nat(), s_pos());
         assert_eq!(result, expected)
     }
 
     #[test]
     fn check_plus() {
         let result = s_pluspp().check(&mut Default::default()).unwrap();
-        let expected = Type::fun(s_pos(), Type::fun(s_pos(), s_pos()));
+        let expected = Fun::new(s_pos(), Fun::new(s_pos(), s_pos()));
         assert_eq!(result, expected)
     }
 }

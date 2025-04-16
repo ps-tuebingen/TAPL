@@ -1,7 +1,5 @@
-use crate::{
-    syntax::{App, Lambda, LambdaSub, Term, TyApp},
-    types::Type,
-};
+use crate::{terms::Term, types::Type};
+use common::terms::{App, Lambda, LambdaSub, TyApp};
 
 pub fn ty_pair(ty1: Type, ty2: Type) -> Type {
     let var = ty1.fresh_tyvar(vec![&ty2]);
