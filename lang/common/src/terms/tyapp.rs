@@ -97,9 +97,9 @@ where
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
         let fun_ty = self.fun.check(env)?;
-        if let Ok(forall) = fun_ty.clone().into_forall() {
+        if let Ok(_forall) = fun_ty.clone().into_forall() {
             todo!()
-        } else if let Ok(forall) = fun_ty.clone().into_forall_bounded() {
+        } else if let Ok(_forall) = fun_ty.clone().into_forall_bounded() {
             todo!()
         } else {
             Err(to_check_err(ErrorKind::TypeMismatch {

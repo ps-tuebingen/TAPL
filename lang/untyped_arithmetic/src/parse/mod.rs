@@ -1,11 +1,11 @@
 use common::{
     errors::{Error, ErrorKind, ErrorLocation},
-    langs::Lang,
     Parse,
 };
 pub mod lexer;
 
-use super::Term;
+use crate::terms::Term;
+use common::terms::{False, If, IsZero, Num, Pred, Succ, True};
 use lexer::{lex, Token};
 use std::collections::VecDeque;
 
@@ -13,7 +13,6 @@ pub fn to_parse_err(knd: ErrorKind) -> Error {
     Error {
         kind: knd,
         loc: ErrorLocation::Parse,
-        lang: Lang::UntypedArithmetic,
     }
 }
 
@@ -63,20 +62,20 @@ fn parse_term(tokens: &mut VecDeque<Token>) -> Result<Term, Error> {
     };
 
     match fst {
-        Token::True => Ok(Term::True),
-        Token::False => Ok(Term::False),
-        Token::Zero => Ok(Term::Zero),
+        Token::True => Ok(True::new().into()),
+        Token::False => Ok(False::new().into()),
+        Token::Zero => Ok(Num::new(0).into()),
         Token::Succ => {
             consume_token(tokens, Token::ParenO)?;
             let inner = parse_term(tokens)?;
             consume_token(tokens, Token::ParenC)?;
-            Ok(Term::Succ(Box::new(inner)))
+            Ok(Succ::new(inner).into())
         }
         Token::Pred => {
             consume_token(tokens, Token::ParenO)?;
             let inner = parse_term(tokens)?;
             consume_token(tokens, Token::ParenC)?;
-            Ok(Term::Pred(Box::new(inner)))
+            Ok(Pred::new(inner).into())
         }
         Token::If => {
             let ifc = parse_term(tokens)?;
@@ -87,13 +86,13 @@ fn parse_term(tokens: &mut VecDeque<Token>) -> Result<Term, Error> {
             consume_token(tokens, Token::BrackO)?;
             let elsec = parse_term(tokens)?;
             consume_token(tokens, Token::BrackC)?;
-            Ok(Term::If(Box::new(ifc), Box::new(thenc), Box::new(elsec)))
+            Ok(If::new(ifc, thenc, elsec).into())
         }
         Token::IsZero => {
             consume_token(tokens, Token::ParenO)?;
             let inner = parse_term(tokens)?;
             consume_token(tokens, Token::ParenC)?;
-            Ok(Term::IsZero(Box::new(inner)))
+            Ok(IsZero::new(inner).into())
         }
         Token::ParenO => {
             let inner = parse_term(tokens)?;
@@ -121,9 +120,9 @@ fn parse_term(tokens: &mut VecDeque<Token>) -> Result<Term, Error> {
 
 fn digits_to_term(digits: Vec<u8>) -> Term {
     let mut num = digits_to_num(digits);
-    let mut term = Term::Zero;
+    let mut term = Num::new(0).into();
     while num > 0 {
-        term = Term::Succ(Box::new(term));
+        term = Succ::new(term).into();
         num -= 1;
     }
     term

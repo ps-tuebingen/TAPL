@@ -5,6 +5,7 @@ use crate::{
 
 mod terms;
 mod types;
+pub mod untyped;
 mod values;
 
 pub use terms::LanguageTerm;
