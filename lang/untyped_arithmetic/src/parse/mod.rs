@@ -140,7 +140,7 @@ fn digits_to_num(mut digits: Vec<u8>) -> u64 {
 
 #[cfg(test)]
 mod parser_tests {
-    use super::{digits_to_num, digits_to_term, parse, Term};
+    use super::{digits_to_num, digits_to_term, parse};
     use common::terms::{False, If, IsZero, Num, Pred, Succ, True};
 
     #[test]
