@@ -3,23 +3,23 @@ use common::{Eval, Parse};
 use std::fmt;
 use std::marker::PhantomData;
 
-pub struct EvalTest<'a, T>
+pub struct EvalTest<T>
 where
-    T: Eval<'a> + Parse,
+    T: Eval + Parse,
     T::Value: fmt::Display,
 {
     name: String,
     source: String,
     expected: String,
-    phantom: PhantomData<&'a T>,
+    phantom: PhantomData<T>,
 }
 
-impl<'a, T> EvalTest<'a, T>
+impl<T> EvalTest<T>
 where
-    T: Eval<'a> + Parse,
+    T: Eval + Parse,
     T::Value: fmt::Display,
 {
-    pub fn new(name: &str, source: &str, exp: &str) -> EvalTest<'a, T> {
+    pub fn new(name: &str, source: &str, exp: &str) -> EvalTest<T> {
         EvalTest {
             name: name.to_owned(),
             source: source.to_owned(),
@@ -29,9 +29,9 @@ where
     }
 }
 
-impl<'a, T> Test for EvalTest<'a, T>
+impl<'a, T> Test for EvalTest<T>
 where
-    T: Eval<'a> + Parse,
+    T: Eval + Parse,
     T::Value: fmt::Display,
 {
     fn name(&self) -> String {

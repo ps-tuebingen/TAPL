@@ -35,20 +35,18 @@ impl TestSuite for ExceptionTests {
         let mut tests = vec![];
         for tst in contents {
             let parse_test =
-                ParseTest::<exceptions::syntax::Term>::new(&tst.source_name, &tst.source_contents);
+                ParseTest::<exceptions::terms::Term>::new(&tst.source_name, &tst.source_contents);
             tests.push(Box::new(parse_test) as Box<dyn Test>);
-            let reparse_test = ReparseTest::<exceptions::syntax::Term>::new(
-                &tst.source_name,
-                &tst.source_contents,
-            );
+            let reparse_test =
+                ReparseTest::<exceptions::terms::Term>::new(&tst.source_name, &tst.source_contents);
             tests.push(Box::new(reparse_test) as Box<dyn Test>);
-            let check_test = CheckTest::<exceptions::syntax::Term>::new(
+            let check_test = CheckTest::<exceptions::terms::Term>::new(
                 &tst.source_name,
                 &tst.source_contents,
                 &tst.conf.ty,
             );
             tests.push(Box::new(check_test) as Box<dyn Test>);
-            let eval_test = EvalTest::<exceptions::syntax::Term>::new(
+            let eval_test = EvalTest::<exceptions::terms::Term>::new(
                 &tst.source_name,
                 &tst.source_contents,
                 &tst.conf.evaluated,

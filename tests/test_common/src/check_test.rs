@@ -1,24 +1,24 @@
 use super::testsuite::{Test, TestResult};
-use common::{Parse, Typecheck};
+use common::{check::Typecheck, parse::Parse};
 use std::{fmt, marker::PhantomData};
 
-pub struct CheckTest<'a, T>
+pub struct CheckTest<T>
 where
-    T: Parse + Typecheck<'a>,
+    T: Parse + Typecheck,
     T::Type: fmt::Display,
 {
     name: String,
     source: String,
     expected: String,
-    phantom: PhantomData<&'a T>,
+    phantom: PhantomData<T>,
 }
 
-impl<'a, T> CheckTest<'a, T>
+impl<T> CheckTest<T>
 where
-    T: Parse + Typecheck<'a>,
+    T: Parse + Typecheck,
     T::Type: fmt::Display,
 {
-    pub fn new(name: &str, source: &str, exp: &str) -> CheckTest<'a, T> {
+    pub fn new(name: &str, source: &str, exp: &str) -> CheckTest<T> {
         CheckTest {
             name: name.to_owned(),
             source: source.to_owned(),
@@ -28,9 +28,9 @@ where
     }
 }
 
-impl<'a, T> Test for CheckTest<'a, T>
+impl<'a, T> Test for CheckTest<T>
 where
-    T: Parse + Typecheck<'a>,
+    T: Parse + Typecheck,
     T::Type: fmt::Display,
 {
     fn name(&self) -> String {
