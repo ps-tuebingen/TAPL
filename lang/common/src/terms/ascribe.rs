@@ -11,7 +11,7 @@ pub struct Ascribe<T>
 where
     T: LanguageTerm,
 {
-    term: Box<T>,
+    pub term: Box<T>,
     ty: <T as LanguageTerm>::Type,
 }
 

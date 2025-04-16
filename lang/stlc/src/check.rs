@@ -1,42 +1,31 @@
-use super::{to_check_err, TypingEnv};
-use crate::{syntax::Term, types::Type};
-use common::{
-    errors::{Error, ErrorKind},
-    Typecheck,
-};
+use super::{terms::Term, types::Type};
+use common::{check::Typecheck, errors::Error, Var};
+use std::collections::HashMap;
 
-impl<'a> Typecheck<'a> for Term {
+impl Typecheck for Term {
     type Type = Type;
-    type Env = &'a mut TypingEnv;
+    type Env = HashMap<Var, Type>;
 
-    fn check_start(&self) -> Result<Self::Type, Error> {
-        self.check(&mut Default::default())
-    }
-
-    fn check(&self, env: Self::Env) -> Result<Self::Type, Error> {
+    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
         match self {
-            Term::Var(v) => env
-                .used_vars
-                .get(v)
-                .cloned()
-                .ok_or(to_check_err(ErrorKind::FreeVariable(v.clone()))),
+            Term::Var(v) => v.check(env),
             Term::Lambda(lam) => lam.check(env),
             Term::App(app) => app.check(env),
             Term::Unit(unit) => unit.check(env),
             Term::True(tru) => tru.check(env),
             Term::False(fls) => fls.check(env),
             Term::If(ift) => ift.check(env),
-            Term::Zero(z) => z.check(env),
-            Term::Succ(s) => s.check(env),
+            Term::Num(num) => num.check(env),
             Term::Pred(p) => p.check(env),
+            Term::Succ(s) => s.check(env),
             Term::IsZero(isz) => isz.check(env),
             Term::Ascribe(asc) => asc.check(env),
             Term::Let(lt) => lt.check(env),
             Term::Pair(pr) => pr.check(env),
-            Term::Proj1(proj) => proj.check(env),
-            Term::Proj2(proj) => proj.check(env),
-            Term::Tup(tup) => tup.check(env),
-            Term::Proj(proj) => proj.check(env),
+            Term::Tuple(tup) => tup.check(env),
+            Term::Projection(proj) => proj.check(env),
+            Term::Fst(proj) => proj.check(env),
+            Term::Snd(proj) => proj.check(env),
             Term::Record(rec) => rec.check(env),
             Term::RecordProj(proj) => proj.check(env),
             Term::Left(lf) => lf.check(env),

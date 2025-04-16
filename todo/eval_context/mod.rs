@@ -13,7 +13,7 @@ use value::Value;
 
 pub use as_context::AsContext;
 
-use crate::syntax::Term;
+use crate::terms::Term;
 
 pub trait Eval {
     fn eval(self) -> Result<Value, Error>;

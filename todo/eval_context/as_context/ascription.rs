@@ -1,7 +1,8 @@
 use super::{super::congruence, AsContext, Error, EvalContext};
-use crate::syntax::Ascribe;
+use crate::terms::Term;
+use common::terms::Ascribe;
 
-impl AsContext for Ascribe {
+impl AsContext for Ascribe<Term> {
     fn to_context(self) -> Result<EvalContext, Error> {
         match (&*self.term).try_into() {
             Ok(val) => Ok(EvalContext::Value(val)),

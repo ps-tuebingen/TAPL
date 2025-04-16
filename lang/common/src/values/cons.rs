@@ -1,39 +1,36 @@
 use super::Value;
-use crate::{
-    language::{LanguageTerm, LanguageValue},
-    terms::Cons as ConsT,
-};
+use crate::{language::LanguageTerm, terms::Cons as ConsT};
 use std::fmt;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct Cons<V>
+pub struct Cons<T>
 where
-    V: LanguageValue,
+    T: LanguageTerm,
 {
-    head: V,
-    tail: V,
-    ty: <<V as LanguageValue>::Term as LanguageTerm>::Type,
+    head: <T as LanguageTerm>::Value,
+    tail: <T as LanguageTerm>::Value,
+    ty: <T as LanguageTerm>::Type,
 }
 
-impl<V> Value for Cons<V>
+impl<T> Value for Cons<T>
 where
-    V: LanguageValue,
+    T: LanguageTerm,
 {
-    type Term = ConsT<<V as LanguageValue>::Term>;
+    type Term = ConsT<T>;
 }
 
-impl<V> From<Cons<V>> for ConsT<<V as LanguageValue>::Term>
+impl<T> From<Cons<T>> for ConsT<T>
 where
-    V: LanguageValue,
+    T: LanguageTerm,
 {
-    fn from(c: Cons<V>) -> ConsT<<V as LanguageValue>::Term> {
+    fn from(c: Cons<T>) -> ConsT<T> {
         ConsT::new(c.head, c.tail, c.ty)
     }
 }
 
-impl<V> fmt::Display for Cons<V>
+impl<T> fmt::Display for Cons<T>
 where
-    V: LanguageValue,
+    T: LanguageTerm,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "cons[{}]({},{})", self.ty, self.head, self.tail)

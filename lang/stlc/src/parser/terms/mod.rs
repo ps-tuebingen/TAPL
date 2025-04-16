@@ -1,6 +1,9 @@
 use super::{get_n_inner, next_rule, to_parse_err, Rule};
-use crate::syntax::{App, False, Term, True, Unit, Zero};
-use common::errors::{Error, ErrorKind};
+use crate::terms::Term;
+use common::{
+    errors::{Error, ErrorKind},
+    terms::{App, False, Num, True, Unit, Variable},
+};
 use pest::iterators::Pair;
 
 mod ascribe;
@@ -64,7 +67,7 @@ pub fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
 
 pub fn pair_to_primterm(p: Pair<'_, Rule>) -> Result<Term, Error> {
     match p.as_rule() {
-        Rule::variable => Ok(Term::Var(p.as_str().trim().to_owned())),
+        Rule::variable => Ok(Variable::new(p.as_str().trim()).into()),
         Rule::r#const => const_to_term(p.as_str()),
         Rule::lambda_term => pair_to_lambda(p).map(|lam| lam.into()),
         Rule::some_term => pair_to_some(p).map(|som| som.into()),
@@ -97,10 +100,10 @@ pub fn pair_to_primterm(p: Pair<'_, Rule>) -> Result<Term, Error> {
 
 fn const_to_term(s: &str) -> Result<Term, Error> {
     match s.to_lowercase().trim() {
-        "true" => Ok(True.into()),
-        "false" => Ok(False.into()),
-        "zero" => Ok(Zero.into()),
-        "unit" => Ok(Unit.into()),
+        "true" => Ok(True::new().into()),
+        "false" => Ok(False::new().into()),
+        "zero" => Ok(Num::new(0).into()),
+        "unit" => Ok(Unit::new().into()),
         _ => Err(to_parse_err(ErrorKind::UnknownKeyword(s.to_owned()))),
     }
 }

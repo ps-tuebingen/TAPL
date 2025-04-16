@@ -1,38 +1,31 @@
-use super::{to_eval_err, Value};
-use crate::syntax::Term;
-use common::{
-    errors::{Error, ErrorKind},
-    Eval,
-};
+use super::{terms::Term, types::Type, values::Value};
+use common::{errors::Error, eval::Eval, Var};
+use std::collections::HashMap;
 
-impl Eval<'_> for Term {
+impl Eval for Term {
+    type Env = HashMap<Var, Type>;
     type Value = Value;
-    type Env = ();
 
-    fn eval_start(self) -> Result<Self::Value, Error> {
-        self.eval(())
-    }
-
-    fn eval(self, env: Self::Env) -> Result<Self::Value, Error> {
+    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
         match self {
-            Term::Var(v) => Err(to_eval_err(ErrorKind::FreeVariable(v))),
+            Term::Var(v) => v.eval(env),
             Term::Lambda(lam) => lam.eval(env),
             Term::App(app) => app.eval(env),
             Term::Unit(unit) => unit.eval(env),
             Term::True(tru) => tru.eval(env),
             Term::False(fls) => fls.eval(env),
             Term::If(ift) => ift.eval(env),
-            Term::Zero(z) => z.eval(env),
-            Term::Succ(s) => s.eval(env),
+            Term::Num(num) => num.eval(env),
             Term::Pred(p) => p.eval(env),
+            Term::Succ(s) => s.eval(env),
             Term::IsZero(isz) => isz.eval(env),
             Term::Ascribe(asc) => asc.eval(env),
             Term::Let(lt) => lt.eval(env),
             Term::Pair(pr) => pr.eval(env),
-            Term::Proj1(proj) => proj.eval(env),
-            Term::Proj2(proj) => proj.eval(env),
-            Term::Tup(tup) => tup.eval(env),
-            Term::Proj(proj) => proj.eval(env),
+            Term::Tuple(tup) => tup.eval(env),
+            Term::Projection(proj) => proj.eval(env),
+            Term::Fst(proj) => proj.eval(env),
+            Term::Snd(proj) => proj.eval(env),
             Term::Record(rec) => rec.eval(env),
             Term::RecordProj(proj) => proj.eval(env),
             Term::Left(lf) => lf.eval(env),
