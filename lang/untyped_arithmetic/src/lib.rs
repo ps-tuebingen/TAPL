@@ -6,30 +6,31 @@ pub mod values;
 
 #[cfg(test)]
 mod term_tests {
-    use super::{terms::Term, values::Value};
-    use common::eval::Eval;
+    use super::terms::Term;
+    use common::{
+        eval::Eval,
+        terms::{If, IsZero, Num, Pred, Succ},
+        values::Num as NumVal,
+    };
 
     #[test]
     fn eval_simple() {
-        let result = Term::Succ(Box::new(Term::Succ(Box::new(Term::Pred(Box::new(
-            Term::Zero,
-        ))))))
-        .eval(Default::default())
-        .unwrap();
-        let expected = Value::Numerical(1);
+        let term: Term = Succ::new(Succ::new(Pred::new(Num::new(0)))).into();
+        let result = term.eval_start().unwrap();
+        let expected = NumVal::new(1).into();
         assert_eq!(result, expected)
     }
 
     #[test]
     fn eval_complex() {
-        let result = Term::If(
-            Box::new(Term::IsZero(Box::new(Term::Succ(Box::new(Term::Zero))))),
-            Box::new(Term::Pred(Box::new(Term::Succ(Box::new(Term::Zero))))),
-            Box::new(Term::Succ(Box::new(Term::Pred(Box::new(Term::Zero))))),
+        let term: Term = If::new(
+            IsZero::new(Succ::new(Num::new(0))),
+            Pred::new(Succ::new(Num::new(0))),
+            Succ::new(Pred::new(Num::new(0))),
         )
-        .eval(Default::default())
-        .unwrap();
-        let expected = Value::Numerical(0);
+        .into();
+        let result = term.eval_start().unwrap();
+        let expected = NumVal::new(0).into();
         assert_eq!(result, expected)
     }
 }

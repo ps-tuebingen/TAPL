@@ -141,64 +141,61 @@ fn digits_to_num(mut digits: Vec<u8>) -> u64 {
 #[cfg(test)]
 mod parser_tests {
     use super::{digits_to_num, digits_to_term, parse, Term};
+    use common::terms::{False, If, IsZero, Num, Pred, Succ, True};
 
     #[test]
     fn parse_true() {
         let result = parse("True".to_owned()).unwrap();
-        let expected = Term::True;
+        let expected = True::new().into();
         assert_eq!(result, expected)
     }
 
     #[test]
     fn parse_false() {
         let result = parse("False".to_owned()).unwrap();
-        let expected = Term::False;
+        let expected = False::new().into();
         assert_eq!(result, expected)
     }
 
     #[test]
     fn parse_if() {
         let result = parse("If (true) { false } else { true }".to_owned()).unwrap();
-        let expected = Term::If(
-            Box::new(Term::True),
-            Box::new(Term::False),
-            Box::new(Term::True),
-        );
+        let expected = If::new(True::new(), False::new(), True::new()).into();
         assert_eq!(result, expected)
     }
 
     #[test]
     fn parse_zero() {
         let result = parse("Zero".to_owned()).unwrap();
-        let expected = Term::Zero;
+        let expected = Num::new(0).into();
         assert_eq!(result, expected)
     }
 
     #[test]
     fn parse_succ() {
         let result = parse("Succ(True)".to_owned()).unwrap();
-        let expected = Term::Succ(Box::new(Term::True));
+        let expected = Succ::new(True::new()).into();
         assert_eq!(result, expected)
     }
 
     #[test]
     fn parse_pred() {
         let result = parse("Pred(Zero)".to_owned()).unwrap();
-        let expected = Term::Pred(Box::new(Term::Zero));
+        let expected = Pred::new(Num::new(0)).into();
         assert_eq!(result, expected)
     }
 
     #[test]
     fn prase_iszero() {
         let result = parse("IsZero(Zero)".to_owned()).unwrap();
-        let expected = Term::IsZero(Box::new(Term::Zero));
+        let expected = IsZero::new(Num::new(0)).into();
         assert_eq!(result, expected)
     }
 
     #[test]
     fn parse_parens() {
         let result = parse("(True)".to_owned()).unwrap();
-        let expected = Term::True;
+        let expected = True::new().into();
         assert_eq!(result, expected)
     }
 
@@ -212,15 +209,12 @@ mod parser_tests {
     #[test]
     fn dig2term() {
         let result = digits_to_term(vec![1, 2]);
-        let expected = Term::Succ(Box::new(Term::Succ(Box::new(Term::Succ(Box::new(
-            Term::Succ(Box::new(Term::Succ(Box::new(Term::Succ(Box::new(
-                Term::Succ(Box::new(Term::Succ(Box::new(Term::Succ(Box::new(
-                    Term::Succ(Box::new(Term::Succ(Box::new(Term::Succ(Box::new(
-                        Term::Zero,
-                    )))))),
-                )))))),
+        let expected = Succ::new(Succ::new(Succ::new(Succ::new(Succ::new(Succ::new(
+            Succ::new(Succ::new(Succ::new(Succ::new(Succ::new(Succ::new(
+                Num::new(0),
             )))))),
-        ))))));
+        ))))))
+        .into();
         assert_eq!(result, expected)
     }
 }
