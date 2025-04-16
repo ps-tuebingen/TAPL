@@ -1,6 +1,9 @@
 use super::{pair_to_n_inner, pair_to_type, to_parse_err, Rule};
-use crate::syntax::{App, Const, Term};
-use common::errors::{Error, ErrorKind};
+use crate::terms::Term;
+use common::{
+    errors::{Error, ErrorKind},
+    terms::{App, Num, Variable},
+};
 use pest::iterators::Pair;
 
 mod lambda;
@@ -60,9 +63,9 @@ fn pair_to_prim_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
                 .parse::<i64>()
                 .map_err(|_| ErrorKind::UnknownKeyword(p.as_str().to_owned()))
                 .map_err(to_parse_err)?;
-            Ok(Const { i: num }.into())
+            Ok(Num::new(num).into())
         }
-        Rule::variable => Ok(Term::Var(p.as_str().trim().to_owned())),
+        Rule::variable => Ok(Variable::new(p.as_str().trim()).into()),
         r => Err(to_parse_err(ErrorKind::UnexpectedRule {
             found: format!("{r:?}"),
             expected: "Non Left-Recursive Term".to_owned(),

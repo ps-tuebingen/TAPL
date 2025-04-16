@@ -5,7 +5,7 @@ use std::collections::HashMap;
 impl Typecheck for Term {
     type Type = Type;
     type Env = HashMap<Var, Type>;
-    fn check(self, env: &mut Self::Env) -> Result<Self::Type, Error> {
+    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
         match self {
             Term::Var(var) => var.check(env),
             Term::Num(num) => num.check(env),

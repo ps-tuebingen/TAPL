@@ -17,6 +17,24 @@ where
     in_term: Box<T>,
 }
 
+impl<T> Unpack<T>
+where
+    T: LanguageTerm,
+{
+    pub fn new<T1, T2>(tyn: &str, tn: &str, bound: T1, int: T2) -> Unpack<T>
+    where
+        T1: Into<T>,
+        T2: Into<T>,
+    {
+        Unpack {
+            ty_name: tyn.to_owned(),
+            term_name: tn.to_owned(),
+            bound_term: Box::new(bound.into()),
+            in_term: Box::new(int.into()),
+        }
+    }
+}
+
 impl<T> Term for Unpack<T> where T: LanguageTerm {}
 
 impl<T> SubstTerm<T> for Unpack<T>

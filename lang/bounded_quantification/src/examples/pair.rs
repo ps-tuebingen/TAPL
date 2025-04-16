@@ -1,15 +1,19 @@
 use crate::{terms::Term, types::Type};
-use common::terms::{App, Lambda, LambdaSub, TyApp};
+use common::{
+    terms::{App, Lambda, LambdaSub, TyApp, Variable},
+    types::{ForallBounded, Fun, TypeVariable},
+};
 
 pub fn ty_pair(ty1: Type, ty2: Type) -> Type {
     let var = ty1.fresh_tyvar(vec![&ty2]);
-    Type::forall_unbounded(
-        var.as_str(),
-        Type::fun(
-            Type::fun(ty1, Type::fun(ty2, (var.as_str()).into())),
-            (var.as_str()).into(),
+    ForallBounded::new_unbounded(
+        &var,
+        Fun::new(
+            Fun::new(ty1, Fun::new(ty2, TypeVariable::new(&var))),
+            TypeVariable::new(&var),
         ),
     )
+    .into()
 }
 
 pub fn pair() -> Term {
@@ -19,16 +23,22 @@ pub fn pair() -> Term {
             "Y",
             Lambda::new(
                 "x",
-                "X".into(),
+                TypeVariable::new("X"),
                 Lambda::new(
                     "y",
-                    "Y".into(),
+                    TypeVariable::new("Y"),
                     LambdaSub::new_unbounded(
                         "R",
                         Lambda::new(
                             "p",
-                            Type::fun("X".into(), Type::fun("Y".into(), "R".into())),
-                            App::new(App::new("p", "x"), "y"),
+                            Fun::new(
+                                TypeVariable::new("X"),
+                                Fun::new(TypeVariable::new("Y"), TypeVariable::new("R")),
+                            ),
+                            App::new(
+                                App::new(Variable::new("p"), Variable::new("x")),
+                                Variable::new("y"),
+                            ),
                         ),
                     ),
                 ),
@@ -45,10 +55,14 @@ pub fn fst() -> Term {
             "Y",
             Lambda::new(
                 "p",
-                ty_pair("X".into(), "Y".into()),
+                ty_pair(TypeVariable::new("X").into(), TypeVariable::new("Y").into()),
                 App::new(
-                    TyApp::new("p", "X".into()),
-                    Lambda::new("x", "X".into(), Lambda::new("y", "Y".into(), "x")),
+                    TyApp::new(Variable::new("p"), TypeVariable::new("X")),
+                    Lambda::new(
+                        "x",
+                        TypeVariable::new("X"),
+                        Lambda::new("y", TypeVariable::new("Y"), Variable::new("x")),
+                    ),
                 ),
             ),
         ),
@@ -63,10 +77,14 @@ pub fn snd() -> Term {
             "Y",
             Lambda::new(
                 "p",
-                ty_pair("X".into(), "Y".into()),
+                ty_pair(TypeVariable::new("X").into(), TypeVariable::new("Y").into()),
                 App::new(
-                    TyApp::new("p", "Y".into()),
-                    Lambda::new("x", "X".into(), Lambda::new("y", "Y".into(), "y")),
+                    TyApp::new(Variable::new("p"), TypeVariable::new("Y")),
+                    Lambda::new(
+                        "x",
+                        TypeVariable::new("X"),
+                        Lambda::new("y", TypeVariable::new("Y"), Variable::new("y")),
+                    ),
                 ),
             ),
         ),
@@ -87,11 +105,12 @@ mod pair_tests {
             "X",
             Type::forall_unbounded(
                 "Y",
-                Type::fun(
-                    "X".into(),
-                    Type::fun(
-                        "Y".into(),
-                        ty_pair("X".into(), "Y".into()).rename("X0".to_owned(), "R".to_owned()),
+                Fun::new(
+                    TypeVariable::new("X"),
+                    Fun::new(
+                        TypeVariable::new("Y")(),
+                        ty_pair(TypeVariable::new("X"), TypeVariable::new("Y")())
+                            .rename("X0".to_owned(), "R".to_owned()),
                     ),
                 ),
             ),
@@ -104,7 +123,13 @@ mod pair_tests {
         let result = fst().check(&mut Default::default()).unwrap();
         let expected = Type::forall_unbounded(
             "X",
-            Type::forall_unbounded("Y", Type::fun(ty_pair("X".into(), "Y".into()), "X".into())),
+            Type::forall_unbounded(
+                "Y",
+                Fun::new(
+                    ty_pair(TypeVariable::new("X"), TypeVariable::new("Y")()),
+                    "X".into(),
+                ),
+            ),
         );
         assert_eq!(result, expected)
     }
@@ -117,7 +142,13 @@ mod pair_tests {
             .unwrap();
         let expected = Type::forall_unbounded(
             "X",
-            Type::forall_unbounded("Y", Type::fun(ty_pair("X".into(), "Y".into()), "Y".into())),
+            Type::forall_unbounded(
+                "Y",
+                Fun::new(
+                    ty_pair(TypeVariable::new("X"), TypeVariable::new("Y")()),
+                    TypeVariable::new("Y")(),
+                ),
+            ),
         );
         assert_eq!(result, expected)
     }

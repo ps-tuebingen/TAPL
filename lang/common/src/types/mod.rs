@@ -9,6 +9,7 @@ where
 pub mod bool;
 pub mod bot;
 pub mod exists;
+pub mod exists_bounded;
 pub mod forall;
 pub mod forall_bounded;
 pub mod fun;
@@ -33,6 +34,7 @@ pub mod variant;
 pub use bool::Bool;
 pub use bot::Bot;
 pub use exists::Exists;
+pub use exists_bounded::ExistsBounded;
 pub use forall::Forall;
 pub use forall_bounded::ForallBounded;
 pub use fun::Fun;

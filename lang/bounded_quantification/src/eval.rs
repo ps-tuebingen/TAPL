@@ -4,7 +4,7 @@ use common::{errors::Error, eval::Eval};
 impl Eval for Term {
     type Value = Value;
     type Env = ();
-    fn eval(self, _: &mut Self::Env) -> Result<Self::Value, Error> {
+    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
         match self {
             Term::Var(var) => var.eval(env),
             Term::Num(num) => num.eval(env),

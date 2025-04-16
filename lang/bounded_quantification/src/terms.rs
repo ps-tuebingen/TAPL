@@ -3,7 +3,7 @@ use common::{
     language::LanguageTerm,
     subst::{SubstTerm, SubstType},
     terms::{
-        App, Lambda, LambdaSub, Num, Pack, Pred, Projection, Record, Succ, TyApp, Unpack, Variable,
+        App, Lambda, LambdaSub, Num, Pack, Pred, Record, RecordProj, Succ, TyApp, Unpack, Variable,
     },
     TypeVar, Var,
 };
@@ -22,7 +22,7 @@ pub enum Term {
     Pack(Pack<Term>),
     Unpack(Unpack<Term>),
     Record(Record<Term>),
-    Projection(Projection<Term>),
+    Projection(RecordProj<Term>),
 }
 
 impl common::terms::Term for Term {}
@@ -157,8 +157,8 @@ impl From<Record<Term>> for Term {
     }
 }
 
-impl From<Projection<Term>> for Term {
-    fn from(proj: Projection<Term>) -> Term {
+impl From<RecordProj<Term>> for Term {
+    fn from(proj: RecordProj<Term>) -> Term {
         Term::Projection(proj)
     }
 }

@@ -11,6 +11,20 @@ where
     records: HashMap<Label, Ty>,
 }
 
+impl<Ty> Record<Ty>
+where
+    Ty: Type,
+{
+    pub fn new<Ty1>(recs: HashMap<Label, Ty1>) -> Record<Ty>
+    where
+        Ty1: Into<Ty>,
+    {
+        Record {
+            records: recs.into_iter().map(|(lb, ty)| (lb, ty.into())).collect(),
+        }
+    }
+}
+
 impl<Ty> Type for Record<Ty> where Ty: Type {}
 
 impl<Ty> SubstType<Ty> for Record<Ty>

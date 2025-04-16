@@ -15,6 +15,21 @@ where
     label: Label,
 }
 
+impl<T> RecordProj<T>
+where
+    T: LanguageTerm,
+{
+    pub fn new<T1>(t: T1, lb: &str) -> RecordProj<T>
+    where
+        T1: Into<T>,
+    {
+        RecordProj {
+            record: Box::new(t.into()),
+            label: lb.to_owned(),
+        }
+    }
+}
+
 impl<T> Term for RecordProj<T> where T: LanguageTerm {}
 
 impl<T> SubstTerm<T> for RecordProj<T>

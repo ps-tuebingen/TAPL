@@ -58,14 +58,14 @@ pub fn s_zero() -> Term {
         "X",
         LambdaSub::new(
             "S",
-            Variable::new("X"),
+            TypeVariable::new("X"),
             LambdaSub::new(
                 "Z",
-                Variable::new("X"),
+                TypeVariable::new("X"),
                 Lambda::new(
                     "s",
                     Fun::new(TypeVariable::new("X"), TypeVariable::new("S")),
-                    Lambda::new("z", "Z".into(), "z"),
+                    Lambda::new("z", TypeVariable::new("Z"), Variable::new("z")),
                 ),
             ),
         ),
@@ -97,14 +97,18 @@ pub fn s_one() -> Term {
         "X",
         LambdaSub::new(
             "S",
-            "X".into(),
+            TypeVariable::new("X"),
             LambdaSub::new(
                 "Z",
-                "X".into(),
+                TypeVariable::new("X"),
                 Lambda::new(
                     "s",
                     Fun::new(TypeVariable::new("X"), TypeVariable::new("S")),
-                    Lambda::new("z", "Z".into(), App::new("s", "z")),
+                    Lambda::new(
+                        "z",
+                        TypeVariable::new("Z"),
+                        App::new(Variable::new("s"), Variable::new("z")),
+                    ),
                 ),
             ),
         ),
@@ -117,14 +121,21 @@ pub fn s_two() -> Term {
         "X",
         LambdaSub::new(
             "S",
-            "X".into(),
+            TypeVariable::new("X"),
             LambdaSub::new(
                 "Z",
-                "X".into(),
+                TypeVariable::new("X"),
                 Lambda::new(
                     "s",
                     Fun::new(TypeVariable::new("X"), TypeVariable::new("S")),
-                    Lambda::new("z", "Z".into(), App::new("s", App::new("s", "z"))),
+                    Lambda::new(
+                        "z",
+                        TypeVariable::new("Z"),
+                        App::new(
+                            Variable::new("s"),
+                            App::new(Variable::new("s"), Variable::new("z")),
+                        ),
+                    ),
                 ),
             ),
         ),
@@ -137,17 +148,23 @@ pub fn s_three() -> Term {
         "X",
         LambdaSub::new(
             "S",
-            "X".into(),
+            TypeVariable::new("X"),
             LambdaSub::new(
                 "Z",
-                "X".into(),
+                TypeVariable::new("X"),
                 Lambda::new(
                     "s",
-                    Fun::new("X".into(), "S".into()),
+                    Fun::new(TypeVariable::new("X"), TypeVariable::new("S")),
                     Lambda::new(
                         "z",
-                        "Z".into(),
-                        App::new("s", App::new("s", App::new("s", "z"))),
+                        TypeVariable::new("Z"),
+                        App::new(
+                            Variable::new("s"),
+                            App::new(
+                                Variable::new("s"),
+                                App::new(Variable::new("s"), Variable::new("z")),
+                            ),
+                        ),
                     ),
                 ),
             ),
@@ -164,27 +181,33 @@ pub fn s_succ() -> Term {
             "X",
             LambdaSub::new(
                 "S",
-                "X".into(),
+                TypeVariable::new("X"),
                 LambdaSub::new(
                     "Z",
-                    "X".into(),
+                    TypeVariable::new("X"),
                     Lambda::new(
                         "s",
-                        Fun::new("X".into(), "S".into()),
+                        Fun::new(TypeVariable::new("X"), TypeVariable::new("S")),
                         Lambda::new(
                             "z",
-                            "Z".into(),
+                            TypeVariable::new("Z"),
                             App::new(
-                                "s",
+                                Variable::new("s"),
                                 App::new(
                                     App::new(
                                         TyApp::new(
-                                            TyApp::new(TyApp::new("n", "X".into()), "S".into()),
-                                            "Z".into(),
+                                            TyApp::new(
+                                                TyApp::new(
+                                                    Variable::new("n"),
+                                                    TypeVariable::new("X"),
+                                                ),
+                                                TypeVariable::new("S"),
+                                            ),
+                                            TypeVariable::new("Z"),
                                         ),
-                                        "s",
+                                        Variable::new("s"),
                                     ),
-                                    "z",
+                                    Variable::new("z"),
                                 ),
                             ),
                         ),
@@ -207,33 +230,45 @@ pub fn s_pluspp() -> Term {
                 "X",
                 LambdaSub::new(
                     "S",
-                    "X".into(),
+                    TypeVariable::new("X"),
                     LambdaSub::new(
                         "Z",
-                        "X".into(),
+                        TypeVariable::new("X"),
                         Lambda::new(
                             "s",
-                            Fun::new("X".into(), "S".into()),
+                            Fun::new(TypeVariable::new("X"), TypeVariable::new("S")),
                             Lambda::new(
                                 "z",
-                                "Z".into(),
+                                TypeVariable::new("Z"),
                                 App::new(
                                     App::new(
                                         TyApp::new(
-                                            TyApp::new(TyApp::new("n", "X".into()), "S".into()),
-                                            "S".into(),
+                                            TyApp::new(
+                                                TyApp::new(
+                                                    Variable::new("n"),
+                                                    TypeVariable::new("X"),
+                                                ),
+                                                TypeVariable::new("S"),
+                                            ),
+                                            TypeVariable::new("S"),
                                         ),
-                                        "s",
+                                        Variable::new("s"),
                                     ),
                                     App::new(
                                         App::new(
                                             TyApp::new(
-                                                TyApp::new(TyApp::new("m", "X".into()), "S".into()),
-                                                "Z".into(),
+                                                TyApp::new(
+                                                    TyApp::new(
+                                                        Variable::new("m"),
+                                                        TypeVariable::new("X"),
+                                                    ),
+                                                    TypeVariable::new("S"),
+                                                ),
+                                                TypeVariable::new("Z"),
                                             ),
-                                            "s",
+                                            Variable::new("s"),
                                         ),
-                                        "z",
+                                        Variable::new("z"),
                                     ),
                                 ),
                             ),
@@ -254,7 +289,7 @@ mod nat_tests {
 
     #[test]
     fn check_zero() {
-        let result = s_zero().check(&mut Default::default()).unwrap();
+        let result = s_zero().check_start().unwrap();
         let expected = ty_s_zero();
         assert_eq!(result, expected)
     }

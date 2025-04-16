@@ -15,6 +15,22 @@ where
     arg: <T as LanguageTerm>::Type,
 }
 
+impl<T> TyApp<T>
+where
+    T: LanguageTerm,
+{
+    pub fn new<T1, Typ>(t: T1, ty: Typ) -> TyApp<T>
+    where
+        T1: Into<T>,
+        Typ: Into<<T as LanguageTerm>::Type>,
+    {
+        TyApp {
+            fun: Box::new(t.into()),
+            arg: ty.into(),
+        }
+    }
+}
+
 impl<T> Term for TyApp<T> where T: LanguageTerm {}
 
 impl<T> SubstTerm<T> for TyApp<T>
