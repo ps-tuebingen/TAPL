@@ -1,7 +1,8 @@
 use super::terms::{Term, Var};
 use common::{
     errors::{Error, ErrorKind, ErrorLocation},
-    langs::Lang,
+    language::untyped::Untyped,
+    terms::{App, Lambda, Variable},
     Parse,
 };
 use std::collections::VecDeque;
@@ -12,7 +13,6 @@ pub fn to_err(knd: ErrorKind) -> Error {
     Error {
         kind: knd,
         loc: ErrorLocation::Parse,
-        lang: Lang::UntypedLambda,
     }
 }
 
@@ -122,12 +122,12 @@ fn parse_lambda(tokens: &mut VecDeque<Token>) -> Result<Term, Error> {
     let body = parse_tokens(tokens)?;
     skip_spaces(tokens);
 
-    let lambda_term = Term::Lambda(var, Box::new(body));
+    let lambda_term = Lambda::new(&var, Untyped, body).into();
     if tokens.is_empty() {
         Ok(lambda_term)
     } else {
         let next_t = parse_tokens(tokens)?;
-        Ok(Term::App(Box::new(lambda_term), Box::new(next_t)))
+        Ok(App::new(lambda_term, next_t).into())
     }
 }
 
@@ -142,10 +142,10 @@ fn parse_tokens(tokens: &mut VecDeque<Token>) -> Result<Term, Error> {
             let var = parse_var(tokens)?;
             skip_spaces(tokens);
             if tokens.is_empty() {
-                Ok(Term::Var(var))
+                Ok(Variable::new(&var).into())
             } else {
                 let rest_term = parse_tokens(tokens)?;
-                Ok(Term::App(Box::new(Term::Var(var)), Box::new(rest_term)))
+                Ok(App::new(Variable::new(&var), rest_term).into())
             }
         }
         Token::ParensO => {
@@ -159,7 +159,7 @@ fn parse_tokens(tokens: &mut VecDeque<Token>) -> Result<Term, Error> {
                 Ok(inner_term)
             } else {
                 let remaining_term = parse_tokens(&mut back)?;
-                Ok(Term::App(Box::new(inner_term), Box::new(remaining_term)))
+                Ok(App::new(inner_term, remaining_term).into())
             }
         }
         Token::ParensC => Err(to_err(ErrorKind::UnexpectedRule {
@@ -185,57 +185,50 @@ pub fn parse(source: &mut String) -> Result<Term, Error> {
 #[cfg(test)]
 mod parser_tests {
     use super::parse;
-    use crate::terms::Term;
+    use common::{
+        language::untyped::Untyped,
+        terms::{App, Lambda, Variable},
+    };
 
     #[test]
     fn parse_id() {
         let result = parse(&mut "\\x.x".to_owned()).unwrap();
-        let expected = Term::Lambda("x".to_owned(), Box::new(Term::Var("x".to_owned())));
+        let expected = Lambda::new("x", Untyped, Variable::new("x")).into();
         assert_eq!(result, expected)
     }
 
     #[test]
     fn parse_true() {
         let result = parse(&mut "\\t.\\f.t".to_owned()).unwrap();
-        let expected = Term::Lambda(
-            "t".to_owned(),
-            Box::new(Term::Lambda(
-                "f".to_owned(),
-                Box::new(Term::Var("t".to_owned())),
-            )),
-        );
+        let expected =
+            Lambda::new("t", Untyped, Lambda::new("f", Untyped, Variable::new("t"))).into();
         assert_eq!(result, expected)
     }
 
     #[test]
     fn parse_false() {
         let result = parse(&mut "\\t.\\f.f".to_owned()).unwrap();
-        let expected = Term::Lambda(
-            "t".to_owned(),
-            Box::new(Term::Lambda(
-                "f".to_owned(),
-                Box::new(Term::Var("f".to_owned())),
-            )),
-        );
+        let expected =
+            Lambda::new("t", Untyped, Lambda::new("f", Untyped, Variable::new("f"))).into();
         assert_eq!(result, expected)
     }
 
     #[test]
     fn parse_if() {
         let result = parse(&mut "\\l.\\m.(l m) n".to_owned()).unwrap();
-        let expected = Term::Lambda(
-            "l".to_owned(),
-            Box::new(Term::Lambda(
-                "m".to_owned(),
-                Box::new(Term::App(
-                    Box::new(Term::App(
-                        Box::new(Term::Var("l".to_owned())),
-                        Box::new(Term::Var("m".to_owned())),
-                    )),
-                    Box::new(Term::Var("n".to_owned())),
-                )),
-            )),
-        );
+        let expected = Lambda::new(
+            "l",
+            Untyped,
+            Lambda::new(
+                "m",
+                Untyped,
+                App::new(
+                    App::new(Variable::new("l"), Variable::new("m")),
+                    Variable::new("n"),
+                ),
+            ),
+        )
+        .into();
         assert_eq!(result, expected)
     }
 }
