@@ -7,9 +7,9 @@ pub struct LambdaSub<T>
 where
     T: LanguageTerm,
 {
-    var: Var,
-    sup_ty: <T as LanguageTerm>::Type,
-    t: T,
+    pub var: Var,
+    pub sup_ty: <T as LanguageTerm>::Type,
+    pub term: T,
 }
 
 impl<T> Value for LambdaSub<T>
@@ -24,7 +24,7 @@ where
     T: LanguageTerm,
 {
     fn from(lam: LambdaSub<T>) -> LambdaSubT<T> {
-        LambdaSubT::new(&lam.var, lam.sup_ty, lam.t)
+        LambdaSubT::new(&lam.var, lam.sup_ty, lam.term)
     }
 }
 
@@ -33,6 +33,6 @@ where
     T: LanguageTerm,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "\\{}<:{}.{}", self.var, self.sup_ty, self.t)
+        write!(f, "\\{}<:{}.{}", self.var, self.sup_ty, self.term)
     }
 }

@@ -1,6 +1,9 @@
 use super::Term;
 use crate::{
-    language::LanguageTerm,
+    check::{to_check_err, Typecheck},
+    errors::{Error, ErrorKind},
+    eval::{to_eval_err, Eval},
+    language::{LanguageTerm, LanguageType, LanguageValue},
     subst::{SubstTerm, SubstType},
     TypeVar, Var,
 };
@@ -60,6 +63,50 @@ where
             arg: self.arg.subst_type(v, ty),
         }
         .into()
+    }
+}
+
+impl<T> Eval for TyApp<T>
+where
+    T: LanguageTerm,
+{
+    type Value = <T as Eval>::Value;
+    type Env = <T as Eval>::Env;
+
+    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
+        let fun_val = self.fun.eval(env)?;
+        if let Ok(tylam) = fun_val.clone().into_tylambda() {
+            tylam.term.subst_type(&tylam.var, &self.arg).eval(env)
+        } else if let Ok(lamsub) = fun_val.clone().into_lambdasub() {
+            lamsub.term.subst_type(&lamsub.var, &self.arg).eval(env)
+        } else {
+            Err(to_eval_err(ErrorKind::ValueMismatch {
+                found: fun_val.to_string(),
+                expected: "Type Abstraction".to_owned(),
+            }))
+        }
+    }
+}
+
+impl<T> Typecheck for TyApp<T>
+where
+    T: LanguageTerm,
+{
+    type Type = <T as Typecheck>::Type;
+    type Env = <T as Typecheck>::Env;
+
+    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
+        let fun_ty = self.fun.check(env)?;
+        if let Ok(forall) = fun_ty.clone().into_forall() {
+            todo!()
+        } else if let Ok(forall) = fun_ty.clone().into_forall_bounded() {
+            todo!()
+        } else {
+            Err(to_check_err(ErrorKind::TypeMismatch {
+                found: fun_ty.to_string(),
+                expected: "Universal Type".to_owned(),
+            }))
+        }
     }
 }
 

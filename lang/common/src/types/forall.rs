@@ -1,5 +1,5 @@
 use super::Type;
-use crate::{subst::SubstType, TypeVar};
+use crate::{kinds::Kind, subst::SubstType, TypeVar};
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -8,6 +8,7 @@ where
     Ty: Type,
 {
     var: TypeVar,
+    kind: Kind,
     ty: Box<Ty>,
 }
 
@@ -25,6 +26,7 @@ where
         } else {
             Forall {
                 var: self.var,
+                kind: self.kind,
                 ty: Box::new(self.ty.subst_type(v, ty)),
             }
             .into()

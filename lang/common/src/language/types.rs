@@ -1,7 +1,7 @@
 use crate::{
     errors::ErrorKind,
     subst::SubstType,
-    types::{Bool, Fun, Nat, Type},
+    types::{Bool, Forall, ForallBounded, Fun, Nat, Type},
 };
 
 pub trait LanguageType
@@ -12,6 +12,20 @@ where
         Err(ErrorKind::TypeMismatch {
             found: self.to_string(),
             expected: "Function Type".to_owned(),
+        })
+    }
+
+    fn into_forall(self) -> Result<Forall<Self>, ErrorKind> {
+        Err(ErrorKind::TypeMismatch {
+            found: self.to_string(),
+            expected: "Universal Type".to_owned(),
+        })
+    }
+
+    fn into_forall_bounded(self) -> Result<ForallBounded<Self>, ErrorKind> {
+        Err(ErrorKind::TypeMismatch {
+            found: self.to_string(),
+            expected: "Universal Type".to_owned(),
         })
     }
 

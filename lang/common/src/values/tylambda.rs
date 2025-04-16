@@ -7,9 +7,9 @@ pub struct TyLambda<T>
 where
     T: LanguageTerm,
 {
-    var: TypeVar,
-    annot: Kind,
-    term: T,
+    pub var: TypeVar,
+    pub annot: Kind,
+    pub term: T,
 }
 
 impl<T> Value for TyLambda<T>

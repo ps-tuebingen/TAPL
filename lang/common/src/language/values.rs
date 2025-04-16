@@ -1,7 +1,7 @@
 use super::terms::LanguageTerm;
 use crate::{
     errors::ErrorKind,
-    values::{False, Lambda, Num, Raise, True, Value},
+    values::{False, Lambda, LambdaSub, Num, Raise, True, TyLambda, Value},
 };
 
 pub trait LanguageValue
@@ -14,6 +14,20 @@ where
         Err(ErrorKind::ValueMismatch {
             found: self.to_string(),
             expected: "Lambda Abstraction".to_owned(),
+        })
+    }
+
+    fn into_tylambda(self) -> Result<TyLambda<<Self as LanguageValue>::Term>, ErrorKind> {
+        Err(ErrorKind::ValueMismatch {
+            found: self.to_string(),
+            expected: "Type Abstraction".to_owned(),
+        })
+    }
+
+    fn into_lambdasub(self) -> Result<LambdaSub<<Self as LanguageValue>::Term>, ErrorKind> {
+        Err(ErrorKind::ValueMismatch {
+            found: self.to_string(),
+            expected: "Type Abstraction".to_owned(),
         })
     }
 
