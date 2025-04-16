@@ -1,52 +1,35 @@
-use crate::{
-    syntax::{Term, Type},
-    to_err,
-};
+use crate::{terms::Term, types::Type};
 use common::{
-    errors::{Error, ErrorKind, ErrorLocation},
-    Typecheck,
+    check::{to_check_err, CheckEnvironment, Typecheck},
+    errors::{Error, ErrorKind},
+    Var,
 };
 
-pub fn to_check_err(knd: ErrorKind) -> Error {
-    to_err(knd, ErrorLocation::Check)
-}
+#[derive(Default, Clone)]
+pub struct Env;
 
-impl Typecheck<'_> for Term {
+impl CheckEnvironment for Env {
     type Type = Type;
-    type Env = ();
-
-    fn check_start(&self) -> Result<Self::Type, Error> {
-        self.check(())
+    fn get_var(&self, v: &Var) -> Result<Self::Type, Error> {
+        Err(to_check_err(ErrorKind::FreeVariable(v.clone())))
     }
 
-    fn check(&self, _env: Self::Env) -> Result<Self::Type, Error> {
+    fn add_var(&mut self, _: Var, _: Type) {}
+}
+
+impl Typecheck for Term {
+    type Type = Type;
+    type Env = Env;
+
+    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
         match self {
-            Term::True => Ok(Type::Bool),
-            Term::False => Ok(Type::Bool),
-            Term::Zero => Ok(Type::Nat),
-            Term::Succ(t) => {
-                let ty = t.check(_env)?;
-                ty.check_equal(Type::Nat).map_err(to_check_err)?;
-                Ok(Type::Nat)
-            }
-            Term::Pred(t) => {
-                let ty = t.check(_env)?;
-                ty.check_equal(Type::Nat).map_err(to_check_err)?;
-                Ok(Type::Nat)
-            }
-            Term::IsZero(t) => {
-                let ty = t.check(_env)?;
-                ty.check_equal(Type::Nat).map_err(to_check_err)?;
-                Ok(Type::Bool)
-            }
-            Term::If { ifc, thent, elset } => {
-                let cond_ty = ifc.check(_env)?;
-                cond_ty.check_equal(Type::Bool).map_err(to_check_err)?;
-                let then_ty = thent.check(_env)?;
-                let else_ty = elset.check(_env)?;
-                then_ty.check_equal(else_ty).map_err(to_check_err)?;
-                Ok(then_ty)
-            }
+            Term::True(tru) => tru.check(env),
+            Term::False(fls) => fls.check(env),
+            Term::Num(num) => num.check(env),
+            Term::Succ(succ) => succ.check(env),
+            Term::Pred(pred) => pred.check(env),
+            Term::IsZero(isz) => isz.check(env),
+            Term::If(ift) => ift.check(env),
         }
     }
 }
