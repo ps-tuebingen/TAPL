@@ -15,6 +15,22 @@ where
     ty: <T as LanguageTerm>::Type,
 }
 
+impl<T> Ascribe<T>
+where
+    T: LanguageTerm,
+{
+    pub fn new<T1, Ty1>(t: T1, ty: Ty1) -> Ascribe<T>
+    where
+        T1: Into<T>,
+        Ty1: Into<<T as LanguageTerm>::Type>,
+    {
+        Ascribe {
+            term: Box::new(t.into()),
+            ty: ty.into(),
+        }
+    }
+}
+
 impl<T> Term for Ascribe<T> where T: LanguageTerm {}
 
 impl<T> SubstTerm<T> for Ascribe<T>

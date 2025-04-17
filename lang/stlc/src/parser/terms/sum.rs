@@ -1,12 +1,15 @@
 use super::pair_to_term;
 use crate::{
     parser::{get_n_inner, next_rule, types::pair_to_type, Rule},
-    syntax::{Left, Right},
+    terms::Term,
 };
-use common::errors::Error;
+use common::{
+    errors::Error,
+    terms::{Left, Right},
+};
 use pest::iterators::Pair;
 
-pub fn pair_to_left(p: Pair<'_, Rule>) -> Result<Left, Error> {
+pub fn pair_to_left(p: Pair<'_, Rule>) -> Result<Left<Term>, Error> {
     let mut inner = get_n_inner(p, vec!["Inl Argument", "Inl Type"])?;
 
     let arg_pair = inner.remove(0);
@@ -17,13 +20,10 @@ pub fn pair_to_left(p: Pair<'_, Rule>) -> Result<Left, Error> {
     let ty_rule = next_rule(ty_pair, Rule::r#type)?;
     let ty = pair_to_type(ty_rule)?;
 
-    Ok(Left {
-        left_term: Box::new(arg_term),
-        ty,
-    })
+    Ok(Left::new(arg_term, ty))
 }
 
-pub fn pair_to_right(p: Pair<'_, Rule>) -> Result<Right, Error> {
+pub fn pair_to_right(p: Pair<'_, Rule>) -> Result<Right<Term>, Error> {
     let mut inner = get_n_inner(p, vec!["Inr Argument", "Inr Type"])?;
 
     let arg_pair = inner.remove(0);
@@ -34,8 +34,5 @@ pub fn pair_to_right(p: Pair<'_, Rule>) -> Result<Right, Error> {
     let ty_rule = next_rule(ty_pair, Rule::r#type)?;
     let ty = pair_to_type(ty_rule)?;
 
-    Ok(Right {
-        right_term: Box::new(arg_term),
-        ty,
-    })
+    Ok(Right::new(arg_term, ty))
 }

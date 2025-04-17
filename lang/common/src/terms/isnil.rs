@@ -15,6 +15,22 @@ where
     ty: <T as LanguageTerm>::Type,
 }
 
+impl<T> IsNil<T>
+where
+    T: LanguageTerm,
+{
+    pub fn new<T1, Ty>(t: T1, ty: Ty) -> IsNil<T>
+    where
+        T1: Into<T>,
+        Ty: Into<<T as LanguageTerm>::Type>,
+    {
+        IsNil {
+            term: Box::new(t.into()),
+            ty: ty.into(),
+        }
+    }
+}
+
 impl<T> Term for IsNil<T> where T: LanguageTerm {}
 
 impl<T> SubstTerm<T> for IsNil<T>

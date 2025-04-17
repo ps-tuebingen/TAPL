@@ -15,6 +15,21 @@ where
     patterns: Vec<VariantPattern<T>>,
 }
 
+impl<T> VariantCase<T>
+where
+    T: LanguageTerm,
+{
+    pub fn new<T1>(bound: T1, pts: Vec<VariantPattern<T>>) -> VariantCase<T>
+    where
+        T1: Into<T>,
+    {
+        VariantCase {
+            bound_term: Box::new(bound.into()),
+            patterns: pts,
+        }
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct VariantPattern<T>
 where
@@ -23,6 +38,22 @@ where
     label: Label,
     bound_var: Var,
     rhs: Box<T>,
+}
+
+impl<T> VariantPattern<T>
+where
+    T: LanguageTerm,
+{
+    pub fn new<T1>(lb: &str, bound: &str, rhs: T1) -> VariantPattern<T>
+    where
+        T1: Into<T>,
+    {
+        VariantPattern {
+            label: lb.to_owned(),
+            bound_var: bound.to_owned(),
+            rhs: Box::new(rhs.into()),
+        }
+    }
 }
 
 impl<T> Term for VariantCase<T> where T: LanguageTerm {}

@@ -2,7 +2,7 @@ use common::{
     language::LanguageType,
     subst::SubstType,
     types::{Bool, Fun, List, Nat, Optional, Product, Record, Sum, Tuple, Unit, Variant},
-    TypeVar, Var,
+    TypeVar,
 };
 use std::fmt;
 

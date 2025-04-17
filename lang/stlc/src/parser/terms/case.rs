@@ -1,9 +1,12 @@
 use super::{pair_to_term, to_parse_err};
 use crate::{
     parser::{get_n_inner, next_rule, Rule},
-    syntax::{SomeCase, SumCase, Term, VariantCase, VariantPattern},
+    terms::Term,
 };
-use common::errors::{Error, ErrorKind};
+use common::{
+    errors::{Error, ErrorKind},
+    terms::{variantcase::VariantPattern, SomeCase, SumCase, VariantCase},
+};
 use pest::iterators::Pair;
 
 #[derive(Debug)]
@@ -179,44 +182,20 @@ fn patterns_to_term(mut pts: Vec<Pattern>, bound: Term) -> Result<Term, Error> {
         PatternBinding::Something { var } => {
             let nothing_pt = pts.remove(0);
             nothing_pt.bnd.into_nothing()?;
-            SomeCase {
-                bound_term: Box::new(bound),
-                some_var: var,
-                some_rhs: Box::new(pt_fst.rhs),
-                none_rhs: Box::new(nothing_pt.rhs),
-            }
-            .into()
+            SomeCase::new(bound, nothing_pt.rhs, &var, pt_fst.rhs).into()
         }
         PatternBinding::Nothing => {
             let some_pt = pts.remove(0);
             let some_var = some_pt.bnd.into_something()?;
-            SomeCase {
-                bound_term: Box::new(bound),
-                some_var,
-                some_rhs: Box::new(some_pt.rhs),
-                none_rhs: Box::new(pt_fst.rhs),
-            }
-            .into()
+            SomeCase::new(bound, pt_fst, &some_var, some_pt).into()
         }
         PatternBinding::Variant { label, var } => {
-            let mut cases = vec![VariantPattern {
-                label,
-                bound_var: var,
-                rhs: Box::new(pt_fst.rhs),
-            }];
+            let mut cases = vec![VariantPattern::new(&label, &var, pt_fst.rhs)];
             for pt in pts {
                 let (label, bound_var) = pt.bnd.into_variant()?;
-                cases.push(VariantPattern {
-                    label,
-                    bound_var,
-                    rhs: Box::new(pt.rhs),
-                })
+                cases.push(VariantPattern::new(&label, &bound_var, pt.rhs))
             }
-            return Ok(VariantCase {
-                bound_term: Box::new(bound),
-                cases,
-            }
-            .into());
+            return Ok(VariantCase::new(bound, cases).into());
         }
     };
 

@@ -17,6 +17,25 @@ where
     some_term: Box<T>,
 }
 
+impl<T> SomeCase<T>
+where
+    T: LanguageTerm,
+{
+    pub fn new<T1, T2, T3>(bound: T1, none: T2, v: &str, some: T2) -> SomeCase<T>
+    where
+        T1: Into<T>,
+        T2: Into<T>,
+        T3: Into<T>,
+    {
+        SomeCase {
+            bound_term: Box::new(bound.into()),
+            none_term: Box::new(none.into()),
+            some_var: v.to_owned(),
+            some_term: Box::new(some.into()),
+        }
+    }
+}
+
 impl<T> Term for SomeCase<T> where T: LanguageTerm {}
 
 impl<T> SubstTerm<T> for SomeCase<T>

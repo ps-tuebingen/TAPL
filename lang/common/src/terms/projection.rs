@@ -15,6 +15,21 @@ where
     index: usize,
 }
 
+impl<T> Projection<T>
+where
+    T: LanguageTerm,
+{
+    pub fn new<T1>(t: T1, ind: usize) -> Projection<T>
+    where
+        T1: Into<T>,
+    {
+        Projection {
+            term: Box::new(t.into()),
+            index: ind,
+        }
+    }
+}
+
 impl<T> Term for Projection<T> where T: LanguageTerm {}
 
 impl<T> SubstTerm<T> for Projection<T>

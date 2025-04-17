@@ -1,12 +1,12 @@
 use super::pair_to_term;
 use crate::{
     parser::{get_n_inner, next_rule, types::pair_to_type, Rule},
-    syntax::Lambda,
+    terms::Term,
 };
-use common::errors::Error;
+use common::{errors::Error, terms::Lambda};
 use pest::iterators::Pair;
 
-pub fn pair_to_lambda(p: Pair<'_, Rule>) -> Result<Lambda, Error> {
+pub fn pair_to_lambda(p: Pair<'_, Rule>) -> Result<Lambda<Term>, Error> {
     let mut inner = get_n_inner(p, vec!["Lambda Variable", "Lambda Annot", "Lambda Bodhy"])?;
 
     let var = inner.remove(0).as_str().trim();
@@ -19,9 +19,5 @@ pub fn pair_to_lambda(p: Pair<'_, Rule>) -> Result<Lambda, Error> {
     let term_rule = next_rule(paren_term_rule, Rule::paren_term)?;
     let term = pair_to_term(term_rule)?;
 
-    Ok(Lambda {
-        var: var.to_owned(),
-        annot: ty,
-        body: Box::new(term),
-    })
+    Ok(Lambda::new(&var, ty, term))
 }

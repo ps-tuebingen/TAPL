@@ -15,6 +15,22 @@ where
     ty: <T as LanguageTerm>::Type,
 }
 
+impl<T> Tail<T>
+where
+    T: LanguageTerm,
+{
+    pub fn new<T1, Ty>(t: T1, ty: Ty) -> Tail<T>
+    where
+        T1: Into<T>,
+        Ty: Into<<T as LanguageTerm>::Type>,
+    {
+        Tail {
+            term: Box::new(t.into()),
+            ty: ty.into(),
+        }
+    }
+}
+
 impl<T> Term for Tail<T> where T: LanguageTerm {}
 
 impl<T> SubstTerm<T> for Tail<T>

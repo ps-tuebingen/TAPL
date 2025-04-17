@@ -16,6 +16,22 @@ where
     in_term: Box<T>,
 }
 
+impl<T> Let<T>
+where
+    T: LanguageTerm,
+{
+    pub fn new<T1, T2>(v: &str, bound: T1, int: T2) -> Let<T>
+    where
+        T1: Into<T>,
+        T2: Into<T>,
+    {
+        Let {
+            var: v.to_owned(),
+            bound_term: Box::new(bound.into()),
+            in_term: Box::new(int.into()),
+        }
+    }
+}
 impl<T> Term for Let<T> where T: LanguageTerm {}
 
 impl<T> SubstTerm<T> for Let<T>

@@ -1,9 +1,8 @@
-use super::{terms::Term, types::Type, values::Value};
-use common::{errors::Error, eval::Eval, Var};
-use std::collections::HashMap;
+use super::{terms::Term, values::Value};
+use common::{errors::Error, eval::Eval};
 
 impl Eval for Term {
-    type Env = HashMap<Var, Type>;
+    type Env = ();
     type Value = Value;
 
     fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
