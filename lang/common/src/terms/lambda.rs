@@ -39,6 +39,7 @@ where
 }
 
 impl<T> Term for Lambda<T> where T: LanguageTerm {}
+
 impl<T> Typecheck for Lambda<T>
 where
     T: LanguageTerm,

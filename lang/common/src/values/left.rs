@@ -7,8 +7,24 @@ pub struct Left<T>
 where
     T: LanguageTerm,
 {
-    left_val: <T as LanguageTerm>::Value,
+    pub left_val: Box<<T as LanguageTerm>::Value>,
     ty: <T as LanguageTerm>::Type,
+}
+
+impl<T> Left<T>
+where
+    T: LanguageTerm,
+{
+    pub fn new<V, Ty>(val: V, ty: Ty) -> Left<T>
+    where
+        V: Into<<T as LanguageTerm>::Value>,
+        Ty: Into<<T as LanguageTerm>::Type>,
+    {
+        Left {
+            left_val: Box::new(val.into()),
+            ty: ty.into(),
+        }
+    }
 }
 
 impl<T> Value for Left<T>
@@ -23,7 +39,7 @@ where
     T: LanguageTerm,
 {
     fn from(lft: Left<T>) -> LeftT<T> {
-        LeftT::new(lft.left_val, lft.ty)
+        LeftT::new(*lft.left_val, lft.ty)
     }
 }
 

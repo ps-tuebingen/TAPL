@@ -1,6 +1,9 @@
 use super::Term;
 use crate::{
-    language::LanguageTerm,
+    check::{to_check_err, CheckEnvironment, Typecheck},
+    errors::{Error, ErrorKind},
+    eval::Eval,
+    language::{LanguageTerm, LanguageType, LanguageValue},
     subst::{SubstTerm, SubstType},
     TypeVar, Var,
 };
@@ -82,6 +85,48 @@ where
     }
 }
 
+impl<T> Typecheck for SomeCase<T>
+where
+    T: LanguageTerm,
+{
+    type Env = <T as Typecheck>::Env;
+    type Type = <T as Typecheck>::Type;
+
+    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
+        let bound_ty = self.bound_term.check(&mut env.clone())?;
+        let option = bound_ty.into_optional().map_err(to_check_err)?;
+        let mut some_env = env.clone();
+        some_env.add_var(self.some_var.clone(), *option.ty);
+        let some_ty = self.some_term.check(&mut some_env)?;
+        let none_ty = self.none_term.check(env)?;
+        some_ty.check_equal(&none_ty).map_err(to_check_err)?;
+        Ok(some_ty)
+    }
+}
+
+impl<T> Eval for SomeCase<T>
+where
+    T: LanguageTerm,
+{
+    type Env = <T as Eval>::Env;
+    type Value = <T as Eval>::Value;
+
+    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
+        let bound_val = self.bound_term.eval(env)?;
+        if let Ok(some_val) = bound_val.clone().into_something() {
+            self.some_term
+                .subst(&self.some_var, &((*some_val.val).into()))
+                .eval(env)
+        } else if let Ok(_) = bound_val.clone().into_nothing() {
+            self.none_term.eval(env)
+        } else {
+            Err(to_check_err(ErrorKind::ValueMismatch {
+                found: bound_val.to_string(),
+                expected: "Option Value".to_owned(),
+            }))
+        }
+    }
+}
 impl<T> fmt::Display for SomeCase<T>
 where
     T: LanguageTerm,

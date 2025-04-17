@@ -7,8 +7,24 @@ pub struct Product<Ty>
 where
     Ty: Type,
 {
-    fst: Box<Ty>,
-    snd: Box<Ty>,
+    pub fst: Box<Ty>,
+    pub snd: Box<Ty>,
+}
+
+impl<Ty> Product<Ty>
+where
+    Ty: Type,
+{
+    pub fn new<Ty1, Ty2>(fst: Ty1, snd: Ty2) -> Product<Ty>
+    where
+        Ty1: Into<Ty>,
+        Ty2: Into<Ty>,
+    {
+        Product {
+            fst: Box::new(fst.into()),
+            snd: Box::new(snd.into()),
+        }
+    }
 }
 
 impl<Ty> Type for Product<Ty> where Ty: Type {}

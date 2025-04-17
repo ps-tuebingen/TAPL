@@ -7,7 +7,21 @@ pub struct Optional<Ty>
 where
     Ty: Type,
 {
-    ty: Box<Ty>,
+    pub ty: Box<Ty>,
+}
+
+impl<Ty> Optional<Ty>
+where
+    Ty: Type,
+{
+    pub fn new<Ty1>(ty: Ty1) -> Optional<Ty>
+    where
+        Ty1: Into<Ty>,
+    {
+        Optional {
+            ty: Box::new(ty.into()),
+        }
+    }
 }
 
 impl<Ty> Type for Optional<Ty> where Ty: Type {}

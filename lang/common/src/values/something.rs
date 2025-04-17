@@ -7,7 +7,21 @@ pub struct Something<T>
 where
     T: LanguageTerm,
 {
-    val: Box<<T as LanguageTerm>::Value>,
+    pub val: Box<<T as LanguageTerm>::Value>,
+}
+
+impl<T> Something<T>
+where
+    T: LanguageTerm,
+{
+    pub fn new<V>(v: V) -> Something<T>
+    where
+        V: Into<<T as LanguageTerm>::Value>,
+    {
+        Something {
+            val: Box::new(v.into()),
+        }
+    }
 }
 
 impl<T> Value for Something<T>

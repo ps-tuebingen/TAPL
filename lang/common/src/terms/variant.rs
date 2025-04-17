@@ -1,7 +1,12 @@
 use super::Term;
 use crate::{
-    language::LanguageTerm,
+    check::{to_check_err, Typecheck},
+    errors::{Error, ErrorKind},
+    eval::Eval,
+    language::{LanguageTerm, LanguageType, LanguageValue},
     subst::{SubstTerm, SubstType},
+    types::Variant as VariantTy,
+    values::Variant as VariantVal,
     Label, TypeVar, Var,
 };
 use std::fmt;
@@ -64,6 +69,41 @@ where
             ty: self.ty.subst_type(v, ty),
         }
         .into()
+    }
+}
+
+impl<T> Typecheck for Variant<T>
+where
+    T: LanguageTerm,
+    VariantTy<<T as LanguageTerm>::Type>: Into<<T as LanguageTerm>::Type>,
+{
+    type Env = <T as Typecheck>::Env;
+    type Type = <T as Typecheck>::Type;
+
+    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
+        let term_ty = self.term.check(env)?;
+        let var_ty = self.ty.clone().into_variant().map_err(to_check_err)?;
+        let lb_ty = var_ty
+            .variants
+            .get(&self.label)
+            .ok_or(to_check_err(ErrorKind::UndefinedLabel(self.label.clone())))
+            .cloned()?;
+        lb_ty.check_equal(&term_ty).map_err(to_check_err)?;
+        Ok(self.ty.clone())
+    }
+}
+
+impl<T> Eval for Variant<T>
+where
+    T: LanguageTerm,
+    VariantVal<T>: Into<<T as LanguageTerm>::Value>,
+{
+    type Env = <T as Eval>::Env;
+    type Value = <T as Eval>::Value;
+
+    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
+        let term_val = self.term.eval(env)?;
+        Ok(VariantVal::<T>::new(&self.label, term_val, self.ty).into())
     }
 }
 

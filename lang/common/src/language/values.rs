@@ -1,7 +1,10 @@
 use super::terms::LanguageTerm;
 use crate::{
     errors::ErrorKind,
-    values::{False, Lambda, LambdaSub, Num, Raise, True, TyLambda, Value},
+    values::{
+        False, Lambda, LambdaSub, Left, Nothing, Num, Pair, Raise, Record, Right, Something, True,
+        Tuple, TyLambda, Value, Variant,
+    },
 };
 
 pub trait LanguageValue
@@ -28,6 +31,62 @@ where
         Err(ErrorKind::ValueMismatch {
             found: self.to_string(),
             expected: "Type Abstraction".to_owned(),
+        })
+    }
+
+    fn into_pair(self) -> Result<Pair<<Self as LanguageValue>::Term>, ErrorKind> {
+        Err(ErrorKind::ValueMismatch {
+            found: self.to_string(),
+            expected: "Pair".to_owned(),
+        })
+    }
+
+    fn into_record(self) -> Result<Record<<Self as LanguageValue>::Term>, ErrorKind> {
+        Err(ErrorKind::ValueMismatch {
+            found: self.to_string(),
+            expected: "Record".to_owned(),
+        })
+    }
+
+    fn into_tuple(self) -> Result<Tuple<<Self as LanguageValue>::Term>, ErrorKind> {
+        Err(ErrorKind::ValueMismatch {
+            found: self.to_string(),
+            expected: "Tuple".to_owned(),
+        })
+    }
+
+    fn into_left(self) -> Result<Left<<Self as LanguageValue>::Term>, ErrorKind> {
+        Err(ErrorKind::ValueMismatch {
+            found: self.to_string(),
+            expected: "Left".to_owned(),
+        })
+    }
+
+    fn into_right(self) -> Result<Right<<Self as LanguageValue>::Term>, ErrorKind> {
+        Err(ErrorKind::ValueMismatch {
+            found: self.to_string(),
+            expected: "Right".to_owned(),
+        })
+    }
+
+    fn into_variant(self) -> Result<Variant<<Self as LanguageValue>::Term>, ErrorKind> {
+        Err(ErrorKind::ValueMismatch {
+            found: self.to_string(),
+            expected: "Variant".to_owned(),
+        })
+    }
+
+    fn into_nothing(self) -> Result<Nothing<<Self as LanguageValue>::Term>, ErrorKind> {
+        Err(ErrorKind::ValueMismatch {
+            found: self.to_string(),
+            expected: "Nothing".to_owned(),
+        })
+    }
+
+    fn into_something(self) -> Result<Something<<Self as LanguageValue>::Term>, ErrorKind> {
+        Err(ErrorKind::ValueMismatch {
+            found: self.to_string(),
+            expected: "Something".to_owned(),
         })
     }
 

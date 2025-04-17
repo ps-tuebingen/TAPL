@@ -7,9 +7,26 @@ pub struct Variant<T>
 where
     T: LanguageTerm,
 {
-    label: Label,
-    val: Box<<T as LanguageTerm>::Value>,
+    pub label: Label,
+    pub val: Box<<T as LanguageTerm>::Value>,
     ty: <T as LanguageTerm>::Type,
+}
+
+impl<T> Variant<T>
+where
+    T: LanguageTerm,
+{
+    pub fn new<V, Ty>(lb: &str, val: V, ty: Ty) -> Variant<T>
+    where
+        V: Into<<T as LanguageTerm>::Value>,
+        Ty: Into<<T as LanguageTerm>::Type>,
+    {
+        Variant {
+            label: lb.to_owned(),
+            val: Box::new(val.into()),
+            ty: ty.into(),
+        }
+    }
 }
 
 impl<T> Value for Variant<T>

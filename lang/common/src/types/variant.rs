@@ -7,7 +7,30 @@ pub struct Variant<Ty>
 where
     Ty: Type,
 {
-    variants: HashMap<Label, Ty>,
+    pub variants: HashMap<Label, Ty>,
+}
+
+impl<Ty> Variant<Ty>
+where
+    Ty: Type,
+{
+    pub fn new<Ty1>(vars: HashMap<Label, Ty1>) -> Variant<Ty>
+    where
+        Ty1: Into<Ty>,
+    {
+        Variant {
+            variants: vars.into_iter().map(|(lb, ty)| (lb, ty.into())).collect(),
+        }
+    }
+
+    pub fn new_single<Ty1>(lb: &str, ty: Ty1) -> Variant<Ty>
+    where
+        Ty1: Into<Ty>,
+    {
+        Variant {
+            variants: HashMap::from([(lb.to_owned(), ty.into())]),
+        }
+    }
 }
 
 impl<Ty> Type for Variant<Ty> where Ty: Type {}

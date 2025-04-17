@@ -1,7 +1,11 @@
 use super::Term;
 use crate::{
-    language::LanguageTerm,
+    check::{CheckEnvironment, Typecheck},
+    errors::Error,
+    eval::Eval,
+    language::{LanguageTerm, LanguageValue},
     subst::{SubstTerm, SubstType},
+    values::Value as ValueTrait,
     TypeVar, Var,
 };
 use std::fmt;
@@ -67,6 +71,32 @@ where
             in_term: Box::new(self.in_term.subst_type(v, ty)),
         }
         .into()
+    }
+}
+
+impl<T> Typecheck for Let<T>
+where
+    T: LanguageTerm,
+{
+    type Env = <T as Typecheck>::Env;
+    type Type = <T as Typecheck>::Type;
+    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
+        let bound_ty = self.bound_term.check(&mut env.clone())?;
+        env.add_var(self.var.clone(), bound_ty);
+        self.in_term.check(env)
+    }
+}
+
+impl<T> Eval for Let<T>
+where
+    T: LanguageTerm,
+{
+    type Env = <T as Eval>::Env;
+    type Value = <T as Eval>::Value;
+
+    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
+        let bound_val = self.bound_term.eval(env)?;
+        self.in_term.subst(&self.var, &bound_val.into()).eval(env)
     }
 }
 

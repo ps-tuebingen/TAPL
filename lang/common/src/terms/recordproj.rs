@@ -1,6 +1,9 @@
 use super::Term;
 use crate::{
-    language::LanguageTerm,
+    check::{to_check_err, Typecheck},
+    errors::{Error, ErrorKind},
+    eval::{to_eval_err, Eval},
+    language::{LanguageTerm, LanguageType, LanguageValue},
     subst::{SubstTerm, SubstType},
     Label, TypeVar, Var,
 };
@@ -59,6 +62,42 @@ where
             label: self.label,
         }
         .into()
+    }
+}
+
+impl<T> Typecheck for RecordProj<T>
+where
+    T: LanguageTerm,
+{
+    type Env = <T as Typecheck>::Env;
+    type Type = <T as Typecheck>::Type;
+
+    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
+        let term_ty = self.record.check(env)?;
+        let rec_ty = term_ty.into_record().map_err(to_check_err)?;
+        rec_ty
+            .records
+            .get(&self.label)
+            .ok_or(to_check_err(ErrorKind::UndefinedLabel(self.label.clone())))
+            .cloned()
+    }
+}
+
+impl<T> Eval for RecordProj<T>
+where
+    T: LanguageTerm,
+{
+    type Env = <T as Eval>::Env;
+    type Value = <T as Eval>::Value;
+
+    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
+        let term_val = self.record.eval(env)?;
+        let rec_val = term_val.into_record().map_err(to_eval_err)?;
+        rec_val
+            .records
+            .get(&self.label)
+            .ok_or(to_eval_err(ErrorKind::UndefinedLabel(self.label.clone())))
+            .cloned()
     }
 }
 

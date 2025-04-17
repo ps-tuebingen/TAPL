@@ -8,7 +8,21 @@ pub struct Record<T>
 where
     T: LanguageTerm,
 {
-    records: HashMap<Label, <T as LanguageTerm>::Value>,
+    pub records: HashMap<Label, <T as LanguageTerm>::Value>,
+}
+
+impl<T> Record<T>
+where
+    T: LanguageTerm,
+{
+    pub fn new<V1>(recs: HashMap<Label, V1>) -> Record<T>
+    where
+        V1: Into<<T as LanguageTerm>::Value>,
+    {
+        Record {
+            records: recs.into_iter().map(|(lb, t)| (lb, t.into())).collect(),
+        }
+    }
 }
 
 impl<T> Value for Record<T>

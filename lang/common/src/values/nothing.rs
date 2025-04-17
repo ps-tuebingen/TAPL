@@ -10,6 +10,18 @@ where
     ty: <T as LanguageTerm>::Type,
 }
 
+impl<T> Nothing<T>
+where
+    T: LanguageTerm,
+{
+    pub fn new<Ty>(ty: Ty) -> Nothing<T>
+    where
+        Ty: Into<<T as LanguageTerm>::Type>,
+    {
+        Nothing { ty: ty.into() }
+    }
+}
+
 impl<T> Value for Nothing<T>
 where
     T: LanguageTerm,

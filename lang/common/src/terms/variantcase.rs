@@ -1,6 +1,9 @@
 use super::Term;
 use crate::{
-    language::LanguageTerm,
+    check::{to_check_err, CheckEnvironment, Typecheck},
+    errors::{Error, ErrorKind},
+    eval::{to_eval_err, Eval},
+    language::{LanguageTerm, LanguageType, LanguageValue},
     subst::{SubstTerm, SubstType},
     Label, TypeVar, Var,
 };
@@ -145,6 +148,70 @@ where
                 .collect::<Vec<String>>()
                 .join("| ")
         )
+    }
+}
+
+impl<T> Typecheck for VariantCase<T>
+where
+    T: LanguageTerm,
+{
+    type Env = <T as Typecheck>::Env;
+    type Type = <T as Typecheck>::Type;
+
+    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
+        let bound_ty = self.bound_term.check(&mut env.clone())?;
+        let bound_var = bound_ty.into_variant().map_err(to_check_err)?;
+        let mut rhs_tys = vec![];
+        for pt in self.patterns.iter() {
+            let var_ty = bound_var
+                .variants
+                .get(&pt.label)
+                .ok_or(to_check_err(ErrorKind::UndefinedLabel(pt.label.clone())))
+                .cloned()?;
+            let mut rhs_env = env.clone();
+            rhs_env.add_var(pt.bound_var.clone(), var_ty);
+            let rhs_ty = pt.rhs.check(&mut env.clone())?;
+            rhs_tys.push(rhs_ty)
+        }
+
+        if rhs_tys.is_empty() {
+            return Err(to_check_err(ErrorKind::Arity {
+                found: 0,
+                expected: bound_var.variants.len(),
+            }));
+        }
+
+        let rhs_fst = rhs_tys.remove(0);
+        if let Some(ty) = rhs_tys.iter().find(|ty| rhs_fst.check_equal(ty).is_err()) {
+            return Err(to_check_err(ErrorKind::TypeMismatch {
+                found: ty.to_string(),
+                expected: rhs_fst.to_string(),
+            }));
+        }
+
+        Ok(rhs_fst)
+    }
+}
+
+impl<T> Eval for VariantCase<T>
+where
+    T: LanguageTerm,
+{
+    type Env = <T as Eval>::Env;
+    type Value = <T as Eval>::Value;
+
+    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
+        let bound_val = self.bound_term.eval(env)?;
+        let var_val = bound_val.into_variant().map_err(to_eval_err)?;
+        let matching = self
+            .patterns
+            .into_iter()
+            .find(|pt| *pt.label == var_val.label)
+            .ok_or(to_eval_err(ErrorKind::UndefinedLabel(var_val.label)))?;
+        matching
+            .rhs
+            .subst(&matching.bound_var, &((*var_val.val).into()))
+            .eval(env)
     }
 }
 

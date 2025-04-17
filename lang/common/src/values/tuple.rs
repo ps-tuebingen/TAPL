@@ -7,7 +7,7 @@ pub struct Tuple<T>
 where
     T: LanguageTerm,
 {
-    vals: Vec<<T as LanguageTerm>::Value>,
+    pub vals: Vec<<T as LanguageTerm>::Value>,
 }
 
 impl<T> Value for Tuple<T>

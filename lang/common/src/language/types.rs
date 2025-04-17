@@ -1,7 +1,9 @@
 use crate::{
     errors::ErrorKind,
     subst::SubstType,
-    types::{Bool, Forall, ForallBounded, Fun, Nat, Type},
+    types::{
+        Bool, Forall, ForallBounded, Fun, Nat, Optional, Product, Record, Sum, Tuple, Type, Variant,
+    },
 };
 
 pub trait LanguageType
@@ -26,6 +28,48 @@ where
         Err(ErrorKind::TypeMismatch {
             found: self.to_string(),
             expected: "Universal Type".to_owned(),
+        })
+    }
+
+    fn into_product(self) -> Result<Product<Self>, ErrorKind> {
+        Err(ErrorKind::TypeMismatch {
+            found: self.to_string(),
+            expected: "Product Type".to_owned(),
+        })
+    }
+
+    fn into_tuple(self) -> Result<Tuple<Self>, ErrorKind> {
+        Err(ErrorKind::TypeMismatch {
+            found: self.to_string(),
+            expected: "Tuple".to_owned(),
+        })
+    }
+
+    fn into_record(self) -> Result<Record<Self>, ErrorKind> {
+        Err(ErrorKind::TypeMismatch {
+            found: self.to_string(),
+            expected: "Record".to_owned(),
+        })
+    }
+
+    fn into_variant(self) -> Result<Variant<Self>, ErrorKind> {
+        Err(ErrorKind::TypeMismatch {
+            found: self.to_string(),
+            expected: "Variant".to_owned(),
+        })
+    }
+
+    fn into_sum(self) -> Result<Sum<Self>, ErrorKind> {
+        Err(ErrorKind::TypeMismatch {
+            found: self.to_string(),
+            expected: "Sum".to_owned(),
+        })
+    }
+
+    fn into_optional(self) -> Result<Optional<Self>, ErrorKind> {
+        Err(ErrorKind::TypeMismatch {
+            found: self.to_string(),
+            expected: "Option".to_owned(),
         })
     }
 

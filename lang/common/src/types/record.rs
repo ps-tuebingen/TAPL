@@ -8,7 +8,7 @@ pub struct Record<Ty>
 where
     Ty: Type,
 {
-    records: HashMap<Label, Ty>,
+    pub records: HashMap<Label, Ty>,
 }
 
 impl<Ty> Record<Ty>

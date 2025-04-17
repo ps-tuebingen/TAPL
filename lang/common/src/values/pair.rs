@@ -7,8 +7,24 @@ pub struct Pair<T>
 where
     T: LanguageTerm,
 {
-    fst: Box<<T as LanguageTerm>::Value>,
-    snd: Box<<T as LanguageTerm>::Value>,
+    pub fst: Box<<T as LanguageTerm>::Value>,
+    pub snd: Box<<T as LanguageTerm>::Value>,
+}
+
+impl<T> Pair<T>
+where
+    T: LanguageTerm,
+{
+    pub fn new<V1, V2>(fst: V1, snd: V2) -> Pair<T>
+    where
+        V1: Into<<T as LanguageTerm>::Value>,
+        V2: Into<<T as LanguageTerm>::Value>,
+    {
+        Pair {
+            fst: Box::new(fst.into()),
+            snd: Box::new(snd.into()),
+        }
+    }
 }
 
 impl<T> Value for Pair<T>

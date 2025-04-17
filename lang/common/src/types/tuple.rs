@@ -7,7 +7,21 @@ pub struct Tuple<Ty>
 where
     Ty: Type,
 {
-    tys: Vec<Ty>,
+    pub tys: Vec<Ty>,
+}
+
+impl<Ty> Tuple<Ty>
+where
+    Ty: Type,
+{
+    pub fn new<Ty1>(tys: Vec<Ty>) -> Tuple<Ty>
+    where
+        Ty1: Into<Ty>,
+    {
+        Tuple {
+            tys: tys.into_iter().map(|ty| ty.into()).collect(),
+        }
+    }
 }
 
 impl<Ty> Type for Tuple<Ty> where Ty: Type {}

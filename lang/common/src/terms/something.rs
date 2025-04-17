@@ -1,7 +1,12 @@
 use super::Term;
 use crate::{
+    check::Typecheck,
+    errors::Error,
+    eval::Eval,
     language::LanguageTerm,
     subst::{SubstTerm, SubstType},
+    types::Optional,
+    values::Something as SomethingVal,
     TypeVar, Var,
 };
 use std::fmt;
@@ -55,6 +60,34 @@ where
             term: Box::new(self.term.subst_type(v, ty)),
         }
         .into()
+    }
+}
+
+impl<T> Typecheck for Something<T>
+where
+    T: LanguageTerm,
+    Optional<<T as LanguageTerm>::Type>: Into<<T as LanguageTerm>::Type>,
+{
+    type Env = <T as Typecheck>::Env;
+    type Type = <T as Typecheck>::Type;
+
+    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
+        let term_ty = self.term.check(env)?;
+        Ok(Optional::new(term_ty.clone()).into())
+    }
+}
+
+impl<T> Eval for Something<T>
+where
+    T: LanguageTerm,
+    SomethingVal<T>: Into<<T as LanguageTerm>::Value>,
+{
+    type Env = <T as Eval>::Env;
+    type Value = <T as Eval>::Value;
+
+    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
+        let term_val = self.term.eval(env)?;
+        Ok(SomethingVal::<T>::new(term_val).into())
     }
 }
 

@@ -1,6 +1,9 @@
 use super::Term;
 use crate::{
-    language::LanguageTerm,
+    check::{to_check_err, Typecheck},
+    errors::Error,
+    eval::Eval,
+    language::{LanguageTerm, LanguageType},
     subst::{SubstTerm, SubstType},
     TypeVar, Var,
 };
@@ -60,6 +63,30 @@ where
             ty: self.ty.subst_type(v, ty),
         }
         .into()
+    }
+}
+
+impl<T> Eval for Ascribe<T>
+where
+    T: LanguageTerm,
+{
+    type Env = <T as Eval>::Env;
+    type Value = <T as Eval>::Value;
+    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
+        self.term.eval(env)
+    }
+}
+
+impl<T> Typecheck for Ascribe<T>
+where
+    T: LanguageTerm,
+{
+    type Type = <T as Typecheck>::Type;
+    type Env = <T as Typecheck>::Env;
+    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
+        let t_ty = self.term.check(env)?;
+        self.ty.check_equal(&t_ty).map_err(to_check_err)?;
+        Ok(self.ty.clone())
     }
 }
 

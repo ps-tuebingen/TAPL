@@ -7,8 +7,24 @@ pub struct Right<T>
 where
     T: LanguageTerm,
 {
-    right_val: Box<<T as LanguageTerm>::Value>,
+    pub right_val: Box<<T as LanguageTerm>::Value>,
     ty: <T as LanguageTerm>::Type,
+}
+
+impl<T> Right<T>
+where
+    T: LanguageTerm,
+{
+    pub fn new<V, Ty>(val: V, ty: Ty) -> Right<T>
+    where
+        V: Into<<T as LanguageTerm>::Value>,
+        Ty: Into<<T as LanguageTerm>::Type>,
+    {
+        Right {
+            right_val: Box::new(val.into()),
+            ty: ty.into(),
+        }
+    }
 }
 
 impl<T> Value for Right<T>

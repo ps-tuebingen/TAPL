@@ -1,7 +1,11 @@
 use super::Term;
 use crate::{
+    check::Typecheck,
+    errors::Error,
+    eval::Eval,
     language::LanguageTerm,
     subst::{SubstTerm, SubstType},
+    types::Tuple as TupleTy,
     TypeVar, Var,
 };
 use std::fmt;
@@ -59,6 +63,24 @@ where
                 .collect(),
         }
         .into()
+    }
+}
+
+impl<T> Typecheck for Tuple<T>
+where
+    T: LanguageTerm,
+    TupleTy<<T as LanguageTerm>::Type>: Into<<T as LanguageTerm>::Type>,
+{
+    type Env = <T as Typecheck>::Env;
+    type Type = <T as Typecheck>::Type;
+
+    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
+        let mut tys: Vec<Self::Type> = vec![];
+        for t in self.terms.iter() {
+            let ty = t.check(&mut env.clone())?;
+            tys.push(ty);
+        }
+        Ok(TupleTy::new::<Self::Type>(tys).into())
     }
 }
 

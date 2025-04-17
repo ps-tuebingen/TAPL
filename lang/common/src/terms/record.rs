@@ -1,7 +1,12 @@
 use super::Term;
 use crate::{
+    check::Typecheck,
+    errors::Error,
+    eval::Eval,
     language::LanguageTerm,
     subst::{SubstTerm, SubstType},
+    types::Record as RecordTy,
+    values::Record as RecordVal,
     Label, TypeVar, Var,
 };
 use std::{collections::HashMap, fmt};
@@ -63,6 +68,42 @@ where
                 .collect(),
         }
         .into()
+    }
+}
+
+impl<T> Typecheck for Record<T>
+where
+    T: LanguageTerm,
+    RecordTy<<T as LanguageTerm>::Type>: Into<<T as LanguageTerm>::Type>,
+{
+    type Env = <T as Typecheck>::Env;
+    type Type = <T as Typecheck>::Type;
+
+    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
+        let mut recs = HashMap::new();
+        for (lb, t) in self.records.iter() {
+            let ty = t.check(&mut env.clone())?;
+            recs.insert(lb.clone(), ty);
+        }
+        Ok(RecordTy::new(recs).into())
+    }
+}
+
+impl<T> Eval for Record<T>
+where
+    T: LanguageTerm,
+    RecordVal<T>: Into<<T as LanguageTerm>::Value>,
+{
+    type Env = <T as Eval>::Env;
+    type Value = <T as Eval>::Value;
+
+    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
+        let mut recs: HashMap<Label, Self::Value> = HashMap::new();
+        for (lb, t) in self.records.into_iter() {
+            let val = t.eval(env)?;
+            recs.insert(lb, val);
+        }
+        Ok(RecordVal::<T>::new::<Self::Value>(recs).into())
     }
 }
 
