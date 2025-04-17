@@ -24,7 +24,7 @@ impl<T> SomeCase<T>
 where
     T: LanguageTerm,
 {
-    pub fn new<T1, T2, T3>(bound: T1, none: T2, v: &str, some: T2) -> SomeCase<T>
+    pub fn new<T1, T2, T3>(bound: T1, none: T2, v: &str, some: T3) -> SomeCase<T>
     where
         T1: Into<T>,
         T2: Into<T>,

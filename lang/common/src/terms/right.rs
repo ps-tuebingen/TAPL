@@ -2,7 +2,7 @@ use super::Term;
 use crate::{
     check::{to_check_err, Typecheck},
     errors::Error,
-    eval::{to_eval_err, Eval},
+    eval::Eval,
     language::{LanguageTerm, LanguageType},
     subst::{SubstTerm, SubstType},
     values::Right as RightVal,

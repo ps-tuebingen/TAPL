@@ -1,7 +1,12 @@
 use super::Term;
 use crate::{
+    check::Typecheck,
+    errors::Error,
+    eval::Eval,
     language::LanguageTerm,
     subst::{SubstTerm, SubstType},
+    types::List,
+    values::Nil as NilVal,
     TypeVar, Var,
 };
 use std::fmt;
@@ -50,6 +55,32 @@ where
             ty: self.ty.subst_type(v, ty),
         }
         .into()
+    }
+}
+
+impl<T> Typecheck for Nil<T>
+where
+    T: LanguageTerm,
+    List<<T as LanguageTerm>::Type>: Into<<T as LanguageTerm>::Type>,
+{
+    type Env = <T as Typecheck>::Env;
+    type Type = <T as Typecheck>::Type;
+
+    fn check(&self, _: &mut Self::Env) -> Result<Self::Type, Error> {
+        Ok(List::new(self.ty.clone()).into())
+    }
+}
+
+impl<T> Eval for Nil<T>
+where
+    T: LanguageTerm,
+    NilVal<T>: Into<<T as LanguageTerm>::Value>,
+{
+    type Env = <T as Eval>::Env;
+    type Value = <T as Eval>::Value;
+
+    fn eval(self, _: &mut Self::Env) -> Result<Self::Value, Error> {
+        Ok(NilVal::<T>::new(self.ty).into())
     }
 }
 

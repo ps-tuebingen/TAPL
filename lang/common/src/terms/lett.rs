@@ -3,9 +3,8 @@ use crate::{
     check::{CheckEnvironment, Typecheck},
     errors::Error,
     eval::Eval,
-    language::{LanguageTerm, LanguageValue},
+    language::LanguageTerm,
     subst::{SubstTerm, SubstType},
-    values::Value as ValueTrait,
     TypeVar, Var,
 };
 use std::fmt;

@@ -1,6 +1,9 @@
 use super::Term;
 use crate::{
-    language::LanguageTerm,
+    check::{to_check_err, Typecheck},
+    errors::Error,
+    eval::{to_eval_err, Eval},
+    language::{LanguageTerm, LanguageType, LanguageValue},
     subst::{SubstTerm, SubstType},
     TypeVar, Var,
 };
@@ -60,6 +63,34 @@ where
             ty: self.ty.subst_type(v, ty),
         }
         .into()
+    }
+}
+
+impl<T> Typecheck for Tail<T>
+where
+    T: LanguageTerm,
+{
+    type Env = <T as Typecheck>::Env;
+    type Type = <T as Typecheck>::Type;
+
+    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
+        let term_ty = self.term.check(env)?;
+        let list_ty = term_ty.into_list().map_err(to_check_err)?;
+        Ok(*list_ty.ty)
+    }
+}
+
+impl<T> Eval for Tail<T>
+where
+    T: LanguageTerm,
+{
+    type Env = <T as Eval>::Env;
+    type Value = <T as Eval>::Value;
+
+    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
+        let term_val = self.term.eval(env)?;
+        let cons_val = term_val.into_cons().map_err(to_eval_err)?;
+        Ok(*cons_val.head)
     }
 }
 

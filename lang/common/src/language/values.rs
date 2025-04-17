@@ -2,8 +2,8 @@ use super::terms::LanguageTerm;
 use crate::{
     errors::ErrorKind,
     values::{
-        False, Lambda, LambdaSub, Left, Nothing, Num, Pair, Raise, Record, Right, Something, True,
-        Tuple, TyLambda, Value, Variant,
+        Cons, False, Lambda, LambdaSub, Left, Nil, Nothing, Num, Pair, Raise, Record, Right,
+        Something, True, Tuple, TyLambda, Value, Variant,
     },
 };
 
@@ -87,6 +87,20 @@ where
         Err(ErrorKind::ValueMismatch {
             found: self.to_string(),
             expected: "Something".to_owned(),
+        })
+    }
+
+    fn into_nil(self) -> Result<Nil<<Self as LanguageValue>::Term>, ErrorKind> {
+        Err(ErrorKind::ValueMismatch {
+            found: self.to_string(),
+            expected: "Nil".to_owned(),
+        })
+    }
+
+    fn into_cons(self) -> Result<Cons<<Self as LanguageValue>::Term>, ErrorKind> {
+        Err(ErrorKind::ValueMismatch {
+            found: self.to_string(),
+            expected: "Cons".to_owned(),
         })
     }
 

@@ -3,7 +3,7 @@ use crate::{
     check::{to_check_err, Typecheck},
     errors::{Error, ErrorKind},
     eval::Eval,
-    language::{LanguageTerm, LanguageType, LanguageValue},
+    language::{LanguageTerm, LanguageType},
     subst::{SubstTerm, SubstType},
     types::Variant as VariantTy,
     values::Variant as VariantVal,

@@ -10,6 +10,20 @@ where
     pub vals: Vec<<T as LanguageTerm>::Value>,
 }
 
+impl<T> Tuple<T>
+where
+    T: LanguageTerm,
+{
+    pub fn new<V>(vals: Vec<V>) -> Tuple<T>
+    where
+        V: Into<<T as LanguageTerm>::Value>,
+    {
+        Tuple {
+            vals: vals.into_iter().map(|v| v.into()).collect(),
+        }
+    }
+}
+
 impl<T> Value for Tuple<T>
 where
     T: LanguageTerm,

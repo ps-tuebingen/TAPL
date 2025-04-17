@@ -1,7 +1,12 @@
 use super::Term;
 use crate::{
-    language::LanguageTerm,
+    check::{to_check_err, Typecheck},
+    errors::{Error, ErrorKind},
+    eval::{to_eval_err, Eval},
+    language::{LanguageTerm, LanguageType, LanguageValue},
     subst::{SubstTerm, SubstType},
+    types::{Bool, List},
+    values::{False, True},
     TypeVar, Var,
 };
 use std::fmt;
@@ -60,6 +65,46 @@ where
             ty: self.ty.subst_type(v, ty),
         }
         .into()
+    }
+}
+
+impl<T> Typecheck for IsNil<T>
+where
+    T: LanguageTerm,
+    List<<T as LanguageTerm>::Type>: Into<<T as LanguageTerm>::Type>,
+    Bool: Into<<T as LanguageTerm>::Type>,
+{
+    type Env = <T as Typecheck>::Env;
+    type Type = <T as Typecheck>::Type;
+
+    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
+        let term_ty = self.term.check(env)?;
+        term_ty.into_list().map_err(to_check_err)?;
+        Ok(Bool.into())
+    }
+}
+
+impl<T> Eval for IsNil<T>
+where
+    T: LanguageTerm,
+    True<T>: Into<<T as LanguageTerm>::Value>,
+    False<T>: Into<<T as LanguageTerm>::Value>,
+{
+    type Env = <T as Eval>::Env;
+    type Value = <T as Eval>::Value;
+
+    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
+        let term_val = self.term.eval(env)?;
+        if let Ok(_) = term_val.clone().into_nil() {
+            Ok(True::new().into())
+        } else if let Ok(_) = term_val.clone().into_cons() {
+            Ok(False::new().into())
+        } else {
+            Err(to_eval_err(ErrorKind::ValueMismatch {
+                found: term_val.to_string(),
+                expected: "List Value".to_owned(),
+            }))
+        }
     }
 }
 

@@ -1,6 +1,9 @@
 use super::{get_n_inner, next_rule, to_parse_err, Rule};
 use crate::types::Type;
-use common::errors::{Error, ErrorKind};
+use common::{
+    errors::{Error, ErrorKind},
+    types::{Bool, Fun, Nat, Product, Record, Sum, Tuple, Unit, Variant},
+};
 use pest::iterators::Pair;
 use std::collections::HashMap;
 
@@ -31,7 +34,7 @@ fn pair_to_fun_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
     let to_rule = next_rule(to_pair, Rule::r#type)?;
     let to_ty = pair_to_type(to_rule)?;
 
-    Ok(Type::Fun(Box::new(from_ty), Box::new(to_ty)))
+    Ok(Fun::new(from_ty, to_ty).into())
 }
 
 fn pair_to_prod_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
@@ -44,7 +47,7 @@ fn pair_to_prod_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
     let snd_rule = next_rule(snd_pair, Rule::r#type)?;
     let snd_ty = pair_to_type(snd_rule)?;
 
-    Ok(Type::Prod(Box::new(fst_ty), Box::new(snd_ty)))
+    Ok(Product::new(fst_ty, snd_ty).into())
 }
 
 fn pair_to_rec_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
@@ -59,7 +62,7 @@ fn pair_to_rec_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
         let next_ty = pair_to_type(next_rule)?;
         recs.insert(next_var, next_ty);
     }
-    Ok(Type::Record(recs))
+    Ok(Record::new(recs).into())
 }
 
 fn pair_to_sum_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
@@ -73,7 +76,7 @@ fn pair_to_sum_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
     let snd_rule = next_rule(snd_pair, Rule::r#type)?;
     let snd_ty = pair_to_type(snd_rule)?;
 
-    Ok(Type::Sum(Box::new(fst_ty), Box::new(snd_ty)))
+    Ok(Sum::new(fst_ty, snd_ty).into())
 }
 
 fn pair_to_variant_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
@@ -88,7 +91,7 @@ fn pair_to_variant_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
         let n_ty = pair_to_type(n_rule)?;
         variants.insert(label, n_ty);
     }
-    Ok(Type::Variant(variants))
+    Ok(Variant::new(variants).into())
 }
 
 fn pair_to_tuple_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
@@ -98,14 +101,14 @@ fn pair_to_tuple_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
         let inner_ty = pair_to_type(inner_rule)?;
         tys.push(inner_ty)
     }
-    Ok(Type::Tup(tys))
+    Ok(Tuple::new(tys).into())
 }
 
 fn str_to_ty(s: &str) -> Result<Type, Error> {
     match s.to_lowercase().trim() {
-        "bool" => Ok(Type::Bool),
-        "nat" => Ok(Type::Nat),
-        "unit" => Ok(Type::Unit),
+        "bool" => Ok(Bool.into()),
+        "nat" => Ok(Nat.into()),
+        "unit" => Ok(Unit.into()),
         _ => Err(to_parse_err(ErrorKind::UnknownKeyword(s.to_owned()))),
     }
 }

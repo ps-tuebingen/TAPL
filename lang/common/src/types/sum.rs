@@ -11,6 +11,22 @@ where
     pub right: Box<Ty>,
 }
 
+impl<Ty> Sum<Ty>
+where
+    Ty: Type,
+{
+    pub fn new<Ty1, Ty2>(l: Ty1, r: Ty2) -> Sum<Ty>
+    where
+        Ty1: Into<Ty>,
+        Ty2: Into<Ty>,
+    {
+        Sum {
+            left: Box::new(l.into()),
+            right: Box::new(r.into()),
+        }
+    }
+}
+
 impl<Ty> Type for Sum<Ty> where Ty: Type {}
 
 impl<Ty> SubstType<Ty> for Sum<Ty>

@@ -2,7 +2,8 @@ use crate::{
     errors::ErrorKind,
     subst::SubstType,
     types::{
-        Bool, Forall, ForallBounded, Fun, Nat, Optional, Product, Record, Sum, Tuple, Type, Variant,
+        Bool, Forall, ForallBounded, Fun, List, Nat, Optional, Product, Record, Sum, Tuple, Type,
+        Variant,
     },
 };
 
@@ -70,6 +71,13 @@ where
         Err(ErrorKind::TypeMismatch {
             found: self.to_string(),
             expected: "Option".to_owned(),
+        })
+    }
+
+    fn into_list(self) -> Result<List<Self>, ErrorKind> {
+        Err(ErrorKind::TypeMismatch {
+            found: self.to_string(),
+            expected: "List".to_owned(),
         })
     }
 

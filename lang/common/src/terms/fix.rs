@@ -1,6 +1,9 @@
 use super::Term;
 use crate::{
-    language::LanguageTerm,
+    check::{to_check_err, Typecheck},
+    errors::Error,
+    eval::{to_eval_err, Eval},
+    language::{LanguageTerm, LanguageType, LanguageValue},
     subst::{SubstTerm, SubstType},
     TypeVar, Var,
 };
@@ -55,6 +58,36 @@ where
             term: Box::new(self.term.subst_type(v, ty)),
         }
         .into()
+    }
+}
+
+impl<T> Typecheck for Fix<T>
+where
+    T: LanguageTerm,
+{
+    type Env = <T as Typecheck>::Env;
+    type Type = <T as Typecheck>::Type;
+
+    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
+        let term_ty = self.term.check(env)?;
+        let fun_ty = term_ty.into_fun().map_err(to_check_err)?;
+        fun_ty.from.check_equal(&fun_ty.to).map_err(to_check_err)?;
+        Ok(*fun_ty.from)
+    }
+}
+
+impl<T> Eval for Fix<T>
+where
+    T: LanguageTerm,
+    Self: Into<T>,
+{
+    type Env = <T as Eval>::Env;
+    type Value = <T as Eval>::Value;
+
+    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
+        let term_val = self.term.clone().eval(env)?;
+        let lam_val = term_val.into_lambda().map_err(to_eval_err)?;
+        lam_val.body.subst(&lam_val.var, &self.into()).eval(env)
     }
 }
 

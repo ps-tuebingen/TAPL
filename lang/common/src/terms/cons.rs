@@ -1,7 +1,12 @@
 use super::Term;
 use crate::{
-    language::LanguageTerm,
+    check::{to_check_err, Typecheck},
+    errors::Error,
+    eval::Eval,
+    language::{LanguageTerm, LanguageType},
     subst::{SubstTerm, SubstType},
+    types::List,
+    values::Cons as ConsVal,
     TypeVar, Var,
 };
 use std::fmt;
@@ -65,6 +70,39 @@ where
             ty: self.ty.subst_type(v, ty),
         }
         .into()
+    }
+}
+
+impl<T> Typecheck for Cons<T>
+where
+    T: LanguageTerm,
+    List<<T as LanguageTerm>::Type>: Into<<T as LanguageTerm>::Type>,
+{
+    type Env = <T as Typecheck>::Env;
+    type Type = <T as Typecheck>::Type;
+
+    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
+        let hd_ty = self.head.check(&mut env.clone())?;
+        hd_ty.check_equal(&self.ty).map_err(to_check_err)?;
+        let tl_ty = self.tail.check(env)?;
+        let list_ty: Self::Type = List::new(self.ty.clone()).into();
+        tl_ty.check_equal(&list_ty).map_err(to_check_err)?;
+        Ok(list_ty)
+    }
+}
+
+impl<T> Eval for Cons<T>
+where
+    T: LanguageTerm,
+    ConsVal<T>: Into<<T as LanguageTerm>::Value>,
+{
+    type Env = <T as Eval>::Env;
+    type Value = <T as Eval>::Value;
+
+    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
+        let hd_val = self.head.eval(env)?;
+        let tail_val = self.tail.eval(env)?;
+        Ok(ConsVal::<T>::new(hd_val, tail_val, self.ty).into())
     }
 }
 

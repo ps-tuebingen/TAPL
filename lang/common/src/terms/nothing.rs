@@ -83,6 +83,7 @@ where
         Ok(NothingVal::<T>::new(self.ty).into())
     }
 }
+
 impl<T> fmt::Display for Nothing<T>
 where
     T: LanguageTerm,

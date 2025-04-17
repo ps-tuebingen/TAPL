@@ -14,7 +14,7 @@ impl<Ty> Tuple<Ty>
 where
     Ty: Type,
 {
-    pub fn new<Ty1>(tys: Vec<Ty>) -> Tuple<Ty>
+    pub fn new<Ty1>(tys: Vec<Ty1>) -> Tuple<Ty>
     where
         Ty1: Into<Ty>,
     {

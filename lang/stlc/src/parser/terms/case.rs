@@ -187,7 +187,7 @@ fn patterns_to_term(mut pts: Vec<Pattern>, bound: Term) -> Result<Term, Error> {
         PatternBinding::Nothing => {
             let some_pt = pts.remove(0);
             let some_var = some_pt.bnd.into_something()?;
-            SomeCase::new(bound, pt_fst, &some_var, some_pt).into()
+            SomeCase::new(bound, pt_fst.rhs, &some_var, some_pt.rhs).into()
         }
         PatternBinding::Variant { label, var } => {
             let mut cases = vec![VariantPattern::new(&label, &var, pt_fst.rhs)];

@@ -7,7 +7,21 @@ pub struct List<Ty>
 where
     Ty: Type,
 {
-    ty: Box<Ty>,
+    pub ty: Box<Ty>,
+}
+
+impl<Ty> List<Ty>
+where
+    Ty: Type,
+{
+    pub fn new<Ty1>(ty: Ty1) -> List<Ty>
+    where
+        Ty1: Into<Ty>,
+    {
+        List {
+            ty: Box::new(ty.into()),
+        }
+    }
 }
 
 impl<Ty> Type for List<Ty> where Ty: Type {}
