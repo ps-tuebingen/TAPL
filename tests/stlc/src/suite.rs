@@ -1,4 +1,3 @@
-use super::EvalCtxTest;
 use std::path::PathBuf;
 use test_common::{
     check_test::CheckTest,
@@ -35,34 +34,26 @@ impl TestSuite for StlcTests {
         let contents: Vec<TestContents<StlcConf>> = load_dir(&self.source_dir, "stlc")?;
         let mut tests = vec![];
         for content in contents {
-            let parse_test = ParseTest::<stlc::syntax::Term>::new(
-                &content.source_name,
-                &content.source_contents,
-            );
+            let parse_test =
+                ParseTest::<stlc::terms::Term>::new(&content.source_name, &content.source_contents);
             tests.push(Box::new(parse_test) as Box<dyn Test>);
-            let reparse_test = ReparseTest::<stlc::syntax::Term>::new(
+            let reparse_test = ReparseTest::<stlc::terms::Term>::new(
                 &content.source_name,
                 &content.source_contents,
             );
             tests.push(Box::new(reparse_test) as Box<dyn Test>);
-            let check_test = CheckTest::<stlc::syntax::Term>::new(
+            let check_test = CheckTest::<stlc::terms::Term>::new(
                 &content.source_name,
                 &content.source_contents,
                 &content.conf.ty,
             );
             tests.push(Box::new(check_test) as Box<dyn Test>);
-            let eval_test = EvalTest::<stlc::syntax::Term>::new(
+            let eval_test = EvalTest::<stlc::terms::Term>::new(
                 &content.source_name,
                 &content.source_contents,
                 &content.conf.evaled,
             );
             tests.push(Box::new(eval_test) as Box<dyn Test>);
-            let eval_ctx_test = EvalCtxTest::new(
-                &content.source_name,
-                &content.source_contents,
-                &content.conf.evaled,
-            );
-            tests.push(Box::new(eval_ctx_test) as Box<dyn Test>);
         }
         Ok(tests)
     }

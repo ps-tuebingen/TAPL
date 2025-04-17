@@ -6,10 +6,8 @@ use test_common::{
     testsuite::TestSuite,
 };
 
-mod eval_ctx_test;
 mod suite;
 
-use eval_ctx_test::EvalCtxTest;
 use suite::StlcTests;
 
 fn main() -> Result<(), Error> {
