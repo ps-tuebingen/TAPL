@@ -49,3 +49,69 @@ impl SubstType<Type> for Type {
         self
     }
 }
+
+impl From<Unit> for Type {
+    fn from(u: Unit) -> Type {
+        Type::Unit(u)
+    }
+}
+
+impl From<Fun<Type>> for Type {
+    fn from(fun: Fun<Type>) -> Type {
+        Type::Fun(fun)
+    }
+}
+
+impl From<Bool> for Type {
+    fn from(b: Bool) -> Type {
+        Type::Bool(b)
+    }
+}
+
+impl From<Nat> for Type {
+    fn from(n: Nat) -> Type {
+        Type::Nat(n)
+    }
+}
+
+impl From<Product<Type>> for Type {
+    fn from(prod: Product<Type>) -> Type {
+        Type::Prod(prod)
+    }
+}
+
+impl From<Tuple<Type>> for Type {
+    fn from(tup: Tuple<Type>) -> Type {
+        Type::Tup(tup)
+    }
+}
+
+impl From<Record<Type>> for Type {
+    fn from(rec: Record<Type>) -> Type {
+        Type::Record(rec)
+    }
+}
+
+impl From<Sum<Type>> for Type {
+    fn from(sum: Sum<Type>) -> Type {
+        Type::Sum(sum)
+    }
+}
+
+impl From<Variant<Type>> for Type {
+    fn from(var: Variant<Type>) -> Type {
+        Type::Variant(var)
+    }
+}
+
+impl From<Optional<Type>> for Type {
+    fn from(opt: Optional<Type>) -> Type {
+        Type::Optional(opt)
+    }
+}
+
+impl From<List<Type>> for Type {
+    fn from(ls: List<Type>) -> Type {
+        Type::List(ls)
+    }
+}
