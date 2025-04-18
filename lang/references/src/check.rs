@@ -1,6 +1,6 @@
 use super::{terms::Term, types::Type};
 use common::{
-    check::{to_check_err, CheckEnvironment, Typecheck},
+    check::{to_check_err, CheckEnvironment, Subtypecheck, Typecheck},
     errors::{Error, ErrorKind},
     Location, Var,
 };
@@ -56,6 +56,13 @@ impl Typecheck for Term {
             Term::True(tru) => tru.check(env),
             Term::False(fls) => fls.check(env),
         }
+    }
+}
+
+impl Subtypecheck for Type {
+    type Env = Env;
+    fn check_subtype(&self, _: &Self, _: &mut Self::Env) -> Result<(), Error> {
+        Ok(())
     }
 }
 

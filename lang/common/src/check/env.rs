@@ -1,6 +1,7 @@
+use super::to_check_err;
 use crate::{
-    errors::{Error, ErrorKind, ErrorLocation},
-    language::LanguageType,
+    errors::{Error, ErrorKind},
+    language::{untyped::Untyped, LanguageType},
     types::Type,
     Location, Var,
 };
@@ -20,24 +21,6 @@ where
     }
 }
 
-pub trait Typecheck {
-    type Type: LanguageType;
-    type Env: CheckEnvironment<Type = Self::Type>;
-
-    fn check_start(&self) -> Result<Self::Type, Error> {
-        self.check(&mut Self::Env::default())
-    }
-
-    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error>;
-}
-
-pub fn to_check_err(knd: ErrorKind) -> Error {
-    Error {
-        kind: knd,
-        loc: ErrorLocation::Check,
-    }
-}
-
 impl<Ty: LanguageType> CheckEnvironment for HashMap<Var, Ty> {
     type Type = Ty;
 
@@ -50,4 +33,13 @@ impl<Ty: LanguageType> CheckEnvironment for HashMap<Var, Ty> {
     fn add_var(&mut self, v: Var, ty: Ty) {
         self.insert(v, ty);
     }
+}
+
+impl CheckEnvironment for () {
+    type Type = Untyped;
+    fn get_var(&self, v: &Var) -> Result<Self::Type, Error> {
+        Err(to_check_err(ErrorKind::FreeVariable(v.clone())))
+    }
+
+    fn add_var(&mut self, _: Var, _: Untyped) {}
 }

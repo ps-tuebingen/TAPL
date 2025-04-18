@@ -1,5 +1,9 @@
 use super::{terms::Term, types::Type};
-use common::{check::Typecheck, errors::Error, Var};
+use common::{
+    check::{Subtypecheck, Typecheck},
+    errors::Error,
+    Var,
+};
 use std::collections::HashMap;
 
 impl Typecheck for Term {
@@ -43,5 +47,12 @@ impl Typecheck for Term {
             Term::Head(hd) => hd.check(env),
             Term::Tail(tl) => tl.check(env),
         }
+    }
+}
+
+impl Subtypecheck for Type {
+    type Env = HashMap<Var, Type>;
+    fn check_subtype(&self, _: &Self, _: &mut Self::Env) -> Result<(), Error> {
+        Ok(())
     }
 }

@@ -1,4 +1,5 @@
 use crate::{
+    check::Subtypecheck,
     errors::ErrorKind,
     subst::SubstType,
     types::{
@@ -9,7 +10,7 @@ use crate::{
 
 pub trait LanguageType
 where
-    Self: Type + SubstType<Self, Target = Self>,
+    Self: Type + SubstType<Self, Target = Self> + Subtypecheck,
 {
     fn into_fun(self) -> Result<Fun<Self>, ErrorKind> {
         Err(ErrorKind::TypeMismatch {

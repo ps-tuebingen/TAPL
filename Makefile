@@ -12,3 +12,18 @@ coverage:
 	@echo "Make sure to install via cargo install cargo-llvm-cov first"
 	cargo llvm-cov --workspace --html
 	cargo llvm-cov --workspace --open
+
+.PHON: done
+done:
+	cargo build -p untyped_arithmetic
+	cargo build -p e2e_untyped_arithmetic
+	cargo build -p untyped_lambda
+	cargo build -p e2e_untyped_lambda
+	cargo build -p typed_arithmetic
+	cargo build -p e2e_typed_arithmetic
+	cargo build -p stlc 
+	cargo build -p e2e_stlc
+	cargo build -p references
+	cargo build -p e2e_references
+	cargo build -p exceptions
+	cargo build -p e2e_exceptions

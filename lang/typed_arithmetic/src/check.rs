@@ -1,5 +1,6 @@
 use crate::{terms::Term, types::Type};
 use common::{
+    check::Subtypecheck,
     check::{to_check_err, CheckEnvironment, Typecheck},
     errors::{Error, ErrorKind},
     Var,
@@ -31,5 +32,12 @@ impl Typecheck for Term {
             Term::IsZero(isz) => isz.check(env),
             Term::If(ift) => ift.check(env),
         }
+    }
+}
+
+impl Subtypecheck for Type {
+    type Env = Env;
+    fn check_subtype(&self, _: &Self, _: &mut Env) -> Result<(), Error> {
+        Ok(())
     }
 }

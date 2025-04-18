@@ -1,7 +1,7 @@
-use crate::{terms::Term, to_err, types::Type};
+use crate::{terms::Term, types::Type};
 use common::{
-    check::{CheckEnvironment, Typecheck},
-    errors::{Error, ErrorKind, ErrorLocation},
+    check::{to_check_err, CheckEnvironment, Subtypecheck, Typecheck},
+    errors::{Error, ErrorKind},
     Var,
 };
 use std::collections::HashMap;
@@ -51,8 +51,11 @@ impl Typecheck for Term {
     }
 }
 
-fn to_check_err(knd: ErrorKind) -> Error {
-    to_err(knd, ErrorLocation::Check)
+impl Subtypecheck for Type {
+    type Env = ExceptionEnv;
+    fn check_subtype(&self, _: &Self, _: &mut Self::Env) -> Result<(), Error> {
+        Ok(())
+    }
 }
 
 #[cfg(test)]
