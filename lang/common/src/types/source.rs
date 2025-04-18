@@ -10,6 +10,20 @@ where
     ty: Box<Ty>,
 }
 
+impl<Ty> Source<Ty>
+where
+    Ty: Type,
+{
+    pub fn new<Ty1>(ty: Ty1) -> Source<Ty>
+    where
+        Ty1: Into<Ty>,
+    {
+        Source {
+            ty: Box::new(ty.into()),
+        }
+    }
+}
+
 impl<Ty> Type for Source<Ty> where Ty: Type {}
 
 impl<Ty> SubstType<Ty> for Source<Ty>

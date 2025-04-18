@@ -15,6 +15,22 @@ where
     ty: <T as LanguageTerm>::Type,
 }
 
+impl<T> Cast<T>
+where
+    T: LanguageTerm,
+{
+    pub fn new<T1, Ty>(t: T1, ty: Ty) -> Cast<T>
+    where
+        T1: Into<T>,
+        Ty: Into<<T as LanguageTerm>::Type>,
+    {
+        Cast {
+            term: Box::new(t.into()),
+            ty: ty.into(),
+        }
+    }
+}
+
 impl<T> Term for Cast<T> where T: LanguageTerm {}
 
 impl<T> SubstTerm<T> for Cast<T>

@@ -1,6 +1,9 @@
 use super::{pair_to_n_inner, to_parse_err, Rule};
 use crate::types::Type;
-use common::errors::{Error, ErrorKind};
+use common::{
+    errors::{Error, ErrorKind},
+    types::{Bool, Bot, Fun, List, Nat, Record, Reference, Sink, Source, Top, Unit, Variant},
+};
 use pest::iterators::Pair;
 use std::collections::HashMap;
 
@@ -28,11 +31,11 @@ pub fn pair_to_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
 
 fn str_to_type(s: &str) -> Result<Type, Error> {
     match s.to_lowercase().trim() {
-        "top" => Ok(Type::Top),
-        "bot" => Ok(Type::Bot),
-        "nat" => Ok(Type::Nat),
-        "unit" => Ok(Type::Unit),
-        "bool" => Ok(Type::Bool),
+        "top" => Ok(Top.into()),
+        "bot" => Ok(Bot.into()),
+        "nat" => Ok(Nat.into()),
+        "unit" => Ok(Unit.into()),
+        "bool" => Ok(Bool.into()),
         s => Err(to_parse_err(ErrorKind::UnknownKeyword(s.to_owned()))),
     }
 }
@@ -45,10 +48,7 @@ fn pair_to_fun_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
     let to_rule = inner.remove(0);
     let to_pair = pair_to_n_inner(to_rule, vec!["Type"])?.remove(0);
     let to_ty = pair_to_type(to_pair)?;
-    Ok(Type::Fun {
-        from: Box::new(from_ty),
-        to: Box::new(to_ty),
-    })
+    Ok(Fun::new(from_ty, to_ty).into())
 }
 
 fn pair_to_rec_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
@@ -64,11 +64,11 @@ fn pair_to_rec_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
         records.insert(var, ty);
     }
 
-    Ok(Type::Record(records))
+    Ok(Record::new(records).into())
 }
 
 fn pair_to_variant_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
-    let mut variants = vec![];
+    let mut variants = HashMap::new();
     let mut inner = p.into_inner();
     while let Some(next) = inner.next() {
         let label = next.as_str().trim().to_owned();
@@ -77,10 +77,10 @@ fn pair_to_variant_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
         )))?;
         let ty_pair = pair_to_n_inner(ty_rule, vec!["Type"])?.remove(0);
         let ty = pair_to_type(ty_pair)?;
-        variants.push((label, ty));
+        variants.insert(label, ty);
     }
 
-    Ok(Type::Variant(variants))
+    Ok(Variant::new(variants).into())
 }
 
 fn pair_to_list_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
@@ -88,7 +88,7 @@ fn pair_to_list_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
     inner.remove(0);
     let ty_rule = inner.remove(0);
     let ty = pair_to_type(ty_rule)?;
-    Ok(Type::List(Box::new(ty)))
+    Ok(List::new(ty).into())
 }
 
 fn pair_to_ref_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
@@ -96,7 +96,7 @@ fn pair_to_ref_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
     inner.remove(0);
     let ty_rule = inner.remove(0);
     let ty = pair_to_type(ty_rule)?;
-    Ok(Type::Ref(Box::new(ty)))
+    Ok(Reference::new(ty).into())
 }
 
 fn pair_to_sink_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
@@ -104,7 +104,7 @@ fn pair_to_sink_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
     inner.remove(0);
     let ty_rule = inner.remove(0);
     let ty = pair_to_type(ty_rule)?;
-    Ok(Type::Sink(Box::new(ty)))
+    Ok(Sink::new(ty).into())
 }
 
 fn pair_to_source_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
@@ -112,5 +112,5 @@ fn pair_to_source_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
     inner.remove(0);
     let ty_rule = inner.remove(0);
     let ty = pair_to_type(ty_rule)?;
-    Ok(Type::Source(Box::new(ty)))
+    Ok(Source::new(ty).into())
 }

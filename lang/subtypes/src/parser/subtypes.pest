@@ -86,12 +86,12 @@ paren_term = { "(" ~ term ~ ")" }
 const = { kw_unit | kw_true | kw_false | kw_zero } 
 lambda_term = { "\\" ~ variable ~ ":" ~ type ~ "." ~ term }
 rec_term = { "{" ~ variable ~ "=" ~ term ~ ("," ~ variable ~ "=" ~ term)* ~ "}" }
-variant_term = { "<" ~ variable ~ "=" ~ term ~ ">" }
+variant_term = { "<" ~ variable ~ "=" ~ term ~ ">" ~ kw_as ~ type }
 variant_case = { kw_case ~ term ~ kw_of ~ "{" ~ variant_pattern ~ ("|" ~ variant_pattern)* ~ "}" }
-variant_pattern = { "<" ~ variable ~ "=" ~ variable ~ ":" ~ type ~ ">" ~ "=>" ~ term }
+variant_pattern = { "<" ~ variable ~ "=" ~ variable  ~ ">" ~ "=>" ~ term }
 nil_term = { kw_nil ~ "[" ~ type ~ "]" }
-cons_term = { kw_cons ~ "(" ~ term ~ "," ~ term ~ ")" }
-list_case = { kw_case ~ term ~ ":" ~ type ~ kw_of ~ "{" ~ ((nil_pt ~ "|" ~ cons_pt) | (cons_pt~"|"~nil_pt)) ~ "}" } 
+cons_term = { kw_cons ~ "[" ~ type ~ "]" ~ "(" ~ term ~ "," ~ term ~ ")" }
+list_case = { kw_case ~ term  ~ kw_of ~ "{" ~ ((nil_pt ~ "|" ~ cons_pt) | (cons_pt~"|"~nil_pt)) ~ "}" } 
 nil_pt = { kw_nil ~ "=>" ~ term }
 cons_pt = { kw_cons ~ "(" ~ variable ~ "," ~ variable ~ ")" ~ "=>" ~ term }
 succ_term = { kw_succ ~ paren_term }

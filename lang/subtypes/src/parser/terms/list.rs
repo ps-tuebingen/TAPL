@@ -1,6 +1,10 @@
 use super::{super::types::pair_to_type, pair_to_n_inner, pair_to_term, to_parse_err, Rule};
-use crate::syntax::{Cons, ListCase, Nil, Term, Var};
-use common::errors::{Error, ErrorKind};
+use crate::terms::Term;
+use common::{
+    errors::{Error, ErrorKind},
+    terms::{Cons, ListCase, Nil},
+    Var,
+};
 use pest::iterators::Pair;
 
 enum ListPattern {
@@ -14,20 +18,21 @@ enum ListPattern {
     },
 }
 
-pub fn pair_to_nil(p: Pair<'_, Rule>) -> Result<Nil, Error> {
+pub fn pair_to_nil(p: Pair<'_, Rule>) -> Result<Nil<Term>, Error> {
     let mut inner = pair_to_n_inner(p, vec!["Nil Keyword", "Nil Type"])?;
     inner.remove(0);
     let ty_rule = inner.remove(0);
     let ty_pair = pair_to_n_inner(ty_rule, vec!["Type"])?.remove(0);
     let ty = pair_to_type(ty_pair)?;
-    Ok(Nil { ty })
+    Ok(Nil::new(ty))
 }
 
-pub fn pair_to_cons(p: Pair<'_, Rule>) -> Result<Cons, Error> {
+pub fn pair_to_cons(p: Pair<'_, Rule>) -> Result<Cons<Term>, Error> {
     let mut inner = pair_to_n_inner(
         p,
         vec![
             "Cons Keyword",
+            "Cons Type",
             "First Cons Argument",
             "Second Cons Argument",
         ],
@@ -35,21 +40,19 @@ pub fn pair_to_cons(p: Pair<'_, Rule>) -> Result<Cons, Error> {
     inner.remove(0);
     let fst_rule = inner.remove(0);
     let fst = pair_to_term(fst_rule)?;
+    let ty_rule = inner.remove(0);
+    let ty = pair_to_type(ty_rule)?;
     let rst_rule = inner.remove(0);
     let rst = pair_to_term(rst_rule)?;
-    Ok(Cons {
-        fst: Box::new(fst),
-        rst: Box::new(rst),
-    })
+    Ok(Cons::new(fst, rst, ty))
 }
 
-pub fn pair_to_listcase(p: Pair<'_, Rule>) -> Result<ListCase, Error> {
+pub fn pair_to_listcase(p: Pair<'_, Rule>) -> Result<ListCase<Term>, Error> {
     let mut inner = pair_to_n_inner(
         p,
         vec![
             "Case Keyword",
             "Case Bound Term",
-            "Case Type",
             "Of Keyword",
             "First List Pattern (Nil or Cons)",
             "Second List Pattern (Nil,Cons)",
@@ -58,9 +61,6 @@ pub fn pair_to_listcase(p: Pair<'_, Rule>) -> Result<ListCase, Error> {
     inner.remove(0);
     let bound_rule = inner.remove(0);
     let bound_term = pair_to_term(bound_rule)?;
-    let ty_rule = inner.remove(0);
-    let ty_pair = pair_to_n_inner(ty_rule, vec!["Type"])?.remove(0);
-    let list_ty = pair_to_type(ty_pair)?;
     inner.remove(0);
     let pt_fst_pair = inner.remove(0);
     let pt_fst = pair_to_list_pattern(pt_fst_pair)?;
@@ -75,14 +75,9 @@ pub fn pair_to_listcase(p: Pair<'_, Rule>) -> Result<ListCase, Error> {
                 rst_var,
                 rhs: cons_rhs,
             },
-        ) => Ok(ListCase {
-            bound_term: Box::new(bound_term),
-            list_ty,
-            nil_rhs: Box::new(nil_rhs),
-            cons_fst: fst_var,
-            cons_rst: rst_var,
-            cons_rhs: Box::new(cons_rhs),
-        }),
+        ) => Ok(ListCase::new(
+            bound_term, nil_rhs, &fst_var, &rst_var, cons_rhs,
+        )),
         (
             ListPattern::ConsPattern {
                 fst_var,
@@ -90,14 +85,9 @@ pub fn pair_to_listcase(p: Pair<'_, Rule>) -> Result<ListCase, Error> {
                 rhs: cons_rhs,
             },
             ListPattern::NilPattern { rhs: nil_rhs },
-        ) => Ok(ListCase {
-            bound_term: Box::new(bound_term),
-            list_ty,
-            nil_rhs: Box::new(nil_rhs),
-            cons_fst: fst_var,
-            cons_rst: rst_var,
-            cons_rhs: Box::new(cons_rhs),
-        }),
+        ) => Ok(ListCase::new(
+            bound_term, nil_rhs, &fst_var, &rst_var, cons_rhs,
+        )),
         (ListPattern::NilPattern { .. }, ListPattern::NilPattern { .. }) => Err(to_parse_err(
             ErrorKind::MissingInput("Cons Pattern".to_owned()),
         )),

@@ -18,6 +18,26 @@ where
     cons_rhs: Box<T>,
 }
 
+impl<T> ListCase<T>
+where
+    T: LanguageTerm,
+{
+    pub fn new<T1, T2, T3>(bound: T1, nil: T2, hd: &str, tl: &str, cons: T3) -> ListCase<T>
+    where
+        T1: Into<T>,
+        T2: Into<T>,
+        T3: Into<T>,
+    {
+        ListCase {
+            bound_term: Box::new(bound.into()),
+            nil_rhs: Box::new(nil.into()),
+            cons_fst: hd.to_owned(),
+            cons_rst: tl.to_owned(),
+            cons_rhs: Box::new(cons.into()),
+        }
+    }
+}
+
 impl<T> Term for ListCase<T> where T: LanguageTerm {}
 
 impl<T> SubstTerm<T> for ListCase<T>

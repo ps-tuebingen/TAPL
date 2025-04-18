@@ -1,9 +1,10 @@
 use super::{pair_to_n_inner, to_parse_err, Rule};
-use crate::{
-    syntax::{App, False, Lambda, Term, True, Unit, Zero},
-    types::Type,
+use crate::terms::Term;
+use common::{
+    errors::{Error, ErrorKind},
+    terms::{App, False, Lambda, Num, True, Unit, Variable},
+    types::Unit as UnitTy,
 };
-use common::errors::{Error, ErrorKind};
 use pest::iterators::Pair;
 
 mod bool;
@@ -56,14 +57,14 @@ pub fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
 fn pair_to_prim_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
     match p.as_rule() {
         Rule::r#const => str_to_term(p.as_str()),
-        Rule::variable => Ok(Term::Var(p.as_str().trim().to_owned())),
+        Rule::variable => Ok(Variable::new(p.as_str().trim()).into()),
         Rule::number => {
             let num = p
                 .as_str()
                 .trim()
                 .parse::<i64>()
                 .map_err(|_| to_parse_err(ErrorKind::UnknownKeyword(p.as_str().to_owned())))?;
-            Ok(num.into())
+            Ok(Num::new(num).into())
         }
         Rule::lambda_term => pair_to_lambda(p).map(|lam| lam.into()),
         Rule::rec_term => pair_to_record(p).map(|rec| rec.into()),
@@ -92,10 +93,10 @@ fn pair_to_prim_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
 
 fn str_to_term(s: &str) -> Result<Term, Error> {
     match s.to_lowercase().trim() {
-        "unit" => Ok(Unit.into()),
-        "true" => Ok(True.into()),
-        "false" => Ok(False.into()),
-        "zero" => Ok(Zero.into()),
+        "unit" => Ok(Unit::new().into()),
+        "true" => Ok(True::new().into()),
+        "false" => Ok(False::new().into()),
+        "zero" => Ok(Num::new(0).into()),
         s => Err(to_parse_err(ErrorKind::UnknownKeyword(s.to_owned()))),
     }
 }
@@ -108,7 +109,7 @@ fn pair_to_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
         Rule::seq_term => {
             let second = pair_to_n_inner(p, vec!["Term"])?.remove(0);
             let term = pair_to_term(second)?;
-            Ok(App::new(Lambda::new("_", Type::Unit, term).into(), t).into())
+            Ok(App::new(Lambda::new("_", UnitTy, term), t).into())
         }
         Rule::term => {
             let arg = pair_to_term(p)?;
