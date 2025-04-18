@@ -56,59 +56,56 @@ impl Eval for Term {
 
 #[cfg(test)]
 mod check_tests {
-    use super::{Eval, Term, Value};
-    use crate::types::Type;
+    use super::{Eval, Term};
+    use common::{
+        terms::{App, Assign, Deref, Lambda, Num, Ref, Unit, Variable},
+        types::{Reference, Unit as UnitTy},
+        values::Unit as UnitVal,
+    };
 
     #[test]
     fn eval1() {
-        let result = Term::app(
-            Term::lam(
-                "x",
-                Type::Ref(Box::new(Type::Unit)),
-                Term::deref("x".into()),
-            ),
-            Term::app(
-                Term::lam("y", Type::Unit, Term::reft("y".into())),
-                Term::Unit,
+        let term: Term = App::new(
+            Lambda::new("x", Reference::new(UnitTy), Deref::new(Variable::new("x"))),
+            App::new(
+                Lambda::new("y", UnitTy, Ref::new(Variable::new("y"))),
+                Unit::new(),
             ),
         )
-        .eval(&mut Default::default())
-        .unwrap();
-        let expected = Value::Unit;
+        .into();
+        let result = term.eval(&mut Default::default()).unwrap();
+        let expected = UnitVal::new().into();
         assert_eq!(result, expected)
     }
 
     #[test]
     fn eval2() {
-        let result = Term::App {
-            fun: Box::new(Term::Lambda {
-                var: "x".to_owned(),
-                annot: Type::Ref(Box::new(Type::Unit)),
-                body: Box::new(Term::Assign {
-                    to: Box::new(Term::Var("x".to_owned())),
-                    body: Box::new(Term::Deref(Box::new(Term::Var("x".to_owned())))),
-                }),
-            }),
-            arg: Box::new(Term::Ref(Box::new(Term::Unit))),
-        }
-        .eval(&mut Default::default())
-        .unwrap();
-        let expected = Value::Unit;
+        let term: Term = App::new(
+            Lambda::new(
+                "x",
+                Reference::new(UnitTy),
+                Assign::new(Variable::new("x"), Deref::new(Variable::new("x"))),
+            ),
+            Ref::new(Unit::new()),
+        )
+        .into();
+        let result = term.eval(&mut Default::default()).unwrap();
+        let expected = UnitVal::new().into();
         assert_eq!(result, expected)
     }
 
     #[test]
     fn eval_store() {
-        let result = Term::seq(
-            Term::assign(
-                Term::reft(Term::Unit),
-                Term::app(Term::lam("x", Type::Unit, "x".into()), Term::Unit),
+        let term: Term = App::seq(
+            Assign::new(
+                Ref::new(Unit::new()),
+                App::new(Lambda::new("x", UnitTy, Variable::new("x")), Unit::new()),
             ),
-            Term::deref(0.into()),
+            Deref::new(Num::new(0)),
         )
-        .eval(&mut Default::default())
-        .unwrap();
-        let expected = Value::Unit;
+        .into();
+        let result = term.eval(&mut Default::default()).unwrap();
+        let expected = UnitVal::new().into();
         assert_eq!(result, expected)
     }
 }

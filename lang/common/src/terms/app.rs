@@ -1,11 +1,11 @@
-use super::Term;
+use super::{Lambda, Term};
 use crate::{
     check::{to_check_err, Typecheck},
     errors::Error,
     eval::{to_eval_err, Eval},
     language::{LanguageTerm, LanguageType, LanguageValue},
     subst::{SubstTerm, SubstType},
-    types::{Fun, Type},
+    types::{Fun, Type, Unit as UnitTy},
     TypeVar, Var,
 };
 use std::fmt;
@@ -27,6 +27,19 @@ where
         App {
             fun: Box::new(f.into()),
             arg: Box::new(a.into()),
+        }
+    }
+
+    pub fn seq<T1, T2>(t1: T1, t2: T2) -> App<T>
+    where
+        T1: Into<T>,
+        T2: Into<T>,
+        Lambda<T>: Into<T>,
+        UnitTy: Into<<T as LanguageTerm>::Type>,
+    {
+        App {
+            fun: Box::new(Lambda::new("_", UnitTy, t2).into()),
+            arg: Box::new(t1.into()),
         }
     }
 }

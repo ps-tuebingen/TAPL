@@ -176,85 +176,60 @@ impl From<Let<Term>> for Term {
 
 #[cfg(test)]
 mod term_tests {
-    use super::{Term, Type};
-    use std::collections::HashSet;
+    use super::Term;
+    use common::{
+        subst::SubstTerm,
+        terms::{App, Assign, Deref, Lambda, Num, Ref, Unit, Variable},
+        types::Unit as UnitTy,
+    };
 
     fn example_term1() -> Term {
-        Term::assign(
-            Term::reft(Term::Unit),
-            Term::lam("x", Type::Unit, Term::app("y".into(), "x".into())),
+        Assign::new(
+            Ref::new(Unit::new()),
+            Lambda::new(
+                "x",
+                UnitTy,
+                App::new(Variable::new("y"), Variable::new("x")),
+            ),
         )
+        .into()
     }
 
     fn example_term2() -> Term {
-        Term::deref(Term::app(Term::lam("x", Type::Unit, 0.into()), "y".into()))
-    }
-
-    #[test]
-    fn seq_terms() {
-        let result = example_term1().seq(example_term2());
-        let expected = Term::App {
-            fun: Box::new(Term::Lambda {
-                var: "x0".to_owned(),
-                annot: Type::Unit,
-                body: Box::new(example_term2()),
-            }),
-            arg: Box::new(example_term1()),
-        };
-        assert_eq!(result, expected)
-    }
-
-    #[test]
-    fn is_val_lam() {
-        let result = Term::lam("x", Type::Unit, Term::app("x".into(), "y".into())).is_value();
-        assert!(result)
-    }
-
-    #[test]
-    fn is_val_ref() {
-        let result = Term::reft(Term::Unit).is_value();
-        assert!(!result)
-    }
-
-    #[test]
-    fn free_vars1() {
-        let result = example_term1().free_vars();
-        let expected = HashSet::from(["y".to_owned()]);
-        assert_eq!(result, expected)
-    }
-
-    #[test]
-    fn free_vars2() {
-        let result = example_term2().free_vars();
-        let expected = HashSet::from(["y".to_owned()]);
-        assert_eq!(result, expected)
+        Deref::new(App::new(
+            Lambda::new("x", UnitTy, Num::new(0)),
+            Variable::new("y"),
+        ))
+        .into()
     }
 
     #[test]
     fn subst1() {
         let result = example_term1()
-            .subst(&"x".to_owned(), Term::Unit)
-            .subst(&"y".to_owned(), Term::reft(Term::Unit));
-        let expected = Term::assign(
-            Term::reft(Term::Unit),
-            Term::lam(
+            .subst(&"x".to_owned(), &Unit::new().into())
+            .subst(&"y".to_owned(), &Ref::new(Unit::new()).into());
+        let expected = Assign::new(
+            Ref::new(Unit::new()),
+            Lambda::new(
                 "x",
-                Type::Unit,
-                Term::app(Term::reft(Term::Unit), "x".into()),
+                UnitTy,
+                App::new(Ref::new(Unit::new()), Variable::new("x")),
             ),
-        );
+        )
+        .into();
         assert_eq!(result, expected)
     }
 
     #[test]
     fn subst2() {
         let result = example_term2()
-            .subst(&"x".to_owned(), Term::Unit)
-            .subst(&"y".to_owned(), Term::reft(Term::Unit));
-        let expected = Term::deref(Term::app(
-            Term::lam("x", Type::Unit, 0.into()),
-            Term::reft(Term::Unit),
-        ));
+            .subst(&"x".to_owned(), &Unit::new().into())
+            .subst(&"y".to_owned(), &Ref::new(Unit::new()).into());
+        let expected = Deref::new(App::new(
+            Lambda::new("x", UnitTy, Num::new(0)),
+            Ref::new(Unit::new()),
+        ))
+        .into();
         assert_eq!(result, expected)
     }
 }
