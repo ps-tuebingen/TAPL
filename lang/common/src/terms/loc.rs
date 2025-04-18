@@ -1,7 +1,11 @@
 use super::Term;
 use crate::{
+    check::{CheckEnvironment, Typecheck},
+    errors::Error,
+    eval::Eval,
     language::LanguageTerm,
     subst::{SubstTerm, SubstType},
+    values::Loc as LocVal,
     TypeVar, Var,
 };
 use std::{fmt, marker::PhantomData};
@@ -48,6 +52,31 @@ where
     type Target = T;
     fn subst_type(self, _: &TypeVar, _: &<T as LanguageTerm>::Type) -> Self::Target {
         self.into()
+    }
+}
+
+impl<T> Typecheck for Loc<T>
+where
+    T: LanguageTerm,
+{
+    type Env = <T as Typecheck>::Env;
+    type Type = <T as Typecheck>::Type;
+
+    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
+        env.get_loc(&self.loc)
+    }
+}
+
+impl<T> Eval for Loc<T>
+where
+    T: LanguageTerm,
+    LocVal<T>: Into<<T as LanguageTerm>::Value>,
+{
+    type Env = <T as Eval>::Env;
+    type Value = <T as Eval>::Value;
+
+    fn eval(self, _: &mut Self::Env) -> Result<Self::Value, Error> {
+        Ok(LocVal::new(self.loc).into())
     }
 }
 

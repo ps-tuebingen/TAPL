@@ -1,7 +1,7 @@
 use crate::terms::Term;
 use common::{
     language::LanguageValue,
-    values::{Lambda, Loc, Num, Unit, Value as ValueTrait},
+    values::{False, Lambda, Loc, Num, True, Unit, Value as ValueTrait},
 };
 use std::fmt;
 
@@ -11,6 +11,8 @@ pub enum Value {
     Unit(Unit<Term>),
     Num(Num<Term>),
     Loc(Loc<Term>),
+    True(True<Term>),
+    False(False<Term>),
 }
 
 impl ValueTrait for Value {
@@ -28,6 +30,8 @@ impl From<Value> for Term {
             Value::Num(num) => num.into_term().into(),
             Value::Unit(u) => u.into_term().into(),
             Value::Loc(loc) => loc.into_term().into(),
+            Value::True(tru) => tru.into_term().into(),
+            Value::False(fls) => fls.into_term().into(),
         }
     }
 }
@@ -39,6 +43,8 @@ impl fmt::Display for Value {
             Value::Num(num) => num.fmt(f),
             Value::Unit(u) => u.fmt(f),
             Value::Loc(loc) => loc.fmt(f),
+            Value::True(tru) => tru.fmt(f),
+            Value::False(fls) => fls.fmt(f),
         }
     }
 }
@@ -61,5 +67,17 @@ impl From<Num<Term>> for Value {
 impl From<Loc<Term>> for Value {
     fn from(loc: Loc<Term>) -> Value {
         Value::Loc(loc)
+    }
+}
+
+impl From<True<Term>> for Value {
+    fn from(tru: True<Term>) -> Value {
+        Value::True(tru)
+    }
+}
+
+impl From<False<Term>> for Value {
+    fn from(fls: False<Term>) -> Value {
+        Value::False(fls)
     }
 }

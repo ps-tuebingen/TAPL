@@ -1,7 +1,7 @@
 use common::{
     language::LanguageType,
     subst::SubstType,
-    types::{Fun, Nat, Reference, Unit},
+    types::{Bool, Fun, Nat, Reference, Unit},
     TypeVar,
 };
 use std::fmt;
@@ -10,6 +10,7 @@ use std::fmt;
 pub enum Type {
     Unit(Unit),
     Nat(Nat),
+    Bool(Bool),
     Fun(Fun<Type>),
     Ref(Reference<Type>),
 }
@@ -30,6 +31,7 @@ impl fmt::Display for Type {
         match self {
             Type::Unit(u) => u.fmt(f),
             Type::Nat(n) => n.fmt(f),
+            Type::Bool(b) => b.fmt(f),
             Type::Fun(fun) => fun.fmt(f),
             Type::Ref(rf) => rf.fmt(f),
         }
@@ -57,5 +59,11 @@ impl From<Fun<Type>> for Type {
 impl From<Reference<Type>> for Type {
     fn from(rf: Reference<Type>) -> Type {
         Type::Ref(rf)
+    }
+}
+
+impl From<Bool> for Type {
+    fn from(b: Bool) -> Type {
+        Type::Bool(b)
     }
 }

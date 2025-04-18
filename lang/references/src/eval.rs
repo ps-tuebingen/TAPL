@@ -1,6 +1,6 @@
 use super::{terms::Term, values::Value};
 use common::{
-    errors::Error,
+    errors::{Error, ErrorKind},
     eval::{Eval, EvalEnvironment},
     Location,
 };
@@ -9,13 +9,23 @@ use std::collections::HashMap;
 #[derive(Default)]
 pub struct Store(HashMap<Location, Value>);
 
-impl EvalEnvironment for Store {
+impl EvalEnvironment<Value> for Store {
     fn fresh_location(&self) -> Location {
         let mut next_loc = 0;
         while self.0.contains_key(&next_loc) {
             next_loc += 1;
         }
         next_loc
+    }
+    fn get_location(&self, loc: Location) -> Result<Value, ErrorKind> {
+        self.0
+            .get(&loc)
+            .ok_or(ErrorKind::UndefinedLocation(loc))
+            .cloned()
+    }
+
+    fn save_location(&mut self, loc: Location, val: Value) {
+        self.0.insert(loc, val);
     }
 }
 
