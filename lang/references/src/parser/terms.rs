@@ -1,9 +1,12 @@
 use super::{pair_to_n_inner, to_parse_err, types::pair_to_type, Rule};
-use crate::{
-    terms::{Cmp, Term},
-    types::Type,
+use crate::terms::Term;
+use common::{
+    errors::{Error, ErrorKind},
+    terms::{
+        App, Assign, Deref, False, If, Lambda, Let, Num, Pred, Ref, Succ, True, Unit, Variable,
+    },
+    types::Unit as UnitTy,
 };
-use common::errors::{Error, ErrorKind};
 use pest::iterators::Pair;
 
 pub fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
@@ -44,14 +47,14 @@ fn pair_to_prim_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
 
 fn prim_rule_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
     match p.as_rule() {
-        Rule::variable => Ok(Term::Var(p.as_str().trim().to_owned())),
+        Rule::variable => Ok(Variable::new(p.as_str().trim()).into()),
         Rule::number => {
             let num = p
                 .as_str()
                 .trim()
                 .parse::<i64>()
                 .map_err(|_| to_parse_err(ErrorKind::UnknownKeyword(p.as_str().to_owned())))?;
-            Ok(Term::Const(num))
+            Ok(Num::new(num).into())
         }
         Rule::paren_term => {
             let term_rule = pair_to_n_inner(p, vec!["Term"])?.remove(0);
@@ -78,29 +81,16 @@ fn pair_to_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
         Rule::assign_term => {
             let term_rule = pair_to_n_inner(inner_rule, vec!["Assign Right hand side"])?.remove(0);
             let rhs = pair_to_term(term_rule)?;
-            Ok(Term::Assign {
-                to: Box::new(t),
-                body: Box::new(rhs),
-            })
+            Ok(Assign::new(t, rhs).into())
         }
         Rule::sequence => {
             let term_rule = pair_to_n_inner(inner_rule, vec!["Sequence Second Term"])?.remove(0);
             let term = pair_to_term(term_rule)?;
-            Ok(Term::App {
-                fun: Box::new(Term::Lambda {
-                    var: "_".to_owned(),
-                    annot: Type::Unit,
-                    body: Box::new(term),
-                }),
-                arg: Box::new(t),
-            })
+            Ok(App::new(Lambda::new("_", UnitTy, term), t).into())
         }
         Rule::term => {
             let arg = pair_to_term(inner_rule)?;
-            Ok(Term::App {
-                fun: Box::new(t),
-                arg: Box::new(arg),
-            })
+            Ok(App::new(t, arg).into())
         }
         r => Err(to_parse_err(ErrorKind::UnexpectedRule {
             found: format!("{r:?}"),
@@ -111,7 +101,9 @@ fn pair_to_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
 
 fn const_to_term(c: &str) -> Result<Term, Error> {
     match c.to_lowercase().trim() {
-        "unit" => Ok(Term::Unit),
+        "unit" => Ok(Unit::new().into()),
+        "true" => Ok(True::new().into()),
+        "false" => Ok(False::new().into()),
         s => Err(to_parse_err(ErrorKind::UnknownKeyword(s.to_owned()))),
     }
 }
@@ -119,7 +111,7 @@ fn const_to_term(c: &str) -> Result<Term, Error> {
 fn pair_to_lambda(p: Pair<'_, Rule>) -> Result<Term, Error> {
     let mut inner_rules =
         pair_to_n_inner(p, vec!["Lambda Variable", "Lambda Annot", "Lambda Term"])?;
-    let var = inner_rules.remove(0).as_str().trim().to_owned();
+    let var = inner_rules.remove(0).as_str().trim();
 
     let ty_rule = inner_rules.remove(0);
     let annot = pair_to_type(ty_rule)?;
@@ -127,11 +119,7 @@ fn pair_to_lambda(p: Pair<'_, Rule>) -> Result<Term, Error> {
     let term_rule = inner_rules.remove(0);
     let term = prim_rule_to_term(term_rule)?;
 
-    Ok(Term::Lambda {
-        var,
-        annot,
-        body: Box::new(term),
-    })
+    Ok(Lambda::new(var, annot, term).into())
 }
 
 fn pair_to_ref(p: Pair<'_, Rule>) -> Result<Term, Error> {
@@ -139,13 +127,13 @@ fn pair_to_ref(p: Pair<'_, Rule>) -> Result<Term, Error> {
     let _ = inner_rules.remove(0);
     let term_rule = inner_rules.remove(0);
     let term = prim_rule_to_term(term_rule)?;
-    Ok(Term::Ref(Box::new(term)))
+    Ok(Ref::new(term).into())
 }
 
 fn pair_to_deref(p: Pair<'_, Rule>) -> Result<Term, Error> {
     let term_rule = pair_to_n_inner(p, vec!["Deref Term"])?.remove(0);
     let term = pair_to_term(term_rule)?;
-    Ok(Term::Deref(Box::new(term)))
+    Ok(Deref::new(term).into())
 }
 
 fn pair_to_let(p: Pair<'_, Rule>) -> Result<Term, Error> {
@@ -160,7 +148,7 @@ fn pair_to_let(p: Pair<'_, Rule>) -> Result<Term, Error> {
         ],
     )?;
     inner.remove(0);
-    let var = inner.remove(0).as_str().trim().to_owned();
+    let var = inner.remove(0).as_str().trim();
 
     let bound_rule = inner.remove(0);
     let bound_term = pair_to_term(bound_rule)?;
@@ -168,11 +156,7 @@ fn pair_to_let(p: Pair<'_, Rule>) -> Result<Term, Error> {
     let in_rule = inner.remove(0);
     let in_term = pair_to_term(in_rule)?;
 
-    Ok(Term::Let {
-        var,
-        bound_term: Box::new(bound_term),
-        in_term: Box::new(in_term),
-    })
+    Ok(Let::new(var, bound_term, in_term).into())
 }
 
 fn pair_to_if(p: Pair<'_, Rule>) -> Result<Term, Error> {
@@ -180,44 +164,21 @@ fn pair_to_if(p: Pair<'_, Rule>) -> Result<Term, Error> {
         p,
         vec![
             "If Keyword",
-            "Left Compared Term",
-            "Comparison Operator",
-            "Right Compared Term",
+            "If Condition",
             "then Term",
             "Else Keyword",
             "else Term",
         ],
     )?;
     inner.remove(0);
-    let left_pair = inner.remove(0);
-    let left_term = pair_to_term(left_pair)?;
-    let cmp_pair = inner.remove(0);
-    let cmp = pair_to_cmp(cmp_pair)?;
-    let right_pair = inner.remove(0);
-    let right_term = pair_to_term(right_pair)?;
+    let cond_pair = inner.remove(0);
+    let cond_term = pair_to_term(cond_pair)?;
     let then_pair = inner.remove(0);
     let then_term = pair_to_term(then_pair)?;
     inner.remove(0);
     let else_pair = inner.remove(0);
     let else_term = pair_to_term(else_pair)?;
-    Ok(Term::If {
-        left: Box::new(left_term),
-        cmp,
-        right: Box::new(right_term),
-        then_term: Box::new(then_term),
-        else_term: Box::new(else_term),
-    })
-}
-
-fn pair_to_cmp(p: Pair<'_, Rule>) -> Result<Cmp, Error> {
-    match p.as_str().trim() {
-        "<" => Ok(Cmp::Less),
-        "<=" => Ok(Cmp::LessEqual),
-        ">" => Ok(Cmp::Greater),
-        ">=" => Ok(Cmp::GreaterEqual),
-        "==" => Ok(Cmp::Equal),
-        s => Err(to_parse_err(ErrorKind::UnknownKeyword(s.to_owned()))),
-    }
+    Ok(If::new(cond_term, then_term, else_term).into())
 }
 
 fn pair_to_succ(p: Pair<'_, Rule>) -> Result<Term, Error> {
@@ -225,7 +186,7 @@ fn pair_to_succ(p: Pair<'_, Rule>) -> Result<Term, Error> {
     inner.remove(0);
     let term_rule = inner.remove(0);
     let term = prim_rule_to_term(term_rule)?;
-    Ok(Term::Succ(Box::new(term)))
+    Ok(Succ::new(term).into())
 }
 
 fn pair_to_pred(p: Pair<'_, Rule>) -> Result<Term, Error> {
@@ -233,5 +194,5 @@ fn pair_to_pred(p: Pair<'_, Rule>) -> Result<Term, Error> {
     inner.remove(0);
     let term_rule = inner.remove(0);
     let term = prim_rule_to_term(term_rule)?;
-    Ok(Term::Pred(Box::new(term)))
+    Ok(Pred::new(term).into())
 }

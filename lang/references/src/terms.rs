@@ -37,12 +37,12 @@ impl LanguageTerm for Term {
 
 impl SubstType<Type> for Term {
     type Target = Self;
-    fn subst_type(self, _: &TypeVar, ty: &Type) -> Self::Target {
+    fn subst_type(self, _: &TypeVar, _: &Type) -> Self::Target {
         self
     }
 }
 
-impl SubstTerm for Term {
+impl SubstTerm<Term> for Term {
     type Target = Self;
     fn subst(self, v: &Var, t: &Term) -> Self::Target {
         match self {

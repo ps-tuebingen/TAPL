@@ -14,6 +14,20 @@ where
     term: Box<T>,
 }
 
+impl<T> Deref<T>
+where
+    T: LanguageTerm,
+{
+    pub fn new<T1>(t: T1) -> Deref<T>
+    where
+        T1: Into<T>,
+    {
+        Deref {
+            term: Box::new(t.into()),
+        }
+    }
+}
+
 impl<T> Term for Deref<T> where T: LanguageTerm {}
 
 impl<T> SubstTerm<T> for Deref<T>

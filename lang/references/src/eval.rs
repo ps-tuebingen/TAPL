@@ -1,6 +1,6 @@
 use super::{terms::Term, values::Value};
 use common::{
-    errors::{Error, ErrorKind},
+    errors::Error,
     eval::{Eval, EvalEnvironment},
     Location,
 };
@@ -12,7 +12,7 @@ pub struct Store(HashMap<Location, Value>);
 impl EvalEnvironment for Store {
     fn fresh_location(&self) -> Location {
         let mut next_loc = 0;
-        while self.contains_key(&next_loc) {
+        while self.0.contains_key(&next_loc) {
             next_loc += 1;
         }
         next_loc
@@ -23,7 +23,7 @@ impl Eval for Term {
     type Value = Value;
     type Env = Store;
 
-    fn eval(self, st: &mut Store) -> Result<Self::Value, Error> {
+    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
         match self {
             Term::Var(var) => var.eval(env),
             Term::Num(c) => c.eval(env),

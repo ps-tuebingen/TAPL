@@ -15,6 +15,22 @@ where
     rhs: Box<T>,
 }
 
+impl<T> Assign<T>
+where
+    T: LanguageTerm,
+{
+    pub fn new<T1, T2>(lhs: T1, rhs: T2) -> Assign<T>
+    where
+        T1: Into<T>,
+        T2: Into<T>,
+    {
+        Assign {
+            lhs: Box::new(lhs.into()),
+            rhs: Box::new(rhs.into()),
+        }
+    }
+}
+
 impl<T> Term for Assign<T> where T: LanguageTerm {}
 
 impl<T> SubstTerm<T> for Assign<T>

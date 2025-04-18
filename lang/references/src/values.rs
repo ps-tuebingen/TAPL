@@ -1,9 +1,6 @@
-use crate::{
-    terms::{Term, Var},
-    types::Type,
-};
-use common::{language::LanguageValue,
-    errors::ErrorKind,
+use crate::terms::Term;
+use common::{
+    language::LanguageValue,
     values::{Lambda, Loc, Num, Unit, Value as ValueTrait},
 };
 use std::fmt;
@@ -16,9 +13,13 @@ pub enum Value {
     Loc(Loc<Term>),
 }
 
-impl ValueTrait for Value { type Term = Term;}
+impl ValueTrait for Value {
+    type Term = Term;
+}
 
-impl LanguageValue for Value { type Term=Term;}
+impl LanguageValue for Value {
+    type Term = Term;
+}
 
 impl From<Value> for Term {
     fn from(val: Value) -> Term {
@@ -33,18 +34,32 @@ impl From<Value> for Term {
 
 impl fmt::Display for Value {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self{
-            Value::Lambda(lam) => lam.fmt(f),,
-            Value::Num(num) => num.fmt(f),,
-            Value::Unit(u) => u.fmt(f),,
-            Value::Loc(loc) => loc.fmt(f),,
-
+        match self {
+            Value::Lambda(lam) => lam.fmt(f),
+            Value::Num(num) => num.fmt(f),
+            Value::Unit(u) => u.fmt(f),
+            Value::Loc(loc) => loc.fmt(f),
         }
     }
 }
 
-impl From<Lambda<Term>>for Value { fn from(lam:Lambda<Term>) -> Value {Value::Lambda(lam)} }
-impl From<Unit<Term>> for Value { fn from(u:Unit<Term>) -> Value { Value::Unit(u)}}
-impl From<Num<Term>> for Value { fn from(n:Num<Term>) -> Value { Value::Num(n)}}
-impl From<Loc<Term>> for Value { fn from(loc:Loc<Term>) -> Value { Value::Loc(loc) }}
-
+impl From<Lambda<Term>> for Value {
+    fn from(lam: Lambda<Term>) -> Value {
+        Value::Lambda(lam)
+    }
+}
+impl From<Unit<Term>> for Value {
+    fn from(u: Unit<Term>) -> Value {
+        Value::Unit(u)
+    }
+}
+impl From<Num<Term>> for Value {
+    fn from(n: Num<Term>) -> Value {
+        Value::Num(n)
+    }
+}
+impl From<Loc<Term>> for Value {
+    fn from(loc: Loc<Term>) -> Value {
+        Value::Loc(loc)
+    }
+}
