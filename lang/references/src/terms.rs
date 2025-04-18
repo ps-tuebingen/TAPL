@@ -1,237 +1,66 @@
-use super::types::Type;
-use std::{collections::HashSet, fmt};
-
-pub type Var = String;
-pub type Loc = usize;
+use super::{types::Type, values::Value};
+use common::{
+    language::LanguageTerm,
+    subst::{SubstTerm, SubstType},
+    terms::{
+        App, Assign, Deref, False, If, Lambda, Let, Loc, Num, Pred, Ref, Succ, True, Unit, Variable,
+    },
+    TypeVar, Var,
+};
+use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Term {
-    Var(Var),
-    Const(i64),
-    Succ(Box<Term>),
-    Pred(Box<Term>),
-    Lambda {
-        var: Var,
-        annot: Type,
-        body: Box<Term>,
-    },
-    App {
-        fun: Box<Term>,
-        arg: Box<Term>,
-    },
-    Unit,
-    Ref(Box<Term>),
-    Deref(Box<Term>),
-    Assign {
-        to: Box<Term>,
-        body: Box<Term>,
-    },
-    Loc(Loc),
-    Let {
-        var: Var,
-        bound_term: Box<Term>,
-        in_term: Box<Term>,
-    },
-    If {
-        left: Box<Term>,
-        cmp: Cmp,
-        right: Box<Term>,
-        then_term: Box<Term>,
-        else_term: Box<Term>,
-    },
+    Var(Variable<Term>),
+    Num(Num<Term>),
+    Succ(Succ<Term>),
+    Pred(Pred<Term>),
+    Lambda(Lambda<Term>),
+    App(App<Term>),
+    Unit(Unit<Term>),
+    Ref(Ref<Term>),
+    Deref(Deref<Term>),
+    Assign(Assign<Term>),
+    Loc(Loc<Term>),
+    Let(Let<Term>),
+    If(If<Term>),
+    True(True<Term>),
+    False(False<Term>),
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub enum Cmp {
-    Equal,
-    Greater,
-    GreaterEqual,
-    Less,
-    LessEqual,
+impl common::terms::Term for Term {}
+
+impl LanguageTerm for Term {
+    type Type = Type;
+    type Value = Value;
 }
 
-impl Term {
-    pub fn seq(self, t2: Term) -> Term {
-        let used = self.free_vars();
-        let mut fresh = 0;
-        while used.contains(&format!("x{fresh}")) {
-            fresh += 1;
-        }
-        let var = format!("x{fresh}");
-
-        Term::App {
-            fun: Box::new(Term::Lambda {
-                var,
-                annot: Type::Unit,
-                body: Box::new(t2),
-            }),
-            arg: Box::new(self),
-        }
+impl SubstType<Type> for Term {
+    type Target = Self;
+    fn subst_type(self, _: &TypeVar, ty: &Type) -> Self::Target {
+        self
     }
+}
 
-    pub fn lam(v: &str, annot: Type, body: Term) -> Term {
-        Term::Lambda {
-            var: v.to_owned(),
-            annot,
-            body: Box::new(body),
-        }
-    }
-
-    pub fn app(t1: Term, t2: Term) -> Term {
-        Term::App {
-            fun: Box::new(t1),
-            arg: Box::new(t2),
-        }
-    }
-
-    pub fn reft(t: Term) -> Term {
-        Term::Ref(Box::new(t))
-    }
-
-    pub fn deref(t: Term) -> Term {
-        Term::Deref(Box::new(t))
-    }
-
-    pub fn assign(to: Term, body: Term) -> Term {
-        Term::Assign {
-            to: Box::new(to),
-            body: Box::new(body),
-        }
-    }
-
-    pub fn is_value(&self) -> bool {
-        matches!(self, Term::Lambda { .. } | Term::Unit | Term::Loc(_))
-    }
-
-    pub fn free_vars(&self) -> HashSet<Var> {
+impl SubstTerm for Term {
+    type Target = Self;
+    fn subst(self, v: &Var, t: &Term) -> Self::Target {
         match self {
-            Term::Var(v) => HashSet::from([v.clone()]),
-            Term::Const(_) => HashSet::new(),
-            Term::Succ(t) => t.free_vars(),
-            Term::Pred(t) => t.free_vars(),
-            Term::Lambda {
-                var,
-                annot: _,
-                body,
-            } => {
-                let mut vars = body.free_vars();
-                vars.remove(var);
-                vars
-            }
-            Term::App { fun, arg } => {
-                let mut vars = fun.free_vars();
-                vars.extend(arg.free_vars());
-                vars
-            }
-            Term::Assign { to, body } => {
-                let mut vars = to.free_vars();
-                vars.extend(body.free_vars());
-                vars
-            }
-            Term::Ref(t) => t.free_vars(),
-            Term::Deref(t) => t.free_vars(),
-            Term::Unit => HashSet::new(),
-            Term::Loc(_) => HashSet::new(),
-            Term::Let {
-                var,
-                bound_term,
-                in_term,
-            } => {
-                let mut vars = in_term.free_vars();
-                vars.remove(var);
-                vars.extend(bound_term.free_vars());
-                vars
-            }
-            Term::If {
-                left,
-                right,
-                then_term,
-                else_term,
-                ..
-            } => {
-                let mut vars = left.free_vars();
-                vars.extend(right.free_vars());
-                vars.extend(then_term.free_vars());
-                vars.extend(else_term.free_vars());
-                vars
-            }
-        }
-    }
-
-    pub fn subst(self, v: &Var, t: Term) -> Term {
-        match self {
-            Term::Var(v1) => {
-                if *v == v1 {
-                    t
-                } else {
-                    Term::Var(v1)
-                }
-            }
-            Term::Const(i) => Term::Const(i),
-            Term::Succ(term) => Term::Succ(Box::new(term.subst(v, t))),
-            Term::Pred(term) => Term::Pred(Box::new(term.subst(v, t))),
-            Term::Lambda { var, annot, body } => {
-                if var == *v {
-                    Term::Lambda { var, annot, body }
-                } else {
-                    Term::Lambda {
-                        var,
-                        annot,
-                        body: Box::new((*body).subst(v, t)),
-                    }
-                }
-            }
-            Term::App { fun, arg } => Term::App {
-                fun: Box::new((*fun).subst(v, t.clone())),
-                arg: Box::new((*arg).subst(v, t)),
-            },
-            Term::Unit => Term::Unit,
-            Term::Ref(tm) => Term::Ref(Box::new((*tm).subst(v, t))),
-            Term::Deref(tm) => Term::Deref(Box::new((*tm).subst(v, t))),
-            Term::Assign { to, body } => Term::Assign {
-                to: Box::new((*to).subst(v, t.clone())),
-                body: Box::new((*body).subst(v, t)),
-            },
-            Term::Loc(loc) => Term::Loc(loc),
-            Term::Let {
-                var,
-                bound_term,
-                in_term,
-            } => {
-                let in_subst = in_term.subst(v, t.clone());
-                if var == *v {
-                    Term::Let {
-                        var,
-                        bound_term,
-                        in_term: Box::new(in_subst),
-                    }
-                } else {
-                    Term::Let {
-                        var,
-                        bound_term: Box::new(bound_term.subst(v, t)),
-                        in_term: Box::new(in_subst),
-                    }
-                }
-            }
-            Term::If {
-                left,
-                cmp,
-                right,
-                then_term,
-                else_term,
-            } => {
-                let left_subst = left.subst(v, t.clone());
-                let right_subst = right.subst(v, t.clone());
-                let then_subst = then_term.subst(v, t.clone());
-                let else_subst = else_term.subst(v, t);
-                Term::If {
-                    left: Box::new(left_subst),
-                    cmp,
-                    right: Box::new(right_subst),
-                    then_term: Box::new(then_subst),
-                    else_term: Box::new(else_subst),
-                }
-            }
+            Term::Var(var) => var.subst(v, t),
+            Term::Num(c) => c.subst(v, t),
+            Term::Succ(s) => s.subst(v, t),
+            Term::Pred(p) => p.subst(v, t),
+            Term::Lambda(lam) => lam.subst(v, t),
+            Term::App(app) => app.subst(v, t),
+            Term::Unit(u) => u.subst(v, t),
+            Term::Ref(reft) => reft.subst(v, t),
+            Term::Deref(dereft) => dereft.subst(v, t),
+            Term::Assign(ass) => ass.subst(v, t),
+            Term::Loc(loc) => loc.subst(v, t),
+            Term::Let(lett) => lett.subst(v, t),
+            Term::If(ift) => ift.subst(v, t),
+            Term::True(tru) => tru.subst(v, t),
+            Term::False(fls) => fls.subst(v, t),
         }
     }
 }
@@ -239,63 +68,109 @@ impl Term {
 impl fmt::Display for Term {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Term::Var(v) => write!(f, "{v}"),
-            Term::Const(c) => write!(f, "{c}"),
-            Term::Succ(t) => write!(f, "succ({t})"),
-            Term::Pred(t) => write!(f, "pred({t})"),
-            Term::Lambda { var, annot, body } => write!(f, "\\{var}:{annot}.({body})"),
-            Term::App { fun, arg } => write!(f, "({fun}) ({arg})"),
-            Term::Unit => f.write_str("unit"),
-            Term::Ref(t) => write!(f, "ref ({t})"),
-            Term::Deref(t) => write!(f, "!({t})"),
-            Term::Assign { to, body } => write!(f, "({to}) := ({body})"),
-            Term::Loc(loc) => write!(f, "{loc}"),
-            Term::Let {
-                var,
-                bound_term,
-                in_term,
-            } => write!(f, "let ({var} = {bound_term}) in {in_term}"),
-            Term::If {
-                left,
-                cmp,
-                right,
-                then_term,
-                else_term,
-            } => write!(
-                f,
-                "if ({left}{cmp}{right}) {{ {then_term} }} else {{ {else_term} }}"
-            ),
+            Term::Var(v) => v.fmt(f),
+            Term::Num(c) => c.fmt(f),
+            Term::Succ(s) => s.fmt(f),
+            Term::Pred(p) => p.fmt(f),
+            Term::Lambda(lam) => lam.fmt(f),
+            Term::App(app) => app.fmt(f),
+            Term::Unit(u) => u.fmt(f),
+            Term::Ref(reft) => reft.fmt(f),
+            Term::Deref(dereft) => dereft.fmt(f),
+            Term::Assign(ass) => ass.fmt(f),
+            Term::Loc(loc) => loc.fmt(f),
+            Term::Let(lett) => lett.fmt(f),
+            Term::If(ift) => ift.fmt(f),
+            Term::True(tru) => tru.fmt(f),
+            Term::False(fls) => fls.fmt(f),
         }
     }
 }
 
-impl fmt::Display for Cmp {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Cmp::Equal => f.write_str("=="),
-            Cmp::Less => f.write_str("<"),
-            Cmp::LessEqual => f.write_str("<="),
-            Cmp::Greater => f.write_str(">"),
-            Cmp::GreaterEqual => f.write_str(">="),
-        }
-    }
-}
-
-impl From<Var> for Term {
-    fn from(v: Var) -> Term {
+impl From<Variable<Term>> for Term {
+    fn from(v: Variable<Term>) -> Term {
         Term::Var(v)
     }
 }
-
-impl From<&str> for Term {
-    fn from(s: &str) -> Term {
-        Term::Var(s.to_owned())
+impl From<Num<Term>> for Term {
+    fn from(n: Num<Term>) -> Term {
+        Term::Num(n)
+    }
+}
+impl From<Succ<Term>> for Term {
+    fn from(s: Succ<Term>) -> Term {
+        Term::Succ(s)
     }
 }
 
-impl From<Loc> for Term {
-    fn from(loc: Loc) -> Term {
+impl From<Pred<Term>> for Term {
+    fn from(p: Pred<Term>) -> Term {
+        Term::Pred(p)
+    }
+}
+impl From<Lambda<Term>> for Term {
+    fn from(lam: Lambda<Term>) -> Term {
+        Term::Lambda(lam)
+    }
+}
+
+impl From<App<Term>> for Term {
+    fn from(app: App<Term>) -> Term {
+        Term::App(app)
+    }
+}
+
+impl From<Unit<Term>> for Term {
+    fn from(u: Unit<Term>) -> Term {
+        Term::Unit(u)
+    }
+}
+
+impl From<Ref<Term>> for Term {
+    fn from(reft: Ref<Term>) -> Term {
+        Term::Ref(reft)
+    }
+}
+
+impl From<Deref<Term>> for Term {
+    fn from(dereft: Deref<Term>) -> Term {
+        Term::Deref(dereft)
+    }
+}
+
+impl From<Assign<Term>> for Term {
+    fn from(ass: Assign<Term>) -> Term {
+        Term::Assign(ass)
+    }
+}
+
+impl From<Loc<Term>> for Term {
+    fn from(loc: Loc<Term>) -> Term {
         Term::Loc(loc)
+    }
+}
+
+impl From<If<Term>> for Term {
+    fn from(ift: If<Term>) -> Term {
+        Term::If(ift)
+    }
+}
+
+impl From<True<Term>> for Term {
+    fn from(tru: True<Term>) -> Term {
+        Term::True(tru)
+    }
+}
+
+impl From<False<Term>> for Term {
+    fn from(fls: False<Term>) -> Term {
+        Term::False(fls)
+    }
+}
+
+impl From<Let<Term>> for Term {
+    fn from(lt: Let<Term>) -> Term {
+        Term::Let(lt)
     }
 }
 

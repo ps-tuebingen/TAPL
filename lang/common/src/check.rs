@@ -2,7 +2,7 @@ use crate::{
     errors::{Error, ErrorKind, ErrorLocation},
     language::LanguageType,
     types::Type,
-    Var,
+    Location, Var,
 };
 use std::collections::HashMap;
 
@@ -14,6 +14,10 @@ where
 
     fn get_var(&self, v: &Var) -> Result<Self::Type, Error>;
     fn add_var(&mut self, v: Var, ty: Self::Type);
+
+    fn get_loc(&self, loc: &Location) -> Result<Self::Type, Error> {
+        Err(to_check_err(ErrorKind::UndefinedLocation(*loc)))
+    }
 }
 
 pub trait Typecheck {

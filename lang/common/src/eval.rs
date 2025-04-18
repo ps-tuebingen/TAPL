@@ -1,9 +1,12 @@
 use crate::{
     errors::{Error, ErrorKind, ErrorLocation},
     language::LanguageValue,
+    Location,
 };
 
-pub trait EvalEnvironment: Default {}
+pub trait EvalEnvironment: Default {
+    fn fresh_location(&self) -> Location;
+}
 
 pub trait Eval: Sized {
     type Env: EvalEnvironment;
@@ -16,7 +19,11 @@ pub trait Eval: Sized {
     fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error>;
 }
 
-impl EvalEnvironment for () {}
+impl EvalEnvironment for () {
+    fn fresh_location(&self) -> Location {
+        0
+    }
+}
 
 pub fn to_eval_err(knd: ErrorKind) -> Error {
     Error {
