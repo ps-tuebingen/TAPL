@@ -115,6 +115,38 @@ impl fmt::Display for Term {
     }
 }
 
+impl From<Loc<Term>> for Term {
+    fn from(loc: Loc<Term>) -> Term {
+        Term::Loc(loc)
+    }
+}
+impl From<Assign<Term>> for Term {
+    fn from(assign: Assign<Term>) -> Term {
+        Term::Assign(assign)
+    }
+}
+impl From<Deref<Term>> for Term {
+    fn from(deref: Deref<Term>) -> Term {
+        Term::Deref(deref)
+    }
+}
+impl From<Ref<Term>> for Term {
+    fn from(reft: Ref<Term>) -> Term {
+        Term::Ref(reft)
+    }
+}
+impl From<ListCase<Term>> for Term {
+    fn from(case: ListCase<Term>) -> Term {
+        Term::ListCase(case)
+    }
+}
+
+impl From<Cast<Term>> for Term {
+    fn from(cast: Cast<Term>) -> Term {
+        Term::Cast(cast)
+    }
+}
+
 impl From<Lambda<Term>> for Term {
     fn from(lam: Lambda<Term>) -> Term {
         Term::Lambda(lam)

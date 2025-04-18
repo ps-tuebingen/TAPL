@@ -1,49 +1,53 @@
-use crate::{
-    syntax::{App, Assign, Deref, Lambda, Let, Projection, Record, Ref, Succ, Term},
-    types::Type,
+use crate::{terms::Term, types::Type};
+use common::{
+    terms::{App, Assign, Deref, Lambda, Let, Num, Record, RecordProj, Ref, Succ, Variable},
+    types::{Fun, Nat, Record as RecordTy, Reference, Unit},
+    Var,
 };
+use std::collections::HashMap;
 
 pub fn ty_counter() -> Type {
-    Type::rec(vec![
-        ("get", Type::fun(Type::Unit, Type::Nat)),
-        ("inc", Type::fun(Type::Unit, Type::Unit)),
-    ])
+    RecordTy::new(HashMap::from([
+        ("get".to_owned(), Fun::new(Unit, Nat)),
+        ("inc".to_owned(), Fun::new(Unit, Unit)),
+    ]))
+    .into()
 }
 
 pub fn counter_rep() -> Type {
-    Type::rec(vec![("x", Type::ref_ty(Type::Nat))])
+    RecordTy::new(HashMap::from([("x".to_owned(), Reference::new(Nat))])).into()
 }
 
 pub fn counter() -> Term {
     Let::new(
         "r",
-        Record::new(vec![("x", Ref::new(1.into()).into())]).into(),
-        Record::new(vec![
+        Record::new(HashMap::<Var, Term>::from([(
+            "x".to_owned(),
+            Ref::new(Num::new(1)).into(),
+        )])),
+        Record::new(HashMap::<Var, Term>::from([
             (
-                "get",
+                "get".to_owned(),
                 Lambda::new(
                     "_",
-                    Type::Unit,
-                    Deref::new(Projection::new("r".into(), "x").into()).into(),
+                    Unit,
+                    Deref::new(RecordProj::new(Variable::new("r"), "x")),
                 )
                 .into(),
             ),
             (
-                "inc",
+                "inc".to_owned(),
                 Lambda::new(
                     "_",
-                    Type::Unit,
+                    Unit,
                     Assign::new(
-                        Projection::new("r".into(), "x").into(),
-                        Succ::new(Deref::new(Projection::new("r".into(), "x").into()).into())
-                            .into(),
-                    )
-                    .into(),
+                        RecordProj::new(Variable::new("r"), "x"),
+                        Succ::new(Deref::new(RecordProj::new(Variable::new("r"), "x"))),
+                    ),
                 )
                 .into(),
             ),
-        ])
-        .into(),
+        ])),
     )
     .into()
 }
@@ -51,13 +55,15 @@ pub fn counter() -> Term {
 pub fn new_counter() -> Term {
     Lambda::new(
         "_",
-        Type::Unit,
+        Unit,
         Let::new(
             "r",
-            Record::new(vec![("x", Ref::new(1.into()).into())]).into(),
-            App::new(counter_class(), "r".into()).into(),
-        )
-        .into(),
+            Record::new(HashMap::<Var, Term>::from([(
+                "x".to_owned(),
+                Ref::new(Num::new(1)).into(),
+            )])),
+            App::new(counter_class(), Variable::new("r")),
+        ),
     )
     .into()
 }
@@ -66,32 +72,29 @@ pub fn counter_class() -> Term {
     Lambda::new(
         "r",
         counter_rep(),
-        Record::new(vec![
+        Record::new(HashMap::<Var, Term>::from([
             (
-                "get",
+                "get".to_owned(),
                 Lambda::new(
                     "_",
-                    Type::Unit,
-                    Deref::new(Projection::new("r".into(), "x").into()).into(),
+                    Unit,
+                    Deref::new(RecordProj::new(Variable::new("r"), "x")),
                 )
                 .into(),
             ),
             (
-                "inc",
+                "inc".to_owned(),
                 Lambda::new(
                     "_",
-                    Type::Unit,
+                    Unit,
                     Assign::new(
-                        Projection::new("r".into(), "x").into(),
-                        Succ::new(Deref::new(Projection::new("r".into(), "x").into()).into())
-                            .into(),
-                    )
-                    .into(),
+                        RecordProj::new(Variable::new("r"), "x"),
+                        Succ::new(Deref::new(RecordProj::new(Variable::new("r"), "x"))),
+                    ),
                 )
                 .into(),
             ),
-        ])
-        .into(),
+        ])),
     )
     .into()
 }

@@ -1,70 +1,66 @@
 use super::counter::counter_rep;
-use crate::{
-    syntax::{App, Assign, Deref, Fix, Lambda, Let, Projection, Record, Ref, Succ, Term, Unit},
-    types::Type,
+use crate::{terms::Term, types::Type};
+use common::{
+    terms::{
+        App, Assign, Deref, Fix, Lambda, Let, Num, Record, RecordProj, Ref, Succ, Unit, Variable,
+    },
+    types::{Fun, Nat, Record as RecordTy, Unit as UnitTy},
+    Var,
 };
+use std::collections::HashMap;
 
 pub fn ty_set_counter() -> Type {
-    Type::rec(vec![
-        ("get", Type::fun(Type::Unit, Type::Nat)),
-        ("set", Type::fun(Type::Nat, Type::Unit)),
-        ("inc", Type::fun(Type::Unit, Type::Unit)),
-    ])
+    RecordTy::new(HashMap::from([
+        ("get".to_owned(), Fun::new(UnitTy, Nat)),
+        ("set".to_owned(), Fun::new(Nat, UnitTy)),
+        ("inc".to_owned(), Fun::new(UnitTy, UnitTy)),
+    ]))
+    .into()
 }
 
 pub fn set_counter_class() -> Term {
     Lambda::new(
         "r",
         counter_rep(),
-        Fix::new(
-            Lambda::new(
-                "self",
-                ty_set_counter(),
-                Record::new(vec![
-                    (
-                        "get",
-                        Lambda::new(
-                            "_",
-                            Type::Unit,
-                            Deref::new(Projection::new("r".into(), "x").into()).into(),
-                        )
-                        .into(),
-                    ),
-                    (
-                        "set",
-                        Lambda::new(
-                            "i",
-                            Type::Nat,
-                            Assign::new(Projection::new("r".into(), "x").into(), "i".into()).into(),
-                        )
-                        .into(),
-                    ),
-                    (
-                        "inc",
-                        Lambda::new(
-                            "_",
-                            Type::Unit,
-                            App::new(
-                                Projection::new("self".into(), "set").into(),
-                                Succ::new(
-                                    App::new(
-                                        Projection::new("self".into(), "get").into(),
-                                        Unit.into(),
-                                    )
-                                    .into(),
-                                )
-                                .into(),
-                            )
-                            .into(),
-                        )
-                        .into(),
-                    ),
-                ])
-                .into(),
-            )
-            .into(),
-        )
-        .into(),
+        Fix::new(Lambda::new(
+            "self",
+            ty_set_counter(),
+            Record::new(HashMap::<Var, Term>::from([
+                (
+                    "get".to_owned(),
+                    Lambda::new(
+                        "_",
+                        UnitTy,
+                        Deref::new(RecordProj::new(Variable::new("r"), "x")),
+                    )
+                    .into(),
+                ),
+                (
+                    "set".to_owned(),
+                    Lambda::new(
+                        "i",
+                        Nat,
+                        Assign::new(RecordProj::new(Variable::new("r"), "x"), Variable::new("i")),
+                    )
+                    .into(),
+                ),
+                (
+                    "inc".to_owned(),
+                    Lambda::new(
+                        "_",
+                        UnitTy,
+                        App::new(
+                            RecordProj::new(Variable::new("self"), "set"),
+                            Succ::new(App::new(
+                                RecordProj::new(Variable::new("self"), "get"),
+                                Unit::new(),
+                            )),
+                        ),
+                    )
+                    .into(),
+                ),
+            ])),
+        )),
     )
     .into()
 }
@@ -72,13 +68,15 @@ pub fn set_counter_class() -> Term {
 pub fn new_set_counter() -> Term {
     Lambda::new(
         "_",
-        Type::Unit,
+        UnitTy,
         Let::new(
             "r",
-            Record::new(vec![("x", Ref::new(1.into()).into())]).into(),
-            App::new(set_counter_class(), "r".into()).into(),
-        )
-        .into(),
+            Record::new(HashMap::<Var, Term>::from([(
+                "x".to_owned(),
+                Ref::new(Num::new(1)).into(),
+            )])),
+            App::new(set_counter_class(), Variable::new("r")),
+        ),
     )
     .into()
 }
@@ -101,14 +99,14 @@ mod set_counter_tests {
     #[test]
     fn ty_set_class() {
         let result = set_counter_class().check(&mut Default::default()).unwrap();
-        let expected = Type::fun(counter_rep(), ty_set_counter());
+        let expected = Fun::new(counter_rep(), ty_set_counter());
         assert_eq!(result, expected)
     }
 
     #[test]
     fn ty_set_new() {
         let result = new_set_counter().check(&mut Default::default()).unwrap();
-        let expected = Type::fun(Type::Unit, ty_set_counter());
+        let expected = Fun::new(UnitTy, ty_set_counter());
         assert_eq!(result, expected)
     }
 }

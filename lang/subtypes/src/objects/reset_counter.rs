@@ -1,27 +1,33 @@
 use super::counter::{counter_class, counter_rep};
-use crate::{
-    syntax::{App, Assign, Lambda, Let, Projection, Record, Ref, Term},
-    types::Type,
+use crate::{terms::Term, types::Type};
+use common::{
+    terms::{App, Assign, Lambda, Let, Num, Record, RecordProj, Ref, Variable},
+    types::{Fun, Nat, Record as RecordTy, Unit},
+    Var,
 };
+use std::collections::HashMap;
 
 pub fn ty_reset_counter() -> Type {
-    Type::rec(vec![
-        ("get", Type::fun(Type::Unit, Type::Nat)),
-        ("inc", Type::fun(Type::Unit, Type::Unit)),
-        ("reset", Type::fun(Type::Unit, Type::Unit)),
-    ])
+    RecordTy::new(HashMap::from([
+        ("get".to_owned(), Fun::new(Unit, Nat)),
+        ("inc".to_owned(), Fun::new(Unit, Unit)),
+        ("reset".to_owned(), Fun::new(Unit, Unit)),
+    ]))
+    .into()
 }
 
 pub fn new_reset_counter() -> Term {
     Lambda::new(
         "_",
-        Type::Unit,
+        Unit,
         Let::new(
             "r",
-            Record::new(vec![("x", Ref::new(1.into()).into())]).into(),
-            App::new(reset_counter_class(), "r".into()).into(),
-        )
-        .into(),
+            Record::new(HashMap::<Var, Term>::from([(
+                "x".to_owned(),
+                Ref::new(Num::new(1)).into(),
+            )])),
+            App::new(reset_counter_class(), Variable::new("r")),
+        ),
     )
     .into()
 }
@@ -32,23 +38,27 @@ pub fn reset_counter_class() -> Term {
         counter_rep(),
         Let::new(
             "super",
-            App::new(counter_class(), "r".into()).into(),
-            Record::new(vec![
-                ("get", Projection::new("super".into(), "get").into()),
-                ("inc", Projection::new("super".into(), "inc").into()),
+            App::new(counter_class(), Variable::new("r")),
+            Record::new(HashMap::<Var, Term>::from([
                 (
-                    "reset",
+                    "get".to_owned(),
+                    RecordProj::new(Variable::new("super"), "get").into(),
+                ),
+                (
+                    "inc".to_owned(),
+                    RecordProj::new(Variable::new("super"), "inc").into(),
+                ),
+                (
+                    "reset".to_owned(),
                     Lambda::new(
                         "_",
-                        Type::Unit,
-                        Assign::new(Projection::new("r".into(), "x").into(), 1.into()).into(),
+                        Unit,
+                        Assign::new(RecordProj::new(Variable::new("r"), "x"), Num::new(1)),
                     )
                     .into(),
                 ),
-            ])
-            .into(),
-        )
-        .into(),
+            ])),
+        ),
     )
     .into()
 }
@@ -67,7 +77,7 @@ mod reset_counter_tests {
     #[test]
     fn ty_new_reset_counter() {
         let result = new_reset_counter().check(&mut Default::default()).unwrap();
-        let expected = Type::fun(Type::Unit, ty_reset_counter());
+        let expected = Fun::new(Unit, ty_reset_counter());
         assert_eq!(result, expected)
     }
 
@@ -76,7 +86,7 @@ mod reset_counter_tests {
         let result = reset_counter_class()
             .check(&mut Default::default())
             .unwrap();
-        let expected = Type::fun(counter_rep(), ty_reset_counter());
+        let expected = Fun::new(counter_rep(), ty_reset_counter());
         assert_eq!(result, expected)
     }
 }

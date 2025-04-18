@@ -1,23 +1,28 @@
 use super::reset_counter::reset_counter_class;
-use crate::{
-    syntax::{App, Assign, Deref, Lambda, Let, Projection, Record, Term},
-    types::Type,
+use crate::{terms::Term, types::Type};
+use common::{
+    terms::{App, Assign, Deref, Lambda, Let, Record, RecordProj, Variable},
+    types::{Fun, Nat, Record as RecordTy, Reference, Unit},
+    Var,
 };
+use std::collections::HashMap;
 
 pub fn ty_backup_counter() -> Type {
-    Type::rec(vec![
-        ("get", Type::fun(Type::Unit, Type::Nat)),
-        ("inc", Type::fun(Type::Unit, Type::Unit)),
-        ("reset", Type::fun(Type::Unit, Type::Unit)),
-        ("backup", Type::fun(Type::Unit, Type::Unit)),
-    ])
+    RecordTy::new(HashMap::from([
+        ("get".to_string(), Fun::new(Unit, Nat)),
+        ("inc".to_string(), Fun::new(Unit, Unit)),
+        ("reset".to_string(), Fun::new(Unit, Unit)),
+        ("backup".to_string(), Fun::new(Unit, Unit)),
+    ]))
+    .into()
 }
 
 pub fn backup_counter_rep() -> Type {
-    Type::rec(vec![
-        ("x", Type::ref_ty(Type::Nat)),
-        ("b", Type::ref_ty(Type::Nat)),
-    ])
+    RecordTy::new(HashMap::from([
+        ("x".to_owned(), Reference::new(Nat)),
+        ("b".to_owned(), Reference::new(Nat)),
+    ]))
+    .into()
 }
 
 pub fn backup_counter_class() -> Term {
@@ -26,40 +31,42 @@ pub fn backup_counter_class() -> Term {
         backup_counter_rep(),
         Let::new(
             "super",
-            App::new(reset_counter_class(), "r".into()).into(),
-            Record::new(vec![
-                ("get", Projection::new("super".into(), "get").into()),
-                ("inc", Projection::new("super".into(), "inc").into()),
+            App::new(reset_counter_class(), Variable::new("r")),
+            Record::new(HashMap::<Var, Term>::from([
                 (
-                    "reset",
+                    "get".to_owned(),
+                    RecordProj::new(Variable::new("super"), "get").into(),
+                ),
+                (
+                    "inc".to_owned(),
+                    RecordProj::new(Variable::new("super"), "inc").into(),
+                ),
+                (
+                    "reset".to_owned(),
                     Lambda::new(
                         "_",
-                        Type::Unit,
+                        Unit,
                         Assign::new(
-                            Projection::new("r".into(), "x").into(),
-                            Deref::new(Projection::new("r".into(), "b").into()).into(),
-                        )
-                        .into(),
+                            RecordProj::new(Variable::new("r"), "x"),
+                            Deref::new(RecordProj::new(Variable::new("r"), "b")),
+                        ),
                     )
                     .into(),
                 ),
                 (
-                    "backup",
+                    "backup".to_owned(),
                     Lambda::new(
                         "_",
-                        Type::Unit,
+                        Unit,
                         Assign::new(
-                            Projection::new("r".into(), "b").into(),
-                            Deref::new(Projection::new("r".into(), "x").into()).into(),
-                        )
-                        .into(),
+                            RecordProj::new(Variable::new("r"), "b"),
+                            Deref::new(RecordProj::new(Variable::new("r"), "x")),
+                        ),
                     )
                     .into(),
                 ),
-            ])
-            .into(),
-        )
-        .into(),
+            ])),
+        ),
     )
     .into()
 }

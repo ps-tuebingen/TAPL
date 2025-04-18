@@ -1,16 +1,20 @@
 use super::{counter::counter_rep, reset_counter::reset_counter_class};
-use crate::{
-    syntax::{App, Assign, Deref, Lambda, Let, Pred, Projection, Record, Ref, Term},
-    types::Type,
+use crate::{terms::Term, types::Type};
+use common::{
+    terms::{App, Assign, Deref, Lambda, Let, Num, Pred, Record, RecordProj, Ref, Variable},
+    types::{Fun, Nat, Record as RecordTy, Unit},
+    Var,
 };
+use std::collections::HashMap;
 
 pub fn ty_dec_counter() -> Type {
-    Type::rec(vec![
-        ("get", Type::fun(Type::Unit, Type::Nat)),
-        ("inc", Type::fun(Type::Unit, Type::Unit)),
-        ("reset", Type::fun(Type::Unit, Type::Unit)),
-        ("dec", Type::fun(Type::Nat, Type::Unit)),
-    ])
+    RecordTy::new(HashMap::from([
+        ("get".to_owned(), Fun::new(Unit, Nat)),
+        ("inc".to_owned(), Fun::new(Unit, Unit)),
+        ("reset".to_owned(), Fun::new(Unit, Unit)),
+        ("dec".to_owned(), Fun::new(Nat, Unit)),
+    ]))
+    .into()
 }
 
 pub fn dec_counter_class() -> Term {
@@ -19,29 +23,34 @@ pub fn dec_counter_class() -> Term {
         counter_rep(),
         Let::new(
             "super",
-            App::new(reset_counter_class(), "r".into()).into(),
-            Record::new(vec![
-                ("get", Projection::new("super".into(), "get").into()),
-                ("inc", Projection::new("super".into(), "inc").into()),
-                ("reset", Projection::new("super".into(), "reset").into()),
+            App::new(reset_counter_class(), Variable::new("r")),
+            Record::new(HashMap::<Var, Term>::from([
                 (
-                    "dec",
+                    "get".to_owned(),
+                    RecordProj::new(Variable::new("super"), "get").into(),
+                ),
+                (
+                    "inc".to_owned(),
+                    RecordProj::new(Variable::new("super"), "inc").into(),
+                ),
+                (
+                    "reset".to_owned(),
+                    RecordProj::new(Variable::new("super"), "reset").into(),
+                ),
+                (
+                    "dec".to_owned(),
                     Lambda::new(
                         "n",
-                        Type::Nat,
+                        Nat,
                         Assign::new(
-                            Projection::new("r".into(), "x").into(),
-                            Pred::new(Deref::new(Projection::new("r".into(), "x").into()).into())
-                                .into(),
-                        )
-                        .into(),
+                            RecordProj::new(Variable::new("r"), "x"),
+                            Pred::new(Deref::new(RecordProj::new(Variable::new("r"), "x"))),
+                        ),
                     )
                     .into(),
                 ),
-            ])
-            .into(),
-        )
-        .into(),
+            ])),
+        ),
     )
     .into()
 }
@@ -49,13 +58,15 @@ pub fn dec_counter_class() -> Term {
 pub fn new_dec_counter() -> Term {
     Lambda::new(
         "_",
-        Type::Unit,
+        Unit,
         Let::new(
             "r",
-            Record::new(vec![("x", Ref::new(1.into()).into())]).into(),
-            App::new(dec_counter_class(), "r".into()).into(),
-        )
-        .into(),
+            Record::new(HashMap::<Var, Term>::from([(
+                "x".to_owned(),
+                Ref::new(Num::new(1)).into(),
+            )])),
+            App::new(dec_counter_class(), Variable::new("r")),
+        ),
     )
     .into()
 }
@@ -83,14 +94,14 @@ mod dec_counter_tests {
     #[test]
     fn ty_dec_class() {
         let result = dec_counter_class().check(&mut Default::default()).unwrap();
-        let expected = Type::fun(counter_rep(), ty_dec_counter());
+        let expected = Fun::new(counter_rep(), ty_dec_counter());
         assert_eq!(result, expected)
     }
 
     #[test]
     fn ty_new_dec() {
         let result = new_dec_counter().check(&mut Default::default()).unwrap();
-        let expected = Type::fun(Type::Unit, ty_dec_counter());
+        let expected = Fun::new(Unit, ty_dec_counter());
         assert_eq!(result, expected)
     }
 }
