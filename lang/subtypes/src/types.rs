@@ -1,72 +1,122 @@
-use super::syntax::Label;
-use std::{collections::HashMap, fmt};
+use common::{
+    language::LanguageType,
+    subst::SubstType,
+    types::{Bool, Bot, Fun, List, Nat, Record, Reference, Sink, Source, Top, Unit, Variant},
+    TypeVar,
+};
+use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Type {
-    Top,
-    Bot,
-    Fun { from: Box<Type>, to: Box<Type> },
-    Record(HashMap<Label, Type>),
-    Variant(Vec<(Label, Type)>),
-    List(Box<Type>),
-    Ref(Box<Type>),
-    Source(Box<Type>),
-    Sink(Box<Type>),
-    Nat,
-    Unit,
-    Bool,
+    Top(Top),
+    Bot(Bot),
+    Fun(Fun<Type>),
+    Record(Record<Type>),
+    Variant(Variant<Type>),
+    List(List<Type>),
+    Ref(Reference<Type>),
+    Source(Source<Type>),
+    Sink(Sink<Type>),
+    Nat(Nat),
+    Unit(Unit),
+    Bool(Bool),
 }
 
-impl Type {
-    pub fn fun(from: Type, to: Type) -> Type {
-        Type::Fun {
-            from: Box::new(from),
-            to: Box::new(to),
-        }
-    }
+impl common::types::Type for Type {}
 
-    pub fn rec(recs: Vec<(&str, Type)>) -> Type {
-        let recs: Vec<(String, Type)> =
-            recs.into_iter().map(|(s, ty)| (s.to_owned(), ty)).collect();
-        Type::Record(HashMap::from_iter(recs))
-    }
+impl LanguageType for Type {}
 
-    pub fn ref_ty(ty: Type) -> Type {
-        Type::Ref(Box::new(ty))
+impl SubstType<Type> for Type {
+    type Target = Self;
+    fn subst_type(self, _: &TypeVar, _: &Type) -> Self::Target {
+        self
     }
 }
 
 impl fmt::Display for Type {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Type::Top => f.write_str("Top"),
-            Type::Bot => f.write_str("Bot"),
-            Type::Fun { from, to } => write!(f, "({from} -> {to})"),
-            Type::Record(recs) => {
-                let mut recs: Vec<(&Label, &Type)> = recs.iter().collect();
-                recs.sort_by(|(lb1, _), (lb2, _)| lb1.cmp(lb2));
-                let rec_strs: Vec<String> = recs
-                    .iter()
-                    .map(|(label, ty)| format!("{label}:{ty}"))
-                    .collect();
-                write!(f, "{{ {} }}", rec_strs.join(", "))
-            }
-            Type::Variant(variants) => {
-                let mut variants: Vec<&(Label, Type)> = variants.iter().collect();
-                variants.sort_by(|(lb1, _), (lb2, _)| lb1.cmp(lb2));
-                let var_strs: Vec<String> = variants
-                    .iter()
-                    .map(|(label, ty)| format!("{label}:{ty}"))
-                    .collect();
-                write!(f, "<{}>", var_strs.join(","))
-            }
-            Type::List(ty) => write!(f, "List({ty})"),
-            Type::Ref(ty) => write!(f, "Ref({ty})"),
-            Type::Source(ty) => write!(f, "Source({ty})"),
-            Type::Sink(ty) => write!(f, "Sink({ty})"),
-            Type::Nat => f.write_str("Nat"),
-            Type::Unit => f.write_str("Unit"),
-            Type::Bool => f.write_str("Bool"),
+            Type::Top(top) => top.fmt(f),
+            Type::Bot(bot) => bot.fmt(f),
+            Type::Fun(fun) => fun.fmt(f),
+            Type::Record(rec) => rec.fmt(f),
+            Type::Variant(variant) => variant.fmt(f),
+            Type::List(list) => list.fmt(f),
+            Type::Ref(refty) => refty.fmt(f),
+            Type::Source(src) => src.fmt(f),
+            Type::Sink(snk) => snk.fmt(f),
+            Type::Nat(nat) => nat.fmt(f),
+            Type::Unit(unit) => unit.fmt(f),
+            Type::Bool(b) => b.fmt(f),
         }
+    }
+}
+
+impl From<Source<Type>> for Type {
+    fn from(src: Source<Type>) -> Type {
+        Type::Source(src)
+    }
+}
+impl From<Sink<Type>> for Type {
+    fn from(sink: Sink<Type>) -> Type {
+        Type::Sink(sink)
+    }
+}
+
+impl From<Reference<Type>> for Type {
+    fn from(reft: Reference<Type>) -> Type {
+        Type::Ref(reft)
+    }
+}
+impl From<Bot> for Type {
+    fn from(b: Bot) -> Type {
+        Type::Bot(b)
+    }
+}
+impl From<Top> for Type {
+    fn from(t: Top) -> Type {
+        Type::Top(t)
+    }
+}
+
+impl From<Unit> for Type {
+    fn from(u: Unit) -> Type {
+        Type::Unit(u)
+    }
+}
+
+impl From<Fun<Type>> for Type {
+    fn from(fun: Fun<Type>) -> Type {
+        Type::Fun(fun)
+    }
+}
+
+impl From<Bool> for Type {
+    fn from(b: Bool) -> Type {
+        Type::Bool(b)
+    }
+}
+
+impl From<Nat> for Type {
+    fn from(n: Nat) -> Type {
+        Type::Nat(n)
+    }
+}
+
+impl From<Record<Type>> for Type {
+    fn from(rec: Record<Type>) -> Type {
+        Type::Record(rec)
+    }
+}
+
+impl From<Variant<Type>> for Type {
+    fn from(var: Variant<Type>) -> Type {
+        Type::Variant(var)
+    }
+}
+
+impl From<List<Type>> for Type {
+    fn from(ls: List<Type>) -> Type {
+        Type::List(ls)
     }
 }

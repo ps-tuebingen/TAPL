@@ -27,3 +27,4 @@ done:
 	cargo build -p e2e_references
 	cargo build -p exceptions
 	cargo build -p e2e_exceptions
+	cargo build -p subtypes
