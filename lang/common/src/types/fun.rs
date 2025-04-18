@@ -1,5 +1,11 @@
 use super::Type;
-use crate::{subst::SubstType, TypeVar};
+use crate::{
+    check::{to_subty_err, Subtypecheck},
+    errors::Error,
+    language::LanguageType,
+    subst::SubstType,
+    TypeVar,
+};
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -37,6 +43,36 @@ where
             to: Box::new(self.to.subst_type(v, ty)),
         }
         .into()
+    }
+}
+
+impl<Ty> Subtypecheck<Ty> for Fun<Ty>
+where
+    Ty: LanguageType,
+{
+    type Env = <Ty as Subtypecheck<Ty>>::Env;
+    fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Error> {
+        if let Ok(_) = sup.clone().into_top() {
+            return Ok(());
+        }
+
+        let sup_fun = sup.clone().into_fun().map_err(to_subty_err)?;
+        self.from
+            .check_supertype(&(*sup_fun.from), &mut env.clone())?;
+        sup_fun.to.check_supertype(&(*self.to), env)?;
+        Ok(())
+    }
+
+    fn check_supertype(&self, sub: &Ty, env: &mut Self::Env) -> Result<(), Error> {
+        if let Ok(_) = sub.clone().into_bot() {
+            return Ok(());
+        }
+
+        let sub_fun = sub.clone().into_fun().map_err(to_subty_err)?;
+        self.from
+            .check_subtype(&(*sub_fun.from), &mut env.clone())?;
+        sub_fun.to.check_subtype(&(*self.to), env)?;
+        Ok(())
     }
 }
 

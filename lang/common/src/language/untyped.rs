@@ -26,7 +26,7 @@ where
     }
 }
 
-impl Subtypecheck for Untyped {
+impl Subtypecheck<Untyped> for Untyped {
     type Env = ();
 
     fn check_subtype(&self, _: &Self, _: &mut Self::Env) -> Result<(), Error> {

@@ -3,14 +3,14 @@ use crate::{
     errors::ErrorKind,
     subst::SubstType,
     types::{
-        Bool, Forall, ForallBounded, Fun, List, Nat, Optional, Product, Record, Reference, Sum,
-        Tuple, Type, Variant,
+        Bool, Bot, Forall, ForallBounded, Fun, List, Nat, Optional, Product, Record, Reference,
+        Sink, Source, Sum, Top, Tuple, Type, Variant,
     },
 };
 
 pub trait LanguageType
 where
-    Self: Type + SubstType<Self, Target = Self> + Subtypecheck,
+    Self: Type + SubstType<Self, Target = Self> + Subtypecheck<Self>,
 {
     fn into_fun(self) -> Result<Fun<Self>, ErrorKind> {
         Err(ErrorKind::TypeMismatch {
@@ -89,6 +89,20 @@ where
         })
     }
 
+    fn into_source(self) -> Result<Source<Self>, ErrorKind> {
+        Err(ErrorKind::TypeMismatch {
+            found: self.to_string(),
+            expected: "Source".to_owned(),
+        })
+    }
+
+    fn into_sink(self) -> Result<Sink<Self>, ErrorKind> {
+        Err(ErrorKind::TypeMismatch {
+            found: self.to_string(),
+            expected: "Sink".to_owned(),
+        })
+    }
+
     fn into_nat(self) -> Result<Nat, ErrorKind> {
         Err(ErrorKind::TypeMismatch {
             found: self.to_string(),
@@ -100,6 +114,20 @@ where
         Err(ErrorKind::TypeMismatch {
             found: self.to_string(),
             expected: "Bool".to_owned(),
+        })
+    }
+
+    fn into_top(self) -> Result<Top, ErrorKind> {
+        Err(ErrorKind::TypeMismatch {
+            found: self.to_string(),
+            expected: "Top".to_owned(),
+        })
+    }
+
+    fn into_bot(self) -> Result<Bot, ErrorKind> {
+        Err(ErrorKind::TypeMismatch {
+            found: self.to_string(),
+            expected: "Bot".to_owned(),
         })
     }
 

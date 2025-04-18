@@ -18,18 +18,27 @@ pub trait Typecheck {
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error>;
 }
 
-pub trait Subtypecheck: Type {
-    type Env: CheckEnvironment<Type = Self>;
+pub trait Subtypecheck<Ty>
+where
+    Self: Type,
+    Ty: LanguageType,
+{
+    type Env: CheckEnvironment<Type = Ty>;
 
-    fn check_subtype(&self, sup: &Self, env: &mut Self::Env) -> Result<(), Error>;
-    fn check_supertype(&self, sub: &Self, env: &mut Self::Env) -> Result<(), Error> {
-        sub.check_subtype(self, env)
-    }
+    fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Error>;
+    fn check_supertype(&self, sub: &Ty, env: &mut Self::Env) -> Result<(), Error>;
 }
 
 pub fn to_check_err(knd: ErrorKind) -> Error {
     Error {
         kind: knd,
         loc: ErrorLocation::Check,
+    }
+}
+
+pub fn to_subty_err(knd: ErrorKind) -> Error {
+    Error {
+        kind: knd,
+        loc: ErrorLocation::Subtyping,
     }
 }

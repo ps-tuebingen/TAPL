@@ -51,9 +51,12 @@ impl Typecheck for Term {
     }
 }
 
-impl Subtypecheck for Type {
+impl Subtypecheck<Type> for Type {
     type Env = ExceptionEnv;
     fn check_subtype(&self, _: &Self, _: &mut Self::Env) -> Result<(), Error> {
+        Ok(())
+    }
+    fn check_supertype(&self, _: &Self, _: &mut Self::Env) -> Result<(), Error> {
         Ok(())
     }
 }

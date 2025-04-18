@@ -1,5 +1,11 @@
 use super::Type;
-use crate::{subst::SubstType, Label, TypeVar};
+use crate::{
+    check::{to_subty_err, Subtypecheck},
+    errors::{Error, ErrorKind},
+    language::LanguageType,
+    subst::SubstType,
+    Label, TypeVar,
+};
 use std::collections::HashMap;
 use std::fmt;
 
@@ -42,6 +48,44 @@ where
                 .collect(),
         }
         .into()
+    }
+}
+
+impl<Ty> Subtypecheck<Ty> for Record<Ty>
+where
+    Ty: LanguageType,
+{
+    type Env = <Ty as Subtypecheck<Ty>>::Env;
+    fn check_supertype(&self, sub: &Ty, env: &mut Self::Env) -> Result<(), Error> {
+        if let Ok(_) = sub.clone().into_bot() {
+            return Ok(());
+        }
+
+        let sub_rec = sub.clone().into_record().map_err(to_subty_err)?;
+        for (lb, ty) in sub_rec.records.iter() {
+            let self_ty = self
+                .records
+                .get(lb)
+                .ok_or(to_subty_err(ErrorKind::UndefinedLabel(lb.clone())))?;
+            ty.check_supertype(self_ty, &mut env.clone())?;
+        }
+        Ok(())
+    }
+
+    fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Error> {
+        if let Ok(_) = sup.clone().into_top() {
+            return Ok(());
+        }
+
+        let sup_rec = sup.clone().into_record().map_err(to_subty_err)?;
+        for (lb, ty) in self.records.iter() {
+            let sup_ty = sup_rec
+                .records
+                .get(lb)
+                .ok_or(to_subty_err(ErrorKind::UndefinedLabel(lb.clone())))?;
+            ty.check_subtype(sup_ty, &mut env.clone())?;
+        }
+        Ok(())
     }
 }
 

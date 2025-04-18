@@ -1,5 +1,11 @@
 use super::Type;
-use crate::{subst::SubstType, TypeVar};
+use crate::{
+    check::{to_subty_err, Subtypecheck},
+    errors::Error,
+    language::LanguageType,
+    subst::SubstType,
+    TypeVar,
+};
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -7,7 +13,7 @@ pub struct Sink<Ty>
 where
     Ty: Type,
 {
-    ty: Box<Ty>,
+    pub ty: Box<Ty>,
 }
 
 impl<Ty> Sink<Ty>
@@ -37,6 +43,34 @@ where
             ty: Box::new(self.ty.subst_type(v, ty)),
         }
         .into()
+    }
+}
+
+impl<Ty> Subtypecheck<Ty> for Sink<Ty>
+where
+    Ty: LanguageType,
+{
+    type Env = <Ty as Subtypecheck<Ty>>::Env;
+    fn check_supertype(&self, sub: &Ty, env: &mut Self::Env) -> Result<(), Error> {
+        if let Ok(_) = sub.clone().into_bot() {
+            return Ok(());
+        }
+
+        if let Ok(reft) = sub.clone().into_ref() {
+            reft.ty.check_supertype(&(*self.ty), env)
+        } else {
+            let sub_sink = sub.clone().into_sink().map_err(to_subty_err)?;
+            sub_sink.ty.check_supertype(&(*self.ty), env)
+        }
+    }
+
+    fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Error> {
+        if let Ok(_) = sup.clone().into_top() {
+            return Ok(());
+        }
+
+        let sup_sink = sup.clone().into_sink().map_err(to_subty_err)?;
+        sup_sink.ty.check_subtype(&(*self.ty), env)
     }
 }
 
