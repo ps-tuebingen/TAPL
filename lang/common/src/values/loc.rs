@@ -7,8 +7,20 @@ pub struct Loc<T>
 where
     T: LanguageTerm,
 {
-    loc: usize,
+    pub loc: usize,
     phantom: PhantomData<T>,
+}
+
+impl<T> Loc<T>
+where
+    T: LanguageTerm,
+{
+    pub fn new(loc: usize) -> Loc<T> {
+        Loc {
+            loc,
+            phantom: PhantomData,
+        }
+    }
 }
 
 impl<T> Value for Loc<T>

@@ -1,6 +1,9 @@
 use super::Term;
 use crate::{
-    language::LanguageTerm,
+    check::{to_check_err, Typecheck},
+    errors::Error,
+    eval::{to_eval_err, Eval, EvalEnvironment},
+    language::{LanguageTerm, LanguageType, LanguageValue},
     subst::{SubstTerm, SubstType},
     TypeVar, Var,
 };
@@ -55,6 +58,34 @@ where
             term: Box::new(self.term.subst_type(v, ty)),
         }
         .into()
+    }
+}
+
+impl<T> Typecheck for Deref<T>
+where
+    T: LanguageTerm,
+{
+    type Env = <T as Typecheck>::Env;
+    type Type = <T as Typecheck>::Type;
+
+    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
+        let term_ty = self.term.check(env)?;
+        let ref_ty = term_ty.into_ref().map_err(to_check_err)?;
+        Ok(*ref_ty.ty)
+    }
+}
+
+impl<T> Eval for Deref<T>
+where
+    T: LanguageTerm,
+{
+    type Env = <T as Eval>::Env;
+    type Value = <T as Eval>::Value;
+
+    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
+        let term_val = self.term.clone().eval(env)?;
+        let loc_val = term_val.into_loc().map_err(to_eval_err)?;
+        env.get_location(loc_val.loc).map_err(to_eval_err)
     }
 }
 

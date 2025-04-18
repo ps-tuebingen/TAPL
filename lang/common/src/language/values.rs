@@ -2,7 +2,7 @@ use super::terms::LanguageTerm;
 use crate::{
     errors::ErrorKind,
     values::{
-        Cons, False, Lambda, LambdaSub, Left, Nil, Nothing, Num, Pair, Raise, Record, Right,
+        Cons, False, Lambda, LambdaSub, Left, Loc, Nil, Nothing, Num, Pair, Raise, Record, Right,
         Something, True, Tuple, TyLambda, Value, Variant,
     },
 };
@@ -101,6 +101,13 @@ where
         Err(ErrorKind::ValueMismatch {
             found: self.to_string(),
             expected: "Cons".to_owned(),
+        })
+    }
+
+    fn into_loc(self) -> Result<Loc<<Self as LanguageValue>::Term>, ErrorKind> {
+        Err(ErrorKind::ValueMismatch {
+            found: self.to_string(),
+            expected: "Location".to_owned(),
         })
     }
 

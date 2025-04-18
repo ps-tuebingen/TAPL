@@ -7,7 +7,7 @@ pub struct Reference<Ty>
 where
     Ty: Type,
 {
-    ty: Box<Ty>,
+    pub ty: Box<Ty>,
 }
 
 impl<Ty> Reference<Ty>

@@ -2,8 +2,8 @@ use crate::{
     errors::ErrorKind,
     subst::SubstType,
     types::{
-        Bool, Forall, ForallBounded, Fun, List, Nat, Optional, Product, Record, Sum, Tuple, Type,
-        Variant,
+        Bool, Forall, ForallBounded, Fun, List, Nat, Optional, Product, Record, Reference, Sum,
+        Tuple, Type, Variant,
     },
 };
 
@@ -78,6 +78,13 @@ where
         Err(ErrorKind::TypeMismatch {
             found: self.to_string(),
             expected: "List".to_owned(),
+        })
+    }
+
+    fn into_ref(self) -> Result<Reference<Self>, ErrorKind> {
+        Err(ErrorKind::TypeMismatch {
+            found: self.to_string(),
+            expected: "Reference".to_owned(),
         })
     }
 

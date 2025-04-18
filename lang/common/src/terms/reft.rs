@@ -1,7 +1,12 @@
 use super::Term;
 use crate::{
+    check::Typecheck,
+    errors::Error,
+    eval::{Eval, EvalEnvironment},
     language::LanguageTerm,
     subst::{SubstTerm, SubstType},
+    types::Reference,
+    values::Loc as LocVal,
     TypeVar, Var,
 };
 use std::fmt;
@@ -55,6 +60,36 @@ where
             term: Box::new(self.term.subst_type(v, ty)),
         }
         .into()
+    }
+}
+
+impl<T> Typecheck for Ref<T>
+where
+    T: LanguageTerm,
+    Reference<<T as LanguageTerm>::Type>: Into<<T as LanguageTerm>::Type>,
+{
+    type Env = <T as Typecheck>::Env;
+    type Type = <T as Typecheck>::Type;
+
+    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
+        let term_ty = self.term.check(env)?;
+        Ok(Reference::new(term_ty).into())
+    }
+}
+
+impl<T> Eval for Ref<T>
+where
+    T: LanguageTerm,
+    LocVal<T>: Into<<T as LanguageTerm>::Value>,
+{
+    type Env = <T as Eval>::Env;
+    type Value = <T as Eval>::Value;
+
+    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
+        let term_val = self.term.clone().eval(env)?;
+        let fresh_loc = env.fresh_location();
+        env.save_location(fresh_loc, term_val);
+        Ok(LocVal::new(fresh_loc).into())
     }
 }
 
