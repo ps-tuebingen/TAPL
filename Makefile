@@ -29,3 +29,4 @@ done:
 	cargo build -p e2e_exceptions
 	cargo build -p subtypes
 	cargo build -p e2e_subtypes
+	cargo build -p recursive
