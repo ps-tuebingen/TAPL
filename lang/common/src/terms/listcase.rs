@@ -1,6 +1,9 @@
 use super::Term;
 use crate::{
-    language::LanguageTerm,
+    check::{to_check_err, CheckEnvironment, Typecheck},
+    errors::{Error, ErrorKind},
+    eval::{to_eval_err, Eval},
+    language::{LanguageTerm, LanguageType, LanguageValue},
     subst::{SubstTerm, SubstType},
     TypeVar, Var,
 };
@@ -86,6 +89,50 @@ where
             cons_rhs: Box::new(self.cons_rhs.subst_type(v, ty)),
         }
         .into()
+    }
+}
+
+impl<T> Typecheck for ListCase<T>
+where
+    T: LanguageTerm,
+{
+    type Env = <T as Typecheck>::Env;
+    type Type = <T as Typecheck>::Type;
+
+    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
+        let bound_ty = self.bound_term.check(&mut env.clone())?;
+        let bound_list = bound_ty.clone().into_list().map_err(to_check_err)?;
+        let nil_ty = self.nil_rhs.check(&mut env.clone())?;
+        env.add_var(self.cons_fst.clone(), *bound_list.ty);
+        env.add_var(self.cons_rst.clone(), bound_ty);
+        let cons_ty = self.cons_rhs.check(env)?;
+        nil_ty.check_equal(&cons_ty).map_err(to_check_err)?;
+        Ok(cons_ty)
+    }
+}
+
+impl<T> Eval for ListCase<T>
+where
+    T: LanguageTerm,
+{
+    type Env = <T as Eval>::Env;
+    type Value = <T as Eval>::Value;
+
+    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
+        let bound_val = self.bound_term.eval(env)?;
+        if let Ok(_) = bound_val.clone().into_nil() {
+            self.nil_rhs.eval(env)
+        } else if let Ok(cons) = bound_val.clone().into_cons() {
+            self.cons_rhs
+                .subst(&self.cons_fst, &((*cons.head).into()))
+                .subst(&self.cons_rst, &((*cons.tail).into()))
+                .eval(env)
+        } else {
+            Err(to_eval_err(ErrorKind::ValueMismatch {
+                found: bound_val.to_string(),
+                expected: "List".to_owned(),
+            }))
+        }
     }
 }
 

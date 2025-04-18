@@ -25,8 +25,8 @@ impl CheckEnvironment for TypingContext {
 
     fn get_loc(&self, loc: &Location) -> Result<Type, Error> {
         self.store_typing
-            .get(&loc)
-            .ok_or(to_check_err(ErrorKind::UndefinedLocation(loc)))
+            .get(loc)
+            .ok_or(to_check_err(ErrorKind::UndefinedLocation(*loc)))
             .cloned()
     }
 }
