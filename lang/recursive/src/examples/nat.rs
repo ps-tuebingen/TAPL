@@ -1,36 +1,30 @@
-use crate::{
-    terms::{App, Fix, If, IsZero, Lambda, Pred, Term},
-    types::Type,
+use crate::terms::Term;
+use common::{
+    terms::{App, Fix, If, IsZero, Lambda, Pred, Variable},
+    types::{Fun, Nat},
 };
 
 pub fn plus() -> Term {
-    Fix::new(
+    Fix::new(Lambda::new(
+        "f",
+        Fun::new(Nat, Fun::new(Nat, Nat)),
         Lambda::new(
-            "f",
-            Type::fun(Type::Nat, Type::fun(Type::Nat, Type::Nat)),
+            "m",
+            Nat,
             Lambda::new(
-                "m",
-                Type::Nat,
-                Lambda::new(
-                    "n",
-                    Type::Nat,
-                    If::new(
-                        IsZero::new("m".into()).into(),
-                        "n".into(),
-                        App::new(
-                            App::new("f".into(), Pred::new("m".into()).into()).into(),
-                            "n".into(),
-                        )
-                        .into(),
-                    )
-                    .into(),
-                )
-                .into(),
-            )
-            .into(),
-        )
-        .into(),
-    )
+                "n",
+                Nat,
+                If::new(
+                    IsZero::new(Variable::new("m")),
+                    Variable::new("n"),
+                    App::new(
+                        App::new(Variable::new("f"), Pred::new(Variable::new("m"))),
+                        Variable::new("n"),
+                    ),
+                ),
+            ),
+        ),
+    ))
     .into()
 }
 
@@ -43,7 +37,7 @@ mod nat_tests {
     #[test]
     fn check_plus() {
         let result = plus().check(&mut Default::default()).unwrap();
-        let expected = Type::fun(Type::Nat, Type::fun(Type::Nat, Type::Nat));
+        let expected = Fun::new(Nat, Fun::new(Nat, Nat));
         assert_eq!(result, expected)
     }
 }

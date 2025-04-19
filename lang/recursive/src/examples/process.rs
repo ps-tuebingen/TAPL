@@ -1,48 +1,44 @@
 use super::nat::plus;
-use crate::{
-    terms::{App, Fix, Fold, Fst, Lambda, Let, Pair, Snd, Term, Unfold, Zero},
-    types::Type,
+use crate::{terms::Term, types::Type};
+use common::{
+    terms::{App, Fix, Fold, Fst, Lambda, Let, Num, Pair, Snd, Unfold, Variable},
+    types::{Fun, Mu, Nat, Product, TypeVariable},
 };
 
 pub fn ty_process() -> Type {
-    Type::mu("A", Type::fun(Type::Nat, Type::pair(Type::Nat, "A".into())))
+    Mu::new(
+        "A",
+        Fun::new(Nat, Product::new(Nat, TypeVariable::new("A"))),
+    )
+    .into()
 }
 
 pub fn proc() -> Term {
     App::new(
-        Fix::new(
+        Fix::new(Lambda::new(
+            "f",
+            Fun::new(Nat, ty_process()),
             Lambda::new(
-                "f",
-                Type::fun(Type::Nat, ty_process()),
-                Lambda::new(
-                    "acc",
-                    Type::Nat,
-                    Fold::new(
-                        Lambda::new(
-                            "n",
-                            Type::Nat,
-                            Let::new(
-                                "newacc",
-                                App::new(App::new(plus(), "acc".into()).into(), "n".into()).into(),
-                                Pair::new(
-                                    "newacc".into(),
-                                    App::new("f".into(), "newacc".into()).into(),
-                                )
-                                .into(),
-                            )
-                            .into(),
-                        )
-                        .into(),
-                        ty_process(),
-                    )
-                    .into(),
-                )
-                .into(),
-            )
-            .into(),
-        )
-        .into(),
-        Zero.into(),
+                "acc",
+                Nat,
+                Fold::new(
+                    Lambda::new(
+                        "n",
+                        Nat,
+                        Let::new(
+                            "newacc",
+                            App::new(App::new(plus(), Variable::new("acc")), Variable::new("n")),
+                            Pair::new(
+                                Variable::new("newacc"),
+                                App::new(Variable::new("f"), Variable::new("newacc")),
+                            ),
+                        ),
+                    ),
+                    ty_process(),
+                ),
+            ),
+        )),
+        Num::new(0),
     )
     .into()
 }
@@ -51,7 +47,10 @@ pub fn curr() -> Term {
     Lambda::new(
         "s",
         ty_process(),
-        Fst::new(App::new(Unfold::new("s".into(), ty_process()).into(), Zero.into()).into()).into(),
+        Fst::new(App::new(
+            Unfold::new(ty_process(), Variable::new("s")),
+            Num::new(0),
+        )),
     )
     .into()
 }
@@ -59,14 +58,15 @@ pub fn curr() -> Term {
 pub fn send() -> Term {
     Lambda::new(
         "n",
-        Type::Nat,
+        Nat,
         Lambda::new(
             "s",
             ty_process(),
-            Snd::new(App::new(Unfold::new("s".into(), ty_process()).into(), "n".into()).into())
-                .into(),
-        )
-        .into(),
+            Snd::new(App::new(
+                Unfold::new(ty_process(), Variable::new("s")),
+                Variable::new("n"),
+            )),
+        ),
     )
     .into()
 }
@@ -87,14 +87,14 @@ mod process_tests {
     #[test]
     fn check_curr() {
         let result = curr().check(&mut Default::default()).unwrap();
-        let expected = Type::fun(ty_process(), Type::Nat);
+        let expected = Fun::new(ty_process(), Nat);
         assert_eq!(result, expected)
     }
 
     #[test]
     fn check_send() {
         let result = send().check(&mut Default::default()).unwrap();
-        let expected = Type::fun(Type::Nat, Type::fun(ty_process(), ty_process()));
+        let expected = Fun::new(Nat, Fun::new(ty_process(), ty_process()));
         assert_eq!(result, expected)
     }
 }

@@ -11,6 +11,21 @@ where
     ty: Box<Ty>,
 }
 
+impl<Ty> Mu<Ty>
+where
+    Ty: Type,
+{
+    pub fn new<Ty1>(v: &str, ty: Ty1) -> Mu<Ty>
+    where
+        Ty1: Into<Ty>,
+    {
+        Mu {
+            var: v.to_owned(),
+            ty: Box::new(ty.into()),
+        }
+    }
+}
+
 impl<Ty> Type for Mu<Ty> where Ty: Type {}
 
 impl<Ty> SubstType<Ty> for Mu<Ty>

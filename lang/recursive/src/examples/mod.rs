@@ -1,6 +1,7 @@
-use crate::{
-    terms::{App, Fix, Fold, Lambda, Term, Unfold},
-    types::Type,
+use crate::{terms::Term, types::Type};
+use common::{
+    terms::{App, Fix, Fold, Lambda, Unfold, Variable},
+    types::{Fun, Mu, Nat, TypeVariable, Unit},
 };
 
 pub mod list;
@@ -11,40 +12,39 @@ pub mod stream;
 pub mod untyped_lambda;
 
 pub fn ty_hungry() -> Type {
-    Type::mu("A", Type::fun(Type::Nat, "A".into()))
+    Mu::new("A", Fun::new(Nat, TypeVariable::new("A"))).into()
 }
 
 pub fn hungry() -> Term {
     Fold::new(
-        Fix::new(
-            Lambda::new(
-                "f",
-                Type::fun(Type::Nat, ty_hungry()),
-                Lambda::new("n", Type::Nat, Fold::new("f".into(), ty_hungry()).into()).into(),
-            )
-            .into(),
-        )
-        .into(),
+        Fix::new(Lambda::new(
+            "f",
+            Fun::new(Nat, ty_hungry()),
+            Lambda::new("n", Nat, Fold::new(Variable::new("f"), ty_hungry())),
+        )),
         ty_hungry(),
     )
     .into()
 }
 
 pub fn fix_t(t: Type) -> Term {
-    let x_ty = Type::mu("A", Type::fun("A".into(), t.clone()));
-    let x_lam = Lambda::new(
+    let x_ty: Type = Mu::new("A", Fun::new(TypeVariable::new("A".into()), t.clone())).into();
+    let x_lam: Term = Lambda::new(
         "x",
         x_ty.clone(),
         App::new(
-            "f".into(),
-            App::new(Unfold::new("x".into(), x_ty.clone()).into(), "x".into()).into(),
-        )
-        .into(),
-    );
+            Variable::new("f"),
+            App::new(
+                Unfold::new(x_ty.clone(), Variable::new("x")),
+                Variable::new("x"),
+            ),
+        ),
+    )
+    .into();
     Lambda::new(
         "f",
-        Type::fun(t.clone(), t.clone()),
-        App::new(x_lam.clone().into(), Fold::new(x_lam.into(), x_ty).into()).into(),
+        Fun::new(t.clone(), t.clone()),
+        App::new(x_lam.clone(), Fold::new(x_lam, x_ty)),
     )
     .into()
 }
@@ -52,8 +52,8 @@ pub fn fix_t(t: Type) -> Term {
 pub fn diverge_t(t: Type) -> Term {
     Lambda::new(
         "_",
-        Type::Unit,
-        App::new(fix_t(t.clone()), Lambda::new("x", t, "x".into()).into()).into(),
+        Unit,
+        App::new(fix_t(t.clone()), Lambda::new("x", t, Variable::new("x"))),
     )
     .into()
 }
@@ -73,38 +73,36 @@ mod example_tests {
 
     #[test]
     fn check_fix() {
-        let result = fix_t(Type::Nat)
+        let result = fix_t(Nat)
             .check(&mut Default::default())
             .map_err(|err| err.to_string())
             .unwrap();
-        let expected = Type::fun(Type::fun(Type::Nat, Type::Nat), Type::Nat);
+        let expected = Fun::new(Type::fun(Nat, Nat), Nat);
         assert_eq!(result, expected);
 
         let result = fix_t(Type::Bool).check(&mut Default::default()).unwrap();
-        let expected = Type::fun(Type::fun(Type::Bool, Type::Bool), Type::Bool);
+        let expected = Fun::new(Type::fun(Type::Bool, Type::Bool), Type::Bool);
         assert_eq!(result, expected);
 
-        let result = fix_t(Type::Unit).check(&mut Default::default()).unwrap();
-        let expected = Type::fun(Type::fun(Type::Unit, Type::Unit), Type::Unit);
+        let result = fix_t(Unit).check(&mut Default::default()).unwrap();
+        let expected = Fun::new(Type::fun(Unit, Unit), Unit);
         assert_eq!(result, expected)
     }
 
     #[test]
     fn check_diverge() {
-        let result = diverge_t(Type::Nat).check(&mut Default::default()).unwrap();
-        let expected = Type::fun(Type::Unit, Type::Nat);
+        let result = diverge_t(Nat).check(&mut Default::default()).unwrap();
+        let expected = Fun::new(Unit, Nat);
         assert_eq!(result, expected);
 
         let result = diverge_t(Type::Bool)
             .check(&mut Default::default())
             .unwrap();
-        let expected = Type::fun(Type::Unit, Type::Bool);
+        let expected = Fun::new(Unit, Type::Bool);
         assert_eq!(result, expected);
 
-        let result = diverge_t(Type::Unit)
-            .check(&mut Default::default())
-            .unwrap();
-        let expected = Type::fun(Type::Unit, Type::Unit);
+        let result = diverge_t(Unit).check(&mut Default::default()).unwrap();
+        let expected = Fun::new(Unit, Unit);
         assert_eq!(result, expected)
     }
 }

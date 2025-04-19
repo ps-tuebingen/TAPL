@@ -1,84 +1,92 @@
-use crate::{
-    terms::{App, Fix, Fold, Lambda, Let, Pred, Record, RecordProj, Succ, Term, Zero},
-    types::Type,
+use crate::{terms::Term, types::Type};
+use common::{
+    terms::{App, Fix, Fold, Lambda, Let, Num, Pred, Record, RecordProj, Succ, Variable},
+    types::{Fun, Mu, Nat, Record as RecordTy, TypeVariable, Unit as UnitTy},
+    TypeVar, Var,
 };
 use std::collections::HashMap;
 
 pub fn ty_counter() -> Type {
-    Type::mu(
+    Mu::new(
         "C",
-        Type::Record(HashMap::from([
-            ("get".to_owned(), Type::Nat),
-            ("inc".to_owned(), Type::fun(Type::Unit, "C".into())),
-            ("dec".to_owned(), Type::fun(Type::Unit, "C".into())),
+        RecordTy::new(HashMap::<TypeVar, Type>::from([
+            ("get".to_owned(), Nat.into()),
+            (
+                "inc".to_owned(),
+                Fun::new(UnitTy, TypeVariable::new("C")).into(),
+            ),
+            (
+                "dec".to_owned(),
+                Fun::new(UnitTy, TypeVariable::new("C")).into(),
+            ),
         ])),
     )
+    .into()
 }
 
 pub fn new_counter() -> Term {
     Let::new(
         "create",
-        Fix::new(
+        Fix::new(Lambda::new(
+            "f",
+            Fun::new(
+                RecordTy::new(HashMap::from([("x".to_owned(), Nat)])),
+                ty_counter(),
+            ),
             Lambda::new(
-                "f",
-                Type::fun(
-                    Type::Record(HashMap::from([("x".to_owned(), Type::Nat)])),
+                "s",
+                RecordTy::new(HashMap::<TypeVar, Type>::from([(
+                    "x".to_owned(),
+                    Nat.into(),
+                )])),
+                Fold::new(
+                    Record::new(HashMap::<Var, Term>::from([
+                        (
+                            "get".to_owned(),
+                            RecordProj::new(Variable::new("s"), "x").into(),
+                        ),
+                        (
+                            "inc".to_owned(),
+                            Lambda::new(
+                                "_",
+                                UnitTy,
+                                App::new(
+                                    Variable::new("f"),
+                                    Record::new(HashMap::<Var, Term>::from([(
+                                        "x".to_owned(),
+                                        Succ::new(RecordProj::new(Variable::new("s"), "x")).into(),
+                                    )])),
+                                ),
+                            )
+                            .into(),
+                        ),
+                        (
+                            "dec".to_owned(),
+                            Lambda::new(
+                                "_",
+                                UnitTy,
+                                App::new(
+                                    Variable::new("f"),
+                                    Record::new(HashMap::<Var, Term>::from([(
+                                        "x".to_owned(),
+                                        Pred::new(RecordProj::new(Variable::new("s"), "x")).into(),
+                                    )])),
+                                ),
+                            )
+                            .into(),
+                        ),
+                    ])),
                     ty_counter(),
                 ),
-                Lambda::new(
-                    "s",
-                    Type::Record(HashMap::from([("x".to_owned(), Type::Nat)])),
-                    Fold::new(
-                        Record::new(&[
-                            ("get", RecordProj::new("s".into(), "x").into()),
-                            (
-                                "inc",
-                                Lambda::new(
-                                    "_",
-                                    Type::Unit,
-                                    App::new(
-                                        "f".into(),
-                                        Record::new(&[(
-                                            "x",
-                                            Succ::new(RecordProj::new("s".into(), "x").into())
-                                                .into(),
-                                        )])
-                                        .into(),
-                                    )
-                                    .into(),
-                                )
-                                .into(),
-                            ),
-                            (
-                                "dec",
-                                Lambda::new(
-                                    "_",
-                                    Type::Unit,
-                                    App::new(
-                                        "f".into(),
-                                        Record::new(&[(
-                                            "x",
-                                            Pred::new(RecordProj::new("s".into(), "x").into())
-                                                .into(),
-                                        )])
-                                        .into(),
-                                    )
-                                    .into(),
-                                )
-                                .into(),
-                            ),
-                        ])
-                        .into(),
-                        ty_counter(),
-                    )
-                    .into(),
-                )
-                .into(),
-            )
-            .into(),
-        )
-        .into(),
-        App::new("create".into(), Record::new(&[("x", Zero.into())]).into()).into(),
+            ),
+        )),
+        App::new(
+            Variable::new("create"),
+            Record::new(HashMap::<Var, Term>::from([(
+                "x".to_owned(),
+                Num::new(0).into(),
+            )])),
+        ),
     )
     .into()
 }

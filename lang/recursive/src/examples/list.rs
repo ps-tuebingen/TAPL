@@ -1,32 +1,38 @@
-use crate::{
+use crate::{terms::Term, types::Type};
+use common::{
     terms::{
-        False, Fold, Fst, Lambda, Pair, Snd, Term, True, Unfold, Variant, VariantCase,
-        VariantPattern, Zero,
+        variantcase::VariantPattern, False, Fold, Fst, Lambda, Num, Pair, Snd, True, Unfold, Unit,
+        Variable, Variant, VariantCase,
     },
-    types::Type,
+    types::{Mu, Nat, Product, TypeVariable, Unit as UnitTy, Variant as VariantTy},
+    Label,
 };
+use std::collections::HashMap;
 
 pub fn nat_list() -> Type {
-    Type::mu(
+    Mu::new(
         "X",
-        Type::variant(vec![
-            ("nil", Type::Unit),
-            ("cons", Type::pair(Type::Nat, "X".into())),
-        ]),
+        VariantTy::new(HashMap::<Label, Type>::from([
+            ("nil".to_owned(), UnitTy.into()),
+            (
+                "cons".to_owned(),
+                Product::new(Nat, TypeVariable::new("X")).into(),
+            ),
+        ])),
     )
+    .into()
 }
 
 pub fn nil() -> Term {
     Fold::new(
         Variant::new(
             "nil",
-            Term::Unit,
-            Type::variant(vec![
-                ("nil", Type::Unit),
-                ("cons", Type::pair(Type::Nat, nat_list())),
-            ]),
-        )
-        .into(),
+            Unit::new(),
+            VariantTy::new(HashMap::<Label, Type>::from([
+                ("nil".to_owned(), UnitTy.into()),
+                ("cons".to_owned(), Product::new(Nat, nat_list()).into()),
+            ])),
+        ),
         nat_list(),
     )
     .into()
@@ -35,25 +41,22 @@ pub fn nil() -> Term {
 pub fn cons() -> Term {
     Lambda::new(
         "n",
-        Type::Nat,
+        Nat,
         Lambda::new(
             "l",
             nat_list(),
             Fold::new(
                 Variant::new(
                     "cons",
-                    Pair::new("n".into(), "l".into()).into(),
-                    Type::variant(vec![
-                        ("nil", Type::Unit),
-                        ("cons", Type::pair(Type::Nat, nat_list())),
-                    ]),
-                )
-                .into(),
+                    Pair::new(Variable::new("n"), Variable::new("l")),
+                    VariantTy::new(HashMap::<Label, Type>::from([
+                        ("nil".to_owned(), UnitTy.into()),
+                        ("cons".to_owned(), Product::new(Nat, nat_list()).into()),
+                    ])),
+                ),
                 nat_list(),
-            )
-            .into(),
-        )
-        .into(),
+            ),
+        ),
     )
     .into()
 }
@@ -63,13 +66,12 @@ pub fn is_nil() -> Term {
         "l",
         nat_list(),
         VariantCase::new(
-            Unfold::new("l".into(), nat_list()).into(),
+            Unfold::new(nat_list(), Variable::new("l")),
             vec![
-                VariantPattern::new("nil", "u", True.into()),
-                VariantPattern::new("cons", "p", False.into()),
+                VariantPattern::new("nil", "u", True::new()),
+                VariantPattern::new("cons", "p", False::new()),
             ],
-        )
-        .into(),
+        ),
     )
     .into()
 }
@@ -79,13 +81,12 @@ pub fn hd() -> Term {
         "l",
         nat_list(),
         VariantCase::new(
-            Unfold::new("l".into(), nat_list()).into(),
+            Unfold::new(nat_list(), Variable::new("l")),
             vec![
-                VariantPattern::new("nil", "u", Zero.into()),
-                VariantPattern::new("cons", "p", Fst::new("p".into()).into()),
+                VariantPattern::new("nil", "u", Num::new(0)),
+                VariantPattern::new("cons", "p", Fst::new(Variable::new("p"))),
             ],
-        )
-        .into(),
+        ),
     )
     .into()
 }
@@ -95,13 +96,12 @@ pub fn tl() -> Term {
         "l",
         nat_list(),
         VariantCase::new(
-            Unfold::new("l".into(), nat_list()).into(),
+            Unfold::new(nat_list(), Variable::new("l")),
             vec![
-                VariantPattern::new("nil", "u", "l".into()),
-                VariantPattern::new("cons", "p", Snd::new("p".into()).into()),
+                VariantPattern::new("nil", "u", Variable::new("l")),
+                VariantPattern::new("cons", "p", Snd::new(Variable::new("p"))),
             ],
-        )
-        .into(),
+        ),
     )
     .into()
 }
@@ -122,7 +122,7 @@ mod list_tests {
     #[test]
     fn ty_cons() {
         let result = cons().check(&mut Default::default()).unwrap();
-        let expected = Type::fun(Type::Nat, Type::fun(nat_list(), nat_list()));
+        let expected = Type::fun(Nat, Type::fun(nat_list(), nat_list()));
         assert_eq!(result, expected)
     }
 
@@ -136,7 +136,7 @@ mod list_tests {
     #[test]
     fn ty_hd() {
         let result = hd().check(&mut Default::default()).unwrap();
-        let expected = Type::fun(nat_list(), Type::Nat);
+        let expected = Type::fun(nat_list(), Nat);
         assert_eq!(result, expected)
     }
 

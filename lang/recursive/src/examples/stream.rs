@@ -1,20 +1,25 @@
-use crate::{
-    terms::{App, Fix, Fold, Fst, Lambda, Pair, Snd, Succ, Term, Unfold, Zero},
-    types::Type,
+use crate::{terms::Term, types::Type};
+use common::{
+    terms::{App, Fix, Fold, Fst, Lambda, Num, Pair, Snd, Succ, Unfold, Unit, Variable},
+    types::{Fun, Mu, Nat, Product, TypeVariable, Unit as UnitTy},
 };
 
 pub fn ty_stream() -> Type {
-    Type::mu(
+    Mu::new(
         "A",
-        Type::fun(Type::Unit, Type::pair(Type::Nat, "A".into())),
+        Fun::new(UnitTy, Product::new(Nat, TypeVariable::new("A"))),
     )
+    .into()
 }
 
 pub fn hd() -> Term {
     Lambda::new(
         "s",
         ty_stream(),
-        Fst::new(App::new(Unfold::new("s".into(), ty_stream()).into(), Term::Unit).into()).into(),
+        Fst::new(App::new(
+            Unfold::new(ty_stream(), Variable::new("s")),
+            Unit::new(),
+        )),
     )
     .into()
 }
@@ -23,41 +28,36 @@ pub fn tl() -> Term {
     Lambda::new(
         "s",
         ty_stream(),
-        Snd::new(App::new(Unfold::new("s".into(), ty_stream()).into(), Term::Unit).into()).into(),
+        Snd::new(App::new(
+            Unfold::new(ty_stream(), Variable::new("s")),
+            Unit::new(),
+        )),
     )
     .into()
 }
 
 pub fn upfrom0() -> Term {
     App::new(
-        Fix::new(
+        Fix::new(Lambda::new(
+            "f",
+            Fun::new(Nat, ty_stream()),
             Lambda::new(
-                "f",
-                Type::fun(Type::Nat, ty_stream()),
-                Lambda::new(
-                    "n",
-                    Type::Nat,
-                    Fold::new(
-                        Lambda::new(
-                            "_",
-                            Type::Unit,
-                            Pair::new(
-                                "n".into(),
-                                App::new("f".into(), Succ::new("n".into()).into()).into(),
-                            )
-                            .into(),
-                        )
-                        .into(),
-                        ty_stream(),
-                    )
-                    .into(),
-                )
-                .into(),
-            )
-            .into(),
-        )
-        .into(),
-        Zero.into(),
+                "n",
+                Nat,
+                Fold::new(
+                    Lambda::new(
+                        "_",
+                        UnitTy,
+                        Pair::new(
+                            Variable::new("n"),
+                            App::new(Variable::new("f"), Succ::new(Variable::new("n"))),
+                        ),
+                    ),
+                    ty_stream(),
+                ),
+            ),
+        )),
+        Num::new(0),
     )
     .into()
 }
@@ -71,14 +71,14 @@ mod stream_tests {
     #[test]
     fn check_hd() {
         let result = hd().check(&mut Default::default()).unwrap();
-        let expected = Type::fun(ty_stream(), Type::Nat);
+        let expected = Fun::new(ty_stream(), Nat);
         assert_eq!(result, expected)
     }
 
     #[test]
     fn check_tl() {
         let result = tl().check(&mut Default::default()).unwrap();
-        let expected = Type::fun(ty_stream(), ty_stream());
+        let expected = Fun::new(ty_stream(), ty_stream());
         assert_eq!(result, expected)
     }
 

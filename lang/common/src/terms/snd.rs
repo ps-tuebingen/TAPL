@@ -17,6 +17,20 @@ where
     term: Box<T>,
 }
 
+impl<T> Snd<T>
+where
+    T: LanguageTerm,
+{
+    pub fn new<T1>(t: T1) -> Snd<T>
+    where
+        T1: Into<T>,
+    {
+        Snd {
+            term: Box::new(t.into()),
+        }
+    }
+}
+
 impl<T> Term for Snd<T> where T: LanguageTerm {}
 
 impl<T> SubstTerm<T> for Snd<T>

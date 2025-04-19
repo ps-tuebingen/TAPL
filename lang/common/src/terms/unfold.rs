@@ -15,6 +15,22 @@ where
     term: Box<T>,
 }
 
+impl<T> Unfold<T>
+where
+    T: LanguageTerm,
+{
+    pub fn new<T1, Ty>(ty: Ty, t: T1) -> Unfold<T>
+    where
+        T1: Into<T>,
+        Ty: Into<<T as LanguageTerm>::Type>,
+    {
+        Unfold {
+            ty: ty.into(),
+            term: Box::new(t.into()),
+        }
+    }
+}
+
 impl<T> Term for Unfold<T> where T: LanguageTerm {}
 
 impl<T> SubstTerm<T> for Unfold<T>
