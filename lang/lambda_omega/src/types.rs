@@ -1,155 +1,96 @@
-use crate::kinds::Kind;
-use common::errors::ErrorKind;
+use common::{
+    language::LanguageType,
+    subst::SubstType,
+    types::{Bool, Forall, Fun, Nat, OpApp, OpLambda, TypeVariable, Unit},
+};
 use std::fmt;
 
 pub type TypeVar = String;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Type {
-    Var(TypeVar),
-    Unit,
-    Nat,
-    Bool,
-    Lambda {
-        var: TypeVar,
-        annot: Kind,
-        body: Box<Type>,
-    },
-    App {
-        fun: Box<Type>,
-        arg: Box<Type>,
-    },
-    Fun {
-        from: Box<Type>,
-        to: Box<Type>,
-    },
-    Forall {
-        var: TypeVar,
-        ty: Box<Type>,
-    },
+    Var(TypeVariable),
+    Unit(Unit),
+    Nat(Nat),
+    Bool(Bool),
+    OpLambda(OpLambda<Type>),
+    OpApp(OpApp<Type>),
+    Fun(Fun<Type>),
+    Forall(Forall<Type>),
 }
 
-impl Type {
-    pub fn as_fun(self) -> Result<(Type, Type), ErrorKind> {
-        if let Type::Fun { from, to } = self {
-            Ok((*from, *to))
-        } else {
-            Err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
-                expected: "Function Type".to_owned(),
-            })
-        }
-    }
+impl common::types::Type for Type {}
 
-    pub fn as_forall(self) -> Result<(TypeVar, Type), ErrorKind> {
-        if let Type::Forall { var, ty } = self {
-            Ok((var, *ty))
-        } else {
-            Err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
-                expected: "Forall Type".to_owned(),
-            })
-        }
-    }
-
-    pub fn equiv(&self, other: &Type) -> bool {
-        match (self, other) {
-            (Type::Var(_), Type::Var(_)) => true,
-            (Type::Lambda { body: body1, .. }, Type::Lambda { body: body2, .. }) => {
-                body1.equiv(body2)
-            }
-            (
-                Type::App {
-                    fun: fun1,
-                    arg: arg1,
-                },
-                Type::App {
-                    fun: fun2,
-                    arg: arg2,
-                },
-            ) => fun1.equiv(fun2) && arg1.equiv(arg2),
-            (
-                Type::Fun {
-                    from: from1,
-                    to: to1,
-                },
-                Type::Fun {
-                    from: from2,
-                    to: to2,
-                },
-            ) => from1.equiv(from2) && to1.equiv(to2),
-            (Type::App { fun, arg }, ty) => {
-                if let Type::Lambda {
-                    var,
-                    annot: _,
-                    body,
-                } = *(*fun).clone()
-                {
-                    body.subst(&var, (**arg).clone()) == *ty
-                } else {
-                    false
-                }
-            }
-            _ => false,
-        }
-    }
-
-    pub fn subst(self, v: &TypeVar, ty: Type) -> Type {
-        match self {
-            Type::Var(var) => {
-                if var == *v {
-                    ty
-                } else {
-                    Type::Var(var)
-                }
-            }
-            Type::Nat => Type::Nat,
-            Type::Unit => Type::Unit,
-            Type::Bool => Type::Bool,
-            Type::Lambda { var, annot, body } => {
-                if var == *v {
-                    Type::Lambda { var, annot, body }
-                } else {
-                    Type::Lambda {
-                        var,
-                        annot,
-                        body: Box::new(body.subst(v, ty)),
-                    }
-                }
-            }
-            Type::App { fun, arg } => Type::App {
-                fun: Box::new(fun.subst(v, ty.clone())),
-                arg: Box::new(arg.subst(v, ty)),
-            },
-            Type::Fun { from, to } => Type::Fun {
-                from: Box::new(from.subst(v, ty.clone())),
-                to: Box::new(to.subst(v, ty)),
-            },
-            Type::Forall { var, ty: body } => {
-                if var == *v {
-                    Type::Forall { var, ty: body }
-                } else {
-                    Type::Forall {
-                        var,
-                        ty: Box::new(body.subst(v, ty)),
-                    }
-                }
-            }
-        }
-    }
-}
+impl LanguageType for Type {}
 
 impl fmt::Display for Type {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Type::Var(v) => f.write_str(v),
-            Type::Unit => f.write_str("Unit"),
-            Type::Bool => f.write_str("Bool"),
-            Type::Nat => f.write_str("Nat"),
-            Type::Lambda { var, annot, body } => write!(f, "\\{}::{}.{}", var, annot, body),
-            Type::App { fun, arg } => write!(f, "({fun}) ({arg})"),
-            Type::Fun { from, to } => write!(f, "({from}) -> ({to})"),
-            Type::Forall { var, ty } => write!(f, "forall {var}.{ty}"),
+            Type::Var(var) => var.fmt(f),
+            Type::Unit(u) => u.fmt(f),
+            Type::Bool(b) => b.fmt(f),
+            Type::Nat(n) => n.fmt(f),
+            Type::OpLambda(oplam) => oplam.fmt(f),
+            Type::OpApp(opapp) => opapp.fmt(f),
+            Type::Fun(fun) => fun.fmt(f),
+            Type::Forall(forall) => forall.fmt(f),
         }
+    }
+}
+
+impl SubstType<Type> for Type {
+    type Target = Self;
+    fn subst_type(self, v: &TypeVar, ty: &Type) -> Self::Target {
+        match self {
+            Type::Var(var) => var.subst_type(v, ty),
+            Type::Unit(u) => u.subst_type(v, ty),
+            Type::Bool(b) => b.subst_type(v, ty),
+            Type::Nat(n) => n.subst_type(v, ty),
+            Type::OpLambda(oplam) => oplam.subst_type(v, ty),
+            Type::OpApp(opapp) => opapp.subst_type(v, ty),
+            Type::Fun(fun) => fun.subst_type(v, ty),
+            Type::Forall(forall) => forall.subst_type(v, ty),
+        }
+    }
+}
+
+impl From<TypeVariable> for Type {
+    fn from(var: TypeVariable) -> Type {
+        Type::Var(var)
+    }
+}
+impl From<Unit> for Type {
+    fn from(u: Unit) -> Type {
+        Type::Unit(u)
+    }
+}
+impl From<Nat> for Type {
+    fn from(n: Nat) -> Type {
+        Type::Nat(n)
+    }
+}
+impl From<Bool> for Type {
+    fn from(b: Bool) -> Type {
+        Type::Bool(b)
+    }
+}
+impl From<OpLambda<Type>> for Type {
+    fn from(lam: OpLambda<Type>) -> Type {
+        Type::OpLambda(lam)
+    }
+}
+impl From<OpApp<Type>> for Type {
+    fn from(app: OpApp<Type>) -> Type {
+        Type::OpApp(app)
+    }
+}
+impl From<Fun<Type>> for Type {
+    fn from(fun: Fun<Type>) -> Type {
+        Type::Fun(fun)
+    }
+}
+impl From<Forall<Type>> for Type {
+    fn from(forall: Forall<Type>) -> Type {
+        Type::Forall(forall)
     }
 }
