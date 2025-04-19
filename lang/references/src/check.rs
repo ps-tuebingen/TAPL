@@ -1,8 +1,9 @@
 use super::{terms::Term, types::Type};
 use common::{
-    check::{to_check_err, CheckEnvironment, Subtypecheck, Typecheck},
+    check::{CheckEnvironment, Subtypecheck, Typecheck},
     errors::{Error, ErrorKind},
-    Location, Var,
+    kinds::Kind,
+    Location, TypeVar, Var,
 };
 use std::collections::HashMap;
 
@@ -18,20 +19,24 @@ pub struct Environment {
 impl CheckEnvironment for Environment {
     type Type = Type;
 
-    fn get_var(&self, v: &Var) -> Result<Type, Error> {
+    fn get_var(&self, v: &Var) -> Result<Type, ErrorKind> {
         self.env.get_var(v)
     }
 
-    fn get_loc(&self, loc: &Location) -> Result<Type, Error> {
+    fn get_loc(&self, loc: &Location) -> Result<Type, ErrorKind> {
         self.store_ty
             .get(loc)
-            .ok_or(to_check_err(ErrorKind::UndefinedLocation(*loc)))
+            .ok_or(ErrorKind::UndefinedLocation(*loc))
             .cloned()
     }
 
     fn add_var(&mut self, v: Var, ty: Type) {
         self.env.add_var(v, ty)
     }
+    fn get_tyvar(&self, v: &TypeVar) -> Result<Kind, ErrorKind> {
+        Err(ErrorKind::FreeTypeVariable(v.clone()))
+    }
+    fn add_tyvar(&mut self, _: TypeVar, _: Kind) {}
 }
 
 impl Typecheck for Term {

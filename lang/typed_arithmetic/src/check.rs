@@ -1,9 +1,10 @@
 use crate::{terms::Term, types::Type};
 use common::{
     check::Subtypecheck,
-    check::{to_check_err, CheckEnvironment, Typecheck},
+    check::{CheckEnvironment, Typecheck},
     errors::{Error, ErrorKind},
-    Var,
+    kinds::Kind,
+    Location, TypeVar, Var,
 };
 
 #[derive(Default, Clone)]
@@ -11,11 +12,19 @@ pub struct Env;
 
 impl CheckEnvironment for Env {
     type Type = Type;
-    fn get_var(&self, v: &Var) -> Result<Self::Type, Error> {
-        Err(to_check_err(ErrorKind::FreeVariable(v.clone())))
+    fn get_var(&self, v: &Var) -> Result<Self::Type, ErrorKind> {
+        Err(ErrorKind::FreeVariable(v.clone()))
     }
-
     fn add_var(&mut self, _: Var, _: Type) {}
+
+    fn get_tyvar(&self, v: &TypeVar) -> Result<Kind, ErrorKind> {
+        Err(ErrorKind::FreeTypeVariable(v.clone()))
+    }
+    fn add_tyvar(&mut self, _: TypeVar, _: Kind) {}
+
+    fn get_loc(&self, loc: &Location) -> Result<Self::Type, ErrorKind> {
+        Err(ErrorKind::UndefinedLocation(*loc))
+    }
 }
 
 impl Typecheck for Term {

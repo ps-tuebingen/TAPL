@@ -15,6 +15,7 @@ coverage:
 
 .PHON: done
 done:
+	cargo build -p common
 	cargo build -p untyped_arithmetic
 	cargo build -p e2e_untyped_arithmetic
 	cargo build -p untyped_lambda
@@ -32,4 +33,4 @@ done:
 	cargo build -p recursive
 	cargo build -p e2e_recursive
 	cargo build -p system_f
-	cargo buld -p e2e_system_f 
+	cargo build -p e2e_systemf 

@@ -1,8 +1,9 @@
 use super::{terms::Term, types::Type};
 use common::{
-    check::{to_check_err, CheckEnvironment, Subtypecheck, Typecheck},
+    check::{CheckEnvironment, Subtypecheck, Typecheck},
     errors::{Error, ErrorKind},
-    Location, Var,
+    kinds::Kind,
+    Location, TypeVar, Var,
 };
 use std::collections::HashMap;
 
@@ -15,7 +16,7 @@ pub struct TypingContext {
 impl CheckEnvironment for TypingContext {
     type Type = Type;
 
-    fn get_var(&self, v: &Var) -> Result<Type, Error> {
+    fn get_var(&self, v: &Var) -> Result<Type, ErrorKind> {
         self.var_env.get_var(v)
     }
 
@@ -23,12 +24,17 @@ impl CheckEnvironment for TypingContext {
         self.var_env.insert(var, ty);
     }
 
-    fn get_loc(&self, loc: &Location) -> Result<Type, Error> {
+    fn get_loc(&self, loc: &Location) -> Result<Type, ErrorKind> {
         self.store_typing
             .get(loc)
-            .ok_or(to_check_err(ErrorKind::UndefinedLocation(*loc)))
+            .ok_or(ErrorKind::UndefinedLocation(*loc))
             .cloned()
     }
+
+    fn get_tyvar(&self, v: &TypeVar) -> Result<Kind, ErrorKind> {
+        Err(ErrorKind::FreeTypeVariable(v.clone()))
+    }
+    fn add_tyvar(&mut self, _: TypeVar, _: Kind) {}
 }
 
 impl Typecheck for Term {

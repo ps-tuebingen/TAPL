@@ -1,6 +1,6 @@
 use super::Term;
 use crate::{
-    check::{CheckEnvironment, Typecheck},
+    check::{to_check_err, CheckEnvironment, Typecheck},
     errors::{Error, ErrorKind},
     eval::{to_eval_err, Eval},
     language::LanguageTerm,
@@ -65,7 +65,7 @@ where
     type Env = <T as Typecheck>::Env;
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
-        env.get_var(&self.var)
+        env.get_var(&self.var).map_err(to_check_err)
     }
 }
 
