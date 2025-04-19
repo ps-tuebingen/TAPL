@@ -31,3 +31,4 @@ done:
 	cargo build -p e2e_subtypes
 	cargo build -p recursive
 	cargo build -p e2e_recursive
+	cargo build -p system_f
