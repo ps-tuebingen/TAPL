@@ -1,6 +1,10 @@
 use super::{pair_to_n_inner, pair_to_type, to_parse_err, Rule};
-use crate::syntax::{App, Lambda, Term, TyApp, TyLambda};
-use common::errors::{Error, ErrorKind};
+use crate::terms::Term;
+use common::{
+    errors::{Error, ErrorKind},
+    kinds::Kind,
+    terms::{App, Lambda, TyApp, TyLambda, Variable},
+};
 use pest::iterators::Pair;
 
 pub fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
@@ -37,7 +41,7 @@ fn pair_to_prim_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
             let term_rule = pair_to_n_inner(p, vec!["Term"])?.remove(0);
             pair_to_term(term_rule)
         }
-        Rule::variable => Ok(Term::Var(p.as_str().trim().to_owned())),
+        Rule::variable => Ok(Variable::new(p.as_str().trim()).into()),
         r => Err(to_parse_err(ErrorKind::UnexpectedRule {
             found: format!("{r:?}"),
             expected: "Non Left-Recursive Term".to_owned(),
@@ -50,11 +54,7 @@ fn pair_to_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
         Rule::tyapp => {
             let ty_rule = pair_to_n_inner(p, vec!["Type"])?.remove(0);
             let ty = pair_to_type(ty_rule)?;
-            Ok(TyApp {
-                term: Box::new(t),
-                ty,
-            }
-            .into())
+            Ok(TyApp::new(t, ty).into())
         }
         Rule::paren_tyapp => {
             let ty_app_rule = pair_to_n_inner(p, vec!["Type Application"])?.remove(0);
@@ -75,27 +75,20 @@ fn pair_to_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
     }
 }
 
-fn pair_to_lambda(p: Pair<'_, Rule>) -> Result<Lambda, Error> {
+fn pair_to_lambda(p: Pair<'_, Rule>) -> Result<Lambda<Term>, Error> {
     let mut inner = pair_to_n_inner(p, vec!["Lambda Variable", "Lambda Annot", "Lambda Body"])?;
-    let var = inner.remove(0).as_str().trim().to_owned();
+    let var = inner.remove(0).as_str().trim();
     let ty_rule = inner.remove(0);
     let annot = pair_to_type(ty_rule)?;
     let body_rule = inner.remove(0);
     let body = pair_to_term(body_rule)?;
-    Ok(Lambda {
-        var,
-        annot,
-        body: Box::new(body),
-    })
+    Ok(Lambda::new(var, annot, body).into())
 }
 
-fn pair_to_tylambda(p: Pair<'_, Rule>) -> Result<TyLambda, Error> {
+fn pair_to_tylambda(p: Pair<'_, Rule>) -> Result<TyLambda<Term>, Error> {
     let mut inner = pair_to_n_inner(p, vec!["Type Variable", "Type Abstraction Body"])?;
-    let var = inner.remove(0).as_str().trim().to_owned();
+    let var = inner.remove(0).as_str().trim();
     let body_rule = inner.remove(0);
     let body = pair_to_term(body_rule)?;
-    Ok(TyLambda {
-        var,
-        term: Box::new(body),
-    })
+    Ok(TyLambda::new(var, Kind::Star, body))
 }

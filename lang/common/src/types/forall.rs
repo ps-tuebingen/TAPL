@@ -12,6 +12,22 @@ where
     ty: Box<Ty>,
 }
 
+impl<Ty> Forall<Ty>
+where
+    Ty: Type,
+{
+    pub fn new<Ty1>(v: &str, knd: Kind, ty: Ty1) -> Forall<Ty>
+    where
+        Ty1: Into<Ty>,
+    {
+        Forall {
+            var: v.to_owned(),
+            kind: knd,
+            ty: Box::new(ty.into()),
+        }
+    }
+}
+
 impl<Ty> Type for Forall<Ty> where Ty: Type {}
 
 impl<Ty> SubstType<Ty> for Forall<Ty>
