@@ -3,7 +3,7 @@ use crate::{
     errors::ErrorKind,
     subst::SubstType,
     types::{
-        Bool, Bot, Forall, ForallBounded, Fun, List, Nat, Optional, Product, Record, Reference,
+        Bool, Bot, Forall, ForallBounded, Fun, List, Mu, Nat, Optional, Product, Record, Reference,
         Sink, Source, Sum, Top, Tuple, Type, Variant,
     },
 };
@@ -100,6 +100,13 @@ where
         Err(ErrorKind::TypeMismatch {
             found: self.to_string(),
             expected: "Sink".to_owned(),
+        })
+    }
+
+    fn into_mu(self) -> Result<Mu<Self>, ErrorKind> {
+        Err(ErrorKind::TypeMismatch {
+            found: self.to_string(),
+            expected: "Mu".to_owned(),
         })
     }
 

@@ -7,8 +7,8 @@ pub struct Mu<Ty>
 where
     Ty: Type,
 {
-    var: TypeVar,
-    ty: Box<Ty>,
+    pub var: TypeVar,
+    pub ty: Box<Ty>,
 }
 
 impl<Ty> Mu<Ty>

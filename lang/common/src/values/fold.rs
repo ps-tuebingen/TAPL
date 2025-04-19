@@ -8,7 +8,23 @@ where
     T: LanguageTerm,
 {
     ty: <T as LanguageTerm>::Type,
-    val: Box<<T as LanguageTerm>::Value>,
+    pub val: Box<<T as LanguageTerm>::Value>,
+}
+
+impl<T> Fold<T>
+where
+    T: LanguageTerm,
+{
+    pub fn new<Ty, V>(ty: Ty, v: V) -> Fold<T>
+    where
+        Ty: Into<<T as LanguageTerm>::Type>,
+        V: Into<<T as LanguageTerm>::Value>,
+    {
+        Fold {
+            ty: ty.into(),
+            val: Box::new(v.into()),
+        }
+    }
 }
 
 impl<T> Value for Fold<T>

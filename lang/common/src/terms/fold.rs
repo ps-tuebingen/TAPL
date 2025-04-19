@@ -1,7 +1,12 @@
 use super::Term;
 use crate::{
-    language::LanguageTerm,
+    check::{to_check_err, Typecheck},
+    errors::Error,
+    eval::Eval,
+    language::{LanguageTerm, LanguageType},
     subst::{SubstTerm, SubstType},
+    types::Mu,
+    values::Fold as FoldVal,
     TypeVar, Var,
 };
 use std::fmt;
@@ -60,6 +65,37 @@ where
             ty: self.ty.subst_type(v, ty),
         }
         .into()
+    }
+}
+
+impl<T> Typecheck for Fold<T>
+where
+    T: LanguageTerm,
+    Mu<<T as LanguageTerm>::Type>: Into<<T as LanguageTerm>::Type>,
+{
+    type Env = <T as Typecheck>::Env;
+    type Type = <T as Typecheck>::Type;
+
+    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
+        let mu_ty = self.ty.clone().into_mu().map_err(to_check_err)?;
+        let mu_subst = mu_ty.clone().subst_type(&mu_ty.var, &mu_ty.ty);
+        let term_ty = self.term.check(env)?;
+        term_ty.check_equal(&mu_subst).map_err(to_check_err)?;
+        Ok(self.ty.clone())
+    }
+}
+
+impl<T> Eval for Fold<T>
+where
+    T: LanguageTerm,
+    FoldVal<T>: Into<<T as LanguageTerm>::Value>,
+{
+    type Env = <T as Eval>::Env;
+    type Value = <T as Eval>::Value;
+
+    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
+        let term_val = self.term.eval(env)?;
+        Ok(FoldVal::<T>::new(self.ty, term_val).into())
     }
 }
 
