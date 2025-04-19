@@ -130,7 +130,7 @@ where
                 expected: self.ty_name.clone(),
             }));
         }
-        env.add_tyvar(bound_exists.var, Kind::Star);
+        env.add_tyvar_kind(bound_exists.var, Kind::Star);
         env.add_var(self.term_name.clone(), *bound_exists.ty);
         self.in_term.check(env)
     }

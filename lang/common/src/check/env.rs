@@ -16,8 +16,11 @@ where
     fn get_var(&self, v: &Var) -> Result<Self::Type, ErrorKind>;
     fn add_var(&mut self, v: Var, ty: Self::Type);
 
-    fn get_tyvar(&self, v: &TypeVar) -> Result<Kind, ErrorKind>;
-    fn add_tyvar(&mut self, v: TypeVar, knd: Kind);
+    fn get_tyvar_kind(&self, v: &TypeVar) -> Result<Kind, ErrorKind>;
+    fn add_tyvar_kind(&mut self, v: TypeVar, knd: Kind);
+
+    fn get_tyvar_super(&self, v: &TypeVar) -> Result<Self::Type, ErrorKind>;
+    fn add_tyvar_super(&mut self, v: TypeVar, ty: Self::Type);
 
     fn get_loc(&self, loc: &Location) -> Result<Self::Type, ErrorKind>;
 }
@@ -35,10 +38,16 @@ impl<Ty: LanguageType> CheckEnvironment for HashMap<Var, Ty> {
         self.insert(v, ty);
     }
 
-    fn get_tyvar(&self, v: &TypeVar) -> Result<Kind, ErrorKind> {
+    fn get_tyvar_kind(&self, v: &TypeVar) -> Result<Kind, ErrorKind> {
         Err(ErrorKind::FreeTypeVariable(v.clone()))
     }
-    fn add_tyvar(&mut self, _: TypeVar, _: Kind) {}
+    fn add_tyvar_kind(&mut self, _: TypeVar, _: Kind) {}
+
+    fn get_tyvar_super(&self, v: &TypeVar) -> Result<Self::Type, ErrorKind> {
+        Err(ErrorKind::FreeTypeVariable(v.clone()))
+    }
+
+    fn add_tyvar_super(&mut self, _: TypeVar, _: Self::Type) {}
 
     fn get_loc(&self, loc: &Location) -> Result<Self::Type, ErrorKind> {
         Err(ErrorKind::UndefinedLocation(*loc))
@@ -52,10 +61,15 @@ impl CheckEnvironment for () {
     }
     fn add_var(&mut self, _: Var, _: Untyped) {}
 
-    fn get_tyvar(&self, v: &TypeVar) -> Result<Kind, ErrorKind> {
+    fn get_tyvar_kind(&self, v: &TypeVar) -> Result<Kind, ErrorKind> {
         Err(ErrorKind::FreeTypeVariable(v.clone()))
     }
-    fn add_tyvar(&mut self, _: TypeVar, _: Kind) {}
+    fn add_tyvar_kind(&mut self, _: TypeVar, _: Kind) {}
+
+    fn get_tyvar_super(&self, v: &TypeVar) -> Result<Self::Type, ErrorKind> {
+        Err(ErrorKind::FreeTypeVariable(v.clone()))
+    }
+    fn add_tyvar_super(&mut self, _: TypeVar, _: Self::Type) {}
 
     fn get_loc(&self, loc: &Location) -> Result<Self::Type, ErrorKind> {
         Err(ErrorKind::UndefinedLocation(*loc))

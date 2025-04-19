@@ -17,10 +17,15 @@ impl CheckEnvironment for Env {
     }
     fn add_var(&mut self, _: Var, _: Type) {}
 
-    fn get_tyvar(&self, v: &TypeVar) -> Result<Kind, ErrorKind> {
+    fn get_tyvar_kind(&self, v: &TypeVar) -> Result<Kind, ErrorKind> {
         Err(ErrorKind::FreeTypeVariable(v.clone()))
     }
-    fn add_tyvar(&mut self, _: TypeVar, _: Kind) {}
+    fn add_tyvar_kind(&mut self, _: TypeVar, _: Kind) {}
+
+    fn get_tyvar_super(&self, v: &TypeVar) -> Result<Self::Type, ErrorKind> {
+        Err(ErrorKind::FreeTypeVariable(v.clone()))
+    }
+    fn add_tyvar_super(&mut self, _: TypeVar, _: Self::Type) {}
 
     fn get_loc(&self, loc: &Location) -> Result<Self::Type, ErrorKind> {
         Err(ErrorKind::UndefinedLocation(*loc))

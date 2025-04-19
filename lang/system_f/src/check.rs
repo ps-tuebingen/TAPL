@@ -25,16 +25,21 @@ impl CheckEnvironment for Env {
         Err(ErrorKind::UndefinedLocation(*loc))
     }
 
-    fn get_tyvar(&self, v: &TypeVar) -> Result<Kind, ErrorKind> {
+    fn get_tyvar_kind(&self, v: &TypeVar) -> Result<Kind, ErrorKind> {
         self.ty_vars
             .get(v)
             .ok_or(ErrorKind::FreeTypeVariable(v.clone()))
             .cloned()
     }
 
-    fn add_tyvar(&mut self, v: TypeVar, knd: Kind) {
+    fn add_tyvar_kind(&mut self, v: TypeVar, knd: Kind) {
         self.ty_vars.insert(v, knd);
     }
+
+    fn get_tyvar_super(&self, v: &TypeVar) -> Result<Self::Type, ErrorKind> {
+        Err(ErrorKind::FreeTypeVariable(v.clone()))
+    }
+    fn add_tyvar_super(&mut self, _: TypeVar, _: Self::Type) {}
 }
 
 impl Typecheck for Term {
