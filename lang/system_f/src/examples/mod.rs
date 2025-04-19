@@ -1,6 +1,8 @@
-use crate::{
-    syntax::{App, Lambda, Term, TyApp, TyLambda},
-    types::Type,
+use crate::terms::Term;
+use common::{
+    kinds::Kind,
+    terms::{App, Lambda, TyApp, TyLambda, Variable},
+    types::{Forall, Fun, TypeVariable},
 };
 
 pub mod bool;
@@ -8,23 +10,30 @@ pub mod list;
 pub mod nat;
 
 pub fn id() -> Term {
-    TyLambda::new("X", Lambda::new("x", "X".into(), "x".into()).into()).into()
+    TyLambda::new(
+        "X",
+        Kind::Star,
+        Lambda::new("x", TypeVariable::new("X"), Variable::new("x")),
+    )
+    .into()
 }
 
 pub fn double() -> Term {
     TyLambda::new(
         "X",
+        Kind::Star,
         Lambda::new(
             "f",
-            Type::fun("X".into(), "X".into()),
+            Fun::new(TypeVariable::new("X"), TypeVariable::new("X")),
             Lambda::new(
                 "a",
-                "X".into(),
-                App::new("f".into(), App::new("f".into(), "a".into()).into()).into(),
-            )
-            .into(),
-        )
-        .into(),
+                TypeVariable::new("X"),
+                App::new(
+                    Variable::new("f"),
+                    App::new(Variable::new("f"), Variable::new("a")),
+                ),
+            ),
+        ),
     )
     .into()
 }
@@ -32,16 +41,22 @@ pub fn double() -> Term {
 pub fn self_app() -> Term {
     Lambda::new(
         "x",
-        Type::forall("X", Type::fun("X".into(), "X".into())),
+        Forall::new(
+            "X",
+            Kind::Star,
+            Fun::new(TypeVariable::new("X"), TypeVariable::new("X")),
+        ),
         App::new(
             TyApp::new(
-                "x".into(),
-                Type::forall("X", Type::fun("X".into(), "X".into())),
-            )
-            .into(),
-            "x".into(),
-        )
-        .into(),
+                Variable::new("x"),
+                Forall::new(
+                    "X",
+                    Kind::Star,
+                    Fun::new(TypeVariable::new("X"), TypeVariable::new("X")),
+                ),
+            ),
+            Variable::new("x"),
+        ),
     )
     .into()
 }
@@ -49,11 +64,14 @@ pub fn self_app() -> Term {
 pub fn quadruple() -> Term {
     TyLambda::new(
         "X",
+        Kind::Star,
         App::new(
-            TyApp::new(double(), Type::fun("X".into(), "X".into())).into(),
-            TyApp::new(double(), "X".into()).into(),
-        )
-        .into(),
+            TyApp::new(
+                double(),
+                Fun::new(TypeVariable::new("X"), TypeVariable::new("X")),
+            ),
+            TyApp::new(double(), TypeVariable::new("X")),
+        ),
     )
     .into()
 }
@@ -61,49 +79,70 @@ pub fn quadruple() -> Term {
 #[cfg(test)]
 mod examples_tests {
     use super::{double, id, quadruple, self_app};
-    use crate::types::Type;
-    use common::Typecheck;
+    use common::{
+        check::Typecheck,
+        kinds::Kind,
+        types::{Forall, Fun, TypeVariable},
+    };
 
     #[test]
     fn ty_id() {
         let result = id().check(&mut Default::default()).unwrap();
-        let expected = Type::forall("X", Type::fun("X".into(), "X".into()));
+        let expected = Forall::new(
+            "X",
+            Kind::Star,
+            Fun::new(TypeVariable::new("X"), TypeVariable::new("X")),
+        )
+        .into();
         assert_eq!(result, expected)
     }
 
     #[test]
     fn ty_dobule() {
         let result = double().check(&mut Default::default()).unwrap();
-        let expected = Type::forall(
+        let expected = Forall::new(
             "X",
-            Type::fun(
-                Type::fun("X".into(), "X".into()),
-                Type::fun("X".into(), "X".into()),
+            Kind::Star,
+            Fun::new(
+                Fun::new(TypeVariable::new("X"), TypeVariable::new("X")),
+                Fun::new(TypeVariable::new("X"), TypeVariable::new("X")),
             ),
-        );
+        )
+        .into();
         assert_eq!(result, expected)
     }
 
     #[test]
     fn ty_selfapp() {
         let result = self_app().check(&mut Default::default()).unwrap();
-        let expected = Type::fun(
-            Type::forall("X", Type::fun("X".into(), "X".into())),
-            Type::forall("X", Type::fun("X".into(), "X".into())),
-        );
+        let expected = Fun::new(
+            Forall::new(
+                "X",
+                Kind::Star,
+                Fun::new(TypeVariable::new("X"), TypeVariable::new("X")),
+            ),
+            Forall::new(
+                "X",
+                Kind::Star,
+                Fun::new(TypeVariable::new("X"), TypeVariable::new("X")),
+            ),
+        )
+        .into();
         assert_eq!(result, expected)
     }
 
     #[test]
     fn ty_quadruple() {
         let result = quadruple().check(&mut Default::default()).unwrap();
-        let expected = Type::forall(
+        let expected = Forall::new(
             "X",
-            Type::fun(
-                Type::fun("X".into(), "X".into()),
-                Type::fun("X".into(), "X".into()),
+            Kind::Star,
+            Fun::new(
+                Fun::new(TypeVariable::new("X"), TypeVariable::new("X")),
+                Fun::new(TypeVariable::new("X"), TypeVariable::new("X")),
             ),
-        );
+        )
+        .into();
         assert_eq!(result, expected)
     }
 }

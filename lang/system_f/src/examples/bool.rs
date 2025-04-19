@@ -1,24 +1,31 @@
-use crate::{
-    syntax::{App, Lambda, Term, TyApp, TyLambda},
-    types::Type,
+use crate::{terms::Term, types::Type};
+use common::{
+    kinds::Kind,
+    terms::{App, Lambda, TyApp, TyLambda, Variable},
+    types::{Forall, Fun, TypeVariable},
 };
 
 pub fn c_bool() -> Type {
-    Type::forall(
+    Forall::new(
         "X",
-        Type::fun("X".into(), Type::fun("X".into(), "X".into())),
+        Kind::Star,
+        Fun::new(
+            TypeVariable::new("X"),
+            Fun::new(TypeVariable::new("X"), TypeVariable::new("X")),
+        ),
     )
+    .into()
 }
 
 pub fn tru() -> Term {
     TyLambda::new(
         "X",
+        Kind::Star,
         Lambda::new(
             "t",
-            "X".into(),
-            Lambda::new("f", "X".into(), "t".into()).into(),
-        )
-        .into(),
+            TypeVariable::new("X"),
+            Lambda::new("f", TypeVariable::new("X"), Variable::new("t")),
+        ),
     )
     .into()
 }
@@ -26,12 +33,12 @@ pub fn tru() -> Term {
 pub fn fls() -> Term {
     TyLambda::new(
         "X",
+        Kind::Star,
         Lambda::new(
             "x",
-            "X".into(),
-            Lambda::new("f", "X".into(), "f".into()).into(),
-        )
-        .into(),
+            TypeVariable::new("X"),
+            Lambda::new("f", TypeVariable::new("X"), Variable::new("f")),
+        ),
     )
     .into()
 }
@@ -42,23 +49,23 @@ pub fn not() -> Term {
         c_bool(),
         TyLambda::new(
             "X",
+            Kind::Star,
             Lambda::new(
                 "t",
-                "X".into(),
+                TypeVariable::new("X"),
                 Lambda::new(
                     "f",
-                    "X".into(),
+                    TypeVariable::new("X"),
                     App::new(
-                        App::new(TyApp::new("b".into(), "X".into()).into(), "f".into()).into(),
-                        "t".into(),
-                    )
-                    .into(),
-                )
-                .into(),
-            )
-            .into(),
-        )
-        .into(),
+                        App::new(
+                            TyApp::new(Variable::new("b"), TypeVariable::new("X")),
+                            Variable::new("f"),
+                        ),
+                        Variable::new("t"),
+                    ),
+                ),
+            ),
+        ),
     )
     .into()
 }
@@ -66,8 +73,7 @@ pub fn not() -> Term {
 #[cfg(test)]
 mod bool_tests {
     use super::{c_bool, fls, not, tru};
-    use crate::types::Type;
-    use common::Typecheck;
+    use common::{check::Typecheck, types::Fun};
 
     #[test]
     fn ty_tru() {
@@ -86,7 +92,7 @@ mod bool_tests {
     #[test]
     fn ty_not() {
         let result = not().check(&mut Default::default()).unwrap();
-        let expected = Type::fun(c_bool(), c_bool());
+        let expected = Fun::new(c_bool(), c_bool()).into();
         assert_eq!(result, expected)
     }
 }
