@@ -74,8 +74,10 @@ pub fn send() -> Term {
 #[cfg(test)]
 mod process_tests {
     use super::{curr, proc, send, ty_process};
-    use crate::types::Type;
-    use common::Typecheck;
+    use common::{
+        check::Typecheck,
+        types::{Fun, Nat},
+    };
 
     #[test]
     fn check_proc() {
@@ -87,14 +89,14 @@ mod process_tests {
     #[test]
     fn check_curr() {
         let result = curr().check(&mut Default::default()).unwrap();
-        let expected = Fun::new(ty_process(), Nat);
+        let expected = Fun::new(ty_process(), Nat).into();
         assert_eq!(result, expected)
     }
 
     #[test]
     fn check_send() {
         let result = send().check(&mut Default::default()).unwrap();
-        let expected = Fun::new(Nat, Fun::new(ty_process(), ty_process()));
+        let expected = Fun::new(Nat, Fun::new(ty_process(), ty_process())).into();
         assert_eq!(result, expected)
     }
 }

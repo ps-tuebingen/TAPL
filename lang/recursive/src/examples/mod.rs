@@ -61,48 +61,54 @@ pub fn diverge_t(t: Type) -> Term {
 #[cfg(test)]
 mod example_tests {
     use super::{diverge_t, fix_t, hungry, ty_hungry};
-    use crate::types::Type;
-    use common::Typecheck;
+    use common::{
+        check::Typecheck,
+        types::{Bool, Fun, Nat, Unit},
+    };
 
     #[test]
     fn check_hungry() {
-        let result = hungry().check(&mut Default::default()).unwrap();
+        let result = hungry().check_start().unwrap();
         let expected = ty_hungry();
         assert_eq!(result, expected)
     }
 
     #[test]
     fn check_fix() {
-        let result = fix_t(Nat)
+        let result = fix_t(Nat.into())
             .check(&mut Default::default())
             .map_err(|err| err.to_string())
             .unwrap();
-        let expected = Fun::new(Type::fun(Nat, Nat), Nat);
+        let expected = Fun::new(Fun::new(Nat, Nat), Nat).into();
         assert_eq!(result, expected);
 
-        let result = fix_t(Type::Bool).check(&mut Default::default()).unwrap();
-        let expected = Fun::new(Type::fun(Type::Bool, Type::Bool), Type::Bool);
+        let result = fix_t(Bool.into()).check(&mut Default::default()).unwrap();
+        let expected = Fun::new(Fun::new(Bool, Bool), Bool).into();
         assert_eq!(result, expected);
 
-        let result = fix_t(Unit).check(&mut Default::default()).unwrap();
-        let expected = Fun::new(Type::fun(Unit, Unit), Unit);
+        let result = fix_t(Unit.into()).check(&mut Default::default()).unwrap();
+        let expected = Fun::new(Fun::new(Unit, Unit), Unit).into();
         assert_eq!(result, expected)
     }
 
     #[test]
     fn check_diverge() {
-        let result = diverge_t(Nat).check(&mut Default::default()).unwrap();
-        let expected = Fun::new(Unit, Nat);
-        assert_eq!(result, expected);
-
-        let result = diverge_t(Type::Bool)
+        let result = diverge_t(Nat.into())
             .check(&mut Default::default())
             .unwrap();
-        let expected = Fun::new(Unit, Type::Bool);
+        let expected = Fun::new(Unit, Nat).into();
         assert_eq!(result, expected);
 
-        let result = diverge_t(Unit).check(&mut Default::default()).unwrap();
-        let expected = Fun::new(Unit, Unit);
+        let result = diverge_t(Bool.into())
+            .check(&mut Default::default())
+            .unwrap();
+        let expected = Fun::new(Unit, Bool).into();
+        assert_eq!(result, expected);
+
+        let result = diverge_t(Unit.into())
+            .check(&mut Default::default())
+            .unwrap();
+        let expected = Fun::new(Unit, Unit).into();
         assert_eq!(result, expected)
     }
 }

@@ -94,7 +94,7 @@ pub fn new_counter() -> Term {
 #[cfg(test)]
 mod counter_tests {
     use super::{new_counter, ty_counter};
-    use common::Typecheck;
+    use common::check::Typecheck;
 
     #[test]
     fn check_new() {

@@ -109,41 +109,43 @@ pub fn tl() -> Term {
 #[cfg(test)]
 mod list_tests {
     use super::{cons, hd, is_nil, nat_list, nil, tl};
-    use crate::types::Type;
-    use common::Typecheck;
+    use common::{
+        check::Typecheck,
+        types::{Bool, Fun, Nat},
+    };
 
     #[test]
     fn ty_nil() {
-        let result = nil().check(&mut Default::default()).unwrap();
+        let result = nil().check_start().unwrap();
         let expected = nat_list();
         assert_eq!(result, expected)
     }
 
     #[test]
     fn ty_cons() {
-        let result = cons().check(&mut Default::default()).unwrap();
-        let expected = Type::fun(Nat, Type::fun(nat_list(), nat_list()));
+        let result = cons().check_start().unwrap();
+        let expected = Fun::new(Nat, Fun::new(nat_list(), nat_list())).into();
         assert_eq!(result, expected)
     }
 
     #[test]
     fn ty_isnil() {
         let result = is_nil().check(&mut Default::default()).unwrap();
-        let expected = Type::fun(nat_list(), Type::Bool);
+        let expected = Fun::new(nat_list(), Bool).into();
         assert_eq!(result, expected)
     }
 
     #[test]
     fn ty_hd() {
         let result = hd().check(&mut Default::default()).unwrap();
-        let expected = Type::fun(nat_list(), Nat);
+        let expected = Fun::new(nat_list(), Nat).into();
         assert_eq!(result, expected)
     }
 
     #[test]
     fn ty_tl() {
         let result = tl().check(&mut Default::default()).unwrap();
-        let expected = Type::fun(nat_list(), nat_list());
+        let expected = Fun::new(nat_list(), nat_list()).into();
         assert_eq!(result, expected)
     }
 }

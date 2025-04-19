@@ -31,13 +31,15 @@ pub fn plus() -> Term {
 #[cfg(test)]
 mod nat_tests {
     use super::plus;
-    use crate::types::Type;
-    use common::Typecheck;
+    use common::{
+        check::Typecheck,
+        types::{Fun, Nat},
+    };
 
     #[test]
     fn check_plus() {
         let result = plus().check(&mut Default::default()).unwrap();
-        let expected = Fun::new(Nat, Fun::new(Nat, Nat));
+        let expected = Fun::new(Nat, Fun::new(Nat, Nat)).into();
         assert_eq!(result, expected)
     }
 }

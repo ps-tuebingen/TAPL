@@ -30,3 +30,4 @@ done:
 	cargo build -p subtypes
 	cargo build -p e2e_subtypes
 	cargo build -p recursive
+	cargo build -p e2e_recursive

@@ -51,20 +51,19 @@ pub fn lambda_to_term(t: LambdaTerm) -> Term {
 #[cfg(test)]
 mod lambda_tests {
     use super::{ap, d, lam};
-    use crate::types::Type;
-    use common::Typecheck;
+    use common::{check::Typecheck, types::Fun};
 
     #[test]
     fn ty_lam() {
-        let result = lam().check(&mut Default::default()).unwrap();
-        let expected = Fun::new(Fun::new(d(), d()), d());
+        let result = lam().check_start().unwrap();
+        let expected = Fun::new(Fun::new(d(), d()), d()).into();
         assert_eq!(result, expected)
     }
 
     #[test]
     fn ty_app() {
-        let result = ap().check(&mut Default::default()).unwrap();
-        let expected = Fun::new(d(), Fun::new(d(), d()));
+        let result = ap().check_start().unwrap();
+        let expected = Fun::new(d(), Fun::new(d(), d())).into();
         assert_eq!(result, expected)
     }
 }

@@ -65,20 +65,22 @@ pub fn upfrom0() -> Term {
 #[cfg(test)]
 mod stream_tests {
     use super::{hd, tl, ty_stream, upfrom0};
-    use crate::types::Type;
-    use common::Typecheck;
+    use common::{
+        check::Typecheck,
+        types::{Fun, Nat},
+    };
 
     #[test]
     fn check_hd() {
         let result = hd().check(&mut Default::default()).unwrap();
-        let expected = Fun::new(ty_stream(), Nat);
+        let expected = Fun::new(ty_stream(), Nat).into();
         assert_eq!(result, expected)
     }
 
     #[test]
     fn check_tl() {
         let result = tl().check(&mut Default::default()).unwrap();
-        let expected = Fun::new(ty_stream(), ty_stream());
+        let expected = Fun::new(ty_stream(), ty_stream()).into();
         assert_eq!(result, expected)
     }
 
