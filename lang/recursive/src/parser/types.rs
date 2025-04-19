@@ -1,6 +1,9 @@
 use super::{pair_to_n_inner, to_parse_err, Rule};
 use crate::types::Type;
-use common::errors::{Error, ErrorKind};
+use common::{
+    errors::{Error, ErrorKind},
+    types::{Bool, Fun, Mu, Nat, Product, Record, TypeVariable, Unit, Variant},
+};
 use pest::iterators::Pair;
 use std::collections::HashMap;
 
@@ -39,7 +42,7 @@ fn pair_to_prim_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
             let inner = pair_to_n_inner(p, vec!["Type"])?.remove(0);
             pair_to_type(inner)
         }
-        Rule::variable => Ok(Type::TypeVar(p.as_str().trim().to_owned())),
+        Rule::variable => Ok(TypeVariable::new(p.as_str().trim()).into()),
         r => Err(to_parse_err(ErrorKind::UnexpectedRule {
             found: format!("{r:?}"),
             expected: "Non Left-Recursive Type".to_owned(),
@@ -59,9 +62,9 @@ fn pair_to_leftrec_type(p: Pair<'_, Rule>, ty: Type) -> Result<Type, Error> {
 
 fn str_to_type(s: &str) -> Result<Type, Error> {
     match s.to_lowercase().trim() {
-        "unit" => Ok(Type::Unit),
-        "nat" => Ok(Type::Nat),
-        "bool" => Ok(Type::Bool),
+        "unit" => Ok(Unit.into()),
+        "nat" => Ok(Nat.into()),
+        "bool" => Ok(Bool.into()),
         s => Err(to_parse_err(ErrorKind::UnknownKeyword(s.to_owned()))),
     }
 }
@@ -69,24 +72,24 @@ fn str_to_type(s: &str) -> Result<Type, Error> {
 fn pair_to_mu_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
     let mut inner = pair_to_n_inner(p, vec!["Mu Keyword", "Mu Variable", "Mu Body"])?;
     inner.remove(0);
-    let var = inner.remove(0).as_str().trim().to_owned();
+    let var = inner.remove(0).as_str().trim();
     let ty_rule = inner.remove(0);
     let ty = pair_to_type(ty_rule)?;
-    Ok(Type::Mu(var, Box::new(ty)))
+    Ok(Mu::new(var, ty).into())
 }
 
 fn pair_to_variant_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
     let mut inner = p.into_inner();
-    let mut variants = vec![];
+    let mut variants = HashMap::new();
     while let Some(label_rule) = inner.next() {
         let label = label_rule.as_str().trim().to_owned();
         let ty_rule = inner.next().ok_or(to_parse_err(ErrorKind::MissingInput(
             "Variant Type".to_owned(),
         )))?;
         let ty = pair_to_type(ty_rule)?;
-        variants.push((label, ty));
+        variants.insert(label, ty);
     }
-    Ok(Type::Variant(variants))
+    Ok(Variant::new(variants).into())
 }
 
 fn pair_to_record_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
@@ -100,16 +103,13 @@ fn pair_to_record_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
         let ty = pair_to_type(ty_rule)?;
         records.insert(label, ty);
     }
-    Ok(Type::Record(records))
+    Ok(Record::new(records).into())
 }
 
 fn pair_to_fun_type(p: Pair<'_, Rule>, ty: Type) -> Result<Type, Error> {
     let inner = pair_to_n_inner(p, vec!["Function Return Type"])?.remove(0);
     let to_ty = pair_to_type(inner)?;
-    Ok(Type::Fun {
-        from: Box::new(ty),
-        to: Box::new(to_ty),
-    })
+    Ok(Fun::new(ty, to_ty).into())
 }
 
 fn pair_to_pair_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
@@ -118,5 +118,5 @@ fn pair_to_pair_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
     let fst = pair_to_type(fst_rule)?;
     let snd_rule = inner.remove(0);
     let snd = pair_to_type(snd_rule)?;
-    Ok(Type::Pair(Box::new(fst), Box::new(snd)))
+    Ok(Product::new(fst, snd).into())
 }

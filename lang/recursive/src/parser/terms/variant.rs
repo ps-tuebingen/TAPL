@@ -1,9 +1,12 @@
 use super::{pair_to_n_inner, pair_to_term, pair_to_type, to_parse_err, Rule};
-use crate::terms::{Variant, VariantCase, VariantPattern};
-use common::errors::{Error, ErrorKind};
+use crate::terms::Term;
+use common::{
+    errors::{Error, ErrorKind},
+    terms::{variantcase::VariantPattern, Variant, VariantCase},
+};
 use pest::iterators::Pair;
 
-pub fn pair_to_variant(p: Pair<'_, Rule>) -> Result<Variant, Error> {
+pub fn pair_to_variant(p: Pair<'_, Rule>) -> Result<Variant<Term>, Error> {
     let mut inner = pair_to_n_inner(
         p,
         vec![
@@ -13,20 +16,16 @@ pub fn pair_to_variant(p: Pair<'_, Rule>) -> Result<Variant, Error> {
             "Variant Type",
         ],
     )?;
-    let var = inner.remove(0).as_str().trim().to_owned();
+    let var = inner.remove(0).as_str().trim();
     let term_rule = inner.remove(0);
     let term = pair_to_term(term_rule)?;
     inner.remove(0);
     let ty_rule = inner.remove(0);
     let ty = pair_to_type(ty_rule)?;
-    Ok(Variant {
-        label: var,
-        term: Box::new(term),
-        annot: ty,
-    })
+    Ok(Variant::new(var, term, ty))
 }
 
-pub fn pair_to_variantcase(p: Pair<'_, Rule>) -> Result<VariantCase, Error> {
+pub fn pair_to_variantcase(p: Pair<'_, Rule>) -> Result<VariantCase<Term>, Error> {
     let mut inner = p.into_inner();
     inner.next().ok_or(to_parse_err(ErrorKind::MissingInput(
         "Case Keyword".to_owned(),
@@ -42,13 +41,10 @@ pub fn pair_to_variantcase(p: Pair<'_, Rule>) -> Result<VariantCase, Error> {
     for pattern_rule in inner {
         patterns.push(pair_to_variantpattern(pattern_rule)?);
     }
-    Ok(VariantCase {
-        bound_term: Box::new(bound_term),
-        patterns,
-    })
+    Ok(VariantCase::new(bound_term, patterns))
 }
 
-fn pair_to_variantpattern(p: Pair<'_, Rule>) -> Result<VariantPattern, Error> {
+fn pair_to_variantpattern(p: Pair<'_, Rule>) -> Result<VariantPattern<Term>, Error> {
     let mut inner = pair_to_n_inner(
         p,
         vec![
@@ -57,13 +53,9 @@ fn pair_to_variantpattern(p: Pair<'_, Rule>) -> Result<VariantPattern, Error> {
             "Variant Pattern Right-Hand Side",
         ],
     )?;
-    let label = inner.remove(0).as_str().trim().to_owned();
-    let var = inner.remove(0).as_str().trim().to_owned();
+    let label = inner.remove(0).as_str().trim();
+    let var = inner.remove(0).as_str().trim();
     let term_rule = inner.remove(0);
     let term = pair_to_term(term_rule)?;
-    Ok(VariantPattern {
-        label,
-        bound_var: var,
-        rhs: Box::new(term),
-    })
+    Ok(VariantPattern::new(label, var, term))
 }
