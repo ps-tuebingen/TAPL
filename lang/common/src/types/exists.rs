@@ -11,6 +11,21 @@ where
     ty: Box<Ty>,
 }
 
+impl<Ty> Exists<Ty>
+where
+    Ty: Type,
+{
+    pub fn new<Ty1>(v: &str, ty: Ty1) -> Exists<Ty>
+    where
+        Ty1: Into<Ty>,
+    {
+        Exists {
+            var: v.to_owned(),
+            ty: Box::new(ty.into()),
+        }
+    }
+}
+
 impl<Ty> Type for Exists<Ty> where Ty: Type {}
 
 impl<Ty> SubstType<Ty> for Exists<Ty>

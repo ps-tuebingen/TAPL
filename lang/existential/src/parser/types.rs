@@ -1,6 +1,9 @@
 use super::{pair_to_n_inner, to_parse_err, Error, Rule};
 use crate::types::Type;
-use common::errors::ErrorKind;
+use common::{
+    errors::ErrorKind,
+    types::{Bool, Exists, Fun, Nat, Record, TypeVariable, Unit},
+};
 use pest::iterators::Pair;
 use std::collections::HashMap;
 
@@ -35,7 +38,7 @@ fn pair_to_prim_ty(p: Pair<'_, Rule>) -> Result<Type, Error> {
         Rule::const_ty => str_to_type(p.as_str()),
         Rule::pack_ty => pair_to_pack_ty(p),
         Rule::record_ty => pair_to_record_ty(p),
-        Rule::variable => Ok(Type::Var(p.as_str().trim().to_owned())),
+        Rule::variable => Ok(TypeVariable::new(p.as_str().trim()).into()),
         _ => Err(to_parse_err(ErrorKind::UnexpectedRule {
             found: format!("{p:?}"),
             expected: "Non Left-Recursive Type".to_owned(),
@@ -55,9 +58,9 @@ fn pair_to_leftrec_ty(p: Pair<'_, Rule>, ty: Type) -> Result<Type, Error> {
 
 fn str_to_type(s: &str) -> Result<Type, Error> {
     match s.to_lowercase().trim() {
-        "nat" => Ok(Type::Nat),
-        "bool" => Ok(Type::Bool),
-        "unit" => Ok(Type::Unit),
+        "nat" => Ok(Nat.into()),
+        "bool" => Ok(Bool.into()),
+        "unit" => Ok(Unit.into()),
         s => Err(to_parse_err(ErrorKind::UnknownKeyword(s.to_owned()))),
     }
 }
@@ -67,13 +70,10 @@ fn pair_to_pack_ty(p: Pair<'_, Rule>) -> Result<Type, Error> {
     let start_rule = inner.remove(0);
     let mut start_inner = pair_to_n_inner(start_rule, vec!["Exists Keyword", "Exists Variable"])?;
     start_inner.remove(0);
-    let var = start_inner.remove(0).as_str().trim().to_owned();
+    let var = start_inner.remove(0).as_str().trim();
     let ty_rule = inner.remove(0);
     let inner_ty = pair_to_type(ty_rule)?;
-    Ok(Type::Package {
-        ty_var: var,
-        ty: Box::new(inner_ty),
-    })
+    Ok(Exists::new(var, inner_ty).into())
 }
 
 fn pair_to_record_ty(p: Pair<'_, Rule>) -> Result<Type, Error> {
@@ -87,14 +87,11 @@ fn pair_to_record_ty(p: Pair<'_, Rule>) -> Result<Type, Error> {
         let ty = pair_to_type(ty_rule)?;
         records.insert(label, ty);
     }
-    Ok(Type::Record(records))
+    Ok(Record::new(records).into())
 }
 
 fn pair_to_fun_ty(p: Pair<'_, Rule>, ty: Type) -> Result<Type, Error> {
     let to_rule = pair_to_n_inner(p, vec!["Function To Type"])?.remove(0);
     let to_ty = pair_to_type(to_rule)?;
-    Ok(Type::Fun {
-        from: Box::new(ty),
-        to: Box::new(to_ty),
-    })
+    Ok(Fun::new(ty, to_ty).into())
 }

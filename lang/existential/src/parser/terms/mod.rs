@@ -1,6 +1,9 @@
 use super::{pair_to_n_inner, pair_to_type, to_parse_err, Rule};
-use crate::terms::{App, False, RecordProj, Term, True, Zero};
-use common::errors::{Error, ErrorKind};
+use crate::terms::Term;
+use common::{
+    errors::{Error, ErrorKind},
+    terms::{App, False, Num, RecordProj, True, Unit, Variable},
+};
 use pest::iterators::Pair;
 
 mod bool;
@@ -60,9 +63,9 @@ fn pair_to_primterm(p: Pair<'_, Rule>) -> Result<Term, Error> {
                 .parse::<i64>()
                 .map_err(|_| ErrorKind::UnknownKeyword(p.as_str().to_owned()))
                 .map_err(to_parse_err)?;
-            Ok(num.into())
+            Ok(Num::new(num).into())
         }
-        Rule::variable => Ok(Term::Var(p.as_str().trim().to_owned())),
+        Rule::variable => Ok(Variable::new(p.as_str().trim()).into()),
         _ => Err(to_parse_err(ErrorKind::UnexpectedRule {
             found: format!("{p:}"),
             expected: "Non Left-Recursive Term".to_owned(),
@@ -76,13 +79,8 @@ fn pair_to_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
             let label = pair_to_n_inner(p, vec!["Projection Target"])?
                 .remove(0)
                 .as_str()
-                .trim()
-                .to_owned();
-            Ok(RecordProj {
-                term: Box::new(t),
-                label,
-            }
-            .into())
+                .trim();
+            Ok(RecordProj::new(t, label).into())
         }
         Rule::term => {
             let arg_term = pair_to_term(p)?;
@@ -101,10 +99,10 @@ fn pair_to_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
 
 fn str_to_term(s: &str) -> Result<Term, Error> {
     match s.to_lowercase().trim() {
-        "unit" => Ok(Term::Unit),
-        "zero" => Ok(Zero.into()),
-        "true" => Ok(True.into()),
-        "false" => Ok(False.into()),
+        "unit" => Ok(Unit::new().into()),
+        "zero" => Ok(Num::new(0).into()),
+        "true" => Ok(True::new().into()),
+        "false" => Ok(False::new().into()),
         s => Err(to_parse_err(ErrorKind::UnknownKeyword(s.to_owned()))),
     }
 }
