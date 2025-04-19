@@ -1,7 +1,9 @@
 use super::{types::Type, values::Value};
 use common::{
     language::LanguageTerm,
+    subst::{SubstTerm, SubstType},
     terms::{App, Lambda, TyApp, TyLambda, Variable},
+    TypeVar, Var,
 };
 use std::fmt;
 
@@ -19,6 +21,32 @@ impl common::terms::Term for Term {}
 impl LanguageTerm for Term {
     type Type = Type;
     type Value = Value;
+}
+
+impl SubstType<Type> for Term {
+    type Target = Self;
+    fn subst_type(self, v: &TypeVar, ty: &Type) -> Self::Target {
+        match self {
+            Term::Var(var) => var.subst_type(v, ty),
+            Term::Lambda(lam) => lam.subst_type(v, ty),
+            Term::App(app) => app.subst_type(v, ty),
+            Term::TyLambda(lam) => lam.subst_type(v, ty),
+            Term::TyApp(app) => app.subst_type(v, ty),
+        }
+    }
+}
+
+impl SubstTerm<Term> for Term {
+    type Target = Self;
+    fn subst(self, v: &Var, t: &Term) -> Self::Target {
+        match self {
+            Term::Var(var) => var.subst(v, t),
+            Term::Lambda(lam) => lam.subst(v, t),
+            Term::App(app) => app.subst(v, t),
+            Term::TyLambda(lam) => lam.subst(v, t),
+            Term::TyApp(app) => app.subst(v, t),
+        }
+    }
 }
 
 impl fmt::Display for Term {

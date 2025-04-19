@@ -12,6 +12,22 @@ where
     pub term: T,
 }
 
+impl<T> TyLambda<T>
+where
+    T: LanguageTerm,
+{
+    pub fn new<T1>(v: &str, knd: Kind, t: T1) -> TyLambda<T>
+    where
+        T1: Into<T>,
+    {
+        TyLambda {
+            var: v.to_owned(),
+            annot: knd,
+            term: t.into(),
+        }
+    }
+}
+
 impl<T> Value for TyLambda<T>
 where
     T: LanguageTerm,

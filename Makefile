@@ -32,3 +32,4 @@ done:
 	cargo build -p recursive
 	cargo build -p e2e_recursive
 	cargo build -p system_f
+	cargo buld -p e2e_system_f 

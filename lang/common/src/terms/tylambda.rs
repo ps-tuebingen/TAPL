@@ -1,8 +1,13 @@
 use super::Term;
 use crate::{
+    check::Typecheck,
+    errors::Error,
+    eval::Eval,
     kinds::Kind,
     language::LanguageTerm,
     subst::{SubstTerm, SubstType},
+    types::Forall,
+    values::TyLambda as TyLambdaVal,
     TypeVar, Var,
 };
 use std::fmt;
@@ -71,6 +76,32 @@ where
     }
 }
 
+impl<T> Eval for TyLambda<T>
+where
+    T: LanguageTerm,
+    TyLambdaVal<T>: Into<<T as LanguageTerm>::Value>,
+{
+    type Value = <T as Eval>::Value;
+    type Env = <T as Eval>::Env;
+
+    fn eval(self, _: &mut Self::Env) -> Result<Self::Value, Error> {
+        Ok(TyLambdaVal::new(&self.var, self.annot, *self.term).into())
+    }
+}
+
+impl<T> Typecheck for TyLambda<T>
+where
+    T: LanguageTerm,
+    Forall<<T as LanguageTerm>::Type>: Into<<T as LanguageTerm>::Type>,
+{
+    type Type = <T as Typecheck>::Type;
+    type Env = <T as Typecheck>::Env;
+
+    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
+        let term_ty = self.term.check(env)?;
+        Ok(Forall::new(&self.var, self.annot.clone(), term_ty).into())
+    }
+}
 impl<T> fmt::Display for TyLambda<T>
 where
     T: LanguageTerm,
