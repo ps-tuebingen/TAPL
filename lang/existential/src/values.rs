@@ -51,3 +51,40 @@ impl fmt::Display for Value {
         }
     }
 }
+
+impl From<Lambda<Term>> for Value {
+    fn from(lam: Lambda<Term>) -> Value {
+        Value::Lambda(lam)
+    }
+}
+impl From<Unit<Term>> for Value {
+    fn from(u: Unit<Term>) -> Value {
+        Value::Unit(u)
+    }
+}
+impl From<True<Term>> for Value {
+    fn from(tru: True<Term>) -> Value {
+        Value::True(tru)
+    }
+}
+impl From<False<Term>> for Value {
+    fn from(fls: False<Term>) -> Value {
+        Value::False(fls)
+    }
+}
+impl From<Num<Term>> for Value {
+    fn from(num: Num<Term>) -> Value {
+        Value::Num(num)
+    }
+}
+impl From<Record<Term>> for Value {
+    fn from(rec: Record<Term>) -> Value {
+        Value::Record(rec)
+    }
+}
+
+impl From<Pack<Term>> for Value {
+    fn from(pack: Pack<Term>) -> Value {
+        Value::Pack(pack)
+    }
+}

@@ -1,7 +1,12 @@
 use super::Term;
 use crate::{
-    language::LanguageTerm,
+    check::{to_check_err, Typecheck},
+    errors::Error,
+    eval::Eval,
+    language::{LanguageTerm, LanguageType},
     subst::{SubstTerm, SubstType},
+    types::Exists,
+    values::Pack as PackVal,
     TypeVar, Var,
 };
 use std::fmt;
@@ -67,6 +72,40 @@ where
         .into()
     }
 }
+
+impl<T> Eval for Pack<T>
+where
+    T: LanguageTerm,
+    PackVal<T>: Into<<T as LanguageTerm>::Value>,
+{
+    type Value = <T as Eval>::Value;
+    type Env = <T as Eval>::Env;
+
+    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
+        let term_val = self.term.eval(env)?;
+        Ok(PackVal::<T>::new(self.inner_ty.clone(), term_val, self.outer_ty.clone()).into())
+    }
+}
+
+impl<T> Typecheck for Pack<T>
+where
+    T: LanguageTerm,
+    Exists<<T as LanguageTerm>::Type>: Into<<T as LanguageTerm>::Type>,
+{
+    type Type = <T as Typecheck>::Type;
+    type Env = <T as Typecheck>::Env;
+
+    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
+        let term_ty = self.term.check(env)?;
+        let outer_exists = self.outer_ty.clone().into_exists().map_err(to_check_err)?;
+        let outer_subst = outer_exists
+            .ty
+            .subst_type(&outer_exists.var, &self.inner_ty);
+        outer_subst.check_equal(&term_ty).map_err(to_check_err)?;
+        Ok(self.outer_ty.clone())
+    }
+}
+
 impl<T> fmt::Display for Pack<T>
 where
     T: LanguageTerm,

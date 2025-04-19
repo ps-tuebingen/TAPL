@@ -7,8 +7,8 @@ pub struct Exists<Ty>
 where
     Ty: Type,
 {
-    var: TypeVar,
-    ty: Box<Ty>,
+    pub var: TypeVar,
+    pub ty: Box<Ty>,
 }
 
 impl<Ty> Exists<Ty>

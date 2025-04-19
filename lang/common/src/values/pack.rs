@@ -7,9 +7,27 @@ pub struct Pack<T>
 where
     T: LanguageTerm,
 {
-    inner_ty: <T as LanguageTerm>::Type,
-    val: Box<<T as LanguageTerm>::Value>,
-    outer_ty: <T as LanguageTerm>::Type,
+    pub inner_ty: <T as LanguageTerm>::Type,
+    pub val: Box<<T as LanguageTerm>::Value>,
+    pub outer_ty: <T as LanguageTerm>::Type,
+}
+
+impl<T> Pack<T>
+where
+    T: LanguageTerm,
+{
+    pub fn new<Ty1, V, Ty2>(inner: Ty1, v: V, outer: Ty2) -> Pack<T>
+    where
+        Ty1: Into<<T as LanguageTerm>::Type>,
+        Ty2: Into<<T as LanguageTerm>::Type>,
+        V: Into<<T as LanguageTerm>::Value>,
+    {
+        Pack {
+            inner_ty: inner.into(),
+            val: Box::new(v.into()),
+            outer_ty: outer.into(),
+        }
+    }
 }
 
 impl<T> Value for Pack<T>

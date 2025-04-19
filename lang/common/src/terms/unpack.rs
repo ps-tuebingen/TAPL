@@ -1,6 +1,10 @@
 use super::Term;
 use crate::{
-    language::LanguageTerm,
+    check::{to_check_err, CheckEnvironment, Typecheck},
+    errors::{Error, ErrorKind},
+    eval::{to_eval_err, Eval},
+    kinds::Kind,
+    language::{LanguageTerm, LanguageType, LanguageValue},
     subst::{SubstTerm, SubstType},
     TypeVar, Var,
 };
@@ -90,6 +94,45 @@ where
             }
             .into()
         }
+    }
+}
+
+impl<T> Eval for Unpack<T>
+where
+    T: LanguageTerm,
+{
+    type Value = <T as Eval>::Value;
+    type Env = <T as Eval>::Env;
+
+    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
+        let term_val = self.bound_term.eval(env)?;
+        let pack_val = term_val.into_pack().map_err(to_eval_err)?;
+        self.in_term
+            .subst_type(&self.ty_name, &pack_val.inner_ty)
+            .subst(&self.term_name, &((*pack_val.val).into()))
+            .eval(env)
+    }
+}
+
+impl<T> Typecheck for Unpack<T>
+where
+    T: LanguageTerm,
+{
+    type Type = <T as Typecheck>::Type;
+    type Env = <T as Typecheck>::Env;
+
+    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
+        let bound_ty = self.bound_term.check(env)?;
+        let bound_exists = bound_ty.into_exists().map_err(to_check_err)?;
+        if self.ty_name != bound_exists.var {
+            return Err(to_check_err(ErrorKind::TypeMismatch {
+                found: bound_exists.var,
+                expected: self.ty_name.clone(),
+            }));
+        }
+        env.add_tyvar(bound_exists.var, Kind::Star);
+        env.add_var(self.term_name.clone(), *bound_exists.ty);
+        self.in_term.check(env)
     }
 }
 

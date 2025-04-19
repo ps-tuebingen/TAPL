@@ -34,3 +34,5 @@ done:
 	cargo build -p e2e_recursive
 	cargo build -p system_f
 	cargo build -p e2e_systemf 
+	cargo build -p existential
+	cargo build -p e2e_existential

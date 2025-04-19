@@ -41,7 +41,7 @@ impl SubstTerm<Term> for Term {
     type Target = Self;
     fn subst(self, v: &Var, t: &Term) -> Self::Target {
         match self {
-            Term::Var(v) => v.subst(v, t),
+            Term::Var(var) => var.subst(v, t),
             Term::Unit(u) => u.subst(v, t),
             Term::Lambda(lam) => lam.subst(v, t),
             Term::App(app) => app.subst(v, t),
@@ -65,7 +65,7 @@ impl SubstType<Type> for Term {
     type Target = Self;
     fn subst_type(self, v: &TypeVar, ty: &Type) -> Self::Target {
         match self {
-            Term::Var(v) => v.subst_type(v, ty),
+            Term::Var(var) => var.subst_type(v, ty),
             Term::Unit(u) => u.subst_type(v, ty),
             Term::Lambda(lam) => lam.subst_type(v, ty),
             Term::App(app) => app.subst_type(v, ty),
