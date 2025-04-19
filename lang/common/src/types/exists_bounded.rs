@@ -1,5 +1,11 @@
 use super::{Top, Type};
-use crate::{subst::SubstType, TypeVar};
+use crate::{
+    check::{to_subty_err, Subtypecheck},
+    errors::{Error, ErrorKind},
+    language::LanguageType,
+    subst::SubstType,
+    TypeVar,
+};
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -67,6 +73,43 @@ where
             }
             .into()
         }
+    }
+}
+impl<Ty> Subtypecheck<Ty> for ExistsBounded<Ty>
+where
+    Ty: LanguageType,
+{
+    type Env = <Ty as Subtypecheck<Ty>>::Env;
+
+    fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Error> {
+        let other_exists = sup.clone().into_exists_bounded().map_err(to_subty_err)?;
+        other_exists
+            .sup_ty
+            .check_equal(&self.sup_ty)
+            .map_err(to_subty_err)?;
+        if self.var != other_exists.var {
+            return Err(to_subty_err(ErrorKind::TypeMismatch {
+                found: other_exists.var.clone(),
+                expected: self.var.clone(),
+            }));
+        }
+        self.ty.check_subtype(&(*other_exists.ty), env)
+    }
+
+    fn check_supertype(&self, sub: &Ty, env: &mut Self::Env) -> Result<(), Error> {
+        let other_exists = sub.clone().into_exists_bounded().map_err(to_subty_err)?;
+        other_exists
+            .sup_ty
+            .check_equal(&self.sup_ty)
+            .map_err(to_subty_err)?;
+        if self.var != other_exists.var {
+            return Err(to_subty_err(ErrorKind::TypeMismatch {
+                found: other_exists.var.clone(),
+                expected: self.var.clone(),
+            }));
+        }
+
+        self.ty.check_supertype(&(*other_exists.ty), env)
     }
 }
 

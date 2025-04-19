@@ -12,6 +12,23 @@ where
     pub term: T,
 }
 
+impl<T> LambdaSub<T>
+where
+    T: LanguageTerm,
+{
+    pub fn new<Ty, T1>(v: &str, sup: Ty, t: T1) -> LambdaSub<T>
+    where
+        Ty: Into<<T as LanguageTerm>::Type>,
+        T1: Into<T>,
+    {
+        LambdaSub {
+            var: v.to_owned(),
+            sup_ty: sup.into(),
+            term: t.into(),
+        }
+    }
+}
+
 impl<T> Value for LambdaSub<T>
 where
     T: LanguageTerm,

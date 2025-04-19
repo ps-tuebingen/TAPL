@@ -1,8 +1,12 @@
 use super::Term;
 use crate::{
+    check::Typecheck,
+    errors::Error,
+    eval::Eval,
     language::LanguageTerm,
     subst::{SubstTerm, SubstType},
-    types::Top,
+    types::{ForallBounded, Top},
+    values::LambdaSub as LambdaSubVal,
     TypeVar, Var,
 };
 use std::fmt;
@@ -91,6 +95,33 @@ where
             }
             .into()
         }
+    }
+}
+
+impl<T> Eval for LambdaSub<T>
+where
+    T: LanguageTerm,
+    LambdaSubVal<T>: Into<<T as LanguageTerm>::Value>,
+{
+    type Value = <T as Eval>::Value;
+    type Env = <T as Eval>::Env;
+
+    fn eval(self, _: &mut Self::Env) -> Result<Self::Value, Error> {
+        Ok(LambdaSubVal::new(&self.var, self.sup_ty, *self.body).into())
+    }
+}
+
+impl<T> Typecheck for LambdaSub<T>
+where
+    T: LanguageTerm,
+    ForallBounded<<T as LanguageTerm>::Type>: Into<<T as LanguageTerm>::Type>,
+{
+    type Type = <T as Typecheck>::Type;
+    type Env = <T as Typecheck>::Env;
+
+    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
+        let term_ty = self.body.check(env)?;
+        Ok(ForallBounded::new(&self.var, self.sup_ty.clone(), term_ty).into())
     }
 }
 

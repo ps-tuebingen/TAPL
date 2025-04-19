@@ -5,7 +5,6 @@ use crate::{
     eval::Eval,
     language::{LanguageTerm, LanguageType},
     subst::{SubstTerm, SubstType},
-    types::Exists,
     values::Pack as PackVal,
     TypeVar, Var,
 };
@@ -90,7 +89,6 @@ where
 impl<T> Typecheck for Pack<T>
 where
     T: LanguageTerm,
-    Exists<<T as LanguageTerm>::Type>: Into<<T as LanguageTerm>::Type>,
 {
     type Type = <T as Typecheck>::Type;
     type Env = <T as Typecheck>::Env;

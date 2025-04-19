@@ -1,5 +1,11 @@
 use super::{Top, Type};
-use crate::{subst::SubstType, TypeVar};
+use crate::{
+    check::{to_subty_err, Subtypecheck},
+    errors::{Error, ErrorKind},
+    language::LanguageType,
+    subst::SubstType,
+    TypeVar,
+};
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -66,6 +72,44 @@ where
             }
             .into()
         }
+    }
+}
+
+impl<Ty> Subtypecheck<Ty> for ForallBounded<Ty>
+where
+    Ty: LanguageType,
+{
+    type Env = <Ty as Subtypecheck<Ty>>::Env;
+
+    fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Error> {
+        let other_forall = sup.clone().into_forall_bounded().map_err(to_subty_err)?;
+        other_forall
+            .sup_ty
+            .check_equal(&self.sup_ty)
+            .map_err(to_subty_err)?;
+        if self.var != other_forall.var {
+            return Err(to_subty_err(ErrorKind::TypeMismatch {
+                found: other_forall.var.clone(),
+                expected: self.var.clone(),
+            }));
+        }
+        self.ty.check_subtype(&(*other_forall.ty), env)
+    }
+
+    fn check_supertype(&self, sub: &Ty, env: &mut Self::Env) -> Result<(), Error> {
+        let other_forall = sub.clone().into_forall_bounded().map_err(to_subty_err)?;
+        other_forall
+            .sup_ty
+            .check_equal(&self.sup_ty)
+            .map_err(to_subty_err)?;
+        if self.var != other_forall.var {
+            return Err(to_subty_err(ErrorKind::TypeMismatch {
+                found: other_forall.var.clone(),
+                expected: self.var.clone(),
+            }));
+        }
+
+        self.ty.check_supertype(&(*other_forall.ty), env)
     }
 }
 

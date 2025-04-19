@@ -3,8 +3,8 @@ use crate::{
     errors::ErrorKind,
     subst::SubstType,
     types::{
-        Bool, Bot, Exists, Forall, ForallBounded, Fun, List, Mu, Nat, Optional, Product, Record,
-        Reference, Sink, Source, Sum, Top, Tuple, Type, Variant,
+        Bool, Bot, Exists, ExistsBounded, Forall, ForallBounded, Fun, List, Mu, Nat, Optional,
+        Product, Record, Reference, Sink, Source, Sum, Top, Tuple, Type, Variant,
     },
 };
 
@@ -104,6 +104,12 @@ where
     }
 
     fn into_exists(self) -> Result<Exists<Self>, ErrorKind> {
+        Err(ErrorKind::TypeMismatch {
+            found: self.to_string(),
+            expected: "Existential Type".to_owned(),
+        })
+    }
+    fn into_exists_bounded(self) -> Result<ExistsBounded<Self>, ErrorKind> {
         Err(ErrorKind::TypeMismatch {
             found: self.to_string(),
             expected: "Existential Type".to_owned(),
