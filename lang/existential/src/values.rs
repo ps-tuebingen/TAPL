@@ -2,7 +2,6 @@ use super::terms::Term;
 use common::{
     language::LanguageValue,
     values::{False, Lambda, Num, Pack, Record, True, Unit, Value as ValueTrait},
-    Label,
 };
 use std::fmt;
 

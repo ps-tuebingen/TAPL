@@ -1,25 +1,41 @@
 use super::{terms::Term, types::Type};
 use common::{
     check::{CheckEnvironment, Subtypecheck, Typecheck},
-    errors::Error,
-    TypeVar, Var,
+    errors::{Error, ErrorKind},
+    kinds::Kind,
+    Location, TypeVar, Var,
 };
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 
 #[derive(Clone, Default)]
 pub struct Env {
     vars: HashMap<Var, Type>,
-    ty_vars: HashSet<TypeVar>,
+    ty_vars: HashMap<TypeVar, Kind>,
 }
 
 impl CheckEnvironment for Env {
     type Type = Type;
-    fn get_var(&self, v: &Var) -> Result<Type, Error> {
+    fn get_var(&self, v: &Var) -> Result<Type, ErrorKind> {
         self.vars.get_var(v)
     }
 
     fn add_var(&mut self, v: Var, ty: Type) {
         self.vars.add_var(v, ty);
+    }
+
+    fn get_tyvar(&self, v: &TypeVar) -> Result<Kind, ErrorKind> {
+        self.ty_vars
+            .get(v)
+            .ok_or(ErrorKind::FreeTypeVariable(v.clone()))
+            .cloned()
+    }
+
+    fn add_tyvar(&mut self, v: TypeVar, knd: Kind) {
+        self.ty_vars.insert(v, knd);
+    }
+
+    fn get_loc(&self, loc: &Location) -> Result<Self::Type, ErrorKind> {
+        Err(ErrorKind::UndefinedLocation(*loc))
     }
 }
 

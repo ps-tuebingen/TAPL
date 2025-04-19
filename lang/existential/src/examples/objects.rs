@@ -1,38 +1,56 @@
-use crate::{
-    terms::{App, Lambda, Pack, Record, RecordProj, Succ, Term, Unpack},
-    types::Type,
+use crate::{terms::Term, types::Type};
+use common::{
+    terms::{App, Lambda, Num, Pack, Record, RecordProj, Succ, Unpack, Variable},
+    types::{Exists, Fun, Nat, Record as RecordTy, TypeVariable},
+    TypeVar, Var,
 };
+use std::collections::HashMap;
 
 pub fn ty_counter() -> Type {
-    Type::pack(
+    Exists::new(
         "X",
-        Type::record(vec![
-            ("state", "X".into()),
+        RecordTy::new(HashMap::<TypeVar, Type>::from([
+            ("state".to_owned(), TypeVariable::new("X").into()),
             (
-                "methods",
-                Type::record(vec![
-                    ("get", Type::fun("X".into(), Type::Nat)),
-                    ("inc", Type::fun("X".into(), "X".into())),
-                ]),
+                "methods".to_owned(),
+                RecordTy::new(HashMap::<TypeVar, Type>::from([
+                    (
+                        "get".to_owned(),
+                        Fun::new(TypeVariable::new("X"), Nat).into(),
+                    ),
+                    (
+                        "inc".to_owned(),
+                        Fun::new(TypeVariable::new("X"), TypeVariable::new("X")).into(),
+                    ),
+                ]))
+                .into(),
             ),
-        ]),
+        ])),
     )
+    .into()
 }
 
 pub fn counter_ex() -> Term {
     Pack::new(
-        Type::Nat,
-        Record::new(vec![
-            ("state", 5.into()),
+        Nat,
+        Record::new(HashMap::<Var, Term>::from([
+            ("state".to_owned(), Num::new(5).into()),
             (
-                "methods",
-                Record::new(vec![
-                    ("get", Lambda::new("x", Type::Nat, "x").into()),
-                    ("inc", Lambda::new("x", Type::Nat, Succ::new("x")).into()),
-                ])
+                "methods".to_owned(),
+                Record::new(HashMap::<Var, Term>::from([
+                    (
+                        "get".to_owned(),
+                        Lambda::new("x", Nat, Variable::new("x")).into(),
+                    )
+                        .into(),
+                    (
+                        "inc".to_owned(),
+                        Lambda::new("x", Nat, Succ::new(Variable::new("x"))).into(),
+                    ),
+                ]))
                 .into(),
             ),
-        ]),
+        ])),
         ty_counter(),
     )
     .into()
@@ -45,10 +63,10 @@ pub fn send_get() -> Term {
         Unpack::new(
             "X",
             "body",
-            "c",
+            Variable::new("c"),
             App::new(
-                RecordProj::new(RecordProj::new("body", "methods"), "get"),
-                RecordProj::new("body", "state"),
+                RecordProj::new(RecordProj::new(Variable::new("body"), "methods"), "get"),
+                RecordProj::new(Variable::new("body"), "state"),
             ),
         ),
     )
@@ -62,20 +80,26 @@ pub fn send_inc() -> Term {
         Unpack::new(
             "X",
             "body",
-            "c",
+            Variable::new("c"),
             Pack::new(
-                "X".into(),
-                Record::new(vec![
+                TypeVariable::new("X"),
+                Record::new(HashMap::<Var, Term>::from([
                     (
-                        "state",
+                        "state".to_owned(),
                         App::new(
-                            RecordProj::new(RecordProj::new("body", "methods"), "inc"),
-                            RecordProj::new("body", "state"),
+                            RecordProj::new(
+                                RecordProj::new(Variable::new("body"), "methods"),
+                                "inc",
+                            ),
+                            RecordProj::new(Variable::new("body"), "state"),
                         )
                         .into(),
                     ),
-                    ("methods", RecordProj::new("body", "methods").into()),
-                ]),
+                    (
+                        "methods".to_owned(),
+                        RecordProj::new(Variable::new("body"), "methods").into(),
+                    ),
+                ])),
                 ty_counter(),
             ),
         ),
@@ -86,8 +110,10 @@ pub fn send_inc() -> Term {
 #[cfg(test)]
 mod object_tests {
     use super::{counter_ex, send_get, send_inc, ty_counter};
-    use crate::types::Type;
-    use common::Typecheck;
+    use common::{
+        check::Typecheck,
+        types::{Fun, Nat},
+    };
 
     #[test]
     fn check_counter() {
@@ -99,14 +125,14 @@ mod object_tests {
     #[test]
     fn check_send_get() {
         let result = send_get().check(&mut Default::default()).unwrap();
-        let expected = Type::fun(ty_counter(), Type::Nat);
+        let expected = Fun::new(ty_counter(), Nat).into();
         assert_eq!(result, expected)
     }
 
     #[test]
     fn check_send_inc() {
         let result = send_inc().check(&mut Default::default()).unwrap();
-        let expected = Type::fun(ty_counter(), ty_counter());
+        let expected = Fun::new(ty_counter(), ty_counter()).into();
         assert_eq!(result, expected)
     }
 }

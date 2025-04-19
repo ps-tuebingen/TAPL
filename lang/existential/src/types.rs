@@ -25,7 +25,7 @@ impl SubstType<Type> for Type {
     type Target = Self;
     fn subst_type(self, v: &TypeVar, ty: &Type) -> Self::Target {
         match self {
-            Type::Var(v) => f.subst_type(v, ty),
+            Type::Var(var) => var.subst_type(v, ty),
             Type::Unit(u) => u.subst_type(v, ty),
             Type::Nat(nat) => nat.subst_type(v, ty),
             Type::Bool(b) => b.subst_type(v, ty),
