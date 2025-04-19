@@ -11,6 +11,22 @@ where
     arg: Box<Ty>,
 }
 
+impl<Ty> OpApp<Ty>
+where
+    Ty: Type,
+{
+    pub fn new<Ty1, Ty2>(fun: Ty1, arg: Ty2) -> OpApp<Ty>
+    where
+        Ty1: Into<Ty>,
+        Ty2: Into<Ty>,
+    {
+        OpApp {
+            fun: Box::new(fun.into()),
+            arg: Box::new(arg.into()),
+        }
+    }
+}
+
 impl<Ty> Type for OpApp<Ty> where Ty: Type {}
 
 impl<Ty> SubstType<Ty> for OpApp<Ty>

@@ -12,6 +12,22 @@ where
     body: Box<Ty>,
 }
 
+impl<Ty> OpLambda<Ty>
+where
+    Ty: Type,
+{
+    pub fn new<Ty1>(var: &str, knd: Kind, ty: Ty1) -> OpLambda<Ty>
+    where
+        Ty1: Into<Ty>,
+    {
+        OpLambda {
+            var: var.to_owned(),
+            annot: knd,
+            body: Box::new(ty.into()),
+        }
+    }
+}
+
 impl<Ty> Type for OpLambda<Ty> where Ty: Type {}
 
 impl<Ty> SubstType<Ty> for OpLambda<Ty>

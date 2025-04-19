@@ -38,3 +38,5 @@ done:
 	cargo build -p e2e_existential
 	cargo build -p bounded_quantification
 	cargo build -p e2e_bounded
+	cargo build -p lambda_omega
+	cargo build -p e2e_lambdaomega

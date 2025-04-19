@@ -1,6 +1,9 @@
 use super::{pair_to_kind, pair_to_n_inner, pair_to_type, to_parse_err, Rule};
-use crate::syntax::Term;
-use common::errors::{Error, ErrorKind};
+use crate::terms::Term;
+use common::{
+    errors::{Error, ErrorKind},
+    terms::{App, False, Lambda, Num, True, TyApp, TyLambda, Unit, Variable},
+};
 use pest::iterators::Pair;
 
 pub fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
@@ -44,9 +47,9 @@ fn pair_to_prim_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
                 .trim()
                 .parse::<i64>()
                 .map_err(|_| to_parse_err(ErrorKind::UnknownKeyword(p.as_str().to_owned())))?;
-            Ok(Term::Const(num))
+            Ok(Num::new(num).into())
         }
-        Rule::variable => Ok(Term::Var(p.as_str().trim().to_owned())),
+        Rule::variable => Ok(Variable::new(p.as_str().trim()).into()),
         r => Err(to_parse_err(ErrorKind::UnexpectedRule {
             found: format!("{r:?}"),
             expected: "Non Left-Recusrive Term".to_owned(),
@@ -59,10 +62,7 @@ fn pair_to_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
         Rule::tyapp => pair_to_tyapp(p, t),
         Rule::term => {
             let arg = pair_to_term(p)?;
-            Ok(Term::App {
-                fun: Box::new(t),
-                arg: Box::new(arg),
-            })
+            Ok(App::new(t, arg).into())
         }
         r => Err(to_parse_err(ErrorKind::UnexpectedRule {
             found: format!("{r:?}"),
@@ -73,25 +73,21 @@ fn pair_to_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
 
 fn str_to_term(s: &str) -> Result<Term, Error> {
     match s.to_lowercase().trim() {
-        "unit" => Ok(Term::Unit),
-        "true" => Ok(Term::True),
-        "false" => Ok(Term::False),
+        "unit" => Ok(Unit::new().into()),
+        "true" => Ok(True::new().into()),
+        "false" => Ok(False::new().into()),
         s => Err(to_parse_err(ErrorKind::UnknownKeyword(s.to_owned()))),
     }
 }
 
 fn pair_to_lambda(p: Pair<'_, Rule>) -> Result<Term, Error> {
     let mut inner = pair_to_n_inner(p, vec!["Lambda Variable", "Lambda Annot", "Lambda Body"])?;
-    let var = inner.remove(0).as_str().trim().to_owned();
+    let var = inner.remove(0).as_str().trim();
     let ty_rule = inner.remove(0);
     let ty = pair_to_type(ty_rule)?;
     let body_rule = inner.remove(0);
     let body = pair_to_term(body_rule)?;
-    Ok(Term::Lambda {
-        var,
-        annot: ty,
-        body: Box::new(body),
-    })
+    Ok(Lambda::new(var, ty, body).into())
 }
 
 fn pair_to_tylambda(p: Pair<'_, Rule>) -> Result<Term, Error> {
@@ -99,24 +95,17 @@ fn pair_to_tylambda(p: Pair<'_, Rule>) -> Result<Term, Error> {
         p,
         vec!["Type Variable", "Kind Annot", "Type Abstraction Body"],
     )?;
-    let var = inner.remove(0).as_str().trim().to_owned();
+    let var = inner.remove(0).as_str().trim();
     let knd_rule = inner.remove(0);
     let knd = pair_to_kind(knd_rule)?;
 
     let body_rule = inner.remove(0);
     let body = pair_to_term(body_rule)?;
-    Ok(Term::TyLambda {
-        var,
-        kind: knd,
-        body: Box::new(body),
-    })
+    Ok(TyLambda::new(var, knd, body).into())
 }
 
 fn pair_to_tyapp(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
     let ty_rule = pair_to_n_inner(p, vec!["Type"])?.remove(0);
     let ty = pair_to_type(ty_rule)?;
-    Ok(Term::TyApp {
-        fun: Box::new(t),
-        arg: ty,
-    })
+    Ok(TyApp::new(t, ty).into())
 }
