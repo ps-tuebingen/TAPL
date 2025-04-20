@@ -1,5 +1,6 @@
 use crate::{terms::Term, types::Type};
 use common::{
+    kinds::Kind,
     terms::{App, Lambda, Num, Pack, Record, RecordProj, Succ, Unpack, Variable},
     types::{Exists, Fun, Nat, Record as RecordTy, TypeVariable},
     TypeVar, Var,
@@ -9,6 +10,7 @@ use std::collections::HashMap;
 pub fn ty_counter() -> Type {
     Exists::new(
         "X",
+        Kind::Star,
         RecordTy::new(HashMap::<TypeVar, Type>::from([
             ("state".to_owned(), TypeVariable::new("X").into()),
             (

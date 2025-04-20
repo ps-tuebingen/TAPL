@@ -2,6 +2,7 @@ use super::{pair_to_n_inner, to_parse_err, Error, Rule};
 use crate::types::Type;
 use common::{
     errors::ErrorKind,
+    kinds::Kind,
     types::{Bool, Exists, Fun, Nat, Record, TypeVariable, Unit},
 };
 use pest::iterators::Pair;
@@ -73,7 +74,7 @@ fn pair_to_pack_ty(p: Pair<'_, Rule>) -> Result<Type, Error> {
     let var = start_inner.remove(0).as_str().trim();
     let ty_rule = inner.remove(0);
     let inner_ty = pair_to_type(ty_rule)?;
-    Ok(Exists::new(var, inner_ty).into())
+    Ok(Exists::new(var, Kind::Star, inner_ty).into())
 }
 
 fn pair_to_record_ty(p: Pair<'_, Rule>) -> Result<Type, Error> {

@@ -1,5 +1,6 @@
 use crate::{terms::Term, types::Type};
 use common::{
+    kinds::Kind,
     terms::{App, IsZero, Lambda, Num, Pack, Record, RecordProj, Succ, Unpack, Variable},
     types::{Bool, Exists, Fun, Nat, Record as RecordTy, TypeVariable},
     TypeVar, Var,
@@ -22,6 +23,7 @@ pub fn counter_adt() -> Term {
         ])),
         Exists::new(
             "Counter",
+            Kind::Star,
             RecordTy::new(HashMap::<TypeVar, Type>::from([
                 ("new".to_owned(), TypeVariable::new("Counter").into()),
                 (
@@ -84,6 +86,7 @@ pub fn counter_adt_rec() -> Term {
         ])),
         Exists::new(
             "Counter",
+            Kind::Star,
             RecordTy::new(HashMap::<Var, Type>::from([
                 ("new".to_owned(), TypeVariable::new("Counter").into()),
                 (
@@ -151,6 +154,7 @@ pub fn flip_flop() -> Term {
                 ])),
                 Exists::new(
                     "FlipFlop",
+                    Kind::Star,
                     RecordTy::new(HashMap::<TypeVar, Type>::from([
                         ("new".to_owned(), TypeVariable::new("FlipFlop").into()),
                         (
@@ -190,6 +194,7 @@ mod adt_tests {
     use super::{counter_adt, counter_adt_rec, flip_flop, Type};
     use common::{
         check::Typecheck,
+        kinds::Kind,
         types::{Bool, Exists, Fun, Nat, Record as RecordTy, TypeVariable},
         TypeVar,
     };
@@ -200,6 +205,7 @@ mod adt_tests {
         let result = counter_adt().check(&mut Default::default()).unwrap();
         let expected = Exists::new(
             "Counter",
+            Kind::Star,
             RecordTy::new(HashMap::<TypeVar, Type>::from([
                 ("new".to_owned(), TypeVariable::new("Counter").into()),
                 (

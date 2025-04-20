@@ -1,5 +1,5 @@
 use super::Type;
-use crate::{subst::SubstType, TypeVar};
+use crate::{kinds::Kind, subst::SubstType, TypeVar};
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -8,6 +8,7 @@ where
     Ty: Type,
 {
     pub var: TypeVar,
+    kind: Kind,
     pub ty: Box<Ty>,
 }
 
@@ -15,12 +16,13 @@ impl<Ty> Exists<Ty>
 where
     Ty: Type,
 {
-    pub fn new<Ty1>(v: &str, ty: Ty1) -> Exists<Ty>
+    pub fn new<Ty1>(v: &str, knd: Kind, ty: Ty1) -> Exists<Ty>
     where
         Ty1: Into<Ty>,
     {
         Exists {
             var: v.to_owned(),
+            kind: knd,
             ty: Box::new(ty.into()),
         }
     }
@@ -41,6 +43,7 @@ where
         } else {
             Exists {
                 var: self.var,
+                kind: self.kind,
                 ty: Box::new((*self.ty).subst_type(v, ty)),
             }
             .into()

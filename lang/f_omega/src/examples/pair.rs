@@ -1,51 +1,57 @@
-use crate::syntax::{
+use crate::terms::Term;
+use common::{
     kinds::Kind,
-    terms::{App, Lambda, Pack, Record, Term, TyApp, TyLambda},
-    types::{Existential, Fun, OpApp, OpLambda, RecTy, Type, Universal},
+    terms::{App, Lambda, Pack, Record, TyApp, TyLambda},
+    types::{Exists, Forall, Fun, OpApp, OpLambda, Record as RecordTy, Type},
+    TypeVar,
 };
+use std::collections::HashMap;
 
 pub fn pair_sig() -> Type {
-    Existential::new(
+    Exists::new(
         "Pair",
         Kind::Star.abs().abs(),
-        RecTy::new(vec![
+        RecordTy::new(HashMap::<TypeVar, Type>::from([
             (
-                "pair",
-                Universal::new(
+                "pair".to_owned(),
+                Forall::new(
                     "X",
                     Kind::Star,
-                    Universal::new(
+                    Forall::new(
                         "Y",
                         Kind::Star,
                         Fun::new("X", Fun::new("Y", OpApp::new(OpApp::new("Pair", "X"), "Y"))),
                     ),
-                ),
+                )
+                .into(),
             ),
             (
-                "fst",
-                Universal::new(
+                "fst".to_owned(),
+                Forall::new(
                     "X",
                     Kind::Star,
-                    Universal::new(
+                    Forall::new(
                         "Y",
                         Kind::Star,
                         Fun::new(OpApp::new(OpApp::new("Pair", "X"), "Y"), "X"),
                     ),
-                ),
+                )
+                .into(),
             ),
             (
-                "snd",
-                Universal::new(
+                "snd".to_owned(),
+                Forall::new(
                     "X",
                     Kind::Star,
-                    Universal::new(
+                    Forall::new(
                         "Y",
                         Kind::Star,
                         Fun::new(OpApp::new(OpApp::new("Pair", "X"), "Y"), "Y"),
                     ),
-                ),
+                )
+                .into(),
             ),
-        ]),
+        ])),
     )
     .into()
 }
@@ -58,7 +64,7 @@ pub fn pair_adt() -> Term {
             OpLambda::new(
                 "Y",
                 Kind::Star,
-                Universal::new(
+                Forall::new(
                     "R",
                     Kind::Star,
                     Fun::new(Fun::new("X", Fun::new("Y", "R")), "R"),
@@ -105,7 +111,7 @@ pub fn pair_adt() -> Term {
                         Kind::Star,
                         Lambda::new(
                             "p",
-                            Universal::new(
+                            Forall::new(
                                 "R",
                                 Kind::Star,
                                 Fun::new(Fun::new("X", Fun::new("Y", "R")), "R"),
@@ -129,7 +135,7 @@ pub fn pair_adt() -> Term {
                         Kind::Star,
                         Lambda::new(
                             "p",
-                            Universal::new(
+                            Forall::new(
                                 "R",
                                 Kind::Star,
                                 Fun::new(Fun::new("X", Fun::new("Y", "R")), "R"),

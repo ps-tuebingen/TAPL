@@ -40,3 +40,5 @@ done:
 	cargo build -p e2e_bounded
 	cargo build -p lambda_omega
 	cargo build -p e2e_lambdaomega
+	cargo build -p system_f
+	cargo build -p e2e_systemf
