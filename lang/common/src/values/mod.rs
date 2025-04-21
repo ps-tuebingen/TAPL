@@ -32,6 +32,7 @@ pub mod something;
 pub mod tru;
 pub mod tuple;
 pub mod tylambda;
+pub mod tylambdasub;
 pub mod unit;
 pub mod variant;
 
@@ -55,5 +56,6 @@ pub use something::Something;
 pub use tru::True;
 pub use tuple::Tuple;
 pub use tylambda::TyLambda;
+pub use tylambdasub::TyLambdaSub;
 pub use unit::Unit;
 pub use variant::Variant;

@@ -1,18 +1,27 @@
 use super::object;
-use crate::syntax::{
+use crate::{terms::Term, types::Type};
+use common::{
     kinds::Kind,
-    terms::{App, Lambda, Pack, Record, RecordProj, Succ, Term, TyLambda, Unpack},
-    types::{Fun, OpApp, OpLambda, RecordTy, Type},
+    terms::{App, Lambda, Num, Pack, Record, RecordProj, Succ, TyLambdaSub, Unpack, Variable},
+    types::{Fun, Nat, OpApp, OpLambda, Record as RecordTy, TypeVariable},
+    TypeVar, Var,
 };
+use std::collections::HashMap;
 
 pub fn counter_m() -> Type {
     OpLambda::new(
         "R",
         Kind::Star,
-        RecordTy::new(vec![
-            ("get", Fun::new("R", Type::Nat).into()),
-            ("inc", Fun::new("R", "R").into()),
-        ]),
+        RecordTy::new(HashMap::<TypeVar, Type>::from([
+            (
+                "get".to_owned(),
+                Fun::new(TypeVariable::new("R"), Nat).into(),
+            ),
+            (
+                "inc".to_owned(),
+                Fun::new(TypeVariable::new("R"), TypeVariable::new("R")).into(),
+            ),
+        ])),
     )
     .into()
 }
@@ -22,30 +31,36 @@ pub fn counter() -> Type {
 }
 
 pub fn send_inc() -> Term {
-    TyLambda::new(
+    TyLambdaSub::new(
         "M",
         counter_m(),
         Lambda::new(
             "c",
-            OpApp::new(object(), "M"),
+            OpApp::new(object(), TypeVariable::new("M")),
             Unpack::new(
                 "X",
                 "b",
-                "c",
+                Variable::new("c"),
                 Pack::new(
-                    "X",
-                    Record::new(vec![
+                    TypeVariable::new("X"),
+                    Record::new(HashMap::<Var, Term>::from([
                         (
-                            "state",
+                            "state".to_owned(),
                             App::new(
-                                RecordProj::new(RecordProj::new("b", "methods"), "inc"),
-                                RecordProj::new("b", "state"),
+                                RecordProj::new(
+                                    RecordProj::new(Variable::new("b"), "methods"),
+                                    "inc",
+                                ),
+                                RecordProj::new(Variable::new("b"), "state"),
                             )
                             .into(),
                         ),
-                        ("methods", RecordProj::new("b", "methods").into()),
-                    ]),
-                    OpApp::new(object(), "M"),
+                        (
+                            "methods".to_owned(),
+                            RecordProj::new(Variable::new("b"), "methods").into(),
+                        ),
+                    ])),
+                    OpApp::new(object(), TypeVariable::new("M")),
                 ),
             ),
         ),
@@ -54,17 +69,20 @@ pub fn send_inc() -> Term {
 }
 
 pub fn send_get() -> Term {
-    TyLambda::new(
+    TyLambdaSub::new(
         "M",
         counter_m(),
         Lambda::new(
             "c",
-            OpApp::new(object(), "M"),
+            OpApp::new(object(), TypeVariable::new("M")),
             Unpack::new(
                 "X",
                 "b",
-                "c",
-                App::new(RecordProj::new(RecordProj::new("b", "methods"), "get"), "c"),
+                Variable::new("c"),
+                App::new(
+                    RecordProj::new(RecordProj::new(Variable::new("b"), "methods"), "get"),
+                    Variable::new("c"),
+                ),
             ),
         ),
     )
@@ -72,35 +90,49 @@ pub fn send_get() -> Term {
 }
 
 pub fn counter_r() -> Type {
-    RecordTy::new(vec![("x", Type::Nat)]).into()
+    RecordTy::new(HashMap::<TypeVar, Type>::from([(
+        "x".to_owned(),
+        Nat.into(),
+    )]))
+    .into()
 }
 
 pub fn counter_class() -> Term {
-    Record::new(vec![
+    Record::new(HashMap::<Var, Term>::from([
         (
-            "get",
-            Lambda::new("r", counter_r(), RecordProj::new("r", "x")).into(),
+            "get".to_owned(),
+            Lambda::new("r", counter_r(), RecordProj::new(Variable::new("r"), "x")).into(),
         ),
         (
-            "inc",
+            "inc".to_owned(),
             Lambda::new(
                 "r",
                 counter_r(),
-                Record::new(vec![("x", Succ::new(RecordProj::new("r", "x")).into())]),
+                Record::new(HashMap::<Var, Term>::from([(
+                    "x".to_owned(),
+                    Succ::new(RecordProj::new(Variable::new("r"), "x")).into(),
+                )])),
             )
             .into(),
         ),
-    ])
+    ]))
     .into()
 }
 
 pub fn new_counter() -> Term {
     Pack::new(
         counter_r(),
-        Record::new(vec![
-            ("state", Record::new(vec![("x", Term::Zero)]).into()),
-            ("methods", counter_class()),
-        ]),
+        Record::new(HashMap::<Var, Term>::from([
+            (
+                "state".to_owned(),
+                Record::new(HashMap::<Var, Term>::from([(
+                    "x".to_owned(),
+                    Num::new(0).into(),
+                )]))
+                .into(),
+            ),
+            ("methods".to_owned(), counter_class()),
+        ])),
         counter(),
     )
     .into()
@@ -133,7 +165,7 @@ mod counter_tests {
         let expected = <Universal as Into<Type>>::into(Universal::new(
             "M",
             counter_m(),
-            Fun::new(OpApp::new(object(), "M"), Type::Nat),
+            Fun::new(OpApp::new(object(), "M"), Nat),
         ))
         .eval(&mut Default::default())
         .unwrap();

@@ -1,7 +1,10 @@
+use crate::types::Type;
 use common::{
     kinds::Kind,
-    types::{Exists, OpApp, OpLambda, Record, Type},
+    types::{ExistsBounded, OpApp, OpLambda, Record, TypeVariable},
+    TypeVar,
 };
+use std::collections::HashMap;
 
 pub mod counter;
 pub mod reset_counter;
@@ -10,13 +13,15 @@ pub fn object() -> Type {
     OpLambda::new(
         "M",
         Kind::Star.abs(),
-        Exists::new_unbounded(
+        ExistsBounded::new_unbounded(
             "X",
-            Kind::Star,
-            RecordTy::new(vec![
-                ("state", "X".into()),
-                ("methods", OpApp::new("M", "X").into()),
-            ]),
+            Record::new(HashMap::<TypeVar, Type>::from([
+                ("state".to_owned(), TypeVariable::new("X").into()),
+                (
+                    "methods".to_owned(),
+                    OpApp::new(TypeVariable::new("M"), TypeVariable::new("X")).into(),
+                ),
+            ])),
         ),
     )
     .into()
@@ -25,12 +30,11 @@ pub fn object() -> Type {
 #[cfg(test)]
 mod object_tests {
     use super::object;
-    use crate::syntax::kinds::Kind;
-    use common::Typecheck;
+    use common::{check::Typecheck, kinds::Kind};
 
     #[test]
     fn check_object() {
-        let result = object().check(&mut Default::default()).unwrap();
+        let result = object().check_start().unwrap();
         let expected = Kind::Star.abs().abs();
         assert_eq!(result, expected)
     }

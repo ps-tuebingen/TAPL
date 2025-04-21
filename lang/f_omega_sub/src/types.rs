@@ -1,7 +1,7 @@
 use common::{
     language::LanguageType,
     subst::SubstType,
-    types::{Exists, Forall, Fun, Nat, OpApp, OpLambda, Record, Top, TypeVariable},
+    types::{ExistsBounded, ForallBounded, Fun, Nat, OpApp, OpLambda, Record, Top, TypeVariable},
     TypeVar,
 };
 use std::fmt;
@@ -11,10 +11,10 @@ pub enum Type {
     Var(TypeVariable),
     Top(Top),
     Fun(Fun<Type>),
-    Forall(Forall<Type>),
+    Forall(ForallBounded<Type>),
     OpLambda(OpLambda<Type>),
     OpApp(OpApp<Type>),
-    Exists(Exists<Type>),
+    Exists(ExistsBounded<Type>),
     Record(Record<Type>),
     Nat(Nat),
 }
@@ -81,13 +81,13 @@ impl From<OpApp<Type>> for Type {
         Type::OpApp(opapp)
     }
 }
-impl From<Forall<Type>> for Type {
-    fn from(forall: Forall<Type>) -> Type {
+impl From<ForallBounded<Type>> for Type {
+    fn from(forall: ForallBounded<Type>) -> Type {
         Type::Forall(forall)
     }
 }
-impl From<Exists<Type>> for Type {
-    fn from(exists: Exists<Type>) -> Type {
+impl From<ExistsBounded<Type>> for Type {
+    fn from(exists: ExistsBounded<Type>) -> Type {
         Type::Exists(exists)
     }
 }

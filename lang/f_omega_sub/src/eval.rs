@@ -11,6 +11,7 @@ impl Eval for Term {
             Term::Lambda(lam) => lam.eval(env),
             Term::App(app) => app.eval(env),
             Term::LambdaSub(lam) => lam.eval(env),
+            Term::TyLambdaSub(lam) => lam.eval(env),
             Term::TyApp(app) => app.eval(env),
             Term::Pack(pack) => pack.eval(env),
             Term::Unpack(unpack) => unpack.eval(env),

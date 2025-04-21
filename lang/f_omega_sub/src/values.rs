@@ -1,7 +1,7 @@
 use super::terms::Term;
 use common::{
     language::LanguageValue,
-    values::{Lambda, LambdaSub, Num, Pack, Record, Value as ValueTrait},
+    values::{Lambda, LambdaSub, Num, Pack, Record, TyLambdaSub, Value as ValueTrait},
 };
 use std::fmt;
 
@@ -9,6 +9,7 @@ use std::fmt;
 pub enum Value {
     Lambda(Lambda<Term>),
     LambdaSub(LambdaSub<Term>),
+    TyLambdaSub(TyLambdaSub<Term>),
     Pack(Pack<Term>),
     Record(Record<Term>),
     Num(Num<Term>),
@@ -27,6 +28,7 @@ impl From<Value> for Term {
         match val {
             Value::Lambda(lam) => lam.into_term().into(),
             Value::LambdaSub(lam) => lam.into_term().into(),
+            Value::TyLambdaSub(lam) => lam.into_term().into(),
             Value::Pack(pack) => pack.into_term().into(),
             Value::Record(rec) => rec.into_term().into(),
             Value::Num(num) => num.into_term().into(),
@@ -39,6 +41,7 @@ impl fmt::Display for Value {
         match self {
             Value::Lambda(lam) => lam.fmt(f),
             Value::LambdaSub(lam) => lam.fmt(f),
+            Value::TyLambdaSub(lam) => lam.fmt(f),
             Value::Pack(pack) => pack.fmt(f),
             Value::Record(rec) => rec.fmt(f),
             Value::Num(num) => num.fmt(f),
@@ -54,6 +57,11 @@ impl From<Pack<Term>> for Value {
 impl From<LambdaSub<Term>> for Value {
     fn from(lam: LambdaSub<Term>) -> Value {
         Value::LambdaSub(lam)
+    }
+}
+impl From<TyLambdaSub<Term>> for Value {
+    fn from(lam: TyLambdaSub<Term>) -> Value {
+        Value::TyLambdaSub(lam)
     }
 }
 impl From<Lambda<Term>> for Value {

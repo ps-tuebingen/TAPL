@@ -2,21 +2,33 @@ use super::{
     counter::{counter_class, counter_r},
     object,
 };
-use crate::syntax::{
+use crate::{terms::Term, types::Type};
+use common::{
     kinds::Kind,
-    terms::{App, Lambda, Let, Pack, Record, RecordProj, Term, TyLambda, Unpack},
-    types::{Fun, OpApp, OpLambda, RecordTy, Type},
+    terms::{App, Lambda, Let, Num, Pack, Record, RecordProj, TyLambdaSub, Unpack, Variable},
+    types::{Fun, Nat, OpApp, OpLambda, Record as RecordTy, TypeVariable},
+    TypeVar, Var,
 };
+use std::collections::HashMap;
 
 pub fn reset_counter_m() -> Type {
     OpLambda::new(
         "R",
         Kind::Star,
-        RecordTy::new(vec![
-            ("get", Fun::new("R", Type::Nat).into()),
-            ("inc", Fun::new("R", "R").into()),
-            ("reset", Fun::new("R", "R").into()),
-        ]),
+        RecordTy::new(HashMap::<TypeVar, Type>::from([
+            (
+                "get".to_owned(),
+                Fun::new(TypeVariable::new("R"), Nat).into(),
+            ),
+            (
+                "inc".to_owned(),
+                Fun::new(TypeVariable::new("R"), TypeVariable::new("R")).into(),
+            ),
+            (
+                "reset".to_owned(),
+                Fun::new(TypeVariable::new("R"), TypeVariable::new("R")).into(),
+            ),
+        ])),
     )
     .into()
 }
@@ -28,43 +40,63 @@ pub fn reset_counter_class() -> Term {
     Let::new(
         "super",
         counter_class(),
-        Record::new(vec![
-            ("get", RecordProj::new("super", "get").into()),
-            ("inc", RecordProj::new("super", "inc").into()),
+        Record::new(HashMap::<Var, Term>::from([
             (
-                "reset",
-                Lambda::new("r", counter_r(), Record::new(vec![("x", Term::Zero)])).into(),
+                "get".to_owned(),
+                RecordProj::new(Variable::new("super"), "get").into(),
             ),
-        ]),
+            (
+                "inc".to_owned(),
+                RecordProj::new(Variable::new("super"), "inc").into(),
+            ),
+            (
+                "reset".to_owned(),
+                Lambda::new(
+                    "r",
+                    counter_r(),
+                    Record::new(HashMap::<Var, Term>::from([(
+                        "x".to_owned(),
+                        Num::new(0).into(),
+                    )])),
+                )
+                .into(),
+            ),
+        ])),
     )
     .into()
 }
 
 pub fn send_reset() -> Term {
-    TyLambda::new(
+    TyLambdaSub::new(
         "M",
         reset_counter_m(),
         Lambda::new(
             "c",
-            OpApp::new(object(), "M"),
+            OpApp::new(object(), TypeVariable::new("M")),
             Unpack::new(
                 "X",
                 "b",
-                "c",
+                Variable::new("c"),
                 Pack::new(
-                    "X",
-                    Record::new(vec![
+                    TypeVariable::new("X"),
+                    Record::new(HashMap::<Var, Term>::from([
                         (
-                            "state",
+                            "state".to_owned(),
                             App::new(
-                                RecordProj::new(RecordProj::new("b", "methods"), "reset"),
-                                RecordProj::new("b", "state"),
+                                RecordProj::new(
+                                    RecordProj::new(Variable::new("b"), "methods"),
+                                    "reset",
+                                ),
+                                RecordProj::new(Variable::new("b"), "state"),
                             )
                             .into(),
                         ),
-                        ("methods", RecordProj::new("b", "methods").into()),
-                    ]),
-                    OpApp::new(object(), "M"),
+                        (
+                            "methods".to_owned(),
+                            RecordProj::new(Variable::new("b"), "methods").into(),
+                        ),
+                    ])),
+                    OpApp::new(object(), TypeVariable::new("M")),
                 ),
             ),
         ),

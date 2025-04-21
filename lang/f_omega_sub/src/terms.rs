@@ -3,8 +3,8 @@ use common::{
     language::LanguageTerm,
     subst::{SubstTerm, SubstType},
     terms::{
-        App, Lambda, LambdaSub, Let, Num, Pack, Pred, Record, RecordProj, Succ, TyApp, Unpack,
-        Variable,
+        App, Lambda, LambdaSub, Let, Num, Pack, Pred, Record, RecordProj, Succ, TyApp, TyLambdaSub,
+        Unpack, Variable,
     },
     TypeVar, Var,
 };
@@ -16,6 +16,7 @@ pub enum Term {
     Lambda(Lambda<Term>),
     App(App<Term>),
     LambdaSub(LambdaSub<Term>),
+    TyLambdaSub(TyLambdaSub<Term>),
     TyApp(TyApp<Term>),
     Pack(Pack<Term>),
     Unpack(Unpack<Term>),
@@ -43,6 +44,7 @@ impl SubstTerm<Term> for Term {
             Term::Lambda(lam) => lam.subst(v, t),
             Term::App(app) => app.subst(v, t),
             Term::LambdaSub(lam) => lam.subst(v, t),
+            Term::TyLambdaSub(lam) => lam.subst(v, t),
             Term::TyApp(app) => app.subst(v, t),
             Term::Pack(pack) => pack.subst(v, t),
             Term::Unpack(unpack) => unpack.subst(v, t),
@@ -65,6 +67,7 @@ impl SubstType<Type> for Term {
             Term::Lambda(lam) => lam.subst_type(v, ty),
             Term::App(app) => app.subst_type(v, ty),
             Term::LambdaSub(lam) => lam.subst_type(v, ty),
+            Term::TyLambdaSub(lam) => lam.subst_type(v, ty),
             Term::TyApp(app) => app.subst_type(v, ty),
             Term::Pack(pack) => pack.subst_type(v, ty),
             Term::Unpack(unpack) => unpack.subst_type(v, ty),
@@ -85,12 +88,13 @@ impl fmt::Display for Term {
             Term::Lambda(lam) => lam.fmt(f),
             Term::App(app) => app.fmt(f),
             Term::LambdaSub(lam) => lam.fmt(f),
+            Term::TyLambdaSub(lam) => lam.fmt(f),
             Term::TyApp(app) => app.fmt(f),
             Term::Pack(pack) => pack.fmt(f),
             Term::Unpack(unpack) => unpack.fmt(f),
             Term::Record(rec) => rec.fmt(f),
             Term::RecordProj(proj) => proj.fmt(f),
-            Term::Num(num) => num.fnt(f),
+            Term::Num(num) => num.fmt(f),
             Term::Succ(succ) => succ.fmt(f),
             Term::Pred(pred) => pred.fmt(f),
             Term::Let(lt) => lt.fmt(f),
@@ -118,7 +122,11 @@ impl From<TyApp<Term>> for Term {
         Term::TyApp(tyapp)
     }
 }
-
+impl From<TyLambdaSub<Term>> for Term {
+    fn from(lam: TyLambdaSub<Term>) -> Term {
+        Term::TyLambdaSub(lam)
+    }
+}
 impl From<LambdaSub<Term>> for Term {
     fn from(lam: LambdaSub<Term>) -> Term {
         Term::LambdaSub(lam)
