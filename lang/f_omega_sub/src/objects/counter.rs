@@ -143,17 +143,24 @@ mod counter_tests {
     use super::{
         counter, counter_class, counter_m, counter_r, new_counter, object, send_get, send_inc,
     };
-    use crate::syntax::types::{Fun, OpApp, Type, Universal};
-    use common::Eval;
-    use common::Typecheck;
+    use crate::types::Type;
+    use common::{
+        check::Typecheck,
+        eval::Eval,
+        language::LanguageType,
+        types::{ForallBounded, Fun, Nat, OpApp, TypeVariable},
+    };
 
     #[test]
     fn check_send_inc() {
         let result = send_inc().check(&mut Default::default()).unwrap();
-        let expected = Universal::new(
+        let expected = ForallBounded::new(
             "M",
             counter_m(),
-            Fun::new(OpApp::new(object(), "M"), OpApp::new(object(), "M")),
+            Fun::new(
+                OpApp::new(object(), TypeVariable::new("M")),
+                OpApp::new(object(), TypeVariable::new("M")),
+            ),
         )
         .into();
         result.check_equal(&expected).unwrap();
@@ -162,22 +169,21 @@ mod counter_tests {
     #[test]
     fn check_send_get() {
         let result = send_get().check(&mut Default::default()).unwrap();
-        let expected = <Universal as Into<Type>>::into(Universal::new(
+        let ty: Type = ForallBounded::new(
             "M",
             counter_m(),
-            Fun::new(OpApp::new(object(), "M"), Nat),
-        ))
-        .eval(&mut Default::default())
-        .unwrap();
+            Fun::new(OpApp::new(object(), TypeVariable::new("M")), Nat),
+        )
+        .into();
+        let expected = ty.eval(&mut Default::default()).unwrap();
         result.check_equal(&expected).unwrap();
     }
 
     #[test]
     fn check_class() {
         let result = counter_class().check(&mut Default::default()).unwrap();
-        let expected = <OpApp as Into<Type>>::into(OpApp::new(counter_m(), counter_r()))
-            .eval(&mut Default::default())
-            .unwrap();
+        let t: Type = OpApp::new(counter_m(), counter_r()).into();
+        let expected = t.eval(&mut Default::default()).unwrap();
         result.check_equal(&expected).unwrap();
     }
 

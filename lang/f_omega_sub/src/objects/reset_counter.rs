@@ -108,22 +108,27 @@ pub fn send_reset() -> Term {
 mod reset_counter_tests {
     use super::{object, reset_counter, reset_counter_class, reset_counter_m, send_reset};
     use crate::{
-        check::check_subtype,
         objects::counter::{counter, counter_m, counter_r},
-        syntax::types::{Fun, OpApp, Type, Universal},
+        types::Type,
     };
-    use common::Eval;
-    use common::Typecheck;
+    use common::{
+        check::{Subtypecheck, Typecheck},
+        eval::Eval,
+        language::LanguageType,
+        types::{ForallBounded, Fun, OpApp, TypeVariable},
+    };
 
     #[test]
     fn reset_counter_sub() {
-        let result = check_subtype(&reset_counter(), &counter(), &mut Default::default());
+        let result = reset_counter().check_subtype(&counter(), &mut Default::default());
         assert!(result.is_ok())
     }
 
     #[test]
     fn reset_counter_m_sub() {
-        check_subtype(&reset_counter_m(), &counter_m(), &mut Default::default()).unwrap();
+        reset_counter_m()
+            .check_subtype(&counter_m(), &mut Default::default())
+            .unwrap();
     }
 
     #[test]
@@ -131,18 +136,20 @@ mod reset_counter_tests {
         let result = reset_counter_class()
             .check(&mut Default::default())
             .unwrap();
-        let expected = <OpApp as Into<Type>>::into(OpApp::new(reset_counter_m(), counter_r()))
-            .eval(&mut Default::default())
-            .unwrap();
+        let ty: Type = OpApp::new(reset_counter_m(), counter_r()).into();
+        let expected = ty.eval(&mut Default::default()).unwrap();
         result.check_equal(&expected).unwrap();
     }
     #[test]
     fn check_send_reset() {
         let result = send_reset().check(&mut Default::default()).unwrap();
-        let expected = Universal::new(
+        let expected = ForallBounded::new(
             "M",
             reset_counter_m(),
-            Fun::new(OpApp::new(object(), "M"), OpApp::new(object(), "M")),
+            Fun::new(
+                OpApp::new(object(), TypeVariable::new("M")),
+                OpApp::new(object(), TypeVariable::new("M")),
+            ),
         )
         .into();
         result.check_equal(&expected).unwrap();

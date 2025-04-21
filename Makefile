@@ -42,3 +42,7 @@ done:
 	cargo build -p e2e_lambdaomega
 	cargo build -p system_f
 	cargo build -p e2e_systemf
+	cargo build -p f_omega
+	cargo build -p e2e_fomega
+	cargo build -p f_omega_sub
+	cargo build -p e2e_fomegasub

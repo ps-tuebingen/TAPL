@@ -1,4 +1,4 @@
-use crate::{syntax::terms::Term, to_err};
+use crate::terms::Term;
 use common::{
     errors::{Error, ErrorKind, ErrorLocation},
     Parse,
@@ -17,7 +17,10 @@ pub fn to_parse_err<T>(knd: T) -> Error
 where
     T: Into<ErrorKind>,
 {
-    to_err(knd.into(), ErrorLocation::Parse)
+    Error {
+        kind: knd.into(),
+        loc: ErrorLocation::Parse,
+    }
 }
 
 #[derive(Parser)]

@@ -1,6 +1,9 @@
 use super::{pair_to_kind, pair_to_n_inner, pair_to_type, to_parse_err, Rule};
-use crate::syntax::terms::{App, False, Fix, RecordProj, Term, True, Zero};
-use common::errors::{Error, ErrorKind};
+use crate::terms::Term;
+use common::{
+    errors::{Error, ErrorKind},
+    terms::{App, False, Fix, Num, RecordProj, True, Unit, Variable},
+};
 use pest::iterators::Pair;
 
 mod ift;
@@ -49,10 +52,7 @@ fn pair_to_primterm(p: Pair<'_, Rule>) -> Result<Term, Error> {
         Rule::fix_term => {
             let inner = pair_to_n_inner(p, vec!["Fix Term"])?.remove(0);
             let inner_term = pair_to_primterm(inner)?;
-            Ok(Fix {
-                term: Box::new(inner_term),
-            }
-            .into())
+            Ok(Fix::new(inner_term).into())
         }
         Rule::succ_term => pair_to_succ(p).map(|s| s.into()),
         Rule::pred_term => pair_to_pred(p).map(|p| p.into()),
@@ -63,7 +63,7 @@ fn pair_to_primterm(p: Pair<'_, Rule>) -> Result<Term, Error> {
         Rule::pack_term => pair_to_pack(p).map(|pack| pack.into()),
         Rule::unpack_term => pair_to_unpack(p).map(|unpack| unpack.into()),
         Rule::record_term => pair_to_record(p).map(|rec| rec.into()),
-        Rule::variable => Ok(Term::Var(p.as_str().trim().to_owned())),
+        Rule::variable => Ok(Variable::new(p.as_str().trim()).into()),
         Rule::const_term => str_to_term(p.as_str()),
         Rule::number => {
             let num = p
@@ -71,7 +71,7 @@ fn pair_to_primterm(p: Pair<'_, Rule>) -> Result<Term, Error> {
                 .trim()
                 .parse::<i64>()
                 .map_err(|_| to_parse_err(ErrorKind::UnknownKeyword(p.as_str().to_owned())))?;
-            Ok(num.into())
+            Ok(Num::new(num).into())
         }
         _ => Err(to_parse_err(ErrorKind::UnexpectedRule {
             found: format!("{p:?}"),
@@ -85,12 +85,8 @@ fn pair_to_leftrec_term(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
         Rule::ty_app => pair_to_tyapp(p, t).map(|tyapp| tyapp.into()),
         Rule::record_projection => {
             let label_rule = pair_to_n_inner(p, vec!["Projection Target"])?.remove(0);
-            let label = label_rule.as_str().trim().to_owned();
-            Ok(RecordProj {
-                label,
-                term: Box::new(t),
-            }
-            .into())
+            let label = label_rule.as_str().trim();
+            Ok(RecordProj::new(t, label).into())
         }
         Rule::term => {
             let arg = pair_to_term(p)?;
@@ -109,10 +105,10 @@ fn pair_to_leftrec_term(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
 
 fn str_to_term(s: &str) -> Result<Term, Error> {
     match s.to_lowercase().trim() {
-        "true" => Ok(True.into()),
-        "false" => Ok(False.into()),
-        "unit" => Ok(Term::Unit),
-        "zero" => Ok(Zero.into()),
+        "true" => Ok(True::new().into()),
+        "false" => Ok(False::new().into()),
+        "unit" => Ok(Unit::new().into()),
+        "zero" => Ok(Num::new(0).into()),
         s => Err(to_parse_err(ErrorKind::UnknownKeyword(s.to_owned()))),
     }
 }

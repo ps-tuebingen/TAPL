@@ -29,12 +29,12 @@ impl SubstType<Type> for Type {
     fn subst_type(self, v: &TypeVar, ty: &Type) -> Self::Target {
         match self {
             Type::Var(var) => var.subst_type(v, ty),
-            Type::Fun(fun) => fun.subst_ty(v, ty),
-            Type::Forall(forall) => forall.subst_ty(v, ty),
-            Type::OpLambda(lam) => lam.subst_ty(v, ty),
-            Type::OpApp(app) => app.subst_ty(v, ty),
-            Type::Exists(ex) => ex.subst_ty(v, ty),
-            Type::Record(rec) => rec.subst_ty(v, ty),
+            Type::Fun(fun) => fun.subst_type(v, ty),
+            Type::Forall(forall) => forall.subst_type(v, ty),
+            Type::OpLambda(lam) => lam.subst_type(v, ty),
+            Type::OpApp(app) => app.subst_type(v, ty),
+            Type::Exists(ex) => ex.subst_type(v, ty),
+            Type::Record(rec) => rec.subst_type(v, ty),
             Type::Bool(b) => b.subst_type(v, ty),
             Type::Unit(u) => u.subst_type(v, ty),
             Type::Nat(nat) => nat.subst_type(v, ty),
@@ -100,7 +100,7 @@ impl From<Bool> for Type {
     }
 }
 impl From<Unit> for Type {
-    fn from(u: Uni) -> Type {
+    fn from(u: Unit) -> Type {
         Type::Unit(u)
     }
 }

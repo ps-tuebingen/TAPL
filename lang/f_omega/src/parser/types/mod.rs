@@ -1,6 +1,9 @@
 use super::{pair_to_kind, pair_to_n_inner, to_parse_err, Rule};
-use crate::syntax::types::{Fun, OpApp, Type};
-use common::errors::{Error, ErrorKind};
+use crate::types::Type;
+use common::{
+    errors::{Error, ErrorKind},
+    types::{Bool, Fun, Nat, OpApp, TypeVariable, Unit},
+};
 use pest::iterators::Pair;
 
 mod existential;
@@ -48,7 +51,7 @@ fn pair_to_primtype(p: Pair<'_, Rule>) -> Result<Type, Error> {
         Rule::op_lambda => pair_to_op_lambda(p).map(|oplam| oplam.into()),
         Rule::exists_ty => pair_to_exists(p).map(|ex| ex.into()),
         Rule::record_ty => pair_to_rec_ty(p).map(|rec| rec.into()),
-        Rule::variable => Ok(Type::Var(p.as_str().trim().to_owned())),
+        Rule::variable => Ok(TypeVariable::new(p.as_str().trim()).into()),
         _ => Err(to_parse_err(ErrorKind::UnexpectedRule {
             found: format!("{p:?}"),
             expected: "Non Left-Recursive Type".to_owned(),
@@ -70,11 +73,7 @@ fn pair_to_leftrec_ty(p: Pair<'_, Rule>, ty: Type) -> Result<Type, Error> {
         Rule::op_app => {
             let arg_rule = pair_to_n_inner(p, vec!["Type"])?.remove(0);
             let arg = pair_to_type(arg_rule)?;
-            Ok(OpApp {
-                fun: Box::new(ty),
-                arg: Box::new(arg),
-            }
-            .into())
+            Ok(OpApp::new(ty, arg).into())
         }
         _ => Err(to_parse_err(ErrorKind::UnexpectedRule {
             found: format!("{p:?}"),
@@ -85,9 +84,9 @@ fn pair_to_leftrec_ty(p: Pair<'_, Rule>, ty: Type) -> Result<Type, Error> {
 
 fn str_to_type(s: &str) -> Result<Type, Error> {
     match s.to_lowercase().trim() {
-        "bool" => Ok(Type::Bool),
-        "unit" => Ok(Type::Unit),
-        "nat" => Ok(Type::Nat),
+        "bool" => Ok(Bool.into()),
+        "unit" => Ok(Unit.into()),
+        "nat" => Ok(Nat.into()),
         s => Err(to_parse_err(ErrorKind::UnknownKeyword(s.to_owned()))),
     }
 }

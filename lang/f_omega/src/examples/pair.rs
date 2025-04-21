@@ -1,9 +1,9 @@
-use crate::terms::Term;
+use crate::{terms::Term, types::Type};
 use common::{
     kinds::Kind,
-    terms::{App, Lambda, Pack, Record, TyApp, TyLambda},
-    types::{Exists, Forall, Fun, OpApp, OpLambda, Record as RecordTy, Type},
-    TypeVar,
+    terms::{App, Lambda, Pack, Record, TyApp, TyLambda, Variable},
+    types::{Exists, Forall, Fun, OpApp, OpLambda, Record as RecordTy, TypeVariable},
+    TypeVar, Var,
 };
 use std::collections::HashMap;
 
@@ -20,7 +20,16 @@ pub fn pair_sig() -> Type {
                     Forall::new(
                         "Y",
                         Kind::Star,
-                        Fun::new("X", Fun::new("Y", OpApp::new(OpApp::new("Pair", "X"), "Y"))),
+                        Fun::new(
+                            TypeVariable::new("X"),
+                            Fun::new(
+                                TypeVariable::new("Y"),
+                                OpApp::new(
+                                    OpApp::new(TypeVariable::new("Pair"), TypeVariable::new("X")),
+                                    TypeVariable::new("Y"),
+                                ),
+                            ),
+                        ),
                     ),
                 )
                 .into(),
@@ -33,7 +42,13 @@ pub fn pair_sig() -> Type {
                     Forall::new(
                         "Y",
                         Kind::Star,
-                        Fun::new(OpApp::new(OpApp::new("Pair", "X"), "Y"), "X"),
+                        Fun::new(
+                            OpApp::new(
+                                OpApp::new(TypeVariable::new("Pair"), TypeVariable::new("X")),
+                                TypeVariable::new("Y"),
+                            ),
+                            TypeVariable::new("X"),
+                        ),
                     ),
                 )
                 .into(),
@@ -46,7 +61,13 @@ pub fn pair_sig() -> Type {
                     Forall::new(
                         "Y",
                         Kind::Star,
-                        Fun::new(OpApp::new(OpApp::new("Pair", "X"), "Y"), "Y"),
+                        Fun::new(
+                            OpApp::new(
+                                OpApp::new(TypeVariable::new("Pair"), TypeVariable::new("X")),
+                                TypeVariable::new("Y"),
+                            ),
+                            TypeVariable::new("Y"),
+                        ),
                     ),
                 )
                 .into(),
@@ -67,13 +88,19 @@ pub fn pair_adt() -> Term {
                 Forall::new(
                     "R",
                     Kind::Star,
-                    Fun::new(Fun::new("X", Fun::new("Y", "R")), "R"),
+                    Fun::new(
+                        Fun::new(
+                            TypeVariable::new("X"),
+                            Fun::new(TypeVariable::new("Y"), TypeVariable::new("R")),
+                        ),
+                        TypeVariable::new("R"),
+                    ),
                 ),
             ),
         ),
-        Record::new(vec![
+        Record::new(HashMap::<Var, Term>::from([
             (
-                "pair",
+                "pair".to_owned(),
                 TyLambda::new(
                     "X",
                     Kind::Star,
@@ -82,17 +109,26 @@ pub fn pair_adt() -> Term {
                         Kind::Star,
                         Lambda::new(
                             "x",
-                            "X",
+                            TypeVariable::new("X"),
                             Lambda::new(
                                 "y",
-                                "Y",
+                                TypeVariable::new("Y"),
                                 TyLambda::new(
                                     "R",
                                     Kind::Star,
                                     Lambda::new(
                                         "p",
-                                        Fun::new("X", Fun::new("Y", "R")),
-                                        App::new(App::new("p", "x"), "y"),
+                                        Fun::new(
+                                            TypeVariable::new("X"),
+                                            Fun::new(
+                                                TypeVariable::new("Y"),
+                                                TypeVariable::new("R"),
+                                            ),
+                                        ),
+                                        App::new(
+                                            App::new(Variable::new("p"), Variable::new("x")),
+                                            Variable::new("y"),
+                                        ),
                                     ),
                                 ),
                             ),
@@ -102,7 +138,7 @@ pub fn pair_adt() -> Term {
                 .into(),
             ),
             (
-                "fst",
+                "fst".to_owned(),
                 TyLambda::new(
                     "X",
                     Kind::Star,
@@ -114,11 +150,21 @@ pub fn pair_adt() -> Term {
                             Forall::new(
                                 "R",
                                 Kind::Star,
-                                Fun::new(Fun::new("X", Fun::new("Y", "R")), "R"),
+                                Fun::new(
+                                    Fun::new(
+                                        TypeVariable::new("X"),
+                                        Fun::new(TypeVariable::new("Y"), TypeVariable::new("R")),
+                                    ),
+                                    TypeVariable::new("R"),
+                                ),
                             ),
                             App::new(
-                                TyApp::new("p", "X"),
-                                Lambda::new("x", "X", Lambda::new("y", "Y", "x")),
+                                TyApp::new(Variable::new("p"), TypeVariable::new("X")),
+                                Lambda::new(
+                                    "x",
+                                    TypeVariable::new("X"),
+                                    Lambda::new("y", TypeVariable::new("Y"), Variable::new("x")),
+                                ),
                             ),
                         ),
                     ),
@@ -126,7 +172,7 @@ pub fn pair_adt() -> Term {
                 .into(),
             ),
             (
-                "snd",
+                "snd".to_owned(),
                 TyLambda::new(
                     "X",
                     Kind::Star,
@@ -138,18 +184,28 @@ pub fn pair_adt() -> Term {
                             Forall::new(
                                 "R",
                                 Kind::Star,
-                                Fun::new(Fun::new("X", Fun::new("Y", "R")), "R"),
+                                Fun::new(
+                                    Fun::new(
+                                        TypeVariable::new("X"),
+                                        Fun::new(TypeVariable::new("Y"), TypeVariable::new("R")),
+                                    ),
+                                    TypeVariable::new("R"),
+                                ),
                             ),
                             App::new(
-                                TyApp::new("p", "Y"),
-                                Lambda::new("x", "X", Lambda::new("y", "Y", "y")),
+                                TyApp::new(Variable::new("p"), TypeVariable::new("Y")),
+                                Lambda::new(
+                                    "x",
+                                    TypeVariable::new("X"),
+                                    Lambda::new("y", TypeVariable::new("Y"), Variable::new("y")),
+                                ),
                             ),
                         ),
                     ),
                 )
                 .into(),
             ),
-        ]),
+        ])),
         pair_sig(),
     )
     .into()
@@ -158,8 +214,7 @@ pub fn pair_adt() -> Term {
 #[cfg(test)]
 mod pair_tests {
     use super::{pair_adt, pair_sig};
-    use crate::syntax::kinds::Kind;
-    use common::Typecheck;
+    use common::{check::Typecheck, kinds::Kind};
 
     #[test]
     fn check_sig() {
