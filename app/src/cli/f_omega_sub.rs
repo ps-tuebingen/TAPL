@@ -1,5 +1,5 @@
 use super::{display_or_debug, Source};
-use common::{Eval, Parse, Typecheck};
+use common::{check::Typecheck, Eval, Parse};
 use std::error::Error;
 
 #[derive(clap::Args)]
@@ -16,7 +16,7 @@ pub struct Args {
 
 pub fn exec(args: Args) -> Result<(), Box<dyn Error>> {
     let src = args.source.get_source()?;
-    let parsed = f_omega_sub::syntax::terms::Term::parse(src)?;
+    let parsed = f_omega_sub::terms::Term::parse(src)?;
     if args.verbose {
         let parsed_str = display_or_debug(&parsed, args.debug);
         println!("parsed: {parsed_str}");
@@ -26,7 +26,7 @@ pub fn exec(args: Args) -> Result<(), Box<dyn Error>> {
         let checked_str = display_or_debug(&checked, args.debug);
         println!("Checked: {checked_str}");
     }
-    let evaled = parsed.eval(&mut Default::default())?;
+    let evaled = parsed.eval_start()?;
     let evaled_str = display_or_debug(&evaled, args.debug);
     println!("Evaluated: {evaled_str}");
     Ok(())

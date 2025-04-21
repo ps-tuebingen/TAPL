@@ -1,7 +1,6 @@
 use super::{display_or_debug, Source};
-use common::{Eval, Parse, Typecheck};
+use common::{check::Typecheck, Eval, Parse};
 use std::error::Error;
-use stlc::eval_context::eval_with_context;
 
 #[derive(clap::Args)]
 pub struct Args {
@@ -13,14 +12,11 @@ pub struct Args {
     /// use debug print intead of regular
     #[clap(short, long)]
     debug: bool,
-    /// use evaluation contexts
-    #[clap(short, long)]
-    eval_context: bool,
 }
 
 pub fn exec(args: Args) -> Result<(), Box<dyn Error>> {
     let src = args.source.get_source()?;
-    let parsed = stlc::syntax::Term::parse(src)?;
+    let parsed = stlc::terms::Term::parse(src)?;
     if args.verbose {
         let parsed_str = display_or_debug(&parsed, args.debug);
         println!("parsed term: {parsed_str}");
@@ -30,14 +26,10 @@ pub fn exec(args: Args) -> Result<(), Box<dyn Error>> {
         let checked_str = display_or_debug(&checked, args.debug);
         println!("type checked: {checked_str}")
     }
-    if args.eval_context {
-        let evaled = eval_with_context(parsed)?;
-        let evaled_str = display_or_debug(&evaled, args.debug);
-        println!("evaluated: {evaled_str}");
-    } else {
-        let evaled = parsed.eval(Default::default())?;
-        let evaled_str = display_or_debug(&evaled, args.debug);
-        println!("evaluated: {evaled_str}");
-    }
+
+    let evaled = parsed.eval_start()?;
+    let evaled_str = display_or_debug(&evaled, args.debug);
+    println!("evaluated: {evaled_str}");
+
     Ok(())
 }

@@ -1,5 +1,5 @@
 use super::{display_or_debug, Source};
-use common::{Eval, Parse, Typecheck};
+use common::{check::Typecheck, Eval, Parse};
 use std::error::Error;
 
 #[derive(clap::Args)]
@@ -26,7 +26,7 @@ pub fn exec(args: Args) -> Result<(), Box<dyn Error>> {
         let checked_str = display_or_debug(&checked, args.debug);
         println!("checked: {checked_str}");
     }
-    let evaled = parsed.eval(Default::default())?;
+    let evaled = parsed.eval_start()?;
     let evaled_str = display_or_debug(&evaled, args.debug);
     println!("Evaluated: {evaled_str}");
     Ok(())

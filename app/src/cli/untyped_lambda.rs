@@ -1,7 +1,6 @@
 use super::{display_or_debug, Source};
 use common::{Eval, Parse};
 use std::error::Error;
-use untyped_lambda::eval::EvalOrder as EvalOrd;
 
 #[derive(clap::Args)]
 pub struct Args {
@@ -13,37 +12,6 @@ pub struct Args {
     /// use debug print instead of regular
     #[clap(short, long)]
     debug: bool,
-    /// Evaluation order to use when evaluating
-    #[clap(flatten)]
-    eo: EvalOrder,
-}
-
-#[derive(clap::Args)]
-#[group(required = false, multiple = false)]
-pub struct EvalOrder {
-    /// Call-by-Value
-    #[clap(long)]
-    cbv: bool,
-    /// Call-by-Name
-    #[clap(long)]
-    cbn: bool,
-    /// Full-Beta Reduction
-    #[clap(long)]
-    full_beta: bool,
-}
-
-impl EvalOrder {
-    fn to_lam_eval_order(&self) -> EvalOrd {
-        if self.cbn {
-            return EvalOrd::CBN;
-        }
-
-        if self.full_beta {
-            return EvalOrd::FullBeta;
-        }
-
-        EvalOrd::CBV
-    }
 }
 
 pub fn exec(args: Args) -> Result<(), Box<dyn Error>> {
@@ -53,7 +21,7 @@ pub fn exec(args: Args) -> Result<(), Box<dyn Error>> {
         let parsed_str = display_or_debug(&parsed, args.debug);
         println!("parsed: {parsed_str}");
     }
-    let evaled = parsed.eval(args.eo.to_lam_eval_order()).unwrap();
+    let evaled = parsed.eval_start().unwrap();
     let evaled_str = display_or_debug(&evaled, args.debug);
     println!("evaluated: {evaled_str}");
     Ok(())

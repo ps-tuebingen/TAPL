@@ -1,5 +1,5 @@
 use super::{display_or_debug, Source};
-use common::{Eval, Parse, Typecheck};
+use common::{check::Typecheck, Eval, Parse};
 use std::error::Error;
 
 #[derive(clap::Args)]

@@ -1,5 +1,5 @@
 use super::{display_or_debug, Source};
-use common::{Parse, Typecheck};
+use common::{check::Typecheck, Parse};
 use std::error::Error;
 
 #[derive(clap::Args)]
@@ -16,7 +16,7 @@ pub struct Args {
 
 pub fn exec(args: Args) -> Result<(), Box<dyn Error>> {
     let src = args.source.get_source()?;
-    let parsed = subtypes::syntax::Term::parse(src)?;
+    let parsed = subtypes::terms::Term::parse(src)?;
     if args.verbose {
         let parsed_str = display_or_debug(&parsed, args.debug);
         println!("parsed: {parsed_str}");

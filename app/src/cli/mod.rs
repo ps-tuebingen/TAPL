@@ -6,10 +6,10 @@ pub mod exceptions;
 pub mod existential;
 pub mod f_omega;
 pub mod f_omega_sub;
-pub mod featherweight;
-pub mod inference;
+//pub mod featherweight;
+//pub mod inference;
 pub mod lambda_omega;
-pub mod nameless_representation;
+//pub mod nameless_representation;
 pub mod recursive;
 pub mod references;
 pub mod stlc;
@@ -30,15 +30,15 @@ pub enum Command {
     UntypedArithmetic(untyped_arithmetic::Args),
     UntypedLambda(untyped_lambda::Args),
     TypedArithmetic(typed_arithmetic::Args),
-    NamelessRepresentation(nameless_representation::Args),
+    //NamelessRepresentation(nameless_representation::Args),
     Stlc(stlc::Args),
     References(references::Args),
     Exceptions(exceptions::Args),
     Subtypes(subtypes::Args),
-    Featherweight(featherweight::Args),
+    //Featherweight(featherweight::Args),
     Recursive(recursive::Args),
     Existential(existential::Args),
-    Inference(inference::Args),
+    //Inference(inference::Args),
     SystemF(system_f::Args),
     BoundedQuantification(bounded_quantification::Args),
     LambdaOmega(lambda_omega::Args),
@@ -78,14 +78,14 @@ pub fn run() -> Result<(), String> {
         Command::UntypedArithmetic(args) => untyped_arithmetic::exec(args),
         Command::UntypedLambda(args) => untyped_lambda::exec(args),
         Command::TypedArithmetic(args) => typed_arithmetic::exec(args),
-        Command::NamelessRepresentation(args) => nameless_representation::exec(args),
+        //Command::NamelessRepresentation(args) => nameless_representation::exec(args),
         Command::Stlc(args) => stlc::exec(args),
         Command::References(args) => references::exec(args),
         Command::Exceptions(args) => exceptions::exec(args),
         Command::Subtypes(args) => subtypes::exec(args),
-        Command::Featherweight(args) => featherweight::exec(args),
+        //Command::Featherweight(args) => featherweight::exec(args),
         Command::Recursive(args) => recursive::exec(args),
-        Command::Inference(args) => inference::exec(args),
+        //Command::Inference(args) => inference::exec(args),
         Command::SystemF(args) => system_f::exec(args),
         Command::BoundedQuantification(args) => bounded_quantification::exec(args),
         Command::LambdaOmega(args) => lambda_omega::exec(args),
