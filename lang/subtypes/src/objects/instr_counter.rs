@@ -115,12 +115,17 @@ pub fn new_instr_counter() -> Term {
 #[cfg(test)]
 mod instr_counter_tests {
     use super::{instr_counter_class, instr_counter_rep, new_instr_counter, ty_instr_counter};
-    use crate::{objects::set_counter::ty_set_counter, types::Type, typing::is_subtype};
-    use common::Typecheck;
+    use crate::objects::set_counter::ty_set_counter;
+    use common::{
+        check::{Subtypecheck, Typecheck},
+        types::{Fun, Unit as UnitTy},
+    };
 
     #[test]
     fn subtype_setcounter() {
-        assert!(is_subtype(&ty_instr_counter(), &ty_set_counter()))
+        ty_instr_counter()
+            .check_subtype(&ty_set_counter(), &mut Default::default())
+            .unwrap()
     }
 
     #[test]
@@ -134,14 +139,15 @@ mod instr_counter_tests {
                 Fun::new(UnitTy::new(), ty_instr_counter()),
                 Fun::new(UnitTy::new(), ty_instr_counter()),
             ),
-        );
+        )
+        .into();
         assert_eq!(result, expected)
     }
 
     #[test]
     fn ty_new() {
         let result = new_instr_counter().check(&mut Default::default()).unwrap();
-        let expected = Fun::new(UnitTy::new(), ty_instr_counter());
+        let expected = Fun::new(UnitTy::new(), ty_instr_counter()).into();
         assert_eq!(result, expected)
     }
 }

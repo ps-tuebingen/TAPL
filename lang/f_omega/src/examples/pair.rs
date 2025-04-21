@@ -214,11 +214,14 @@ pub fn pair_adt() -> Term {
 #[cfg(test)]
 mod pair_tests {
     use super::{pair_adt, pair_sig};
-    use common::{check::Typecheck, kinds::Kind};
+    use common::{
+        check::{Kindcheck, Typecheck},
+        kinds::Kind,
+    };
 
     #[test]
     fn check_sig() {
-        let result = pair_sig().check(&mut Default::default()).unwrap();
+        let result = pair_sig().check_kind(&mut Default::default()).unwrap();
         let expected = Kind::Star;
         assert_eq!(result, expected)
     }

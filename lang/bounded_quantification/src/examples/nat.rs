@@ -284,8 +284,7 @@ pub fn s_pluspp() -> Term {
 #[cfg(test)]
 mod nat_tests {
     use super::{s_nat, s_one, s_pluspp, s_pos, s_succ, s_three, s_two, s_zero, ty_s_zero};
-    use crate::types::Type;
-    use common::Typecheck;
+    use common::{check::Typecheck, types::Fun};
 
     #[test]
     fn check_zero() {
@@ -318,14 +317,14 @@ mod nat_tests {
     #[test]
     fn check_succ() {
         let result = s_succ().check(&mut Default::default()).unwrap();
-        let expected = Fun::new(s_nat(), s_pos());
+        let expected = Fun::new(s_nat(), s_pos()).into();
         assert_eq!(result, expected)
     }
 
     #[test]
     fn check_plus() {
         let result = s_pluspp().check(&mut Default::default()).unwrap();
-        let expected = Fun::new(s_pos(), Fun::new(s_pos(), s_pos()));
+        let expected = Fun::new(s_pos(), Fun::new(s_pos(), s_pos())).into();
         assert_eq!(result, expected)
     }
 }

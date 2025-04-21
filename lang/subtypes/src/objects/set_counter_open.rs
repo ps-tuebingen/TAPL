@@ -91,8 +91,11 @@ pub fn new_set_counter() -> Term {
 #[cfg(test)]
 mod set_counter_open_tests {
     use super::{new_set_counter, set_counter_class, ty_set_counter};
-    use crate::{objects::counter::counter_rep, types::Type};
-    use common::Typecheck;
+    use crate::objects::counter::counter_rep;
+    use common::{
+        check::Typecheck,
+        types::{Fun, Unit},
+    };
 
     #[test]
     fn ty_set_class() {
@@ -100,17 +103,18 @@ mod set_counter_open_tests {
         let expected = Fun::new(
             counter_rep(),
             Fun::new(
-                Fun::new(Unit, ty_set_counter()),
-                Fun::new(Unit, ty_set_counter()),
+                Fun::new(Unit::new(), ty_set_counter()),
+                Fun::new(Unit::new(), ty_set_counter()),
             ),
-        );
+        )
+        .into();
         assert_eq!(result, expected)
     }
 
     #[test]
     fn ty_set_new() {
         let result = new_set_counter().check(&mut Default::default()).unwrap();
-        let expected = Fun::new(Unit, ty_set_counter());
+        let expected = Fun::new(Unit::new(), ty_set_counter()).into();
         assert_eq!(result, expected)
     }
 }

@@ -99,15 +99,19 @@ mod check_tests {
     #[test]
     fn check1() {
         let term: Term = App::new(
-            Lambda::new("x", Reference::new(UnitTy), Deref::new(Variable::new("x"))),
+            Lambda::new(
+                "x",
+                Reference::new(UnitTy::new()),
+                Deref::new(Variable::new("x")),
+            ),
             App::new(
-                Lambda::new("y", UnitTy, Ref::new(Variable::new("y"))),
+                Lambda::new("y", UnitTy::new(), Ref::new(Variable::new("y"))),
                 Unit::new(),
             ),
         )
         .into();
         let result = term.check(&mut Default::default()).unwrap();
-        let expected = UnitTy.into();
+        let expected = UnitTy::new().into();
         assert_eq!(result, expected)
     }
 
@@ -116,14 +120,14 @@ mod check_tests {
         let term: Term = App::new(
             Lambda::new(
                 "x",
-                Reference::new(UnitTy),
+                Reference::new(UnitTy::new()),
                 Assign::new(Variable::new("x"), Deref::new(Variable::new("x"))),
             ),
             Ref::new(Unit::new()),
         )
         .into();
         let result = term.check(&mut Default::default()).unwrap();
-        let expected = UnitTy.into();
+        let expected = UnitTy::new().into();
         assert_eq!(result, expected)
     }
 
@@ -132,7 +136,10 @@ mod check_tests {
         let term: Term = App::seq(
             Assign::new(
                 Ref::new(Unit::new()),
-                App::new(Lambda::new("x", UnitTy, Variable::new("x")), Unit::new()),
+                App::new(
+                    Lambda::new("x", UnitTy::new(), Variable::new("x")),
+                    Unit::new(),
+                ),
             ),
             Deref::new(Num::new(0)),
         )
@@ -146,7 +153,10 @@ mod check_tests {
         let term: Term = App::seq(
             Assign::new(
                 Ref::new(Unit::new()),
-                App::new(Lambda::new("x", UnitTy, Variable::new("x")), Unit::new()),
+                App::new(
+                    Lambda::new("x", UnitTy::new(), Variable::new("x")),
+                    Unit::new(),
+                ),
             ),
             Deref::new(Num::new(0)),
         )
@@ -154,10 +164,10 @@ mod check_tests {
         let result = term
             .check(&mut Environment {
                 env: Default::default(),
-                store_ty: HashMap::from([(0, UnitTy.into())]),
+                store_ty: HashMap::from([(0, UnitTy::new().into())]),
             })
             .unwrap();
-        let expected = UnitTy.into();
+        let expected = UnitTy::new().into();
         assert_eq!(result, expected)
     }
 }

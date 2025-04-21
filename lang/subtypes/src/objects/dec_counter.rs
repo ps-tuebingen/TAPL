@@ -74,34 +74,37 @@ pub fn new_dec_counter() -> Term {
 #[cfg(test)]
 mod dec_counter_tests {
     use super::{counter_rep, dec_counter_class, new_dec_counter, ty_dec_counter};
-    use crate::{
-        objects::{counter::ty_counter, reset_counter::ty_reset_counter},
-        types::Type,
-        typing::is_subtype,
+    use crate::objects::{counter::ty_counter, reset_counter::ty_reset_counter};
+    use common::{
+        check::{Subtypecheck, Typecheck},
+        types::{Fun, Unit},
     };
-    use common::Typecheck;
 
     #[test]
     fn subtype_reset() {
-        assert!(is_subtype(&ty_dec_counter(), &ty_reset_counter()))
+        ty_dec_counter()
+            .check_subtype(&ty_reset_counter(), &mut Default::default())
+            .unwrap()
     }
 
     #[test]
     fn subtype_counter() {
-        assert!(is_subtype(&ty_dec_counter(), &ty_counter()))
+        ty_dec_counter()
+            .check_subtype(&ty_counter(), &mut Default::default())
+            .unwrap()
     }
 
     #[test]
     fn ty_dec_class() {
         let result = dec_counter_class().check(&mut Default::default()).unwrap();
-        let expected = Fun::new(counter_rep(), ty_dec_counter());
+        let expected = Fun::new(counter_rep(), ty_dec_counter()).into();
         assert_eq!(result, expected)
     }
 
     #[test]
     fn ty_new_dec() {
         let result = new_dec_counter().check(&mut Default::default()).unwrap();
-        let expected = Fun::new(Unit::new(), ty_dec_counter());
+        let expected = Fun::new(Unit::new(), ty_dec_counter()).into();
         assert_eq!(result, expected)
     }
 }

@@ -137,7 +137,7 @@ mod list_tests {
     #[test]
     fn ty_isnil() {
         let result = is_nil().check(&mut Default::default()).unwrap();
-        let expected = Fun::new(nat_list(), Bool).into();
+        let expected = Fun::new(nat_list(), Bool::new()).into();
         assert_eq!(result, expected)
     }
 

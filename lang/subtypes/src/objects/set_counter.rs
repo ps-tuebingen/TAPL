@@ -84,29 +84,30 @@ pub fn new_set_counter() -> Term {
 #[cfg(test)]
 mod set_counter_tests {
     use super::{new_set_counter, set_counter_class, ty_set_counter};
-    use crate::{
-        objects::counter::{counter_rep, ty_counter},
-        types::Type,
-        typing::is_subtype,
+    use crate::objects::counter::{counter_rep, ty_counter};
+    use common::{
+        check::{Subtypecheck, Typecheck},
+        types::{Fun, Unit as UnitTy},
     };
-    use common::Typecheck;
 
     #[test]
     fn subtype_counter() {
-        assert!(is_subtype(&ty_set_counter(), &ty_counter()))
+        ty_set_counter()
+            .check_subtype(&ty_counter(), &mut Default::default())
+            .unwrap()
     }
 
     #[test]
     fn ty_set_class() {
         let result = set_counter_class().check(&mut Default::default()).unwrap();
-        let expected = Fun::new(counter_rep(), ty_set_counter());
+        let expected = Fun::new(counter_rep(), ty_set_counter()).into();
         assert_eq!(result, expected)
     }
 
     #[test]
     fn ty_set_new() {
         let result = new_set_counter().check(&mut Default::default()).unwrap();
-        let expected = Fun::new(UnitTy, ty_set_counter());
+        let expected = Fun::new(UnitTy::new(), ty_set_counter()).into();
         assert_eq!(result, expected)
     }
 }

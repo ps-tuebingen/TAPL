@@ -227,6 +227,7 @@ mod adt_tests {
         let result = counter_adt_rec().check(&mut Default::default()).unwrap();
         let expected = Exists::new(
             "Counter",
+            Kind::Star,
             RecordTy::new(HashMap::<TypeVar, Type>::from([
                 ("new".to_owned(), TypeVariable::new("Counter").into()),
                 (
@@ -246,7 +247,7 @@ mod adt_tests {
     #[test]
     fn check_flipflop() {
         let result = flip_flop().check(&mut Default::default()).unwrap();
-        let expected = Bool.into();
+        let expected = Bool::new().into();
         assert_eq!(result, expected)
     }
 }

@@ -106,8 +106,10 @@ pub fn counter_class() -> Term {
 #[cfg(test)]
 mod counter_tests {
     use super::{counter, counter_class, counter_rep, new_counter, ty_counter};
-    use crate::types::Type;
-    use common::Typecheck;
+    use common::{
+        check::Typecheck,
+        types::{Fun, Unit},
+    };
 
     #[test]
     fn check_counter() {
@@ -119,14 +121,14 @@ mod counter_tests {
     #[test]
     fn ty_new_counter() {
         let result = new_counter().check(&mut Default::default()).unwrap();
-        let expected = Type::fun(Type::Unit::new(), ty_counter());
+        let expected = Fun::new(Unit::new(), ty_counter()).into();
         assert_eq!(result, expected)
     }
 
     #[test]
     fn ty_class() {
         let result = counter_class().check(&mut Default::default()).unwrap();
-        let expected = Type::fun(counter_rep(), ty_counter());
+        let expected = Fun::new(counter_rep(), ty_counter()).into();
         assert_eq!(result, expected)
     }
 }

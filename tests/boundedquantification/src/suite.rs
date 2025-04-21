@@ -34,23 +34,23 @@ impl TestSuite for BoundedTests {
         let contents: Vec<TestContents<BoundedConf>> = load_dir(&self.source_dir, "bd")?;
         let mut tests = vec![];
         for tst in contents {
-            let parse_test = ParseTest::<bounded_quantification::syntax::Term>::new(
+            let parse_test = ParseTest::<bounded_quantification::terms::Term>::new(
                 &tst.source_name,
                 &tst.source_contents,
             );
             tests.push(Box::new(parse_test) as Box<dyn Test>);
-            let reparse_test = ReparseTest::<bounded_quantification::syntax::Term>::new(
+            let reparse_test = ReparseTest::<bounded_quantification::terms::Term>::new(
                 &tst.source_name,
                 &tst.source_contents,
             );
             tests.push(Box::new(reparse_test) as Box<dyn Test>);
-            let check_test = CheckTest::<bounded_quantification::syntax::Term>::new(
+            let check_test = CheckTest::<bounded_quantification::terms::Term>::new(
                 &tst.source_name,
                 &tst.source_contents,
                 &tst.conf.ty,
             );
             tests.push(Box::new(check_test) as Box<dyn Test>);
-            let eval_test = EvalTest::<bounded_quantification::syntax::Term>::new(
+            let eval_test = EvalTest::<bounded_quantification::terms::Term>::new(
                 &tst.source_name,
                 &tst.source_contents,
                 &tst.conf.evaluated,

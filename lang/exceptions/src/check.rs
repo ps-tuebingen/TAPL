@@ -82,21 +82,20 @@ impl Kindcheck<Type> for Type {
 
 #[cfg(test)]
 mod check_tests {
-    use super::Type;
     use crate::terms::term_tests::{example_term1, example_term2};
     use common::{check::Typecheck, types::Unit};
 
     #[test]
     fn check1() {
         let result = example_term1().check(&mut Default::default()).unwrap();
-        let expected = Type::Unit(Unit);
+        let expected = Unit::new().into();
         assert_eq!(result, expected)
     }
 
     #[test]
     fn check2() {
         let result = example_term2().check(&mut Default::default()).unwrap();
-        let expected = Type::Unit(Unit);
+        let expected = Unit::new().into();
         assert_eq!(result, expected)
     }
 }

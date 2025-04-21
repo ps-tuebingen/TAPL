@@ -33,12 +33,12 @@ impl TestSuite for SubtypesTests {
         let mut tests = vec![];
         for tst in contents {
             let parse_test =
-                ParseTest::<subtypes::syntax::Term>::new(&tst.source_name, &tst.source_contents);
+                ParseTest::<subtypes::terms::Term>::new(&tst.source_name, &tst.source_contents);
             tests.push(Box::new(parse_test) as Box<dyn Test>);
             let reparse_test =
-                ReparseTest::<subtypes::syntax::Term>::new(&tst.source_name, &tst.source_contents);
+                ReparseTest::<subtypes::terms::Term>::new(&tst.source_name, &tst.source_contents);
             tests.push(Box::new(reparse_test) as Box<dyn Test>);
-            let check_test = CheckTest::<subtypes::syntax::Term>::new(
+            let check_test = CheckTest::<subtypes::terms::Term>::new(
                 &tst.source_name,
                 &tst.source_contents,
                 &tst.conf.ty,

@@ -202,7 +202,7 @@ pub mod term_tests {
     pub fn example_term1() -> Term {
         Try::<Term>::new(
             App::<Term>::new(
-                Lambda::<Term>::new("x", UnitTy, Variable::<Term>::new("x")),
+                Lambda::<Term>::new("x", UnitTy::new(), Variable::<Term>::new("x")),
                 Unit::<Term>::new(),
             ),
             Unit::<Term>::new(),
@@ -212,8 +212,8 @@ pub mod term_tests {
 
     pub fn example_term2() -> Term {
         TryWithVal::<Term>::new(
-            Raise::<Term>::new(Unit::<Term>::new(), UnitTy, UnitTy),
-            Lambda::<Term>::new("x", UnitTy, Unit::new()),
+            Raise::<Term>::new(Unit::<Term>::new(), UnitTy::new(), UnitTy::new()),
+            Lambda::<Term>::new("x", UnitTy::new(), Unit::new()),
         )
         .into()
     }

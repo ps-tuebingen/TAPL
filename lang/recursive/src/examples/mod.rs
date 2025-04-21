@@ -75,15 +75,17 @@ mod example_tests {
 
     #[test]
     fn check_fix() {
-        let result = fix_t(Nat.into())
+        let result = fix_t(Nat::new().into())
             .check(&mut Default::default())
             .map_err(|err| err.to_string())
             .unwrap();
-        let expected = Fun::new(Fun::new(Nat, Nat), Nat).into();
+        let expected = Fun::new(Fun::new(Nat::new(), Nat::new()), Nat::new()).into();
         assert_eq!(result, expected);
 
-        let result = fix_t(Bool.into()).check(&mut Default::default()).unwrap();
-        let expected = Fun::new(Fun::new(Bool, Bool), Bool).into();
+        let result = fix_t(Bool::new().into())
+            .check(&mut Default::default())
+            .unwrap();
+        let expected = Fun::new(Fun::new(Bool::new(), Bool::new()), Bool::new()).into();
         assert_eq!(result, expected);
 
         let result = fix_t(Unit::new().into())
@@ -95,22 +97,22 @@ mod example_tests {
 
     #[test]
     fn check_diverge() {
-        let result = diverge_t(Nat.into())
+        let result = diverge_t(Nat::new().into())
             .check(&mut Default::default())
             .unwrap();
-        let expected = Fun::new(Unit::new(), Nat).into();
+        let expected = Fun::new(Unit::new(), Nat::new()).into();
         assert_eq!(result, expected);
 
-        let result = diverge_t(Bool.into())
+        let result = diverge_t(Bool::new().into())
             .check(&mut Default::default())
             .unwrap();
-        let expected = Fun::new(Unit::new(), Bool).into();
+        let expected = Fun::new(Unit::new(), Bool::new()).into();
         assert_eq!(result, expected);
 
-        let result = diverge_t(Unit.into())
+        let result = diverge_t(Unit::new().into())
             .check(&mut Default::default())
             .unwrap();
-        let expected = Fun::new(Unit, Unit).into();
+        let expected = Fun::new(Unit::new(), Unit::new()).into();
         assert_eq!(result, expected)
     }
 }

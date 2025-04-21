@@ -188,7 +188,7 @@ mod term_tests {
             Ref::new(Unit::new()),
             Lambda::new(
                 "x",
-                UnitTy,
+                UnitTy::new(),
                 App::new(Variable::new("y"), Variable::new("x")),
             ),
         )
@@ -197,7 +197,7 @@ mod term_tests {
 
     fn example_term2() -> Term {
         Deref::new(App::new(
-            Lambda::new("x", UnitTy, Num::new(0)),
+            Lambda::new("x", UnitTy::new(), Num::new(0)),
             Variable::new("y"),
         ))
         .into()
@@ -212,7 +212,7 @@ mod term_tests {
             Ref::new(Unit::new()),
             Lambda::new(
                 "x",
-                UnitTy,
+                UnitTy::new(),
                 App::new(Ref::new(Unit::new()), Variable::new("x")),
             ),
         )
@@ -226,7 +226,7 @@ mod term_tests {
             .subst(&"x".to_owned(), &Unit::new().into())
             .subst(&"y".to_owned(), &Ref::new(Unit::new()).into());
         let expected = Deref::new(App::new(
-            Lambda::new("x", UnitTy, Num::new(0)),
+            Lambda::new("x", UnitTy::new(), Num::new(0)),
             Ref::new(Unit::new()),
         ))
         .into();

@@ -30,11 +30,11 @@ pub fn object() -> Type {
 #[cfg(test)]
 mod object_tests {
     use super::object;
-    use common::{check::Typecheck, kinds::Kind};
+    use common::{check::Kindcheck, kinds::Kind};
 
     #[test]
     fn check_object() {
-        let result = object().check_start().unwrap();
+        let result = object().check_kind(&mut Default::default()).unwrap();
         let expected = Kind::Star.abs().abs();
         assert_eq!(result, expected)
     }

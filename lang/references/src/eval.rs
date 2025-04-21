@@ -66,9 +66,13 @@ mod check_tests {
     #[test]
     fn eval1() {
         let term: Term = App::new(
-            Lambda::new("x", Reference::new(UnitTy), Deref::new(Variable::new("x"))),
+            Lambda::new(
+                "x",
+                Reference::new(UnitTy::new()),
+                Deref::new(Variable::new("x")),
+            ),
             App::new(
-                Lambda::new("y", UnitTy, Ref::new(Variable::new("y"))),
+                Lambda::new("y", UnitTy::new(), Ref::new(Variable::new("y"))),
                 Unit::new(),
             ),
         )
@@ -83,7 +87,7 @@ mod check_tests {
         let term: Term = App::new(
             Lambda::new(
                 "x",
-                Reference::new(UnitTy),
+                Reference::new(UnitTy::new()),
                 Assign::new(Variable::new("x"), Deref::new(Variable::new("x"))),
             ),
             Ref::new(Unit::new()),
@@ -99,7 +103,10 @@ mod check_tests {
         let term: Term = App::seq(
             Assign::new(
                 Ref::new(Unit::new()),
-                App::new(Lambda::new("x", UnitTy, Variable::new("x")), Unit::new()),
+                App::new(
+                    Lambda::new("x", UnitTy::new(), Variable::new("x")),
+                    Unit::new(),
+                ),
             ),
             Deref::new(Num::new(0)),
         )
