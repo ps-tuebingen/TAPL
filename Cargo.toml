@@ -3,7 +3,7 @@ members = [
     "app",
 
     "tests/test_common",
-    "tests/nameless",
+    #"tests/nameless",
     "tests/typed_arithmetic",
     "tests/untyped_arithmetic",
     "tests/untyped_lambda",
@@ -30,7 +30,7 @@ members = [
     "lang/references",
     "lang/subtypes",
     #"lang/inference",
-    "lang/nameless_representation",
+    #"lang/nameless_representation",
     "lang/system_f",
     #"lang/featherweight",
     "lang/recursive", 
