@@ -8,8 +8,8 @@ use std::fmt;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum Type {
-    Nat(Nat),
-    Bool(Bool),
+    Nat(Nat<Type>),
+    Bool(Bool<Type>),
 }
 
 impl common::types::Type for Type {}
@@ -32,14 +32,14 @@ impl fmt::Display for Type {
     }
 }
 
-impl From<Nat> for Type {
-    fn from(n: Nat) -> Type {
+impl From<Nat<Type>> for Type {
+    fn from(n: Nat<Type>) -> Type {
         Type::Nat(n)
     }
 }
 
-impl From<Bool> for Type {
-    fn from(b: Bool) -> Type {
+impl From<Bool<Type>> for Type {
+    fn from(b: Bool<Type>) -> Type {
         Type::Bool(b)
     }
 }

@@ -11,18 +11,18 @@ use std::collections::HashMap;
 
 pub fn ty_instr_counter() -> Type {
     RecordTy::new(HashMap::from([
-        ("get".to_owned(), Fun::new(UnitTy, Nat)),
-        ("set".to_owned(), Fun::new(Nat, UnitTy)),
-        ("inc".to_owned(), Fun::new(UnitTy, UnitTy)),
-        ("accesses".to_owned(), Fun::new(UnitTy, Nat)),
+        ("get".to_owned(), Fun::new(UnitTy::new(), Nat::new())),
+        ("set".to_owned(), Fun::new(Nat::new(), UnitTy::new())),
+        ("inc".to_owned(), Fun::new(UnitTy::new(), UnitTy::new())),
+        ("accesses".to_owned(), Fun::new(UnitTy::new(), Nat::new())),
     ]))
     .into()
 }
 
 pub fn instr_counter_rep() -> Type {
     RecordTy::new(HashMap::from([
-        ("x".to_owned(), Reference::new(Nat)),
-        ("a".to_owned(), Reference::new(Nat)),
+        ("x".to_owned(), Reference::new(Nat::new())),
+        ("a".to_owned(), Reference::new(Nat::new())),
     ]))
     .into()
 }
@@ -33,10 +33,10 @@ pub fn instr_counter_class() -> Term {
         instr_counter_rep(),
         Lambda::new(
             "self",
-            Fun::new(UnitTy, ty_instr_counter()),
+            Fun::new(UnitTy::new(), ty_instr_counter()),
             Lambda::new(
                 "_",
-                UnitTy,
+                UnitTy::new(),
                 Let::new(
                     "super",
                     App::new(
@@ -55,7 +55,7 @@ pub fn instr_counter_class() -> Term {
                             "set".to_owned(),
                             Lambda::new(
                                 "i",
-                                Nat,
+                                Nat::new(),
                                 App::seq(
                                     Assign::new(
                                         RecordProj::new(Variable::new("r"), "a"),
@@ -80,7 +80,7 @@ pub fn instr_counter_class() -> Term {
                             "accesses".to_owned(),
                             Lambda::new(
                                 "_",
-                                UnitTy,
+                                UnitTy::new(),
                                 Deref::new(RecordProj::new(Variable::new("r"), "a")),
                             )
                             .into(),
@@ -96,7 +96,7 @@ pub fn instr_counter_class() -> Term {
 pub fn new_instr_counter() -> Term {
     Lambda::new(
         "_",
-        UnitTy,
+        UnitTy::new(),
         Let::new(
             "r",
             Record::new(HashMap::<Var, Term>::from([
@@ -131,8 +131,8 @@ mod instr_counter_tests {
         let expected = Fun::new(
             instr_counter_rep(),
             Fun::new(
-                Fun::new(UnitTy, ty_instr_counter()),
-                Fun::new(UnitTy, ty_instr_counter()),
+                Fun::new(UnitTy::new(), ty_instr_counter()),
+                Fun::new(UnitTy::new(), ty_instr_counter()),
             ),
         );
         assert_eq!(result, expected)
@@ -141,7 +141,7 @@ mod instr_counter_tests {
     #[test]
     fn ty_new() {
         let result = new_instr_counter().check(&mut Default::default()).unwrap();
-        let expected = Fun::new(UnitTy, ty_instr_counter());
+        let expected = Fun::new(UnitTy::new(), ty_instr_counter());
         assert_eq!(result, expected)
     }
 }

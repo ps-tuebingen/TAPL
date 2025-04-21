@@ -8,7 +8,7 @@ use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Type {
-    Top(Top),
+    Top(Top<Type>),
     Bot(Bot),
     Fun(Fun<Type>),
     Record(Record<Type>),
@@ -17,9 +17,9 @@ pub enum Type {
     Ref(Reference<Type>),
     Source(Source<Type>),
     Sink(Sink<Type>),
-    Nat(Nat),
-    Unit(Unit),
-    Bool(Bool),
+    Nat(Nat<Type>),
+    Unit(Unit<Type>),
+    Bool(Bool<Type>),
 }
 
 impl common::types::Type for Type {}
@@ -73,14 +73,14 @@ impl From<Bot> for Type {
         Type::Bot(b)
     }
 }
-impl From<Top> for Type {
-    fn from(t: Top) -> Type {
+impl From<Top<Type>> for Type {
+    fn from(t: Top<Type>) -> Type {
         Type::Top(t)
     }
 }
 
-impl From<Unit> for Type {
-    fn from(u: Unit) -> Type {
+impl From<Unit<Type>> for Type {
+    fn from(u: Unit<Type>) -> Type {
         Type::Unit(u)
     }
 }
@@ -91,14 +91,14 @@ impl From<Fun<Type>> for Type {
     }
 }
 
-impl From<Bool> for Type {
-    fn from(b: Bool) -> Type {
+impl From<Bool<Type>> for Type {
+    fn from(b: Bool<Type>) -> Type {
         Type::Bool(b)
     }
 }
 
-impl From<Nat> for Type {
-    fn from(n: Nat) -> Type {
+impl From<Nat<Type>> for Type {
+    fn from(n: Nat<Type>) -> Type {
         Type::Nat(n)
     }
 }

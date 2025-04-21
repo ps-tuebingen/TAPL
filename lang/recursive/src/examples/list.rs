@@ -13,10 +13,10 @@ pub fn nat_list() -> Type {
     Mu::new(
         "X",
         VariantTy::new(HashMap::<Label, Type>::from([
-            ("nil".to_owned(), UnitTy.into()),
+            ("nil".to_owned(), UnitTy::new().into()),
             (
                 "cons".to_owned(),
-                Product::new(Nat, TypeVariable::new("X")).into(),
+                Product::new(Nat::new(), TypeVariable::new("X")).into(),
             ),
         ])),
     )
@@ -29,8 +29,11 @@ pub fn nil() -> Term {
             "nil",
             Unit::new(),
             VariantTy::new(HashMap::<Label, Type>::from([
-                ("nil".to_owned(), UnitTy.into()),
-                ("cons".to_owned(), Product::new(Nat, nat_list()).into()),
+                ("nil".to_owned(), UnitTy::new().into()),
+                (
+                    "cons".to_owned(),
+                    Product::new(Nat::new(), nat_list()).into(),
+                ),
             ])),
         ),
         nat_list(),
@@ -41,7 +44,7 @@ pub fn nil() -> Term {
 pub fn cons() -> Term {
     Lambda::new(
         "n",
-        Nat,
+        Nat::new(),
         Lambda::new(
             "l",
             nat_list(),
@@ -50,8 +53,11 @@ pub fn cons() -> Term {
                     "cons",
                     Pair::new(Variable::new("n"), Variable::new("l")),
                     VariantTy::new(HashMap::<Label, Type>::from([
-                        ("nil".to_owned(), UnitTy.into()),
-                        ("cons".to_owned(), Product::new(Nat, nat_list()).into()),
+                        ("nil".to_owned(), UnitTy::new().into()),
+                        (
+                            "cons".to_owned(),
+                            Product::new(Nat::new(), nat_list()).into(),
+                        ),
                     ])),
                 ),
                 nat_list(),
@@ -124,7 +130,7 @@ mod list_tests {
     #[test]
     fn ty_cons() {
         let result = cons().check_start().unwrap();
-        let expected = Fun::new(Nat, Fun::new(nat_list(), nat_list())).into();
+        let expected = Fun::new(Nat::new(), Fun::new(nat_list(), nat_list())).into();
         assert_eq!(result, expected)
     }
 
@@ -138,7 +144,7 @@ mod list_tests {
     #[test]
     fn ty_hd() {
         let result = hd().check(&mut Default::default()).unwrap();
-        let expected = Fun::new(nat_list(), Nat).into();
+        let expected = Fun::new(nat_list(), Nat::new()).into();
         assert_eq!(result, expected)
     }
 

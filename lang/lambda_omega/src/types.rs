@@ -9,10 +9,10 @@ pub type TypeVar = String;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Type {
-    Var(TypeVariable),
-    Unit(Unit),
-    Nat(Nat),
-    Bool(Bool),
+    Var(TypeVariable<Type>),
+    Unit(Unit<Type>),
+    Nat(Nat<Type>),
+    Bool(Bool<Type>),
     OpLambda(OpLambda<Type>),
     OpApp(OpApp<Type>),
     Fun(Fun<Type>),
@@ -54,23 +54,23 @@ impl SubstType<Type> for Type {
     }
 }
 
-impl From<TypeVariable> for Type {
-    fn from(var: TypeVariable) -> Type {
+impl From<TypeVariable<Type>> for Type {
+    fn from(var: TypeVariable<Type>) -> Type {
         Type::Var(var)
     }
 }
-impl From<Unit> for Type {
-    fn from(u: Unit) -> Type {
+impl From<Unit<Type>> for Type {
+    fn from(u: Unit<Type>) -> Type {
         Type::Unit(u)
     }
 }
-impl From<Nat> for Type {
-    fn from(n: Nat) -> Type {
+impl From<Nat<Type>> for Type {
+    fn from(n: Nat<Type>) -> Type {
         Type::Nat(n)
     }
 }
-impl From<Bool> for Type {
-    fn from(b: Bool) -> Type {
+impl From<Bool<Type>> for Type {
+    fn from(b: Bool<Type>) -> Type {
         Type::Bool(b)
     }
 }

@@ -1,6 +1,6 @@
 use super::{terms::Term, types::Type};
 use common::{
-    check::{CheckEnvironment, Subtypecheck, Typecheck},
+    check::{CheckEnvironment, Kindcheck, Subtypecheck, Typecheck},
     errors::{Error, ErrorKind},
     kinds::Kind,
     Location, TypeVar, Var,
@@ -79,5 +79,23 @@ impl Subtypecheck<Type> for Type {
     }
     fn check_supertype(&self, _: &Type, _: &mut Self::Env) -> Result<(), Error> {
         Ok(())
+    }
+}
+
+impl Kindcheck<Type> for Type {
+    type Env = Env;
+    fn check_kind(&self, env: &mut Self::Env) -> Result<Kind, Error> {
+        match self {
+            Type::Var(var) => var.check_kind(env),
+            Type::Fun(fun) => fun.check_kind(env),
+            Type::Forall(forall) => forall.check_kind(env),
+            Type::OpLambda(lam) => lam.check_kind(env),
+            Type::OpApp(app) => app.check_kind(env),
+            Type::Exists(ex) => ex.check_kind(env),
+            Type::Record(rec) => rec.check_kind(env),
+            Type::Bool(b) => b.check_kind(env),
+            Type::Unit(u) => u.check_kind(env),
+            Type::Nat(nat) => nat.check_kind(env),
+        }
     }
 }

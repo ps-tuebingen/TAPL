@@ -18,7 +18,7 @@ pub fn ty_counter() -> Type {
                 RecordTy::new(HashMap::<TypeVar, Type>::from([
                     (
                         "get".to_owned(),
-                        Fun::new(TypeVariable::new("X"), Nat).into(),
+                        Fun::new(TypeVariable::new("X"), Nat::new()).into(),
                     ),
                     (
                         "inc".to_owned(),
@@ -34,7 +34,7 @@ pub fn ty_counter() -> Type {
 
 pub fn counter_ex() -> Term {
     Pack::new(
-        Nat,
+        Nat::new(),
         Record::new(HashMap::<Var, Term>::from([
             ("state".to_owned(), Num::new(5).into()),
             (
@@ -42,12 +42,12 @@ pub fn counter_ex() -> Term {
                 Record::new(HashMap::<Var, Term>::from([
                     (
                         "get".to_owned(),
-                        Lambda::new("x", Nat, Variable::new("x")).into(),
+                        Lambda::new("x", Nat::new(), Variable::new("x")).into(),
                     )
                         .into(),
                     (
                         "inc".to_owned(),
-                        Lambda::new("x", Nat, Succ::new(Variable::new("x"))).into(),
+                        Lambda::new("x", Nat::new(), Succ::new(Variable::new("x"))).into(),
                     ),
                 ]))
                 .into(),
@@ -127,7 +127,7 @@ mod object_tests {
     #[test]
     fn check_send_get() {
         let result = send_get().check(&mut Default::default()).unwrap();
-        let expected = Fun::new(ty_counter(), Nat).into();
+        let expected = Fun::new(ty_counter(), Nat::new()).into();
         assert_eq!(result, expected)
     }
 

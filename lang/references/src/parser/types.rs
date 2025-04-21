@@ -2,7 +2,7 @@ use super::{pair_to_n_inner, to_parse_err, Rule};
 use crate::types::Type;
 use common::{
     errors::{Error, ErrorKind},
-    types::{Fun, Nat, Reference, Unit},
+    types::{Bool, Fun, Nat, Reference, Unit},
 };
 use pest::iterators::Pair;
 
@@ -31,8 +31,9 @@ pub fn pair_to_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
 
 fn str_to_prim_type(s: &str) -> Result<Type, Error> {
     match s.to_lowercase().trim() {
-        "unit" => Ok(Unit.into()),
-        "nat" => Ok(Nat.into()),
+        "unit" => Ok(Unit::new().into()),
+        "nat" => Ok(Nat::new().into()),
+        "bool" => Ok(Bool::new().into()),
         s => Err(to_parse_err(ErrorKind::UnknownKeyword(s.to_owned()))),
     }
 }

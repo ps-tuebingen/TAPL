@@ -9,16 +9,16 @@ use std::collections::HashMap;
 
 pub fn counter_adt() -> Term {
     Pack::new(
-        Nat,
+        Nat::new(),
         Record::new(HashMap::<Var, Term>::from([
             ("new".to_owned(), Succ::new(Num::new(0)).into()),
             (
                 "get".to_owned(),
-                Lambda::new("i", Nat, Variable::new("i")).into(),
+                Lambda::new("i", Nat::new(), Variable::new("i")).into(),
             ),
             (
                 "inc".to_owned(),
-                Lambda::new("i", Nat, Succ::new(Variable::new("i"))).into(),
+                Lambda::new("i", Nat::new(), Succ::new(Variable::new("i"))).into(),
             ),
         ])),
         Exists::new(
@@ -28,7 +28,7 @@ pub fn counter_adt() -> Term {
                 ("new".to_owned(), TypeVariable::new("Counter").into()),
                 (
                     "get".to_owned(),
-                    Fun::new(TypeVariable::new("Counter"), Nat).into(),
+                    Fun::new(TypeVariable::new("Counter"), Nat::new()).into(),
                 )
                     .into(),
                 (
@@ -45,7 +45,7 @@ pub fn counter_adt_rec() -> Term {
     Pack::new(
         RecordTy::new(HashMap::<TypeVar, Type>::from([(
             "x".to_owned(),
-            Nat.into(),
+            Nat::new().into(),
         )])),
         Record::new(HashMap::<Var, Term>::from([
             (
@@ -62,7 +62,7 @@ pub fn counter_adt_rec() -> Term {
                     "i",
                     RecordTy::new(HashMap::<TypeVar, Type>::from([(
                         "x".to_owned(),
-                        Nat.into(),
+                        Nat::new().into(),
                     )])),
                     RecordProj::new(Variable::new("i"), "x"),
                 )
@@ -74,7 +74,7 @@ pub fn counter_adt_rec() -> Term {
                     "i",
                     RecordTy::new(HashMap::<TypeVar, Type>::from([(
                         "x".to_owned(),
-                        Nat.into(),
+                        Nat::new().into(),
                     )])),
                     Record::new(HashMap::<Var, Term>::from([(
                         "x".to_owned(),
@@ -91,7 +91,7 @@ pub fn counter_adt_rec() -> Term {
                 ("new".to_owned(), TypeVariable::new("Counter").into()),
                 (
                     "get".to_owned(),
-                    Fun::new(TypeVariable::new("Counter"), Nat).into(),
+                    Fun::new(TypeVariable::new("Counter"), Nat::new()).into(),
                 ),
                 (
                     "inc".to_owned(),
@@ -159,7 +159,7 @@ pub fn flip_flop() -> Term {
                         ("new".to_owned(), TypeVariable::new("FlipFlop").into()),
                         (
                             "read".to_owned(),
-                            Fun::new(TypeVariable::new("FlipFlop"), Bool).into(),
+                            Fun::new(TypeVariable::new("FlipFlop"), Bool::new()).into(),
                         ),
                         (
                             "toggle".to_owned(),
@@ -210,7 +210,7 @@ mod adt_tests {
                 ("new".to_owned(), TypeVariable::new("Counter").into()),
                 (
                     "get".to_owned(),
-                    Fun::new(TypeVariable::new("Counter"), Nat).into(),
+                    Fun::new(TypeVariable::new("Counter"), Nat::new()).into(),
                 ),
                 (
                     "inc".to_owned(),
@@ -231,7 +231,7 @@ mod adt_tests {
                 ("new".to_owned(), TypeVariable::new("Counter").into()),
                 (
                     "get".to_owned(),
-                    Fun::new(TypeVariable::new("Counter"), Nat).into(),
+                    Fun::new(TypeVariable::new("Counter"), Nat::new()).into(),
                 ),
                 (
                     "inc".to_owned(),

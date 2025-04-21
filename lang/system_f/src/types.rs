@@ -8,7 +8,7 @@ use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Type {
-    Var(TypeVariable),
+    Var(TypeVariable<Type>),
     Fun(Fun<Type>),
     Forall(Forall<Type>),
 }
@@ -39,8 +39,8 @@ impl SubstType<Type> for Type {
     }
 }
 
-impl From<TypeVariable> for Type {
-    fn from(v: TypeVariable) -> Type {
+impl From<TypeVariable<Type>> for Type {
+    fn from(v: TypeVariable<Type>) -> Type {
         Type::Var(v)
     }
 }

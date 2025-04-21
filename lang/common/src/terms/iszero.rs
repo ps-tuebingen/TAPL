@@ -66,7 +66,7 @@ where
 impl<T> Typecheck for IsZero<T>
 where
     T: LanguageTerm,
-    Nat: Into<<T as LanguageTerm>::Type>,
+    Nat<<T as LanguageTerm>::Type>: Into<<T as LanguageTerm>::Type>,
 {
     type Type = <T as Typecheck>::Type;
     type Env = <T as Typecheck>::Env;

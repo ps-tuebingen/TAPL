@@ -1,5 +1,5 @@
 use crate::{
-    check::Subtypecheck,
+    check::{Kindcheck, Subtypecheck},
     errors::ErrorKind,
     subst::SubstType,
     types::{
@@ -11,7 +11,7 @@ use crate::{
 
 pub trait LanguageType
 where
-    Self: Type + SubstType<Self, Target = Self> + Subtypecheck<Self>,
+    Self: Type + SubstType<Self, Target = Self> + Subtypecheck<Self> + Kindcheck<Self>,
 {
     fn into_fun(self) -> Result<Fun<Self>, ErrorKind> {
         Err(ErrorKind::TypeMismatch {
@@ -138,21 +138,21 @@ where
         })
     }
 
-    fn into_nat(self) -> Result<Nat, ErrorKind> {
+    fn into_nat(self) -> Result<Nat<Self>, ErrorKind> {
         Err(ErrorKind::TypeMismatch {
             found: self.to_string(),
             expected: "Nat".to_owned(),
         })
     }
 
-    fn into_bool(self) -> Result<Bool, ErrorKind> {
+    fn into_bool(self) -> Result<Bool<Self>, ErrorKind> {
         Err(ErrorKind::TypeMismatch {
             found: self.to_string(),
             expected: "Bool".to_owned(),
         })
     }
 
-    fn into_top(self) -> Result<Top, ErrorKind> {
+    fn into_top(self) -> Result<Top<Self>, ErrorKind> {
         Err(ErrorKind::TypeMismatch {
             found: self.to_string(),
             expected: "Top".to_owned(),

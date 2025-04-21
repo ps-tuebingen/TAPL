@@ -1,7 +1,7 @@
 use crate::{terms::Term, types::Type};
 use common::{
-    check::Subtypecheck,
     check::{CheckEnvironment, Typecheck},
+    check::{Kindcheck, Subtypecheck},
     errors::{Error, ErrorKind},
     kinds::Kind,
     Location, TypeVar, Var,
@@ -56,5 +56,12 @@ impl Subtypecheck<Type> for Type {
     }
     fn check_supertype(&self, _: &Self, _: &mut Env) -> Result<(), Error> {
         Ok(())
+    }
+}
+
+impl Kindcheck<Type> for Type {
+    type Env = Env;
+    fn check_kind(&self, _: &mut Self::Env) -> Result<Kind, Error> {
+        Ok(Kind::Star)
     }
 }

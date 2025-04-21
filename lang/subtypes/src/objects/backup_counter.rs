@@ -9,18 +9,18 @@ use std::collections::HashMap;
 
 pub fn ty_backup_counter() -> Type {
     RecordTy::new(HashMap::from([
-        ("get".to_string(), Fun::new(Unit, Nat)),
-        ("inc".to_string(), Fun::new(Unit, Unit)),
-        ("reset".to_string(), Fun::new(Unit, Unit)),
-        ("backup".to_string(), Fun::new(Unit, Unit)),
+        ("get".to_string(), Fun::new(Unit::new(), Nat::new())),
+        ("inc".to_string(), Fun::new(Unit::new(), Unit::new())),
+        ("reset".to_string(), Fun::new(Unit::new(), Unit::new())),
+        ("backup".to_string(), Fun::new(Unit::new(), Unit::new())),
     ]))
     .into()
 }
 
 pub fn backup_counter_rep() -> Type {
     RecordTy::new(HashMap::from([
-        ("x".to_owned(), Reference::new(Nat)),
-        ("b".to_owned(), Reference::new(Nat)),
+        ("x".to_owned(), Reference::new(Nat::new())),
+        ("b".to_owned(), Reference::new(Nat::new())),
     ]))
     .into()
 }
@@ -45,7 +45,7 @@ pub fn backup_counter_class() -> Term {
                     "reset".to_owned(),
                     Lambda::new(
                         "_",
-                        Unit,
+                        Unit::new(),
                         Assign::new(
                             RecordProj::new(Variable::new("r"), "x"),
                             Deref::new(RecordProj::new(Variable::new("r"), "b")),
@@ -57,7 +57,7 @@ pub fn backup_counter_class() -> Term {
                     "backup".to_owned(),
                     Lambda::new(
                         "_",
-                        Unit,
+                        Unit::new(),
                         Assign::new(
                             RecordProj::new(Variable::new("r"), "b"),
                             Deref::new(RecordProj::new(Variable::new("r"), "x")),

@@ -15,16 +15,16 @@ pub fn set_counter_class() -> Term {
         counter_rep(),
         Lambda::new(
             "self",
-            Fun::new(UnitTy, ty_set_counter()),
+            Fun::new(UnitTy::new(), ty_set_counter()),
             Lambda::new(
                 "_",
-                UnitTy,
+                UnitTy::new(),
                 Record::new(HashMap::<Var, Term>::from([
                     (
                         "get".to_owned(),
                         Lambda::new(
                             "_",
-                            UnitTy,
+                            UnitTy::new(),
                             Deref::new(RecordProj::new(Variable::new("r"), "x")),
                         )
                         .into(),
@@ -33,7 +33,7 @@ pub fn set_counter_class() -> Term {
                         "set".to_owned(),
                         Lambda::new(
                             "i",
-                            Nat,
+                            Nat::new(),
                             Assign::new(
                                 RecordProj::new(Variable::new("r"), "x"),
                                 Variable::new("i"),
@@ -45,7 +45,7 @@ pub fn set_counter_class() -> Term {
                         "inc".to_owned(),
                         Lambda::new(
                             "_",
-                            UnitTy,
+                            UnitTy::new(),
                             App::new(
                                 RecordProj::new(
                                     App::new(Variable::new("self"), Unit::new()),
@@ -72,7 +72,7 @@ pub fn set_counter_class() -> Term {
 pub fn new_set_counter() -> Term {
     Lambda::new(
         "_",
-        UnitTy,
+        UnitTy::new(),
         Let::new(
             "r",
             Record::new(HashMap::<Var, Term>::from([(

@@ -1,6 +1,7 @@
 use crate::{
-    check::{Subtypecheck, Typecheck},
+    check::{Kindcheck, Subtypecheck, Typecheck},
     errors::Error,
+    kinds::Kind,
     language::{LanguageTerm, LanguageType},
     subst::SubstType,
     types::Type,
@@ -34,6 +35,13 @@ impl Subtypecheck<Untyped> for Untyped {
     }
     fn check_supertype(&self, _: &Self, _: &mut Self::Env) -> Result<(), Error> {
         Ok(())
+    }
+}
+
+impl Kindcheck<Untyped> for Untyped {
+    type Env = ();
+    fn check_kind(&self, _: &mut Self::Env) -> Result<Kind, Error> {
+        Ok(Kind::Star)
     }
 }
 

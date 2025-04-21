@@ -1,7 +1,8 @@
 use super::{Top, Type};
 use crate::{
-    check::{to_subty_err, Subtypecheck},
+    check::{to_subty_err, CheckEnvironment, Kindcheck, Subtypecheck},
     errors::{Error, ErrorKind},
+    kinds::Kind,
     language::LanguageType,
     subst::SubstType,
     TypeVar,
@@ -37,7 +38,7 @@ where
     pub fn new_unbounded<Typ>(v: &str, ty: Typ) -> ForallBounded<Ty>
     where
         Typ: Into<Ty>,
-        Top: Into<Ty>,
+        Top<Ty>: Into<Ty>,
     {
         ForallBounded {
             var: v.to_owned(),
@@ -110,6 +111,19 @@ where
         }
 
         self.ty.check_supertype(&(*other_forall.ty), env)
+    }
+}
+
+impl<Ty> Kindcheck<Ty> for ForallBounded<Ty>
+where
+    Ty: LanguageType,
+{
+    type Env = <Ty as Kindcheck<Ty>>::Env;
+
+    fn check_kind(&self, env: &mut Self::Env) -> Result<Kind, Error> {
+        let sup_kind = self.sup_ty.check_kind(env)?;
+        env.add_tyvar_kind(self.var.clone(), sup_kind);
+        self.ty.check_kind(env)
     }
 }
 

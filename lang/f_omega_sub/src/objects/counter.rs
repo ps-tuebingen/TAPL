@@ -15,7 +15,7 @@ pub fn counter_m() -> Type {
         RecordTy::new(HashMap::<TypeVar, Type>::from([
             (
                 "get".to_owned(),
-                Fun::new(TypeVariable::new("R"), Nat).into(),
+                Fun::new(TypeVariable::new("R"), Nat::new()).into(),
             ),
             (
                 "inc".to_owned(),
@@ -92,7 +92,7 @@ pub fn send_get() -> Term {
 pub fn counter_r() -> Type {
     RecordTy::new(HashMap::<TypeVar, Type>::from([(
         "x".to_owned(),
-        Nat.into(),
+        Nat::new().into(),
     )]))
     .into()
 }
@@ -172,7 +172,7 @@ mod counter_tests {
         let ty: Type = ForallBounded::new(
             "M",
             counter_m(),
-            Fun::new(OpApp::new(object(), TypeVariable::new("M")), Nat),
+            Fun::new(OpApp::new(object(), TypeVariable::new("M")), Nat::new()),
         )
         .into();
         let expected = ty.eval(&mut Default::default()).unwrap();

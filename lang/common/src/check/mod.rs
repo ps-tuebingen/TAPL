@@ -1,5 +1,6 @@
 use crate::{
     errors::{Error, ErrorKind, ErrorLocation},
+    kinds::Kind,
     language::LanguageType,
     types::Type,
 };
@@ -29,6 +30,14 @@ where
     fn check_supertype(&self, sub: &Ty, env: &mut Self::Env) -> Result<(), Error>;
 }
 
+pub trait Kindcheck<Ty>
+where
+    Ty: LanguageType,
+{
+    type Env: CheckEnvironment<Type = Ty>;
+    fn check_kind(&self, env: &mut Self::Env) -> Result<Kind, Error>;
+}
+
 pub fn to_check_err(knd: ErrorKind) -> Error {
     Error {
         kind: knd,
@@ -40,5 +49,12 @@ pub fn to_subty_err(knd: ErrorKind) -> Error {
     Error {
         kind: knd,
         loc: ErrorLocation::Subtyping,
+    }
+}
+
+pub fn to_kind_err(knd: ErrorKind) -> Error {
+    Error {
+        kind: knd,
+        loc: ErrorLocation::Kind,
     }
 }

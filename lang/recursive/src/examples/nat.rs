@@ -7,13 +7,13 @@ use common::{
 pub fn plus() -> Term {
     Fix::new(Lambda::new(
         "f",
-        Fun::new(Nat, Fun::new(Nat, Nat)),
+        Fun::new(Nat::new(), Fun::new(Nat::new(), Nat::new())),
         Lambda::new(
             "m",
-            Nat,
+            Nat::new(),
             Lambda::new(
                 "n",
-                Nat,
+                Nat::new(),
                 If::new(
                     IsZero::new(Variable::new("m")),
                     Variable::new("n"),
@@ -39,7 +39,7 @@ mod nat_tests {
     #[test]
     fn check_plus() {
         let result = plus().check(&mut Default::default()).unwrap();
-        let expected = Fun::new(Nat, Fun::new(Nat, Nat)).into();
+        let expected = Fun::new(Nat::new(), Fun::new(Nat::new(), Nat::new())).into();
         assert_eq!(result, expected)
     }
 }

@@ -9,9 +9,9 @@ use std::collections::HashMap;
 
 pub fn ty_reset_counter() -> Type {
     RecordTy::new(HashMap::from([
-        ("get".to_owned(), Fun::new(Unit, Nat)),
-        ("inc".to_owned(), Fun::new(Unit, Unit)),
-        ("reset".to_owned(), Fun::new(Unit, Unit)),
+        ("get".to_owned(), Fun::new(Unit::new(), Nat::new())),
+        ("inc".to_owned(), Fun::new(Unit::new(), Unit::new())),
+        ("reset".to_owned(), Fun::new(Unit::new(), Unit::new())),
     ]))
     .into()
 }
@@ -19,7 +19,7 @@ pub fn ty_reset_counter() -> Type {
 pub fn new_reset_counter() -> Term {
     Lambda::new(
         "_",
-        Unit,
+        Unit::new(),
         Let::new(
             "r",
             Record::new(HashMap::<Var, Term>::from([(
@@ -52,7 +52,7 @@ pub fn reset_counter_class() -> Term {
                     "reset".to_owned(),
                     Lambda::new(
                         "_",
-                        Unit,
+                        Unit::new(),
                         Assign::new(RecordProj::new(Variable::new("r"), "x"), Num::new(1)),
                     )
                     .into(),
@@ -77,7 +77,7 @@ mod reset_counter_tests {
     #[test]
     fn ty_new_reset_counter() {
         let result = new_reset_counter().check(&mut Default::default()).unwrap();
-        let expected = Fun::new(Unit, ty_reset_counter());
+        let expected = Fun::new(Unit::new(), ty_reset_counter());
         assert_eq!(result, expected)
     }
 

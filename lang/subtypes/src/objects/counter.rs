@@ -8,14 +8,18 @@ use std::collections::HashMap;
 
 pub fn ty_counter() -> Type {
     RecordTy::new(HashMap::from([
-        ("get".to_owned(), Fun::new(Unit, Nat)),
-        ("inc".to_owned(), Fun::new(Unit, Unit)),
+        ("get".to_owned(), Fun::new(Unit::new(), Nat::new())),
+        ("inc".to_owned(), Fun::new(Unit::new(), Unit::new())),
     ]))
     .into()
 }
 
 pub fn counter_rep() -> Type {
-    RecordTy::new(HashMap::from([("x".to_owned(), Reference::new(Nat))])).into()
+    RecordTy::new(HashMap::from([(
+        "x".to_owned(),
+        Reference::new(Nat::new()),
+    )]))
+    .into()
 }
 
 pub fn counter() -> Term {
@@ -30,7 +34,7 @@ pub fn counter() -> Term {
                 "get".to_owned(),
                 Lambda::new(
                     "_",
-                    Unit,
+                    Unit::new(),
                     Deref::new(RecordProj::new(Variable::new("r"), "x")),
                 )
                 .into(),
@@ -39,7 +43,7 @@ pub fn counter() -> Term {
                 "inc".to_owned(),
                 Lambda::new(
                     "_",
-                    Unit,
+                    Unit::new(),
                     Assign::new(
                         RecordProj::new(Variable::new("r"), "x"),
                         Succ::new(Deref::new(RecordProj::new(Variable::new("r"), "x"))),
@@ -55,7 +59,7 @@ pub fn counter() -> Term {
 pub fn new_counter() -> Term {
     Lambda::new(
         "_",
-        Unit,
+        Unit::new(),
         Let::new(
             "r",
             Record::new(HashMap::<Var, Term>::from([(
@@ -77,7 +81,7 @@ pub fn counter_class() -> Term {
                 "get".to_owned(),
                 Lambda::new(
                     "_",
-                    Unit,
+                    Unit::new(),
                     Deref::new(RecordProj::new(Variable::new("r"), "x")),
                 )
                 .into(),
@@ -86,7 +90,7 @@ pub fn counter_class() -> Term {
                 "inc".to_owned(),
                 Lambda::new(
                     "_",
-                    Unit,
+                    Unit::new(),
                     Assign::new(
                         RecordProj::new(Variable::new("r"), "x"),
                         Succ::new(Deref::new(RecordProj::new(Variable::new("r"), "x"))),
@@ -115,7 +119,7 @@ mod counter_tests {
     #[test]
     fn ty_new_counter() {
         let result = new_counter().check(&mut Default::default()).unwrap();
-        let expected = Type::fun(Type::Unit, ty_counter());
+        let expected = Type::fun(Type::Unit::new(), ty_counter());
         assert_eq!(result, expected)
     }
 

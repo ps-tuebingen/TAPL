@@ -1,5 +1,12 @@
 use super::Type;
-use crate::{kinds::Kind, subst::SubstType, TypeVar};
+use crate::{
+    check::{CheckEnvironment, Kindcheck},
+    errors::Error,
+    kinds::Kind,
+    language::LanguageType,
+    subst::SubstType,
+    TypeVar,
+};
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -47,6 +54,19 @@ where
             }
             .into()
         }
+    }
+}
+
+impl<Ty> Kindcheck<Ty> for Forall<Ty>
+where
+    Ty: LanguageType,
+{
+    type Env = <Ty as Kindcheck<Ty>>::Env;
+
+    fn check_kind(&self, env: &mut Self::Env) -> Result<Kind, Error> {
+        env.add_tyvar_kind(self.var.clone(), self.kind.clone());
+        let ty_kind = self.ty.check_kind(env)?;
+        Ok(ty_kind)
     }
 }
 

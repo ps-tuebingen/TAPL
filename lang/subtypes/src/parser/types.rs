@@ -33,9 +33,9 @@ fn str_to_type(s: &str) -> Result<Type, Error> {
     match s.to_lowercase().trim() {
         "top" => Ok(Top::new_star().into()),
         "bot" => Ok(Bot.into()),
-        "nat" => Ok(Nat.into()),
-        "unit" => Ok(Unit.into()),
-        "bool" => Ok(Bool.into()),
+        "nat" => Ok(Nat::new().into()),
+        "unit" => Ok(Unit::new().into()),
+        "bool" => Ok(Bool::new().into()),
         s => Err(to_parse_err(ErrorKind::UnknownKeyword(s.to_owned()))),
     }
 }

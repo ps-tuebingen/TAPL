@@ -11,9 +11,9 @@ use std::collections::HashMap;
 
 pub fn ty_set_counter() -> Type {
     RecordTy::new(HashMap::from([
-        ("get".to_owned(), Fun::new(UnitTy, Nat)),
-        ("set".to_owned(), Fun::new(Nat, UnitTy)),
-        ("inc".to_owned(), Fun::new(UnitTy, UnitTy)),
+        ("get".to_owned(), Fun::new(UnitTy::new(), Nat::new())),
+        ("set".to_owned(), Fun::new(Nat::new(), UnitTy::new())),
+        ("inc".to_owned(), Fun::new(UnitTy::new(), UnitTy::new())),
     ]))
     .into()
 }
@@ -30,7 +30,7 @@ pub fn set_counter_class() -> Term {
                     "get".to_owned(),
                     Lambda::new(
                         "_",
-                        UnitTy,
+                        UnitTy::new(),
                         Deref::new(RecordProj::new(Variable::new("r"), "x")),
                     )
                     .into(),
@@ -39,7 +39,7 @@ pub fn set_counter_class() -> Term {
                     "set".to_owned(),
                     Lambda::new(
                         "i",
-                        Nat,
+                        Nat::new(),
                         Assign::new(RecordProj::new(Variable::new("r"), "x"), Variable::new("i")),
                     )
                     .into(),
@@ -48,7 +48,7 @@ pub fn set_counter_class() -> Term {
                     "inc".to_owned(),
                     Lambda::new(
                         "_",
-                        UnitTy,
+                        UnitTy::new(),
                         App::new(
                             RecordProj::new(Variable::new("self"), "set"),
                             Succ::new(App::new(
@@ -68,7 +68,7 @@ pub fn set_counter_class() -> Term {
 pub fn new_set_counter() -> Term {
     Lambda::new(
         "_",
-        UnitTy,
+        UnitTy::new(),
         Let::new(
             "r",
             Record::new(HashMap::<Var, Term>::from([(

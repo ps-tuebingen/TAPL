@@ -8,15 +8,15 @@ use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Type {
-    Var(TypeVariable),
-    Top(Top),
+    Var(TypeVariable<Type>),
+    Top(Top<Type>),
     Fun(Fun<Type>),
     Forall(ForallBounded<Type>),
     OpLambda(OpLambda<Type>),
     OpApp(OpApp<Type>),
     Exists(ExistsBounded<Type>),
     Record(Record<Type>),
-    Nat(Nat),
+    Nat(Nat<Type>),
 }
 
 impl common::types::Type for Type {}
@@ -55,14 +55,14 @@ impl fmt::Display for Type {
         }
     }
 }
-impl From<Top> for Type {
-    fn from(t: Top) -> Type {
+impl From<Top<Type>> for Type {
+    fn from(t: Top<Type>) -> Type {
         Type::Top(t)
     }
 }
 
-impl From<TypeVariable> for Type {
-    fn from(var: TypeVariable) -> Type {
+impl From<TypeVariable<Type>> for Type {
+    fn from(var: TypeVariable<Type>) -> Type {
         Type::Var(var)
     }
 }
@@ -96,8 +96,8 @@ impl From<Record<Type>> for Type {
         Type::Record(rec)
     }
 }
-impl From<Nat> for Type {
-    fn from(n: Nat) -> Type {
+impl From<Nat<Type>> for Type {
+    fn from(n: Nat<Type>) -> Type {
         Type::Nat(n)
     }
 }

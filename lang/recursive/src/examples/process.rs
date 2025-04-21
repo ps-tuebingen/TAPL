@@ -8,7 +8,7 @@ use common::{
 pub fn ty_process() -> Type {
     Mu::new(
         "A",
-        Fun::new(Nat, Product::new(Nat, TypeVariable::new("A"))),
+        Fun::new(Nat::new(), Product::new(Nat::new(), TypeVariable::new("A"))),
     )
     .into()
 }
@@ -17,14 +17,14 @@ pub fn proc() -> Term {
     App::new(
         Fix::new(Lambda::new(
             "f",
-            Fun::new(Nat, ty_process()),
+            Fun::new(Nat::new(), ty_process()),
             Lambda::new(
                 "acc",
-                Nat,
+                Nat::new(),
                 Fold::new(
                     Lambda::new(
                         "n",
-                        Nat,
+                        Nat::new(),
                         Let::new(
                             "newacc",
                             App::new(App::new(plus(), Variable::new("acc")), Variable::new("n")),
@@ -58,7 +58,7 @@ pub fn curr() -> Term {
 pub fn send() -> Term {
     Lambda::new(
         "n",
-        Nat,
+        Nat::new(),
         Lambda::new(
             "s",
             ty_process(),
@@ -89,14 +89,14 @@ mod process_tests {
     #[test]
     fn check_curr() {
         let result = curr().check(&mut Default::default()).unwrap();
-        let expected = Fun::new(ty_process(), Nat).into();
+        let expected = Fun::new(ty_process(), Nat::new()).into();
         assert_eq!(result, expected)
     }
 
     #[test]
     fn check_send() {
         let result = send().check(&mut Default::default()).unwrap();
-        let expected = Fun::new(Nat, Fun::new(ty_process(), ty_process())).into();
+        let expected = Fun::new(Nat::new(), Fun::new(ty_process(), ty_process())).into();
         assert_eq!(result, expected)
     }
 }

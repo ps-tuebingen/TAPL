@@ -1,7 +1,8 @@
 use super::{terms::Term, types::Type};
 use common::{
-    check::{Subtypecheck, Typecheck},
+    check::{Kindcheck, Subtypecheck, Typecheck},
     errors::Error,
+    kinds::Kind,
     Var,
 };
 use std::collections::HashMap;
@@ -57,5 +58,12 @@ impl Subtypecheck<Type> for Type {
     }
     fn check_supertype(&self, _: &Self, _: &mut Self::Env) -> Result<(), Error> {
         Ok(())
+    }
+}
+
+impl Kindcheck<Type> for Type {
+    type Env = HashMap<Var, Type>;
+    fn check_kind(&self, _: &mut Self::Env) -> Result<Kind, Error> {
+        Ok(Kind::Star)
     }
 }

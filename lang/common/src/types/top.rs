@@ -1,32 +1,45 @@
 use super::Type;
 use crate::{
-    check::{to_subty_err, Subtypecheck},
+    check::{to_subty_err, Kindcheck, Subtypecheck},
     errors::{Error, ErrorKind},
     kinds::Kind,
     language::LanguageType,
     subst::SubstType,
     TypeVar,
 };
-use std::fmt;
+use std::{fmt, marker::PhantomData};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Top {
+pub struct Top<Ty>
+where
+    Ty: Type,
+{
     kind: Kind,
+    phantom: PhantomData<Ty>,
 }
 
-impl Top {
-    pub fn new(knd: Kind) -> Top {
-        Top { kind: knd }
+impl<Ty> Top<Ty>
+where
+    Ty: Type,
+{
+    pub fn new(knd: Kind) -> Top<Ty> {
+        Top {
+            kind: knd,
+            phantom: PhantomData,
+        }
     }
 
-    pub fn new_star() -> Top {
-        Top { kind: Kind::Star }
+    pub fn new_star() -> Top<Ty> {
+        Top {
+            kind: Kind::Star,
+            phantom: PhantomData,
+        }
     }
 }
 
-impl Type for Top {}
+impl<Ty> Type for Top<Ty> where Ty: Type {}
 
-impl<Ty> SubstType<Ty> for Top
+impl<Ty> SubstType<Ty> for Top<Ty>
 where
     Ty: Type,
     Self: Into<Ty>,
@@ -37,7 +50,7 @@ where
     }
 }
 
-impl<Ty> Subtypecheck<Ty> for Top
+impl<Ty> Subtypecheck<Ty> for Top<Ty>
 where
     Ty: LanguageType,
 {
@@ -53,7 +66,20 @@ where
     }
 }
 
-impl fmt::Display for Top {
+impl<Ty> Kindcheck<Ty> for Top<Ty>
+where
+    Ty: LanguageType,
+{
+    type Env = <Ty as Kindcheck<Ty>>::Env;
+    fn check_kind(&self, _: &mut Self::Env) -> Result<Kind, Error> {
+        Ok(self.kind.clone())
+    }
+}
+
+impl<Ty> fmt::Display for Top<Ty>
+where
+    Ty: Type,
+{
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.write_str("Top")
     }

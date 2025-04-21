@@ -8,9 +8,9 @@ use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Type {
-    Unit(Unit),
-    Nat(Nat),
-    Bool(Bool),
+    Unit(Unit<Type>),
+    Nat(Nat<Type>),
+    Bool(Bool<Type>),
     Fun(Fun<Type>),
     Ref(Reference<Type>),
 }
@@ -38,14 +38,14 @@ impl fmt::Display for Type {
     }
 }
 
-impl From<Unit> for Type {
-    fn from(u: Unit) -> Type {
+impl From<Unit<Type>> for Type {
+    fn from(u: Unit<Type>) -> Type {
         Type::Unit(u)
     }
 }
 
-impl From<Nat> for Type {
-    fn from(n: Nat) -> Type {
+impl From<Nat<Type>> for Type {
+    fn from(n: Nat<Type>) -> Type {
         Type::Nat(n)
     }
 }
@@ -62,8 +62,8 @@ impl From<Reference<Type>> for Type {
     }
 }
 
-impl From<Bool> for Type {
-    fn from(b: Bool) -> Type {
+impl From<Bool<Type>> for Type {
+    fn from(b: Bool<Type>) -> Type {
         Type::Bool(b)
     }
 }

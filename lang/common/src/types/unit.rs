@@ -1,19 +1,36 @@
 use super::Type;
 use crate::{
-    check::{to_subty_err, Subtypecheck},
+    check::{to_subty_err, Kindcheck, Subtypecheck},
     errors::Error,
+    kinds::Kind,
     language::LanguageType,
     subst::SubstType,
     TypeVar,
 };
-use std::fmt;
+use std::{fmt, marker::PhantomData};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Unit;
+pub struct Unit<Ty>
+where
+    Ty: Type,
+{
+    phantom: PhantomData<Ty>,
+}
 
-impl Type for Unit {}
+impl<Ty> Unit<Ty>
+where
+    Ty: Type,
+{
+    pub fn new() -> Unit<Ty> {
+        Unit {
+            phantom: PhantomData,
+        }
+    }
+}
 
-impl<Ty> SubstType<Ty> for Unit
+impl<Ty> Type for Unit<Ty> where Ty: Type {}
+
+impl<Ty> SubstType<Ty> for Unit<Ty>
 where
     Ty: Type,
     Self: Into<Ty>,
@@ -24,7 +41,7 @@ where
     }
 }
 
-impl<Ty> Subtypecheck<Ty> for Unit
+impl<Ty> Subtypecheck<Ty> for Unit<Ty>
 where
     Ty: LanguageType,
 {
@@ -47,7 +64,21 @@ where
     }
 }
 
-impl fmt::Display for Unit {
+impl<Ty> Kindcheck<Ty> for Unit<Ty>
+where
+    Ty: LanguageType,
+{
+    type Env = <Ty as Kindcheck<Ty>>::Env;
+
+    fn check_kind(&self, _: &mut Self::Env) -> Result<Kind, Error> {
+        Ok(Kind::Star)
+    }
+}
+
+impl<Ty> fmt::Display for Unit<Ty>
+where
+    Ty: Type,
+{
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.write_str("Unit")
     }

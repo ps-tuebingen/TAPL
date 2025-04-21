@@ -12,15 +12,15 @@ pub mod stream;
 pub mod untyped_lambda;
 
 pub fn ty_hungry() -> Type {
-    Mu::new("A", Fun::new(Nat, TypeVariable::new("A"))).into()
+    Mu::new("A", Fun::new(Nat::new(), TypeVariable::new("A"))).into()
 }
 
 pub fn hungry() -> Term {
     Fold::new(
         Fix::new(Lambda::new(
             "f",
-            Fun::new(Nat, ty_hungry()),
-            Lambda::new("n", Nat, Fold::new(Variable::new("f"), ty_hungry())),
+            Fun::new(Nat::new(), ty_hungry()),
+            Lambda::new("n", Nat::new(), Fold::new(Variable::new("f"), ty_hungry())),
         )),
         ty_hungry(),
     )
@@ -52,7 +52,7 @@ pub fn fix_t(t: Type) -> Term {
 pub fn diverge_t(t: Type) -> Term {
     Lambda::new(
         "_",
-        Unit,
+        Unit::new(),
         App::new(fix_t(t.clone()), Lambda::new("x", t, Variable::new("x"))),
     )
     .into()
@@ -86,8 +86,10 @@ mod example_tests {
         let expected = Fun::new(Fun::new(Bool, Bool), Bool).into();
         assert_eq!(result, expected);
 
-        let result = fix_t(Unit.into()).check(&mut Default::default()).unwrap();
-        let expected = Fun::new(Fun::new(Unit, Unit), Unit).into();
+        let result = fix_t(Unit::new().into())
+            .check(&mut Default::default())
+            .unwrap();
+        let expected = Fun::new(Fun::new(Unit::new(), Unit::new()), Unit::new()).into();
         assert_eq!(result, expected)
     }
 
@@ -96,13 +98,13 @@ mod example_tests {
         let result = diverge_t(Nat.into())
             .check(&mut Default::default())
             .unwrap();
-        let expected = Fun::new(Unit, Nat).into();
+        let expected = Fun::new(Unit::new(), Nat).into();
         assert_eq!(result, expected);
 
         let result = diverge_t(Bool.into())
             .check(&mut Default::default())
             .unwrap();
-        let expected = Fun::new(Unit, Bool).into();
+        let expected = Fun::new(Unit::new(), Bool).into();
         assert_eq!(result, expected);
 
         let result = diverge_t(Unit.into())

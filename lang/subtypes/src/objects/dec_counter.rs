@@ -9,10 +9,10 @@ use std::collections::HashMap;
 
 pub fn ty_dec_counter() -> Type {
     RecordTy::new(HashMap::from([
-        ("get".to_owned(), Fun::new(Unit, Nat)),
-        ("inc".to_owned(), Fun::new(Unit, Unit)),
-        ("reset".to_owned(), Fun::new(Unit, Unit)),
-        ("dec".to_owned(), Fun::new(Nat, Unit)),
+        ("get".to_owned(), Fun::new(Unit::new(), Nat::new())),
+        ("inc".to_owned(), Fun::new(Unit::new(), Unit::new())),
+        ("reset".to_owned(), Fun::new(Unit::new(), Unit::new())),
+        ("dec".to_owned(), Fun::new(Nat::new(), Unit::new())),
     ]))
     .into()
 }
@@ -41,7 +41,7 @@ pub fn dec_counter_class() -> Term {
                     "dec".to_owned(),
                     Lambda::new(
                         "n",
-                        Nat,
+                        Nat::new(),
                         Assign::new(
                             RecordProj::new(Variable::new("r"), "x"),
                             Pred::new(Deref::new(RecordProj::new(Variable::new("r"), "x"))),
@@ -58,7 +58,7 @@ pub fn dec_counter_class() -> Term {
 pub fn new_dec_counter() -> Term {
     Lambda::new(
         "_",
-        Unit,
+        Unit::new(),
         Let::new(
             "r",
             Record::new(HashMap::<Var, Term>::from([(
@@ -101,7 +101,7 @@ mod dec_counter_tests {
     #[test]
     fn ty_new_dec() {
         let result = new_dec_counter().check(&mut Default::default()).unwrap();
-        let expected = Fun::new(Unit, ty_dec_counter());
+        let expected = Fun::new(Unit::new(), ty_dec_counter());
         assert_eq!(result, expected)
     }
 }

@@ -13,6 +13,7 @@ kw_pred = { "pred" }
 kw_true = { "true" }
 kw_false = { "false" }
 kw_tyref = { "Ref" }
+kw_tybool = { "Bool" }
 kw_tyunit = { "Unit" }
 kw_tynat = { "Nat" }
 
@@ -26,6 +27,7 @@ keyword = {
   | kw_false
   | kw_else 
   | kw_tyunit
+  | kw_tybool
   | kw_tyref
   | kw_tynat
 }
@@ -75,6 +77,6 @@ type = {
   | paren_type
 }
 paren_type = { "(" ~ type ~ ")" }
-prim_type = { kw_tyunit | kw_tynat }
+prim_type = { kw_tyunit | kw_tynat | kw_tybool }
 fun_type = { "(" ~ type ~ "->" ~ type ~ ")" }
 ref_type = { kw_tyref ~ type }

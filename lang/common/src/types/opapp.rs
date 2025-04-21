@@ -1,7 +1,8 @@
 use super::Type;
 use crate::{
-    check::{to_subty_err, Subtypecheck},
-    errors::Error,
+    check::{to_kind_err, to_subty_err, Kindcheck, Subtypecheck},
+    errors::{Error, ErrorKind},
+    kinds::Kind,
     language::LanguageType,
     subst::SubstType,
     TypeVar,
@@ -64,6 +65,27 @@ where
         let sub_app = sub.clone().into_opapp().map_err(to_subty_err)?;
         self.fun.check_supertype(&sub_app.fun, &mut env.clone())?;
         self.arg.check_supertype(&sub_app.arg, env)
+    }
+}
+
+impl<Ty> Kindcheck<Ty> for OpApp<Ty>
+where
+    Ty: LanguageType,
+{
+    type Env = <Ty as Kindcheck<Ty>>::Env;
+
+    fn check_kind(&self, env: &mut Self::Env) -> Result<Kind, Error> {
+        let fun_kind = self.fun.check_kind(&mut env.clone())?;
+        let (fun_from, fun_to) = fun_kind.into_arrow().map_err(to_kind_err)?;
+        let arg_kind = self.arg.check_kind(env)?;
+        if fun_from == arg_kind {
+            Ok(fun_to)
+        } else {
+            Err(to_kind_err(ErrorKind::KindMismatch {
+                found: arg_kind.to_string(),
+                expected: fun_from.to_string(),
+            }))
+        }
     }
 }
 

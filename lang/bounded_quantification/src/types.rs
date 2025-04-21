@@ -9,9 +9,9 @@ use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Type {
-    Var(TypeVariable),
-    Top(Top),
-    Nat(Nat),
+    Var(TypeVariable<Type>),
+    Top(Top<Type>),
+    Nat(Nat<Type>),
     Fun(Fun<Type>),
     Forall(ForallBounded<Type>),
     Exists(ExistsBounded<Type>),
@@ -21,7 +21,7 @@ pub enum Type {
 impl common::types::Type for Type {}
 
 impl LanguageType for Type {
-    fn into_nat(self) -> Result<Nat, ErrorKind> {
+    fn into_nat(self) -> Result<Nat<Type>, ErrorKind> {
         if let Type::Nat(n) = self {
             Ok(n)
         } else {
@@ -44,19 +44,19 @@ impl LanguageType for Type {
     }
 }
 
-impl From<TypeVariable> for Type {
-    fn from(v: TypeVariable) -> Type {
+impl From<TypeVariable<Type>> for Type {
+    fn from(v: TypeVariable<Type>) -> Type {
         Type::Var(v)
     }
 }
-impl From<Top> for Type {
-    fn from(t: Top) -> Type {
+impl From<Top<Type>> for Type {
+    fn from(t: Top<Type>) -> Type {
         Type::Top(t)
     }
 }
 
-impl From<Nat> for Type {
-    fn from(nat: Nat) -> Type {
+impl From<Nat<Type>> for Type {
+    fn from(nat: Nat<Type>) -> Type {
         Type::Nat(nat)
     }
 }

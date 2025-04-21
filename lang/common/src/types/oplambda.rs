@@ -1,6 +1,6 @@
 use super::Type;
 use crate::{
-    check::{to_subty_err, CheckEnvironment, Subtypecheck},
+    check::{to_subty_err, CheckEnvironment, Kindcheck, Subtypecheck},
     errors::{Error, ErrorKind},
     kinds::Kind,
     language::LanguageType,
@@ -61,7 +61,7 @@ where
 impl<Ty> Subtypecheck<Ty> for OpLambda<Ty>
 where
     Ty: LanguageType,
-    TypeVariable: Into<Ty>,
+    TypeVariable<Ty>: Into<Ty>,
 {
     type Env = <Ty as Subtypecheck<Ty>>::Env;
     fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Error> {
@@ -96,6 +96,21 @@ where
                 .subst_type(&sub_op.var, &(TypeVariable::new(&self.var).into())),
             env,
         )
+    }
+}
+
+impl<Ty> Kindcheck<Ty> for OpLambda<Ty>
+where
+    Ty: LanguageType,
+{
+    type Env = <Ty as Kindcheck<Ty>>::Env;
+
+    fn check_kind(&self, env: &mut Self::Env) -> Result<Kind, Error> {
+        let body_kind = self.body.check_kind(env)?;
+        Ok(Kind::Arrow(
+            Box::new(self.annot.clone()),
+            Box::new(body_kind),
+        ))
     }
 }
 

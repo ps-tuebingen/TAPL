@@ -10,14 +10,14 @@ pub fn ty_counter() -> Type {
     Mu::new(
         "C",
         RecordTy::new(HashMap::<TypeVar, Type>::from([
-            ("get".to_owned(), Nat.into()),
+            ("get".to_owned(), Nat::new().into()),
             (
                 "inc".to_owned(),
-                Fun::new(UnitTy, TypeVariable::new("C")).into(),
+                Fun::new(UnitTy::new(), TypeVariable::new("C")).into(),
             ),
             (
                 "dec".to_owned(),
-                Fun::new(UnitTy, TypeVariable::new("C")).into(),
+                Fun::new(UnitTy::new(), TypeVariable::new("C")).into(),
             ),
         ])),
     )
@@ -30,14 +30,14 @@ pub fn new_counter() -> Term {
         Fix::new(Lambda::new(
             "f",
             Fun::new(
-                RecordTy::new(HashMap::from([("x".to_owned(), Nat)])),
+                RecordTy::new(HashMap::from([("x".to_owned(), Nat::new())])),
                 ty_counter(),
             ),
             Lambda::new(
                 "s",
                 RecordTy::new(HashMap::<TypeVar, Type>::from([(
                     "x".to_owned(),
-                    Nat.into(),
+                    Nat::new().into(),
                 )])),
                 Fold::new(
                     Record::new(HashMap::<Var, Term>::from([
@@ -49,7 +49,7 @@ pub fn new_counter() -> Term {
                             "inc".to_owned(),
                             Lambda::new(
                                 "_",
-                                UnitTy,
+                                UnitTy::new(),
                                 App::new(
                                     Variable::new("f"),
                                     Record::new(HashMap::<Var, Term>::from([(
@@ -64,7 +64,7 @@ pub fn new_counter() -> Term {
                             "dec".to_owned(),
                             Lambda::new(
                                 "_",
-                                UnitTy,
+                                UnitTy::new(),
                                 App::new(
                                     Variable::new("f"),
                                     Record::new(HashMap::<Var, Term>::from([(

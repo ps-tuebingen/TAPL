@@ -18,7 +18,7 @@ pub fn reset_counter_m() -> Type {
         RecordTy::new(HashMap::<TypeVar, Type>::from([
             (
                 "get".to_owned(),
-                Fun::new(TypeVariable::new("R"), Nat).into(),
+                Fun::new(TypeVariable::new("R"), Nat::new()).into(),
             ),
             (
                 "inc".to_owned(),

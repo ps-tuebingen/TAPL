@@ -9,16 +9,16 @@ use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Type {
-    Unit(Unit),
-    Nat(Nat),
-    Bool(Bool),
+    Unit(Unit<Type>),
+    Nat(Nat<Type>),
+    Bool(Bool<Type>),
     Fun(Fun<Type>),
 }
 
 impl common::types::Type for Type {}
 
 impl LanguageType for Type {
-    fn into_nat(self) -> Result<Nat, ErrorKind> {
+    fn into_nat(self) -> Result<Nat<Type>, ErrorKind> {
         if let Type::Nat(n) = self {
             Ok(n)
         } else {
@@ -29,7 +29,7 @@ impl LanguageType for Type {
         }
     }
 
-    fn into_bool(self) -> Result<Bool, ErrorKind> {
+    fn into_bool(self) -> Result<Bool<Type>, ErrorKind> {
         if let Type::Bool(b) = self {
             Ok(b)
         } else {
@@ -52,20 +52,20 @@ impl LanguageType for Type {
     }
 }
 
-impl From<Unit> for Type {
-    fn from(u: Unit) -> Type {
+impl From<Unit<Type>> for Type {
+    fn from(u: Unit<Type>) -> Type {
         Type::Unit(u)
     }
 }
 
-impl From<Nat> for Type {
-    fn from(nat: Nat) -> Type {
+impl From<Nat<Type>> for Type {
+    fn from(nat: Nat<Type>) -> Type {
         Type::Nat(nat)
     }
 }
 
-impl From<Bool> for Type {
-    fn from(b: Bool) -> Type {
+impl From<Bool<Type>> for Type {
+    fn from(b: Bool<Type>) -> Type {
         Type::Bool(b)
     }
 }

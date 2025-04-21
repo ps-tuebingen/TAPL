@@ -62,9 +62,9 @@ fn pair_to_leftrec_type(p: Pair<'_, Rule>, ty: Type) -> Result<Type, Error> {
 
 fn str_to_type(s: &str) -> Result<Type, Error> {
     match s.to_lowercase().trim() {
-        "unit" => Ok(Unit.into()),
-        "nat" => Ok(Nat.into()),
-        "bool" => Ok(Bool.into()),
+        "unit" => Ok(Unit::new().into()),
+        "nat" => Ok(Nat::new().into()),
+        "bool" => Ok(Bool::new().into()),
         s => Err(to_parse_err(ErrorKind::UnknownKeyword(s.to_owned()))),
     }
 }

@@ -1,27 +1,38 @@
 use super::Type;
 use crate::{
-    check::{to_subty_err, CheckEnvironment, Subtypecheck},
+    check::{to_kind_err, to_subty_err, CheckEnvironment, Kindcheck, Subtypecheck},
     errors::Error,
+    kinds::Kind,
     language::LanguageType,
     subst::SubstType,
     TypeVar,
 };
-use std::fmt;
+use std::{fmt, marker::PhantomData};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct TypeVariable {
+pub struct TypeVariable<Ty>
+where
+    Ty: Type,
+{
     v: TypeVar,
+    phantom: PhantomData<Ty>,
 }
 
-impl TypeVariable {
-    pub fn new(v: &str) -> TypeVariable {
-        TypeVariable { v: v.to_owned() }
+impl<Ty> TypeVariable<Ty>
+where
+    Ty: Type,
+{
+    pub fn new(v: &str) -> TypeVariable<Ty> {
+        TypeVariable {
+            v: v.to_owned(),
+            phantom: PhantomData,
+        }
     }
 }
 
-impl Type for TypeVariable {}
+impl<Ty> Type for TypeVariable<Ty> where Ty: Type {}
 
-impl<Ty> SubstType<Ty> for TypeVariable
+impl<Ty> SubstType<Ty> for TypeVariable<Ty>
 where
     Ty: Type,
     Self: Into<Ty>,
@@ -36,7 +47,7 @@ where
     }
 }
 
-impl<Ty> Subtypecheck<Ty> for TypeVariable
+impl<Ty> Subtypecheck<Ty> for TypeVariable<Ty>
 where
     Ty: LanguageType,
 {
@@ -52,7 +63,20 @@ where
     }
 }
 
-impl fmt::Display for TypeVariable {
+impl<Ty> Kindcheck<Ty> for TypeVariable<Ty>
+where
+    Ty: LanguageType,
+{
+    type Env = <Ty as Kindcheck<Ty>>::Env;
+    fn check_kind(&self, env: &mut Self::Env) -> Result<Kind, Error> {
+        env.get_tyvar_kind(&self.v).map_err(to_kind_err)
+    }
+}
+
+impl<Ty> fmt::Display for TypeVariable<Ty>
+where
+    Ty: Type,
+{
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.v)
     }

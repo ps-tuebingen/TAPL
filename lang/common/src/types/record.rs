@@ -1,7 +1,8 @@
 use super::Type;
 use crate::{
-    check::{to_subty_err, Subtypecheck},
+    check::{to_kind_err, to_subty_err, Kindcheck, Subtypecheck},
     errors::{Error, ErrorKind},
+    kinds::Kind,
     language::LanguageType,
     subst::SubstType,
     Label, TypeVar,
@@ -86,6 +87,25 @@ where
             ty.check_subtype(sup_ty, &mut env.clone())?;
         }
         Ok(())
+    }
+}
+
+impl<Ty> Kindcheck<Ty> for Record<Ty>
+where
+    Ty: LanguageType,
+{
+    type Env = <Ty as Kindcheck<Ty>>::Env;
+    fn check_kind(&self, env: &mut Self::Env) -> Result<Kind, Error> {
+        for (_, t) in self.records.iter() {
+            let knd = t.check_kind(&mut env.clone())?;
+            if knd != Kind::Star {
+                return Err(to_kind_err(ErrorKind::KindMismatch {
+                    found: knd.to_string(),
+                    expected: "*".to_owned(),
+                }));
+            }
+        }
+        Ok(Kind::Star)
     }
 }
 

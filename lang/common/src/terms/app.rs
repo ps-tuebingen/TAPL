@@ -35,10 +35,10 @@ where
         T1: Into<T>,
         T2: Into<T>,
         Lambda<T>: Into<T>,
-        UnitTy: Into<<T as LanguageTerm>::Type>,
+        UnitTy<<T as LanguageTerm>::Type>: Into<<T as LanguageTerm>::Type>,
     {
         App {
-            fun: Box::new(Lambda::new("_", UnitTy, t2).into()),
+            fun: Box::new(Lambda::new("_", UnitTy::new(), t2).into()),
             arg: Box::new(t1.into()),
         }
     }

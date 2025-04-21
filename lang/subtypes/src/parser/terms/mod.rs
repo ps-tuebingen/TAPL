@@ -109,7 +109,7 @@ fn pair_to_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
         Rule::seq_term => {
             let second = pair_to_n_inner(p, vec!["Term"])?.remove(0);
             let term = pair_to_term(second)?;
-            Ok(App::new(Lambda::new("_", UnitTy, term), t).into())
+            Ok(App::new(Lambda::new("_", UnitTy::new(), term), t).into())
         }
         Rule::term => {
             let arg = pair_to_term(p)?;

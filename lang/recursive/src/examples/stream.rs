@@ -7,7 +7,10 @@ use common::{
 pub fn ty_stream() -> Type {
     Mu::new(
         "A",
-        Fun::new(UnitTy, Product::new(Nat, TypeVariable::new("A"))),
+        Fun::new(
+            UnitTy::new(),
+            Product::new(Nat::new(), TypeVariable::new("A")),
+        ),
     )
     .into()
 }
@@ -40,14 +43,14 @@ pub fn upfrom0() -> Term {
     App::new(
         Fix::new(Lambda::new(
             "f",
-            Fun::new(Nat, ty_stream()),
+            Fun::new(Nat::new(), ty_stream()),
             Lambda::new(
                 "n",
-                Nat,
+                Nat::new(),
                 Fold::new(
                     Lambda::new(
                         "_",
-                        UnitTy,
+                        UnitTy::new(),
                         Pair::new(
                             Variable::new("n"),
                             App::new(Variable::new("f"), Succ::new(Variable::new("n"))),
@@ -73,7 +76,7 @@ mod stream_tests {
     #[test]
     fn check_hd() {
         let result = hd().check(&mut Default::default()).unwrap();
-        let expected = Fun::new(ty_stream(), Nat).into();
+        let expected = Fun::new(ty_stream(), Nat::new()).into();
         assert_eq!(result, expected)
     }
 

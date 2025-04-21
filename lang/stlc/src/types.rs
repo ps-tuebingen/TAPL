@@ -8,10 +8,10 @@ use std::fmt;
 
 #[derive(PartialEq, Eq, Clone, Debug)]
 pub enum Type {
-    Unit(Unit),
+    Unit(Unit<Type>),
     Fun(Fun<Type>),
-    Bool(Bool),
-    Nat(Nat),
+    Bool(Bool<Type>),
+    Nat(Nat<Type>),
     Prod(Product<Type>),
     Tup(Tuple<Type>),
     Record(Record<Type>),
@@ -50,8 +50,8 @@ impl SubstType<Type> for Type {
     }
 }
 
-impl From<Unit> for Type {
-    fn from(u: Unit) -> Type {
+impl From<Unit<Type>> for Type {
+    fn from(u: Unit<Type>) -> Type {
         Type::Unit(u)
     }
 }
@@ -62,14 +62,14 @@ impl From<Fun<Type>> for Type {
     }
 }
 
-impl From<Bool> for Type {
-    fn from(b: Bool) -> Type {
+impl From<Bool<Type>> for Type {
+    fn from(b: Bool<Type>) -> Type {
         Type::Bool(b)
     }
 }
 
-impl From<Nat> for Type {
-    fn from(n: Nat) -> Type {
+impl From<Nat<Type>> for Type {
+    fn from(n: Nat<Type>) -> Type {
         Type::Nat(n)
     }
 }

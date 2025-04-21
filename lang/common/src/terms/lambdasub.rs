@@ -40,7 +40,7 @@ where
     pub fn new_unbounded<T1>(v: &str, bod: T1) -> LambdaSub<T>
     where
         T1: Into<T>,
-        Top: Into<<T as LanguageTerm>::Type>,
+        Top<<T as LanguageTerm>::Type>: Into<<T as LanguageTerm>::Type>,
     {
         LambdaSub {
             var: v.to_owned(),

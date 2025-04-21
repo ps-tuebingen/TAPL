@@ -106,9 +106,9 @@ fn pair_to_tuple_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
 
 fn str_to_ty(s: &str) -> Result<Type, Error> {
     match s.to_lowercase().trim() {
-        "bool" => Ok(Bool.into()),
-        "nat" => Ok(Nat.into()),
-        "unit" => Ok(Unit.into()),
+        "bool" => Ok(Bool::new().into()),
+        "nat" => Ok(Nat::new().into()),
+        "unit" => Ok(Unit::new().into()),
         _ => Err(to_parse_err(ErrorKind::UnknownKeyword(s.to_owned()))),
     }
 }
