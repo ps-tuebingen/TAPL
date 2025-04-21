@@ -1,5 +1,13 @@
 use super::Type;
-use crate::{kinds::Kind, subst::SubstType, TypeVar};
+use crate::{
+    check::{to_subty_err, CheckEnvironment, Subtypecheck},
+    errors::{Error, ErrorKind},
+    kinds::Kind,
+    language::LanguageType,
+    subst::SubstType,
+    types::TypeVariable,
+    TypeVar,
+};
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -8,7 +16,7 @@ where
     Ty: Type,
 {
     var: TypeVar,
-    annot: Kind,
+    pub annot: Kind,
     body: Box<Ty>,
 }
 
@@ -47,6 +55,47 @@ where
             }
             .into()
         }
+    }
+}
+
+impl<Ty> Subtypecheck<Ty> for OpLambda<Ty>
+where
+    Ty: LanguageType,
+    TypeVariable: Into<Ty>,
+{
+    type Env = <Ty as Subtypecheck<Ty>>::Env;
+    fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Error> {
+        let sup_op = sup.clone().into_oplambda().map_err(to_subty_err)?;
+        if sup_op.annot != self.annot {
+            return Err(to_subty_err(ErrorKind::KindMismatch {
+                found: sup_op.annot.to_string(),
+                expected: self.annot.to_string(),
+            }));
+        }
+        env.add_tyvar_kind(self.var.clone(), self.annot.clone());
+        self.body.check_subtype(
+            &sup_op
+                .body
+                .subst_type(&sup_op.var, &(TypeVariable::new(&self.var).into())),
+            env,
+        )
+    }
+
+    fn check_supertype(&self, sub: &Ty, env: &mut Self::Env) -> Result<(), Error> {
+        let sub_op = sub.clone().into_oplambda().map_err(to_subty_err)?;
+        if sub_op.annot != self.annot {
+            return Err(to_subty_err(ErrorKind::KindMismatch {
+                found: sub_op.annot.to_string(),
+                expected: self.annot.to_string(),
+            }));
+        }
+        env.add_tyvar_kind(self.var.clone(), self.annot.clone());
+        self.body.check_supertype(
+            &sub_op
+                .body
+                .subst_type(&sub_op.var, &(TypeVariable::new(&self.var).into())),
+            env,
+        )
     }
 }
 
