@@ -1,6 +1,9 @@
 use super::{pair_to_kind, pair_to_n_inner, to_parse_err, Error, Rule};
-use crate::syntax::types::{Fun, OpApp, Type};
-use common::errors::ErrorKind;
+use crate::types::Type;
+use common::{
+    errors::ErrorKind,
+    types::{Fun, Nat, OpApp, Top, TypeVariable},
+};
 use pest::iterators::Pair;
 
 mod existential;
@@ -45,7 +48,7 @@ fn pair_to_primtype(p: Pair<'_, Rule>) -> Result<Type, Error> {
         Rule::top_ty => {
             let kind_rule = pair_to_n_inner(p, vec!["Kind"])?.remove(0);
             let kind = pair_to_kind(kind_rule)?;
-            Ok(Type::Top(kind))
+            Ok(Top::new(kind).into())
         }
         Rule::forall_ty => pair_to_universal(p).map(|uni| uni.into()),
         Rule::forall_unbounded => pair_to_universal_unbounded(p).map(|uni| uni.into()),
@@ -54,7 +57,7 @@ fn pair_to_primtype(p: Pair<'_, Rule>) -> Result<Type, Error> {
         Rule::exists_ty => pair_to_exists(p).map(|ex| ex.into()),
         Rule::exists_unbounded => pair_to_exists_unbounded(p).map(|ex| ex.into()),
         Rule::record_ty => pair_to_rec_ty(p).map(|rec| rec.into()),
-        Rule::variable => Ok(Type::Var(p.as_str().trim().to_owned())),
+        Rule::variable => Ok(TypeVariable::new(p.as_str().trim()).into()),
         _ => Err(to_parse_err(ErrorKind::UnexpectedRule {
             found: format!("{p:?}"),
             expected: "Non Left-Recursive Type".to_owned(),
@@ -76,11 +79,7 @@ fn pair_to_leftrec_ty(p: Pair<'_, Rule>, ty: Type) -> Result<Type, Error> {
         Rule::op_app => {
             let arg_rule = pair_to_n_inner(p, vec!["Type"])?.remove(0);
             let arg = pair_to_type(arg_rule)?;
-            Ok(OpApp {
-                fun: Box::new(ty),
-                arg: Box::new(arg),
-            }
-            .into())
+            Ok(OpApp::new(ty, arg).into())
         }
         _ => Err(to_parse_err(ErrorKind::UnexpectedRule {
             found: format!("{p:?}"),
@@ -91,7 +90,7 @@ fn pair_to_leftrec_ty(p: Pair<'_, Rule>, ty: Type) -> Result<Type, Error> {
 
 fn str_to_type(s: &str) -> Result<Type, Error> {
     match s.to_lowercase().trim() {
-        "nat" => Ok(Type::Nat),
+        "nat" => Ok(Nat.into()),
         s => Err(to_parse_err(ErrorKind::UnknownKeyword(s.to_owned()))),
     }
 }

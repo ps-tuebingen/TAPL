@@ -1,6 +1,5 @@
 use super::{pair_to_n_inner, to_parse_err, Error, Rule};
-use crate::syntax::kinds::Kind;
-use common::errors::ErrorKind;
+use common::{errors::ErrorKind, kinds::Kind};
 use pest::iterators::Pair;
 
 pub fn pair_to_kind(p: Pair<'_, Rule>) -> Result<Kind, Error> {

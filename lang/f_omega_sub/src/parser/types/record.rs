@@ -1,10 +1,10 @@
 use super::{pair_to_type, to_parse_err, Error, Rule};
-use crate::syntax::types::RecordTy;
-use common::errors::ErrorKind;
+use crate::types::Type;
+use common::{errors::ErrorKind, types::Record};
 use pest::iterators::Pair;
 use std::collections::HashMap;
 
-pub fn pair_to_rec_ty(p: Pair<'_, Rule>) -> Result<RecordTy, Error> {
+pub fn pair_to_rec_ty(p: Pair<'_, Rule>) -> Result<Record<Type>, Error> {
     let mut inner = p.into_inner();
     let mut records = HashMap::new();
     while let Some(var_rule) = inner.next() {
@@ -15,5 +15,5 @@ pub fn pair_to_rec_ty(p: Pair<'_, Rule>) -> Result<RecordTy, Error> {
         let ty = pair_to_type(ty_rule)?;
         records.insert(label, ty);
     }
-    Ok(RecordTy { records })
+    Ok(Record::new(records))
 }

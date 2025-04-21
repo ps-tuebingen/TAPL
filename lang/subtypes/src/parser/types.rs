@@ -31,7 +31,7 @@ pub fn pair_to_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
 
 fn str_to_type(s: &str) -> Result<Type, Error> {
     match s.to_lowercase().trim() {
-        "top" => Ok(Top.into()),
+        "top" => Ok(Top::new_star().into()),
         "bot" => Ok(Bot.into()),
         "nat" => Ok(Nat.into()),
         "unit" => Ok(Unit.into()),

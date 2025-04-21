@@ -2,6 +2,7 @@ use super::Type;
 use crate::{
     check::{to_subty_err, Subtypecheck},
     errors::{Error, ErrorKind},
+    kinds::Kind,
     language::LanguageType,
     subst::SubstType,
     TypeVar,
@@ -9,7 +10,19 @@ use crate::{
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Top;
+pub struct Top {
+    kind: Kind,
+}
+
+impl Top {
+    pub fn new(knd: Kind) -> Top {
+        Top { kind: knd }
+    }
+
+    pub fn new_star() -> Top {
+        Top { kind: Kind::Star }
+    }
+}
 
 impl Type for Top {}
 

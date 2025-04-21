@@ -44,7 +44,7 @@ where
     {
         LambdaSub {
             var: v.to_owned(),
-            sup_ty: Top.into(),
+            sup_ty: Top::new_star().into(),
             body: Box::new(bod.into()),
         }
     }

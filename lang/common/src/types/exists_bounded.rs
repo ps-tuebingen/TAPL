@@ -41,7 +41,7 @@ where
     {
         ExistsBounded {
             var: v.to_owned(),
-            sup_ty: Box::new(Top.into()),
+            sup_ty: Box::new(Top::new_star().into()),
             ty: Box::new(ty.into()),
         }
     }

@@ -1,10 +1,10 @@
 use super::{pair_to_term, to_parse_err, Error, Rule};
-use crate::syntax::terms::Record;
-use common::errors::ErrorKind;
+use crate::terms::Term;
+use common::{errors::ErrorKind, terms::Record};
 use pest::iterators::Pair;
 use std::collections::HashMap;
 
-pub fn pair_to_record(p: Pair<'_, Rule>) -> Result<Record, Error> {
+pub fn pair_to_record(p: Pair<'_, Rule>) -> Result<Record<Term>, Error> {
     let mut inner = p.into_inner();
     let mut records = HashMap::new();
     while let Some(var_rule) = inner.next() {
@@ -15,5 +15,5 @@ pub fn pair_to_record(p: Pair<'_, Rule>) -> Result<Record, Error> {
         let term = pair_to_term(term_rule)?;
         records.insert(label, term);
     }
-    Ok(Record { records })
+    Ok(Record::new(records))
 }
