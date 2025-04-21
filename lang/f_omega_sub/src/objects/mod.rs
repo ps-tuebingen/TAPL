@@ -1,6 +1,6 @@
-use crate::syntax::{
+use common::{
     kinds::Kind,
-    types::{Existential, OpApp, OpLambda, RecordTy, Type},
+    types::{Exists, OpApp, OpLambda, Record, Type},
 };
 
 pub mod counter;
@@ -10,7 +10,7 @@ pub fn object() -> Type {
     OpLambda::new(
         "M",
         Kind::Star.abs(),
-        Existential::new_unbounded(
+        Exists::new_unbounded(
             "X",
             Kind::Star,
             RecordTy::new(vec![
