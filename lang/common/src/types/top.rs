@@ -56,9 +56,7 @@ where
     Ty: LanguageType,
 {
     type Env = <Ty as Subtypecheck<Ty>>::Env;
-    fn check_supertype(&self, _: &Ty, _: &mut Self::Env) -> Result<(), Error> {
-        Ok(())
-    }
+
     fn check_subtype(&self, sup: &Ty, _: &mut Self::Env) -> Result<(), Error> {
         Err(to_subty_err(ErrorKind::Subtype {
             sub: self.to_string(),

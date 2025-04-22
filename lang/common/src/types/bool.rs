@@ -48,14 +48,6 @@ where
 {
     type Env = <Ty as Subtypecheck<Ty>>::Env;
 
-    fn check_supertype(&self, sub: &Ty, _: &mut Self::Env) -> Result<(), Error> {
-        if let Ok(_) = sub.clone().into_bot() {
-            return Ok(());
-        }
-
-        sub.clone().into_bool().map(|_| ()).map_err(to_subty_err)
-    }
-
     fn check_subtype(&self, sup: &Ty, _: &mut Self::Env) -> Result<(), Error> {
         if let Ok(_) = sup.clone().into_top() {
             return Ok(());

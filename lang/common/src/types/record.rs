@@ -58,21 +58,6 @@ where
     Ty: LanguageType,
 {
     type Env = <Ty as Subtypecheck<Ty>>::Env;
-    fn check_supertype(&self, sub: &Ty, env: &mut Self::Env) -> Result<(), Error> {
-        if let Ok(_) = sub.clone().into_bot() {
-            return Ok(());
-        }
-
-        let sub_rec = sub.clone().into_record().map_err(to_subty_err)?;
-        for (lb, ty) in sub_rec.records.iter() {
-            let self_ty = self
-                .records
-                .get(lb)
-                .ok_or(to_subty_err(ErrorKind::UndefinedLabel(lb.clone())))?;
-            ty.check_supertype(self_ty, &mut env.clone())?;
-        }
-        Ok(())
-    }
 
     fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Error> {
         if let Ok(_) = sup.clone().into_top() {

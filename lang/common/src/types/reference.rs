@@ -51,15 +51,6 @@ where
     Ty: LanguageType,
 {
     type Env = <Ty as Subtypecheck<Ty>>::Env;
-    fn check_supertype(&self, sub: &Ty, env: &mut Self::Env) -> Result<(), Error> {
-        if let Ok(_) = sub.clone().into_bot() {
-            return Ok(());
-        }
-
-        let sub_ref = sub.clone().into_ref().map_err(to_subty_err)?;
-        sub_ref.ty.check_supertype(&(*self.ty), &mut env.clone())?;
-        self.ty.check_supertype(&(*sub_ref.ty), env)
-    }
 
     fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Error> {
         if let Ok(_) = sup.clone().into_top() {

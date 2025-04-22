@@ -58,15 +58,6 @@ where
         let sup_list = sup.clone().into_list().map_err(to_subty_err)?;
         self.ty.check_subtype(&(*sup_list.ty), env)
     }
-
-    fn check_supertype(&self, sub: &Ty, env: &mut Self::Env) -> Result<(), Error> {
-        if let Ok(_) = sub.clone().into_bot() {
-            return Ok(());
-        }
-
-        let sub_list = sub.clone().into_list().map_err(to_subty_err)?;
-        self.ty.check_supertype(&(*sub_list.ty), env)
-    }
 }
 
 impl<Ty> fmt::Display for List<Ty>

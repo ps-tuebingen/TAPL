@@ -59,21 +59,10 @@ where
         }
 
         let sup_fun = sup.clone().into_fun().map_err(to_subty_err)?;
-        self.from
-            .check_supertype(&(*sup_fun.from), &mut env.clone())?;
-        sup_fun.to.check_supertype(&(*self.to), env)?;
-        Ok(())
-    }
-
-    fn check_supertype(&self, sub: &Ty, env: &mut Self::Env) -> Result<(), Error> {
-        if let Ok(_) = sub.clone().into_bot() {
-            return Ok(());
-        }
-
-        let sub_fun = sub.clone().into_fun().map_err(to_subty_err)?;
-        self.from
-            .check_subtype(&(*sub_fun.from), &mut env.clone())?;
-        sub_fun.to.check_subtype(&(*self.to), env)?;
+        sup_fun
+            .from
+            .check_subtype(&(*self.from), &mut env.clone())?;
+        self.to.check_subtype(&(*sup_fun.to), env)?;
         Ok(())
     }
 }

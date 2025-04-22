@@ -97,22 +97,6 @@ where
         }
         self.ty.check_subtype(&(*other_exists.ty), env)
     }
-
-    fn check_supertype(&self, sub: &Ty, env: &mut Self::Env) -> Result<(), Error> {
-        let other_exists = sub.clone().into_exists_bounded().map_err(to_subty_err)?;
-        other_exists
-            .sup_ty
-            .check_equal(&self.sup_ty)
-            .map_err(to_subty_err)?;
-        if self.var != other_exists.var {
-            return Err(to_subty_err(ErrorKind::TypeMismatch {
-                found: other_exists.var.clone(),
-                expected: self.var.clone(),
-            }));
-        }
-
-        self.ty.check_supertype(&(*other_exists.ty), env)
-    }
 }
 
 impl<Ty> Kindcheck<Ty> for ExistsBounded<Ty>

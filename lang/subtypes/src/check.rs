@@ -95,23 +95,6 @@ impl Subtypecheck<Type> for Type {
             Type::Bool(b) => b.check_subtype(sup, env),
         }
     }
-
-    fn check_supertype(&self, sup: &Self, env: &mut Self::Env) -> Result<(), Error> {
-        match self {
-            Type::Top(top) => top.check_supertype(sup, env),
-            Type::Bot(bot) => bot.check_supertype(sup, env),
-            Type::Fun(fun) => fun.check_supertype(sup, env),
-            Type::Record(rec) => rec.check_supertype(sup, env),
-            Type::Variant(variant) => variant.check_supertype(sup, env),
-            Type::List(list) => list.check_supertype(sup, env),
-            Type::Ref(refty) => refty.check_supertype(sup, env),
-            Type::Source(src) => src.check_supertype(sup, env),
-            Type::Sink(snk) => snk.check_supertype(sup, env),
-            Type::Nat(nat) => nat.check_supertype(sup, env),
-            Type::Unit(unit) => unit.check_supertype(sup, env),
-            Type::Bool(b) => b.check_supertype(sup, env),
-        }
-    }
 }
 
 impl Kindcheck<Type> for Type {

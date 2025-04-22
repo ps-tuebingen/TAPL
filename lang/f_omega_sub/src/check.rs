@@ -86,20 +86,6 @@ impl Subtypecheck<Type> for Type {
             Type::Nat(nat) => nat.check_subtype(sup, env),
         }
     }
-
-    fn check_supertype(&self, sub: &Type, env: &mut Self::Env) -> Result<(), Error> {
-        match self {
-            Type::Var(var) => var.check_supertype(sub, env),
-            Type::Top(top) => top.check_supertype(sub, env),
-            Type::Fun(fun) => fun.check_supertype(sub, env),
-            Type::Forall(forall) => forall.check_supertype(sub, env),
-            Type::OpLambda(lam) => lam.check_supertype(sub, env),
-            Type::OpApp(app) => app.check_supertype(sub, env),
-            Type::Exists(ex) => ex.check_supertype(sub, env),
-            Type::Record(rec) => rec.check_supertype(sub, env),
-            Type::Nat(nat) => nat.check_supertype(sub, env),
-        }
-    }
 }
 
 impl Kindcheck<Type> for Type {

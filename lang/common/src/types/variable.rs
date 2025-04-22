@@ -58,11 +58,6 @@ where
         let ty_super = env.get_tyvar_super(&self.v).map_err(to_subty_err)?;
         ty_super.check_equal(&sup).map_err(to_subty_err)
     }
-
-    fn check_supertype(&self, sub: &Ty, env: &mut Self::Env) -> Result<(), Error> {
-        let ty_super = env.get_tyvar_super(&self.v).map_err(to_subty_err)?;
-        sub.check_supertype(&ty_super, env)
-    }
 }
 
 impl<Ty> Kindcheck<Ty> for TypeVariable<Ty>

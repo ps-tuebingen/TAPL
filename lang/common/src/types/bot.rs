@@ -32,13 +32,6 @@ where
     fn check_subtype(&self, _: &Ty, _: &mut Self::Env) -> Result<(), Error> {
         Ok(())
     }
-
-    fn check_supertype(&self, sub: &Ty, _: &mut Self::Env) -> Result<(), Error> {
-        Err(to_subty_err(ErrorKind::Subtype {
-            sup: self.to_string(),
-            sub: sub.to_string(),
-        }))
-    }
 }
 
 impl fmt::Display for Bot {

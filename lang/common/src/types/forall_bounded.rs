@@ -97,22 +97,6 @@ where
         }
         self.ty.check_subtype(&(*other_forall.ty), env)
     }
-
-    fn check_supertype(&self, sub: &Ty, env: &mut Self::Env) -> Result<(), Error> {
-        let other_forall = sub.clone().into_forall_bounded().map_err(to_subty_err)?;
-        other_forall
-            .sup_ty
-            .check_equal(&self.sup_ty)
-            .map_err(to_subty_err)?;
-        if self.var != other_forall.var {
-            return Err(to_subty_err(ErrorKind::TypeMismatch {
-                found: other_forall.var.clone(),
-                expected: self.var.clone(),
-            }));
-        }
-
-        self.ty.check_supertype(&(*other_forall.ty), env)
-    }
 }
 
 impl<Ty> Kindcheck<Ty> for ForallBounded<Ty>

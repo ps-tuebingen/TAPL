@@ -68,9 +68,6 @@ impl Subtypecheck<Type> for Type {
     fn check_subtype(&self, _: &Self, _: &mut Self::Env) -> Result<(), Error> {
         Ok(())
     }
-    fn check_supertype(&self, _: &Self, _: &mut Self::Env) -> Result<(), Error> {
-        Ok(())
-    }
 }
 
 impl Kindcheck<Type> for Type {

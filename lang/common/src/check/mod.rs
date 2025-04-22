@@ -27,7 +27,6 @@ where
     type Env: CheckEnvironment<Type = Ty>;
 
     fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Error>;
-    fn check_supertype(&self, sub: &Ty, env: &mut Self::Env) -> Result<(), Error>;
 }
 
 pub trait Kindcheck<Ty>

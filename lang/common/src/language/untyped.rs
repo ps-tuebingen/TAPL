@@ -34,9 +34,6 @@ impl Subtypecheck<Untyped> for Untyped {
     fn check_subtype(&self, _: &Self, _: &mut Self::Env) -> Result<(), Error> {
         Ok(())
     }
-    fn check_supertype(&self, _: &Self, _: &mut Self::Env) -> Result<(), Error> {
-        Ok(())
-    }
 }
 
 impl Normalize<Untyped> for Untyped {

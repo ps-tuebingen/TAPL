@@ -81,23 +81,6 @@ where
             env,
         )
     }
-
-    fn check_supertype(&self, sub: &Ty, env: &mut Self::Env) -> Result<(), Error> {
-        let sub_op = sub.clone().into_oplambda().map_err(to_subty_err)?;
-        if sub_op.annot != self.annot {
-            return Err(to_subty_err(ErrorKind::KindMismatch {
-                found: sub_op.annot.to_string(),
-                expected: self.annot.to_string(),
-            }));
-        }
-        env.add_tyvar_kind(self.var.clone(), self.annot.clone());
-        self.body.check_supertype(
-            &sub_op
-                .body
-                .subst_type(&sub_op.var, &(TypeVariable::new(&self.var).into())),
-            env,
-        )
-    }
 }
 
 impl<Ty> Kindcheck<Ty> for OpLambda<Ty>
