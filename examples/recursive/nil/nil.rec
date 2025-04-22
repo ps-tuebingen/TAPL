@@ -1,1 +1,1 @@
-fold [mu X.<nil:Unit, cons:{Nat,X}>] (<nil=unit> as <nil:Unit, cons:{Nat,mu X.<nil:Unit,cons:{Nat,X}>}>) 
+fold [mu X.<nil:Unit, cons:(Nat x X)>] (<nil=unit> as <nil:Unit, cons:(Nat x (mu X.<nil:Unit,cons:(Nat x X)>))>) 

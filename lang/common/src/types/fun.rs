@@ -59,11 +59,9 @@ where
         }
 
         let sup_fun = sup.clone().into_fun().map_err(to_subty_err)?;
-        println!("checking fun subtype {}<:{}", sup_fun.from, self.from);
         sup_fun
             .from
             .check_subtype(&(*self.from), &mut env.clone())?;
-        println!("checked {} <: {}", sup_fun.from, self.from);
         self.to.check_subtype(&(*sup_fun.to), env)?;
         Ok(())
     }

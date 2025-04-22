@@ -1,2 +1,2 @@
-ty="(Nat) -> ((Nat) -> (Nat))"
-evaluated = "\\n:(Nat).(\\m:(Nat).(if (iszero(n)) { m } else { ((((fix (\\f:((Nat) -> ((Nat) -> (Nat))).(\\n:(Nat).(\\m:(Nat).(if (iszero(n)) { m } else { ((((f) (pred(n)))) (m)) }))))) (pred(n)))) (m)) }))"
+ty="(Nat -> (Nat -> Nat))"
+evaluated = "\\n:Nat.(\\m:Nat.(if (iszero(n)) { m } else { ((fix(\\f:(Nat -> (Nat -> Nat)).(\\n:Nat.(\\m:Nat.(if (iszero(n)) { m } else { ((f) (pred(n))) (m) }))))) (pred(n))) (m) }))"

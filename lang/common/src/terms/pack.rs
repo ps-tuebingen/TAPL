@@ -94,11 +94,8 @@ where
     type Env = <T as Typecheck>::Env;
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
-        println!("checking inner {}", self.inner_ty);
         let inner_kind = self.inner_ty.check_kind(env)?;
-        println!("checking pack outer {}", self.outer_ty);
         let outer_knd = self.outer_ty.check_kind(env)?;
-        println!("got outer kind: {outer_knd}, converting type to exists");
 
         if let Ok(outer_exists) = self.outer_ty.clone().into_exists() {
             env.add_tyvar_kind(outer_exists.var.clone(), outer_exists.kind.clone());

@@ -1,2 +1,2 @@
-ty="mu A.(Unit) -> ({ Nat, A })"
-evaluated="fold [mu A.(Unit) -> ({ Nat, A })] \\_:(Unit).({zero,((fix (\\f:((Nat) -> (mu A.(Unit) -> ({ Nat, A }))).(\\n:(Nat).(fold [mu A.(Unit) -> ({ Nat, A })] \\_:(Unit).({n,((f) (succ(n)))}))))) (succ(zero)))})"
+ty="mu A.(Unit -> (Nat x A))"
+evaluated="fold[mu A.(Unit -> (Nat x A))](\\_:Unit.({ 0, (fix(\\f:(Nat -> mu A.(Unit -> (Nat x A))).(\\n:Nat.(fold[mu A.(Unit -> (Nat x A))](\\_:Unit.({ n, (f) (succ(n)) })))))) (succ(0)) }))"

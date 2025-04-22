@@ -55,18 +55,12 @@ where
     type Env = <Ty as Subtypecheck<Ty>>::Env;
     fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Error> {
         let ty_super = env.get_tyvar_super(&self.v).map_err(to_subty_err)?;
-        println!(
-            "got var super {}<:{}, checking {}<:{:?}",
-            self.v, ty_super, self, sup
-        );
 
         if let Ok(_) = sup.clone().into_top() {
-            println!("sup is top");
             return Ok(());
         }
 
         if let Ok(v) = sup.clone().into_variable() {
-            println!("sup is var {v}");
             if v.v == self.v {
                 return Ok(());
             }

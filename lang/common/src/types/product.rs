@@ -50,6 +50,6 @@ where
     Ty: Type,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "({}) x ({})", self.fst, self.snd)
+        write!(f, "({} x {})", self.fst, self.snd)
     }
 }

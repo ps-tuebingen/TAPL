@@ -1,6 +1,6 @@
 use super::Type;
 use crate::{
-    check::{to_kind_err, to_subty_err, CheckEnvironment, Kindcheck, Subtypecheck},
+    check::{to_kind_err, to_subty_err, Kindcheck, Subtypecheck},
     errors::{Error, ErrorKind},
     eval::Normalize,
     kinds::Kind,
@@ -60,12 +60,10 @@ where
     type Env = <Ty as Subtypecheck<Ty>>::Env;
 
     fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Error> {
-        println!("checking suptype {self}<:{sup}");
         if let Ok(_) = sup.clone().into_top() {
             return Ok(());
         }
 
-        println!("converting {sup} to record (checking subtype record)");
         let sup_rec = sup.clone().into_record().map_err(to_subty_err)?;
         for (lb, ty) in sup_rec.records.iter() {
             let sub_ty = self

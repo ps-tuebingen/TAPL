@@ -1,2 +1,2 @@
-ty="(mu X.(X) -> (X)) -> ((mu X.(X) -> (X)) -> (mu X.(X) -> (X)))"
-evaluated="\\f:(mu X.(X) -> (X)).(\\a:(mu X.(X) -> (X)).(((unfold [mu X.(X) -> (X)] f) (a))))"
+ty="(mu X.(X -> X) -> (mu X.(X -> X) -> mu X.(X -> X)))"
+evaluated="\\f:mu X.(X -> X).(\\a:mu X.(X -> X).((unfold[mu X.(X -> X)](f)) (a)))"

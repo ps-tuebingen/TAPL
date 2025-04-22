@@ -120,7 +120,6 @@ where
     type Env = <T as Typecheck>::Env;
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
-        println!("checking lambdasub {}", self.var);
         let sup_kind = self.sup_ty.check_kind(env)?;
         env.add_tyvar_super(self.var.clone(), self.sup_ty.clone());
         env.add_tyvar_kind(self.var.clone(), sup_kind.clone());

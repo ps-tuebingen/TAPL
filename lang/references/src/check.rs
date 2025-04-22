@@ -160,7 +160,6 @@ mod check_tests {
             Deref::new(Loc::new(0)),
         )
         .into();
-        println!("checking term: {term}");
         let result = term
             .check(&mut Environment {
                 env: Default::default(),

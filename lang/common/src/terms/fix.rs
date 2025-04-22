@@ -71,7 +71,6 @@ where
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
         let term_ty = self.term.check(env)?;
         term_ty.check_kind(env)?.into_star().map_err(to_check_err)?;
-        println!("converting fix arg to fun ty");
         let fun_ty = term_ty.into_fun().map_err(to_check_err)?;
         fun_ty.from.check_equal(&fun_ty.to).map_err(to_check_err)?;
         Ok(*fun_ty.from)
@@ -88,7 +87,6 @@ where
 
     fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
         let term_val = self.term.clone().eval(env)?;
-        println!("converting fix arg to lambda");
         let lam_val = term_val.into_lambda().map_err(to_eval_err)?;
         lam_val.body.subst(&lam_val.var, &self.into()).eval(env)
     }

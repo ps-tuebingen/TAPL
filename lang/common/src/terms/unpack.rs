@@ -122,7 +122,6 @@ where
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
         let bound_ty = self.bound_term.check(env)?;
-        println!("converting bound type of unpack");
         if let Ok(bound_exists) = bound_ty.clone().into_exists() {
             if self.ty_name != bound_exists.var {
                 return Err(to_check_err(ErrorKind::TypeMismatch {
@@ -143,7 +142,6 @@ where
             env.add_tyvar_super(bound_bound.var, *bound_bound.sup_ty.clone());
             let sup_kind = bound_bound.sup_ty.check_kind(env)?;
             env.add_tyvar_kind(self.ty_name.clone(), sup_kind);
-            println!("adding {}: {} to env", self.term_name, bound_bound.ty);
             env.add_var(self.term_name.clone(), *bound_bound.ty.clone());
             self.in_term.check(env)
         } else {

@@ -1,2 +1,2 @@
-ty="mu X.<cons:{ Nat, X }, nil:Unit>"
-evaluated="fold [mu X.<cons:{ Nat, X }, nil:Unit>] <nil = unit> as <cons:{ Nat, mu X.<cons:{ Nat, X }, nil:Unit> }, nil:Unit>"
+ty="mu X.<cons:(Nat x X), nil:Unit>"
+evaluated="fold[mu X.<cons:(Nat x X), nil:Unit>](<nil=unit> as <cons:(Nat x mu X.<cons:(Nat x X), nil:Unit>), nil:Unit>)"

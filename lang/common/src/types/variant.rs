@@ -66,7 +66,6 @@ where
     type Env = <Ty as Subtypecheck<Ty>>::Env;
 
     fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Error> {
-        println!("checking subtype {self}<:{sup}");
         if let Ok(_) = sup.clone().into_top() {
             return Ok(());
         }

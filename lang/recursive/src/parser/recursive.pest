@@ -110,7 +110,7 @@ prim_type = {
 paren_type = { "(" ~ type ~ ")" }
 const_type = { kw_tyunit | kw_tynat | kw_tybool } 
 mu_type = { kw_mu ~ variable ~ "." ~ type }
-pair_type = { "{" ~ type ~ "," ~ type ~ "}" }
+pair_type = { "(" ~ type ~ "x" ~ type ~ ")" }
 variant_type = { "<" ~ variable ~ ":" ~ type ~ ("," ~ variable ~ ":" ~ type)* ~ ">" } 
 record_type = { "{" ~ variable ~ ":" ~ type ~ ("," ~ variable ~ ":" ~ type)* ~ "}" }
 

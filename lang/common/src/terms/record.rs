@@ -80,11 +80,9 @@ where
     type Type = <T as Typecheck>::Type;
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
-        println!("checking record term");
         let mut recs = HashMap::new();
         let mut rec_knd = None;
         for (lb, t) in self.records.iter() {
-            println!("checking type for {lb}");
             let ty = t.check(&mut env.clone())?;
             let ty_knd = ty.check_kind(env)?;
             recs.insert(lb.clone(), ty);

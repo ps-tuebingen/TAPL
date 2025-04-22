@@ -96,7 +96,6 @@ impl LanguageType for Type {
     }
 
     fn into_exists_bounded(self) -> Result<ExistsBounded<Type>, ErrorKind> {
-        println!("converting: {self} to exists");
         let self_norm = self.normalize();
         if let Type::Exists(ex) = self_norm {
             Ok(ex)

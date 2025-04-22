@@ -86,13 +86,10 @@ where
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
         let fun_ty = self.fun.check(&mut env.clone())?;
         fun_ty.check_kind(env)?.into_star().map_err(to_check_err)?;
-        println!("converting app fun {}:{fun_ty} to function type", self.fun);
         let fun: Fun<<T as LanguageTerm>::Type> = fun_ty.into_fun().map_err(to_check_err)?;
         let arg_ty = self.arg.check(env)?;
-        println!("got function arg {arg_ty}");
         arg_ty.check_kind(env)?.into_star().map_err(to_check_err)?;
         arg_ty.check_subtype(&(*fun.from), env)?;
-        println!("finished checking app with return {}", fun.to);
         Ok(*fun.to)
     }
 }

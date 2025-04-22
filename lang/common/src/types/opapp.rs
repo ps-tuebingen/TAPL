@@ -61,7 +61,6 @@ where
     fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Error> {
         let self_norm = self.clone().normalize();
         let sup_norm = sup.clone().normalize();
-        println!("normalized app: {self_norm}<:{sup_norm}");
         self_norm.check_subtype(&sup_norm, env)
     }
 }
@@ -73,13 +72,10 @@ where
     type Env = <Ty as Kindcheck<Ty>>::Env;
 
     fn check_kind(&self, env: &mut Self::Env) -> Result<Kind, Error> {
-        println!("checking op app fun {}", self.fun);
         let fun_kind = self.fun.check_kind(&mut env.clone())?;
         let (fun_from, fun_to) = fun_kind.into_arrow().map_err(to_kind_err)?;
-        println!("checking app arg {}", self.arg);
         let arg_kind = self.arg.check_kind(env)?;
         if fun_from == arg_kind {
-            println!("finished checking op app ({} {})", self.fun, self.arg);
             Ok(fun_to)
         } else {
             Err(to_kind_err(ErrorKind::KindMismatch {

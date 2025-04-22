@@ -105,7 +105,6 @@ where
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
         let sup_knd = self.sup.check_kind(env)?;
-        println!("got sup kind {sup_knd} for variable {}", self.var);
         env.add_tyvar_kind(self.var.clone(), sup_knd.clone());
         let term_ty = self.term.check(env)?;
         let term_knd = term_ty.check_kind(env)?;

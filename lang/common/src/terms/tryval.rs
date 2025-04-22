@@ -2,12 +2,12 @@ use super::Term;
 use crate::{
     check::{to_check_err, Kindcheck, Typecheck},
     errors::Error,
-    eval::{to_eval_err, Eval},
+    eval::Eval,
     language::{LanguageTerm, LanguageType, LanguageValue},
     subst::{SubstTerm, SubstType},
     terms::App,
     types::Fun,
-    values::{Raise, Value},
+    values::Raise,
     TypeVar, Var,
 };
 use std::fmt;
@@ -100,7 +100,6 @@ where
     type Env = <T as Eval>::Env;
 
     fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
-        println!("evaluating try with value");
         let term_evaled = self.term.eval(env)?;
         if let Ok(raise) = term_evaled.clone().into_raise() {
             let raise_term: T = (*raise.val).into();
