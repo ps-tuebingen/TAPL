@@ -1,4 +1,5 @@
 use common::{
+    errors::ErrorKind,
     language::LanguageType,
     subst::SubstType,
     types::{Bool, Nat},
@@ -14,7 +15,29 @@ pub enum Type {
 
 impl common::types::Type for Type {}
 
-impl LanguageType for Type {}
+impl LanguageType for Type {
+    fn into_nat(self) -> Result<Nat<Type>, ErrorKind> {
+        if let Type::Nat(nat) = self {
+            Ok(nat)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Nat".to_owned(),
+            })
+        }
+    }
+
+    fn into_bool(self) -> Result<Bool<Type>, ErrorKind> {
+        if let Type::Bool(b) = self {
+            Ok(b)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Bool".to_owned(),
+            })
+        }
+    }
+}
 
 impl SubstType<Type> for Type {
     type Target = Type;
