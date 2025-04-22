@@ -5,9 +5,9 @@ use crate::{
     eval::{to_eval_err, Eval},
     language::{LanguageTerm, LanguageType, LanguageValue},
     subst::{SubstTerm, SubstType},
-    terms::{App, Raise},
+    terms::App,
     types::Fun,
-    values::Value,
+    values::{Raise, Value},
     TypeVar, Var,
 };
 use std::fmt;
@@ -93,16 +93,21 @@ where
 impl<T> Eval for TryWithVal<T>
 where
     T: LanguageTerm,
-    Raise<T>: Into<T>,
+    Raise<T>: Into<<T as LanguageTerm>::Value>,
     App<T>: Into<T>,
 {
     type Value = <T as Eval>::Value;
     type Env = <T as Eval>::Env;
 
     fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
+        println!("evaluating try with value");
         let term_evaled = self.term.eval(env)?;
-        let raise = term_evaled.into_raise().map_err(to_eval_err)?.into_term();
-        App::new(*self.handler, raise).into().eval(env)
+        if let Ok(raise) = term_evaled.clone().into_raise() {
+            let raise_term: T = (*raise.val).into();
+            App::new(*self.handler, raise_term).into().eval(env)
+        } else {
+            Ok(term_evaled)
+        }
     }
 }
 

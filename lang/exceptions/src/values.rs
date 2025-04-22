@@ -24,6 +24,39 @@ impl common::values::Value for Value {
 impl LanguageValue for Value {
     type Term = Term;
 
+    fn into_true(self) -> Result<True<Term>, ErrorKind> {
+        if let Value::True(tru) = self {
+            Ok(tru)
+        } else {
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
+                expected: "True".to_owned(),
+            })
+        }
+    }
+
+    fn into_false(self) -> Result<False<Term>, ErrorKind> {
+        if let Value::False(fls) = self {
+            Ok(fls)
+        } else {
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
+                expected: "False".to_owned(),
+            })
+        }
+    }
+
+    fn into_exception(self) -> Result<Exception<Term>, ErrorKind> {
+        if let Value::Exception(ex) = self {
+            Ok(ex)
+        } else {
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
+                expected: "Exception".to_owned(),
+            })
+        }
+    }
+
     fn into_lambda(self) -> Result<Lambda<Term>, ErrorKind> {
         if let Value::Lambda(lam) = self {
             Ok(lam)

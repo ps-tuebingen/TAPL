@@ -7,7 +7,7 @@ pub struct Raise<T>
 where
     T: LanguageTerm,
 {
-    val: Box<<T as LanguageTerm>::Value>,
+    pub val: Box<<T as LanguageTerm>::Value>,
     cont_ty: <T as LanguageTerm>::Type,
     exception_ty: <T as LanguageTerm>::Type,
 }
