@@ -1,5 +1,6 @@
 use super::terms::Term;
 use common::{
+    errors::ErrorKind,
     language::LanguageValue,
     values::{Lambda, LambdaSub, Num, Pack, Record, TyLambdaSub, Value as ValueTrait},
 };
@@ -21,6 +22,72 @@ impl common::values::Value for Value {
 
 impl LanguageValue for Value {
     type Term = Term;
+
+    fn into_lambda(self) -> Result<Lambda<Term>, ErrorKind> {
+        if let Value::Lambda(lam) = self {
+            Ok(lam)
+        } else {
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
+                expected: "Lambda Abstraction".to_owned(),
+            })
+        }
+    }
+
+    fn into_lambdasub(self) -> Result<LambdaSub<Term>, ErrorKind> {
+        if let Value::LambdaSub(lam) = self {
+            Ok(lam)
+        } else {
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
+                expected: "Type Abstraction".to_owned(),
+            })
+        }
+    }
+
+    fn into_tylambdasub(self) -> Result<TyLambdaSub<Term>, ErrorKind> {
+        if let Value::TyLambdaSub(lam) = self {
+            Ok(lam)
+        } else {
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
+                expected: "Type Abstraction".to_owned(),
+            })
+        }
+    }
+
+    fn into_pack(self) -> Result<Pack<Term>, ErrorKind> {
+        if let Value::Pack(pack) = self {
+            Ok(pack)
+        } else {
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
+                expected: "Package".to_owned(),
+            })
+        }
+    }
+
+    fn into_record(self) -> Result<Record<Term>, ErrorKind> {
+        if let Value::Record(rec) = self {
+            Ok(rec)
+        } else {
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
+                expected: "Record".to_owned(),
+            })
+        }
+    }
+
+    fn into_num(self) -> Result<Num<Term>, ErrorKind> {
+        if let Value::Num(num) = self {
+            Ok(num)
+        } else {
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
+                expected: "Number".to_owned(),
+            })
+        }
+    }
 }
 
 impl From<Value> for Term {

@@ -19,7 +19,9 @@ where
         + Normalize<Self>,
 {
     fn check_equal(&self, other: &Self) -> Result<(), ErrorKind> {
-        if *self == *other {
+        let self_norm = self.clone().normalize();
+        let other_norm = other.clone().normalize();
+        if self_norm == other_norm {
             Ok(())
         } else {
             Err(ErrorKind::TypeMismatch {

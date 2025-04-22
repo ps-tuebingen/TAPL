@@ -1,5 +1,6 @@
 use super::terms::Term;
 use common::{
+    errors::ErrorKind,
     language::LanguageValue,
     values::{Lambda, TyLambda, Value as ValueTrait},
 };
@@ -17,6 +18,28 @@ impl common::values::Value for Value {
 
 impl LanguageValue for Value {
     type Term = Term;
+
+    fn into_lambda(self) -> Result<Lambda<Term>, ErrorKind> {
+        if let Value::Lambda(lam) = self {
+            Ok(lam)
+        } else {
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
+                expected: "Lambda Abstraction".to_owned(),
+            })
+        }
+    }
+
+    fn into_tylambda(self) -> Result<TyLambda<Term>, ErrorKind> {
+        if let Value::TyLambda(lam) = self {
+            Ok(lam)
+        } else {
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
+                expected: "Operator Abstraction".to_owned(),
+            })
+        }
+    }
 }
 
 impl From<Value> for Term {

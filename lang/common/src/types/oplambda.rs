@@ -1,7 +1,7 @@
 use super::Type;
 use crate::{
     check::{to_subty_err, CheckEnvironment, Kindcheck, Subtypecheck},
-    errors::{Error, ErrorKind},
+    errors::Error,
     eval::Normalize,
     kinds::Kind,
     language::LanguageType,
@@ -67,13 +67,12 @@ where
     type Env = <Ty as Subtypecheck<Ty>>::Env;
     fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Error> {
         let sup_op = sup.clone().into_oplambda().map_err(to_subty_err)?;
-        if sup_op.annot != self.annot {
-            return Err(to_subty_err(ErrorKind::KindMismatch {
-                found: sup_op.annot.to_string(),
-                expected: self.annot.to_string(),
-            }));
-        }
+        sup_op
+            .annot
+            .check_equal(&self.annot)
+            .map_err(to_subty_err)?;
         env.add_tyvar_kind(self.var.clone(), self.annot.clone());
+
         self.body.check_subtype(
             &sup_op
                 .body
@@ -90,6 +89,7 @@ where
     type Env = <Ty as Kindcheck<Ty>>::Env;
 
     fn check_kind(&self, env: &mut Self::Env) -> Result<Kind, Error> {
+        env.add_tyvar_kind(self.var.clone(), self.annot.clone());
         let body_kind = self.body.check_kind(env)?;
         Ok(Kind::Arrow(
             Box::new(self.annot.clone()),
