@@ -1,4 +1,5 @@
 use common::{
+    errors::ErrorKind,
     language::LanguageType,
     subst::SubstType,
     types::{Bool, Fun, Nat, Reference, Unit},
@@ -17,7 +18,51 @@ pub enum Type {
 
 impl common::types::Type for Type {}
 
-impl LanguageType for Type {}
+impl LanguageType for Type {
+    fn into_nat(self) -> Result<Nat<Type>, ErrorKind> {
+        if let Type::Nat(nat) = self {
+            Ok(nat)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Nat".to_owned(),
+            })
+        }
+    }
+
+    fn into_fun(self) -> Result<Fun<Self>, ErrorKind> {
+        if let Type::Fun(fun) = self {
+            Ok(fun)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Function Type".to_owned(),
+            })
+        }
+    }
+
+    fn into_bool(self) -> Result<Bool<Self>, ErrorKind> {
+        if let Type::Bool(b) = self {
+            Ok(b)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Bool".to_owned(),
+            })
+        }
+    }
+
+    fn into_ref(self) -> Result<Reference<Self>, ErrorKind> {
+        if let Type::Ref(reft) = self {
+            Ok(reft)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Reference".to_owned(),
+            })
+        }
+    }
+}
 
 impl SubstType<Type> for Type {
     type Target = Self;

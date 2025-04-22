@@ -49,6 +49,7 @@ where
     type Env = <T as Typecheck>::Env;
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
+        println!("checking body of lambda {}", self.var);
         env.add_var(self.var.clone(), self.annot.clone());
         let body_ty = self.body.check(env)?;
         Ok(Fun::new(self.annot.clone(), body_ty).into())

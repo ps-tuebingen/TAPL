@@ -1,4 +1,5 @@
 use common::{
+    errors::ErrorKind,
     language::LanguageType,
     subst::SubstType,
     types::{Bool, Fun, Mu, Nat, Product, Record, TypeVariable, Unit, Variant},
@@ -22,7 +23,84 @@ pub enum Type {
 
 impl common::types::Type for Type {}
 
-impl LanguageType for Type {}
+impl LanguageType for Type {
+    fn into_fun(self) -> Result<Fun<Self>, ErrorKind> {
+        if let Type::Fun(fun) = self {
+            Ok(fun)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Function Type".to_owned(),
+            })
+        }
+    }
+
+    fn into_mu(self) -> Result<Mu<Self>, ErrorKind> {
+        if let Type::Mu(mu) = self {
+            Ok(mu)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Recursive Type".to_owned(),
+            })
+        }
+    }
+
+    fn into_variant(self) -> Result<Variant<Self>, ErrorKind> {
+        if let Type::Variant(var) = self {
+            Ok(var)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Variant Type".to_owned(),
+            })
+        }
+    }
+
+    fn into_product(self) -> Result<Product<Self>, ErrorKind> {
+        if let Type::Product(prod) = self {
+            Ok(prod)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Product Type".to_owned(),
+            })
+        }
+    }
+
+    fn into_nat(self) -> Result<Nat<Self>, ErrorKind> {
+        if let Type::Nat(nat) = self {
+            Ok(nat)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Nat".to_owned(),
+            })
+        }
+    }
+
+    fn into_bool(self) -> Result<Bool<Self>, ErrorKind> {
+        if let Type::Bool(b) = self {
+            Ok(b)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Bool".to_owned(),
+            })
+        }
+    }
+
+    fn into_record(self) -> Result<Record<Self>, ErrorKind> {
+        if let Type::Record(rec) = self {
+            Ok(rec)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Record".to_owned(),
+            })
+        }
+    }
+}
 
 impl fmt::Display for Type {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {

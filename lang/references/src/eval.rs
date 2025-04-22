@@ -64,7 +64,7 @@ impl Normalize<Type> for Type {
 mod check_tests {
     use super::{Eval, Term};
     use common::{
-        terms::{App, Assign, Deref, Lambda, Num, Ref, Unit, Variable},
+        terms::{App, Assign, Deref, Lambda, Loc, Ref, Unit, Variable},
         types::{Reference, Unit as UnitTy},
         values::Unit as UnitVal,
     };
@@ -114,7 +114,7 @@ mod check_tests {
                     Unit::new(),
                 ),
             ),
-            Deref::new(Num::new(0)),
+            Deref::new(Loc::new(0)),
         )
         .into();
         let result = term.eval(&mut Default::default()).unwrap();

@@ -82,6 +82,7 @@ where
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
         let mut recs = HashMap::new();
         for (lb, t) in self.records.iter() {
+            println!("checking type for label {lb}");
             let ty = t.check(&mut env.clone())?;
             recs.insert(lb.clone(), ty);
         }

@@ -91,7 +91,7 @@ mod check_tests {
     use super::{Environment, Term};
     use common::{
         check::Typecheck,
-        terms::{App, Assign, Deref, Lambda, Num, Ref, Unit, Variable},
+        terms::{App, Assign, Deref, Lambda, Loc, Num, Ref, Unit, Variable},
         types::{Reference, Unit as UnitTy},
     };
     use std::collections::HashMap;
@@ -158,9 +158,10 @@ mod check_tests {
                     Unit::new(),
                 ),
             ),
-            Deref::new(Num::new(0)),
+            Deref::new(Loc::new(0)),
         )
         .into();
+        println!("checking term: {term}");
         let result = term
             .check(&mut Environment {
                 env: Default::default(),

@@ -70,6 +70,7 @@ where
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
         let term_ty = self.term.check(env)?;
+        println!("got deref type: {term_ty}");
         let ref_ty = term_ty.into_ref().map_err(to_check_err)?;
         Ok(*ref_ty.ty)
     }

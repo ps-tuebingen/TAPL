@@ -84,7 +84,9 @@ where
     type Env = <T as Typecheck>::Env;
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
+        println!("checking app fun {}", self.fun);
         let fun_ty = self.fun.check(&mut env.clone())?;
+        println!("got app fun: {fun_ty}");
         let fun: Fun<<T as LanguageTerm>::Type> = fun_ty.into_fun().map_err(to_check_err)?;
         let arg_ty = self.arg.check(env)?;
         fun.from.check_equal(&arg_ty).map_err(to_check_err)?;

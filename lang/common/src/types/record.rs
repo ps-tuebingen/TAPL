@@ -81,10 +81,12 @@ where
 
         let sup_rec = sup.clone().into_record().map_err(to_subty_err)?;
         for (lb, ty) in self.records.iter() {
+            println!("checking subtype for {lb}");
             let sup_ty = sup_rec
                 .records
                 .get(lb)
                 .ok_or(to_subty_err(ErrorKind::UndefinedLabel(lb.clone())))?;
+            println!("got super type for {lb}, {sup_ty}");
             ty.check_subtype(sup_ty, &mut env.clone())?;
         }
         Ok(())

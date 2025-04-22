@@ -1,4 +1,5 @@
 use common::{
+    errors::ErrorKind,
     language::LanguageType,
     subst::SubstType,
     types::{Bool, Bot, Fun, List, Nat, Record, Reference, Sink, Source, Top, Unit, Variant},
@@ -24,7 +25,128 @@ pub enum Type {
 
 impl common::types::Type for Type {}
 
-impl LanguageType for Type {}
+impl LanguageType for Type {
+    fn into_top(self) -> Result<Top<Type>, ErrorKind> {
+        if let Type::Top(top) = self {
+            Ok(top)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Top".to_owned(),
+            })
+        }
+    }
+
+    fn into_bot(self) -> Result<Bot, ErrorKind> {
+        if let Type::Bot(bot) = self {
+            Ok(bot)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Bot".to_owned(),
+            })
+        }
+    }
+
+    fn into_fun(self) -> Result<Fun<Type>, ErrorKind> {
+        if let Type::Fun(fun) = self {
+            Ok(fun)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Function Type".to_owned(),
+            })
+        }
+    }
+
+    fn into_record(self) -> Result<Record<Type>, ErrorKind> {
+        if let Type::Record(rec) = self {
+            Ok(rec)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Record".to_owned(),
+            })
+        }
+    }
+
+    fn into_variant(self) -> Result<Variant<Type>, ErrorKind> {
+        if let Type::Variant(var) = self {
+            Ok(var)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Variant".to_owned(),
+            })
+        }
+    }
+
+    fn into_list(self) -> Result<List<Type>, ErrorKind> {
+        if let Type::List(list) = self {
+            Ok(list)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "List".to_owned(),
+            })
+        }
+    }
+
+    fn into_ref(self) -> Result<Reference<Type>, ErrorKind> {
+        if let Type::Ref(reft) = self {
+            Ok(reft)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Reference".to_owned(),
+            })
+        }
+    }
+
+    fn into_source(self) -> Result<Source<Type>, ErrorKind> {
+        if let Type::Source(src) = self {
+            Ok(src)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Source".to_owned(),
+            })
+        }
+    }
+
+    fn into_sink(self) -> Result<Sink<Type>, ErrorKind> {
+        if let Type::Sink(sink) = self {
+            Ok(sink)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Sink".to_owned(),
+            })
+        }
+    }
+
+    fn into_nat(self) -> Result<Nat<Type>, ErrorKind> {
+        if let Type::Nat(nat) = self {
+            Ok(nat)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Nat".to_owned(),
+            })
+        }
+    }
+
+    fn into_bool(self) -> Result<Bool<Type>, ErrorKind> {
+        if let Type::Bool(b) = self {
+            Ok(b)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Bool".to_owned(),
+            })
+        }
+    }
+}
 
 impl SubstType<Type> for Type {
     type Target = Self;

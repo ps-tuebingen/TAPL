@@ -113,21 +113,21 @@ mod counter_tests {
 
     #[test]
     fn check_counter() {
-        let result = counter().check(&mut Default::default()).unwrap();
+        let result = counter().check_start().unwrap();
         let expected = ty_counter();
         assert_eq!(result, expected)
     }
 
     #[test]
     fn ty_new_counter() {
-        let result = new_counter().check(&mut Default::default()).unwrap();
+        let result = new_counter().check_start().unwrap();
         let expected = Fun::new(Unit::new(), ty_counter()).into();
         assert_eq!(result, expected)
     }
 
     #[test]
     fn ty_class() {
-        let result = counter_class().check(&mut Default::default()).unwrap();
+        let result = counter_class().check_start().unwrap();
         let expected = Fun::new(counter_rep(), ty_counter()).into();
         assert_eq!(result, expected)
     }

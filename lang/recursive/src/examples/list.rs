@@ -136,21 +136,21 @@ mod list_tests {
 
     #[test]
     fn ty_isnil() {
-        let result = is_nil().check(&mut Default::default()).unwrap();
+        let result = is_nil().check_start().unwrap();
         let expected = Fun::new(nat_list(), Bool::new()).into();
         assert_eq!(result, expected)
     }
 
     #[test]
     fn ty_hd() {
-        let result = hd().check(&mut Default::default()).unwrap();
+        let result = hd().check_start().unwrap();
         let expected = Fun::new(nat_list(), Nat::new()).into();
         assert_eq!(result, expected)
     }
 
     #[test]
     fn ty_tl() {
-        let result = tl().check(&mut Default::default()).unwrap();
+        let result = tl().check_start().unwrap();
         let expected = Fun::new(nat_list(), nat_list()).into();
         assert_eq!(result, expected)
     }

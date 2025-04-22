@@ -38,9 +38,9 @@ where
     type Target = T;
     fn subst(self, v: &Var, t: &T) -> T {
         if *v == self.var {
-            self.into()
-        } else {
             t.clone()
+        } else {
+            self.into()
         }
     }
 }

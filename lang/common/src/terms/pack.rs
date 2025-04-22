@@ -94,7 +94,9 @@ where
     type Env = <T as Typecheck>::Env;
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
+        println!("checking pack term");
         let term_ty = self.term.check(env)?;
+        println!("got pack term {term_ty}");
         let outer_exists = self.outer_ty.clone().into_exists().map_err(to_check_err)?;
         let outer_subst = outer_exists
             .ty

@@ -70,6 +70,7 @@ where
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
         let term_ty = self.term.check(env)?;
+        println!("got fix term type: {term_ty}");
         let fun_ty = term_ty.into_fun().map_err(to_check_err)?;
         fun_ty.from.check_equal(&fun_ty.to).map_err(to_check_err)?;
         Ok(*fun_ty.from)

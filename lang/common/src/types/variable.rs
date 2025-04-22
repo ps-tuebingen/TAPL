@@ -40,6 +40,7 @@ where
 {
     type Target = Ty;
     fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+        println!("substituting variable {v} with type {ty}");
         if *v == self.v {
             ty.clone()
         } else {

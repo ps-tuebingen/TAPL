@@ -169,8 +169,13 @@ where
                 .ok_or(to_check_err(ErrorKind::UndefinedLabel(pt.label.clone())))
                 .cloned()?;
             let mut rhs_env = env.clone();
+            println!(
+                "adding variable {} with type {} to environment",
+                pt.bound_var, var_ty
+            );
             rhs_env.add_var(pt.bound_var.clone(), var_ty);
-            let rhs_ty = pt.rhs.check(&mut env.clone())?;
+
+            let rhs_ty = pt.rhs.check(&mut rhs_env)?;
             rhs_tys.push(rhs_ty)
         }
 

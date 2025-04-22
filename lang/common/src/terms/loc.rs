@@ -5,6 +5,7 @@ use crate::{
     eval::Eval,
     language::LanguageTerm,
     subst::{SubstTerm, SubstType},
+    types::Reference,
     values::Loc as LocVal,
     TypeVar, Var,
 };
@@ -58,12 +59,14 @@ where
 impl<T> Typecheck for Loc<T>
 where
     T: LanguageTerm,
+    Reference<<T as LanguageTerm>::Type>: Into<<T as LanguageTerm>::Type>,
 {
     type Env = <T as Typecheck>::Env;
     type Type = <T as Typecheck>::Type;
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
-        env.get_loc(&self.loc).map_err(to_check_err)
+        let loc_ty = env.get_loc(&self.loc).map_err(to_check_err)?;
+        Ok(Reference::new(loc_ty).into())
     }
 }
 

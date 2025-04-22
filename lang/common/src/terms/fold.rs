@@ -78,8 +78,15 @@ where
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
         let mu_ty = self.ty.clone().into_mu().map_err(to_check_err)?;
-        let mu_subst = mu_ty.clone().subst_type(&mu_ty.var, &mu_ty.ty);
+        println!("mu type: {mu_ty}");
+        println!("substititung {} by {} in {}", mu_ty.var, mu_ty, mu_ty.ty);
+        let mu_subst = mu_ty
+            .ty
+            .clone()
+            .subst_type(&mu_ty.var.clone(), &(mu_ty.into()));
+        println!("fold mu subst: {mu_subst}");
         let term_ty = self.term.check(env)?;
+        println!("got fold term ty {term_ty}");
         term_ty.check_equal(&mu_subst).map_err(to_check_err)?;
         Ok(self.ty.clone())
     }

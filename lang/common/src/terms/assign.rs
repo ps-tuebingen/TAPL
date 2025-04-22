@@ -5,7 +5,8 @@ use crate::{
     eval::{to_eval_err, Eval, EvalEnvironment},
     language::{LanguageTerm, LanguageType, LanguageValue},
     subst::{SubstTerm, SubstType},
-    values::Unit,
+    types::Unit as UnitTy,
+    values::Unit as UnitVal,
     TypeVar, Var,
 };
 use std::fmt;
@@ -70,23 +71,26 @@ where
 impl<T> Typecheck for Assign<T>
 where
     T: LanguageTerm,
+    UnitTy<<T as LanguageTerm>::Type>: Into<<T as LanguageTerm>::Type>,
 {
     type Env = <T as Typecheck>::Env;
     type Type = <T as Typecheck>::Type;
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
+        println!("checking assign lhs: {}", self.lhs);
         let lhs_ty = self.lhs.check(&mut env.clone())?;
+        println!("got assign lhs: {lhs_ty}");
         let lhs_ref = lhs_ty.into_ref().map_err(to_check_err)?;
         let rhs_ty = self.rhs.check(env)?;
         lhs_ref.ty.check_equal(&rhs_ty).map_err(to_check_err)?;
-        Ok(rhs_ty)
+        Ok(UnitTy::new().into())
     }
 }
 
 impl<T> Eval for Assign<T>
 where
     T: LanguageTerm,
-    Unit<T>: Into<<T as LanguageTerm>::Value>,
+    UnitVal<T>: Into<<T as LanguageTerm>::Value>,
 {
     type Env = <T as Eval>::Env;
     type Value = <T as Eval>::Value;
@@ -96,7 +100,7 @@ where
         let lhs_loc = lhs_val.into_loc().map_err(to_eval_err)?;
         let rhs_val = self.rhs.eval(env)?;
         env.save_location(lhs_loc.loc, rhs_val);
-        Ok(Unit::new().into())
+        Ok(UnitVal::new().into())
     }
 }
 

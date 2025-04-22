@@ -69,7 +69,9 @@ where
     type Type = <T as Typecheck>::Type;
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
+        println!("checking term of snd {}", self.term);
         let term_ty = self.term.check(env)?;
+        println!("got snd term ty {term_ty}");
         let prod_ty = term_ty.into_product().map_err(to_check_err)?;
         Ok(*prod_ty.snd)
     }
