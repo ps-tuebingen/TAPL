@@ -15,9 +15,9 @@ pub struct ForallBounded<Ty>
 where
     Ty: Type,
 {
-    var: TypeVar,
-    sup_ty: Box<Ty>,
-    ty: Box<Ty>,
+    pub var: TypeVar,
+    pub sup_ty: Box<Ty>,
+    pub ty: Box<Ty>,
 }
 
 impl<Ty> ForallBounded<Ty>

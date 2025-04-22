@@ -1,6 +1,6 @@
 use super::{Lambda, Term};
 use crate::{
-    check::{to_check_err, Typecheck},
+    check::{to_check_err, Kindcheck, Subtypecheck, Typecheck},
     errors::Error,
     eval::{to_eval_err, Eval},
     language::{LanguageTerm, LanguageType, LanguageValue},
@@ -84,12 +84,12 @@ where
     type Env = <T as Typecheck>::Env;
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
-        println!("checking app fun {}", self.fun);
         let fun_ty = self.fun.check(&mut env.clone())?;
-        println!("got app fun: {fun_ty}");
+        fun_ty.check_kind(env)?.into_star().map_err(to_check_err)?;
         let fun: Fun<<T as LanguageTerm>::Type> = fun_ty.into_fun().map_err(to_check_err)?;
         let arg_ty = self.arg.check(env)?;
-        fun.from.check_equal(&arg_ty).map_err(to_check_err)?;
+        arg_ty.check_kind(env)?.into_star().map_err(to_check_err)?;
+        arg_ty.check_subtype(&(*fun.from), env)?;
         Ok(*fun.to)
     }
 }

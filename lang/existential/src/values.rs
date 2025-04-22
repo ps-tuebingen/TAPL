@@ -1,5 +1,6 @@
 use super::terms::Term;
 use common::{
+    errors::ErrorKind,
     language::LanguageValue,
     values::{False, Lambda, Num, Pack, Record, True, Unit, Value as ValueTrait},
 };
@@ -22,6 +23,71 @@ impl common::values::Value for Value {
 
 impl LanguageValue for Value {
     type Term = Term;
+    fn into_lambda(self) -> Result<Lambda<Term>, ErrorKind> {
+        if let Value::Lambda(lam) = self {
+            Ok(lam)
+        } else {
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
+                expected: "Lambda Abstraction".to_owned(),
+            })
+        }
+    }
+
+    fn into_pack(self) -> Result<Pack<Term>, ErrorKind> {
+        if let Value::Pack(pack) = self {
+            Ok(pack)
+        } else {
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
+                expected: "Pack".to_owned(),
+            })
+        }
+    }
+
+    fn into_num(self) -> Result<Num<Term>, ErrorKind> {
+        if let Value::Num(num) = self {
+            Ok(num)
+        } else {
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
+                expected: "Number".to_owned(),
+            })
+        }
+    }
+
+    fn into_record(self) -> Result<Record<Term>, ErrorKind> {
+        if let Value::Record(rec) = self {
+            Ok(rec)
+        } else {
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
+                expected: "Record".to_owned(),
+            })
+        }
+    }
+
+    fn into_true(self) -> Result<True<Term>, ErrorKind> {
+        if let Value::True(tru) = self {
+            Ok(tru)
+        } else {
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
+                expected: "True".to_owned(),
+            })
+        }
+    }
+
+    fn into_false(self) -> Result<False<Term>, ErrorKind> {
+        if let Value::False(fls) = self {
+            Ok(fls)
+        } else {
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
+                expected: "False".to_owned(),
+            })
+        }
+    }
 }
 
 impl From<Value> for Term {

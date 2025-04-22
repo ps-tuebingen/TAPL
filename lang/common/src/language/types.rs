@@ -5,7 +5,7 @@ use crate::{
     subst::SubstType,
     types::{
         Bool, Bot, Exists, ExistsBounded, Forall, ForallBounded, Fun, List, Mu, Nat, OpApp,
-        OpLambda, Optional, Product, Record, Reference, Sink, Source, Sum, Top, Tuple, Type,
+        OpLambda, Optional, Product, Record, Reference, Sink, Source, Sum, Top, Tuple, Type, Unit,
         Variant,
     },
 };
@@ -164,6 +164,13 @@ where
         Err(ErrorKind::TypeMismatch {
             found: self.to_string(),
             expected: "Bool".to_owned(),
+        })
+    }
+
+    fn into_unit(self) -> Result<Unit<Self>, ErrorKind> {
+        Err(ErrorKind::TypeMismatch {
+            found: self.to_string(),
+            expected: "Unit".to_owned(),
         })
     }
 

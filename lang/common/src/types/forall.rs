@@ -15,9 +15,9 @@ pub struct Forall<Ty>
 where
     Ty: Type,
 {
-    var: TypeVar,
-    kind: Kind,
-    ty: Box<Ty>,
+    pub var: TypeVar,
+    pub kind: Kind,
+    pub ty: Box<Ty>,
 }
 
 impl<Ty> Forall<Ty>

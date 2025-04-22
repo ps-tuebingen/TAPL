@@ -70,7 +70,7 @@ impl Typecheck for Term {
 }
 
 impl Subtypecheck<Type> for Type {
-    type Env = HashMap<Var, Type>;
+    type Env = Env;
 
     fn check_subtype(&self, sup: &Self, env: &mut Self::Env) -> Result<(), Error> {
         match self {

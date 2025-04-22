@@ -1,10 +1,6 @@
 use super::Type;
 use crate::{
-    check::{to_subty_err, Subtypecheck},
-    errors::{Error, ErrorKind},
-    language::LanguageType,
-    subst::SubstType,
-    TypeVar,
+    check::Subtypecheck, errors::Error, language::LanguageType, subst::SubstType, TypeVar,
 };
 use std::fmt;
 

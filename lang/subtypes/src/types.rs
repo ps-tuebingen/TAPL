@@ -26,6 +26,16 @@ pub enum Type {
 impl common::types::Type for Type {}
 
 impl LanguageType for Type {
+    fn into_unit(self) -> Result<Unit<Type>, ErrorKind> {
+        if let Type::Unit(u) = self {
+            Ok(u)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Unit".to_owned(),
+            })
+        }
+    }
     fn into_top(self) -> Result<Top<Type>, ErrorKind> {
         if let Type::Top(top) = self {
             Ok(top)

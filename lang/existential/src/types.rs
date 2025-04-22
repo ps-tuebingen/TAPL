@@ -1,4 +1,5 @@
 use common::{
+    errors::ErrorKind,
     language::LanguageType,
     subst::SubstType,
     types::{Bool, Exists, Fun, Nat, Record, TypeVariable, Unit},
@@ -19,7 +20,73 @@ pub enum Type {
 
 impl common::types::Type for Type {}
 
-impl LanguageType for Type {}
+impl LanguageType for Type {
+    fn into_unit(self) -> Result<Unit<Type>, ErrorKind> {
+        if let Type::Unit(u) = self {
+            Ok(u)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Unit".to_owned(),
+            })
+        }
+    }
+
+    fn into_nat(self) -> Result<Nat<Type>, ErrorKind> {
+        if let Type::Nat(nat) = self {
+            Ok(nat)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Nat".to_owned(),
+            })
+        }
+    }
+
+    fn into_bool(self) -> Result<Bool<Type>, ErrorKind> {
+        if let Type::Bool(b) = self {
+            Ok(b)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Bool".to_owned(),
+            })
+        }
+    }
+
+    fn into_fun(self) -> Result<Fun<Type>, ErrorKind> {
+        if let Type::Fun(fun) = self {
+            Ok(fun)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Fun".to_owned(),
+            })
+        }
+    }
+
+    fn into_exists(self) -> Result<Exists<Type>, ErrorKind> {
+        if let Type::Exists(ex) = self {
+            Ok(ex)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Existential Type".to_owned(),
+            })
+        }
+    }
+
+    fn into_record(self) -> Result<Record<Type>, ErrorKind> {
+        if let Type::Record(rec) = self {
+            Ok(rec)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Record".to_owned(),
+            })
+        }
+    }
+}
 
 impl SubstType<Type> for Type {
     type Target = Self;

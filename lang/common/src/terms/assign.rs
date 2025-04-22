@@ -1,6 +1,6 @@
 use super::Term;
 use crate::{
-    check::{to_check_err, Typecheck},
+    check::{to_check_err, Kindcheck, Typecheck},
     errors::Error,
     eval::{to_eval_err, Eval, EvalEnvironment},
     language::{LanguageTerm, LanguageType, LanguageValue},
@@ -77,11 +77,11 @@ where
     type Type = <T as Typecheck>::Type;
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
-        println!("checking assign lhs: {}", self.lhs);
         let lhs_ty = self.lhs.check(&mut env.clone())?;
-        println!("got assign lhs: {lhs_ty}");
+        lhs_ty.check_kind(env)?.into_star().map_err(to_check_err)?;
         let lhs_ref = lhs_ty.into_ref().map_err(to_check_err)?;
         let rhs_ty = self.rhs.check(env)?;
+        rhs_ty.check_kind(env)?.into_star().map_err(to_check_err)?;
         lhs_ref.ty.check_equal(&rhs_ty).map_err(to_check_err)?;
         Ok(UnitTy::new().into())
     }

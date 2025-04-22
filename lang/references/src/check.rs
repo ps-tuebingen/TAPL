@@ -70,14 +70,14 @@ impl Typecheck for Term {
 }
 
 impl Subtypecheck<Type> for Type {
-    type Env = Env;
+    type Env = Environment;
     fn check_subtype(&self, _: &Self, _: &mut Self::Env) -> Result<(), Error> {
         Ok(())
     }
 }
 
 impl Kindcheck<Type> for Type {
-    type Env = Env;
+    type Env = Environment;
     fn check_kind(&self, _: &mut Self::Env) -> Result<Kind, Error> {
         Ok(Kind::Star)
     }

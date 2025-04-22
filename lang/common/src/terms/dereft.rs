@@ -1,6 +1,6 @@
 use super::Term;
 use crate::{
-    check::{to_check_err, Typecheck},
+    check::{to_check_err, Kindcheck, Typecheck},
     errors::Error,
     eval::{to_eval_err, Eval, EvalEnvironment},
     language::{LanguageTerm, LanguageType, LanguageValue},
@@ -70,7 +70,7 @@ where
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
         let term_ty = self.term.check(env)?;
-        println!("got deref type: {term_ty}");
+        term_ty.check_kind(env)?.into_star().map_err(to_check_err)?;
         let ref_ty = term_ty.into_ref().map_err(to_check_err)?;
         Ok(*ref_ty.ty)
     }

@@ -1,6 +1,6 @@
 use super::{LanguageType, LanguageValue};
 use crate::{
-    check::Typecheck,
+    check::{Kindcheck, Subtypecheck, Typecheck},
     eval::Eval,
     subst::{SubstTerm, SubstType},
     terms::Term,
@@ -14,6 +14,8 @@ where
         + Eval<Value = <Self as LanguageTerm>::Value>
         + Typecheck<Type = <Self as LanguageTerm>::Type>,
 {
-    type Type: LanguageType;
+    type Type: LanguageType
+        + Subtypecheck<<Self as LanguageTerm>::Type, Env = <Self as Typecheck>::Env>
+        + Kindcheck<<Self as LanguageTerm>::Type, Env = <Self as Typecheck>::Env>;
     type Value: LanguageValue<Term = Self>;
 }

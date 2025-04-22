@@ -1,5 +1,5 @@
 use crate::{
-    check::{CheckEnvironment, Typecheck},
+    check::{CheckEnvironment, Subtypecheck, Typecheck},
     eval::{Eval, EvalEnvironment},
 };
 
@@ -16,7 +16,7 @@ pub trait Language {
     type Term: LanguageTerm<Type = Self::Type, Value = Self::Value>
         + Typecheck<Env = Self::CheckEnv, Type = Self::Type>
         + Eval<Value = Self::Value, Env = Self::EvalEnv>;
-    type Type: LanguageType;
+    type Type: LanguageType + Subtypecheck<Self::Type, Env = Self::CheckEnv>;
     type Value: LanguageValue<Term = Self::Term>;
 
     type CheckEnv: CheckEnvironment<Type = Self::Type>;

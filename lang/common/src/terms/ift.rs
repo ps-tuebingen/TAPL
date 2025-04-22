@@ -1,6 +1,6 @@
 use super::Term;
 use crate::{
-    check::{to_check_err, Typecheck},
+    check::{to_check_err, Kindcheck, Typecheck},
     errors::{Error, ErrorKind},
     eval::{to_eval_err, Eval},
     language::{LanguageTerm, LanguageType, LanguageValue},
@@ -80,9 +80,12 @@ where
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
         let if_ty = self.if_cond.check(&mut env.clone())?;
+        if_ty.check_kind(env)?.into_star().map_err(to_check_err)?;
         if_ty.into_bool().map_err(to_check_err)?;
         let then_ty = self.then_term.check(&mut env.clone())?;
+        then_ty.check_kind(env)?.into_star().map_err(to_check_err)?;
         let else_ty = self.else_term.check(env)?;
+        else_ty.check_kind(env)?.into_star().map_err(to_check_err)?;
         if then_ty != else_ty {
             Err(to_check_err(ErrorKind::TypeMismatch {
                 found: then_ty.to_string(),

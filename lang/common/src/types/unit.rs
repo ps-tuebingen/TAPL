@@ -53,7 +53,7 @@ where
             return Ok(());
         }
 
-        sup.clone().into_bool().map(|_| ()).map_err(to_subty_err)
+        sup.clone().into_unit().map(|_| ()).map_err(to_subty_err)
     }
 }
 

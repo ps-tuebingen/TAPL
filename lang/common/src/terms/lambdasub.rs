@@ -1,6 +1,6 @@
 use super::Term;
 use crate::{
-    check::Typecheck,
+    check::{to_check_err, Kindcheck, Typecheck},
     errors::Error,
     eval::Eval,
     language::LanguageTerm,
@@ -121,6 +121,9 @@ where
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
         let term_ty = self.body.check(env)?;
+        let term_kind = term_ty.check_kind(env)?;
+        let sup_kind = self.sup_ty.check_kind(env)?;
+        term_kind.check_equal(&sup_kind).map_err(to_check_err)?;
         Ok(ForallBounded::new(&self.var, self.sup_ty.clone(), term_ty).into())
     }
 }

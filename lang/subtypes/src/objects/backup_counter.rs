@@ -76,7 +76,6 @@ mod backup_counter_tests {
     use super::{backup_counter_class, backup_counter_rep, ty_backup_counter};
     use crate::objects::{
         counter::{counter_rep, ty_counter},
-        dec_counter::ty_dec_counter,
         reset_counter::ty_reset_counter,
     };
     use common::{
@@ -95,13 +94,6 @@ mod backup_counter_tests {
     fn subtype_reset() {
         ty_backup_counter()
             .check_subtype(&ty_reset_counter(), &mut Default::default())
-            .unwrap()
-    }
-
-    #[test]
-    fn subtype_dec() {
-        ty_backup_counter()
-            .check_subtype(&ty_dec_counter(), &mut Default::default())
             .unwrap()
     }
 

@@ -1,6 +1,6 @@
 use super::Term;
 use crate::{
-    check::{to_check_err, Typecheck},
+    check::{to_check_err, Kindcheck, Subtypecheck, Typecheck},
     errors::{Error, ErrorKind},
     eval::{to_eval_err, Eval},
     language::{LanguageTerm, LanguageType, LanguageValue},
@@ -97,10 +97,18 @@ where
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
         let fun_ty = self.fun.check(env)?;
-        if let Ok(_forall) = fun_ty.clone().into_forall() {
-            todo!()
-        } else if let Ok(_forall) = fun_ty.clone().into_forall_bounded() {
-            todo!()
+        if let Ok(forall) = fun_ty.clone().into_forall() {
+            let arg_kind = self.arg.check_kind(env)?;
+            if forall.kind != arg_kind {
+                return Err(to_check_err(ErrorKind::KindMismatch {
+                    found: arg_kind.to_string(),
+                    expected: forall.kind.to_string(),
+                }));
+            }
+            Ok(forall.ty.subst_type(&forall.var, &self.arg))
+        } else if let Ok(forall) = fun_ty.clone().into_forall_bounded() {
+            self.arg.check_subtype(&forall.sup_ty, env)?;
+            Ok(forall.ty.subst_type(&forall.var, &self.arg))
         } else {
             Err(to_check_err(ErrorKind::TypeMismatch {
                 found: fun_ty.to_string(),
