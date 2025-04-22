@@ -2,6 +2,7 @@ use super::Type;
 use crate::{
     check::{to_kind_err, to_subty_err, CheckEnvironment, Kindcheck, Subtypecheck},
     errors::Error,
+    eval::Normalize,
     kinds::Kind,
     language::LanguageType,
     subst::SubstType,
@@ -70,6 +71,16 @@ where
     type Env = <Ty as Kindcheck<Ty>>::Env;
     fn check_kind(&self, env: &mut Self::Env) -> Result<Kind, Error> {
         env.get_tyvar_kind(&self.v).map_err(to_kind_err)
+    }
+}
+
+impl<Ty> Normalize<Ty> for TypeVariable<Ty>
+where
+    Ty: LanguageType,
+    Self: Into<Ty>,
+{
+    fn normalize(self) -> Ty {
+        self.into()
     }
 }
 

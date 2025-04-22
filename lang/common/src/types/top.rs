@@ -2,6 +2,7 @@ use super::Type;
 use crate::{
     check::{to_subty_err, Kindcheck, Subtypecheck},
     errors::{Error, ErrorKind},
+    eval::Normalize,
     kinds::Kind,
     language::LanguageType,
     subst::SubstType,
@@ -73,6 +74,15 @@ where
     type Env = <Ty as Kindcheck<Ty>>::Env;
     fn check_kind(&self, _: &mut Self::Env) -> Result<Kind, Error> {
         Ok(self.kind.clone())
+    }
+}
+impl<Ty> Normalize<Ty> for Top<Ty>
+where
+    Ty: LanguageType,
+    Self: Into<Ty>,
+{
+    fn normalize(self) -> Ty {
+        self.into()
     }
 }
 

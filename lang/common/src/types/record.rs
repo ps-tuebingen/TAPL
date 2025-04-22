@@ -2,6 +2,7 @@ use super::Type;
 use crate::{
     check::{to_kind_err, to_subty_err, Kindcheck, Subtypecheck},
     errors::{Error, ErrorKind},
+    eval::Normalize,
     kinds::Kind,
     language::LanguageType,
     subst::SubstType,
@@ -106,6 +107,21 @@ where
             }
         }
         Ok(Kind::Star)
+    }
+}
+
+impl<Ty> Normalize<Ty> for Record<Ty>
+where
+    Ty: LanguageType,
+    Self: Into<Ty>,
+{
+    fn normalize(self) -> Ty {
+        let mut recs_norm = HashMap::new();
+        for (lb, ty) in self.records {
+            let ty_norm = ty.normalize();
+            recs_norm.insert(lb, ty_norm);
+        }
+        Record { records: recs_norm }.into()
     }
 }
 

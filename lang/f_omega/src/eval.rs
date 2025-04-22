@@ -1,5 +1,8 @@
-use super::{terms::Term, values::Value};
-use common::{errors::Error, Eval};
+use super::{terms::Term, types::Type, values::Value};
+use common::{
+    errors::Error,
+    eval::{Eval, Normalize},
+};
 
 impl Eval for Term {
     type Env = ();
@@ -25,6 +28,23 @@ impl Eval for Term {
             Term::Succ(s) => s.eval(env),
             Term::Pred(p) => p.eval(env),
             Term::IsZero(isz) => isz.eval(env),
+        }
+    }
+}
+
+impl Normalize<Type> for Type {
+    fn normalize(self) -> Type {
+        match self {
+            Type::Var(var) => var.normalize(),
+            Type::Fun(fun) => fun.normalize(),
+            Type::Forall(forall) => forall.normalize(),
+            Type::OpLambda(lam) => lam.normalize(),
+            Type::OpApp(app) => app.normalize(),
+            Type::Exists(ex) => ex.normalize(),
+            Type::Record(rec) => rec.normalize(),
+            Type::Bool(b) => b.normalize(),
+            Type::Unit(u) => u.normalize(),
+            Type::Nat(nat) => nat.normalize(),
         }
     }
 }

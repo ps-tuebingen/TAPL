@@ -1,8 +1,8 @@
 use super::to_err;
-use crate::{terms::Term, values::Value};
+use crate::{terms::Term, types::Type, values::Value};
 use common::{
     errors::{Error, ErrorKind, ErrorLocation},
-    eval::Eval,
+    eval::{Eval, Normalize},
     terms::{False, Num, True, Unit, Variable},
 };
 
@@ -32,6 +32,12 @@ impl Eval for Term {
             Term::TryWithVal(tr) => tr.eval(env),
             Term::Raise(r) => r.eval(env),
         }
+    }
+}
+
+impl Normalize<Type> for Type {
+    fn normalize(self) -> Type {
+        self
     }
 }
 

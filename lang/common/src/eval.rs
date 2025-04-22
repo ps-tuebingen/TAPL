@@ -1,6 +1,6 @@
 use crate::{
     errors::{Error, ErrorKind, ErrorLocation},
-    language::LanguageValue,
+    language::{LanguageType, LanguageValue},
     values::Value,
     Location,
 };
@@ -25,6 +25,13 @@ pub trait Eval: Sized {
     }
 
     fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error>;
+}
+
+pub trait Normalize<Ty>
+where
+    Ty: LanguageType,
+{
+    fn normalize(self) -> Ty;
 }
 
 impl<V> EvalEnvironment<V> for ()

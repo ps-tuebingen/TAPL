@@ -1,5 +1,8 @@
-use super::{terms::Term, values::Value};
-use common::{errors::Error, eval::Eval};
+use super::{terms::Term, types::Type, values::Value};
+use common::{
+    errors::Error,
+    eval::{Eval, Normalize},
+};
 
 impl Eval for Term {
     type Env = ();
@@ -32,5 +35,11 @@ impl Eval for Term {
             Term::Let(lt) => lt.eval(env),
             Term::Fix(fix) => fix.eval(env),
         }
+    }
+}
+
+impl Normalize<Type> for Type {
+    fn normalize(self) -> Type {
+        self
     }
 }

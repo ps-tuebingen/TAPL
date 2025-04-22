@@ -146,7 +146,7 @@ mod counter_tests {
     use crate::types::Type;
     use common::{
         check::Typecheck,
-        eval::Eval,
+        eval::Normalize,
         language::LanguageType,
         types::{ForallBounded, Fun, Nat, OpApp, TypeVariable},
     };
@@ -175,7 +175,7 @@ mod counter_tests {
             Fun::new(OpApp::new(object(), TypeVariable::new("M")), Nat::new()),
         )
         .into();
-        let expected = ty.eval(&mut Default::default()).unwrap();
+        let expected = ty.normalize();
         result.check_equal(&expected).unwrap();
     }
 
@@ -183,7 +183,7 @@ mod counter_tests {
     fn check_class() {
         let result = counter_class().check(&mut Default::default()).unwrap();
         let t: Type = OpApp::new(counter_m(), counter_r()).into();
-        let expected = t.eval(&mut Default::default()).unwrap();
+        let expected = t.normalize();
         result.check_equal(&expected).unwrap();
     }
 

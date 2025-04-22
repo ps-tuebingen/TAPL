@@ -2,6 +2,7 @@ use super::Type;
 use crate::{
     check::{to_kind_err, to_subty_err, Kindcheck, Subtypecheck},
     errors::{Error, ErrorKind},
+    eval::Normalize,
     kinds::Kind,
     language::LanguageType,
     subst::SubstType,
@@ -85,6 +86,26 @@ where
                 found: arg_kind.to_string(),
                 expected: fun_from.to_string(),
             }))
+        }
+    }
+}
+
+impl<Ty> Normalize<Ty> for OpApp<Ty>
+where
+    Ty: LanguageType,
+    Self: Into<Ty>,
+{
+    fn normalize(self) -> Ty {
+        let fun_norm = self.fun.normalize();
+        let arg_norm = self.arg.normalize();
+        if let Ok(oplam) = fun_norm.clone().into_oplambda() {
+            oplam.body.subst_type(&oplam.var, &arg_norm).normalize()
+        } else {
+            OpApp {
+                fun: Box::new(fun_norm),
+                arg: Box::new(arg_norm),
+            }
+            .into()
         }
     }
 }

@@ -1,5 +1,8 @@
-use crate::{terms::Term, values::Value};
-use common::{errors::Error, eval::Eval};
+use crate::{terms::Term, types::Type, values::Value};
+use common::{
+    errors::Error,
+    eval::{Eval, Normalize},
+};
 
 impl Eval for Term {
     type Value = Value;
@@ -19,5 +22,11 @@ impl Eval for Term {
             Term::Record(rec) => rec.eval(env),
             Term::Projection(proj) => proj.eval(env),
         }
+    }
+}
+
+impl Normalize<Type> for Type {
+    fn normalize(self) -> Type {
+        self
     }
 }

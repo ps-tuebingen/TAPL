@@ -2,6 +2,7 @@ use super::Type;
 use crate::{
     check::{CheckEnvironment, Kindcheck},
     errors::Error,
+    eval::Normalize,
     kinds::Kind,
     language::LanguageType,
     subst::SubstType,
@@ -67,6 +68,22 @@ where
         env.add_tyvar_kind(self.var.clone(), self.kind.clone());
         let ty_kind = self.ty.check_kind(env)?;
         Ok(ty_kind)
+    }
+}
+
+impl<Ty> Normalize<Ty> for Forall<Ty>
+where
+    Ty: LanguageType,
+    Self: Into<Ty>,
+{
+    fn normalize(self) -> Ty {
+        let body_norm = self.ty.normalize();
+        Forall {
+            var: self.var,
+            kind: self.kind,
+            ty: Box::new(body_norm),
+        }
+        .into()
     }
 }
 

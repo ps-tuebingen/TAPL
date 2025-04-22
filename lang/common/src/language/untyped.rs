@@ -1,6 +1,7 @@
 use crate::{
     check::{Kindcheck, Subtypecheck, Typecheck},
     errors::Error,
+    eval::Normalize,
     kinds::Kind,
     language::{LanguageTerm, LanguageType},
     subst::SubstType,
@@ -35,6 +36,12 @@ impl Subtypecheck<Untyped> for Untyped {
     }
     fn check_supertype(&self, _: &Self, _: &mut Self::Env) -> Result<(), Error> {
         Ok(())
+    }
+}
+
+impl Normalize<Untyped> for Untyped {
+    fn normalize(self) -> Self {
+        self
     }
 }
 

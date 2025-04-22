@@ -1,7 +1,7 @@
-use super::{terms::Term, values::Value};
+use super::{terms::Term, types::Type, values::Value};
 use common::{
     errors::{Error, ErrorKind},
-    eval::{Eval, EvalEnvironment},
+    eval::{Eval, EvalEnvironment, Normalize},
     Location,
 };
 use std::collections::HashMap;
@@ -51,6 +51,12 @@ impl Eval for Term {
             Term::True(tru) => tru.eval(env),
             Term::False(fls) => fls.eval(env),
         }
+    }
+}
+
+impl Normalize<Type> for Type {
+    fn normalize(self) -> Type {
+        self
     }
 }
 

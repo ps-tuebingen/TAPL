@@ -1,6 +1,7 @@
 use crate::{
     check::{Kindcheck, Subtypecheck},
     errors::ErrorKind,
+    eval::Normalize,
     subst::SubstType,
     types::{
         Bool, Bot, Exists, ExistsBounded, Forall, ForallBounded, Fun, List, Mu, Nat, OpApp,
@@ -11,8 +12,22 @@ use crate::{
 
 pub trait LanguageType
 where
-    Self: Type + SubstType<Self, Target = Self> + Subtypecheck<Self> + Kindcheck<Self>,
+    Self: Type
+        + SubstType<Self, Target = Self>
+        + Subtypecheck<Self>
+        + Kindcheck<Self>
+        + Normalize<Self>,
 {
+    fn check_equal(&self, other: &Self) -> Result<(), ErrorKind> {
+        if *self == *other {
+            Ok(())
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: other.to_string(),
+            })
+        }
+    }
     fn into_fun(self) -> Result<Fun<Self>, ErrorKind> {
         Err(ErrorKind::TypeMismatch {
             found: self.to_string(),
@@ -164,16 +179,5 @@ where
             found: self.to_string(),
             expected: "Bot".to_owned(),
         })
-    }
-
-    fn check_equal(&self, other: &Self) -> Result<(), ErrorKind> {
-        if *self == *other {
-            Ok(())
-        } else {
-            Err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
-                expected: other.to_string(),
-            })
-        }
     }
 }

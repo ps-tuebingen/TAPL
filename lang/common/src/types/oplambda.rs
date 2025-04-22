@@ -2,6 +2,7 @@ use super::Type;
 use crate::{
     check::{to_subty_err, CheckEnvironment, Kindcheck, Subtypecheck},
     errors::{Error, ErrorKind},
+    eval::Normalize,
     kinds::Kind,
     language::LanguageType,
     subst::SubstType,
@@ -15,9 +16,9 @@ pub struct OpLambda<Ty>
 where
     Ty: Type,
 {
-    var: TypeVar,
+    pub var: TypeVar,
     pub annot: Kind,
-    body: Box<Ty>,
+    pub body: Box<Ty>,
 }
 
 impl<Ty> OpLambda<Ty>
@@ -111,6 +112,22 @@ where
             Box::new(self.annot.clone()),
             Box::new(body_kind),
         ))
+    }
+}
+
+impl<Ty> Normalize<Ty> for OpLambda<Ty>
+where
+    Ty: LanguageType,
+    Self: Into<Ty>,
+{
+    fn normalize(self) -> Ty {
+        let body_norm = self.body.normalize();
+        OpLambda {
+            var: self.var,
+            annot: self.annot,
+            body: Box::new(body_norm),
+        }
+        .into()
     }
 }
 

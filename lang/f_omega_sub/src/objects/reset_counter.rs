@@ -113,7 +113,7 @@ mod reset_counter_tests {
     };
     use common::{
         check::{Subtypecheck, Typecheck},
-        eval::Eval,
+        eval::Normalize,
         language::LanguageType,
         types::{ForallBounded, Fun, OpApp, TypeVariable},
     };
@@ -137,7 +137,7 @@ mod reset_counter_tests {
             .check(&mut Default::default())
             .unwrap();
         let ty: Type = OpApp::new(reset_counter_m(), counter_r()).into();
-        let expected = ty.eval(&mut Default::default()).unwrap();
+        let expected = ty.normalize();
         result.check_equal(&expected).unwrap();
     }
     #[test]

@@ -2,6 +2,7 @@ use super::Type;
 use crate::{
     check::{to_subty_err, Kindcheck, Subtypecheck},
     errors::Error,
+    eval::Normalize,
     kinds::Kind,
     language::LanguageType,
     subst::SubstType,
@@ -71,6 +72,15 @@ where
 
     fn check_kind(&self, _: &mut Self::Env) -> Result<Kind, Error> {
         Ok(Kind::Star)
+    }
+}
+impl<Ty> Normalize<Ty> for Nat<Ty>
+where
+    Ty: LanguageType,
+    Self: Into<Ty>,
+{
+    fn normalize(self) -> Ty {
+        self.into()
     }
 }
 

@@ -2,6 +2,7 @@ use super::Type;
 use crate::{
     check::{to_kind_err, to_subty_err, Kindcheck, Subtypecheck},
     errors::{Error, ErrorKind},
+    eval::Normalize,
     kinds::Kind,
     language::LanguageType,
     subst::SubstType,
@@ -99,6 +100,22 @@ where
             }));
         }
         Ok(Kind::Star)
+    }
+}
+
+impl<Ty> Normalize<Ty> for Fun<Ty>
+where
+    Ty: LanguageType,
+    Self: Into<Ty>,
+{
+    fn normalize(self) -> Ty {
+        let from_norm = self.from.normalize();
+        let to_norm = self.to.normalize();
+        Fun {
+            from: Box::new(from_norm),
+            to: Box::new(to_norm),
+        }
+        .into()
     }
 }
 
