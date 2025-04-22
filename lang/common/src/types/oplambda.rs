@@ -89,6 +89,8 @@ where
     type Env = <Ty as Kindcheck<Ty>>::Env;
 
     fn check_kind(&self, env: &mut Self::Env) -> Result<Kind, Error> {
+        println!("checking op lam {}", self.var);
+        println!("adding {}:{} to env", self.var, self.annot);
         env.add_tyvar_kind(self.var.clone(), self.annot.clone());
         let body_kind = self.body.check_kind(env)?;
         Ok(Kind::Arrow(

@@ -102,6 +102,7 @@ where
     type Value = <T as LanguageTerm>::Value;
 
     fn eval(self, env: &mut <T as Eval>::Env) -> Result<<T as LanguageTerm>::Value, Error> {
+        println!("checking app");
         let fun_val = self.fun.eval(env)?;
 
         let lam = fun_val.into_lambda().map_err(to_eval_err)?;

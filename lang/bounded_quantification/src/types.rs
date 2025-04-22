@@ -21,6 +21,27 @@ pub enum Type {
 impl common::types::Type for Type {}
 
 impl LanguageType for Type {
+    fn into_variable(self) -> Result<TypeVariable<Type>, ErrorKind> {
+        if let Type::Var(var) = self {
+            Ok(var)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Type Variable".to_owned(),
+            })
+        }
+    }
+    fn into_top(self) -> Result<Top<Type>, ErrorKind> {
+        if let Type::Top(top) = self {
+            Ok(top)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Top".to_owned(),
+            })
+        }
+    }
+
     fn into_nat(self) -> Result<Nat<Type>, ErrorKind> {
         if let Type::Nat(n) = self {
             Ok(n)
@@ -39,6 +60,39 @@ impl LanguageType for Type {
             Err(ErrorKind::TypeMismatch {
                 found: self.to_string(),
                 expected: "Function Type".to_owned(),
+            })
+        }
+    }
+
+    fn into_forall_bounded(self) -> Result<ForallBounded<Type>, ErrorKind> {
+        if let Type::Forall(forall) = self {
+            Ok(forall)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Universal Type".to_owned(),
+            })
+        }
+    }
+
+    fn into_exists_bounded(self) -> Result<ExistsBounded<Type>, ErrorKind> {
+        if let Type::Exists(ex) = self {
+            Ok(ex)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Existential Type".to_owned(),
+            })
+        }
+    }
+
+    fn into_record(self) -> Result<Record<Type>, ErrorKind> {
+        if let Type::Record(rec) = self {
+            Ok(rec)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Record Type".to_owned(),
             })
         }
     }

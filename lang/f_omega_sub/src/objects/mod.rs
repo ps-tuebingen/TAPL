@@ -2,7 +2,7 @@ use crate::types::Type;
 use common::{
     kinds::Kind,
     types::{ExistsBounded, OpApp, OpLambda, Record, TypeVariable},
-    TypeVar,
+    Label, TypeVar,
 };
 use std::collections::HashMap;
 
@@ -15,7 +15,7 @@ pub fn object() -> Type {
         Kind::Star.abs(),
         ExistsBounded::new_unbounded(
             "X",
-            Record::new(HashMap::<TypeVar, Type>::from([
+            Record::new(HashMap::<Label, Type>::from([
                 ("state".to_owned(), TypeVariable::new("X").into()),
                 (
                     "methods".to_owned(),
@@ -35,7 +35,10 @@ mod object_tests {
     #[test]
     fn check_object() {
         let result = object().check_kind(&mut Default::default()).unwrap();
-        let expected = Kind::Star.abs().abs();
+        let expected = Kind::Arrow(
+            Box::new(Kind::Arrow(Box::new(Kind::Star), Box::new(Kind::Star))),
+            Box::new(Kind::Star),
+        );
         assert_eq!(result, expected)
     }
 }

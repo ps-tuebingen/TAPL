@@ -4,7 +4,7 @@ use common::{
     kinds::Kind,
     terms::{App, Lambda, Num, Pack, Record, RecordProj, Succ, TyLambdaSub, Unpack, Variable},
     types::{Fun, Nat, OpApp, OpLambda, Record as RecordTy, TypeVariable},
-    TypeVar, Var,
+    Label, TypeVar, Var,
 };
 use std::collections::HashMap;
 
@@ -90,7 +90,7 @@ pub fn send_get() -> Term {
 }
 
 pub fn counter_r() -> Type {
-    RecordTy::new(HashMap::<TypeVar, Type>::from([(
+    RecordTy::new(HashMap::<Label, Type>::from([(
         "x".to_owned(),
         Nat::new().into(),
     )]))
@@ -122,10 +122,10 @@ pub fn counter_class() -> Term {
 pub fn new_counter() -> Term {
     Pack::new(
         counter_r(),
-        Record::new(HashMap::<Var, Term>::from([
+        Record::new(HashMap::<Label, Term>::from([
             (
                 "state".to_owned(),
-                Record::new(HashMap::<Var, Term>::from([(
+                Record::new(HashMap::<Label, Term>::from([(
                     "x".to_owned(),
                     Num::new(0).into(),
                 )]))
@@ -189,7 +189,7 @@ mod counter_tests {
 
     #[test]
     fn check_new() {
-        let result = new_counter().check(&mut Default::default()).unwrap();
+        let result = new_counter().check_start().unwrap().normalize();
         let expected = counter();
         result.check_equal(&expected).unwrap();
     }

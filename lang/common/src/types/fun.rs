@@ -59,7 +59,7 @@ where
         }
 
         let sup_fun = sup.clone().into_fun().map_err(to_subty_err)?;
-        println!("got super fun {sup_fun}, self: {self}");
+        println!("checking fun subtype {}<:{}", sup_fun.from, self.from);
         sup_fun
             .from
             .check_subtype(&(*self.from), &mut env.clone())?;

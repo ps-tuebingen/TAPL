@@ -80,7 +80,7 @@ where
     type Type = <T as Typecheck>::Type;
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
-        println!("checking record");
+        println!("checking record term");
         let mut recs = HashMap::new();
         let mut rec_knd = None;
         for (lb, t) in self.records.iter() {

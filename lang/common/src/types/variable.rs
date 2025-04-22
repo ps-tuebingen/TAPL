@@ -40,7 +40,6 @@ where
 {
     type Target = Ty;
     fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
-        println!("substituting variable {v} with type {ty}");
         if *v == self.v {
             ty.clone()
         } else {
@@ -56,6 +55,17 @@ where
     type Env = <Ty as Subtypecheck<Ty>>::Env;
     fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Error> {
         let ty_super = env.get_tyvar_super(&self.v).map_err(to_subty_err)?;
+        println!("got var super {}<:{}", self.v, ty_super);
+
+        if let Ok(_) = sup.clone().into_top() {
+            return Ok(());
+        }
+
+        if let Ok(v) = sup.clone().into_variable() {
+            if v.v == self.v {
+                return Ok(());
+            }
+        }
         ty_super.check_equal(&sup).map_err(to_subty_err)
     }
 }

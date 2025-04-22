@@ -33,6 +33,28 @@ impl LanguageValue for Value {
         }
     }
 
+    fn into_lambdasub(self) -> Result<LambdaSub<Term>, ErrorKind> {
+        if let Value::LambdaSub(lam) = self {
+            Ok(lam)
+        } else {
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
+                expected: "Type Abstraction".to_owned(),
+            })
+        }
+    }
+
+    fn into_pack(self) -> Result<Pack<Term>, ErrorKind> {
+        if let Value::Pack(pack) = self {
+            Ok(pack)
+        } else {
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
+                expected: "Pack".to_owned(),
+            })
+        }
+    }
+
     fn into_num(self) -> Result<Num<Term>, ErrorKind> {
         if let Value::Num(num) = self {
             Ok(num)
@@ -40,6 +62,17 @@ impl LanguageValue for Value {
             Err(ErrorKind::ValueMismatch {
                 found: self.to_string(),
                 expected: "Number".to_owned(),
+            })
+        }
+    }
+
+    fn into_record(self) -> Result<Record<Term>, ErrorKind> {
+        if let Value::Record(rec) = self {
+            Ok(rec)
+        } else {
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
+                expected: "Record".to_owned(),
             })
         }
     }

@@ -1,6 +1,6 @@
 use super::Type;
 use crate::{
-    check::{to_kind_err, to_subty_err, Kindcheck, Subtypecheck},
+    check::{to_kind_err, to_subty_err, CheckEnvironment, Kindcheck, Subtypecheck},
     errors::{Error, ErrorKind},
     eval::Normalize,
     kinds::Kind,
@@ -85,15 +85,14 @@ where
 {
     type Env = <Ty as Kindcheck<Ty>>::Env;
     fn check_kind(&self, env: &mut Self::Env) -> Result<Kind, Error> {
-        for (_, t) in self.records.iter() {
-            let knd = t.check_kind(&mut env.clone())?;
-            if knd != Kind::Star {
-                return Err(to_kind_err(ErrorKind::KindMismatch {
-                    found: knd.to_string(),
-                    expected: "*".to_owned(),
-                }));
-            }
+        println!("checking records kind");
+        for (lb, t) in self.records.iter() {
+            println!("checking label {lb}");
+            t.check_kind(&mut env.clone())?
+                .into_star()
+                .map_err(to_kind_err)?;
         }
+        println!("checked record");
         Ok(Kind::Star)
     }
 }

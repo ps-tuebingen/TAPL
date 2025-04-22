@@ -1,5 +1,6 @@
 use common::{
     errors::ErrorKind,
+    eval::Normalize,
     language::LanguageType,
     subst::SubstType,
     types::{ExistsBounded, ForallBounded, Fun, Nat, OpApp, OpLambda, Record, Top, TypeVariable},
@@ -24,88 +25,97 @@ impl common::types::Type for Type {}
 
 impl LanguageType for Type {
     fn into_top(self) -> Result<Top<Type>, ErrorKind> {
-        if let Type::Top(top) = self {
+        let self_norm = self.normalize();
+        if let Type::Top(top) = self_norm {
             Ok(top)
         } else {
             Err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
+                found: self_norm.to_string(),
                 expected: "Top".to_owned(),
             })
         }
     }
 
     fn into_fun(self) -> Result<Fun<Type>, ErrorKind> {
-        if let Type::Fun(fun) = self {
+        let self_norm = self.normalize();
+        if let Type::Fun(fun) = self_norm {
             Ok(fun)
         } else {
             Err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
+                found: self_norm.to_string(),
                 expected: "Function Type".to_owned(),
             })
         }
     }
 
     fn into_forall_bounded(self) -> Result<ForallBounded<Type>, ErrorKind> {
-        if let Type::Forall(forall) = self {
+        let self_norm = self.normalize();
+        if let Type::Forall(forall) = self_norm {
             Ok(forall)
         } else {
             Err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
+                found: self_norm.to_string(),
                 expected: "Universal Type".to_owned(),
             })
         }
     }
 
     fn into_oplambda(self) -> Result<OpLambda<Type>, ErrorKind> {
-        if let Type::OpLambda(lam) = self {
+        let self_norm = self.normalize();
+        if let Type::OpLambda(lam) = self_norm {
             Ok(lam)
         } else {
             Err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
+                found: self_norm.to_string(),
                 expected: "Operator Abstraction".to_owned(),
             })
         }
     }
 
     fn into_opapp(self) -> Result<OpApp<Type>, ErrorKind> {
-        if let Type::OpApp(app) = self {
+        let self_norm = self.normalize();
+        if let Type::OpApp(app) = self_norm {
             Ok(app)
         } else {
             Err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
+                found: self_norm.to_string(),
                 expected: "Operator Abstraction".to_owned(),
             })
         }
     }
 
     fn into_exists_bounded(self) -> Result<ExistsBounded<Type>, ErrorKind> {
-        if let Type::Exists(ex) = self {
+        println!("converting: {self} to exists");
+        let self_norm = self.normalize();
+        if let Type::Exists(ex) = self_norm {
             Ok(ex)
         } else {
             Err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
+                found: self_norm.to_string(),
                 expected: "Existential Type".to_owned(),
             })
         }
     }
 
     fn into_record(self) -> Result<Record<Type>, ErrorKind> {
-        if let Type::Record(rec) = self {
+        let self_norm = self.normalize();
+        if let Type::Record(rec) = self_norm {
             Ok(rec)
         } else {
             Err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
+                found: self_norm.to_string(),
                 expected: "Record Type".to_owned(),
             })
         }
     }
 
     fn into_nat(self) -> Result<Nat<Type>, ErrorKind> {
-        if let Type::Nat(nat) = self {
+        let self_norm = self.normalize();
+        if let Type::Nat(nat) = self_norm {
             Ok(nat)
         } else {
             Err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
+                found: self_norm.to_string(),
                 expected: "Nat".to_owned(),
             })
         }

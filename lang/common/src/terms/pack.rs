@@ -94,18 +94,20 @@ where
     type Env = <T as Typecheck>::Env;
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
-        println!("checking pack");
+        println!("checking inner {}", self.inner_ty);
+        let inner_kind = self.inner_ty.check_kind(env)?;
+        println!("checking pack,outer {}", self.outer_ty);
         let outer_knd = self.outer_ty.check_kind(env)?;
+
         let outer_exists = self.outer_ty.clone().into_exists().map_err(to_check_err)?;
         println!("got pack outer {}::{}", outer_exists.var, outer_exists.kind);
         env.add_tyvar_kind(outer_exists.var.clone(), outer_exists.kind.clone());
-        println!("checking inner {}", self.inner_ty);
-        let inner_kind = self.inner_ty.check_kind(env)?;
         println!("got inner kind {inner_kind}");
         let term_ty = self.term.check(env)?;
         println!("got pack inner ty {term_ty}");
         let term_kind = term_ty.check_kind(env)?;
         println!("got term kind {term_kind}");
+
         term_kind.check_equal(&outer_knd).map_err(to_check_err)?;
         inner_kind
             .check_equal(&outer_exists.kind)

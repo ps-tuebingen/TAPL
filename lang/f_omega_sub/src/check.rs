@@ -3,6 +3,7 @@ use common::{
     check::{CheckEnvironment, Kindcheck, Subtypecheck, Typecheck},
     errors::{Error, ErrorKind},
     kinds::Kind,
+    types::Top,
     Location, TypeVar, Var,
 };
 use std::collections::HashMap;
@@ -36,10 +37,17 @@ impl CheckEnvironment for Env {
     }
 
     fn get_tyvar_kind(&self, v: &TypeVar) -> Result<Kind, ErrorKind> {
-        Err(ErrorKind::FreeTypeVariable(v.clone()))
+        let sup = self
+            .ty_vars
+            .get(v)
+            .ok_or(ErrorKind::FreeTypeVariable(v.clone()))?;
+        let sup_kind = sup.check_kind(&mut self.clone()).map_err(|err| err.kind)?;
+        Ok(sup_kind)
     }
 
-    fn add_tyvar_kind(&mut self, _: TypeVar, _: Kind) {}
+    fn add_tyvar_kind(&mut self, v: TypeVar, kind: Kind) {
+        self.ty_vars.insert(v, Top::new(kind).into());
+    }
 
     fn get_loc(&self, loc: &Location) -> Result<Type, ErrorKind> {
         Err(ErrorKind::UndefinedLocation(loc.clone()))

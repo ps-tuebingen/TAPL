@@ -105,7 +105,9 @@ where
 {
     type Env = <Ty as Kindcheck<Ty>>::Env;
     fn check_kind(&self, env: &mut Self::Env) -> Result<Kind, Error> {
+        println!("checking exists bounded super type: {}", self.sup_ty);
         let sup_kind = self.sup_ty.check_kind(env)?;
+        println!("adding {}:{} to env", self.var, sup_kind);
         env.add_tyvar_kind(self.var.clone(), sup_kind);
         self.ty.check_kind(env)
     }

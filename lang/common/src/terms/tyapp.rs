@@ -96,6 +96,7 @@ where
     type Env = <T as Typecheck>::Env;
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
+        println!("checking tyapp");
         let fun_ty = self.fun.check(env)?;
         let arg_kind = self.arg.check_kind(env)?;
         if let Ok(forall) = fun_ty.clone().into_forall() {
@@ -104,6 +105,7 @@ where
         } else if let Ok(forall) = fun_ty.clone().into_forall_bounded() {
             let sup_knd = forall.sup_ty.check_kind(env)?;
             sup_knd.check_equal(&arg_kind).map_err(to_check_err)?;
+            println!("checking subtypes: {}<:{}", self.arg, forall.sup_ty);
             self.arg.check_subtype(&forall.sup_ty, env)?;
             Ok(forall.ty.subst_type(&forall.var, &self.arg))
         } else {

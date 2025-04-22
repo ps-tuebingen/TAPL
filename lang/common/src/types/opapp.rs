@@ -71,8 +71,10 @@ where
     type Env = <Ty as Kindcheck<Ty>>::Env;
 
     fn check_kind(&self, env: &mut Self::Env) -> Result<Kind, Error> {
+        println!("checking op app fun {}", self.fun);
         let fun_kind = self.fun.check_kind(&mut env.clone())?;
         let (fun_from, fun_to) = fun_kind.into_arrow().map_err(to_kind_err)?;
+        println!("checking app arg {}", self.arg);
         let arg_kind = self.arg.check_kind(env)?;
         if fun_from == arg_kind {
             Ok(fun_to)
