@@ -128,9 +128,9 @@ where
         recs.sort_by(|(lb1, _), (lb2, _)| lb1.cmp(lb2));
         write!(
             f,
-            "{{ {} }}",
+            "{{{}}}",
             recs.iter()
-                .map(|(lb, t)| format!("{lb} = {t}"))
+                .map(|(lb, t)| format!("{lb}={t}"))
                 .collect::<Vec<String>>()
                 .join(", ")
         )

@@ -47,6 +47,6 @@ where
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let mut ts: Vec<String> = self.vals.iter().map(|t| t.to_string()).collect();
         ts.sort();
-        write!(f, "( {} )", ts.join(", "))
+        write!(f, "{{ {} }}", ts.join(", "))
     }
 }

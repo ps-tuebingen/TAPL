@@ -29,7 +29,7 @@ where
     T: Parse + fmt::Display,
 {
     fn name(&self) -> String {
-        format!("Parsing {}", self.name)
+        format!("Reparsing {}", self.name)
     }
 
     fn run(&self) -> TestResult {

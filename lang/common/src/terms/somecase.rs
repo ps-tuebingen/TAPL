@@ -145,7 +145,7 @@ where
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(
             f,
-            "case {} of {{ nothing => {} | something({}) => {} }}",
+            "case {} of {{ Nothing => {} | Something({}) => {} }}",
             self.bound_term, self.none_term, self.some_var, self.some_term
         )
     }

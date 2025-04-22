@@ -117,6 +117,6 @@ where
     T: LanguageTerm,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "<{} = {}> as {}", self.label, self.term, self.ty)
+        write!(f, "<{}={}> as {}", self.label, self.term, self.ty)
     }
 }

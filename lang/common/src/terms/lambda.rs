@@ -116,7 +116,7 @@ where
         if ty_str.is_empty() {
             write!(f, "\\{}.{}", self.var, self.body)
         } else {
-            write!(f, "\\{}:{}.{}", self.var, ty_str, self.body)
+            write!(f, "\\{}:{}.({})", self.var, ty_str, self.body)
         }
     }
 }

@@ -1,4 +1,5 @@
 use common::{
+    errors::ErrorKind,
     language::LanguageType,
     subst::SubstType,
     types::{Bool, Fun, List, Nat, Optional, Product, Record, Sum, Tuple, Unit, Variant},
@@ -23,7 +24,128 @@ pub enum Type {
 
 impl common::types::Type for Type {}
 
-impl LanguageType for Type {}
+impl LanguageType for Type {
+    fn into_unit(self) -> Result<Unit<Type>, ErrorKind> {
+        if let Type::Unit(u) = self {
+            Ok(u)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Unit".to_owned(),
+            })
+        }
+    }
+
+    fn into_fun(self) -> Result<Fun<Type>, ErrorKind> {
+        if let Type::Fun(fun) = self {
+            Ok(fun)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Function Type".to_owned(),
+            })
+        }
+    }
+
+    fn into_bool(self) -> Result<Bool<Type>, ErrorKind> {
+        if let Type::Bool(b) = self {
+            Ok(b)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Bool".to_owned(),
+            })
+        }
+    }
+
+    fn into_nat(self) -> Result<Nat<Type>, ErrorKind> {
+        if let Type::Nat(n) = self {
+            Ok(n)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Nat".to_owned(),
+            })
+        }
+    }
+
+    fn into_product(self) -> Result<Product<Type>, ErrorKind> {
+        if let Type::Prod(prod) = self {
+            Ok(prod)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Product".to_owned(),
+            })
+        }
+    }
+
+    fn into_tuple(self) -> Result<Tuple<Type>, ErrorKind> {
+        if let Type::Tup(tup) = self {
+            Ok(tup)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Tuple".to_owned(),
+            })
+        }
+    }
+
+    fn into_record(self) -> Result<Record<Type>, ErrorKind> {
+        if let Type::Record(rec) = self {
+            Ok(rec)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Record".to_owned(),
+            })
+        }
+    }
+
+    fn into_sum(self) -> Result<Sum<Type>, ErrorKind> {
+        if let Type::Sum(sum) = self {
+            Ok(sum)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Sum".to_owned(),
+            })
+        }
+    }
+
+    fn into_variant(self) -> Result<Variant<Type>, ErrorKind> {
+        if let Type::Variant(var) = self {
+            Ok(var)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Variant".to_owned(),
+            })
+        }
+    }
+
+    fn into_optional(self) -> Result<Optional<Type>, ErrorKind> {
+        if let Type::Optional(opt) = self {
+            Ok(opt)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Option".to_owned(),
+            })
+        }
+    }
+
+    fn into_list(self) -> Result<List<Type>, ErrorKind> {
+        if let Type::List(list) = self {
+            Ok(list)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "List".to_owned(),
+            })
+        }
+    }
+}
 
 impl fmt::Display for Type {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {

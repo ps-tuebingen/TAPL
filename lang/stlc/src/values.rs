@@ -1,5 +1,6 @@
 use super::terms::Term;
 use common::{
+    errors::ErrorKind,
     language::LanguageValue,
     values::{
         Cons, False, Lambda, Left, Nil, Nothing, Num, Pair, Record, Right, Something, True, Tuple,
@@ -11,7 +12,6 @@ use std::fmt;
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Value {
     Lambda(Lambda<Term>),
-
     Unit(Unit<Term>),
     True(True<Term>),
     False(False<Term>),
@@ -34,6 +34,160 @@ impl common::values::Value for Value {
 
 impl LanguageValue for Value {
     type Term = Term;
+
+    fn into_lambda(self) -> Result<Lambda<Term>, ErrorKind> {
+        if let Value::Lambda(lam) = self {
+            Ok(lam)
+        } else {
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
+                expected: "Lambda Abstraction".to_owned(),
+            })
+        }
+    }
+
+    fn into_true(self) -> Result<True<Term>, ErrorKind> {
+        if let Value::True(tru) = self {
+            Ok(tru)
+        } else {
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
+                expected: "True".to_owned(),
+            })
+        }
+    }
+
+    fn into_false(self) -> Result<False<Term>, ErrorKind> {
+        if let Value::False(fls) = self {
+            Ok(fls)
+        } else {
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
+                expected: "False".to_owned(),
+            })
+        }
+    }
+
+    fn into_num(self) -> Result<Num<Term>, ErrorKind> {
+        if let Value::Num(num) = self {
+            Ok(num)
+        } else {
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
+                expected: "Number".to_owned(),
+            })
+        }
+    }
+
+    fn into_pair(self) -> Result<Pair<Term>, ErrorKind> {
+        if let Value::Pair(pair) = self {
+            Ok(pair)
+        } else {
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
+                expected: "Pair".to_owned(),
+            })
+        }
+    }
+
+    fn into_tuple(self) -> Result<Tuple<Term>, ErrorKind> {
+        if let Value::Tuple(tup) = self {
+            Ok(tup)
+        } else {
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
+                expected: "Tuple".to_owned(),
+            })
+        }
+    }
+
+    fn into_record(self) -> Result<Record<Term>, ErrorKind> {
+        if let Value::Record(rec) = self {
+            Ok(rec)
+        } else {
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
+                expected: "Record".to_owned(),
+            })
+        }
+    }
+
+    fn into_left(self) -> Result<Left<Term>, ErrorKind> {
+        if let Value::Left(lft) = self {
+            Ok(lft)
+        } else {
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
+                expected: "Left".to_owned(),
+            })
+        }
+    }
+
+    fn into_right(self) -> Result<Right<Term>, ErrorKind> {
+        if let Value::Right(right) = self {
+            Ok(right)
+        } else {
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
+                expected: "Right".to_owned(),
+            })
+        }
+    }
+
+    fn into_variant(self) -> Result<Variant<Term>, ErrorKind> {
+        if let Value::Variant(var) = self {
+            Ok(var)
+        } else {
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
+                expected: "Variant".to_owned(),
+            })
+        }
+    }
+
+    fn into_nothing(self) -> Result<Nothing<Term>, ErrorKind> {
+        if let Value::Nothing(not) = self {
+            Ok(not)
+        } else {
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
+                expected: "Nothing".to_owned(),
+            })
+        }
+    }
+
+    fn into_something(self) -> Result<Something<Term>, ErrorKind> {
+        if let Value::Something(somet) = self {
+            Ok(somet)
+        } else {
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
+                expected: "Something".to_owned(),
+            })
+        }
+    }
+
+    fn into_nil(self) -> Result<Nil<Term>, ErrorKind> {
+        if let Value::Nil(nil) = self {
+            Ok(nil)
+        } else {
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
+                expected: "Nil".to_owned(),
+            })
+        }
+    }
+
+    fn into_cons(self) -> Result<Cons<Term>, ErrorKind> {
+        if let Value::Cons(cons) = self {
+            Ok(cons)
+        } else {
+            Err(ErrorKind::ValueMismatch {
+                found: self.to_string(),
+                expected: "Cons".to_owned(),
+            })
+        }
+    }
 }
 
 impl From<Value> for Term {

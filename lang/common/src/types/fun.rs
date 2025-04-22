@@ -115,6 +115,6 @@ where
     Ty: Type,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{} -> {}", self.from, self.to)
+        write!(f, "({} -> {})", self.from, self.to)
     }
 }

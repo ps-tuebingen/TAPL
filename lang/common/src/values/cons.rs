@@ -51,6 +51,6 @@ where
     T: LanguageTerm,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "cons[{}]({},{})", self.ty, self.head, self.tail)
+        write!(f, "Cons[{}]({},{})", self.ty, self.head, self.tail)
     }
 }
