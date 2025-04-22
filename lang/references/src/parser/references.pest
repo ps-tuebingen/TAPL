@@ -8,8 +8,10 @@ kw_let = { "let" }
 kw_in = { "in" }
 kw_if = { "if" }
 kw_else = { "else" }
+kw_fix = { "fix" }
 kw_succ = { "succ" }
 kw_pred = { "pred" }
+kw_iszero = { "iszero" }
 kw_true = { "true" }
 kw_false = { "false" }
 kw_tyref = { "Ref" }
@@ -22,6 +24,8 @@ keyword = {
   | kw_ref
   | kw_let
   | kw_in
+  | kw_fix
+  | kw_iszero
   | kw_if
   | kw_true 
   | kw_false
@@ -36,16 +40,18 @@ keyword = {
 term = { prim_term ~ left_rec? }
 paren_term = { "(" ~ term ~ ")" }
 
-const = { kw_unit }
+const = { kw_unit | kw_true | kw_false }
 
 prim_term = {
   | paren_term
   | const 
   | lambda_term
+  | fix_term
   | let_term
   | if_term
   | succ_term
   | pred_term
+  | iszero_term
   | ref_term
   | deref_term
   | number
@@ -55,10 +61,12 @@ prim_term = {
 deref_term = { "!" ~ term }
 ref_term = { kw_ref ~ paren_term }
 let_term = { kw_let ~ "(" ~ variable ~ "=" ~ term ~ ")" ~ kw_in ~ term }
+fix_term = { kw_fix ~ paren_term }
 if_term = { kw_if ~ "(" ~ term ~ ")" ~ "{" ~ term ~ "}" ~ kw_else ~ "{" ~ term ~ "}" }
 lambda_term = { "\\" ~ variable ~ ":" ~ type ~ "." ~ paren_term }
 succ_term = { kw_succ ~ paren_term }
 pred_term = { kw_pred ~ paren_term }
+iszero_term = { kw_iszero ~ paren_term} 
 
 // Left Recursive Terms
 left_rec = { assign_term | sequence | term }

@@ -3,7 +3,8 @@ use common::{
     language::LanguageTerm,
     subst::{SubstTerm, SubstType},
     terms::{
-        App, Assign, Deref, False, If, Lambda, Let, Loc, Num, Pred, Ref, Succ, True, Unit, Variable,
+        App, Assign, Deref, False, Fix, If, IsZero, Lambda, Let, Loc, Num, Pred, Ref, Succ, True,
+        Unit, Variable,
     },
     TypeVar, Var,
 };
@@ -15,6 +16,7 @@ pub enum Term {
     Num(Num<Term>),
     Succ(Succ<Term>),
     Pred(Pred<Term>),
+    IsZero(IsZero<Term>),
     Lambda(Lambda<Term>),
     App(App<Term>),
     Unit(Unit<Term>),
@@ -26,6 +28,7 @@ pub enum Term {
     If(If<Term>),
     True(True<Term>),
     False(False<Term>),
+    Fix(Fix<Term>),
 }
 
 impl common::terms::Term for Term {}
@@ -61,6 +64,8 @@ impl SubstTerm<Term> for Term {
             Term::If(ift) => ift.subst(v, t),
             Term::True(tru) => tru.subst(v, t),
             Term::False(fls) => fls.subst(v, t),
+            Term::Fix(fix) => fix.subst(v, t),
+            Term::IsZero(isz) => isz.subst(v, t),
         }
     }
 }
@@ -83,6 +88,8 @@ impl fmt::Display for Term {
             Term::If(ift) => ift.fmt(f),
             Term::True(tru) => tru.fmt(f),
             Term::False(fls) => fls.fmt(f),
+            Term::Fix(fix) => fix.fmt(f),
+            Term::IsZero(isz) => isz.fmt(f),
         }
     }
 }
@@ -171,6 +178,17 @@ impl From<False<Term>> for Term {
 impl From<Let<Term>> for Term {
     fn from(lt: Let<Term>) -> Term {
         Term::Let(lt)
+    }
+}
+impl From<Fix<Term>> for Term {
+    fn from(fix: Fix<Term>) -> Term {
+        Term::Fix(fix)
+    }
+}
+
+impl From<IsZero<Term>> for Term {
+    fn from(isz: IsZero<Term>) -> Term {
+        Term::IsZero(isz)
     }
 }
 

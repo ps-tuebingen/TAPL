@@ -65,6 +65,8 @@ impl Typecheck for Term {
             Term::If(ift) => ift.check(env),
             Term::True(tru) => tru.check(env),
             Term::False(fls) => fls.check(env),
+            Term::Fix(fix) => fix.check(env),
+            Term::IsZero(isz) => isz.check(env),
         }
     }
 }

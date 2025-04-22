@@ -82,6 +82,8 @@ where
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
         let bound_ty = self.bound_term.check(&mut env.clone())?;
         bound_ty.check_kind(env)?;
+
+        println!("checked let {} bound", self.var);
         env.add_var(self.var.clone(), bound_ty);
         let in_ty = self.in_term.check(env)?;
         in_ty.check_kind(env)?;

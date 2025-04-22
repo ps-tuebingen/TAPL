@@ -50,6 +50,8 @@ impl Eval for Term {
             Term::If(ift) => ift.eval(env),
             Term::True(tru) => tru.eval(env),
             Term::False(fls) => fls.eval(env),
+            Term::Fix(fix) => fix.eval(env),
+            Term::IsZero(isz) => isz.eval(env),
         }
     }
 }
