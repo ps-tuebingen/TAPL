@@ -1,6 +1,6 @@
 use super::Term;
 use crate::{
-    check::{to_check_err, Typecheck},
+    check::{to_check_err, Kindcheck, Typecheck},
     errors::{Error, ErrorKind},
     eval::Eval,
     language::{LanguageTerm, LanguageType},
@@ -82,12 +82,17 @@ where
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
         let term_ty = self.term.check(env)?;
+        let term_knd = term_ty.check_kind(env)?;
+
         let var_ty = self.ty.clone().into_variant().map_err(to_check_err)?;
         let lb_ty = var_ty
             .variants
             .get(&self.label)
             .ok_or(to_check_err(ErrorKind::UndefinedLabel(self.label.clone())))
             .cloned()?;
+        let lb_knd = lb_ty.check_kind(env)?;
+
+        lb_knd.check_equal(&term_knd).map_err(to_check_err)?;
         lb_ty.check_equal(&term_ty).map_err(to_check_err)?;
         Ok(self.ty.clone())
     }

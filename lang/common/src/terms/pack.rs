@@ -1,6 +1,6 @@
 use super::Term;
 use crate::{
-    check::{to_check_err, Typecheck},
+    check::{to_check_err, CheckEnvironment, Kindcheck, Typecheck},
     errors::Error,
     eval::Eval,
     language::{LanguageTerm, LanguageType},
@@ -94,10 +94,17 @@ where
     type Env = <T as Typecheck>::Env;
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
-        println!("checking pack term");
-        let term_ty = self.term.check(env)?;
-        println!("got pack term {term_ty}");
+        self.outer_ty
+            .check_kind(env)?
+            .into_star()
+            .map_err(to_check_err)?;
         let outer_exists = self.outer_ty.clone().into_exists().map_err(to_check_err)?;
+        env.add_tyvar_kind(outer_exists.var.clone(), outer_exists.kind);
+        let inner_kind = self.inner_ty.check_kind(env)?;
+        let term_ty = self.term.check(env)?;
+        let term_kind = term_ty.check_kind(env)?;
+        inner_kind.check_equal(&term_kind).map_err(to_check_err)?;
+
         let outer_subst = outer_exists
             .ty
             .subst_type(&outer_exists.var, &self.inner_ty);

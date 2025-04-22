@@ -1,6 +1,6 @@
 use super::Term;
 use crate::{
-    check::Typecheck,
+    check::{to_check_err, Kindcheck, Typecheck},
     errors::Error,
     eval::Eval,
     language::LanguageTerm,
@@ -77,9 +77,20 @@ where
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
         let mut tys: Vec<Self::Type> = vec![];
+        let mut knd = None;
         for t in self.terms.iter() {
             let ty = t.check(&mut env.clone())?;
+            let ty_knd = ty.check_kind(env)?;
             tys.push(ty);
+
+            match knd {
+                None => {
+                    knd = Some(ty_knd);
+                }
+                Some(ref knd) => {
+                    ty_knd.check_equal(&knd).map_err(to_check_err)?;
+                }
+            }
         }
         Ok(TupleTy::new::<Self::Type>(tys).into())
     }

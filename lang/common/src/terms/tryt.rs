@@ -1,9 +1,9 @@
 use super::Term;
 use crate::{
-    check::{to_check_err, Typecheck},
-    errors::{Error, ErrorKind},
+    check::{to_check_err, Kindcheck, Typecheck},
+    errors::Error,
     eval::Eval,
-    language::LanguageTerm,
+    language::{LanguageTerm, LanguageType, LanguageValue},
     subst::{SubstTerm, SubstType},
     TypeVar, Var,
 };
@@ -71,15 +71,14 @@ where
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
         let term_ty = self.term.check(&mut env.clone())?;
+        let term_knd = term_ty.check_kind(env)?;
+
         let handler_ty = self.handler.check(env)?;
-        if term_ty == handler_ty {
-            Ok(term_ty)
-        } else {
-            Err(to_check_err(ErrorKind::TypeMismatch {
-                found: term_ty.to_string(),
-                expected: handler_ty.to_string(),
-            }))
-        }
+        let handler_knd = handler_ty.check_kind(env)?;
+
+        term_knd.check_equal(&handler_knd).map_err(to_check_err)?;
+        term_ty.check_equal(&handler_ty).map_err(to_check_err)?;
+        Ok(term_ty)
     }
 }
 
@@ -91,11 +90,11 @@ where
     type Env = <T as Eval>::Env;
 
     fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
-        let term_val = self.term.eval(env);
-        if term_val.is_err() {
+        let term_val = self.term.eval(env)?;
+        if let Ok(_) = term_val.clone().into_exception() {
             self.handler.eval(env)
         } else {
-            term_val
+            Ok(term_val)
         }
     }
 }

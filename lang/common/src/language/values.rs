@@ -2,8 +2,8 @@ use super::terms::LanguageTerm;
 use crate::{
     errors::ErrorKind,
     values::{
-        Cons, False, Fold, Lambda, LambdaSub, Left, Loc, Nil, Nothing, Num, Pack, Pair, Raise,
-        Record, Right, Something, True, Tuple, TyLambda, Value, Variant,
+        Cons, Exception, False, Fold, Lambda, LambdaSub, Left, Loc, Nil, Nothing, Num, Pack, Pair,
+        Raise, Record, Right, Something, True, Tuple, TyLambda, Value, Variant,
     },
 };
 
@@ -115,6 +115,13 @@ where
         Err(ErrorKind::ValueMismatch {
             found: self.to_string(),
             expected: "Raise".to_owned(),
+        })
+    }
+
+    fn into_exception(self) -> Result<Exception<<Self as LanguageValue>::Term>, ErrorKind> {
+        Err(ErrorKind::ValueMismatch {
+            found: self.to_string(),
+            expected: "Exception".to_owned(),
         })
     }
 

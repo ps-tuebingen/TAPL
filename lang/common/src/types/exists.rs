@@ -16,7 +16,7 @@ where
     Ty: Type,
 {
     pub var: TypeVar,
-    kind: Kind,
+    pub kind: Kind,
     pub ty: Box<Ty>,
 }
 

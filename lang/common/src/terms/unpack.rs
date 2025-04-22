@@ -3,7 +3,6 @@ use crate::{
     check::{to_check_err, CheckEnvironment, Typecheck},
     errors::{Error, ErrorKind},
     eval::{to_eval_err, Eval},
-    kinds::Kind,
     language::{LanguageTerm, LanguageType, LanguageValue},
     subst::{SubstTerm, SubstType},
     TypeVar, Var,
@@ -130,7 +129,7 @@ where
                 expected: self.ty_name.clone(),
             }));
         }
-        env.add_tyvar_kind(bound_exists.var, Kind::Star);
+        env.add_tyvar_kind(bound_exists.var, bound_exists.kind);
         env.add_var(self.term_name.clone(), *bound_exists.ty);
         self.in_term.check(env)
     }

@@ -1,6 +1,6 @@
 use super::Term;
 use crate::{
-    check::Typecheck,
+    check::{to_check_err, Kindcheck, Typecheck},
     errors::Error,
     eval::Eval,
     language::LanguageTerm,
@@ -79,6 +79,9 @@ where
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
         let fst_ty = self.fst.check(&mut env.clone())?;
         let snd_ty = self.snd.check(env)?;
+        let fst_knd = fst_ty.check_kind(env)?;
+        let snd_knd = snd_ty.check_kind(env)?;
+        fst_knd.check_equal(&snd_knd).map_err(to_check_err)?;
         Ok(Product::new(fst_ty, snd_ty).into())
     }
 }

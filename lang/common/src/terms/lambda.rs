@@ -1,6 +1,6 @@
 use super::Term;
 use crate::{
-    check::{to_check_err, CheckEnvironment, Kindcheck, Typecheck},
+    check::{CheckEnvironment, Kindcheck, Typecheck},
     errors::Error,
     eval::Eval,
     language::LanguageTerm,
@@ -49,13 +49,10 @@ where
     type Env = <T as Typecheck>::Env;
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
-        self.annot
-            .check_kind(env)?
-            .into_star()
-            .map_err(to_check_err)?;
+        self.annot.check_kind(env)?;
         env.add_var(self.var.clone(), self.annot.clone());
         let body_ty = self.body.check(env)?;
-        body_ty.check_kind(env)?.into_star().map_err(to_check_err)?;
+        body_ty.check_kind(env)?;
         Ok(Fun::new(self.annot.clone(), body_ty).into())
     }
 }

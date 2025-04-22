@@ -83,17 +83,14 @@ where
         if_ty.check_kind(env)?.into_star().map_err(to_check_err)?;
         if_ty.into_bool().map_err(to_check_err)?;
         let then_ty = self.then_term.check(&mut env.clone())?;
-        then_ty.check_kind(env)?.into_star().map_err(to_check_err)?;
+        let then_kind = then_ty.check_kind(env)?;
+
         let else_ty = self.else_term.check(env)?;
-        else_ty.check_kind(env)?.into_star().map_err(to_check_err)?;
-        if then_ty != else_ty {
-            Err(to_check_err(ErrorKind::TypeMismatch {
-                found: then_ty.to_string(),
-                expected: else_ty.to_string(),
-            }))
-        } else {
-            Ok(then_ty)
-        }
+        let else_kind = else_ty.check_kind(env)?;
+
+        then_kind.check_equal(&else_kind).map_err(to_check_err)?;
+        then_ty.check_equal(&else_ty).map_err(to_check_err)?;
+        Ok(then_ty)
     }
 }
 

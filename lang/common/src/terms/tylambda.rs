@@ -1,6 +1,6 @@
 use super::Term;
 use crate::{
-    check::Typecheck,
+    check::{to_check_err, Kindcheck, Typecheck},
     errors::Error,
     eval::Eval,
     kinds::Kind,
@@ -99,6 +99,8 @@ where
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
         let term_ty = self.term.check(env)?;
+        let term_knd = term_ty.check_kind(env)?;
+        self.annot.check_equal(&term_knd).map_err(to_check_err)?;
         Ok(Forall::new(&self.var, self.annot.clone(), term_ty).into())
     }
 }

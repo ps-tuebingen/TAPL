@@ -1,6 +1,6 @@
 use super::Term;
 use crate::{
-    check::{to_check_err, CheckEnvironment, Typecheck},
+    check::{to_check_err, CheckEnvironment, Kindcheck, Typecheck},
     errors::{Error, ErrorKind},
     eval::{to_eval_err, Eval},
     language::{LanguageTerm, LanguageType, LanguageValue},
@@ -79,12 +79,22 @@ where
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
         let bound_ty = self.bound_term.check(&mut env.clone())?;
+        bound_ty
+            .check_kind(env)?
+            .into_star()
+            .map_err(to_check_err)?;
         let bound_sum = bound_ty.into_sum().map_err(to_check_err)?;
+
         let mut left_env = env.clone();
         left_env.add_var(self.left_var.clone(), *bound_sum.left);
         let left_ty = self.left_term.check(&mut left_env)?;
+        let left_knd = left_ty.check_kind(&mut left_env)?;
+
         env.add_var(self.right_var.clone(), *bound_sum.right);
         let right_ty = self.right_term.check(env)?;
+        let right_knd = right_ty.check_kind(env)?;
+
+        left_knd.check_equal(&right_knd).map_err(to_check_err)?;
         left_ty.check_equal(&right_ty).map_err(to_check_err)?;
         Ok(right_ty)
     }

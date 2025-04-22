@@ -1,9 +1,9 @@
 use super::Term;
 use crate::{
-    check::{to_check_err, Typecheck},
-    errors::{Error, ErrorKind},
+    check::{to_check_err, Kindcheck, Typecheck},
+    errors::Error,
     eval::Eval,
-    language::LanguageTerm,
+    language::{LanguageTerm, LanguageType},
     subst::{SubstTerm, SubstType},
     values::Raise as RaiseVal,
     TypeVar, Var,
@@ -80,15 +80,18 @@ where
     type Env = <T as Typecheck>::Env;
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
+        let ex_knd = self.exception_ty.check_kind(env)?;
+        self.cont_ty.check_kind(env)?;
+
         let err_ty = self.exception.check(env)?;
-        if err_ty == self.exception_ty {
-            Ok(self.cont_ty.clone())
-        } else {
-            Err(to_check_err(ErrorKind::TypeMismatch {
-                found: err_ty.to_string(),
-                expected: self.exception_ty.to_string(),
-            }))
-        }
+        let err_knd = err_ty.check_kind(env)?;
+
+        ex_knd.check_equal(&err_knd).map_err(to_check_err)?;
+        self.exception_ty
+            .check_equal(&err_ty)
+            .map_err(to_check_err)?;
+
+        Ok(self.cont_ty.clone())
     }
 }
 
