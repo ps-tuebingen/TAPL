@@ -1,7 +1,7 @@
 use super::Term;
 use crate::{
-    check::{to_check_err, CheckEnvironment, Kindcheck, Typecheck},
-    errors::Error,
+    check::{to_check_err, CheckEnvironment, Kindcheck, Subtypecheck, Typecheck},
+    errors::{Error, ErrorKind},
     eval::Eval,
     language::{LanguageTerm, LanguageType},
     subst::{SubstTerm, SubstType},
@@ -96,28 +96,43 @@ where
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
         println!("checking inner {}", self.inner_ty);
         let inner_kind = self.inner_ty.check_kind(env)?;
-        println!("checking pack,outer {}", self.outer_ty);
+        println!("checking pack outer {}", self.outer_ty);
         let outer_knd = self.outer_ty.check_kind(env)?;
+        println!("got outer kind: {outer_knd}, converting type to exists");
 
-        let outer_exists = self.outer_ty.clone().into_exists().map_err(to_check_err)?;
-        println!("got pack outer {}::{}", outer_exists.var, outer_exists.kind);
-        env.add_tyvar_kind(outer_exists.var.clone(), outer_exists.kind.clone());
-        println!("got inner kind {inner_kind}");
-        let term_ty = self.term.check(env)?;
-        println!("got pack inner ty {term_ty}");
-        let term_kind = term_ty.check_kind(env)?;
-        println!("got term kind {term_kind}");
+        if let Ok(outer_exists) = self.outer_ty.clone().into_exists() {
+            env.add_tyvar_kind(outer_exists.var.clone(), outer_exists.kind.clone());
+            let term_ty = self.term.check(env)?;
+            let term_kind = term_ty.check_kind(env)?;
 
-        term_kind.check_equal(&outer_knd).map_err(to_check_err)?;
-        inner_kind
-            .check_equal(&outer_exists.kind)
-            .map_err(to_check_err)?;
+            term_kind.check_equal(&outer_knd).map_err(to_check_err)?;
+            inner_kind
+                .check_equal(&outer_exists.kind)
+                .map_err(to_check_err)?;
 
-        let outer_subst = outer_exists
-            .ty
-            .subst_type(&outer_exists.var, &self.inner_ty);
-        outer_subst.check_equal(&term_ty).map_err(to_check_err)?;
-        Ok(self.outer_ty.clone())
+            let outer_subst = outer_exists
+                .ty
+                .subst_type(&outer_exists.var, &self.inner_ty);
+            outer_subst.check_equal(&term_ty).map_err(to_check_err)?;
+            Ok(self.outer_ty.clone())
+        } else if let Ok(outer_bound) = self.outer_ty.clone().into_exists_bounded() {
+            env.add_tyvar_super(outer_bound.var.clone(), *outer_bound.sup_ty.clone());
+            let sup_kind = outer_bound.sup_ty.check_kind(env)?;
+            env.add_tyvar_kind(outer_bound.var.clone(), sup_kind);
+
+            let term_ty = self.term.check(env)?;
+            let term_kind = term_ty.check_kind(env)?;
+            term_kind.check_equal(&outer_knd).map_err(to_check_err)?;
+
+            let outer_subst = outer_bound.ty.subst_type(&outer_bound.var, &self.inner_ty);
+            term_ty.check_subtype(&outer_subst, env)?;
+            Ok(self.outer_ty.clone())
+        } else {
+            Err(to_check_err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Existential Type".to_owned(),
+            }))
+        }
     }
 }
 

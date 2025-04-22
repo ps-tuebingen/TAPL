@@ -15,9 +15,9 @@ pub struct ExistsBounded<Ty>
 where
     Ty: Type,
 {
-    var: TypeVar,
-    sup_ty: Box<Ty>,
-    ty: Box<Ty>,
+    pub var: TypeVar,
+    pub sup_ty: Box<Ty>,
+    pub ty: Box<Ty>,
 }
 
 impl<Ty> ExistsBounded<Ty>
@@ -84,6 +84,7 @@ where
     type Env = <Ty as Subtypecheck<Ty>>::Env;
 
     fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Error> {
+        println!("converting subtype of {self} to exists");
         let other_exists = sup.clone().into_exists_bounded().map_err(to_subty_err)?;
         other_exists
             .sup_ty
@@ -95,6 +96,7 @@ where
                 expected: self.var.clone(),
             }));
         }
+        env.add_tyvar_super(other_exists.var, *self.sup_ty.clone());
         self.ty.check_subtype(&(*other_exists.ty), env)
     }
 }

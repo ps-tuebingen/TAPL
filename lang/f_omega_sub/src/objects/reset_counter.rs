@@ -7,7 +7,7 @@ use common::{
     kinds::Kind,
     terms::{App, Lambda, Let, Num, Pack, Record, RecordProj, TyLambdaSub, Unpack, Variable},
     types::{Fun, Nat, OpApp, OpLambda, Record as RecordTy, TypeVariable},
-    TypeVar, Var,
+    Label, Var,
 };
 use std::collections::HashMap;
 
@@ -15,7 +15,7 @@ pub fn reset_counter_m() -> Type {
     OpLambda::new(
         "R",
         Kind::Star,
-        RecordTy::new(HashMap::<TypeVar, Type>::from([
+        RecordTy::new(HashMap::<Label, Type>::from([
             (
                 "get".to_owned(),
                 Fun::new(TypeVariable::new("R"), Nat::new()).into(),
@@ -120,8 +120,9 @@ mod reset_counter_tests {
 
     #[test]
     fn reset_counter_sub() {
-        let result = reset_counter().check_subtype(&counter(), &mut Default::default());
-        assert!(result.is_ok())
+        reset_counter()
+            .check_subtype(&counter(), &mut Default::default())
+            .unwrap();
     }
 
     #[test]

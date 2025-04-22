@@ -112,6 +112,11 @@ where
     T: LanguageTerm,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "\\{}:{}.{}", self.var, self.annot, self.body)
+        let ty_str = self.annot.to_string();
+        if ty_str.is_empty() {
+            write!(f, "\\{}.{}", self.var, self.body)
+        } else {
+            write!(f, "\\{}:{}.{}", self.var, ty_str, self.body)
+        }
     }
 }

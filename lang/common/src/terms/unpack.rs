@@ -1,6 +1,6 @@
 use super::Term;
 use crate::{
-    check::{to_check_err, CheckEnvironment, Typecheck},
+    check::{to_check_err, CheckEnvironment, Kindcheck, Typecheck},
     errors::{Error, ErrorKind},
     eval::{to_eval_err, Eval},
     language::{LanguageTerm, LanguageType, LanguageValue},
@@ -122,16 +122,36 @@ where
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
         let bound_ty = self.bound_term.check(env)?;
-        let bound_exists = bound_ty.into_exists().map_err(to_check_err)?;
-        if self.ty_name != bound_exists.var {
-            return Err(to_check_err(ErrorKind::TypeMismatch {
-                found: bound_exists.var,
-                expected: self.ty_name.clone(),
-            }));
+        println!("converting bound type of unpack");
+        if let Ok(bound_exists) = bound_ty.clone().into_exists() {
+            if self.ty_name != bound_exists.var {
+                return Err(to_check_err(ErrorKind::TypeMismatch {
+                    found: bound_exists.var,
+                    expected: self.ty_name.clone(),
+                }));
+            }
+            env.add_tyvar_kind(bound_exists.var, bound_exists.kind);
+            env.add_var(self.term_name.clone(), *bound_exists.ty);
+            self.in_term.check(env)
+        } else if let Ok(bound_bound) = bound_ty.clone().into_exists_bounded() {
+            if self.ty_name != bound_bound.var {
+                return Err(to_check_err(ErrorKind::TypeMismatch {
+                    found: bound_bound.var,
+                    expected: self.ty_name.clone(),
+                }));
+            }
+            env.add_tyvar_super(bound_bound.var, *bound_bound.sup_ty.clone());
+            let sup_kind = bound_bound.sup_ty.check_kind(env)?;
+            env.add_tyvar_kind(self.ty_name.clone(), sup_kind);
+            println!("adding {}: {} to env", self.term_name, bound_bound.ty);
+            env.add_var(self.term_name.clone(), *bound_bound.ty.clone());
+            self.in_term.check(env)
+        } else {
+            Err(to_check_err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Existential Type".to_owned(),
+            }))
         }
-        env.add_tyvar_kind(bound_exists.var, bound_exists.kind);
-        env.add_var(self.term_name.clone(), *bound_exists.ty);
-        self.in_term.check(env)
     }
 }
 

@@ -55,12 +55,14 @@ where
 impl<Ty> Subtypecheck<Ty> for OpApp<Ty>
 where
     Ty: LanguageType,
+    Self: Into<Ty>,
 {
     type Env = <Ty as Subtypecheck<Ty>>::Env;
     fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Error> {
-        let sup_app = sup.clone().into_opapp().map_err(to_subty_err)?;
-        self.fun.check_subtype(&sup_app.fun, &mut env.clone())?;
-        self.arg.check_subtype(&sup_app.arg, env)
+        let self_norm = self.clone().normalize();
+        let sup_norm = sup.clone().normalize();
+        println!("normalized app: {self_norm}<:{sup_norm}");
+        self_norm.check_subtype(&sup_norm, env)
     }
 }
 
@@ -77,6 +79,7 @@ where
         println!("checking app arg {}", self.arg);
         let arg_kind = self.arg.check_kind(env)?;
         if fun_from == arg_kind {
+            println!("finished checking op app ({} {})", self.fun, self.arg);
             Ok(fun_to)
         } else {
             Err(to_kind_err(ErrorKind::KindMismatch {

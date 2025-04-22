@@ -24,6 +24,17 @@ pub enum Type {
 impl common::types::Type for Type {}
 
 impl LanguageType for Type {
+    fn into_variable(self) -> Result<TypeVariable<Type>, ErrorKind> {
+        let self_norm = self.normalize();
+        if let Type::Var(var) = self_norm {
+            Ok(var)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self_norm.to_string(),
+                expected: "Type Variable".to_owned(),
+            })
+        }
+    }
     fn into_top(self) -> Result<Top<Type>, ErrorKind> {
         let self_norm = self.normalize();
         if let Type::Top(top) = self_norm {

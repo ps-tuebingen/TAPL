@@ -1,4 +1,5 @@
 use common::{
+    errors::ErrorKind,
     language::LanguageType,
     subst::SubstType,
     types::{Bool, Forall, Fun, Nat, OpApp, OpLambda, TypeVariable, Unit},
@@ -21,7 +22,95 @@ pub enum Type {
 
 impl common::types::Type for Type {}
 
-impl LanguageType for Type {}
+impl LanguageType for Type {
+    fn into_variable(self) -> Result<TypeVariable<Type>, ErrorKind> {
+        if let Type::Var(v) = self {
+            Ok(v)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Type Variable".to_owned(),
+            })
+        }
+    }
+
+    fn into_unit(self) -> Result<Unit<Type>, ErrorKind> {
+        if let Type::Unit(u) = self {
+            Ok(u)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Unit".to_owned(),
+            })
+        }
+    }
+
+    fn into_nat(self) -> Result<Nat<Type>, ErrorKind> {
+        if let Type::Nat(nat) = self {
+            Ok(nat)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Nat".to_owned(),
+            })
+        }
+    }
+
+    fn into_bool(self) -> Result<Bool<Type>, ErrorKind> {
+        if let Type::Bool(b) = self {
+            Ok(b)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Bool".to_owned(),
+            })
+        }
+    }
+
+    fn into_oplambda(self) -> Result<OpLambda<Type>, ErrorKind> {
+        if let Type::OpLambda(lam) = self {
+            Ok(lam)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Operator Abstraction".to_owned(),
+            })
+        }
+    }
+
+    fn into_opapp(self) -> Result<OpApp<Type>, ErrorKind> {
+        if let Type::OpApp(app) = self {
+            Ok(app)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Operator Application".to_owned(),
+            })
+        }
+    }
+
+    fn into_fun(self) -> Result<Fun<Type>, ErrorKind> {
+        if let Type::Fun(fun) = self {
+            Ok(fun)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Function Type".to_owned(),
+            })
+        }
+    }
+
+    fn into_forall(self) -> Result<Forall<Type>, ErrorKind> {
+        if let Type::Forall(forall) = self {
+            Ok(forall)
+        } else {
+            Err(ErrorKind::TypeMismatch {
+                found: self.to_string(),
+                expected: "Universal Type".to_owned(),
+            })
+        }
+    }
+}
 
 impl fmt::Display for Type {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {

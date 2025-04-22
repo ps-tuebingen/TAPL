@@ -60,20 +60,19 @@ where
     type Env = <Ty as Subtypecheck<Ty>>::Env;
 
     fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Error> {
+        println!("checking suptype {self}<:{sup}");
         if let Ok(_) = sup.clone().into_top() {
             return Ok(());
         }
 
+        println!("converting {sup} to record (checking subtype record)");
         let sup_rec = sup.clone().into_record().map_err(to_subty_err)?;
         for (lb, ty) in sup_rec.records.iter() {
-            println!("checking subtype for {lb}");
-            let sup_ty = self
+            let sub_ty = self
                 .records
                 .get(lb)
                 .ok_or(to_subty_err(ErrorKind::UndefinedLabel(lb.clone())))?;
-            println!("got super type for {lb}, {sup_ty}, self type: {ty}");
-            ty.check_subtype(sup_ty, &mut env.clone())?;
-            println!("checked {ty}<:{sup_ty}");
+            sub_ty.check_subtype(ty, &mut env.clone())?;
         }
         Ok(())
     }
@@ -85,14 +84,11 @@ where
 {
     type Env = <Ty as Kindcheck<Ty>>::Env;
     fn check_kind(&self, env: &mut Self::Env) -> Result<Kind, Error> {
-        println!("checking records kind");
-        for (lb, t) in self.records.iter() {
-            println!("checking label {lb}");
+        for (_, t) in self.records.iter() {
             t.check_kind(&mut env.clone())?
                 .into_star()
                 .map_err(to_kind_err)?;
         }
-        println!("checked record");
         Ok(Kind::Star)
     }
 }

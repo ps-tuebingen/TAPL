@@ -2,7 +2,7 @@ use crate::types::Type;
 use common::{
     kinds::Kind,
     types::{ExistsBounded, OpApp, OpLambda, Record, TypeVariable},
-    Label, TypeVar,
+    Label,
 };
 use std::collections::HashMap;
 

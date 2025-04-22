@@ -61,7 +61,7 @@ where
 
 impl fmt::Display for Untyped {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        f.write_str("untyped")
+        f.write_str("")
     }
 }
 

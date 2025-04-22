@@ -75,6 +75,10 @@ where
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
         let term_ty = self.record.check(env)?;
         term_ty.check_kind(env)?;
+        println!(
+            "converting {term_ty} to record (projection to {})",
+            self.label
+        );
         let rec_ty = term_ty.into_record().map_err(to_check_err)?;
         rec_ty
             .records
