@@ -34,7 +34,7 @@ impl Normalize<Type> for Type {
             Type::Top(top) => top.normalize(),
             Type::Fun(fun) => fun.normalize(),
             Type::Forall(forall) => forall.normalize(),
-            Type::OpLambda(lam) => lam.normalize(),
+            Type::OpLambdaSub(lam) => lam.normalize(),
             Type::OpApp(app) => app.normalize(),
             Type::Exists(ex) => ex.normalize(),
             Type::Record(rec) => rec.normalize(),

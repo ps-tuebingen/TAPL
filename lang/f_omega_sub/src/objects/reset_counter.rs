@@ -6,15 +6,15 @@ use crate::{terms::Term, types::Type};
 use common::{
     kinds::Kind,
     terms::{App, Lambda, LambdaSub, Let, Num, Pack, Record, RecordProj, Unpack, Variable},
-    types::{Fun, Nat, OpApp, OpLambda, Record as RecordTy, TypeVariable},
+    types::{Fun, Nat, OpApp, OpLambdaSub, Record as RecordTy, Top, TypeVariable},
     Label, Var,
 };
 use std::collections::HashMap;
 
 pub fn reset_counter_m() -> Type {
-    OpLambda::new(
+    OpLambdaSub::new(
         "R",
-        Kind::Star,
+        Top::new(Kind::Star),
         RecordTy::new(HashMap::<Label, Type>::from([
             (
                 "get".to_owned(),

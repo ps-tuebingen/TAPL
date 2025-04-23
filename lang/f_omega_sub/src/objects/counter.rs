@@ -3,15 +3,15 @@ use crate::{terms::Term, types::Type};
 use common::{
     kinds::Kind,
     terms::{App, Lambda, LambdaSub, Num, Pack, Record, RecordProj, Succ, Unpack, Variable},
-    types::{Fun, Nat, OpApp, OpLambda, Record as RecordTy, TypeVariable},
+    types::{Fun, Nat, OpApp, OpLambdaSub, Record as RecordTy, Top, TypeVariable},
     Label, TypeVar, Var,
 };
 use std::collections::HashMap;
 
 pub fn counter_m() -> Type {
-    OpLambda::new(
+    OpLambdaSub::new(
         "R",
-        Kind::Star,
+        Top::new(Kind::Star),
         RecordTy::new(HashMap::<TypeVar, Type>::from([
             (
                 "get".to_owned(),

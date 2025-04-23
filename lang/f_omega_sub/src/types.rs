@@ -3,7 +3,9 @@ use common::{
     eval::Normalize,
     language::LanguageType,
     subst::SubstType,
-    types::{ExistsBounded, ForallBounded, Fun, Nat, OpApp, OpLambda, Record, Top, TypeVariable},
+    types::{
+        ExistsBounded, ForallBounded, Fun, Nat, OpApp, OpLambdaSub, Record, Top, TypeVariable,
+    },
     TypeVar,
 };
 use std::fmt;
@@ -14,7 +16,7 @@ pub enum Type {
     Top(Top<Type>),
     Fun(Fun<Type>),
     Forall(ForallBounded<Type>),
-    OpLambda(OpLambda<Type>),
+    OpLambdaSub(OpLambdaSub<Type>),
     OpApp(OpApp<Type>),
     Exists(ExistsBounded<Type>),
     Record(Record<Type>),
@@ -71,9 +73,9 @@ impl LanguageType for Type {
         }
     }
 
-    fn into_oplambda(self) -> Result<OpLambda<Type>, ErrorKind> {
+    fn into_oplambdasub(self) -> Result<OpLambdaSub<Type>, ErrorKind> {
         let self_norm = self.normalize();
-        if let Type::OpLambda(lam) = self_norm {
+        if let Type::OpLambdaSub(lam) = self_norm {
             Ok(lam)
         } else {
             Err(ErrorKind::TypeMismatch {
@@ -140,7 +142,7 @@ impl SubstType<Type> for Type {
             Type::Top(top) => top.subst_type(v, ty),
             Type::Fun(fun) => fun.subst_type(v, ty),
             Type::Forall(forall) => forall.subst_type(v, ty),
-            Type::OpLambda(lam) => lam.subst_type(v, ty),
+            Type::OpLambdaSub(lam) => lam.subst_type(v, ty),
             Type::OpApp(app) => app.subst_type(v, ty),
             Type::Exists(ex) => ex.subst_type(v, ty),
             Type::Record(rec) => rec.subst_type(v, ty),
@@ -156,7 +158,7 @@ impl fmt::Display for Type {
             Type::Top(top) => top.fmt(f),
             Type::Fun(fun) => fun.fmt(f),
             Type::Forall(forall) => forall.fmt(f),
-            Type::OpLambda(lam) => lam.fmt(f),
+            Type::OpLambdaSub(lam) => lam.fmt(f),
             Type::OpApp(app) => app.fmt(f),
             Type::Exists(ex) => ex.fmt(f),
             Type::Record(rec) => rec.fmt(f),
@@ -175,9 +177,9 @@ impl From<TypeVariable<Type>> for Type {
         Type::Var(var)
     }
 }
-impl From<OpLambda<Type>> for Type {
-    fn from(oplam: OpLambda<Type>) -> Type {
-        Type::OpLambda(oplam)
+impl From<OpLambdaSub<Type>> for Type {
+    fn from(oplam: OpLambdaSub<Type>) -> Type {
+        Type::OpLambdaSub(oplam)
     }
 }
 impl From<Fun<Type>> for Type {

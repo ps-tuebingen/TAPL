@@ -1,7 +1,7 @@
 use crate::types::Type;
 use common::{
     kinds::Kind,
-    types::{ExistsBounded, OpApp, OpLambda, Record, TypeVariable},
+    types::{ExistsBounded, OpApp, OpLambdaSub, Record, Top, TypeVariable},
     Label,
 };
 use std::collections::HashMap;
@@ -10,9 +10,9 @@ pub mod counter;
 pub mod reset_counter;
 
 pub fn object() -> Type {
-    OpLambda::new(
+    OpLambdaSub::new(
         "M",
-        Kind::Star.abs(),
+        Top::new(Kind::Star),
         ExistsBounded::new_unbounded(
             "X",
             Record::new(HashMap::<Label, Type>::from([
