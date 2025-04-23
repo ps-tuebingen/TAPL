@@ -96,6 +96,8 @@ where
         let arg_norm = self.arg.normalize();
         if let Ok(oplam) = fun_norm.clone().into_oplambda() {
             oplam.body.subst_type(&oplam.var, &arg_norm).normalize()
+        } else if let Ok(oplam) = fun_norm.clone().into_oplambdasub() {
+            oplam.body.subst_type(&oplam.var, &arg_norm).normalize()
         } else {
             OpApp {
                 fun: Box::new(fun_norm),

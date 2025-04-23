@@ -5,8 +5,8 @@ use crate::{
     subst::SubstType,
     types::{
         Bool, Bot, Exists, ExistsBounded, Forall, ForallBounded, Fun, List, Mu, Nat, OpApp,
-        OpLambda, Optional, Product, Record, Reference, Sink, Source, Sum, Top, Tuple, Type,
-        TypeVariable, Unit, Variant,
+        OpLambda, OpLambdaSub, Optional, Product, Record, Reference, Sink, Source, Sum, Top, Tuple,
+        Type, TypeVariable, Unit, Variant,
     },
 };
 
@@ -150,6 +150,13 @@ where
     }
 
     fn into_oplambda(self) -> Result<OpLambda<Self>, ErrorKind> {
+        Err(ErrorKind::TypeMismatch {
+            found: self.to_string(),
+            expected: "Operator Abstraction".to_owned(),
+        })
+    }
+
+    fn into_oplambdasub(self) -> Result<OpLambdaSub<Self>, ErrorKind> {
         Err(ErrorKind::TypeMismatch {
             found: self.to_string(),
             expected: "Operator Abstraction".to_owned(),
