@@ -1,5 +1,0 @@
-if (true) {
-  {x=true,y=false}
-}else{
-  {x=false,z=true}
-}

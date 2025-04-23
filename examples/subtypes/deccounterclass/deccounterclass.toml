@@ -1,1 +1,1 @@
-ty="({ x:Ref(Nat) } -> { dec:(Nat -> Unit), get:(Unit -> Nat), inc:(Unit -> Unit), reset:(Unit -> Unit) })"
+ty="({x:Ref(Nat)} -> {dec:(Nat -> Unit), get:(Unit -> Nat), inc:(Unit -> Unit), reset:(Unit -> Unit)})"

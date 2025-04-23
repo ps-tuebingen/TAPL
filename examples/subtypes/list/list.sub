@@ -1,4 +1,4 @@
-case Cons(1,Cons(2,Cons(3,Nil[Nat]))) : List(Nat) of {
+case Cons[Nat](1,Cons[Nat](2,Cons[Nat](3,Nil[Nat]))) of {
   Nil => 0
   | Cons(x,xs) => x
 }

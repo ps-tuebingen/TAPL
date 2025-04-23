@@ -109,6 +109,6 @@ where
     T: LanguageTerm,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{} := {}", self.lhs, self.rhs)
+        write!(f, "({}) := {}", self.lhs, self.rhs)
     }
 }

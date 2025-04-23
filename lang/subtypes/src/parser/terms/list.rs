@@ -38,10 +38,11 @@ pub fn pair_to_cons(p: Pair<'_, Rule>) -> Result<Cons<Term>, Error> {
         ],
     )?;
     inner.remove(0);
+    let ty_rule = pair_to_n_inner(inner.remove(0), vec!["Type"])?.remove(0);
+    let ty = pair_to_type(ty_rule)?;
+
     let fst_rule = inner.remove(0);
     let fst = pair_to_term(fst_rule)?;
-    let ty_rule = inner.remove(0);
-    let ty = pair_to_type(ty_rule)?;
     let rst_rule = inner.remove(0);
     let rst = pair_to_term(rst_rule)?;
     Ok(Cons::new(fst, rst, ty))

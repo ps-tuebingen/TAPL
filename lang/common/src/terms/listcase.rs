@@ -153,7 +153,7 @@ where
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(
             f,
-            "case {} of {{ nil => {} | cons({},{}) => {} }}",
+            "case {} of {{ Nil => {} | Cons({},{}) => {} }}",
             self.bound_term, self.nil_rhs, self.cons_fst, self.cons_rst, self.cons_rhs
         )
     }

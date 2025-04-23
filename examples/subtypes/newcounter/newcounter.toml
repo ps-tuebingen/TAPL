@@ -1,1 +1,1 @@
-ty="(Unit -> { get:(Unit -> Nat), inc:(Unit -> Unit) })"
+ty="(Unit -> {get:(Unit -> Nat), inc:(Unit -> Unit)})"

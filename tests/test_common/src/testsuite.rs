@@ -18,7 +18,7 @@ impl TestResult {
             TestResult::Success
         } else {
             TestResult::Fail(format!(
-                "Result!=Epected:\n\tresult:   {res}\n\texpected: {exp}"
+                "Result!=Expected:\n\tresult:   {res}\n\texpected: {exp}"
             ))
         }
     }
