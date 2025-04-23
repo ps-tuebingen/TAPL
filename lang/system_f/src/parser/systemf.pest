@@ -35,7 +35,7 @@ prim_type = {
 }
 
 paren_ty = { "(" ~ type ~ ")" }
-forall_ty = { forall_var ~ "." ~ type } 
+forall_ty = { forall_var ~ "::*"? ~ "." ~ type } 
 forall_var = ${kw_forall ~ " " ~ variable }
 
 left_rec_ty = { fun_ty }
