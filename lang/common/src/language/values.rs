@@ -3,7 +3,7 @@ use crate::{
     errors::ErrorKind,
     values::{
         Cons, Exception, False, Fold, Lambda, LambdaSub, Left, Loc, Nil, Nothing, Num, Pack, Pair,
-        Raise, Record, Right, Something, True, Tuple, TyLambda, TyLambdaSub, Value, Variant,
+        Raise, Record, Right, Something, True, Tuple, TyLambda, Value, Variant,
     },
 };
 
@@ -21,13 +21,6 @@ where
     }
 
     fn into_tylambda(self) -> Result<TyLambda<<Self as LanguageValue>::Term>, ErrorKind> {
-        Err(ErrorKind::ValueMismatch {
-            found: self.to_string(),
-            expected: "Type Abstraction".to_owned(),
-        })
-    }
-
-    fn into_tylambdasub(self) -> Result<TyLambdaSub<<Self as LanguageValue>::Term>, ErrorKind> {
         Err(ErrorKind::ValueMismatch {
             found: self.to_string(),
             expected: "Type Abstraction".to_owned(),

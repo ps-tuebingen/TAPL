@@ -5,7 +5,7 @@ use super::{
 use crate::{terms::Term, types::Type};
 use common::{
     kinds::Kind,
-    terms::{App, Lambda, Let, Num, Pack, Record, RecordProj, TyLambdaSub, Unpack, Variable},
+    terms::{App, Lambda, LambdaSub, Let, Num, Pack, Record, RecordProj, Unpack, Variable},
     types::{Fun, Nat, OpApp, OpLambda, Record as RecordTy, TypeVariable},
     Label, Var,
 };
@@ -67,7 +67,7 @@ pub fn reset_counter_class() -> Term {
 }
 
 pub fn send_reset() -> Term {
-    TyLambdaSub::new(
+    LambdaSub::new(
         "M",
         reset_counter_m(),
         Lambda::new(

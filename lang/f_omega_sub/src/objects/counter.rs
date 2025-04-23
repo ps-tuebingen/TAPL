@@ -2,7 +2,7 @@ use super::object;
 use crate::{terms::Term, types::Type};
 use common::{
     kinds::Kind,
-    terms::{App, Lambda, Num, Pack, Record, RecordProj, Succ, TyLambdaSub, Unpack, Variable},
+    terms::{App, Lambda, LambdaSub, Num, Pack, Record, RecordProj, Succ, Unpack, Variable},
     types::{Fun, Nat, OpApp, OpLambda, Record as RecordTy, TypeVariable},
     Label, TypeVar, Var,
 };
@@ -31,7 +31,7 @@ pub fn counter() -> Type {
 }
 
 pub fn send_inc() -> Term {
-    TyLambdaSub::new(
+    LambdaSub::new(
         "M",
         counter_m(),
         Lambda::new(
@@ -69,7 +69,7 @@ pub fn send_inc() -> Term {
 }
 
 pub fn send_get() -> Term {
-    TyLambdaSub::new(
+    LambdaSub::new(
         "M",
         counter_m(),
         Lambda::new(

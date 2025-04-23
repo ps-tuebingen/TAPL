@@ -16,7 +16,7 @@ pub struct LambdaSub<T>
 where
     T: LanguageTerm,
 {
-    var: Var,
+    var: TypeVar,
     sup_ty: <T as LanguageTerm>::Type,
     body: Box<T>,
 }

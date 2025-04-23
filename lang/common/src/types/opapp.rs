@@ -1,6 +1,6 @@
 use super::Type;
 use crate::{
-    check::{to_kind_err, to_subty_err, Kindcheck, Subtypecheck},
+    check::{to_kind_err, Kindcheck, Subtypecheck},
     errors::{Error, ErrorKind},
     eval::Normalize,
     kinds::Kind,

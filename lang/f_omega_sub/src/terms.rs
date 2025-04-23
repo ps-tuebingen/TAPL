@@ -3,8 +3,8 @@ use common::{
     language::LanguageTerm,
     subst::{SubstTerm, SubstType},
     terms::{
-        App, Lambda, LambdaSub, Let, Num, Pack, Pred, Record, RecordProj, Succ, TyApp, TyLambdaSub,
-        Unpack, Variable,
+        App, Lambda, LambdaSub, Let, Num, Pack, Pred, Record, RecordProj, Succ, TyApp, Unpack,
+        Variable,
     },
     TypeVar, Var,
 };
@@ -16,7 +16,6 @@ pub enum Term {
     Lambda(Lambda<Term>),
     App(App<Term>),
     LambdaSub(LambdaSub<Term>),
-    TyLambdaSub(TyLambdaSub<Term>),
     TyApp(TyApp<Term>),
     Pack(Pack<Term>),
     Unpack(Unpack<Term>),
@@ -44,7 +43,6 @@ impl SubstTerm<Term> for Term {
             Term::Lambda(lam) => lam.subst(v, t),
             Term::App(app) => app.subst(v, t),
             Term::LambdaSub(lam) => lam.subst(v, t),
-            Term::TyLambdaSub(lam) => lam.subst(v, t),
             Term::TyApp(app) => app.subst(v, t),
             Term::Pack(pack) => pack.subst(v, t),
             Term::Unpack(unpack) => unpack.subst(v, t),
@@ -67,7 +65,6 @@ impl SubstType<Type> for Term {
             Term::Lambda(lam) => lam.subst_type(v, ty),
             Term::App(app) => app.subst_type(v, ty),
             Term::LambdaSub(lam) => lam.subst_type(v, ty),
-            Term::TyLambdaSub(lam) => lam.subst_type(v, ty),
             Term::TyApp(app) => app.subst_type(v, ty),
             Term::Pack(pack) => pack.subst_type(v, ty),
             Term::Unpack(unpack) => unpack.subst_type(v, ty),
@@ -88,7 +85,6 @@ impl fmt::Display for Term {
             Term::Lambda(lam) => lam.fmt(f),
             Term::App(app) => app.fmt(f),
             Term::LambdaSub(lam) => lam.fmt(f),
-            Term::TyLambdaSub(lam) => lam.fmt(f),
             Term::TyApp(app) => app.fmt(f),
             Term::Pack(pack) => pack.fmt(f),
             Term::Unpack(unpack) => unpack.fmt(f),
@@ -122,16 +118,7 @@ impl From<TyApp<Term>> for Term {
         Term::TyApp(tyapp)
     }
 }
-impl From<TyLambdaSub<Term>> for Term {
-    fn from(lam: TyLambdaSub<Term>) -> Term {
-        Term::TyLambdaSub(lam)
-    }
-}
-impl From<LambdaSub<Term>> for Term {
-    fn from(lam: LambdaSub<Term>) -> Term {
-        Term::LambdaSub(lam)
-    }
-}
+
 impl From<Lambda<Term>> for Term {
     fn from(lam: Lambda<Term>) -> Term {
         Term::Lambda(lam)
@@ -173,7 +160,11 @@ impl From<Succ<Term>> for Term {
         Term::Succ(succ)
     }
 }
-
+impl From<LambdaSub<Term>> for Term {
+    fn from(lam: LambdaSub<Term>) -> Term {
+        Term::LambdaSub(lam)
+    }
+}
 impl From<RecordProj<Term>> for Term {
     fn from(proj: RecordProj<Term>) -> Term {
         Term::RecordProj(proj)

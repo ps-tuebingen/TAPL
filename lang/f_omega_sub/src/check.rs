@@ -64,7 +64,6 @@ impl Typecheck for Term {
             Term::Lambda(lam) => lam.check(env),
             Term::App(app) => app.check(env),
             Term::LambdaSub(lam) => lam.check(env),
-            Term::TyLambdaSub(lam) => lam.check(env),
             Term::TyApp(app) => app.check(env),
             Term::Pack(pack) => pack.check(env),
             Term::Unpack(unpack) => unpack.check(env),
