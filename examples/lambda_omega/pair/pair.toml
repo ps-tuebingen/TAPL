@@ -1,2 +1,2 @@
 ty="forall X::*.forall Y::*.(X -> (Y -> forall R::*.((X -> (Y -> R)) -> R)))"
-evaluated="\\X::*.\\Y::*.\\x:X.(\\y:Y.(\\R::*.\\p:(X -> (Y -> R)).(((p) (x)) (y))))"
+evaluated="\\X::*.\\Y::*.(\\x:X.(\\y:Y.(\\R::*.(\\p:(X -> (Y -> R)).(((p) (x)) (y))))))"

@@ -1,2 +1,2 @@
-ty="{exists X,{methods:{get:(X -> Nat), inc:(X -> X)}, state:X}}"
-evaluated="{*Nat,{methods={get=\\x:Nat.(x), inc=\\x:Nat.(succ(x))}, state=5}} as {exists X,{methods:{get:(X -> Nat), inc:(X -> X)}, state:X}}"
+ty="{exists X::*,{methods:{get:(X -> Nat), inc:(X -> X)}, state:X}}"
+evaluated="{*Nat,{methods={get=\\x:Nat.(x), inc=\\x:Nat.(succ(x))}, state=5}} as {exists X::*,{methods:{get:(X -> Nat), inc:(X -> X)}, state:X}}"

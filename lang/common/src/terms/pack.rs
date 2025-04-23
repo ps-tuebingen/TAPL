@@ -140,7 +140,7 @@ where
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(
             f,
-            "{{*{},{}}} as {}",
+            "{{*({}),{}}} as {}",
             self.inner_ty, self.term, self.outer_ty
         )
     }

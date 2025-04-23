@@ -1,2 +1,2 @@
-ty="{exists Counter,{get:(Counter -> Nat), inc:(Counter -> Counter), new:Counter}}"
-evaluated="{*{x:Nat},{get=\\l:{x:Nat}.((l).x), inc=\\l:{x:Nat}.({x=succ((l).x)}), new={x=1}}} as {exists Counter,{get:(Counter -> Nat), inc:(Counter -> Counter), new:Counter}}"
+ty="{exists Counter::*,{get:(Counter -> Nat), inc:(Counter -> Counter), new:Counter}}"
+evaluated="{*{x:Nat},{get=\\l:{x:Nat}.((l).x), inc=\\l:{x:Nat}.({x=succ((l).x)}), new={x=1}}} as {exists Counter::*,{get:(Counter -> Nat), inc:(Counter -> Counter), new:Counter}}"
