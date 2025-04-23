@@ -103,8 +103,9 @@ where
     Ty: LanguageType,
     Self: Into<Ty>,
 {
-    fn normalize(self) -> Ty {
-        let body_norm = self.body.normalize();
+    type Env = <Ty as Normalize<Ty>>::Env;
+    fn normalize(self, env: &mut Self::Env) -> Ty {
+        let body_norm = self.body.normalize(env);
         OpLambda {
             var: self.var,
             annot: self.annot,

@@ -1,4 +1,4 @@
-use super::{terms::Term, types::Type, values::Value};
+use super::{check::Env, terms::Term, types::Type, values::Value};
 use common::{
     errors::Error,
     eval::{Eval, Normalize},
@@ -28,17 +28,18 @@ impl Eval for Term {
 }
 
 impl Normalize<Type> for Type {
-    fn normalize(self) -> Self {
+    type Env = Env;
+    fn normalize(self, env: &mut Self::Env) -> Self {
         match self {
-            Type::Var(var) => var.normalize(),
-            Type::Top(top) => top.normalize(),
-            Type::Fun(fun) => fun.normalize(),
-            Type::Forall(forall) => forall.normalize(),
-            Type::OpLambdaSub(lam) => lam.normalize(),
-            Type::OpApp(app) => app.normalize(),
-            Type::Exists(ex) => ex.normalize(),
-            Type::Record(rec) => rec.normalize(),
-            Type::Nat(nat) => nat.normalize(),
+            Type::Var(var) => var.normalize(env),
+            Type::Top(top) => top.normalize(env),
+            Type::Fun(fun) => fun.normalize(env),
+            Type::Forall(forall) => forall.normalize(env),
+            Type::OpLambdaSub(lam) => lam.normalize(env),
+            Type::OpApp(app) => app.normalize(env),
+            Type::Exists(ex) => ex.normalize(env),
+            Type::Record(rec) => rec.normalize(env),
+            Type::Nat(nat) => nat.normalize(env),
         }
     }
 }

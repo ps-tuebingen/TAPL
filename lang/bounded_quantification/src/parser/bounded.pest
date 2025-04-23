@@ -72,7 +72,7 @@ prim_type = {
 }
 
 paren_type = { "(" ~ type ~ ")" }
-const_ty = { kw_tytop | kw_tynat }
+const_ty = { kw_tytop ~ "[*]"?| kw_tynat }
 forall_ty = { forall_start ~ "<:" ~ type ~ "." ~ type } 
 forall_unbounded = { forall_start  ~ "." ~ type }
 forall_start = ${ kw_forall ~ " " ~ variable }

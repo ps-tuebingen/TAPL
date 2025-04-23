@@ -2,7 +2,7 @@ use super::Term;
 use crate::{
     check::{to_check_err, Kindcheck, Typecheck},
     errors::Error,
-    eval::Eval,
+    eval::{Eval, Normalize},
     language::{LanguageTerm, LanguageType},
     subst::{SubstTerm, SubstType},
     values::Left as LeftVal,
@@ -75,9 +75,10 @@ where
     type Type = <T as Typecheck>::Type;
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
-        let left_ty = self.left_term.check(env)?;
+        let left_ty = self.left_term.check(env)?.normalize(env);
         let left_knd = left_ty.check_kind(env)?;
-        let sum_ty = self.ty.clone().into_sum().map_err(to_check_err)?;
+        let ty_norm = self.ty.clone().normalize(env);
+        let sum_ty = ty_norm.into_sum().map_err(to_check_err)?;
         let sum_kind = sum_ty.check_kind(env)?;
         left_knd.check_equal(&sum_kind).map_err(to_check_err)?;
         sum_ty.left.check_equal(&left_ty).map_err(to_check_err)?;

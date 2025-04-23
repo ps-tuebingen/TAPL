@@ -71,7 +71,8 @@ where
     Ty: LanguageType,
     Self: Into<Ty>,
 {
-    fn normalize(self) -> Ty {
+    type Env = <Ty as Normalize<Ty>>::Env;
+    fn normalize(self, _: &mut Self::Env) -> Ty {
         self.into()
     }
 }

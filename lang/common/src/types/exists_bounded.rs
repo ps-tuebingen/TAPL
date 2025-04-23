@@ -84,10 +84,12 @@ where
     type Env = <Ty as Subtypecheck<Ty>>::Env;
 
     fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Error> {
-        let other_exists = sup.clone().into_exists_bounded().map_err(to_subty_err)?;
+        let sup_norm = sup.clone().normalize(env);
+        let self_norm = self.sup_ty.clone().normalize(env);
+        let other_exists = sup_norm.into_exists_bounded().map_err(to_subty_err)?;
         other_exists
             .sup_ty
-            .check_equal(&self.sup_ty)
+            .check_equal(&self_norm)
             .map_err(to_subty_err)?;
         if self.var != other_exists.var {
             return Err(to_subty_err(ErrorKind::TypeMismatch {
@@ -96,7 +98,10 @@ where
             }));
         }
         env.add_tyvar_super(other_exists.var, *self.sup_ty.clone());
-        self.ty.check_subtype(&(*other_exists.ty), env)
+        self.ty
+            .clone()
+            .normalize(env)
+            .check_subtype(&(*other_exists.ty), env)
     }
 }
 
@@ -117,9 +122,10 @@ where
     Ty: LanguageType,
     Self: Into<Ty>,
 {
-    fn normalize(self) -> Ty {
-        let sup_norm = self.sup_ty.normalize();
-        let ty_norm = self.ty.normalize();
+    type Env = <Ty as Normalize<Ty>>::Env;
+    fn normalize(self, env: &mut Self::Env) -> Ty {
+        let sup_norm = self.sup_ty.normalize(env);
+        let ty_norm = self.ty.normalize(env);
         ExistsBounded {
             var: self.var,
             sup_ty: Box::new(sup_norm),

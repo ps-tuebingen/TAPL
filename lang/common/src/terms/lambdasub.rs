@@ -2,7 +2,7 @@ use super::Term;
 use crate::{
     check::{to_check_err, CheckEnvironment, Kindcheck, Typecheck},
     errors::Error,
-    eval::Eval,
+    eval::{Eval, Normalize},
     language::LanguageTerm,
     subst::{SubstTerm, SubstType},
     types::{ForallBounded, Top},
@@ -120,13 +120,14 @@ where
     type Env = <T as Typecheck>::Env;
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
-        let sup_kind = self.sup_ty.check_kind(env)?;
-        env.add_tyvar_super(self.var.clone(), self.sup_ty.clone());
+        let sup_norm = self.sup_ty.clone().normalize(env);
+        let sup_kind = sup_norm.check_kind(env)?;
+        env.add_tyvar_super(self.var.clone(), sup_norm.clone());
         env.add_tyvar_kind(self.var.clone(), sup_kind.clone());
-        let term_ty = self.body.check(env)?;
+        let term_ty = self.body.check(env)?.normalize(env);
         let term_kind = term_ty.check_kind(env)?;
         term_kind.check_equal(&sup_kind).map_err(to_check_err)?;
-        Ok(ForallBounded::new(&self.var, self.sup_ty.clone(), term_ty).into())
+        Ok(ForallBounded::new(&self.var, sup_norm.clone(), term_ty).into())
     }
 }
 
@@ -135,6 +136,6 @@ where
     T: LanguageTerm,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "\\{}<:{}.{}", self.var, self.sup_ty, self.body)
+        write!(f, "\\{}<:({}).{}", self.var, self.sup_ty, self.body)
     }
 }

@@ -2,7 +2,7 @@ use super::Term;
 use crate::{
     check::{to_check_err, Kindcheck, Subtypecheck, Typecheck},
     errors::{Error, ErrorKind},
-    eval::{to_eval_err, Eval},
+    eval::{to_eval_err, Eval, Normalize},
     language::{LanguageTerm, LanguageType, LanguageValue},
     subst::{SubstTerm, SubstType},
     TypeVar, Var,
@@ -96,16 +96,17 @@ where
     type Env = <T as Typecheck>::Env;
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
-        let fun_ty = self.fun.check(env)?;
-        let arg_kind = self.arg.check_kind(env)?;
+        let fun_ty = self.fun.check(env)?.normalize(env);
+        let arg_norm = self.arg.clone().normalize(env);
+        let arg_kind = arg_norm.check_kind(env)?;
         if let Ok(forall) = fun_ty.clone().into_forall() {
             forall.kind.check_equal(&arg_kind).map_err(to_check_err)?;
-            Ok(forall.ty.subst_type(&forall.var, &self.arg))
+            Ok(forall.ty.subst_type(&forall.var, &arg_norm))
         } else if let Ok(forall) = fun_ty.clone().into_forall_bounded() {
             let sup_knd = forall.sup_ty.check_kind(env)?;
             sup_knd.check_equal(&arg_kind).map_err(to_check_err)?;
-            self.arg.check_subtype(&forall.sup_ty, env)?;
-            Ok(forall.ty.subst_type(&forall.var, &self.arg))
+            arg_norm.check_subtype(&forall.sup_ty, env)?;
+            Ok(forall.ty.subst_type(&forall.var, &arg_norm))
         } else {
             Err(to_check_err(ErrorKind::TypeMismatch {
                 found: fun_ty.to_string(),

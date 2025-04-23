@@ -138,7 +138,7 @@ mod reset_counter_tests {
             .check(&mut Default::default())
             .unwrap();
         let ty: Type = OpApp::new(reset_counter_m(), counter_r()).into();
-        let expected = ty.normalize();
+        let expected = ty.normalize(&mut Default::default());
         result.check_equal(&expected).unwrap();
     }
     #[test]

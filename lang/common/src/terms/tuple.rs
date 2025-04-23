@@ -2,7 +2,7 @@ use super::Term;
 use crate::{
     check::{to_check_err, Kindcheck, Typecheck},
     errors::Error,
-    eval::Eval,
+    eval::{Eval, Normalize},
     language::LanguageTerm,
     subst::{SubstTerm, SubstType},
     types::Tuple as TupleTy,
@@ -79,7 +79,7 @@ where
         let mut tys: Vec<Self::Type> = vec![];
         let mut knd = None;
         for t in self.terms.iter() {
-            let ty = t.check(&mut env.clone())?;
+            let ty = t.check(&mut env.clone())?.normalize(env);
             let ty_knd = ty.check_kind(env)?;
             tys.push(ty);
 

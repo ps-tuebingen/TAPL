@@ -55,17 +55,18 @@ where
     type Env = <Ty as Subtypecheck<Ty>>::Env;
     fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Error> {
         let ty_super = env.get_tyvar_super(&self.v).map_err(to_subty_err)?;
+        let sup_norm = sup.clone().normalize(env);
 
-        if let Ok(_) = sup.clone().into_top() {
+        if let Ok(_) = sup_norm.clone().into_top() {
             return Ok(());
         }
 
-        if let Ok(v) = sup.clone().into_variable() {
+        if let Ok(v) = sup_norm.clone().into_variable() {
             if v.v == self.v {
                 return Ok(());
             }
         }
-        ty_super.check_equal(&sup).map_err(to_subty_err)
+        ty_super.check_equal(&sup_norm).map_err(to_subty_err)
     }
 }
 
@@ -84,8 +85,9 @@ where
     Ty: LanguageType,
     Self: Into<Ty>,
 {
-    fn normalize(self) -> Ty {
-        self.into()
+    type Env = <Ty as Normalize<Ty>>::Env;
+    fn normalize(self, env: &mut Self::Env) -> Ty {
+        env.get_tyvar_super(&self.v).unwrap_or(self.into())
     }
 }
 

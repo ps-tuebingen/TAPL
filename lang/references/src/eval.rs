@@ -1,4 +1,4 @@
-use super::{terms::Term, types::Type, values::Value};
+use super::{check::Environment, terms::Term, types::Type, values::Value};
 use common::{
     errors::{Error, ErrorKind},
     eval::{Eval, EvalEnvironment, Normalize},
@@ -57,7 +57,8 @@ impl Eval for Term {
 }
 
 impl Normalize<Type> for Type {
-    fn normalize(self) -> Type {
+    type Env = Environment;
+    fn normalize(self, _: &mut Self::Env) -> Type {
         self
     }
 }

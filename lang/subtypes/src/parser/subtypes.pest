@@ -124,7 +124,7 @@ type = {
   | paren_ty 
 }
 
-prim_type = { kw_tytop | kw_tybot | kw_tynat | kw_tyunit | kw_tybool } 
+prim_type = { kw_tytop ~ "[*]"? | kw_tybot | kw_tynat | kw_tyunit | kw_tybool } 
 paren_ty = { "(" ~ type ~ ")" } 
 fun_type = { "(" ~ type ~ "->" ~ type ~ ")" }
 rec_type = { "{" ~ variable ~ ":" ~ type ~ ("," ~ variable ~ ":" ~ type)* ~ "}" }

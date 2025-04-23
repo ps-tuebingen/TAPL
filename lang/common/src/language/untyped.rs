@@ -37,7 +37,8 @@ impl Subtypecheck<Untyped> for Untyped {
 }
 
 impl Normalize<Untyped> for Untyped {
-    fn normalize(self) -> Self {
+    type Env = ();
+    fn normalize(self, _: &mut Self::Env) -> Self {
         self
     }
 }

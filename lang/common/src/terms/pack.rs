@@ -2,7 +2,7 @@ use super::Term;
 use crate::{
     check::{to_check_err, CheckEnvironment, Kindcheck, Subtypecheck, Typecheck},
     errors::{Error, ErrorKind},
-    eval::Eval,
+    eval::{Eval, Normalize},
     language::{LanguageTerm, LanguageType},
     subst::{SubstTerm, SubstType},
     values::Pack as PackVal,
@@ -94,12 +94,14 @@ where
     type Env = <T as Typecheck>::Env;
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
-        let inner_kind = self.inner_ty.check_kind(env)?;
-        let outer_knd = self.outer_ty.check_kind(env)?;
+        let inner_norm = self.inner_ty.clone().normalize(env);
+        let outer_norm = self.outer_ty.clone().normalize(env);
+        let inner_kind = inner_norm.check_kind(env)?;
+        let outer_knd = outer_norm.check_kind(env)?;
 
-        if let Ok(outer_exists) = self.outer_ty.clone().into_exists() {
+        if let Ok(outer_exists) = outer_norm.clone().into_exists() {
             env.add_tyvar_kind(outer_exists.var.clone(), outer_exists.kind.clone());
-            let term_ty = self.term.check(env)?;
+            let term_ty = self.term.check(env)?.normalize(env);
             let term_kind = term_ty.check_kind(env)?;
 
             term_kind.check_equal(&outer_knd).map_err(to_check_err)?;
@@ -107,21 +109,20 @@ where
                 .check_equal(&outer_exists.kind)
                 .map_err(to_check_err)?;
 
-            let outer_subst = outer_exists
-                .ty
-                .subst_type(&outer_exists.var, &self.inner_ty);
+            let outer_subst = outer_exists.ty.subst_type(&outer_exists.var, &inner_norm);
             outer_subst.check_equal(&term_ty).map_err(to_check_err)?;
-            Ok(self.outer_ty.clone())
+            Ok(outer_norm.clone())
         } else if let Ok(outer_bound) = self.outer_ty.clone().into_exists_bounded() {
-            env.add_tyvar_super(outer_bound.var.clone(), *outer_bound.sup_ty.clone());
-            let sup_kind = outer_bound.sup_ty.check_kind(env)?;
+            let sup_norm = outer_bound.sup_ty.clone().normalize(env);
+            env.add_tyvar_super(outer_bound.var.clone(), sup_norm.clone());
+            let sup_kind = sup_norm.check_kind(env)?;
             env.add_tyvar_kind(outer_bound.var.clone(), sup_kind);
 
             let term_ty = self.term.check(env)?;
             let term_kind = term_ty.check_kind(env)?;
             term_kind.check_equal(&outer_knd).map_err(to_check_err)?;
 
-            let outer_subst = outer_bound.ty.subst_type(&outer_bound.var, &self.inner_ty);
+            let outer_subst = outer_bound.ty.subst_type(&outer_bound.var, &inner_norm);
             term_ty.check_subtype(&outer_subst, env)?;
             Ok(self.outer_ty.clone())
         } else {

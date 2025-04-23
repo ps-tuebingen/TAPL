@@ -2,7 +2,7 @@ use super::Term;
 use crate::{
     check::{to_check_err, Kindcheck, Typecheck},
     errors::{Error, ErrorKind},
-    eval::Eval,
+    eval::{Eval, Normalize},
     language::{LanguageTerm, LanguageType},
     subst::{SubstTerm, SubstType},
     types::Variant as VariantTy,
@@ -81,10 +81,11 @@ where
     type Type = <T as Typecheck>::Type;
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
-        let term_ty = self.term.check(env)?;
+        let ty_norm = self.ty.clone().normalize(env);
+        let term_ty = self.term.check(env)?.normalize(env);
         let term_knd = term_ty.check_kind(env)?;
 
-        let var_ty = self.ty.clone().into_variant().map_err(to_check_err)?;
+        let var_ty = ty_norm.clone().into_variant().map_err(to_check_err)?;
         let lb_ty = var_ty
             .variants
             .get(&self.label)
@@ -94,7 +95,7 @@ where
 
         lb_knd.check_equal(&term_knd).map_err(to_check_err)?;
         lb_ty.check_equal(&term_ty).map_err(to_check_err)?;
-        Ok(self.ty.clone())
+        Ok(ty_norm)
     }
 }
 

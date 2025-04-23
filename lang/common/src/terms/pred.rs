@@ -2,7 +2,7 @@ use super::Term;
 use crate::{
     check::{to_check_err, Typecheck},
     errors::Error,
-    eval::{to_eval_err, Eval},
+    eval::{to_eval_err, Eval, Normalize},
     language::{LanguageTerm, LanguageType, LanguageValue},
     subst::{SubstTerm, SubstType},
     types::Nat,
@@ -72,7 +72,7 @@ where
     type Env = <T as Typecheck>::Env;
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
-        let inner_ty = self.term.check(env)?;
+        let inner_ty = self.term.check(env)?.normalize(env);
         let nat = inner_ty.into_nat().map_err(to_check_err)?;
         Ok(nat.into())
     }

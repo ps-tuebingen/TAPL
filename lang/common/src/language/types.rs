@@ -16,12 +16,10 @@ where
         + SubstType<Self, Target = Self>
         + Subtypecheck<Self>
         + Kindcheck<Self>
-        + Normalize<Self>,
+        + Normalize<Self, Env = <Self as Subtypecheck<Self>>::Env>,
 {
     fn check_equal(&self, other: &Self) -> Result<(), ErrorKind> {
-        let self_norm = self.clone().normalize();
-        let other_norm = other.clone().normalize();
-        if self_norm == other_norm {
+        if self == other {
             Ok(())
         } else {
             Err(ErrorKind::TypeMismatch {

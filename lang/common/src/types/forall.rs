@@ -76,8 +76,9 @@ where
     Ty: LanguageType,
     Self: Into<Ty>,
 {
-    fn normalize(self) -> Ty {
-        let body_norm = self.ty.normalize();
+    type Env = <Ty as Normalize<Ty>>::Env;
+    fn normalize(self, env: &mut Self::Env) -> Ty {
+        let body_norm = self.ty.normalize(env);
         Forall {
             var: self.var,
             kind: self.kind,

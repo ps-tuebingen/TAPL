@@ -27,107 +27,98 @@ impl common::types::Type for Type {}
 
 impl LanguageType for Type {
     fn into_variable(self) -> Result<TypeVariable<Type>, ErrorKind> {
-        let self_norm = self.normalize();
-        if let Type::Var(var) = self_norm {
+        if let Type::Var(var) = self {
             Ok(var)
         } else {
             Err(ErrorKind::TypeMismatch {
-                found: self_norm.to_string(),
+                found: self.to_string(),
                 expected: "Type Variable".to_owned(),
             })
         }
     }
     fn into_top(self) -> Result<Top<Type>, ErrorKind> {
-        let self_norm = self.normalize();
-        if let Type::Top(top) = self_norm {
+        if let Type::Top(top) = self {
             Ok(top)
         } else {
             Err(ErrorKind::TypeMismatch {
-                found: self_norm.to_string(),
+                found: self.to_string(),
                 expected: "Top".to_owned(),
             })
         }
     }
 
     fn into_fun(self) -> Result<Fun<Type>, ErrorKind> {
-        let self_norm = self.normalize();
-        if let Type::Fun(fun) = self_norm {
+        if let Type::Fun(fun) = self {
             Ok(fun)
         } else {
             Err(ErrorKind::TypeMismatch {
-                found: self_norm.to_string(),
+                found: self.to_string(),
                 expected: "Function Type".to_owned(),
             })
         }
     }
 
     fn into_forall_bounded(self) -> Result<ForallBounded<Type>, ErrorKind> {
-        let self_norm = self.normalize();
-        if let Type::Forall(forall) = self_norm {
+        if let Type::Forall(forall) = self {
             Ok(forall)
         } else {
             Err(ErrorKind::TypeMismatch {
-                found: self_norm.to_string(),
+                found: self.to_string(),
                 expected: "Universal Type".to_owned(),
             })
         }
     }
 
     fn into_oplambdasub(self) -> Result<OpLambdaSub<Type>, ErrorKind> {
-        let self_norm = self.normalize();
-        if let Type::OpLambdaSub(lam) = self_norm {
+        if let Type::OpLambdaSub(lam) = self {
             Ok(lam)
         } else {
             Err(ErrorKind::TypeMismatch {
-                found: self_norm.to_string(),
+                found: self.to_string(),
                 expected: "Operator Abstraction".to_owned(),
             })
         }
     }
 
     fn into_opapp(self) -> Result<OpApp<Type>, ErrorKind> {
-        let self_norm = self.normalize();
-        if let Type::OpApp(app) = self_norm {
+        if let Type::OpApp(app) = self {
             Ok(app)
         } else {
             Err(ErrorKind::TypeMismatch {
-                found: self_norm.to_string(),
+                found: self.to_string(),
                 expected: "Operator Abstraction".to_owned(),
             })
         }
     }
 
     fn into_exists_bounded(self) -> Result<ExistsBounded<Type>, ErrorKind> {
-        let self_norm = self.normalize();
-        if let Type::Exists(ex) = self_norm {
+        if let Type::Exists(ex) = self {
             Ok(ex)
         } else {
             Err(ErrorKind::TypeMismatch {
-                found: self_norm.to_string(),
+                found: self.to_string(),
                 expected: "Existential Type".to_owned(),
             })
         }
     }
 
     fn into_record(self) -> Result<Record<Type>, ErrorKind> {
-        let self_norm = self.normalize();
-        if let Type::Record(rec) = self_norm {
+        if let Type::Record(rec) = self {
             Ok(rec)
         } else {
             Err(ErrorKind::TypeMismatch {
-                found: self_norm.to_string(),
+                found: self.to_string(),
                 expected: "Record Type".to_owned(),
             })
         }
     }
 
     fn into_nat(self) -> Result<Nat<Type>, ErrorKind> {
-        let self_norm = self.normalize();
-        if let Type::Nat(nat) = self_norm {
+        if let Type::Nat(nat) = self {
             Ok(nat)
         } else {
             Err(ErrorKind::TypeMismatch {
-                found: self_norm.to_string(),
+                found: self.to_string(),
                 expected: "Nat".to_owned(),
             })
         }

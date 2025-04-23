@@ -1,5 +1,5 @@
 use super::to_err;
-use crate::{terms::Term, types::Type, values::Value};
+use crate::{check::ExceptionEnv, terms::Term, types::Type, values::Value};
 use common::{
     errors::{Error, ErrorKind, ErrorLocation},
     eval::{Eval, Normalize},
@@ -36,7 +36,8 @@ impl Eval for Term {
 }
 
 impl Normalize<Type> for Type {
-    fn normalize(self) -> Type {
+    type Env = ExceptionEnv;
+    fn normalize(self, _: &mut Self::Env) -> Type {
         self
     }
 }

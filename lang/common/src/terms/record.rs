@@ -2,7 +2,7 @@ use super::Term;
 use crate::{
     check::{to_check_err, Kindcheck, Typecheck},
     errors::Error,
-    eval::Eval,
+    eval::{Eval, Normalize},
     language::LanguageTerm,
     subst::{SubstTerm, SubstType},
     types::Record as RecordTy,
@@ -83,7 +83,7 @@ where
         let mut recs = HashMap::new();
         let mut rec_knd = None;
         for (lb, t) in self.records.iter() {
-            let ty = t.check(&mut env.clone())?;
+            let ty = t.check(&mut env.clone())?.normalize(env);
             let ty_knd = ty.check_kind(env)?;
             recs.insert(lb.clone(), ty);
             match rec_knd {

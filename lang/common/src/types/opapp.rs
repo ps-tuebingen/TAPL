@@ -59,8 +59,9 @@ where
 {
     type Env = <Ty as Subtypecheck<Ty>>::Env;
     fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Error> {
-        let self_norm = self.clone().normalize();
-        let sup_norm = sup.clone().normalize();
+        println!("checking subtype {self}<:{sup}");
+        let self_norm = self.clone().normalize(env);
+        let sup_norm = sup.clone().normalize(env);
         self_norm.check_subtype(&sup_norm, env)
     }
 }
@@ -91,13 +92,15 @@ where
     Ty: LanguageType,
     Self: Into<Ty>,
 {
-    fn normalize(self) -> Ty {
-        let fun_norm = self.fun.normalize();
-        let arg_norm = self.arg.normalize();
+    type Env = <Ty as Normalize<Ty>>::Env;
+    fn normalize(self, env: &mut Self::Env) -> Ty {
+        let fun_norm = self.fun.normalize(env);
+        let arg_norm = self.arg.normalize(env);
+
         if let Ok(oplam) = fun_norm.clone().into_oplambda() {
-            oplam.body.subst_type(&oplam.var, &arg_norm).normalize()
+            oplam.body.subst_type(&oplam.var, &arg_norm).normalize(env)
         } else if let Ok(oplam) = fun_norm.clone().into_oplambdasub() {
-            oplam.body.subst_type(&oplam.var, &arg_norm).normalize()
+            oplam.body.subst_type(&oplam.var, &arg_norm).normalize(env)
         } else {
             OpApp {
                 fun: Box::new(fun_norm),

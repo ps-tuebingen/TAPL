@@ -79,7 +79,8 @@ where
     Ty: LanguageType,
     Self: Into<Ty>,
 {
-    fn normalize(self) -> Ty {
+    type Env = <Ty as Normalize<Ty>>::Env;
+    fn normalize(self, _: &mut Self::Env) -> Ty {
         self.into()
     }
 }
@@ -89,6 +90,6 @@ where
     Ty: Type,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        f.write_str("Top")
+        write!(f, "Top[{}]", self.kind)
     }
 }

@@ -1,4 +1,5 @@
 use crate::{
+    check::CheckEnvironment,
     errors::{Error, ErrorKind, ErrorLocation},
     language::{LanguageType, LanguageValue},
     values::Value,
@@ -31,7 +32,8 @@ pub trait Normalize<Ty>
 where
     Ty: LanguageType,
 {
-    fn normalize(self) -> Ty;
+    type Env: CheckEnvironment<Type = Ty>;
+    fn normalize(self, env: &mut Self::Env) -> Ty;
 }
 
 impl<V> EvalEnvironment<V> for ()

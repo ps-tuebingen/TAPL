@@ -85,17 +85,17 @@ where
 
     fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Error> {
         let other_forall = sup.clone().into_forall_bounded().map_err(to_subty_err)?;
-        other_forall
-            .sup_ty
-            .check_equal(&self.sup_ty)
-            .map_err(to_subty_err)?;
+        let sup_norm = other_forall.sup_ty.normalize(env);
+        let self_norm = self.sup_ty.clone().normalize(env);
+        sup_norm.check_equal(&self_norm).map_err(to_subty_err)?;
         if self.var != other_forall.var {
             return Err(to_subty_err(ErrorKind::TypeMismatch {
                 found: other_forall.var.clone(),
                 expected: self.var.clone(),
             }));
         }
-        self.ty.check_subtype(&(*other_forall.ty), env)
+        let ty_norm = self.ty.clone().normalize(env);
+        ty_norm.check_subtype(&(*other_forall.ty), env)
     }
 }
 
@@ -117,9 +117,10 @@ where
     Ty: LanguageType,
     Self: Into<Ty>,
 {
-    fn normalize(self) -> Ty {
-        let sup_norm = self.sup_ty.normalize();
-        let ty_norm = self.ty.normalize();
+    type Env = <Ty as Normalize<Ty>>::Env;
+    fn normalize(self, env: &mut Self::Env) -> Ty {
+        let sup_norm = self.sup_ty.normalize(env);
+        let ty_norm = self.ty.normalize(env);
         ForallBounded {
             var: self.var,
             sup_ty: Box::new(sup_norm),

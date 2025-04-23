@@ -1,8 +1,10 @@
-use super::{terms::Term, types::Type, values::Value};
+use super::{check::TypingContext, terms::Term, types::Type, values::Value};
 use common::{
     errors::Error,
     eval::{Eval, Normalize},
+    Var,
 };
+use std::collections::HashMap;
 
 impl Eval for Term {
     type Env = ();
@@ -39,7 +41,8 @@ impl Eval for Term {
 }
 
 impl Normalize<Type> for Type {
-    fn normalize(self) -> Type {
+    type Env = TypingContext;
+    fn normalize(self, _: &mut Self::Env) -> Type {
         self
     }
 }

@@ -2,7 +2,7 @@ use super::Term;
 use crate::{
     check::{to_check_err, CheckEnvironment, Kindcheck, Typecheck},
     errors::{Error, ErrorKind},
-    eval::{to_eval_err, Eval},
+    eval::{to_eval_err, Eval, Normalize},
     language::{LanguageTerm, LanguageType, LanguageValue},
     subst::{SubstTerm, SubstType},
     TypeVar, Var,
@@ -121,7 +121,7 @@ where
     type Env = <T as Typecheck>::Env;
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
-        let bound_ty = self.bound_term.check(env)?;
+        let bound_ty = self.bound_term.check(env)?.normalize(env);
         if let Ok(bound_exists) = bound_ty.clone().into_exists() {
             if self.ty_name != bound_exists.var {
                 return Err(to_check_err(ErrorKind::TypeMismatch {

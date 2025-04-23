@@ -175,7 +175,7 @@ mod counter_tests {
             Fun::new(OpApp::new(object(), TypeVariable::new("M")), Nat::new()),
         )
         .into();
-        let expected = ty.normalize();
+        let expected = ty.normalize(&mut Default::default());
         result.check_equal(&expected).unwrap();
     }
 
@@ -183,13 +183,16 @@ mod counter_tests {
     fn check_class() {
         let result = counter_class().check(&mut Default::default()).unwrap();
         let t: Type = OpApp::new(counter_m(), counter_r()).into();
-        let expected = t.normalize();
+        let expected = t.normalize(&mut Default::default());
         result.check_equal(&expected).unwrap();
     }
 
     #[test]
     fn check_new() {
-        let result = new_counter().check_start().unwrap().normalize();
+        let result = new_counter()
+            .check_start()
+            .unwrap()
+            .normalize(&mut Default::default());
         let expected = counter();
         result.check_equal(&expected).unwrap();
     }

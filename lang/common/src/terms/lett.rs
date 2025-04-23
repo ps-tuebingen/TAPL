@@ -2,7 +2,7 @@ use super::Term;
 use crate::{
     check::{CheckEnvironment, Kindcheck, Typecheck},
     errors::Error,
-    eval::Eval,
+    eval::{Eval, Normalize},
     language::LanguageTerm,
     subst::{SubstTerm, SubstType},
     TypeVar, Var,
@@ -80,11 +80,11 @@ where
     type Env = <T as Typecheck>::Env;
     type Type = <T as Typecheck>::Type;
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
-        let bound_ty = self.bound_term.check(&mut env.clone())?;
+        let bound_ty = self.bound_term.check(&mut env.clone())?.normalize(env);
         bound_ty.check_kind(env)?;
 
         env.add_var(self.var.clone(), bound_ty);
-        let in_ty = self.in_term.check(env)?;
+        let in_ty = self.in_term.check(env)?.normalize(env);
         in_ty.check_kind(env)?;
         Ok(in_ty)
     }

@@ -73,8 +73,13 @@ where
 {
     type Env = <Ty as Subtypecheck<Ty>>::Env;
     fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Error> {
-        let sup_op = sup.clone().into_oplambdasub().map_err(to_subty_err)?;
-        sup_op.sup.check_equal(&self.sup).map_err(to_subty_err)?;
+        let sup_norm = sup.clone().normalize(env);
+        let self_sup_norm = self.sup.clone().normalize(env);
+        let sup_op = sup_norm.into_oplambdasub().map_err(to_subty_err)?;
+        sup_op
+            .sup
+            .check_equal(&self_sup_norm)
+            .map_err(to_subty_err)?;
         env.add_tyvar_super(self.var.clone(), *self.sup.clone());
 
         self.body.check_subtype(
@@ -105,8 +110,9 @@ where
     Ty: LanguageType,
     Self: Into<Ty>,
 {
-    fn normalize(self) -> Ty {
-        let body_norm = self.body.normalize();
+    type Env = <Ty as Normalize<Ty>>::Env;
+    fn normalize(self, env: &mut Self::Env) -> Ty {
+        let body_norm = self.body.normalize(env);
         OpLambdaSub {
             var: self.var,
             sup: self.sup,
