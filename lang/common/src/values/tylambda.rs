@@ -49,6 +49,6 @@ where
     T: LanguageTerm,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "\\{}.{}", self.var, self.term)
+        write!(f, "\\{}::{}.{}", self.var, self.annot, self.term)
     }
 }

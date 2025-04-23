@@ -1,6 +1,6 @@
 use super::Term;
 use crate::{
-    check::{to_check_err, Kindcheck, Typecheck},
+    check::{to_check_err, CheckEnvironment, Kindcheck, Typecheck},
     errors::Error,
     eval::Eval,
     kinds::Kind,
@@ -98,6 +98,7 @@ where
     type Env = <T as Typecheck>::Env;
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
+        env.add_tyvar_kind(self.var.clone(), self.annot.clone());
         let term_ty = self.term.check(env)?;
         let term_knd = term_ty.check_kind(env)?;
         self.annot.check_equal(&term_knd).map_err(to_check_err)?;
@@ -109,6 +110,6 @@ where
     T: LanguageTerm,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "\\{}.{}", self.var, self.term)
+        write!(f, "\\{}::{}.{}", self.var, self.annot, self.term)
     }
 }
