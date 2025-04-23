@@ -1,6 +1,6 @@
 use super::Term;
 use crate::{
-    check::{to_check_err, Kindcheck, Typecheck},
+    check::{to_check_err, CheckEnvironment, Kindcheck, Typecheck},
     errors::{Error, ErrorKind},
     eval::{to_eval_err, Eval},
     language::{LanguageTerm, LanguageType, LanguageValue},
@@ -75,7 +75,12 @@ where
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
         let term_ty = self.record.check(env)?;
         term_ty.check_kind(env)?;
-        let rec_ty = term_ty.into_record().map_err(to_check_err)?;
+
+        let term_rec = match term_ty.clone().into_variable() {
+            Ok(v) => env.get_tyvar_super(&v.v).map_err(to_check_err)?,
+            Err(_) => term_ty,
+        };
+        let rec_ty = term_rec.into_record().map_err(to_check_err)?;
         rec_ty
             .records
             .get(&self.label)

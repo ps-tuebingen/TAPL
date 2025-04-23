@@ -134,6 +134,6 @@ where
     Ty: Type,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{{exitsts {},{}}}", self.var, self.ty)
+        write!(f, "{{exists {}<:{},{}}}", self.var, self.sup_ty, self.ty)
     }
 }

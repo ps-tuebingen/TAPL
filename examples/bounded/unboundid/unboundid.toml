@@ -1,2 +1,2 @@
-ty="forall X<:Top.(X) -> (X)"
-evaluated="\\X<:Top.\\x:X.x"
+ty="forall X<:Top.(X -> X)"
+evaluated="\\X<:Top.\\x:X.(x)"
