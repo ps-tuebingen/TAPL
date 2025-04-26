@@ -96,16 +96,17 @@ where
     type Env = <T as Typecheck>::Env;
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
-        let fun_ty = self.fun.check(env)?.normalize(env);
-        let arg_norm = self.arg.clone().normalize(env);
-        let arg_kind = arg_norm.check_kind(env)?;
+        let fun_ty = self
+            .fun
+            .check(&mut env.clone())?
+            .normalize(&mut env.clone());
+        let arg_norm = self.arg.clone().normalize(&mut env.clone());
+        let arg_kind = arg_norm.check_kind(&mut env.clone())?;
         if let Ok(forall) = fun_ty.clone().into_forall() {
-            println!("comparing tyapp kinds {}=={}", forall.kind, arg_kind);
             forall.kind.check_equal(&arg_kind).map_err(to_check_err)?;
             Ok(forall.ty.subst_type(&forall.var, &arg_norm))
         } else if let Ok(forall) = fun_ty.clone().into_forall_bounded() {
-            let sup_knd = forall.sup_ty.check_kind(env)?;
-            println!("comparing tyapp kinds (sup) {}=={}", sup_knd, arg_kind);
+            let sup_knd = forall.sup_ty.check_kind(&mut env.clone())?;
             sup_knd.check_equal(&arg_kind).map_err(to_check_err)?;
             arg_norm.check_subtype(&forall.sup_ty, env)?;
             Ok(forall.ty.subst_type(&forall.var, &arg_norm))

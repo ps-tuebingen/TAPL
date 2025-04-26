@@ -84,11 +84,23 @@ where
     type Env = <T as Typecheck>::Env;
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
-        let fun_ty = self.fun.check(&mut env.clone())?.normalize(env);
-        fun_ty.check_kind(env)?.into_star().map_err(to_check_err)?;
+        let fun_ty = self
+            .fun
+            .check(&mut env.clone())?
+            .normalize(&mut env.clone());
+        fun_ty
+            .check_kind(&mut env.clone())?
+            .into_star()
+            .map_err(to_check_err)?;
         let fun: Fun<<T as LanguageTerm>::Type> = fun_ty.into_fun().map_err(to_check_err)?;
-        let arg_ty = self.arg.check(env)?.normalize(env);
-        arg_ty.check_kind(env)?.into_star().map_err(to_check_err)?;
+        let arg_ty = self
+            .arg
+            .check(&mut env.clone())?
+            .normalize(&mut env.clone());
+        arg_ty
+            .check_kind(&mut env.clone())?
+            .into_star()
+            .map_err(to_check_err)?;
         arg_ty.check_subtype(&(*fun.from), env)?;
         Ok(*fun.to)
     }

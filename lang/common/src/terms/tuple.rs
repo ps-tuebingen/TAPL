@@ -79,7 +79,9 @@ where
         let mut tys: Vec<Self::Type> = vec![];
         let mut knd = None;
         for t in self.terms.iter() {
-            let ty = t.check(&mut env.clone())?.normalize(env);
+            let ty = t
+                .check(&mut &mut env.clone().clone())?
+                .normalize(&mut env.clone());
             let ty_knd = ty.check_kind(env)?;
             tys.push(ty);
 

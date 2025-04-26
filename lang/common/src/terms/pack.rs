@@ -94,47 +94,40 @@ where
     type Env = <T as Typecheck>::Env;
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
-        let inner_norm = self.inner_ty.clone().normalize(env);
         let outer_norm = self.outer_ty.clone().normalize(env);
-        let inner_kind = inner_norm.check_kind(env)?;
+        let inner_kind = self.inner_ty.check_kind(env)?;
         let outer_knd = outer_norm.check_kind(env)?;
+        println!("outer: {},outer norm:{}", self.outer_ty, outer_norm);
 
         if let Ok(outer_exists) = outer_norm.clone().into_exists() {
             env.add_tyvar_kind(outer_exists.var.clone(), outer_exists.kind.clone());
             let term_ty = self.term.check(env)?.normalize(env);
             let term_kind = term_ty.check_kind(env)?;
 
-            println!("comparing pack term,outer {term_kind}=={outer_knd}");
             term_kind.check_equal(&outer_knd).map_err(to_check_err)?;
-            println!(
-                "comparing pack inner outer {inner_kind}=={}",
-                outer_exists.kind
-            );
             inner_kind
                 .check_equal(&outer_exists.kind)
                 .map_err(to_check_err)?;
 
             let outer_subst = outer_exists
                 .ty
-                .subst_type(&outer_exists.var, &inner_norm)
+                .subst_type(&outer_exists.var, &self.inner_ty)
                 .normalize(env);
             outer_subst.check_equal(&term_ty).map_err(to_check_err)?;
-            Ok(outer_norm.clone())
+            Ok(outer_norm)
         } else if let Ok(outer_bound) = outer_norm.clone().into_exists_bounded() {
             let sup_norm = outer_bound.sup_ty.clone().normalize(env);
-            println!("adding pack {}<:{}", outer_bound.var, sup_norm);
-            env.add_tyvar_super(outer_bound.var.clone(), sup_norm.clone());
             let sup_kind = sup_norm.check_kind(env)?;
+            env.add_tyvar_super(outer_bound.var.clone(), *outer_bound.sup_ty.clone());
             env.add_tyvar_kind(outer_bound.var.clone(), sup_kind);
 
             let term_ty = self.term.check(env)?;
             let term_kind = term_ty.check_kind(env)?;
-            println!("comparing pack term,outer (sub) {term_kind}=={outer_knd}");
             term_kind.check_equal(&outer_knd).map_err(to_check_err)?;
 
-            let outer_subst = outer_bound.ty.subst_type(&outer_bound.var, &inner_norm);
+            let outer_subst = outer_bound.ty.subst_type(&outer_bound.var, &self.inner_ty);
             term_ty.check_subtype(&outer_subst, env)?;
-            Ok(self.outer_ty.clone())
+            Ok(outer_norm)
         } else {
             Err(to_check_err(ErrorKind::TypeMismatch {
                 found: outer_norm.to_string(),

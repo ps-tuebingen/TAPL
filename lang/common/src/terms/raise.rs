@@ -80,13 +80,16 @@ where
     type Env = <T as Typecheck>::Env;
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
-        let ex_norm = self.exception_ty.clone().normalize(env);
-        let cont_norm = self.cont_ty.clone().normalize(env);
+        let ex_norm = self.exception_ty.clone().normalize(&mut env.clone());
+        let cont_norm = self.cont_ty.clone().normalize(&mut env.clone());
 
-        let ex_knd = ex_norm.check_kind(env)?;
-        self.cont_ty.check_kind(env)?;
+        let ex_knd = ex_norm.check_kind(&mut env.clone())?;
+        self.cont_ty.check_kind(&mut env.clone())?;
 
-        let err_ty = self.exception.check(env)?.normalize(env);
+        let err_ty = self
+            .exception
+            .check(&mut env.clone())?
+            .normalize(&mut env.clone());
         let err_knd = err_ty.check_kind(env)?;
 
         ex_knd.check_equal(&err_knd).map_err(to_check_err)?;

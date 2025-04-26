@@ -83,10 +83,9 @@ where
         let mut recs = HashMap::new();
         let mut rec_knd = None;
         for (lb, t) in self.records.iter() {
-            let ty = t.check(&mut env.clone())?.normalize(env);
+            let ty = t.check(&mut env.clone())?.normalize(&mut env.clone());
             let ty_knd = ty.check_kind(env)?;
             recs.insert(lb.clone(), ty);
-            println!("comparing record kinds {rec_knd:?}=={ty_knd}");
             match rec_knd {
                 None => {
                     rec_knd = Some(ty_knd);

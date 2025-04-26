@@ -81,13 +81,13 @@ where
         let mu_ty = self
             .ty
             .clone()
-            .normalize(env)
+            .normalize(&mut env.clone())
             .into_mu()
             .map_err(to_check_err)?;
-        env.add_tyvar_kind(mu_ty.var.clone(), Kind::Star);
+        &mut env.clone().add_tyvar_kind(mu_ty.var.clone(), Kind::Star);
         mu_ty
             .ty
-            .check_kind(env)?
+            .check_kind(&mut env.clone())?
             .into_star()
             .map_err(to_check_err)?;
 
@@ -95,7 +95,10 @@ where
             .ty
             .clone()
             .subst_type(&mu_ty.var.clone(), &(mu_ty.into()));
-        let term_ty = self.term.check(env)?.normalize(env);
+        let term_ty = self
+            .term
+            .check(&mut env.clone())?
+            .normalize(&mut env.clone());
         term_ty.check_kind(env)?.into_star().map_err(to_check_err)?;
         term_ty.check_equal(&mu_subst).map_err(to_check_err)?;
         Ok(self.ty.clone())

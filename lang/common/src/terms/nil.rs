@@ -67,7 +67,7 @@ where
     type Type = <T as Typecheck>::Type;
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
-        let ty_norm = self.ty.clone().normalize(env);
+        let ty_norm = self.ty.clone().normalize(&mut env.clone());
         ty_norm.check_kind(env)?.into_star().map_err(to_check_err)?;
         Ok(List::new(ty_norm.clone()).into())
     }

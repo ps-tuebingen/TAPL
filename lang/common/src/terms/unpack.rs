@@ -121,7 +121,10 @@ where
     type Env = <T as Typecheck>::Env;
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
-        let bound_ty = self.bound_term.check(env)?.normalize(env);
+        let bound_ty = self
+            .bound_term
+            .check(&mut env.clone())?
+            .normalize(&mut env.clone());
         if let Ok(bound_exists) = bound_ty.clone().into_exists() {
             if self.ty_name != bound_exists.var {
                 return Err(to_check_err(ErrorKind::TypeMismatch {
@@ -139,10 +142,6 @@ where
                     expected: self.ty_name.clone(),
                 }));
             }
-            println!(
-                "adding unpack bound {}<:{}",
-                bound_bound.var, bound_bound.sup_ty
-            );
             env.add_tyvar_super(bound_bound.var, *bound_bound.sup_ty.clone());
             let sup_kind = bound_bound.sup_ty.check_kind(env)?;
             env.add_tyvar_kind(self.ty_name.clone(), sup_kind);

@@ -77,10 +77,16 @@ where
     type Env = <T as Typecheck>::Env;
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
-        let t_ty = self.term.check(&mut env.clone())?.normalize(env);
-        let t_knd = t_ty.check_kind(env)?;
+        let t_ty = self
+            .term
+            .check(&mut &mut env.clone().clone())?
+            .normalize(&mut env.clone());
+        let t_knd = t_ty.check_kind(&mut env.clone())?;
 
-        let handler_ty = self.handler.check(env)?.normalize(env);
+        let handler_ty = self
+            .handler
+            .check(&mut env.clone())?
+            .normalize(&mut env.clone());
         let handler_knd = handler_ty.check_kind(env)?;
         let fun: Fun<<T as LanguageTerm>::Type> = handler_ty.into_fun().map_err(to_check_err)?;
 

@@ -72,7 +72,10 @@ where
     type Env = <T as Typecheck>::Env;
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
-        let inner_ty = self.term.check(env)?.normalize(env);
+        let inner_ty = self
+            .term
+            .check(&mut env.clone())?
+            .normalize(&mut env.clone());
         inner_ty
             .check_kind(env)?
             .into_star()

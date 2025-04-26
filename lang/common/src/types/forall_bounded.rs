@@ -119,14 +119,8 @@ where
 {
     type Env = <Ty as Normalize<Ty>>::Env;
     fn normalize(self, env: &mut Self::Env) -> Ty {
-        let sup_norm = self.sup_ty.normalize(env);
-        let ty_norm = self.ty.normalize(env);
-        ForallBounded {
-            var: self.var,
-            sup_ty: Box::new(sup_norm),
-            ty: Box::new(ty_norm),
-        }
-        .into()
+        env.add_tyvar_super(self.var.clone(), *self.ty.clone());
+        self.into()
     }
 }
 

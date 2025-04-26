@@ -74,10 +74,13 @@ where
     type Type = <T as Typecheck>::Type;
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
-        let ty_norm = self.ty.clone().normalize(env);
-        let ty_kind = ty_norm.check_kind(env)?;
+        let ty_norm = self.ty.clone().normalize(&mut env.clone());
+        let ty_kind = ty_norm.check_kind(&mut env.clone())?;
 
-        let term_ty = self.term.check(env)?.normalize(env);
+        let term_ty = self
+            .term
+            .check(&mut env.clone())?
+            .normalize(&mut env.clone());
         let term_knd = term_ty.check_kind(env)?;
         term_knd.check_equal(&ty_kind).map_err(to_check_err)?;
 

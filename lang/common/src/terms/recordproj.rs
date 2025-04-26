@@ -73,8 +73,11 @@ where
     type Type = <T as Typecheck>::Type;
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
-        let term_ty = self.record.check(env)?.normalize(env);
-        term_ty.check_kind(env)?;
+        let term_ty = self
+            .record
+            .check(&mut env.clone())?
+            .normalize(&mut env.clone());
+        term_ty.check_kind(&mut env.clone())?;
 
         let term_rec = match term_ty.clone().into_variable() {
             Ok(v) => env

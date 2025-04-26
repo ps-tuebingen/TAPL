@@ -75,13 +75,16 @@ where
     type Env = <T as Typecheck>::Env;
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
-        let right_ty = self.right_term.check(env)?.normalize(env);
-        let right_knd = right_ty.check_kind(env)?;
+        let right_ty = self
+            .right_term
+            .check(&mut env.clone())?
+            .normalize(&mut env.clone());
+        let right_knd = right_ty.check_kind(&mut env.clone())?;
 
         let sum_ty = self
             .ty
             .clone()
-            .normalize(env)
+            .normalize(&mut env.clone())
             .into_sum()
             .map_err(to_check_err)?;
         let sum_knd = sum_ty.check_kind(env)?;

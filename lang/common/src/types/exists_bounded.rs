@@ -86,7 +86,6 @@ where
     fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Error> {
         let sup_norm = sup.clone().normalize(env);
         let self_norm = self.sup_ty.clone().normalize(env);
-        println!("converting super to exists (exists subtype");
         let other_exists = sup_norm.into_exists_bounded().map_err(to_subty_err)?;
         other_exists
             .sup_ty
