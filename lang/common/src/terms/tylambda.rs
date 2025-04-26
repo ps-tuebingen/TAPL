@@ -101,6 +101,7 @@ where
         env.add_tyvar_kind(self.var.clone(), self.annot.clone());
         let term_ty = self.term.check(env)?.normalize(env);
         let term_knd = term_ty.check_kind(env)?;
+        println!("comparing tylambda {}=={}", self.annot, term_knd);
         self.annot.check_equal(&term_knd).map_err(to_check_err)?;
         Ok(Forall::new(&self.var, self.annot.clone(), term_ty).into())
     }

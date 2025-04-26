@@ -130,7 +130,7 @@ where
 
     fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
         let bound_val = self.bound_term.eval(env)?;
-        if let Ok(_) = bound_val.clone().into_nil() {
+        if bound_val.clone().into_nil().is_ok() {
             self.nil_rhs.eval(env)
         } else if let Ok(cons) = bound_val.clone().into_cons() {
             self.cons_rhs

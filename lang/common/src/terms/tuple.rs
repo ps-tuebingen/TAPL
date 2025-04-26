@@ -88,7 +88,7 @@ where
                     knd = Some(ty_knd);
                 }
                 Some(ref knd) => {
-                    ty_knd.check_equal(&knd).map_err(to_check_err)?;
+                    ty_knd.check_equal(knd).map_err(to_check_err)?;
                 }
             }
         }

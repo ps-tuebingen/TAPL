@@ -28,7 +28,7 @@ where
     }
 }
 
-impl<'a, T> Test for CheckTest<T>
+impl<T> Test for CheckTest<T>
 where
     T: Parse + Typecheck,
     T::Type: fmt::Display,

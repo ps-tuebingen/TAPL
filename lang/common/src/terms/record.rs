@@ -86,6 +86,7 @@ where
             let ty = t.check(&mut env.clone())?.normalize(env);
             let ty_knd = ty.check_kind(env)?;
             recs.insert(lb.clone(), ty);
+            println!("comparing record kinds {rec_knd:?}=={ty_knd}");
             match rec_knd {
                 None => {
                     rec_knd = Some(ty_knd);

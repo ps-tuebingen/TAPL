@@ -57,7 +57,7 @@ where
         let ty_super = env.get_tyvar_super(&self.v).map_err(to_subty_err)?;
         let sup_norm = sup.clone().normalize(env);
 
-        if let Ok(_) = sup_norm.clone().into_top() {
+        if sup_norm.clone().into_top().is_ok() {
             return Ok(());
         }
 

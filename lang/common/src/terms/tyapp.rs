@@ -100,10 +100,12 @@ where
         let arg_norm = self.arg.clone().normalize(env);
         let arg_kind = arg_norm.check_kind(env)?;
         if let Ok(forall) = fun_ty.clone().into_forall() {
+            println!("comparing tyapp kinds {}=={}", forall.kind, arg_kind);
             forall.kind.check_equal(&arg_kind).map_err(to_check_err)?;
             Ok(forall.ty.subst_type(&forall.var, &arg_norm))
         } else if let Ok(forall) = fun_ty.clone().into_forall_bounded() {
             let sup_knd = forall.sup_ty.check_kind(env)?;
+            println!("comparing tyapp kinds (sup) {}=={}", sup_knd, arg_kind);
             sup_knd.check_equal(&arg_kind).map_err(to_check_err)?;
             arg_norm.check_subtype(&forall.sup_ty, env)?;
             Ok(forall.ty.subst_type(&forall.var, &arg_norm))

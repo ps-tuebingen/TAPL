@@ -29,6 +29,15 @@ where
     }
 }
 
+impl<Ty> Default for Nat<Ty>
+where
+    Ty: Type,
+{
+    fn default() -> Nat<Ty> {
+        Nat::new()
+    }
+}
+
 impl<Ty> Type for Nat<Ty> where Ty: Type {}
 
 impl<Ty> SubstType<Ty> for Nat<Ty>
@@ -49,7 +58,7 @@ where
     type Env = <Ty as Subtypecheck<Ty>>::Env;
 
     fn check_subtype(&self, sup: &Ty, _: &mut Self::Env) -> Result<(), Error> {
-        if let Ok(_) = sup.clone().into_top() {
+        if sup.clone().into_top().is_ok() {
             return Ok(());
         }
 

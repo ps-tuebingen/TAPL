@@ -91,7 +91,7 @@ where
 
     fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
         let term_val = self.term.eval(env)?;
-        if let Ok(_) = term_val.clone().into_exception() {
+        if term_val.clone().into_exception().is_ok() {
             self.handler.eval(env)
         } else {
             Ok(term_val)

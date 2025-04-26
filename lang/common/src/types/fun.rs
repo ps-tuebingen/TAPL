@@ -54,7 +54,7 @@ where
 {
     type Env = <Ty as Subtypecheck<Ty>>::Env;
     fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Error> {
-        if let Ok(_) = sup.clone().into_top() {
+        if sup.clone().into_top().is_ok() {
             return Ok(());
         }
 
@@ -75,13 +75,16 @@ where
 
     fn check_kind(&self, env: &mut Self::Env) -> Result<Kind, Error> {
         let from_kind = self.from.check_kind(&mut env.clone())?;
+        println!("checking fun from {from_kind} == *");
         if from_kind != Kind::Star {
             return Err(to_kind_err(ErrorKind::KindMismatch {
                 found: from_kind.to_string(),
                 expected: "*".to_owned(),
             }));
         };
+
         let to_kind = self.to.check_kind(env)?;
+        println!("checking fun to {to_kind} == *");
         if to_kind != Kind::Star {
             return Err(to_kind_err(ErrorKind::KindMismatch {
                 found: to_kind.to_string(),

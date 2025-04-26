@@ -19,5 +19,5 @@ pub fn pair_to_lambda(p: Pair<'_, Rule>) -> Result<Lambda<Term>, Error> {
     let term_rule = next_rule(paren_term_rule, Rule::paren_term)?;
     let term = pair_to_term(term_rule)?;
 
-    Ok(Lambda::new(&var, ty, term))
+    Ok(Lambda::new(var, ty, term))
 }

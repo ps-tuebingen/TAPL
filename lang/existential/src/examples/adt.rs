@@ -29,8 +29,7 @@ pub fn counter_adt() -> Term {
                 (
                     "get".to_owned(),
                     Fun::new(TypeVariable::new("Counter"), Nat::new()).into(),
-                )
-                    .into(),
+                ),
                 (
                     "inc".to_owned(),
                     Fun::new(TypeVariable::new("Counter"), TypeVariable::new("Counter")).into(),

@@ -2,9 +2,7 @@ use super::{check::TypingContext, terms::Term, types::Type, values::Value};
 use common::{
     errors::Error,
     eval::{Eval, Normalize},
-    Var,
 };
-use std::collections::HashMap;
 
 impl Eval for Term {
     type Env = ();

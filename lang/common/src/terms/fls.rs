@@ -30,6 +30,15 @@ where
     }
 }
 
+impl<T> Default for False<T>
+where
+    T: LanguageTerm,
+{
+    fn default() -> False<T> {
+        False::new()
+    }
+}
+
 impl<T> Term for False<T> where T: LanguageTerm {}
 
 impl<T> SubstTerm<T> for False<T>

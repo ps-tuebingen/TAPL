@@ -58,10 +58,14 @@ where
     type Env = <Ty as Subtypecheck<Ty>>::Env;
 
     fn check_subtype(&self, sup: &Ty, _: &mut Self::Env) -> Result<(), Error> {
-        Err(to_subty_err(ErrorKind::Subtype {
-            sub: self.to_string(),
-            sup: sup.to_string(),
-        }))
+        if sup.clone().into_top().is_ok() {
+            Ok(())
+        } else {
+            Err(to_subty_err(ErrorKind::Subtype {
+                sub: self.to_string(),
+                sup: sup.to_string(),
+            }))
+        }
     }
 }
 

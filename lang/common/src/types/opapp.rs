@@ -76,6 +76,7 @@ where
         let fun_kind = self.fun.check_kind(&mut env.clone())?;
         let (fun_from, fun_to) = fun_kind.into_arrow().map_err(to_kind_err)?;
         let arg_kind = self.arg.check_kind(env)?;
+        println!("comparing op app {fun_from} == {arg_kind}");
         if fun_from == arg_kind {
             Ok(fun_to)
         } else {

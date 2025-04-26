@@ -82,7 +82,7 @@ fn pair_to_lambda(p: Pair<'_, Rule>) -> Result<Lambda<Term>, Error> {
     let annot = pair_to_type(ty_rule)?;
     let body_rule = inner.remove(0);
     let body = pair_to_term(body_rule)?;
-    Ok(Lambda::new(var, annot, body).into())
+    Ok(Lambda::new(var, annot, body))
 }
 
 fn pair_to_tylambda(p: Pair<'_, Rule>) -> Result<TyLambda<Term>, Error> {

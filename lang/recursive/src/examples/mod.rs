@@ -28,7 +28,7 @@ pub fn hungry() -> Term {
 }
 
 pub fn fix_t(t: Type) -> Term {
-    let x_ty: Type = Mu::new("A", Fun::new(TypeVariable::new("A".into()), t.clone())).into();
+    let x_ty: Type = Mu::new("A", Fun::new(TypeVariable::new("A"), t.clone())).into();
     let x_lam: Term = Lambda::new(
         "x",
         x_ty.clone(),

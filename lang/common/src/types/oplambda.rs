@@ -67,6 +67,7 @@ where
     type Env = <Ty as Subtypecheck<Ty>>::Env;
     fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Error> {
         let sup_op = sup.clone().into_oplambda().map_err(to_subty_err)?;
+        println!("comparing oplambda annots {}=={}", sup_op.annot, self.annot);
         sup_op
             .annot
             .check_equal(&self.annot)

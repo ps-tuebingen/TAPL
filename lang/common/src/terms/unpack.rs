@@ -139,6 +139,10 @@ where
                     expected: self.ty_name.clone(),
                 }));
             }
+            println!(
+                "adding unpack bound {}<:{}",
+                bound_bound.var, bound_bound.sup_ty
+            );
             env.add_tyvar_super(bound_bound.var, *bound_bound.sup_ty.clone());
             let sup_kind = bound_bound.sup_ty.check_kind(env)?;
             env.add_tyvar_kind(self.ty_name.clone(), sup_kind);

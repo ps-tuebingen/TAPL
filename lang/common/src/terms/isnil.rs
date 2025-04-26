@@ -96,9 +96,9 @@ where
 
     fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
         let term_val = self.term.eval(env)?;
-        if let Ok(_) = term_val.clone().into_nil() {
+        if term_val.clone().into_nil().is_ok() {
             Ok(True::new().into())
-        } else if let Ok(_) = term_val.clone().into_cons() {
+        } else if term_val.clone().into_cons().is_ok() {
             Ok(False::new().into())
         } else {
             Err(to_eval_err(ErrorKind::ValueMismatch {

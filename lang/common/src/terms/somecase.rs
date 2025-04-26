@@ -128,7 +128,7 @@ where
             self.some_term
                 .subst(&self.some_var, &((*some_val.val).into()))
                 .eval(env)
-        } else if let Ok(_) = bound_val.clone().into_nothing() {
+        } else if bound_val.clone().into_nothing().is_ok() {
             self.none_term.eval(env)
         } else {
             Err(to_check_err(ErrorKind::ValueMismatch {

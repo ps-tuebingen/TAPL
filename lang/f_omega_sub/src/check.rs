@@ -46,11 +46,14 @@ impl CheckEnvironment for Env {
     }
 
     fn add_tyvar_kind(&mut self, v: TypeVar, kind: Kind) {
+        if self.ty_vars.contains_key(&v) {
+            return;
+        }
         self.ty_vars.insert(v, Top::new(kind).into());
     }
 
     fn get_loc(&self, loc: &Location) -> Result<Type, ErrorKind> {
-        Err(ErrorKind::UndefinedLocation(loc.clone()))
+        Err(ErrorKind::UndefinedLocation(*loc))
     }
 }
 

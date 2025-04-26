@@ -21,6 +21,6 @@ impl Eval for Term {
 impl Normalize<Type> for Type {
     type Env = Env;
     fn normalize(self, _: &mut Self::Env) -> Type {
-        self.into()
+        self
     }
 }

@@ -43,8 +43,7 @@ pub fn counter_ex() -> Term {
                     (
                         "get".to_owned(),
                         Lambda::new("x", Nat::new(), Variable::new("x")).into(),
-                    )
-                        .into(),
+                    ),
                     (
                         "inc".to_owned(),
                         Lambda::new("x", Nat::new(), Succ::new(Variable::new("x"))).into(),

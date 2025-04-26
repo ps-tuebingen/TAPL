@@ -77,7 +77,10 @@ where
         term_ty.check_kind(env)?;
 
         let term_rec = match term_ty.clone().into_variable() {
-            Ok(v) => env.get_tyvar_super(&v.v).map_err(to_check_err)?,
+            Ok(v) => env
+                .get_tyvar_super(&v.v)
+                .map_err(to_check_err)?
+                .normalize(env),
             Err(_) => term_ty,
         };
         let rec_ty = term_rec.into_record().map_err(to_check_err)?;

@@ -122,10 +122,13 @@ where
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
         let sup_norm = self.sup_ty.clone().normalize(env);
         let sup_kind = sup_norm.check_kind(env)?;
+        println!("adding lambdasub {}<:{}", self.var, sup_norm);
         env.add_tyvar_super(self.var.clone(), sup_norm.clone());
         env.add_tyvar_kind(self.var.clone(), sup_kind.clone());
         let term_ty = self.body.check(env)?.normalize(env);
         let term_kind = term_ty.check_kind(env)?;
+        println!("comparing lambda sub term and super kinds {term_kind}=={sup_kind}");
+        println!("term: {}, super: {}", term_ty, sup_norm);
         term_kind.check_equal(&sup_kind).map_err(to_check_err)?;
         Ok(ForallBounded::new(&self.var, sup_norm.clone(), term_ty).into())
     }

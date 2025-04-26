@@ -1,6 +1,5 @@
 use common::{
     errors::ErrorKind,
-    eval::Normalize,
     language::LanguageType,
     subst::SubstType,
     types::{

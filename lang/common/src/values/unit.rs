@@ -21,6 +21,15 @@ where
     }
 }
 
+impl<T> Default for Unit<T>
+where
+    T: LanguageTerm,
+{
+    fn default() -> Unit<T> {
+        Unit::new()
+    }
+}
+
 impl<T> Value for Unit<T>
 where
     T: LanguageTerm,

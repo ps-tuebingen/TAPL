@@ -21,6 +21,15 @@ where
     }
 }
 
+impl<T> Default for True<T>
+where
+    T: LanguageTerm,
+{
+    fn default() -> True<T> {
+        True::new()
+    }
+}
+
 impl<T> Value for True<T>
 where
     T: LanguageTerm,

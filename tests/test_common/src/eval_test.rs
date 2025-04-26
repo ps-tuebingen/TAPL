@@ -29,7 +29,7 @@ where
     }
 }
 
-impl<'a, T> Test for EvalTest<T>
+impl<T> Test for EvalTest<T>
 where
     T: Eval + Parse,
     T::Value: fmt::Display,
