@@ -1,6 +1,6 @@
 use super::Term;
 use crate::{
-    check::{to_check_err, CheckEnvironment, Kindcheck, Typecheck},
+    check::{CheckEnvironment, Kindcheck, Typecheck},
     errors::Error,
     eval::{Eval, Normalize},
     language::LanguageTerm,

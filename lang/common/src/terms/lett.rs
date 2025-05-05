@@ -86,7 +86,7 @@ where
             .normalize(&mut env.clone());
         bound_ty.check_kind(&mut env.clone())?;
 
-        &mut env.clone().add_var(self.var.clone(), bound_ty);
+        env.add_var(self.var.clone(), bound_ty);
         let in_ty = self
             .in_term
             .check(&mut env.clone())?

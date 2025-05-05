@@ -99,6 +99,7 @@ where
         }
         println!("adding existss {}<:{}", other_exists.var, self.sup_ty);
         env.add_tyvar_super(other_exists.var, *self.sup_ty.clone());
+        println!("checking {}<:{} (existsbounded)", self.ty, other_exists.ty);
         self.ty
             .clone()
             .normalize(env)
@@ -125,14 +126,8 @@ where
 {
     type Env = <Ty as Normalize<Ty>>::Env;
     fn normalize(self, env: &mut Self::Env) -> Ty {
-        let sup_norm = self.sup_ty.normalize(env);
-        let ty_norm = self.ty.normalize(env);
-        ExistsBounded {
-            var: self.var,
-            sup_ty: Box::new(sup_norm),
-            ty: Box::new(ty_norm),
-        }
-        .into()
+        env.add_tyvar_super(self.var.clone(), *self.sup_ty.clone());
+        self.into()
     }
 }
 

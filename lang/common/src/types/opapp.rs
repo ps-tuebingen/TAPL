@@ -1,6 +1,6 @@
 use super::Type;
 use crate::{
-    check::{to_kind_err, Kindcheck, Subtypecheck},
+    check::{to_kind_err, to_subty_err, Kindcheck, Subtypecheck},
     errors::{Error, ErrorKind},
     eval::Normalize,
     kinds::Kind,
@@ -59,9 +59,14 @@ where
 {
     type Env = <Ty as Subtypecheck<Ty>>::Env;
     fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Error> {
-        let self_norm = self.clone().normalize(env);
-        let sup_norm = sup.clone().normalize(env);
-        self_norm.check_subtype(&sup_norm, env)
+        if sup.clone().into_top().is_ok() {
+            return Ok(());
+        }
+        let sup_op = sup.clone().into_opapp().map_err(to_subty_err)?;
+        println!("checking {}<:{} (opapp fun)", self.fun, sup_op.fun);
+        self.fun.check_subtype(&sup_op.fun, &mut env.clone())?;
+        println!("checking {}<:{} (opapp arg)", self.arg, sup_op.arg);
+        self.arg.check_subtype(&sup_op.arg, env)
     }
 }
 

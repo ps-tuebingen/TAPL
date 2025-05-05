@@ -84,7 +84,7 @@ where
             .normalize(&mut env.clone())
             .into_mu()
             .map_err(to_check_err)?;
-        &mut env.clone().add_tyvar_kind(mu_ty.var.clone(), Kind::Star);
+        env.add_tyvar_kind(mu_ty.var.clone(), Kind::Star);
         mu_ty
             .ty
             .check_kind(&mut env.clone())?

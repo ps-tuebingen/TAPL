@@ -103,8 +103,8 @@ where
             .term
             .check(&mut env.clone())?
             .normalize(&mut env.clone());
+        println!("tylambda term {term_ty}");
         let term_knd = term_ty.check_kind(env)?;
-        println!("comparing tylambda {}=={}", self.annot, term_knd);
         self.annot.check_equal(&term_knd).map_err(to_check_err)?;
         Ok(Forall::new(&self.var, self.annot.clone(), term_ty).into())
     }

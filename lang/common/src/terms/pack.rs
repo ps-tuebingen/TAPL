@@ -100,6 +100,7 @@ where
         println!("outer: {},outer norm:{}", self.outer_ty, outer_norm);
 
         if let Ok(outer_exists) = outer_norm.clone().into_exists() {
+            println!("checking pack {}", self);
             env.add_tyvar_kind(outer_exists.var.clone(), outer_exists.kind.clone());
             let term_ty = self.term.check(env)?.normalize(env);
             let term_kind = term_ty.check_kind(env)?;
@@ -114,6 +115,7 @@ where
                 .subst_type(&outer_exists.var, &self.inner_ty)
                 .normalize(env);
             outer_subst.check_equal(&term_ty).map_err(to_check_err)?;
+            println!("checked pack: {outer_norm}");
             Ok(outer_norm)
         } else if let Ok(outer_bound) = outer_norm.clone().into_exists_bounded() {
             let sup_norm = outer_bound.sup_ty.clone().normalize(env);
@@ -126,6 +128,7 @@ where
             term_kind.check_equal(&outer_knd).map_err(to_check_err)?;
 
             let outer_subst = outer_bound.ty.subst_type(&outer_bound.var, &self.inner_ty);
+            println!("checking {}<:{}", term_ty, outer_subst);
             term_ty.check_subtype(&outer_subst, env)?;
             Ok(outer_norm)
         } else {

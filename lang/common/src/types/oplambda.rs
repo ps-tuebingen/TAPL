@@ -74,6 +74,7 @@ where
             .map_err(to_subty_err)?;
         env.add_tyvar_kind(self.var.clone(), self.annot.clone());
 
+        println!("checking {}<:{} (oplambda)", self.body, sup_op.body);
         self.body.check_subtype(
             &sup_op
                 .body

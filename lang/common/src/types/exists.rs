@@ -78,13 +78,8 @@ where
 {
     type Env = <Ty as Normalize<Ty>>::Env;
     fn normalize(self, env: &mut Self::Env) -> Ty {
-        let ty_norm = self.ty.normalize(env);
-        Exists {
-            var: self.var,
-            kind: self.kind,
-            ty: Box::new(ty_norm),
-        }
-        .into()
+        env.add_tyvar_kind(self.var.clone(), self.kind.clone());
+        self.into()
     }
 }
 

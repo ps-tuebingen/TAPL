@@ -80,9 +80,9 @@ where
             .sup
             .check_equal(&self_sup_norm)
             .map_err(to_subty_err)?;
-        println!("adding oplambdasub var {} <: {}", self.var, self_sup_norm);
         env.add_tyvar_super(self.var.clone(), self_sup_norm);
 
+        println!("checking {}<:{} (oplambdasub)", self.body, sup_op.body);
         self.body.check_subtype(
             &sup_op
                 .body

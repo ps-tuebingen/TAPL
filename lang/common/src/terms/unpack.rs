@@ -134,7 +134,7 @@ where
             }
             env.add_tyvar_kind(bound_exists.var, bound_exists.kind);
             env.add_var(self.term_name.clone(), *bound_exists.ty);
-            self.in_term.check(env)
+            Ok(self.in_term.check(&mut env.clone())?.normalize(env))
         } else if let Ok(bound_bound) = bound_ty.clone().into_exists_bounded() {
             if self.ty_name != bound_bound.var {
                 return Err(to_check_err(ErrorKind::TypeMismatch {
@@ -142,11 +142,11 @@ where
                     expected: self.ty_name.clone(),
                 }));
             }
-            env.add_tyvar_super(bound_bound.var, *bound_bound.sup_ty.clone());
             let sup_kind = bound_bound.sup_ty.check_kind(env)?;
+            env.add_tyvar_super(bound_bound.var, *bound_bound.sup_ty.clone());
             env.add_tyvar_kind(self.ty_name.clone(), sup_kind);
             env.add_var(self.term_name.clone(), *bound_bound.ty.clone());
-            self.in_term.check(env)
+            Ok(self.in_term.check(&mut env.clone())?.normalize(env))
         } else {
             Err(to_check_err(ErrorKind::TypeMismatch {
                 found: self.to_string(),
