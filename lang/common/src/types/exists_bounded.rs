@@ -84,6 +84,10 @@ where
     type Env = <Ty as Subtypecheck<Ty>>::Env;
 
     fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Error> {
+        if sup.clone().into_top().is_ok() {
+            return Ok(());
+        }
+
         let sup_norm = sup.clone().normalize(env);
         let self_norm = self.sup_ty.clone().normalize(env);
         let other_exists = sup_norm.into_exists_bounded().map_err(to_subty_err)?;
@@ -97,9 +101,7 @@ where
                 expected: self.var.clone(),
             }));
         }
-        println!("adding existss {}<:{}", other_exists.var, self.sup_ty);
         env.add_tyvar_super(other_exists.var, *self.sup_ty.clone());
-        println!("checking {}<:{} (existsbounded)", self.ty, other_exists.ty);
         self.ty
             .clone()
             .normalize(env)

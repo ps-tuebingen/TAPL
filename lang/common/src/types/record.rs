@@ -64,13 +64,13 @@ where
             return Ok(());
         }
 
-        let sup_rec = sup.clone().into_record().map_err(to_subty_err)?;
+        let sup_norm = sup.clone().normalize(env);
+        let sup_rec = sup_norm.into_record().map_err(to_subty_err)?;
         for (lb, ty) in sup_rec.records.iter() {
             let sub_ty = self
                 .records
                 .get(lb)
                 .ok_or(to_subty_err(ErrorKind::UndefinedLabel(lb.clone())))?;
-            println!("checking {sub_ty} <: {ty} (record, label {lb})");
             sub_ty.check_subtype(ty, &mut env.clone())?;
         }
         Ok(())
@@ -99,13 +99,9 @@ where
 {
     type Env = <Ty as Normalize<Ty>>::Env;
     fn normalize(self, env: &mut Self::Env) -> Ty {
-        println!("normalizing record");
         let mut recs_norm = HashMap::new();
         for (lb, ty) in self.records {
-            println!("normalizing {lb}");
-            println!("{ty} -> ");
             let ty_norm = ty.normalize(env);
-            println!("{ty_norm}");
             recs_norm.insert(lb, ty_norm);
         }
         Record { records: recs_norm }.into()

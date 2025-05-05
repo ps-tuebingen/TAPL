@@ -95,7 +95,6 @@ where
             }));
         }
         let ty_norm = self.ty.clone().normalize(env);
-        println!("checking {ty_norm} <: {} (forallbounded)", other_forall.ty);
         ty_norm.check_subtype(&(*other_forall.ty), env)
     }
 }

@@ -146,7 +146,8 @@ where
             env.add_tyvar_super(bound_bound.var, *bound_bound.sup_ty.clone());
             env.add_tyvar_kind(self.ty_name.clone(), sup_kind);
             env.add_var(self.term_name.clone(), *bound_bound.ty.clone());
-            Ok(self.in_term.check(&mut env.clone())?.normalize(env))
+            let inner_ty = self.in_term.check(&mut env.clone())?;
+            Ok(inner_ty.normalize(env))
         } else {
             Err(to_check_err(ErrorKind::TypeMismatch {
                 found: self.to_string(),

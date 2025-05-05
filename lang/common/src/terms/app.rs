@@ -101,7 +101,6 @@ where
             .check_kind(&mut env.clone())?
             .into_star()
             .map_err(to_check_err)?;
-        println!("checking {}<:{} (app)", arg_ty, fun.from);
         arg_ty.check_subtype(&(*fun.from), env)?;
         Ok(*fun.to)
     }

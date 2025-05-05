@@ -108,7 +108,6 @@ where
         } else if let Ok(forall) = fun_ty.clone().into_forall_bounded() {
             let sup_knd = forall.sup_ty.check_kind(&mut env.clone())?;
             sup_knd.check_equal(&arg_kind).map_err(to_check_err)?;
-            println!("checking {}<:{}(tyapp)", arg_norm, forall.sup_ty);
             arg_norm.check_subtype(&forall.sup_ty, env)?;
             Ok(forall.ty.subst_type(&forall.var, &arg_norm))
         } else {

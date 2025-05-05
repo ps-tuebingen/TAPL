@@ -1,2 +1,2 @@
-ty="forall M<:\\R::*.{ get:(R) -> (Nat), inc:(R) -> (R) }.({exists X<:Top::*,{ methods:(M) [X], state:X } }) -> ({exists X<:Top::*,{ methods:(M) [X], state:X } })"
+ty="forall M<:\\R<:Top[*].{get:(R -> Nat), inc:(R -> R)}.({exists X<:Top[*],{methods:(M[X]), state:X}} -> {exists X<:Top[*],{methods:(M[X]), state:X}})"
 evaluated="\\M<:(\\R<:Top[*].{get:(R -> Nat), inc:(R -> R)}).\\c:(\\M<:Top[(*) => (*)].{exists X<:Top[*],{methods:(M[X]), state:X}}[M]).(let {X,b}=c in {*(X),{methods=(b).methods, state=(((b).methods).inc) ((b).methods)}} as (\\M<:Top[(*) => (*)].{exists X<:Top[*],{methods:(M[X]), state:X}}[M]))"

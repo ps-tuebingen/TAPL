@@ -63,9 +63,7 @@ where
             return Ok(());
         }
         let sup_op = sup.clone().into_opapp().map_err(to_subty_err)?;
-        println!("checking {}<:{} (opapp fun)", self.fun, sup_op.fun);
         self.fun.check_subtype(&sup_op.fun, &mut env.clone())?;
-        println!("checking {}<:{} (opapp arg)", self.arg, sup_op.arg);
         self.arg.check_subtype(&sup_op.arg, env)
     }
 }
@@ -98,17 +96,14 @@ where
 {
     type Env = <Ty as Normalize<Ty>>::Env;
     fn normalize(self, env: &mut Self::Env) -> Ty {
-        let fun_norm = self.fun.normalize(env);
-        let arg_norm = self.arg.normalize(env);
-
-        if let Ok(oplam) = fun_norm.clone().into_oplambda() {
-            oplam.body.subst_type(&oplam.var, &arg_norm).normalize(env)
-        } else if let Ok(oplam) = fun_norm.clone().into_oplambdasub() {
-            oplam.body.subst_type(&oplam.var, &arg_norm).normalize(env)
+        if let Ok(oplam) = self.fun.clone().into_oplambda() {
+            oplam.body.subst_type(&oplam.var, &self.arg).normalize(env)
+        } else if let Ok(oplam) = self.fun.clone().into_oplambdasub() {
+            oplam.body.subst_type(&oplam.var, &self.arg).normalize(env)
         } else {
             OpApp {
-                fun: Box::new(fun_norm),
-                arg: Box::new(arg_norm),
+                fun: Box::new(self.fun.normalize(&mut env.clone())),
+                arg: Box::new(self.arg.normalize(env)),
             }
             .into()
         }
