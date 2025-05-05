@@ -108,10 +108,10 @@ where
                 .check_equal(&outer_exists.kind)
                 .map_err(to_check_err)?;
 
-            let outer_subst = outer_exists
+            let outer_subst = dbg!(outer_exists
                 .ty
-                .subst_type(&outer_exists.var, &self.inner_ty)
-                .normalize(env);
+                .subst_type(&outer_exists.var, &self.inner_ty))
+            .normalize(env);
             outer_subst.check_equal(&term_ty).map_err(to_check_err)?;
             Ok(self.outer_ty.clone())
         } else if let Ok(outer_bound) = outer_norm.clone().into_exists_bounded() {

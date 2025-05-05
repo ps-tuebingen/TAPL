@@ -79,7 +79,7 @@ where
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
         let fst_ty = self
             .fst
-            .check(&mut &mut env.clone().clone())?
+            .check(&mut env.clone())?
             .normalize(&mut env.clone());
         let snd_ty = self
             .snd

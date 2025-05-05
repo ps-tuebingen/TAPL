@@ -72,7 +72,7 @@ where
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
         let term_ty = self
             .term
-            .check(&mut &mut env.clone().clone())?
+            .check(&mut env.clone())?
             .normalize(&mut env.clone());
         let term_knd = term_ty.check_kind(&mut env.clone())?;
 

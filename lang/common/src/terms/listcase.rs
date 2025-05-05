@@ -102,7 +102,7 @@ where
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
         let bound_ty = self
             .bound_term
-            .check(&mut &mut env.clone().clone())?
+            .check(&mut env.clone())?
             .normalize(&mut env.clone());
         bound_ty
             .check_kind(&mut env.clone())?
@@ -112,7 +112,7 @@ where
 
         let nil_ty = self
             .nil_rhs
-            .check(&mut &mut env.clone().clone())?
+            .check(&mut env.clone())?
             .normalize(&mut env.clone());
         let nil_kind = nil_ty.check_kind(&mut env.clone())?;
 

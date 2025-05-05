@@ -85,7 +85,7 @@ where
         let ty_norm = self.ty.clone().normalize(&mut env.clone());
         let hd_ty = self
             .head
-            .check(&mut &mut env.clone().clone())?
+            .check(&mut env.clone())?
             .normalize(&mut env.clone());
         hd_ty.check_equal(&ty_norm).map_err(to_check_err)?;
         hd_ty

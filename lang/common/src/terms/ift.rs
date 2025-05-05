@@ -81,7 +81,7 @@ where
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
         let if_ty = self
             .if_cond
-            .check(&mut &mut env.clone().clone())?
+            .check(&mut env.clone())?
             .normalize(&mut env.clone());
         if_ty
             .check_kind(&mut env.clone())?
@@ -91,7 +91,7 @@ where
 
         let then_ty = self
             .then_term
-            .check(&mut &mut env.clone().clone())?
+            .check(&mut env.clone())?
             .normalize(&mut env.clone());
         let then_kind = then_ty.check_kind(&mut env.clone())?;
 
