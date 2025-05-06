@@ -4,6 +4,20 @@ pub mod parse;
 pub mod terms;
 pub mod values;
 
+use common::language::{untyped::Untyped, Language};
+use terms::Term;
+use values::Value;
+
+pub struct UntypedArithmetic;
+
+impl Language for UntypedArithmetic {
+    type Term = Term;
+    type Type = Untyped;
+    type Value = Value;
+    type CheckEnv = ();
+    type EvalEnv = ();
+}
+
 #[cfg(test)]
 mod term_tests {
     use super::terms::Term;

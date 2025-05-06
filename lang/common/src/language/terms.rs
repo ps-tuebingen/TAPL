@@ -2,6 +2,7 @@ use super::{LanguageType, LanguageValue};
 use crate::{
     check::{Kindcheck, Subtypecheck, Typecheck},
     eval::{Eval, Normalize},
+    parse::Parse,
     subst::{SubstTerm, SubstType},
     terms::Term,
 };
@@ -9,6 +10,7 @@ use crate::{
 pub trait LanguageTerm
 where
     Self: Term
+        + Parse
         + SubstTerm<Self, Target = Self>
         + SubstType<<Self as LanguageTerm>::Type, Target = Self>
         + Eval<Value = <Self as LanguageTerm>::Value>
