@@ -34,21 +34,23 @@ impl TestSuite for ExistentialTests {
         let contents: Vec<TestContents<ExistentialConf>> = load_dir(&self.source_dir, "ex")?;
         let mut tests = vec![];
         for tst in contents {
-            let parse_test =
-                ParseTest::<existential::terms::Term>::new(&tst.source_name, &tst.source_contents);
+            let parse_test = ParseTest::<languages::existential::terms::Term>::new(
+                &tst.source_name,
+                &tst.source_contents,
+            );
             tests.push(Box::new(parse_test) as Box<dyn Test>);
-            let reparse_test = ReparseTest::<existential::terms::Term>::new(
+            let reparse_test = ReparseTest::<languages::existential::terms::Term>::new(
                 &tst.source_name,
                 &tst.source_contents,
             );
             tests.push(Box::new(reparse_test) as Box<dyn Test>);
-            let check_test = CheckTest::<existential::terms::Term>::new(
+            let check_test = CheckTest::<languages::existential::terms::Term>::new(
                 &tst.source_name,
                 &tst.source_contents,
                 &tst.conf.ty,
             );
             tests.push(Box::new(check_test) as Box<dyn Test>);
-            let eval_test = EvalTest::<existential::terms::Term>::new(
+            let eval_test = EvalTest::<languages::existential::terms::Term>::new(
                 &tst.source_name,
                 &tst.source_contents,
                 &tst.conf.evaluated,

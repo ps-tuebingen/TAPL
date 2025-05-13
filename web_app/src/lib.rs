@@ -89,7 +89,7 @@ impl HtmlContext {
         let lang = self.get_lang();
         alert(&lang.to_string());
         let text_value = self.source_area.value();
-        let parsed = match untyped_lambda::terms::Term::parse(text_value) {
+        let parsed = match languages::untyped_lambda::terms::Term::parse(text_value) {
             Ok(p) => p,
             Err(err) => return self.set_err(err),
         };

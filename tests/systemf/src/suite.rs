@@ -34,19 +34,23 @@ impl TestSuite for SystemFTests {
         let contents: Vec<TestContents<SystemFConf>> = load_dir(&self.source_path, "f")?;
         let mut tests = vec![];
         for tst in contents {
-            let parse_test =
-                ParseTest::<system_f::terms::Term>::new(&tst.source_name, &tst.source_contents);
+            let parse_test = ParseTest::<languages::system_f::terms::Term>::new(
+                &tst.source_name,
+                &tst.source_contents,
+            );
             tests.push(Box::new(parse_test) as Box<dyn Test>);
-            let reparse_test =
-                ReparseTest::<system_f::terms::Term>::new(&tst.source_name, &tst.source_contents);
+            let reparse_test = ReparseTest::<languages::system_f::terms::Term>::new(
+                &tst.source_name,
+                &tst.source_contents,
+            );
             tests.push(Box::new(reparse_test) as Box<dyn Test>);
-            let check_test = CheckTest::<system_f::terms::Term>::new(
+            let check_test = CheckTest::<languages::system_f::terms::Term>::new(
                 &tst.source_name,
                 &tst.source_contents,
                 &tst.conf.ty,
             );
             tests.push(Box::new(check_test) as Box<dyn Test>);
-            let eval_test = EvalTest::<system_f::terms::Term>::new(
+            let eval_test = EvalTest::<languages::system_f::terms::Term>::new(
                 &tst.source_name,
                 &tst.source_contents,
                 &tst.conf.evaluated,

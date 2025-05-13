@@ -34,23 +34,23 @@ impl TestSuite for TypedArithTests {
         let contents: Vec<TestContents<TypedArithConf>> = load_dir(&self.source_dir, "arith")?;
         let mut tests = vec![];
         for content in contents {
-            let parse_test = ParseTest::<typed_arithmetic::terms::Term>::new(
+            let parse_test = ParseTest::<languages::typed_arithmetic::terms::Term>::new(
                 &content.source_name,
                 &content.source_contents,
             );
             tests.push(Box::new(parse_test) as Box<dyn Test>);
-            let reparse_test = ReparseTest::<typed_arithmetic::terms::Term>::new(
+            let reparse_test = ReparseTest::<languages::typed_arithmetic::terms::Term>::new(
                 &content.source_name,
                 &content.source_contents,
             );
             tests.push(Box::new(reparse_test) as Box<dyn Test>);
-            let eval_test = EvalTest::<typed_arithmetic::terms::Term>::new(
+            let eval_test = EvalTest::<languages::typed_arithmetic::terms::Term>::new(
                 &content.source_name,
                 &content.source_contents,
                 &content.conf.expected,
             );
             tests.push(Box::new(eval_test) as Box<dyn Test>);
-            let check_test = CheckTest::<typed_arithmetic::terms::Term>::new(
+            let check_test = CheckTest::<languages::typed_arithmetic::terms::Term>::new(
                 &content.source_name,
                 &content.source_contents,
                 &content.conf.ty,

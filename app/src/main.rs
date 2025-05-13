@@ -6,23 +6,27 @@ use std::{fmt, fs::read_to_string, path::PathBuf};
 fn run_lang(lang: &ImplementedLanguage, src: String, debug: bool) -> Result<(), Error> {
     match lang {
         ImplementedLanguage::UntypedArithmetic => {
-            run::<untyped_arithmetic::terms::Term>(src, debug)
+            run::<languages::untyped_arithmetic::terms::Term>(src, debug)
         }
-        ImplementedLanguage::UntypedLambda => run::<untyped_lambda::terms::Term>(src, debug),
-        ImplementedLanguage::TypedArithmetic => run::<typed_arithmetic::terms::Term>(src, debug),
-        ImplementedLanguage::Stlc => run::<stlc::terms::Term>(src, debug),
-        ImplementedLanguage::References => run::<references::terms::Term>(src, debug),
-        ImplementedLanguage::Exceptions => run::<exceptions::terms::Term>(src, debug),
-        ImplementedLanguage::Subtypes => run::<subtypes::terms::Term>(src, debug),
-        ImplementedLanguage::Recursive => run::<recursive::terms::Term>(src, debug),
-        ImplementedLanguage::Existential => run::<existential::terms::Term>(src, debug),
-        ImplementedLanguage::SystemF => run::<system_f::terms::Term>(src, debug),
+        ImplementedLanguage::UntypedLambda => {
+            run::<languages::untyped_lambda::terms::Term>(src, debug)
+        }
+        ImplementedLanguage::TypedArithmetic => {
+            run::<languages::typed_arithmetic::terms::Term>(src, debug)
+        }
+        ImplementedLanguage::Stlc => run::<languages::stlc::terms::Term>(src, debug),
+        ImplementedLanguage::References => run::<languages::references::terms::Term>(src, debug),
+        ImplementedLanguage::Exceptions => run::<languages::exceptions::terms::Term>(src, debug),
+        ImplementedLanguage::Subtypes => run::<languages::subtypes::terms::Term>(src, debug),
+        ImplementedLanguage::Recursive => run::<languages::recursive::terms::Term>(src, debug),
+        ImplementedLanguage::Existential => run::<languages::existential::terms::Term>(src, debug),
+        ImplementedLanguage::SystemF => run::<languages::system_f::terms::Term>(src, debug),
         ImplementedLanguage::BoundedQuantification => {
-            run::<bounded_quantification::terms::Term>(src, debug)
+            run::<languages::bounded_quantification::terms::Term>(src, debug)
         }
-        ImplementedLanguage::LambdaOmega => run::<lambda_omega::terms::Term>(src, debug),
-        ImplementedLanguage::FOmega => run::<f_omega::terms::Term>(src, debug),
-        ImplementedLanguage::FOmegaSub => run::<f_omega_sub::terms::Term>(src, debug),
+        ImplementedLanguage::LambdaOmega => run::<languages::lambda_omega::terms::Term>(src, debug),
+        ImplementedLanguage::FOmega => run::<languages::f_omega::terms::Term>(src, debug),
+        ImplementedLanguage::FOmegaSub => run::<languages::f_omega_sub::terms::Term>(src, debug),
     }
 }
 

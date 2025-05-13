@@ -13,4 +13,4 @@ serde = {version="1.0.219", features=["derive"]}
 
 test_common = { path="../test_common" }
 common = { path="../../lang/common" }
-existential = { path="../../lang/existential" }
+languages = { path="../../lang/languages"}

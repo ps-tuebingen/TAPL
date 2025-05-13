@@ -34,19 +34,23 @@ impl TestSuite for ExceptionTests {
         let contents: Vec<TestContents<ExceptionsConf>> = load_dir(&self.source_path, "ex")?;
         let mut tests = vec![];
         for tst in contents {
-            let parse_test =
-                ParseTest::<exceptions::terms::Term>::new(&tst.source_name, &tst.source_contents);
+            let parse_test = ParseTest::<languages::exceptions::terms::Term>::new(
+                &tst.source_name,
+                &tst.source_contents,
+            );
             tests.push(Box::new(parse_test) as Box<dyn Test>);
-            let reparse_test =
-                ReparseTest::<exceptions::terms::Term>::new(&tst.source_name, &tst.source_contents);
+            let reparse_test = ReparseTest::<languages::exceptions::terms::Term>::new(
+                &tst.source_name,
+                &tst.source_contents,
+            );
             tests.push(Box::new(reparse_test) as Box<dyn Test>);
-            let check_test = CheckTest::<exceptions::terms::Term>::new(
+            let check_test = CheckTest::<languages::exceptions::terms::Term>::new(
                 &tst.source_name,
                 &tst.source_contents,
                 &tst.conf.ty,
             );
             tests.push(Box::new(check_test) as Box<dyn Test>);
-            let eval_test = EvalTest::<exceptions::terms::Term>::new(
+            let eval_test = EvalTest::<languages::exceptions::terms::Term>::new(
                 &tst.source_name,
                 &tst.source_contents,
                 &tst.conf.evaluated,

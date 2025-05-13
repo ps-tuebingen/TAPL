@@ -4,7 +4,6 @@ members = [
     "web_app",
 
     "tests/test_common",
-    #"tests/nameless",
     "tests/typed_arithmetic",
     "tests/untyped_arithmetic",
     "tests/untyped_lambda",
@@ -12,10 +11,8 @@ members = [
     "tests/references",
     "tests/exceptions",
     "tests/subtypes",
-    #"tests/featherweight",
     "tests/recursive",
     "tests/existential",
-    #"tests/inference",
     "tests/systemf",
     "tests/boundedquantification",
     "tests/lambdaomega",
@@ -23,23 +20,7 @@ members = [
     "tests/f_omega_sub",
 
     "lang/common",
-    "lang/untyped_lambda",
-    "lang/untyped_arithmetic",
-    "lang/typed_arithmetic",
-    "lang/stlc",
-    "lang/exceptions",
-    "lang/references",
-    "lang/subtypes",
-    #"lang/inference",
-    #"lang/nameless_representation",
-    "lang/system_f",
-    #"lang/featherweight",
-    "lang/recursive", 
-    "lang/existential",
-    "lang/bounded_quantification",
-    "lang/lambda_omega",
-    "lang/f_omega",
-    "lang/f_omega_sub",
+    "lang/languages",
 ]
 
 resolver = "2"
