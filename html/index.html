@@ -5,16 +5,12 @@
     <link rel="icon" type="image/x-icon" href="favicon.ico"/>
   </head>
   <body>
-    <textarea id="source_code">
-      default value
-    </textarea>
-
     <script type="module">
-      import init, { greet } from "./pkg/tapl_web.js";
-      init().then(() => {
-        greet()
-      })
+      import init, { setup } from "./pkg/tapl_web.js";
+      await init();
     </script>
+
+    <textarea id="source_code"></textarea>
     <button id="run_button">Run</button>
   </body>
 </html>
