@@ -1,6 +1,7 @@
 [workspace]
 members = [
     "app",
+    "web_app",
 
     "tests/test_common",
     #"tests/nameless",

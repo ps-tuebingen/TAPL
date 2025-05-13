@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Types and Programming Languages</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico"/>
+  </head>
+  <body>
+    <textarea id="source_code">
+      default value
+    </textarea>
+
+    <script type="module">
+      import init, { greet } from "./pkg/tapl_web.js";
+      init().then(() => {
+        greet()
+      })
+    </script>
+    <button id="run_button">Run</button>
+  </body>
+</html>

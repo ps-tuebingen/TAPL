@@ -1,3 +1,7 @@
+.PHONY: web
+web:
+	wasm-pack build web_app --target web --out-dir ../html/pkg
+
 .PHONY: test 
 test:
 	cargo test --all --no-fail-fast 
@@ -12,5 +16,3 @@ coverage:
 	@echo "Make sure to install via cargo install cargo-llvm-cov first"
 	cargo llvm-cov --workspace --html
 	cargo llvm-cov --workspace --open
-
-
