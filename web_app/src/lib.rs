@@ -1,11 +1,12 @@
 use std::rc::Rc;
 use wasm_bindgen::prelude::*;
-use web_sys::{HtmlButtonElement, HtmlTextAreaElement};
+use web_sys::{HtmlButtonElement, HtmlDivElement, HtmlTextAreaElement};
 
 #[derive(Clone)]
 struct HtmlContext {
     run_button: HtmlButtonElement,
     source_area: HtmlTextAreaElement,
+    out_div: HtmlDivElement,
 }
 
 impl HtmlContext {
@@ -21,9 +22,15 @@ impl HtmlContext {
             .unwrap()
             .dyn_into::<HtmlTextAreaElement>()
             .unwrap();
+        let out_div = doc
+            .get_element_by_id("output")
+            .unwrap()
+            .dyn_into::<HtmlDivElement>()
+            .unwrap();
         Rc::new(Self {
             run_button,
             source_area,
+            out_div,
         })
     }
 
@@ -41,7 +48,7 @@ impl HtmlContext {
 
     pub fn handle_button(&self) {
         let text_value = self.source_area.value();
-        alert(&text_value);
+        self.out_div.set_inner_html(&text_value);
     }
 }
 
