@@ -1,9 +1,0 @@
-[package]
-name = "test_common"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-basic-toml = {version="0.1.10"}
-serde = {version="1.0.219", features=["derive"]}
-common = { path="../../lang/common" }

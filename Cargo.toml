@@ -2,23 +2,8 @@
 members = [
     "app",
     "web_app",
-
-    "tests/test_common",
-    "tests/typed_arithmetic",
-    "tests/untyped_arithmetic",
-    "tests/untyped_lambda",
-    "tests/stlc",
-    "tests/references",
-    "tests/exceptions",
-    "tests/subtypes",
-    "tests/recursive",
-    "tests/existential",
-    "tests/systemf",
-    "tests/boundedquantification",
-    "tests/lambdaomega",
-    "tests/f_omega",
-    "tests/f_omega_sub",
-
+    "tests/common",
+    "tests",
     "lang/common",
     "lang/languages",
 ]

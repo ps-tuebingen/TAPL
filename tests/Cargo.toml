@@ -1,0 +1,80 @@
+[package]
+name = "e2e_tests"
+version = "0.1.0"
+edition = "2021"
+
+[[test]]
+name = "e2e_untyped_arithmetic"
+path = "untyped_arithmetic.rs"
+harness=false
+
+[[test]]
+name = "e2e_untyped_lambda"
+path = "untyped_lambda.rs"
+harness=false
+
+[[test]]
+name = "e2e_typed_arithmetic"
+path = "typed_arithmetic.rs"
+harness=false
+
+[[test]]
+name = "e2e_stlc"
+path = "stlc.rs"
+harness=false
+
+[[test]]
+name = "e2e_references"
+path = "references.rs"
+harness=false
+
+[[test]]
+name = "e2e_exceptions"
+path = "exceptions.rs"
+harness=false
+
+[[test]]
+name = "e2e_recursive"
+path = "recursive.rs"
+harness=false
+
+[[test]]
+name = "e2e_subtypes"
+path = "subtypes.rs"
+harness=false
+
+[[test]]
+name = "e2e_bounded_quantification"
+path = "bounded_quantification.rs"
+harness=false
+
+[[test]]
+name = "e2e_existential"
+path = "existential.rs"
+harness=false
+
+[[test]]
+name = "e2e_system_f"
+path = "system_f.rs"
+harness=false
+
+[[test]]
+name = "e2e_lambda_omega"
+path = "lambda_omega.rs"
+harness=false
+
+[[test]]
+name = "e2e_f_omega"
+path = "f_omega.rs"
+harness=false
+
+[[test]]
+name = "e2e_f_omega_sub"
+path = "f_omega_sub.rs"
+harness=false
+
+[dependencies]
+serde = {version="1.0.219", features=["derive"]}
+e2e_common={path="common"}
+common={path="../lang/common"}
+languages={path="../lang/languages"}

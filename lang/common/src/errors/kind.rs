@@ -25,6 +25,8 @@ pub enum ErrorKind {
     UnknownKeyword(String),
     UnexpectedRule { found: String, expected: String },
     UndefinedLanguage(String),
+    DirAccess { tried: String, msg: String },
+    Toml { source: String, msg: String },
 }
 
 impl fmt::Display for ErrorKind {
@@ -66,6 +68,10 @@ impl fmt::Display for ErrorKind {
                 write!(f, "Unexpeced rule {found}, expected {expected}")
             }
             ErrorKind::UndefinedLanguage(lang) => write!(f, "Language {lang} does not exist"),
+            ErrorKind::DirAccess { tried, msg } => {
+                write!(f, "Could not {tried}, error: {msg}")
+            }
+            ErrorKind::Toml { source, msg } => write!(f, "Could not parse toml: {msg}\n{source}"),
         }
     }
 }
