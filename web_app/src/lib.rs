@@ -1,4 +1,5 @@
-use common::{eval::Eval, language::ImplementedLanguage, parse::Parse};
+use common::{eval::Eval, parse::Parse};
+use languages::AllLanguages;
 use std::rc::Rc;
 use wasm_bindgen::{prelude::wasm_bindgen, JsCast};
 use web_sys::{
@@ -46,7 +47,7 @@ impl HtmlContext {
     }
 
     fn setup_languages(&self, doc: &Document) {
-        for lang in ImplementedLanguage::all() {
+        for lang in AllLanguages::all() {
             let lang_option = doc
                 .create_element("option")
                 .unwrap()
@@ -81,8 +82,8 @@ impl HtmlContext {
         self.error_out.set_inner_html("");
     }
 
-    fn get_lang(&self) -> ImplementedLanguage {
-        ImplementedLanguage::all()[self.language_select.selected_index() as usize]
+    fn get_lang(&self) -> AllLanguages {
+        AllLanguages::all()[self.language_select.selected_index() as usize]
     }
 
     fn handle_button(&self) {

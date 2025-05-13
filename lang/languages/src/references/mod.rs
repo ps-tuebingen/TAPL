@@ -12,6 +12,7 @@ use terms::Term;
 use types::Type;
 use values::Value;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct References;
 
 impl Language for References {

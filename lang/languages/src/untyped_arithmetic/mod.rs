@@ -7,6 +7,7 @@ use common::language::{untyped::Untyped, Language};
 use terms::Term;
 use values::Value;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct UntypedArithmetic;
 
 impl Language for UntypedArithmetic {

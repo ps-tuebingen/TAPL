@@ -11,7 +11,9 @@ use terms::Term;
 use types::Type;
 use values::Value;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Recursive;
+
 impl Language for Recursive {
     type Term = Term;
     type Type = Type;
