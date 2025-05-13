@@ -1,5 +1,6 @@
 use super::terms::Term;
 use common::{
+    errors::ErrorKind,
     language::LanguageValue,
     values::{Lambda, Value as ValueTrait},
 };
@@ -16,6 +17,12 @@ impl common::values::Value for Value {
 
 impl LanguageValue for Value {
     type Term = Term;
+
+    fn into_lambda(self) -> Result<Lambda<Term>, ErrorKind> {
+        match self {
+            Value::Lambda(lam) => Ok(lam),
+        }
+    }
 }
 
 impl fmt::Display for Value {
