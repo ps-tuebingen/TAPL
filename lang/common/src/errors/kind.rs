@@ -24,6 +24,7 @@ pub enum ErrorKind {
     RemainingInput(String),
     UnknownKeyword(String),
     UnexpectedRule { found: String, expected: String },
+    UndefinedLanguage(String),
 }
 
 impl fmt::Display for ErrorKind {
@@ -64,6 +65,7 @@ impl fmt::Display for ErrorKind {
             ErrorKind::UnexpectedRule { found, expected } => {
                 write!(f, "Unexpeced rule {found}, expected {expected}")
             }
+            ErrorKind::UndefinedLanguage(lang) => write!(f, "Language {lang} does not exist"),
         }
     }
 }

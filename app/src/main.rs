@@ -1,51 +1,34 @@
-use clap::{Parser, ValueEnum};
+use clap::Parser;
+use common::language::ImplementedLanguage;
 use common::{errors::Error, language::LanguageTerm};
 use std::{fmt, fs::read_to_string, path::PathBuf};
 
-#[derive(Parser, Clone, ValueEnum)]
-pub enum Language {
-    UntypedArithmetic,
-    UntypedLambda,
-    TypedArithmetic,
-    Stlc,
-    References,
-    Exceptions,
-    Subtypes,
-    Recursive,
-    Existential,
-    SystemF,
-    BoundedQuantification,
-    LambdaOmega,
-    FOmega,
-    FOmegaSub,
-}
-
-impl Language {
-    fn run(&self, src: String, debug: bool) -> Result<(), Error> {
-        match self {
-            Language::UntypedArithmetic => run::<untyped_arithmetic::terms::Term>(src, debug),
-            Language::UntypedLambda => run::<untyped_lambda::terms::Term>(src, debug),
-            Language::TypedArithmetic => run::<typed_arithmetic::terms::Term>(src, debug),
-            Language::Stlc => run::<stlc::terms::Term>(src, debug),
-            Language::References => run::<references::terms::Term>(src, debug),
-            Language::Exceptions => run::<exceptions::terms::Term>(src, debug),
-            Language::Subtypes => run::<subtypes::terms::Term>(src, debug),
-            Language::Recursive => run::<recursive::terms::Term>(src, debug),
-            Language::Existential => run::<existential::terms::Term>(src, debug),
-            Language::SystemF => run::<system_f::terms::Term>(src, debug),
-            Language::BoundedQuantification => {
-                run::<bounded_quantification::terms::Term>(src, debug)
-            }
-            Language::LambdaOmega => run::<lambda_omega::terms::Term>(src, debug),
-            Language::FOmega => run::<f_omega::terms::Term>(src, debug),
-            Language::FOmegaSub => run::<f_omega_sub::terms::Term>(src, debug),
+fn run_lang(lang: &ImplementedLanguage, src: String, debug: bool) -> Result<(), Error> {
+    match lang {
+        ImplementedLanguage::UntypedArithmetic => {
+            run::<untyped_arithmetic::terms::Term>(src, debug)
         }
+        ImplementedLanguage::UntypedLambda => run::<untyped_lambda::terms::Term>(src, debug),
+        ImplementedLanguage::TypedArithmetic => run::<typed_arithmetic::terms::Term>(src, debug),
+        ImplementedLanguage::Stlc => run::<stlc::terms::Term>(src, debug),
+        ImplementedLanguage::References => run::<references::terms::Term>(src, debug),
+        ImplementedLanguage::Exceptions => run::<exceptions::terms::Term>(src, debug),
+        ImplementedLanguage::Subtypes => run::<subtypes::terms::Term>(src, debug),
+        ImplementedLanguage::Recursive => run::<recursive::terms::Term>(src, debug),
+        ImplementedLanguage::Existential => run::<existential::terms::Term>(src, debug),
+        ImplementedLanguage::SystemF => run::<system_f::terms::Term>(src, debug),
+        ImplementedLanguage::BoundedQuantification => {
+            run::<bounded_quantification::terms::Term>(src, debug)
+        }
+        ImplementedLanguage::LambdaOmega => run::<lambda_omega::terms::Term>(src, debug),
+        ImplementedLanguage::FOmega => run::<f_omega::terms::Term>(src, debug),
+        ImplementedLanguage::FOmegaSub => run::<f_omega_sub::terms::Term>(src, debug),
     }
 }
 
 #[derive(Parser)]
 pub struct Args {
-    lang: Language,
+    lang: ImplementedLanguage,
     #[clap(flatten)]
     source: Source,
     #[clap(short, long)]
@@ -104,7 +87,7 @@ pub fn display_or_debug<T: fmt::Debug + fmt::Display>(t: &T, debug: bool) -> Str
 fn main() {
     let args = Args::parse();
     let src = args.source.get_source();
-    match args.lang.run(src, args.debug) {
+    match run_lang(&args.lang, src, args.debug) {
         Ok(()) => (),
         Err(err) => println!("Program exited with error:\n{}", err),
     }

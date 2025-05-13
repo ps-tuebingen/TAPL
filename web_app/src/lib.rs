@@ -1,7 +1,10 @@
-use common::{eval::Eval, parse::Parse};
+use common::{eval::Eval, language::ImplementedLanguage, parse::Parse};
 use std::rc::Rc;
-use wasm_bindgen::prelude::*;
-use web_sys::{HtmlButtonElement, HtmlDivElement, HtmlTextAreaElement};
+use wasm_bindgen::{prelude::wasm_bindgen, JsCast};
+use web_sys::{
+    Document, HtmlButtonElement, HtmlDivElement, HtmlOptionElement, HtmlSelectElement,
+    HtmlTextAreaElement,
+};
 
 #[derive(Clone)]
 struct HtmlContext {
@@ -10,45 +13,49 @@ struct HtmlContext {
     parsed_out: HtmlDivElement,
     evaled_out: HtmlDivElement,
     error_out: HtmlDivElement,
+    language_select: HtmlSelectElement,
 }
 
 impl HtmlContext {
     pub fn new() -> Rc<HtmlContext> {
         let doc = web_sys::window().unwrap().document().unwrap();
-        let run_button = doc
-            .get_element_by_id("run_button")
-            .unwrap()
-            .dyn_into::<HtmlButtonElement>()
-            .unwrap();
-        let source_area = doc
-            .get_element_by_id("source_code")
-            .unwrap()
-            .dyn_into::<HtmlTextAreaElement>()
-            .unwrap();
-        let parsed_out = doc
-            .get_element_by_id("parsed_out")
-            .unwrap()
-            .dyn_into::<HtmlDivElement>()
-            .unwrap();
-        let evaled_out = doc
-            .get_element_by_id("evaled_out")
-            .unwrap()
-            .dyn_into::<HtmlDivElement>()
-            .unwrap();
-        let error_out = doc
-            .get_element_by_id("errors")
-            .unwrap()
-            .dyn_into::<HtmlDivElement>()
-            .unwrap();
+        let run_button = Self::get_by_id("run_button", &doc);
+        let source_area = Self::get_by_id("source_code", &doc);
+        let parsed_out = Self::get_by_id("parsed_out", &doc);
+        let evaled_out = Self::get_by_id("evaled_out", &doc);
+        let error_out = Self::get_by_id("errors", &doc);
+        let language_select = Self::get_by_id("language_select", &doc);
         let ctx = Rc::new(Self {
             run_button,
             source_area,
             parsed_out,
             evaled_out,
             error_out,
+            language_select,
         });
+        ctx.setup_languages(&doc);
         Self::setup_events(&ctx);
         ctx
+    }
+
+    fn get_by_id<T>(id: &str, doc: &Document) -> T
+    where
+        T: JsCast,
+    {
+        doc.get_element_by_id(id).unwrap().dyn_into::<T>().unwrap()
+    }
+
+    fn setup_languages(&self, doc: &Document) {
+        for lang in ImplementedLanguage::all() {
+            let lang_option = doc
+                .create_element("option")
+                .unwrap()
+                .dyn_into::<HtmlOptionElement>()
+                .unwrap();
+            lang_option.set_id(&lang.to_string());
+            lang_option.set_inner_html(lang.describe());
+            self.language_select.append_child(&lang_option).unwrap();
+        }
     }
 
     pub fn setup_events(ctx: &Rc<Self>) {
@@ -63,18 +70,24 @@ impl HtmlContext {
         button_handler.forget();
     }
 
-    pub fn set_err<T>(&self, err: T)
+    fn set_err<T>(&self, err: T)
     where
         T: std::error::Error,
     {
         self.error_out.set_inner_html(&err.to_string());
     }
 
-    pub fn reset_err(&self) {
+    fn reset_err(&self) {
         self.error_out.set_inner_html("");
     }
 
-    pub fn handle_button(&self) {
+    fn get_lang(&self) -> ImplementedLanguage {
+        ImplementedLanguage::all()[self.language_select.selected_index() as usize]
+    }
+
+    fn handle_button(&self) {
+        let lang = self.get_lang();
+        alert(&lang.to_string());
         let text_value = self.source_area.value();
         let parsed = match untyped_lambda::terms::Term::parse(text_value) {
             Ok(p) => p,

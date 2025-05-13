@@ -8,6 +8,7 @@ pub enum ErrorLocation {
     Parse,
     Kind,
     Inference,
+    LanguageSelect,
 }
 
 impl fmt::Display for ErrorLocation {
@@ -19,6 +20,7 @@ impl fmt::Display for ErrorLocation {
             ErrorLocation::Parse => f.write_str("Parsing"),
             ErrorLocation::Kind => f.write_str("Kinding"),
             ErrorLocation::Inference => f.write_str("Inference"),
+            ErrorLocation::LanguageSelect => f.write_str("Selecting Language"),
         }
     }
 }
