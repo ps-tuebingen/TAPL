@@ -3,6 +3,7 @@
   <head>
     <title>Types and Programming Languages</title>
     <link rel="icon" type="image/x-icon" href="favicon.ico"/>
+    <link rel="stylesheet" type="text/css" href="main.css"/>
   </head>
   <body>
     <script type="module">
@@ -10,29 +11,32 @@
       await init();
     </script>
 
-    <div>
-      Current Language:
-      <select id="language_select"></select>
-    </div>
-    <textarea id="source_code"></textarea>
-    <button id="run_button">Run</button>
-    <div>
-      <div>
-        Parsed:
-        <div id="parsed_out"></div>
-      </div>
-      <div>
-        Typechecked:
-        <div id="checked_out"></div>
+    <div id="content-grid">
+      <h1> Types and Programming Languages Playground </h1>  
+
+      <div class="hline"></div>
+
+      <div id="input_column">
+        <div id="control-box">
+          <div>Current Language:</div>
+          <select id="language_select"></select>
+          <button id="run_button">Run</button>
+        </div>
+        <textarea id="source_code">if (true) { 1 } else { 0 }</textarea>
       </div>
 
-      <div>
-        Evaluated:
-        <div id="evaled_out"></div>
-      </div>
-      <div>
-        Errors:
-        <div id="errors"></div>
+      <div class="vline"></div>
+
+      <div id="output_column">
+        <h2>Results</h2>
+        <div id="text-parsed"> Parsed:</div>
+        <div id="parsed_out" class="output"></div>
+        <div id="text-checked">Typechecked:</div>
+        <div id="checked_out" class="output"></div>
+        <div id="text-evaled">Evaluated:</div>
+        <div id="evaled_out" class="output"></div>
+        <div id="text-error">Errors:</div>
+        <div id="error_out" class="output"></div>
       </div>
     </div>
   </body>

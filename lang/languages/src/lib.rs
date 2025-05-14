@@ -222,8 +222,8 @@ impl AllLanguages {
             Self::SystemF(_) => "System F",
             Self::BoundedQuantification(_) => "System F with Bounded Quantification",
             Self::LambdaOmega(_) => "STLC with Higher Kinded Types",
-            Self::FOmega(_) => "System F with Higher Kinded Types",
-            Self::FOmegaSub(_) => "System F with Higher Kinded Types and Subtyping",
+            Self::FOmega(_) => "Higher Kinded System F",
+            Self::FOmegaSub(_) => "Higher Kinded System F with Subtyping",
         }
     }
 

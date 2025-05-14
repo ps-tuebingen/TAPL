@@ -7,13 +7,40 @@ use web_sys::{
 };
 
 #[derive(Clone)]
+struct OutDivs {
+    parsed: HtmlDivElement,
+    checked: HtmlDivElement,
+    evaled: HtmlDivElement,
+    error: HtmlDivElement,
+}
+
+impl OutDivs {
+    pub fn new(doc: &Document) -> OutDivs {
+        let parsed = HtmlContext::get_by_id("parsed_out", doc);
+        let checked = HtmlContext::get_by_id("checked_out", doc);
+        let evaled = HtmlContext::get_by_id("evaled_out", doc);
+        let error = HtmlContext::get_by_id("error_out", doc);
+        OutDivs {
+            parsed,
+            checked,
+            evaled,
+            error,
+        }
+    }
+
+    fn clear(&self) {
+        self.parsed.set_inner_html("");
+        self.checked.set_inner_html("");
+        self.evaled.set_inner_html("");
+        self.error.set_inner_html("");
+    }
+}
+
+#[derive(Clone)]
 struct HtmlContext {
     run_button: HtmlButtonElement,
     source_area: HtmlTextAreaElement,
-    parsed_out: HtmlDivElement,
-    checked_out: HtmlDivElement,
-    evaled_out: HtmlDivElement,
-    error_out: HtmlDivElement,
+    out_divs: OutDivs,
     language_select: HtmlSelectElement,
 }
 
@@ -22,18 +49,12 @@ impl HtmlContext {
         let doc = web_sys::window().unwrap().document().unwrap();
         let run_button = Self::get_by_id("run_button", &doc);
         let source_area = Self::get_by_id("source_code", &doc);
-        let parsed_out = Self::get_by_id("parsed_out", &doc);
-        let checked_out = Self::get_by_id("checked_out", &doc);
-        let evaled_out = Self::get_by_id("evaled_out", &doc);
-        let error_out = Self::get_by_id("errors", &doc);
-        let language_select = Self::get_by_id("language_select", &doc);
+        let out_divs = OutDivs::new(&doc);
+        let language_select: HtmlSelectElement = Self::get_by_id("language_select", &doc);
         let ctx = Rc::new(Self {
             run_button,
             source_area,
-            parsed_out,
-            checked_out,
-            evaled_out,
-            error_out,
+            out_divs,
             language_select,
         });
         ctx.setup_languages(&doc);
@@ -77,23 +98,17 @@ impl HtmlContext {
         AllLanguages::all()[self.language_select.selected_index() as usize]
     }
 
-    fn clear_out(&self) {
-        self.parsed_out.set_inner_html("");
-        self.checked_out.set_inner_html("");
-        self.evaled_out.set_inner_html("");
-    }
-
     fn handle_button(&self) {
         let lang = self.get_lang();
         let source = self.source_area.value();
-        self.clear_out();
+        self.out_divs.clear();
         lang.run(
             source,
             false,
-            |p| self.parsed_out.set_inner_html(p),
-            |ty| self.checked_out.set_inner_html(ty),
-            |v| self.evaled_out.set_inner_html(v),
-            |err| self.error_out.set_inner_html(err),
+            |p| self.out_divs.parsed.set_inner_html(p),
+            |ty| self.out_divs.checked.set_inner_html(ty),
+            |v| self.out_divs.evaled.set_inner_html(v),
+            |err| self.out_divs.error.set_inner_html(err),
         );
     }
 }
