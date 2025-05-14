@@ -1,4 +1,3 @@
-use common::{eval::Eval, parse::Parse};
 use languages::AllLanguages;
 use std::rc::Rc;
 use wasm_bindgen::{prelude::wasm_bindgen, JsCast};
@@ -12,6 +11,7 @@ struct HtmlContext {
     run_button: HtmlButtonElement,
     source_area: HtmlTextAreaElement,
     parsed_out: HtmlDivElement,
+    checked_out: HtmlDivElement,
     evaled_out: HtmlDivElement,
     error_out: HtmlDivElement,
     language_select: HtmlSelectElement,
@@ -23,6 +23,7 @@ impl HtmlContext {
         let run_button = Self::get_by_id("run_button", &doc);
         let source_area = Self::get_by_id("source_code", &doc);
         let parsed_out = Self::get_by_id("parsed_out", &doc);
+        let checked_out = Self::get_by_id("checked_out", &doc);
         let evaled_out = Self::get_by_id("evaled_out", &doc);
         let error_out = Self::get_by_id("errors", &doc);
         let language_select = Self::get_by_id("language_select", &doc);
@@ -30,6 +31,7 @@ impl HtmlContext {
             run_button,
             source_area,
             parsed_out,
+            checked_out,
             evaled_out,
             error_out,
             language_select,
@@ -71,36 +73,28 @@ impl HtmlContext {
         button_handler.forget();
     }
 
-    fn set_err<T>(&self, err: T)
-    where
-        T: std::error::Error,
-    {
-        self.error_out.set_inner_html(&err.to_string());
-    }
-
-    fn reset_err(&self) {
-        self.error_out.set_inner_html("");
-    }
-
     fn get_lang(&self) -> AllLanguages {
         AllLanguages::all()[self.language_select.selected_index() as usize]
     }
 
+    fn clear_out(&self) {
+        self.parsed_out.set_inner_html("");
+        self.checked_out.set_inner_html("");
+        self.evaled_out.set_inner_html("");
+    }
+
     fn handle_button(&self) {
         let lang = self.get_lang();
-        alert(&lang.to_string());
-        let text_value = self.source_area.value();
-        let parsed = match languages::untyped_lambda::terms::Term::parse(text_value) {
-            Ok(p) => p,
-            Err(err) => return self.set_err(err),
-        };
-        self.parsed_out.set_inner_html(&parsed.to_string());
-        let evaled = match parsed.eval_start() {
-            Ok(e) => e,
-            Err(err) => return self.set_err(err),
-        };
-        self.evaled_out.set_inner_html(&evaled.to_string());
-        self.reset_err();
+        let source = self.source_area.value();
+        self.clear_out();
+        lang.run(
+            source,
+            false,
+            |p| self.parsed_out.set_inner_html(p),
+            |ty| self.checked_out.set_inner_html(ty),
+            |v| self.evaled_out.set_inner_html(v),
+            |err| self.error_out.set_inner_html(err),
+        );
     }
 }
 

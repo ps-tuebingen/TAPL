@@ -100,6 +100,7 @@ where
 
     pub fn report(
         self,
+        debug: bool,
         callback_parse: impl Fn(&str),
         callback_check: impl Fn(&str),
         callback_eval: impl Fn(&str),
@@ -108,7 +109,13 @@ where
         match self {
             RunResult::ParseFail(err) => callback_err(&err.to_string()),
             RunResult::CheckFail { parsed, check_err } => {
-                callback_parse(&parsed.to_string());
+                callback_parse(
+                    &(if debug {
+                        format!("{parsed:?}")
+                    } else {
+                        parsed.to_string()
+                    }),
+                );
                 callback_err(&check_err.to_string());
             }
             RunResult::EvalFail {
@@ -116,8 +123,20 @@ where
                 checked,
                 eval_err,
             } => {
-                callback_parse(&parsed.to_string());
-                callback_check(&checked.to_string());
+                callback_parse(
+                    &(if debug {
+                        format!("{parsed:?}")
+                    } else {
+                        parsed.to_string()
+                    }),
+                );
+                callback_check(
+                    &(if debug {
+                        format!("{checked:?}")
+                    } else {
+                        checked.to_string()
+                    }),
+                );
                 callback_err(&eval_err.to_string());
             }
             RunResult::Success {
@@ -125,9 +144,27 @@ where
                 checked,
                 evaled,
             } => {
-                callback_parse(&parsed.to_string());
-                callback_check(&checked.to_string());
-                callback_eval(&evaled.to_string())
+                callback_parse(
+                    &(if debug {
+                        format!("{parsed:?}")
+                    } else {
+                        parsed.to_string()
+                    }),
+                );
+                callback_check(
+                    &(if debug {
+                        format!("{checked:?}")
+                    } else {
+                        checked.to_string()
+                    }),
+                );
+                callback_eval(
+                    &(if debug {
+                        format!("{evaled:?}")
+                    } else {
+                        evaled.to_string()
+                    }),
+                )
             }
         }
     }
@@ -193,6 +230,7 @@ impl AllLanguages {
     pub fn run(
         &self,
         input: String,
+        debug: bool,
         callback_parse: impl Fn(&str),
         callback_check: impl Fn(&str),
         callback_eval: impl Fn(&str),
@@ -201,18 +239,25 @@ impl AllLanguages {
         match self {
             Self::UntypedArithmetic(_) => {
                 RunResult::<untyped_arithmetic::UntypedArithmetic>::run_language(input).report(
+                    debug,
                     callback_parse,
                     callback_check,
                     callback_eval,
                     callback_err,
                 )
             }
-            Self::UntypedLambda(_) => RunResult::<untyped_lambda::UntypedLambda>::run_language(
-                input,
-            )
-            .report(callback_parse, callback_check, callback_eval, callback_err),
+            Self::UntypedLambda(_) => {
+                RunResult::<untyped_lambda::UntypedLambda>::run_language(input).report(
+                    debug,
+                    callback_parse,
+                    callback_check,
+                    callback_eval,
+                    callback_err,
+                )
+            }
             Self::TypedArithmetic(_) => {
                 RunResult::<typed_arithmetic::TypedArithmetic>::run_language(input).report(
+                    debug,
                     callback_parse,
                     callback_check,
                     callback_eval,
@@ -220,38 +265,50 @@ impl AllLanguages {
                 )
             }
             Self::Stlc(_) => RunResult::<stlc::Stlc>::run_language(input).report(
+                debug,
                 callback_parse,
                 callback_check,
                 callback_eval,
                 callback_err,
             ),
             Self::References(_) => RunResult::<references::References>::run_language(input).report(
+                debug,
                 callback_parse,
                 callback_check,
                 callback_eval,
                 callback_err,
             ),
             Self::Exceptions(_) => RunResult::<exceptions::Exceptions>::run_language(input).report(
+                debug,
                 callback_parse,
                 callback_check,
                 callback_eval,
                 callback_err,
             ),
             Self::Subtypes(_) => RunResult::<subtypes::Subtypes>::run_language(input).report(
+                debug,
                 callback_parse,
                 callback_check,
                 callback_eval,
                 callback_err,
             ),
             Self::Recursive(_) => RunResult::<recursive::Recursive>::run_language(input).report(
+                debug,
                 callback_parse,
                 callback_check,
                 callback_eval,
                 callback_err,
             ),
             Self::Existential(_) => RunResult::<existential::Existential>::run_language(input)
-                .report(callback_parse, callback_check, callback_eval, callback_err),
+                .report(
+                    debug,
+                    callback_parse,
+                    callback_check,
+                    callback_eval,
+                    callback_err,
+                ),
             Self::SystemF(_) => RunResult::<system_f::SystemF>::run_language(input).report(
+                debug,
                 callback_parse,
                 callback_check,
                 callback_eval,
@@ -259,15 +316,33 @@ impl AllLanguages {
             ),
             Self::BoundedQuantification(_) => {
                 RunResult::<bounded_quantification::BoundedQuantification>::run_language(input)
-                    .report(callback_parse, callback_check, callback_eval, callback_err)
+                    .report(
+                        debug,
+                        callback_parse,
+                        callback_check,
+                        callback_eval,
+                        callback_err,
+                    )
             }
             Self::LambdaOmega(_) => RunResult::<lambda_omega::LambdaOmega>::run_language(input)
-                .report(callback_parse, callback_check, callback_eval, callback_err),
-            Self::FOmega(_) => RunResult::<untyped_arithmetic::UntypedArithmetic>::run_language(
-                input,
-            )
-            .report(callback_parse, callback_check, callback_eval, callback_err),
+                .report(
+                    debug,
+                    callback_parse,
+                    callback_check,
+                    callback_eval,
+                    callback_err,
+                ),
+            Self::FOmega(_) => {
+                RunResult::<untyped_arithmetic::UntypedArithmetic>::run_language(input).report(
+                    debug,
+                    callback_parse,
+                    callback_check,
+                    callback_eval,
+                    callback_err,
+                )
+            }
             Self::FOmegaSub(_) => RunResult::<f_omega_sub::FOmegaSub>::run_language(input).report(
+                debug,
                 callback_parse,
                 callback_check,
                 callback_eval,

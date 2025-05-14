@@ -66,6 +66,7 @@ fn main() {
     let src = args.source.get_source();
     args.lang.run(
         src,
+        args.debug,
         |p| println!("parsed: {p}"),
         |ty| println!("checked: {ty}"),
         |v| println!("evaluated: {v}"),
