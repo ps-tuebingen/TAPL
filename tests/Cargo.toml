@@ -75,6 +75,6 @@ harness=false
 
 [dependencies]
 serde = {version="1.0.219", features=["derive"]}
-e2e_common={path="common"}
-common={path="../lib/common"}
-languages={path="../lib/languages"}
+e2e_common={path="../crates/test_lib"}
+common={path="../crates/common_lib"}
+languages={path="../crates/languages_lib"}

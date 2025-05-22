@@ -1,13 +1,13 @@
 [package]
-name = "tapl"
+name = "tapl_cli"
 version = "0.1.0"
 edition = "2021"
 
 [[bin]]
-name = "tapl"
+name = "tapl_cli"
 path = "src/main.rs"
 
 [dependencies]
 clap = { version = "4", features=["derive"]}
-common = { path="../../lib/common" }
-languages= {path="../../lib/languages"}
+common = { path="../common_lib" }
+languages= {path="../languages_lib"}

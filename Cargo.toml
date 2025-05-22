@@ -2,10 +2,10 @@
 members = [
     "crates/cli_bin",
     "crates/web_bin",
-    "tests/common",
+    "crates/common_lib",
+    "crates/languages_lib",
+    "crates/test_lib",
     "tests",
-    "lib/common",
-    "lib/languages",
 ]
 
 resolver = "2"
