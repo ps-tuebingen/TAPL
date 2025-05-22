@@ -4,7 +4,7 @@ members = [
     "crates/web_bin",
     "crates/common_lib",
     "crates/languages_lib",
-    "crates/test_lib",
+    "crates/test_utils",
     "tests",
 ]
 

@@ -1,5 +1,6 @@
 use common::errors::Error;
-use e2e_common::{
+use std::path::PathBuf;
+use test_utils::{
     eval_test::EvalTest,
     load_tests::{load_dir, TestContents},
     parse_test::ParseTest,
@@ -8,7 +9,6 @@ use e2e_common::{
     setup,
     testsuite::{Test, TestSuite},
 };
-use std::path::PathBuf;
 pub struct UntypedLambdaTests {
     source_dir: PathBuf,
 }

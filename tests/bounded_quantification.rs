@@ -1,5 +1,7 @@
 use common::errors::Error;
-use e2e_common::{
+use languages::bounded_quantification::terms::Term;
+use std::path::PathBuf;
+use test_utils::{
     check_test::CheckTest,
     eval_test::EvalTest,
     load_tests::{load_dir, TestContents},
@@ -9,8 +11,6 @@ use e2e_common::{
     setup,
     testsuite::{Test, TestSuite},
 };
-use languages::bounded_quantification::terms::Term;
-use std::path::PathBuf;
 
 pub struct BoundedTests {
     source_dir: PathBuf,
