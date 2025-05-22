@@ -1,6 +1,6 @@
 .PHONY: web
 web:
-	wasm-pack build web_app --target web --out-dir ../html/pkg
+	wasm-pack build crates/web_bin --target web --out-dir ../../html/pkg
 
 .PHONY: test 
 test:

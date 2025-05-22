@@ -1,7 +1,7 @@
 [workspace]
 members = [
-    "app",
-    "web_app",
+    "crates/cli_bin",
+    "crates/web_bin",
     "tests/common",
     "tests",
     "lib/common",
@@ -9,4 +9,4 @@ members = [
 ]
 
 resolver = "2"
-default-members = ["app"]
+default-members = ["crates/cli_bin"]
