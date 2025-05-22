@@ -2,6 +2,9 @@
 members = [
     "crates/cli_bin",
     "crates/web_bin",
+    "crates/syntax_lib",
+    "crates/eval_lib",
+    "crates/check_lib",
     "crates/common_lib",
     "crates/languages_lib",
     "crates/test_utils",
