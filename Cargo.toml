@@ -4,8 +4,8 @@ members = [
     "web_app",
     "tests/common",
     "tests",
-    "lang/common",
-    "lang/languages",
+    "lib/common",
+    "lib/languages",
 ]
 
 resolver = "2"
