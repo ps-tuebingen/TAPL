@@ -1,9 +1,17 @@
 use super::Type;
-use crate::{subst::SubstType, TypeVar};
+use crate::{kinds::Kind, subst::SubstType, TypeVar};
 use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct Bot;
+pub struct Bot {
+    pub kind: Kind,
+}
+
+impl Bot {
+    pub fn new() -> Bot {
+        Bot { kind: Kind::Star }
+    }
+}
 
 impl Type for Bot {}
 

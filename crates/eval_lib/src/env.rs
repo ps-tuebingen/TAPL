@@ -1,12 +1,6 @@
-use crate::{
-    check::CheckEnvironment,
-    language::{LanguageType, LanguageValue},
-    values::Value,
-};
-use common::{
-    errors::{Error, ErrorKind, ErrorLocation},
-    Location,
-};
+use crate::values::Value;
+use common::errors::{Error, ErrorKind, ErrorLocation};
+use syntax::Location;
 
 pub trait EvalEnvironment<V>
 where
@@ -21,21 +15,13 @@ where
 
 pub trait Eval: Sized {
     type Env: EvalEnvironment<Self::Value>;
-    type Value: LanguageValue;
+    type Value: Value;
 
     fn eval_start(self) -> Result<Self::Value, Error> {
         self.eval(&mut Self::Env::default())
     }
 
     fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error>;
-}
-
-pub trait Normalize<Ty>
-where
-    Ty: LanguageType,
-{
-    type Env: CheckEnvironment<Type = Ty>;
-    fn normalize(self, env: &mut Self::Env) -> Ty;
 }
 
 impl<V> EvalEnvironment<V> for ()

@@ -7,4 +7,3 @@ edition = "2021"
 pest={version="2.7.15"}
 common={path="../common_lib"}
 syntax={path="../syntax_lib"}
-check={path="../check_lib"}

@@ -1,7 +1,10 @@
+use crate::{Eval, Value};
+use common::errors::Error;
+use syntax::terms::{Deref, Term};
 
 impl<T> Eval for Deref<T>
 where
-    T: LanguageTerm,
+    T: Term + Eval,
 {
     type Env = <T as Eval>::Env;
     type Value = <T as Eval>::Value;

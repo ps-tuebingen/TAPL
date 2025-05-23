@@ -1,6 +1,13 @@
+use crate::{to_subty_err, Kindcheck, Subtypecheck};
+use common::errors::Error;
+use syntax::{
+    kinds::Kind,
+    types::{Bool, Type, TypeGroup},
+};
+
 impl<Ty> Subtypecheck<Ty> for Bool<Ty>
 where
-    Ty: LanguageType,
+    Ty: TypeGroup + Subtypecheck<Ty>,
 {
     type Env = <Ty as Subtypecheck<Ty>>::Env;
 
@@ -15,7 +22,7 @@ where
 
 impl<Ty> Kindcheck<Ty> for Bool<Ty>
 where
-    Ty: LanguageType,
+    Ty: Type + Kindcheck<Ty>,
 {
     type Env = <Ty as Kindcheck<Ty>>::Env;
 

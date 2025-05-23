@@ -1,7 +1,11 @@
+use crate::{Eval, Value};
+use common::errors::Error;
+use syntax::terms::{Term, Tuple};
+
 impl<T> Eval for Tuple<T>
 where
-    T: LanguageTerm,
-    TupleVal<T>: Into<<T as LanguageTerm>::Value>,
+    T: Term + Eval,
+    TupleVal<T>: Into<<T as Term>::Value>,
 {
     type Env = <T as Eval>::Env;
     type Value = <T as Eval>::Value;

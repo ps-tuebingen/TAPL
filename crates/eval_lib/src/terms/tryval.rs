@@ -1,7 +1,11 @@
+use crate::{Eval, Value};
+use common::errors::Error;
+use syntax::terms::{Term, TryWithVal};
+
 impl<T> Eval for TryWithVal<T>
 where
-    T: LanguageTerm,
-    Raise<T>: Into<<T as LanguageTerm>::Value>,
+    T: Term + Eval,
+    Raise<T>: Into<<T as Term>::Value>,
     App<T>: Into<T>,
 {
     type Value = <T as Eval>::Value;

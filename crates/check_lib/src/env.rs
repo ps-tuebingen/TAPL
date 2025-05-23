@@ -1,11 +1,6 @@
-use crate::{
-    errors::ErrorKind,
-    kinds::Kind,
-    language::{untyped::Untyped, LanguageType},
-    types::Type,
-    Location, TypeVar, Var,
-};
+use common::errors::ErrorKind;
 use std::collections::HashMap;
+use syntax::{kinds::Kind, types::Type, untyped::Untyped, Location, TypeVar, Var};
 
 pub trait CheckEnvironment
 where
@@ -25,7 +20,7 @@ where
     fn get_loc(&self, loc: &Location) -> Result<Self::Type, ErrorKind>;
 }
 
-impl<Ty: LanguageType> CheckEnvironment for HashMap<Var, Ty> {
+impl<Ty: Type> CheckEnvironment for HashMap<Var, Ty> {
     type Type = Ty;
 
     fn get_var(&self, v: &Var) -> Result<Self::Type, ErrorKind> {

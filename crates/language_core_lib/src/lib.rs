@@ -19,3 +19,5 @@ pub trait Language {
     type CheckEnv: CheckEnvironment<Type = Self::Type>;
     type EvalEnv: EvalEnvironment<Self::Value>;
 }
+
+impl LanguageType for Untyped {}

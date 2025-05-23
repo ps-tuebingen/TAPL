@@ -1,6 +1,10 @@
+use crate::{Eval, Value};
+use common::errors::Error;
+use syntax::terms::{Fix, Term};
+
 impl<T> Eval for Fix<T>
 where
-    T: LanguageTerm,
+    T: Term + Eval,
     Self: Into<T>,
 {
     type Env = <T as Eval>::Env;

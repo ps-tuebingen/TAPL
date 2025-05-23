@@ -1,8 +1,11 @@
+use crate::{Eval, Value};
+use common::errors::Error;
+use syntax::terms::{Exception, Term};
 
 impl<T> Eval for Exception<T>
 where
-    T: LanguageTerm,
-    ExceptionVal<T>: Into<<T as LanguageTerm>::Value>,
+    T: Term + Eval,
+    ExceptionVal<T>: Into<<T as Term>::Value>,
 {
     type Value = <T as Eval>::Value;
     type Env = <T as Eval>::Env;

@@ -1,16 +1,14 @@
-use crate::{
-    errors::{Error, ErrorKind, ErrorLocation},
-    kinds::Kind,
-    language::LanguageType,
-    types::Type,
-};
+use common::errors::{Error, ErrorKind, ErrorLocation};
+use syntax::{kinds::Kind, types::Type};
 
 pub mod env;
 pub mod types;
+pub mod untyped;
+
 pub use env::CheckEnvironment;
 
 pub trait Typecheck {
-    type Type: LanguageType;
+    type Type: Type;
     type Env: CheckEnvironment<Type = Self::Type>;
 
     fn check_start(&self) -> Result<Self::Type, Error> {
@@ -23,7 +21,7 @@ pub trait Typecheck {
 pub trait Subtypecheck<Ty>
 where
     Self: Type,
-    Ty: LanguageType,
+    Ty: Type,
 {
     type Env: CheckEnvironment<Type = Ty>;
 
@@ -32,10 +30,18 @@ where
 
 pub trait Kindcheck<Ty>
 where
-    Ty: LanguageType,
+    Ty: Type,
 {
     type Env: CheckEnvironment<Type = Ty>;
     fn check_kind(&self, env: &mut Self::Env) -> Result<Kind, Error>;
+}
+
+pub trait Normalize<Ty>
+where
+    Ty: Type,
+{
+    type Env: CheckEnvironment<Type = Ty>;
+    fn normalize(self, env: &mut Self::Env) -> Ty;
 }
 
 pub fn to_check_err(knd: ErrorKind) -> Error {

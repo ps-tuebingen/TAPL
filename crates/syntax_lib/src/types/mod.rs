@@ -6,6 +6,9 @@ where
 {
 }
 
+pub mod group;
+pub use group::TypeGroup;
+
 pub mod bool;
 pub mod bot;
 pub mod exists;

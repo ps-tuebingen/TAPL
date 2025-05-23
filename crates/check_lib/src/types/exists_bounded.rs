@@ -1,6 +1,10 @@
+use crate::{Kindcheck, Subtypecheck};
+use common::errors::Error;
+use syntax::types::{ExistsBounded, TypeGroup};
+
 impl<Ty> Subtypecheck<Ty> for ExistsBounded<Ty>
 where
-    Ty: LanguageType,
+    Ty: TypeGroup + Subtypecheck<Ty>,
 {
     type Env = <Ty as Subtypecheck<Ty>>::Env;
 

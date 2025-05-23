@@ -1,7 +1,11 @@
+use crate::{Eval, Value};
+use common::errors::Error;
+use syntax::terms::{Something, Term};
+
 impl<T> Eval for Something<T>
 where
-    T: LanguageTerm,
-    SomethingVal<T>: Into<<T as LanguageTerm>::Value>,
+    T: Term + Eval,
+    SomethingVal<T>: Into<<T as Term>::Value>,
 {
     type Env = <T as Eval>::Env;
     type Value = <T as Eval>::Value;

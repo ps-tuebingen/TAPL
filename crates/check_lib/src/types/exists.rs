@@ -1,6 +1,13 @@
+use crate::{env::CheckEnvironment, Kindcheck};
+use common::errors::Error;
+use syntax::{
+    kinds::Kind,
+    types::{Exists, Type},
+};
+
 impl<Ty> Kindcheck<Ty> for Exists<Ty>
 where
-    Ty: LanguageType,
+    Ty: Type + Kindcheck<Ty>,
 {
     type Env = <Ty as Kindcheck<Ty>>::Env;
 

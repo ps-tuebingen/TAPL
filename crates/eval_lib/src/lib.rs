@@ -5,7 +5,6 @@ pub mod values;
 
 use common::errors::Error;
 use env::EvalEnvironment;
-use syntax::types::Type;
 use values::Value;
 
 pub trait Eval: Sized {
@@ -17,12 +16,4 @@ pub trait Eval: Sized {
     }
 
     fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error>;
-}
-
-pub trait Normalize<Ty>
-where
-    Ty: Type,
-{
-    type Env: CheckEnvironment<Type = Ty>;
-    fn normalize(self, env: &mut Self::Env) -> Ty;
 }

@@ -1,6 +1,10 @@
+use crate::{Eval, Value};
+use common::errors::Error;
+use syntax::terms::{Term, Unpack};
+
 impl<T> Eval for Unpack<T>
 where
-    T: LanguageTerm,
+    T: Term + Eval,
 {
     type Value = <T as Eval>::Value;
     type Env = <T as Eval>::Env;

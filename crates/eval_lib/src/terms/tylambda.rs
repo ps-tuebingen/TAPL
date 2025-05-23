@@ -1,7 +1,11 @@
+use crate::{Eval, Value};
+use common::errors::Error;
+use syntax::terms::{Term, TyLambda};
+
 impl<T> Eval for TyLambda<T>
 where
-    T: LanguageTerm,
-    TyLambdaVal<T>: Into<<T as LanguageTerm>::Value>,
+    T: Term + Eval,
+    TyLambdaVal<T>: Into<<T as Term>::Value>,
 {
     type Value = <T as Eval>::Value;
     type Env = <T as Eval>::Env;
