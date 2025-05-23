@@ -1,0 +1,9 @@
+[package]
+name = "language_core"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+common={ path="../common_lib" }
+pest={version="2.7.15"}
+pest_derive={version="2.7.15"}

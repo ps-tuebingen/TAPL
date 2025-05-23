@@ -1,8 +1,10 @@
 use crate::{
     check::CheckEnvironment,
-    errors::{Error, ErrorKind, ErrorLocation},
     language::{LanguageType, LanguageValue},
     values::Value,
+};
+use common::{
+    errors::{Error, ErrorKind, ErrorLocation},
     Location,
 };
 
