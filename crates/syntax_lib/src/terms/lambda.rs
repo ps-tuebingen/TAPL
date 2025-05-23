@@ -1,43 +1,51 @@
 use super::Term;
 use crate::{
     subst::{SubstTerm, SubstType},
-    types::Fun,
+    types::Type,
     TypeVar, Var,
 };
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Lambda<T>
+pub struct Lambda<T, Ty>
 where
     T: Term,
+    Ty: Type,
 {
     pub var: Var,
-    pub annot: <T as Term>::Type,
+    pub annot: Ty,
     pub body: Box<T>,
 }
 
-impl<T> Lambda<T>
+impl<T, Ty> Lambda<T, Ty>
 where
     T: Term,
+    Ty: Type,
 {
-    pub fn new<A, B>(v: &str, a: A, b: B) -> Lambda<T>
+    pub fn new<T1, Typ>(v: &str, ty: Typ, t: T1) -> Lambda<T, Ty>
     where
-        A: Into<<T as Term>::Type>,
-        B: Into<T>,
+        T1: Into<T>,
+        Typ: Into<Ty>,
     {
         Lambda {
             var: v.to_owned(),
-            annot: a.into(),
-            body: Box::new(b.into()),
+            annot: ty.into(),
+            body: Box::new(t.into()),
         }
     }
 }
 
-impl<T> Term for Lambda<T> where T: Term {}
-
-impl<T> SubstTerm<T> for Lambda<T>
+impl<T, Ty> Term for Lambda<T, Ty>
 where
     T: Term,
+    Ty: Type,
+{
+}
+
+impl<T, Ty> SubstTerm<T> for Lambda<T, Ty>
+where
+    T: Term + SubstTerm<T, Target = T>,
+    Ty: Type,
     Self: Into<T>,
 {
     type Target = T;
@@ -55,13 +63,14 @@ where
     }
 }
 
-impl<T> SubstType<<T as Term>::Type> for Lambda<T>
+impl<T, Ty> SubstType<Ty> for Lambda<T, Ty>
 where
-    T: Term,
+    T: Term + SubstType<Ty, Target = T>,
+    Ty: Type + SubstType<Ty, Target = Ty>,
     Self: Into<T>,
 {
     type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &<T as Term>::Type) -> Self::Target {
+    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
         Lambda {
             var: self.var,
             annot: self.annot.subst_type(v, ty),
@@ -71,9 +80,10 @@ where
     }
 }
 
-impl<T> fmt::Display for Lambda<T>
+impl<T, Ty> fmt::Display for Lambda<T, Ty>
 where
     T: Term,
+    Ty: Type,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let ty_str = self.annot.to_string();

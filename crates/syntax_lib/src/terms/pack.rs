@@ -1,29 +1,31 @@
 use super::Term;
 use crate::{
-    errors::{Error, ErrorKind},
     subst::{SubstTerm, SubstType},
+    types::Type,
     TypeVar, Var,
 };
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Pack<T>
+pub struct Pack<T, Ty>
 where
     T: Term,
+    Ty: Type,
 {
-    inner_ty: <T as Term>::Type,
+    inner_ty: Ty,
     term: Box<T>,
-    outer_ty: <T as Term>::Type,
+    outer_ty: Ty,
 }
 
-impl<T> Pack<T>
+impl<T, Ty> Pack<T, Ty>
 where
     T: Term,
+    Ty: Type,
 {
-    pub fn new<Ty1, Ty2, T1>(inner: Ty1, t: T1, outer: Ty2) -> Pack<T>
+    pub fn new<Ty1, Ty2, T1>(inner: Ty1, t: T1, outer: Ty2) -> Pack<T, Ty>
     where
-        Ty1: Into<<T as Term>::Type>,
-        Ty2: Into<<T as Term>::Type>,
+        Ty1: Into<Ty>,
+        Ty2: Into<Ty>,
         T1: Into<T>,
     {
         Pack {
@@ -34,11 +36,17 @@ where
     }
 }
 
-impl<T> Term for Pack<T> where T: Term {}
-
-impl<T> SubstTerm<T> for Pack<T>
+impl<T, Ty> Term for Pack<T, Ty>
 where
     T: Term,
+    Ty: Type,
+{
+}
+
+impl<T, Ty> SubstTerm<T> for Pack<T, Ty>
+where
+    T: Term + SubstTerm<T, Target = T>,
+    Ty: Type,
     Self: Into<T>,
 {
     type Target = T;
@@ -52,13 +60,14 @@ where
     }
 }
 
-impl<T> SubstType<<T as Term>::Type> for Pack<T>
+impl<T, Ty> SubstType<Ty> for Pack<T, Ty>
 where
-    T: Term,
+    T: Term + SubstType<Ty, Target = T>,
+    Ty: Type + SubstType<Ty, Target = Ty>,
     Self: Into<T>,
 {
     type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &<T as Term>::Type) -> Self::Target {
+    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
         Pack {
             inner_ty: self.inner_ty.subst_type(v, ty),
             term: Box::new(self.term.subst_type(v, ty)),
@@ -68,9 +77,10 @@ where
     }
 }
 
-impl<T> fmt::Display for Pack<T>
+impl<T, Ty> fmt::Display for Pack<T, Ty>
 where
     T: Term,
+    Ty: Type,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(

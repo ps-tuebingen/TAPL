@@ -2,6 +2,7 @@ use super::Term;
 use crate::{
     kinds::Kind,
     subst::{SubstTerm, SubstType},
+    types::Type,
     TypeVar, Var,
 };
 use std::fmt;
@@ -36,7 +37,7 @@ impl<T> Term for TyLambda<T> where T: Term {}
 
 impl<T> SubstTerm<T> for TyLambda<T>
 where
-    T: Term,
+    T: Term + SubstTerm<T, Target = T>,
     Self: Into<T>,
 {
     type Target = T;
@@ -52,7 +53,8 @@ where
 
 impl<T, Ty> SubstType<Ty> for TyLambda<T>
 where
-    T: Term,
+    T: Term + SubstType<Ty, Target = T>,
+    Ty: Type,
     Self: Into<T>,
 {
     type Target = T;

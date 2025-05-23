@@ -42,7 +42,7 @@ where
 
 impl<T, Ty> SubstTerm<T> for Unfold<T, Ty>
 where
-    T: Term,
+    T: Term + SubstTerm<T, Target = T>,
     Ty: Type,
     Self: Into<T>,
 {
@@ -58,8 +58,8 @@ where
 
 impl<T, Ty> SubstType<Ty> for Unfold<T, Ty>
 where
-    T: Term,
-    Ty: Type,
+    T: Term + SubstType<Ty, Target = T>,
+    Ty: Type + SubstType<Ty, Target = Ty>,
     Self: Into<T>,
 {
     type Target = T;

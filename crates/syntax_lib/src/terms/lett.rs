@@ -1,5 +1,9 @@
 use super::Term;
-use crate::subst::{SubstTerm, SubstType};
+use crate::{
+    subst::{SubstTerm, SubstType},
+    types::Type,
+    TypeVar, Var,
+};
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -32,7 +36,7 @@ impl<T> Term for Let<T> where T: Term {}
 
 impl<T> SubstTerm<T> for Let<T>
 where
-    T: Term,
+    T: Term + SubstTerm<T, Target = T>,
     Self: Into<T>,
 {
     type Target = T;
@@ -50,13 +54,14 @@ where
     }
 }
 
-impl<T> SubstType<<T as Term>::Type> for Let<T>
+impl<T, Ty> SubstType<Ty> for Let<T>
 where
-    T: Term,
+    T: Term + SubstType<Ty, Target = T>,
+    Ty: Type,
     Self: Into<T>,
 {
     type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &<T as Term>::Type) -> Self::Target {
+    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
         Let {
             var: self.var,
             bound_term: Box::new(self.bound_term.subst_type(v, ty)),

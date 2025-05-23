@@ -1,7 +1,7 @@
 use super::Term;
-use cratecommon::{
+use crate::{
     subst::{SubstTerm, SubstType},
-    types::{Bool, Type},
+    types::Type,
     TypeVar, Var,
 };
 use std::{fmt, marker::PhantomData};

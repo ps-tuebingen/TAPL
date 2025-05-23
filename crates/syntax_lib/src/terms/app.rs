@@ -1,7 +1,7 @@
 use super::{Lambda, Term};
 use crate::{
     subst::{SubstTerm, SubstType},
-    types::{Fun, Type, Unit as UnitTy},
+    types::{Type, Unit as UnitTy},
     TypeVar, Var,
 };
 use std::fmt;
@@ -26,12 +26,13 @@ where
         }
     }
 
-    pub fn seq<T1, T2>(t1: T1, t2: T2) -> App<T>
+    pub fn seq<T1, T2, Ty>(t1: T1, t2: T2) -> App<T>
     where
+        Ty: Type,
         T1: Into<T>,
         T2: Into<T>,
-        Lambda<T>: Into<T>,
-        UnitTy<<T as Term>::Type>: Into<<T as Term>::Type>,
+        Lambda<T, Ty>: Into<T>,
+        UnitTy<Ty>: Into<Ty>,
     {
         App {
             fun: Box::new(Lambda::new("_", UnitTy::new(), t2).into()),
@@ -44,7 +45,7 @@ impl<T> Term for App<T> where T: Term {}
 
 impl<T> SubstTerm<T> for App<T>
 where
-    T: Term,
+    T: Term + SubstTerm<T, Target = T>,
     Self: Into<T>,
 {
     type Target = T;
@@ -59,7 +60,7 @@ where
 impl<Ty, T> SubstType<Ty> for App<T>
 where
     Ty: Type,
-    T: Term<Type = Ty>,
+    T: Term + SubstType<Ty, Target = T>,
     Self: Into<T>,
 {
     type Target = T;

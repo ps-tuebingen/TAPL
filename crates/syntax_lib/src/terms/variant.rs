@@ -4,7 +4,6 @@ use crate::{
     types::Type,
     Label, TypeVar, Var,
 };
-use common::errors::{Error, ErrorKind};
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -45,7 +44,7 @@ where
 
 impl<T, Ty> SubstTerm<T> for Variant<T, Ty>
 where
-    T: Term,
+    T: Term + SubstTerm<T, Target = T>,
     Ty: Type,
     Self: Into<T>,
 {
@@ -62,12 +61,12 @@ where
 
 impl<T, Ty> SubstType<Ty> for Variant<T, Ty>
 where
-    T: Term,
-    Ty: Type,
+    T: Term + SubstType<Ty, Target = T>,
+    Ty: Type + SubstType<Ty, Target = Ty>,
     Self: Into<T>,
 {
     type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &<T as Term>::Type) -> Self::Target {
+    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
         Variant {
             label: self.label,
             term: Box::new(self.term.subst_type(v, ty)),

@@ -1,29 +1,32 @@
 use super::Term;
 use crate::{
     subst::{SubstTerm, SubstType},
+    types::Type,
     TypeVar, Var,
 };
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Raise<T>
+pub struct Raise<T, Ty>
 where
     T: Term,
+    Ty: Type,
 {
     exception: Box<T>,
-    exception_ty: <T as Term>::Type,
-    cont_ty: <T as Term>::Type,
+    exception_ty: Ty,
+    cont_ty: Ty,
 }
 
-impl<T> Raise<T>
+impl<T, Ty> Raise<T, Ty>
 where
     T: Term,
+    Ty: Type,
 {
-    pub fn new<E, Ty1, Ty2>(ex: E, ex_ty: Ty1, cont_ty: Ty2) -> Raise<T>
+    pub fn new<E, Ty1, Ty2>(ex: E, ex_ty: Ty1, cont_ty: Ty2) -> Raise<T, Ty>
     where
         E: Into<T>,
-        Ty1: Into<<T as Term>::Type>,
-        Ty2: Into<<T as Term>::Type>,
+        Ty1: Into<Ty>,
+        Ty2: Into<Ty>,
     {
         Raise {
             exception: Box::new(ex.into()),
@@ -33,11 +36,17 @@ where
     }
 }
 
-impl<T> Term for Raise<T> where T: Term {}
-
-impl<T> SubstTerm<T> for Raise<T>
+impl<T, Ty> Term for Raise<T, Ty>
 where
     T: Term,
+    Ty: Type,
+{
+}
+
+impl<T, Ty> SubstTerm<T> for Raise<T, Ty>
+where
+    T: Term + SubstTerm<T, Target = T>,
+    Ty: Type,
     Self: Into<T>,
 {
     type Target = T;
@@ -51,13 +60,14 @@ where
     }
 }
 
-impl<T> SubstType<<T as Term>::Type> for Raise<T>
+impl<T, Ty> SubstType<Ty> for Raise<T, Ty>
 where
-    T: Term,
+    T: Term + SubstType<Ty, Target = T>,
+    Ty: Type + SubstType<Ty, Target = Ty>,
     Self: Into<T>,
 {
     type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &<T as Term>::Type) -> Self::Target {
+    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
         Raise {
             exception: Box::new(self.exception.subst_type(v, ty)),
             exception_ty: self.exception_ty.subst_type(v, ty),
@@ -67,9 +77,10 @@ where
     }
 }
 
-impl<T> fmt::Display for Raise<T>
+impl<T, Ty> fmt::Display for Raise<T, Ty>
 where
     T: Term,
+    Ty: Type,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(

@@ -31,7 +31,7 @@ impl<Ty> Type for Sum<Ty> where Ty: Type {}
 
 impl<Ty> SubstType<Ty> for Sum<Ty>
 where
-    Ty: Type,
+    Ty: Type + SubstType<Ty, Target = Ty>,
     Self: Into<Ty>,
 {
     type Target = Ty;

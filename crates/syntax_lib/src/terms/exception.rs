@@ -1,26 +1,29 @@
 use super::Term;
 use crate::{
     subst::{SubstTerm, SubstType},
+    types::Type,
     TypeVar, Var,
 };
 use std::{fmt, marker::PhantomData};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Exception<T>
+pub struct Exception<T, Ty>
 where
     T: Term,
+    Ty: Type,
 {
-    ty: <T as Term>::Type,
+    ty: Ty,
     phantom: PhantomData<T>,
 }
 
-impl<T> Exception<T>
+impl<T, Ty> Exception<T, Ty>
 where
     T: Term,
+    Ty: Type,
 {
-    pub fn new<Typ>(ty: Typ) -> Exception<T>
+    pub fn new<Typ>(ty: Typ) -> Exception<T, Ty>
     where
-        Typ: Into<<T as Term>::Type>,
+        Typ: Into<Ty>,
     {
         Exception {
             ty: ty.into(),
@@ -29,11 +32,17 @@ where
     }
 }
 
-impl<T> Term for Exception<T> where T: Term {}
-
-impl<T> SubstTerm<T> for Exception<T>
+impl<T, Ty> Term for Exception<T, Ty>
 where
     T: Term,
+    Ty: Type,
+{
+}
+
+impl<T, Ty> SubstTerm<T> for Exception<T, Ty>
+where
+    T: Term,
+    Ty: Type,
     Self: Into<T>,
 {
     type Target = T;
@@ -42,13 +51,14 @@ where
     }
 }
 
-impl<T> SubstType<<T as Term>::Type> for Exception<T>
+impl<T, Ty> SubstType<Ty> for Exception<T, Ty>
 where
     T: Term,
+    Ty: Type + SubstType<Ty, Target = Ty>,
     Self: Into<T>,
 {
     type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &<T as Term>::Type) -> Self::Target {
+    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
         Exception {
             ty: self.ty.subst_type(v, ty),
             phantom: PhantomData,
@@ -57,9 +67,10 @@ where
     }
 }
 
-impl<T> fmt::Display for Exception<T>
+impl<T, Ty> fmt::Display for Exception<T, Ty>
 where
     T: Term,
+    Ty: Type,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "error[{}]", self.ty)

@@ -1,27 +1,30 @@
 use super::Term;
 use crate::{
     subst::{SubstTerm, SubstType},
+    types::Type,
     TypeVar, Var,
 };
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Left<T>
+pub struct Left<T, Ty>
 where
     T: Term,
+    Ty: Type,
 {
     left_term: Box<T>,
-    ty: <T as Term>::Type,
+    ty: Ty,
 }
 
-impl<T> Left<T>
+impl<T, Ty> Left<T, Ty>
 where
     T: Term,
+    Ty: Type,
 {
-    pub fn new<L, Typ>(left_t: L, ty: Typ) -> Left<T>
+    pub fn new<L, Typ>(left_t: L, ty: Typ) -> Left<T, Ty>
     where
         L: Into<T>,
-        Typ: Into<<T as Term>::Type>,
+        Typ: Into<Ty>,
     {
         Left {
             left_term: Box::new(left_t.into()),
@@ -30,11 +33,17 @@ where
     }
 }
 
-impl<T> Term for Left<T> where T: Term {}
-
-impl<T> SubstTerm<T> for Left<T>
+impl<T, Ty> Term for Left<T, Ty>
 where
     T: Term,
+    Ty: Type,
+{
+}
+
+impl<T, Ty> SubstTerm<T> for Left<T, Ty>
+where
+    T: Term + SubstTerm<T, Target = T>,
+    Ty: Type,
     Self: Into<T>,
 {
     type Target = T;
@@ -47,13 +56,14 @@ where
     }
 }
 
-impl<T> SubstType<<T as Term>::Type> for Left<T>
+impl<T, Ty> SubstType<Ty> for Left<T, Ty>
 where
-    T: Term,
+    T: Term + SubstType<Ty, Target = T>,
+    Ty: Type + SubstType<Ty, Target = Ty>,
     Self: Into<T>,
 {
     type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &<T as Term>::Type) -> Self::Target {
+    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
         Left {
             left_term: Box::new(self.left_term.subst_type(v, ty)),
             ty: self.ty.subst_type(v, ty),
@@ -62,9 +72,10 @@ where
     }
 }
 
-impl<T> fmt::Display for Left<T>
+impl<T, Ty> fmt::Display for Left<T, Ty>
 where
     T: Term,
+    Ty: Type,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "inl({}) as {}", self.left_term, self.ty)

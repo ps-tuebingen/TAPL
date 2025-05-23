@@ -2,27 +2,29 @@ use super::Term;
 use crate::{
     subst::{SubstTerm, SubstType},
     types::Top,
+    types::Type,
     TypeVar, Var,
 };
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct LambdaSub<T>
+pub struct LambdaSub<T, Ty>
 where
     T: Term,
 {
     var: TypeVar,
-    sup_ty: <T as Term>::Type,
+    sup_ty: Ty,
     body: Box<T>,
 }
 
-impl<T> LambdaSub<T>
+impl<T, Ty> LambdaSub<T, Ty>
 where
     T: Term,
+    Ty: Type,
 {
-    pub fn new<Typ, B>(v: &str, sup: Typ, bod: B) -> LambdaSub<T>
+    pub fn new<Typ, B>(v: &str, sup: Typ, bod: B) -> LambdaSub<T, Ty>
     where
-        Typ: Into<<T as Term>::Type>,
+        Typ: Into<Ty>,
         B: Into<T>,
     {
         LambdaSub {
@@ -32,10 +34,10 @@ where
         }
     }
 
-    pub fn new_unbounded<T1>(v: &str, bod: T1) -> LambdaSub<T>
+    pub fn new_unbounded<T1>(v: &str, bod: T1) -> LambdaSub<T, Ty>
     where
         T1: Into<T>,
-        Top<<T as Term>::Type>: Into<<T as LanguageTerm>::Type>,
+        Top<Ty>: Into<Ty>,
     {
         LambdaSub {
             var: v.to_owned(),
@@ -45,11 +47,16 @@ where
     }
 }
 
-impl<T> Term for LambdaSub<T> where T: Term {}
-
-impl<T> SubstTerm<T> for LambdaSub<T>
+impl<T, Ty> Term for LambdaSub<T, Ty>
 where
     T: Term,
+    Ty: Type,
+{
+}
+
+impl<T, Ty> SubstTerm<T> for LambdaSub<T, Ty>
+where
+    T: Term + SubstTerm<T, Target = T>,
     Self: Into<T>,
 {
     type Target = T;
@@ -67,13 +74,14 @@ where
     }
 }
 
-impl<T> SubstType<<T as Term>::Type> for LambdaSub<T>
+impl<T, Ty> SubstType<Ty> for LambdaSub<T, Ty>
 where
-    T: Term,
+    T: Term + SubstType<Ty, Target = T>,
+    Ty: Type + SubstType<Ty, Target = Ty>,
     Self: Into<T>,
 {
     type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &<T as Term>::Type) -> Self::Target {
+    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
         let sup_subst = self.sup_ty.subst_type(v, ty);
         if *v == self.var {
             LambdaSub {
@@ -93,9 +101,10 @@ where
     }
 }
 
-impl<T> fmt::Display for LambdaSub<T>
+impl<T, Ty> fmt::Display for LambdaSub<T, Ty>
 where
     T: Term,
+    Ty: Type,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "\\{}<:({}).{}", self.var, self.sup_ty, self.body)

@@ -1,34 +1,44 @@
 use super::Term;
 use crate::{
     subst::{SubstTerm, SubstType},
-    types::List,
+    types::Type,
     TypeVar, Var,
 };
-use std::fmt;
+use std::{fmt, marker::PhantomData};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Nil<T>
+pub struct Nil<T, Ty>
 where
     T: Term,
 {
-    ty: <T as Term>::Type,
+    ty: Ty,
+    phantom: PhantomData<T>,
 }
 
-impl<T> Nil<T>
+impl<T, Ty> Nil<T, Ty>
 where
     T: Term,
+    Ty: Type,
 {
-    pub fn new<Typ>(ty: Typ) -> Nil<T>
+    pub fn new<Typ>(ty: Typ) -> Nil<T, Ty>
     where
-        Typ: Into<<T as Term>::Type>,
+        Typ: Into<Ty>,
     {
-        Nil { ty: ty.into() }
+        Nil {
+            ty: ty.into(),
+            phantom: PhantomData,
+        }
     }
 }
 
-impl<T> Term for Nil<T> where T: Term {}
+impl<T, Ty> Term for Nil<T, Ty>
+where
+    T: Term,
+    Ty: Type,
+{
+}
 
-impl<T> SubstTerm<T> for Nil<T>
+impl<T, Ty> SubstTerm<T> for Nil<T, Ty>
 where
     T: Term,
     Self: Into<T>,
@@ -39,23 +49,26 @@ where
     }
 }
 
-impl<T> SubstType<<T as Term>::Type> for Nil<T>
+impl<T, Ty> SubstType<Ty> for Nil<T, Ty>
 where
     T: Term,
+    Ty: Type + SubstType<Ty, Target = Ty>,
     Self: Into<T>,
 {
     type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &<T as Term>::Type) -> Self::Target {
+    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
         Nil {
             ty: self.ty.subst_type(v, ty),
+            phantom: PhantomData,
         }
         .into()
     }
 }
 
-impl<T> fmt::Display for Nil<T>
+impl<T, Ty> fmt::Display for Nil<T, Ty>
 where
     T: Term,
+    Ty: Type,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "Nil[{}]", self.ty)

@@ -7,77 +7,63 @@ use crate::{
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Fold<T, Ty>
+pub struct Snd<T>
 where
     T: Term,
-    Ty: Type,
 {
     term: Box<T>,
-    ty: Ty,
 }
 
-impl<T, Ty> Fold<T, Ty>
+impl<T> Snd<T>
 where
     T: Term,
-    Ty: Type,
 {
-    pub fn new<T1, Typ>(t: T1, ty: Typ) -> Fold<T, Ty>
+    pub fn new<T1>(t: T1) -> Snd<T>
     where
         T1: Into<T>,
-        Typ: Into<Ty>,
     {
-        Fold {
+        Snd {
             term: Box::new(t.into()),
-            ty: ty.into(),
         }
     }
 }
 
-impl<T, Ty> Term for Fold<T, Ty>
-where
-    T: Term,
-    Ty: Type,
-{
-}
+impl<T> Term for Snd<T> where T: Term {}
 
-impl<T, Ty> SubstTerm<T> for Fold<T, Ty>
+impl<T> SubstTerm<T> for Snd<T>
 where
     T: Term + SubstTerm<T, Target = T>,
-    Ty: Type,
     Self: Into<T>,
 {
     type Target = T;
     fn subst(self, v: &Var, t: &T) -> T {
-        Fold {
+        Snd {
             term: Box::new(self.term.subst(v, t)),
-            ty: self.ty,
         }
         .into()
     }
 }
 
-impl<T, Ty> SubstType<Ty> for Fold<T, Ty>
+impl<T, Ty> SubstType<Ty> for Snd<T>
 where
-    T: Term + SubstType<Ty, Target = T>,
-    Ty: Type + SubstType<Ty, Target = Ty>,
+    T: Term + SubstType<Ty, Target = Ty>,
+    Ty: Type,
     Self: Into<T>,
 {
     type Target = T;
     fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
-        Fold {
+        Snd {
             term: Box::new(self.term.subst_type(v, ty)),
-            ty: self.ty.subst_type(v, ty),
         }
         .into()
     }
 }
 
-impl<T, Ty> fmt::Display for Fold<T, Ty>
+impl<T> fmt::Display for Snd<T>
 where
     T: Term,
-    Ty: Type,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "fold[{}]({})", self.ty, self.term)
+        write!(f, "({}).1", self.term)
     }
 }

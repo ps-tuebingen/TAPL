@@ -1,7 +1,7 @@
 use super::Term;
 use crate::{
     subst::{SubstTerm, SubstType},
-    types::Bool,
+    types::Type,
     TypeVar, Var,
 };
 use std::{fmt, marker::PhantomData};
@@ -47,13 +47,14 @@ where
     }
 }
 
-impl<T> SubstType<<T as Term>::Type> for False<T>
+impl<T, Ty> SubstType<Ty> for False<T>
 where
     T: Term,
+    Ty: Type,
     Self: Into<T>,
 {
     type Target = T;
-    fn subst_type(self, _: &TypeVar, _: &<T as Term>::Type) -> Self::Target {
+    fn subst_type(self, _: &TypeVar, _: &Ty) -> Self::Target {
         False {
             phantom: PhantomData,
         }

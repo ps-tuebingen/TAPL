@@ -1,8 +1,7 @@
 use super::Term;
-use crate::{types::Type,
+use crate::{
     subst::{SubstTerm, SubstType},
-    terms::App,
-    types::Fun,
+    types::Type,
     TypeVar, Var,
 };
 use std::fmt;
@@ -36,7 +35,7 @@ impl<T> Term for TryWithVal<T> where T: Term {}
 
 impl<T> SubstTerm<T> for TryWithVal<T>
 where
-    T: Term,
+    T: Term + SubstTerm<T, Target = T>,
     Self: Into<T>,
 {
     type Target = T;
@@ -49,13 +48,14 @@ where
     }
 }
 
-impl<T,Ty> SubstType<Ty> for TryWithVal<T>
+impl<T, Ty> SubstType<Ty> for TryWithVal<T>
 where
-    T: Term,Ty:Type
+    T: Term + SubstType<Ty, Target = T>,
+    Ty: Type,
     Self: Into<T>,
 {
     type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &<T as Term>::Type) -> Self::Target {
+    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
         TryWithVal {
             term: Box::new(self.term.subst_type(v, ty)),
             handler: Box::new(self.handler.subst_type(v, ty)),

@@ -23,7 +23,7 @@ where
     pub fn new<T1, Ty1>(t: T1, ty: Ty1) -> Tail<T, Ty>
     where
         T1: Into<T>,
-        Ty: Into<Ty>,
+        Ty1: Into<Ty>,
     {
         Tail {
             term: Box::new(t.into()),
@@ -41,7 +41,7 @@ where
 
 impl<T, Ty> SubstTerm<T> for Tail<T, Ty>
 where
-    T: Term,
+    T: Term + SubstTerm<T, Target = T>,
     Ty: Type,
     Self: Into<T>,
 {
@@ -57,7 +57,8 @@ where
 
 impl<T, Ty> SubstType<Ty> for Tail<T, Ty>
 where
-    T: Term,
+    T: Term + SubstType<Ty, Target = T>,
+    Ty: Type + SubstType<Ty, Target = Ty>,
     Self: Into<T>,
 {
     type Target = T;

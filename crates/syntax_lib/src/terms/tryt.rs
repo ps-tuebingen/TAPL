@@ -1,6 +1,7 @@
 use super::Term;
 use crate::{
     subst::{SubstTerm, SubstType},
+    types::Type,
     TypeVar, Var,
 };
 use std::fmt;
@@ -30,7 +31,7 @@ impl<T> Term for Try<T> where T: Term {}
 
 impl<T> SubstTerm<T> for Try<T>
 where
-    T: Term,
+    T: Term + SubstTerm<T, Target = T>,
     Self: Into<T>,
 {
     type Target = T;
@@ -45,7 +46,8 @@ where
 
 impl<T, Ty> SubstType<Ty> for Try<T>
 where
-    T: Term,
+    T: Term + SubstType<Ty, Target = T>,
+    Ty: Type,
     Self: Into<T>,
 {
     type Target = T;

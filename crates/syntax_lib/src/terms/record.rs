@@ -1,6 +1,7 @@
 use super::Term;
 use crate::{
     subst::{SubstTerm, SubstType},
+    types::Type,
     Label, TypeVar, Var,
 };
 use std::{collections::HashMap, fmt};
@@ -31,7 +32,7 @@ impl<T> Term for Record<T> where T: Term {}
 
 impl<T> SubstTerm<T> for Record<T>
 where
-    T: Term,
+    T: Term + SubstTerm<T, Target = T>,
     Self: Into<T>,
 {
     type Target = T;
@@ -47,13 +48,14 @@ where
     }
 }
 
-impl<T> SubstType<<T as Term>::Type> for Record<T>
+impl<T, Ty> SubstType<Ty> for Record<T>
 where
-    T: Term,
+    T: Term + SubstType<Ty, Target = T>,
+    Ty: Type,
     Self: Into<T>,
 {
     type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &<T as Term>::Type) -> Self::Target {
+    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
         Record {
             records: self
                 .records
