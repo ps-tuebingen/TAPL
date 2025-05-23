@@ -1,11 +1,6 @@
 use super::Term;
-use common::{
-    check::{to_check_err, Kindcheck, Typecheck},
-    errors::Error,
-    eval::{Eval, Normalize},
-    language::{LanguageTerm, LanguageType},
+use crate::{
     subst::{SubstTerm, SubstType},
-    values::Raise as RaiseVal,
     TypeVar, Var,
 };
 use std::fmt;
@@ -13,22 +8,22 @@ use std::fmt;
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Raise<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     exception: Box<T>,
-    exception_ty: <T as LanguageTerm>::Type,
-    cont_ty: <T as LanguageTerm>::Type,
+    exception_ty: <T as Term>::Type,
+    cont_ty: <T as Term>::Type,
 }
 
 impl<T> Raise<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     pub fn new<E, Ty1, Ty2>(ex: E, ex_ty: Ty1, cont_ty: Ty2) -> Raise<T>
     where
         E: Into<T>,
-        Ty1: Into<<T as LanguageTerm>::Type>,
-        Ty2: Into<<T as LanguageTerm>::Type>,
+        Ty1: Into<<T as Term>::Type>,
+        Ty2: Into<<T as Term>::Type>,
     {
         Raise {
             exception: Box::new(ex.into()),
@@ -38,11 +33,11 @@ where
     }
 }
 
-impl<T> Term for Raise<T> where T: LanguageTerm {}
+impl<T> Term for Raise<T> where T: Term {}
 
 impl<T> SubstTerm<T> for Raise<T>
 where
-    T: LanguageTerm,
+    T: Term,
     Self: Into<T>,
 {
     type Target = T;
@@ -56,13 +51,13 @@ where
     }
 }
 
-impl<T> SubstType<<T as LanguageTerm>::Type> for Raise<T>
+impl<T> SubstType<<T as Term>::Type> for Raise<T>
 where
-    T: LanguageTerm,
+    T: Term,
     Self: Into<T>,
 {
     type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &<T as LanguageTerm>::Type) -> Self::Target {
+    fn subst_type(self, v: &TypeVar, ty: &<T as Term>::Type) -> Self::Target {
         Raise {
             exception: Box::new(self.exception.subst_type(v, ty)),
             exception_ty: self.exception_ty.subst_type(v, ty),
@@ -72,51 +67,9 @@ where
     }
 }
 
-impl<T> Typecheck for Raise<T>
-where
-    T: LanguageTerm,
-{
-    type Type = <T as Typecheck>::Type;
-    type Env = <T as Typecheck>::Env;
-
-    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
-        let ex_norm = self.exception_ty.clone().normalize(&mut env.clone());
-        let cont_norm = self.cont_ty.clone().normalize(&mut env.clone());
-
-        let ex_knd = ex_norm.check_kind(&mut env.clone())?;
-        self.cont_ty.check_kind(&mut env.clone())?;
-
-        let err_ty = self
-            .exception
-            .check(&mut env.clone())?
-            .normalize(&mut env.clone());
-        let err_knd = err_ty.check_kind(env)?;
-
-        ex_knd.check_equal(&err_knd).map_err(to_check_err)?;
-        ex_norm.check_equal(&err_ty).map_err(to_check_err)?;
-
-        Ok(cont_norm.clone())
-    }
-}
-
-impl<T> Eval for Raise<T>
-where
-    T: LanguageTerm,
-    RaiseVal<T>: Into<<T as LanguageTerm>::Value>,
-{
-    type Value = <T as Eval>::Value;
-    type Env = <T as Eval>::Env;
-
-    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
-        let exc_val = self.exception.eval(env)?;
-        let raise_val = RaiseVal::<T>::new(exc_val, self.cont_ty, self.exception_ty);
-        Ok(raise_val.into())
-    }
-}
-
 impl<T> fmt::Display for Raise<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(

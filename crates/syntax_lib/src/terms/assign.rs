@@ -1,12 +1,6 @@
 use super::Term;
-use crate::types::Unit as UnitTy;
-use common::{
-    check::{to_check_err, Kindcheck, Typecheck},
-    errors::Error,
-    eval::{to_eval_err, Eval, EvalEnvironment, Normalize},
-    language::{LanguageTerm, LanguageType, LanguageValue},
+use crate::{
     subst::{SubstTerm, SubstType},
-    values::Unit as UnitVal,
     TypeVar, Var,
 };
 use std::fmt;
@@ -14,7 +8,7 @@ use std::fmt;
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Assign<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     lhs: Box<T>,
     rhs: Box<T>,
@@ -22,7 +16,7 @@ where
 
 impl<T> Assign<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     pub fn new<T1, T2>(lhs: T1, rhs: T2) -> Assign<T>
     where
@@ -36,11 +30,11 @@ where
     }
 }
 
-impl<T> Term for Assign<T> where T: LanguageTerm {}
+impl<T> Term for Assign<T> where T: Term {}
 
 impl<T> SubstTerm<T> for Assign<T>
 where
-    T: LanguageTerm,
+    T: Term,
     Self: Into<T>,
 {
     type Target = T;
@@ -53,13 +47,13 @@ where
     }
 }
 
-impl<T> SubstType<<T as LanguageTerm>::Type> for Assign<T>
+impl<T> SubstType<<T as Term>::Type> for Assign<T>
 where
-    T: LanguageTerm,
+    T: Term,
     Self: Into<T>,
 {
     type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &<T as LanguageTerm>::Type) -> Self::Target {
+    fn subst_type(self, v: &TypeVar, ty: &<T as Term>::Type) -> Self::Target {
         Assign {
             lhs: Box::new(self.lhs.subst_type(v, ty)),
             rhs: Box::new(self.rhs.subst_type(v, ty)),
@@ -68,55 +62,9 @@ where
     }
 }
 
-impl<T> Typecheck for Assign<T>
-where
-    T: LanguageTerm,
-    UnitTy<<T as LanguageTerm>::Type>: Into<<T as LanguageTerm>::Type>,
-{
-    type Env = <T as Typecheck>::Env;
-    type Type = <T as Typecheck>::Type;
-
-    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
-        let lhs_ty = self
-            .lhs
-            .check(&mut env.clone())?
-            .normalize(&mut env.clone());
-        lhs_ty
-            .check_kind(&mut env.clone())?
-            .into_star()
-            .map_err(to_check_err)?;
-        let lhs_ref = lhs_ty.into_ref().map_err(to_check_err)?;
-
-        let rhs_ty = self
-            .rhs
-            .check(&mut env.clone())?
-            .normalize(&mut env.clone());
-        rhs_ty.check_kind(env)?.into_star().map_err(to_check_err)?;
-        lhs_ref.ty.check_equal(&rhs_ty).map_err(to_check_err)?;
-        Ok(UnitTy::new().into())
-    }
-}
-
-impl<T> Eval for Assign<T>
-where
-    T: LanguageTerm,
-    UnitVal<T>: Into<<T as LanguageTerm>::Value>,
-{
-    type Env = <T as Eval>::Env;
-    type Value = <T as Eval>::Value;
-
-    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
-        let lhs_val = self.lhs.eval(env)?;
-        let lhs_loc = lhs_val.into_loc().map_err(to_eval_err)?;
-        let rhs_val = self.rhs.eval(env)?;
-        env.save_location(lhs_loc.loc, rhs_val);
-        Ok(UnitVal::new().into())
-    }
-}
-
 impl<T> fmt::Display for Assign<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "({}) := {}", self.lhs, self.rhs)

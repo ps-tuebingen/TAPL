@@ -1,12 +1,7 @@
 use super::Term;
-use common::{
-    check::{to_check_err, Kindcheck, Typecheck},
-    errors::Error,
-    eval::{Eval, Normalize},
-    language::LanguageTerm,
+use crate::{
     subst::{SubstTerm, SubstType},
     types::List,
-    values::Nil as NilVal,
     TypeVar, Var,
 };
 use std::fmt;
@@ -14,28 +9,28 @@ use std::fmt;
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Nil<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
-    ty: <T as LanguageTerm>::Type,
+    ty: <T as Term>::Type,
 }
 
 impl<T> Nil<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     pub fn new<Typ>(ty: Typ) -> Nil<T>
     where
-        Typ: Into<<T as LanguageTerm>::Type>,
+        Typ: Into<<T as Term>::Type>,
     {
         Nil { ty: ty.into() }
     }
 }
 
-impl<T> Term for Nil<T> where T: LanguageTerm {}
+impl<T> Term for Nil<T> where T: Term {}
 
 impl<T> SubstTerm<T> for Nil<T>
 where
-    T: LanguageTerm,
+    T: Term,
     Self: Into<T>,
 {
     type Target = T;
@@ -44,13 +39,13 @@ where
     }
 }
 
-impl<T> SubstType<<T as LanguageTerm>::Type> for Nil<T>
+impl<T> SubstType<<T as Term>::Type> for Nil<T>
 where
-    T: LanguageTerm,
+    T: Term,
     Self: Into<T>,
 {
     type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &<T as LanguageTerm>::Type) -> Self::Target {
+    fn subst_type(self, v: &TypeVar, ty: &<T as Term>::Type) -> Self::Target {
         Nil {
             ty: self.ty.subst_type(v, ty),
         }
@@ -58,37 +53,9 @@ where
     }
 }
 
-impl<T> Typecheck for Nil<T>
-where
-    T: LanguageTerm,
-    List<<T as LanguageTerm>::Type>: Into<<T as LanguageTerm>::Type>,
-{
-    type Env = <T as Typecheck>::Env;
-    type Type = <T as Typecheck>::Type;
-
-    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
-        let ty_norm = self.ty.clone().normalize(&mut env.clone());
-        ty_norm.check_kind(env)?.into_star().map_err(to_check_err)?;
-        Ok(List::new(ty_norm.clone()).into())
-    }
-}
-
-impl<T> Eval for Nil<T>
-where
-    T: LanguageTerm,
-    NilVal<T>: Into<<T as LanguageTerm>::Value>,
-{
-    type Env = <T as Eval>::Env;
-    type Value = <T as Eval>::Value;
-
-    fn eval(self, _: &mut Self::Env) -> Result<Self::Value, Error> {
-        Ok(NilVal::<T>::new(self.ty).into())
-    }
-}
-
 impl<T> fmt::Display for Nil<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "Nil[{}]", self.ty)

@@ -1,0 +1,25 @@
+impl<T> Typecheck for Try<T>
+where
+    T: LanguageTerm,
+{
+    type Type = <T as Typecheck>::Type;
+    type Env = <T as Typecheck>::Env;
+
+    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
+        let term_ty = self
+            .term
+            .check(&mut env.clone())?
+            .normalize(&mut env.clone());
+        let term_knd = term_ty.check_kind(&mut env.clone())?;
+
+        let handler_ty = self
+            .handler
+            .check(&mut env.clone())?
+            .normalize(&mut env.clone());
+        let handler_knd = handler_ty.check_kind(env)?;
+
+        term_knd.check_equal(&handler_knd).map_err(to_check_err)?;
+        term_ty.check_equal(&handler_ty).map_err(to_check_err)?;
+        Ok(term_ty)
+    }
+}

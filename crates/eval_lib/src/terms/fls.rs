@@ -1,0 +1,12 @@
+impl<T> Eval for False<T>
+where
+    T: LanguageTerm,
+    FalseVal<T>: Into<<T as LanguageTerm>::Value>,
+{
+    type Value = <T as Eval>::Value;
+    type Env = <T as Eval>::Env;
+
+    fn eval(self, _: &mut Self::Env) -> Result<Self::Value, Error> {
+        Ok(FalseVal::new().into())
+    }
+}

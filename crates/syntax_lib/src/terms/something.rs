@@ -1,12 +1,7 @@
 use super::Term;
-use common::{
-    check::{to_check_err, Kindcheck, Typecheck},
-    errors::Error,
-    eval::{Eval, Normalize},
-    language::LanguageTerm,
+use crate::{
     subst::{SubstTerm, SubstType},
     types::Optional,
-    values::Something as SomethingVal,
     TypeVar, Var,
 };
 use std::fmt;
@@ -14,14 +9,14 @@ use std::fmt;
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Something<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     term: Box<T>,
 }
 
 impl<T> Something<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     pub fn new<T1>(t: T1) -> Something<T>
     where
@@ -33,11 +28,11 @@ where
     }
 }
 
-impl<T> Term for Something<T> where T: LanguageTerm {}
+impl<T> Term for Something<T> where T: Term {}
 
 impl<T> SubstTerm<T> for Something<T>
 where
-    T: LanguageTerm,
+    T: Term,
     Self: Into<T>,
 {
     type Target = T;
@@ -49,13 +44,13 @@ where
     }
 }
 
-impl<T> SubstType<<T as LanguageTerm>::Type> for Something<T>
+impl<T> SubstType<<T as Term>::Type> for Something<T>
 where
-    T: LanguageTerm,
+    T: Term,
     Self: Into<T>,
 {
     type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &<T as LanguageTerm>::Type) -> Self::Target {
+    fn subst_type(self, v: &TypeVar, ty: &<T as Term>::Type) -> Self::Target {
         Something {
             term: Box::new(self.term.subst_type(v, ty)),
         }
@@ -63,41 +58,9 @@ where
     }
 }
 
-impl<T> Typecheck for Something<T>
-where
-    T: LanguageTerm,
-    Optional<<T as LanguageTerm>::Type>: Into<<T as LanguageTerm>::Type>,
-{
-    type Env = <T as Typecheck>::Env;
-    type Type = <T as Typecheck>::Type;
-
-    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
-        let term_ty = self
-            .term
-            .check(&mut env.clone())?
-            .normalize(&mut env.clone());
-        term_ty.check_kind(env)?.into_star().map_err(to_check_err)?;
-        Ok(Optional::new(term_ty.clone()).into())
-    }
-}
-
-impl<T> Eval for Something<T>
-where
-    T: LanguageTerm,
-    SomethingVal<T>: Into<<T as LanguageTerm>::Value>,
-{
-    type Env = <T as Eval>::Env;
-    type Value = <T as Eval>::Value;
-
-    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
-        let term_val = self.term.eval(env)?;
-        Ok(SomethingVal::<T>::new(term_val).into())
-    }
-}
-
 impl<T> fmt::Display for Something<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "something({})", self.term)

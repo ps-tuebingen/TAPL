@@ -6,6 +6,7 @@ use crate::{
 };
 
 pub mod env;
+pub mod types;
 pub use env::CheckEnvironment;
 
 pub trait Typecheck {

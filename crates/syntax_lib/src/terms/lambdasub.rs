@@ -1,12 +1,7 @@
 use super::Term;
-use common::{
-    check::{CheckEnvironment, Kindcheck, Typecheck},
-    errors::Error,
-    eval::{Eval, Normalize},
-    language::LanguageTerm,
+use crate::{
     subst::{SubstTerm, SubstType},
-    types::{ForallBounded, Top},
-    values::LambdaSub as LambdaSubVal,
+    types::Top,
     TypeVar, Var,
 };
 use std::fmt;
@@ -14,20 +9,20 @@ use std::fmt;
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct LambdaSub<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     var: TypeVar,
-    sup_ty: <T as LanguageTerm>::Type,
+    sup_ty: <T as Term>::Type,
     body: Box<T>,
 }
 
 impl<T> LambdaSub<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     pub fn new<Typ, B>(v: &str, sup: Typ, bod: B) -> LambdaSub<T>
     where
-        Typ: Into<<T as LanguageTerm>::Type>,
+        Typ: Into<<T as Term>::Type>,
         B: Into<T>,
     {
         LambdaSub {
@@ -40,7 +35,7 @@ where
     pub fn new_unbounded<T1>(v: &str, bod: T1) -> LambdaSub<T>
     where
         T1: Into<T>,
-        Top<<T as LanguageTerm>::Type>: Into<<T as LanguageTerm>::Type>,
+        Top<<T as Term>::Type>: Into<<T as LanguageTerm>::Type>,
     {
         LambdaSub {
             var: v.to_owned(),
@@ -50,11 +45,11 @@ where
     }
 }
 
-impl<T> Term for LambdaSub<T> where T: LanguageTerm {}
+impl<T> Term for LambdaSub<T> where T: Term {}
 
 impl<T> SubstTerm<T> for LambdaSub<T>
 where
-    T: LanguageTerm,
+    T: Term,
     Self: Into<T>,
 {
     type Target = T;
@@ -72,13 +67,13 @@ where
     }
 }
 
-impl<T> SubstType<<T as LanguageTerm>::Type> for LambdaSub<T>
+impl<T> SubstType<<T as Term>::Type> for LambdaSub<T>
 where
-    T: LanguageTerm,
+    T: Term,
     Self: Into<T>,
 {
     type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &<T as LanguageTerm>::Type) -> Self::Target {
+    fn subst_type(self, v: &TypeVar, ty: &<T as Term>::Type) -> Self::Target {
         let sup_subst = self.sup_ty.subst_type(v, ty);
         if *v == self.var {
             LambdaSub {
@@ -98,40 +93,9 @@ where
     }
 }
 
-impl<T> Eval for LambdaSub<T>
-where
-    T: LanguageTerm,
-    LambdaSubVal<T>: Into<<T as LanguageTerm>::Value>,
-{
-    type Value = <T as Eval>::Value;
-    type Env = <T as Eval>::Env;
-
-    fn eval(self, _: &mut Self::Env) -> Result<Self::Value, Error> {
-        Ok(LambdaSubVal::new(&self.var, self.sup_ty, *self.body).into())
-    }
-}
-
-impl<T> Typecheck for LambdaSub<T>
-where
-    T: LanguageTerm,
-    ForallBounded<<T as LanguageTerm>::Type>: Into<<T as LanguageTerm>::Type>,
-{
-    type Type = <T as Typecheck>::Type;
-    type Env = <T as Typecheck>::Env;
-
-    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
-        let sup_norm = self.sup_ty.clone().normalize(&mut env.clone());
-        let sup_kind = sup_norm.check_kind(&mut env.clone())?;
-        env.add_tyvar_super(self.var.clone(), sup_norm.clone());
-        env.add_tyvar_kind(self.var.clone(), sup_kind.clone());
-        let term_ty = self.body.check(&mut env.clone())?.normalize(env);
-        Ok(ForallBounded::new(&self.var, self.sup_ty.clone(), term_ty).into())
-    }
-}
-
 impl<T> fmt::Display for LambdaSub<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "\\{}<:({}).{}", self.var, self.sup_ty, self.body)

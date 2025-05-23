@@ -1,13 +1,7 @@
 use super::Term;
-use common::{
-    check::{to_check_err, CheckEnvironment, Kindcheck, Typecheck},
-    errors::Error,
-    eval::{Eval, Normalize},
+use crate::{
     kinds::Kind,
-    language::LanguageTerm,
     subst::{SubstTerm, SubstType},
-    types::Forall,
-    values::TyLambda as TyLambdaVal,
     TypeVar, Var,
 };
 use std::fmt;
@@ -15,7 +9,7 @@ use std::fmt;
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct TyLambda<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     var: TypeVar,
     annot: Kind,
@@ -24,7 +18,7 @@ where
 
 impl<T> TyLambda<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     pub fn new<T1>(v: &str, knd: Kind, t: T1) -> TyLambda<T>
     where
@@ -38,11 +32,11 @@ where
     }
 }
 
-impl<T> Term for TyLambda<T> where T: LanguageTerm {}
+impl<T> Term for TyLambda<T> where T: Term {}
 
 impl<T> SubstTerm<T> for TyLambda<T>
 where
-    T: LanguageTerm,
+    T: Term,
     Self: Into<T>,
 {
     type Target = T;
@@ -56,13 +50,13 @@ where
     }
 }
 
-impl<T> SubstType<<T as LanguageTerm>::Type> for TyLambda<T>
+impl<T, Ty> SubstType<Ty> for TyLambda<T>
 where
-    T: LanguageTerm,
+    T: Term,
     Self: Into<T>,
 {
     type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &<T as LanguageTerm>::Type) -> Self::Target {
+    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
         if *v == self.var {
             self.into()
         } else {
@@ -76,41 +70,9 @@ where
     }
 }
 
-impl<T> Eval for TyLambda<T>
-where
-    T: LanguageTerm,
-    TyLambdaVal<T>: Into<<T as LanguageTerm>::Value>,
-{
-    type Value = <T as Eval>::Value;
-    type Env = <T as Eval>::Env;
-
-    fn eval(self, _: &mut Self::Env) -> Result<Self::Value, Error> {
-        Ok(TyLambdaVal::new(&self.var, self.annot, *self.term).into())
-    }
-}
-
-impl<T> Typecheck for TyLambda<T>
-where
-    T: LanguageTerm,
-    Forall<<T as LanguageTerm>::Type>: Into<<T as LanguageTerm>::Type>,
-{
-    type Type = <T as Typecheck>::Type;
-    type Env = <T as Typecheck>::Env;
-
-    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
-        env.add_tyvar_kind(self.var.clone(), self.annot.clone());
-        let term_ty = self
-            .term
-            .check(&mut env.clone())?
-            .normalize(&mut env.clone());
-        let term_knd = term_ty.check_kind(env)?;
-        self.annot.check_equal(&term_knd).map_err(to_check_err)?;
-        Ok(Forall::new(&self.var, self.annot.clone(), term_ty).into())
-    }
-}
 impl<T> fmt::Display for TyLambda<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "\\{}::{}.({})", self.var, self.annot, self.term)

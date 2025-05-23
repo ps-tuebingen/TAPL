@@ -1,18 +1,11 @@
 use super::Term;
-use common::{
-    check::{CheckEnvironment, Kindcheck, Typecheck},
-    errors::Error,
-    eval::{Eval, Normalize},
-    language::LanguageTerm,
-    subst::{SubstTerm, SubstType},
-    TypeVar, Var,
-};
+use crate::subst::{SubstTerm, SubstType};
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Let<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     var: Var,
     bound_term: Box<T>,
@@ -21,7 +14,7 @@ where
 
 impl<T> Let<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     pub fn new<T1, T2>(v: &str, bound: T1, int: T2) -> Let<T>
     where
@@ -35,11 +28,11 @@ where
         }
     }
 }
-impl<T> Term for Let<T> where T: LanguageTerm {}
+impl<T> Term for Let<T> where T: Term {}
 
 impl<T> SubstTerm<T> for Let<T>
 where
-    T: LanguageTerm,
+    T: Term,
     Self: Into<T>,
 {
     type Target = T;
@@ -57,13 +50,13 @@ where
     }
 }
 
-impl<T> SubstType<<T as LanguageTerm>::Type> for Let<T>
+impl<T> SubstType<<T as Term>::Type> for Let<T>
 where
-    T: LanguageTerm,
+    T: Term,
     Self: Into<T>,
 {
     type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &<T as LanguageTerm>::Type) -> Self::Target {
+    fn subst_type(self, v: &TypeVar, ty: &<T as Term>::Type) -> Self::Target {
         Let {
             var: self.var,
             bound_term: Box::new(self.bound_term.subst_type(v, ty)),
@@ -73,45 +66,9 @@ where
     }
 }
 
-impl<T> Typecheck for Let<T>
-where
-    T: LanguageTerm,
-{
-    type Env = <T as Typecheck>::Env;
-    type Type = <T as Typecheck>::Type;
-    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
-        let bound_ty = self
-            .bound_term
-            .check(&mut env.clone())?
-            .normalize(&mut env.clone());
-        bound_ty.check_kind(&mut env.clone())?;
-
-        env.add_var(self.var.clone(), bound_ty);
-        let in_ty = self
-            .in_term
-            .check(&mut env.clone())?
-            .normalize(&mut env.clone());
-        in_ty.check_kind(env)?;
-        Ok(in_ty)
-    }
-}
-
-impl<T> Eval for Let<T>
-where
-    T: LanguageTerm,
-{
-    type Env = <T as Eval>::Env;
-    type Value = <T as Eval>::Value;
-
-    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
-        let bound_val = self.bound_term.eval(env)?;
-        self.in_term.subst(&self.var, &bound_val.into()).eval(env)
-    }
-}
-
 impl<T> fmt::Display for Let<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(

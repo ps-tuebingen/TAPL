@@ -1,11 +1,5 @@
 use super::Type;
-use crate::{
-    check::{to_subty_err, Subtypecheck},
-    errors::Error,
-    language::LanguageType,
-    subst::SubstType,
-    TypeVar,
-};
+use crate::{subst::SubstType, TypeVar};
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -43,22 +37,6 @@ where
             ty: Box::new(self.ty.subst_type(v, ty)),
         }
         .into()
-    }
-}
-
-impl<Ty> Subtypecheck<Ty> for Source<Ty>
-where
-    Ty: LanguageType,
-{
-    type Env = <Ty as Subtypecheck<Ty>>::Env;
-
-    fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Error> {
-        if sup.clone().into_top().is_ok() {
-            return Ok(());
-        }
-
-        let sup_src = sup.clone().into_source().map_err(to_subty_err)?;
-        self.ty.check_subtype(&(*sup_src.ty), env)
     }
 }
 

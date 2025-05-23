@@ -1,9 +1,5 @@
 use super::Term;
-use common::{
-    check::{to_check_err, Kindcheck, Typecheck},
-    errors::Error,
-    eval::{Eval, Normalize},
-    language::{LanguageTerm, LanguageType},
+use crate::{
     subst::{SubstTerm, SubstType},
     TypeVar, Var,
 };
@@ -12,20 +8,20 @@ use std::fmt;
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Ascribe<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     pub term: Box<T>,
-    ty: <T as LanguageTerm>::Type,
+    ty: <T as Term>::Type,
 }
 
 impl<T> Ascribe<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     pub fn new<T1, Ty1>(t: T1, ty: Ty1) -> Ascribe<T>
     where
         T1: Into<T>,
-        Ty1: Into<<T as LanguageTerm>::Type>,
+        Ty1: Into<<T as Term>::Type>,
     {
         Ascribe {
             term: Box::new(t.into()),
@@ -34,11 +30,11 @@ where
     }
 }
 
-impl<T> Term for Ascribe<T> where T: LanguageTerm {}
+impl<T> Term for Ascribe<T> where T: Term {}
 
 impl<T> SubstTerm<T> for Ascribe<T>
 where
-    T: LanguageTerm,
+    T: Term,
     Self: Into<T>,
 {
     type Target = T;
@@ -51,13 +47,13 @@ where
     }
 }
 
-impl<T> SubstType<<T as LanguageTerm>::Type> for Ascribe<T>
+impl<T> SubstType<<T as Term>::Type> for Ascribe<T>
 where
-    T: LanguageTerm,
+    T: Term,
     Self: Into<T>,
 {
     type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &<T as LanguageTerm>::Type) -> Self::Target {
+    fn subst_type(self, v: &TypeVar, ty: &<T as Term>::Type) -> Self::Target {
         Ascribe {
             term: Box::new(self.term.subst_type(v, ty)),
             ty: self.ty.subst_type(v, ty),
@@ -66,40 +62,9 @@ where
     }
 }
 
-impl<T> Eval for Ascribe<T>
-where
-    T: LanguageTerm,
-{
-    type Env = <T as Eval>::Env;
-    type Value = <T as Eval>::Value;
-    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
-        self.term.eval(env)
-    }
-}
-
-impl<T> Typecheck for Ascribe<T>
-where
-    T: LanguageTerm,
-{
-    type Type = <T as Typecheck>::Type;
-    type Env = <T as Typecheck>::Env;
-    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
-        let t_ty = self
-            .term
-            .check(&mut env.clone())?
-            .normalize(&mut env.clone());
-        let asc_norm = self.ty.clone().normalize(&mut env.clone());
-        let t_kind = t_ty.check_kind(&mut env.clone())?;
-        let ty_kind = self.ty.check_kind(env)?;
-        t_kind.check_equal(&ty_kind).map_err(to_check_err)?;
-        asc_norm.check_equal(&t_ty).map_err(to_check_err)?;
-        Ok(self.ty.clone())
-    }
-}
-
 impl<T> fmt::Display for Ascribe<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "({} as {})", self.term, self.ty)

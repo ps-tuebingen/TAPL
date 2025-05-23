@@ -1,23 +1,22 @@
-use crate::{Kind, Label, Location, Term, Type, TypeVar, Value, Var};
 use pest::{error::Error as PestErr, RuleType};
 use std::fmt;
 
 #[derive(Debug)]
 pub enum ErrorKind {
-    FreeVariable(Var),
-    FreeTypeVariable(TypeVar),
-    UndefinedLabel(Label),
-    UndefinedLocation(Location),
+    FreeVariable(String),
+    FreeTypeVariable(String),
+    UndefinedLabel(String),
+    UndefinedLocation(usize),
     UndefinedName(String),
     DefinedMultipleTimes(String),
-    Subtype { sub: Type, sup: Type },
+    Subtype { sub: String, sup: String },
     NameMismatch { found: String, expected: String },
-    TypeMismatch { found: Type, expected: String },
-    TermMismatch { found: Term, expected: String },
-    KindMismatch { found: Kind, expected: String },
-    ValueMismatch { found: Value, expected: String },
+    TypeMismatch { found: String, expected: String },
+    TermMismatch { found: String, expected: String },
+    KindMismatch { found: String, expected: String },
+    ValueMismatch { found: String, expected: String },
     Arity { found: usize, expected: usize },
-    Infer { term: Term, reason: String },
+    Infer { term: String, reason: String },
     // Parsing Errors
     Pest(String),
     MissingInput(String),

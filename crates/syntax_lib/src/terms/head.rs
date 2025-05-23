@@ -1,9 +1,5 @@
 use super::Term;
-use common::{
-    check::{to_check_err, Kindcheck, Typecheck},
-    errors::Error,
-    eval::{to_eval_err, Eval, Normalize},
-    language::{LanguageTerm, LanguageType, LanguageValue},
+use crate::{
     subst::{SubstTerm, SubstType},
     TypeVar, Var,
 };
@@ -12,20 +8,20 @@ use std::fmt;
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Head<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     term: Box<T>,
-    ty: <T as LanguageTerm>::Type,
+    ty: <T as Term>::Type,
 }
 
 impl<T> Head<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     pub fn new<T1, Ty>(t: T1, ty: Ty) -> Head<T>
     where
         T1: Into<T>,
-        Ty: Into<<T as LanguageTerm>::Type>,
+        Ty: Into<<T as Term>::Type>,
     {
         Head {
             term: Box::new(t.into()),
@@ -34,11 +30,11 @@ where
     }
 }
 
-impl<T> Term for Head<T> where T: LanguageTerm {}
+impl<T> Term for Head<T> where T: Term {}
 
 impl<T> SubstTerm<T> for Head<T>
 where
-    T: LanguageTerm,
+    T: Term,
     Self: Into<T>,
 {
     type Target = T;
@@ -51,13 +47,13 @@ where
     }
 }
 
-impl<T> SubstType<<T as LanguageTerm>::Type> for Head<T>
+impl<T> SubstType<<T as Term>::Type> for Head<T>
 where
-    T: LanguageTerm,
+    T: Term,
     Self: Into<T>,
 {
     type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &<T as LanguageTerm>::Type) -> Self::Target {
+    fn subst_type(self, v: &TypeVar, ty: &<T as Term>::Type) -> Self::Target {
         Head {
             term: Box::new(self.term.subst_type(v, ty)),
             ty: self.ty.subst_type(v, ty),
@@ -66,41 +62,9 @@ where
     }
 }
 
-impl<T> Typecheck for Head<T>
-where
-    T: LanguageTerm,
-{
-    type Env = <T as Typecheck>::Env;
-    type Type = <T as Typecheck>::Type;
-
-    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
-        let term_ty = self
-            .term
-            .check(&mut env.clone())?
-            .normalize(&mut env.clone());
-        term_ty.check_kind(env)?.into_star().map_err(to_check_err)?;
-        let list_ty = term_ty.into_list().map_err(to_check_err)?;
-        Ok(*list_ty.ty)
-    }
-}
-
-impl<T> Eval for Head<T>
-where
-    T: LanguageTerm,
-{
-    type Env = <T as Eval>::Env;
-    type Value = <T as Eval>::Value;
-
-    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
-        let term_val = self.term.eval(env)?;
-        let cons_val = term_val.into_cons().map_err(to_eval_err)?;
-        Ok(*cons_val.head)
-    }
-}
-
 impl<T> fmt::Display for Head<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "head[{}]({})", self.ty, self.term)

@@ -1,9 +1,5 @@
 use super::Term;
-use common::{
-    check::{to_check_err, Kindcheck, Typecheck},
-    errors::{Error, ErrorKind},
-    eval::{to_eval_err, Eval, Normalize},
-    language::{LanguageTerm, LanguageType, LanguageValue},
+use crate::{
     subst::{SubstTerm, SubstType},
     TypeVar, Var,
 };
@@ -12,7 +8,7 @@ use std::fmt;
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct If<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     if_cond: Box<T>,
     then_term: Box<T>,
@@ -21,7 +17,7 @@ where
 
 impl<T> If<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     pub fn new<T1, T2, T3>(cond: T1, th: T2, els: T3) -> If<T>
     where
@@ -37,11 +33,11 @@ where
     }
 }
 
-impl<T> Term for If<T> where T: LanguageTerm {}
+impl<T> Term for If<T> where T: Term {}
 
 impl<T> SubstTerm<T> for If<T>
 where
-    T: LanguageTerm,
+    T: Term,
     Self: Into<T>,
 {
     type Target = T;
@@ -55,13 +51,13 @@ where
     }
 }
 
-impl<T> SubstType<<T as LanguageTerm>::Type> for If<T>
+impl<T> SubstType<<T as Term>::Type> for If<T>
 where
-    T: LanguageTerm,
+    T: Term,
     Self: Into<T>,
 {
     type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &<T as LanguageTerm>::Type) -> Self::Target {
+    fn subst_type(self, v: &TypeVar, ty: &<T as Term>::Type) -> Self::Target {
         If {
             if_cond: Box::new(self.if_cond.subst_type(v, ty)),
             then_term: Box::new(self.then_term.subst_type(v, ty)),
@@ -71,68 +67,9 @@ where
     }
 }
 
-impl<T> Typecheck for If<T>
-where
-    T: LanguageTerm,
-{
-    type Type = <T as Typecheck>::Type;
-    type Env = <T as Typecheck>::Env;
-
-    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
-        let if_ty = self
-            .if_cond
-            .check(&mut env.clone())?
-            .normalize(&mut env.clone());
-        if_ty
-            .check_kind(&mut env.clone())?
-            .into_star()
-            .map_err(to_check_err)?;
-        if_ty.into_bool().map_err(to_check_err)?;
-
-        let then_ty = self
-            .then_term
-            .check(&mut env.clone())?
-            .normalize(&mut env.clone());
-        let then_kind = then_ty.check_kind(&mut env.clone())?;
-
-        let else_ty = self
-            .else_term
-            .check(&mut env.clone())?
-            .normalize(&mut env.clone());
-        let else_kind = else_ty.check_kind(env)?;
-
-        then_kind.check_equal(&else_kind).map_err(to_check_err)?;
-        then_ty.check_equal(&else_ty).map_err(to_check_err)?;
-        Ok(then_ty)
-    }
-}
-
-impl<T> Eval for If<T>
-where
-    T: LanguageTerm,
-{
-    type Value = <T as Eval>::Value;
-    type Env = <T as Eval>::Env;
-
-    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
-        let cond_val = self.if_cond.eval(env)?;
-        let cond_val_str = cond_val.to_string();
-        if cond_val.clone().into_true().is_ok() {
-            self.then_term.eval(env)
-        } else if cond_val.into_false().is_ok() {
-            self.else_term.eval(env)
-        } else {
-            Err(to_eval_err(ErrorKind::ValueMismatch {
-                found: cond_val_str,
-                expected: "Boolean".to_owned(),
-            }))
-        }
-    }
-}
-
 impl<T> fmt::Display for If<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(

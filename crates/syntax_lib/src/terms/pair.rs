@@ -1,12 +1,7 @@
 use super::Term;
-use common::{
-    check::{to_check_err, Kindcheck, Typecheck},
-    errors::Error,
-    eval::{Eval, Normalize},
-    language::LanguageTerm,
+use crate::{
     subst::{SubstTerm, SubstType},
     types::Product,
-    values::Pair as PairVal,
     TypeVar, Var,
 };
 use std::fmt;
@@ -14,7 +9,7 @@ use std::fmt;
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Pair<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     fst: Box<T>,
     snd: Box<T>,
@@ -22,7 +17,7 @@ where
 
 impl<T> Pair<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     pub fn new<T1, T2>(fst: T1, snd: T2) -> Pair<T>
     where
@@ -36,11 +31,11 @@ where
     }
 }
 
-impl<T> Term for Pair<T> where T: LanguageTerm {}
+impl<T> Term for Pair<T> where T: Term {}
 
 impl<T> SubstTerm<T> for Pair<T>
 where
-    T: LanguageTerm,
+    T: Term,
     Self: Into<T>,
 {
     type Target = T;
@@ -53,13 +48,13 @@ where
     }
 }
 
-impl<T> SubstType<<T as LanguageTerm>::Type> for Pair<T>
+impl<T> SubstType<<T as Term>::Type> for Pair<T>
 where
-    T: LanguageTerm,
+    T: Term,
     Self: Into<T>,
 {
     type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &<T as LanguageTerm>::Type) -> Self::Target {
+    fn subst_type(self, v: &TypeVar, ty: &<T as Term>::Type) -> Self::Target {
         Pair {
             fst: Box::new(self.fst.subst_type(v, ty)),
             snd: Box::new(self.snd.subst_type(v, ty)),
@@ -68,48 +63,9 @@ where
     }
 }
 
-impl<T> Typecheck for Pair<T>
-where
-    T: LanguageTerm,
-    Product<<T as LanguageTerm>::Type>: Into<<T as LanguageTerm>::Type>,
-{
-    type Env = <T as Typecheck>::Env;
-    type Type = <T as Typecheck>::Type;
-
-    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
-        let fst_ty = self
-            .fst
-            .check(&mut env.clone())?
-            .normalize(&mut env.clone());
-        let snd_ty = self
-            .snd
-            .check(&mut env.clone())?
-            .normalize(&mut env.clone());
-        let fst_knd = fst_ty.check_kind(&mut env.clone())?;
-        let snd_knd = snd_ty.check_kind(env)?;
-        fst_knd.check_equal(&snd_knd).map_err(to_check_err)?;
-        Ok(Product::new(fst_ty, snd_ty).into())
-    }
-}
-
-impl<T> Eval for Pair<T>
-where
-    T: LanguageTerm,
-    PairVal<T>: Into<<T as LanguageTerm>::Value>,
-{
-    type Env = <T as Eval>::Env;
-    type Value = <T as Eval>::Value;
-
-    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
-        let fst_val = self.fst.eval(env)?;
-        let snd_val = self.snd.eval(env)?;
-        Ok(PairVal::<T>::new(fst_val, snd_val).into())
-    }
-}
-
 impl<T> fmt::Display for Pair<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{{ {}, {} }}", self.fst, self.snd)
