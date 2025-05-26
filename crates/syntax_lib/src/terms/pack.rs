@@ -12,9 +12,9 @@ where
     T: Term,
     Ty: Type,
 {
-    inner_ty: Ty,
-    term: Box<T>,
-    outer_ty: Ty,
+    pub inner_ty: Ty,
+    pub term: Box<T>,
+    pub outer_ty: Ty,
 }
 
 impl<T, Ty> Pack<T, Ty>

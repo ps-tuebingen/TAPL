@@ -1,11 +1,15 @@
-use crate::{Eval, Value};
+use crate::{values::Nothing as NothingVal, Eval};
 use common::errors::Error;
-use syntax::terms::{Nothing, Term};
+use syntax::{
+    terms::{Nothing, Term},
+    types::Type,
+};
 
-impl<T> Eval for Nothing<T>
+impl<T, Ty> Eval for Nothing<T, Ty>
 where
     T: Term + Eval,
-    NothingVal<T>: Into<<T as Term>::Value>,
+    Ty: Type,
+    NothingVal<T>: Into<<T as Eval>::Value>,
 {
     type Env = <T as Eval>::Env;
     type Value = <T as Eval>::Value;

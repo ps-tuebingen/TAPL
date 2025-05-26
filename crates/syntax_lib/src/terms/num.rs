@@ -11,7 +11,7 @@ pub struct Num<T>
 where
     T: Term,
 {
-    num: i64,
+    pub num: i64,
     phantom: PhantomData<T>,
 }
 

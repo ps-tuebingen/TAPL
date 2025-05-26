@@ -11,8 +11,8 @@ pub struct Pair<T>
 where
     T: Term,
 {
-    fst: Box<T>,
-    snd: Box<T>,
+    pub fst: Box<T>,
+    pub snd: Box<T>,
 }
 
 impl<T> Pair<T>

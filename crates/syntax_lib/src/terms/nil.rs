@@ -11,7 +11,7 @@ pub struct Nil<T, Ty>
 where
     T: Term,
 {
-    ty: Ty,
+    pub ty: Ty,
     phantom: PhantomData<T>,
 }
 

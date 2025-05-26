@@ -1,11 +1,15 @@
-use crate::{Eval, Value};
+use crate::{values::Pack as PackVal, Eval};
 use common::errors::Error;
-use syntax::terms::{Pack, Term};
+use syntax::{
+    terms::{Pack, Term},
+    types::Type,
+};
 
-impl<T> Eval for Pack<T>
+impl<T, Ty> Eval for Pack<T, Ty>
 where
     T: Term + Eval,
-    PackVal<T>: Into<<T as Term>::Value>,
+    Ty: Type,
+    PackVal<T>: Into<<T as Eval>::Value>,
 {
     type Value = <T as Eval>::Value;
     type Env = <T as Eval>::Env;

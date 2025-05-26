@@ -11,7 +11,7 @@ pub struct Pred<T>
 where
     T: Term,
 {
-    term: Box<T>,
+    pub term: Box<T>,
 }
 
 impl<T> Pred<T>

@@ -1,11 +1,15 @@
-use crate::{Eval, Value};
+use crate::{values::Nil as NilVal, Eval};
 use common::errors::Error;
-use syntax::terms::{Nil, Term};
+use syntax::{
+    terms::{Nil, Term},
+    types::Type,
+};
 
-impl<T> Eval for Nil<T>
+impl<T, Ty> Eval for Nil<T, Ty>
 where
     T: Term + Eval,
-    NilVal<T>: Into<<T as Term>::Value>,
+    Ty: Type,
+    NilVal<T>: Into<<T as Eval>::Value>,
 {
     type Env = <T as Eval>::Env;
     type Value = <T as Eval>::Value;
