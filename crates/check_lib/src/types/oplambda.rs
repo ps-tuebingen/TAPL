@@ -1,3 +1,7 @@
+use crate::{Kindcheck, Subtypecheck};
+use common::errors::Error;
+use syntax::types::{OpLambda, TypeGroup};
+
 impl<Ty> Subtypecheck<Ty> for OpLambda<Ty>
 where
     Ty: LanguageType,

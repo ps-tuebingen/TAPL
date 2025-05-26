@@ -1,3 +1,7 @@
+use crate::{Kindcheck, Subtypecheck};
+use common::errors::Error;
+use syntax::types::{Top, TypeGroup};
+
 impl<Ty> Subtypecheck<Ty> for Top<Ty>
 where
     Ty: LanguageType,

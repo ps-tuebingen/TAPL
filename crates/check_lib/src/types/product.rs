@@ -1,1 +1,0 @@
-impl Subtypecheck for Product {}

@@ -1,3 +1,7 @@
+use crate::{Kindcheck, Subtypecheck};
+use common::errors::Error;
+use syntax::types::{Sum, TypeGroup};
+
 impl<Ty> Kindcheck<Ty> for Sum<Ty>
 where
     Ty: LanguageType,

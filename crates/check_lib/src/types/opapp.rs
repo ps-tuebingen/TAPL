@@ -1,3 +1,7 @@
+use crate::{Kindcheck, Subtypecheck};
+use common::errors::Error;
+use syntax::types::{OpApp, TypeGroup};
+
 impl<Ty> Subtypecheck<Ty> for OpApp<Ty>
 where
     Ty: LanguageType,
