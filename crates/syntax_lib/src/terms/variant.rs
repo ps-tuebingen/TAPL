@@ -12,9 +12,9 @@ where
     T: Term,
     Ty: Type,
 {
-    label: Label,
-    term: Box<T>,
-    ty: Ty,
+    pub label: Label,
+    pub term: Box<T>,
+    pub ty: Ty,
 }
 
 impl<T, Ty> Variant<T, Ty>

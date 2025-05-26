@@ -1,11 +1,15 @@
-use crate::{Eval, Value};
+use crate::{values::Raise as RaiseVal, Eval};
 use common::errors::Error;
-use syntax::terms::{Raise, Term};
+use syntax::{
+    terms::{Raise, Term},
+    types::Type,
+};
 
-impl<T> Eval for Raise<T>
+impl<T, Ty> Eval for Raise<T, Ty>
 where
     T: Term + Eval,
-    RaiseVal<T>: Into<<T as Term>::Value>,
+    Ty: Type,
+    RaiseVal<T>: Into<<T as Eval>::Value>,
 {
     type Value = <T as Eval>::Value;
     type Env = <T as Eval>::Env;

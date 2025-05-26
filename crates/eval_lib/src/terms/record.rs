@@ -1,11 +1,15 @@
-use crate::{Eval, Value};
+use crate::{values::Record as RecordVal, Eval};
 use common::errors::Error;
-use syntax::terms::{Record, Term};
+use std::collections::HashMap;
+use syntax::{
+    terms::{Record, Term},
+    Label,
+};
 
 impl<T> Eval for Record<T>
 where
     T: Term + Eval,
-    RecordVal<T>: Into<<T as Term>::Value>,
+    RecordVal<T>: Into<<T as Eval>::Value>,
 {
     type Env = <T as Eval>::Env;
     type Value = <T as Eval>::Value;

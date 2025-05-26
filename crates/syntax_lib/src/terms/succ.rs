@@ -11,7 +11,7 @@ pub struct Succ<T>
 where
     T: Term,
 {
-    term: Box<T>,
+    pub term: Box<T>,
 }
 
 impl<T> Succ<T>

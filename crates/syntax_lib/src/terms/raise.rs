@@ -12,9 +12,9 @@ where
     T: Term,
     Ty: Type,
 {
-    exception: Box<T>,
-    exception_ty: Ty,
-    cont_ty: Ty,
+    pub exception: Box<T>,
+    pub exception_ty: Ty,
+    pub cont_ty: Ty,
 }
 
 impl<T, Ty> Raise<T, Ty>

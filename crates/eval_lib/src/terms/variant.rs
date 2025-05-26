@@ -1,11 +1,15 @@
-use crate::{Eval, Value};
+use crate::{values::Variant as VariantVal, Eval};
 use common::errors::Error;
-use syntax::terms::{Term, Variant};
+use syntax::{
+    terms::{Term, Variant},
+    types::Type,
+};
 
-impl<T> Eval for Variant<T>
+impl<T, Ty> Eval for Variant<T, Ty>
 where
     T: Term + Eval,
-    VariantVal<T>: Into<<T as Term>::Value>,
+    Ty: Type,
+    VariantVal<T>: Into<<T as Eval>::Value>,
 {
     type Env = <T as Eval>::Env;
     type Value = <T as Eval>::Value;

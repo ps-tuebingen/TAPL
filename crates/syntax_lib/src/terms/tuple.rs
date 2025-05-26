@@ -11,7 +11,7 @@ pub struct Tuple<T>
 where
     T: Term,
 {
-    terms: Vec<T>,
+    pub terms: Vec<T>,
 }
 
 impl<T> Tuple<T>

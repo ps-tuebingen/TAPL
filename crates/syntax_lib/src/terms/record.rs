@@ -11,7 +11,7 @@ pub struct Record<T>
 where
     T: Term,
 {
-    records: HashMap<Label, T>,
+    pub records: HashMap<Label, T>,
 }
 
 impl<T> Record<T>

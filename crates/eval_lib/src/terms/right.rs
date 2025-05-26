@@ -1,11 +1,15 @@
-use crate::{Eval, Value};
+use crate::{values::Right as RightVal, Eval};
 use common::errors::Error;
-use syntax::terms::{Right, Term};
+use syntax::{
+    terms::{Right, Term},
+    types::Type,
+};
 
-impl<T> Eval for Right<T>
+impl<T, Ty> Eval for Right<T, Ty>
 where
     T: Term + Eval,
-    RightVal<T>: Into<<T as Term>::Value>,
+    Ty: Type,
+    RightVal<T>: Into<<T as Eval>::Value>,
 {
     type Value = <T as Eval>::Value;
     type Env = <T as Eval>::Env;

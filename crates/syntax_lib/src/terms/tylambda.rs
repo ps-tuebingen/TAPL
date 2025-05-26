@@ -12,9 +12,9 @@ pub struct TyLambda<T>
 where
     T: Term,
 {
-    var: TypeVar,
-    annot: Kind,
-    term: Box<T>,
+    pub var: TypeVar,
+    pub annot: Kind,
+    pub term: Box<T>,
 }
 
 impl<T> TyLambda<T>
