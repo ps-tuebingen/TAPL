@@ -1,46 +1,58 @@
 use super::Value;
-use crate::{language::LanguageTerm, terms::Exception as ExceptionT};
-use std::fmt;
+use std::{fmt, marker::PhantomData};
+use syntax::{
+    terms::{Exception as ExceptionT, Term},
+    types::Type,
+};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct Exception<T>
+pub struct Exception<T, Ty>
 where
-    T: LanguageTerm,
+    Ty: Type,
+    T: Term,
 {
-    ty: <T as LanguageTerm>::Type,
+    ty: Ty,
+    phantom: PhantomData<T>,
 }
 
-impl<T> Exception<T>
+impl<T, Ty> Exception<T, Ty>
 where
-    T: LanguageTerm,
+    Ty: Type,
+    T: Term,
 {
-    pub fn new<Ty1>(ty: Ty1) -> Exception<T>
+    pub fn new<Ty1>(ty: Ty1) -> Exception<T, Ty>
     where
-        Ty1: Into<<T as LanguageTerm>::Type>,
+        Ty1: Into<Ty>,
     {
-        Exception { ty: ty.into() }
+        Exception {
+            ty: ty.into(),
+            phantom: PhantomData,
+        }
     }
 }
 
-impl<T> Value for Exception<T>
+impl<T, Ty> Value for Exception<T, Ty>
 where
-    T: LanguageTerm,
+    T: Term,
+    Ty: Type,
 {
-    type Term = ExceptionT<T>;
+    type Term = ExceptionT<T, Ty>;
 }
 
-impl<T> From<Exception<T>> for ExceptionT<T>
+impl<T, Ty> From<Exception<T, Ty>> for ExceptionT<T, Ty>
 where
-    T: LanguageTerm,
+    T: Term,
+    Ty: Type,
 {
-    fn from(ex: Exception<T>) -> ExceptionT<T> {
+    fn from(ex: Exception<T, Ty>) -> ExceptionT<T, Ty> {
         ExceptionT::new(ex.ty)
     }
 }
 
-impl<T> fmt::Display for Exception<T>
+impl<T, Ty> fmt::Display for Exception<T, Ty>
 where
-    T: LanguageTerm,
+    T: Term,
+    Ty: Type,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "error[{}]", self.ty)

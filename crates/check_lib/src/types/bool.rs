@@ -30,3 +30,14 @@ where
         Ok(Kind::Star)
     }
 }
+
+impl<Ty> Normalize<Ty> for Bool<Ty>
+where
+    Ty: LanguageType,
+    Self: Into<Ty>,
+{
+    type Env = <Ty as Normalize<Ty>>::Env;
+    fn normalize(self, _: &mut Self::Env) -> Ty {
+        self.into()
+    }
+}

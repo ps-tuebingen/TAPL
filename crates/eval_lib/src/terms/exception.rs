@@ -9,7 +9,7 @@ impl<T, Ty> Eval for Exception<T, Ty>
 where
     T: Term + Eval,
     Ty: Type,
-    ExceptionVal<T>: Into<<T as Eval>::Value>,
+    ExceptionVal<T, Ty>: Into<<T as Eval>::Value>,
 {
     type Value = <T as Eval>::Value;
     type Env = <T as Eval>::Env;

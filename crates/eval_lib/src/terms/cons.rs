@@ -1,4 +1,7 @@
-use crate::{values::Cons as ConsVal, Eval};
+use crate::{
+    values::{Cons as ConsVal, ValueGroup},
+    Eval,
+};
 use common::errors::Error;
 use syntax::{
     terms::{Cons, Term},
@@ -9,6 +12,7 @@ impl<T, Ty, V> Eval for Cons<T, Ty>
 where
     T: Term + Eval<Value = V>,
     Ty: Type,
+    V: ValueGroup,
     ConsVal<Ty, V>: Into<<T as Eval>::Value>,
 {
     type Env = <T as Eval>::Env;

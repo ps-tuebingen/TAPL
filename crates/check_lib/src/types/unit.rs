@@ -27,3 +27,14 @@ where
         sup.clone().into_unit().map(|_| ()).map_err(to_subty_err)
     }
 }
+
+impl<Ty> Normalize<Ty> for Unit<Ty>
+where
+    Ty: LanguageType,
+    Self: Into<Ty>,
+{
+    type Env = <Ty as Normalize<Ty>>::Env;
+    fn normalize(self, _: &mut Self::Env) -> Ty {
+        self.into()
+    }
+}

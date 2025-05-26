@@ -3,10 +3,11 @@ use crate::values::{
     Raise, Record, Right, Something, True, Tuple, TyLambda, Value, Variant,
 };
 use common::errors::ErrorKind;
-use syntax::terms::Term as TermTrait;
+use syntax::{terms::Term as TermTrait, types::Type};
 
 pub trait ValueGroup: Value {
     type Term: TermTrait;
+    type Type: Type;
 
     fn into_lambda(self) -> Result<Lambda<<Self as ValueGroup>::Term>, ErrorKind> {
         Err(ErrorKind::ValueMismatch {
@@ -92,7 +93,7 @@ pub trait ValueGroup: Value {
         })
     }
 
-    fn into_cons(self) -> Result<Cons<<Self as ValueGroup>::Term>, ErrorKind> {
+    fn into_cons(self) -> Result<Cons<Self::Type, Self>, ErrorKind> {
         Err(ErrorKind::ValueMismatch {
             found: self.to_string(),
             expected: "Cons".to_owned(),
@@ -113,7 +114,9 @@ pub trait ValueGroup: Value {
         })
     }
 
-    fn into_exception(self) -> Result<Exception<<Self as ValueGroup>::Term>, ErrorKind> {
+    fn into_exception(
+        self,
+    ) -> Result<Exception<<Self as ValueGroup>::Term, Self::Type>, ErrorKind> {
         Err(ErrorKind::ValueMismatch {
             found: self.to_string(),
             expected: "Exception".to_owned(),

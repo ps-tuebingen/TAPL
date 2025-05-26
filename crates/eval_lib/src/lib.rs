@@ -1,6 +1,5 @@
 pub mod env;
 pub mod terms;
-pub mod types;
 pub mod values;
 
 use common::errors::{Error, ErrorKind, ErrorLocation};
