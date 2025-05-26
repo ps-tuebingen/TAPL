@@ -11,10 +11,10 @@ pub struct SomeCase<T>
 where
     T: Term,
 {
-    bound_term: Box<T>,
-    none_term: Box<T>,
-    some_var: Var,
-    some_term: Box<T>,
+    pub bound_term: Box<T>,
+    pub none_term: Box<T>,
+    pub some_var: Var,
+    pub some_term: Box<T>,
 }
 
 impl<T> SomeCase<T>

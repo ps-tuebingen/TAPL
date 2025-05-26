@@ -12,6 +12,9 @@ where
     }
 }
 
+pub mod group;
+pub use group::ValueGroup;
+
 pub mod cons;
 pub mod exception;
 pub mod fls;

@@ -1,26 +1,31 @@
-use super::Value;
-use crate::{language::LanguageTerm, terms::Cons as ConsT};
+use super::{Value, ValueGroup};
 use std::fmt;
+use syntax::{
+    terms::{Cons as ConsT, Term},
+    types::Type,
+};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct Cons<T>
+pub struct Cons<Ty, V>
 where
-    T: LanguageTerm,
+    Ty: Type,
+    V: Value,
 {
-    pub head: Box<<T as LanguageTerm>::Value>,
-    pub tail: Box<<T as LanguageTerm>::Value>,
-    ty: <T as LanguageTerm>::Type,
+    pub head: Box<V>,
+    pub tail: Box<V>,
+    ty: Ty,
 }
 
-impl<T> Cons<T>
+impl<Ty, V> Cons<Ty, V>
 where
-    T: LanguageTerm,
+    Ty: Type,
+    V: Value,
 {
-    pub fn new<T1, T2, Ty>(hd: T1, tl: T2, ty: Ty) -> Cons<T>
+    pub fn new<V1, V2, Typ>(hd: V1, tl: V2, ty: Typ) -> Cons<Ty, V>
     where
-        T1: Into<<T as LanguageTerm>::Value>,
-        T2: Into<<T as LanguageTerm>::Value>,
-        Ty: Into<<T as LanguageTerm>::Type>,
+        V1: Into<V>,
+        V2: Into<V>,
+        Typ: Into<Ty>,
     {
         Cons {
             head: Box::new(hd.into()),
@@ -30,25 +35,29 @@ where
     }
 }
 
-impl<T> Value for Cons<T>
+impl<Ty, V> Value for Cons<Ty, V>
 where
-    T: LanguageTerm,
+    Ty: Type,
+    V: ValueGroup,
 {
-    type Term = ConsT<T>;
+    type Term = ConsT<<V as ValueGroup>::Term, Ty>;
 }
 
-impl<T> From<Cons<T>> for ConsT<T>
+impl<T, Ty, V> From<Cons<Ty, V>> for ConsT<T, Ty>
 where
-    T: LanguageTerm,
+    T: Term,
+    Ty: Type,
+    V: Value,
 {
-    fn from(c: Cons<T>) -> ConsT<T> {
+    fn from(c: Cons<Ty, V>) -> ConsT<T, Ty> {
         ConsT::new(*c.head, *c.tail, c.ty)
     }
 }
 
-impl<T> fmt::Display for Cons<T>
+impl<Ty, V> fmt::Display for Cons<Ty, V>
 where
-    T: LanguageTerm,
+    Ty: Type,
+    V: Value,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "Cons[{}]({},{})", self.ty, self.head, self.tail)

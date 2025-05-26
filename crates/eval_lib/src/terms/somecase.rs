@@ -1,6 +1,6 @@
 use crate::{Eval, Value};
 use common::errors::Error;
-use syntax::terms::{SumCase, Term};
+use syntax::terms::{SomeCase, Term};
 
 impl<T> Eval for SomeCase<T>
 where
