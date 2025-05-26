@@ -1,12 +1,16 @@
-use crate::{Eval, Value};
+use crate::{
+    to_eval_err,
+    values::{False, True, ValueGroup},
+    Eval,
+};
 use common::errors::Error;
 use syntax::terms::{IsZero, Term};
 
 impl<T> Eval for IsZero<T>
 where
     T: Term + Eval,
-    True<T>: Into<<T as Term>::Value>,
-    False<T>: Into<<T as Term>::Value>,
+    True<T>: Into<<T as Eval>::Value>,
+    False<T>: Into<<T as Eval>::Value>,
 {
     type Value = <T as Eval>::Value;
     type Env = <T as Eval>::Env;

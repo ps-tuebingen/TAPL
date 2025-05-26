@@ -12,8 +12,8 @@ where
     T: Term,
     Ty: Type,
 {
-    term: Box<T>,
-    ty: Ty,
+    pub term: Box<T>,
+    pub ty: Ty,
 }
 
 impl<T, Ty> Head<T, Ty>

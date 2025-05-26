@@ -11,8 +11,8 @@ pub struct RecordProj<T>
 where
     T: Term,
 {
-    record: Box<T>,
-    label: Label,
+    pub record: Box<T>,
+    pub label: Label,
 }
 
 impl<T> RecordProj<T>

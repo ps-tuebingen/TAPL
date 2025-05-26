@@ -1,10 +1,14 @@
-use crate::{Eval, Value};
+use crate::{to_eval_err, values::ValueGroup, Eval};
 use common::errors::Error;
-use syntax::terms::{Term, Unfold};
+use syntax::{
+    terms::{Term, Unfold},
+    types::Type,
+};
 
-impl<T> Eval for Unfold<T>
+impl<T, Ty> Eval for Unfold<T, Ty>
 where
     T: Term + Eval,
+    Ty: Type,
 {
     type Env = <T as Eval>::Env;
     type Value = <T as Eval>::Value;

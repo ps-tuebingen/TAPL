@@ -12,10 +12,10 @@ pub struct Unpack<T>
 where
     T: Term,
 {
-    ty_name: TypeVar,
-    term_name: Var,
-    bound_term: Box<T>,
-    in_term: Box<T>,
+    pub ty_name: TypeVar,
+    pub term_name: Var,
+    pub bound_term: Box<T>,
+    pub in_term: Box<T>,
 }
 
 impl<T> Unpack<T>

@@ -1,4 +1,4 @@
-use crate::{Eval, Value};
+use crate::Eval;
 use common::errors::Error;
 use syntax::terms::{Let, Term};
 

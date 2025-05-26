@@ -1,11 +1,15 @@
-use crate::{Eval, Value};
+use crate::{values::Lambda as LambdaVal, Eval};
 use common::errors::Error;
-use syntax::terms::{Lambda, Term};
+use syntax::{
+    terms::{Lambda, Term},
+    types::Type,
+};
 
-impl<T> Eval for Lambda<T>
+impl<T, Ty> Eval for Lambda<T, Ty>
 where
     T: Term + Eval,
-    LambdaVal<T>: Into<<T as Term>::Value>,
+    Ty: Type,
+    LambdaVal<T>: Into<<T as Eval>::Value>,
 {
     type Value = <T as Eval>::Value;
     type Env = <T as Eval>::Env;

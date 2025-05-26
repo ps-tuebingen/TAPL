@@ -11,8 +11,8 @@ pub struct Projection<T>
 where
     T: Term,
 {
-    term: Box<T>,
-    index: usize,
+    pub term: Box<T>,
+    pub index: usize,
 }
 
 impl<T> Projection<T>

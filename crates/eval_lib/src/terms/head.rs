@@ -1,10 +1,14 @@
-use crate::{Eval, Value};
+use crate::{to_eval_err, values::ValueGroup, Eval};
 use common::errors::Error;
-use syntax::terms::{Head, Term};
+use syntax::{
+    terms::{Head, Term},
+    types::Type,
+};
 
-impl<T> Eval for Head<T>
+impl<T, Ty> Eval for Head<T, Ty>
 where
     T: Term + Eval,
+    Ty: Type,
 {
     type Env = <T as Eval>::Env;
     type Value = <T as Eval>::Value;

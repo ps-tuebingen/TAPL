@@ -1,10 +1,14 @@
-use crate::{Eval, Value};
+use crate::{values::ValueGroup, Eval};
 use common::errors::Error;
-use syntax::terms::{Term, TyApp};
+use syntax::{
+    terms::{Term, TyApp},
+    types::Type,
+};
 
-impl<T> Eval for TyApp<T>
+impl<T, Ty> Eval for TyApp<T, Ty>
 where
     T: Term + Eval,
+    Ty: Type,
 {
     type Value = <T as Eval>::Value;
     type Env = <T as Eval>::Env;

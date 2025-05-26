@@ -11,8 +11,8 @@ pub struct VariantCase<T>
 where
     T: Term,
 {
-    bound_term: Box<T>,
-    patterns: Vec<VariantPattern<T>>,
+    pub bound_term: Box<T>,
+    pub patterns: Vec<VariantPattern<T>>,
 }
 
 impl<T> VariantCase<T>
@@ -35,9 +35,9 @@ pub struct VariantPattern<T>
 where
     T: Term,
 {
-    label: Label,
-    bound_var: Var,
-    rhs: Box<T>,
+    pub label: Label,
+    pub bound_var: Var,
+    pub rhs: Box<T>,
 }
 
 impl<T> VariantPattern<T>

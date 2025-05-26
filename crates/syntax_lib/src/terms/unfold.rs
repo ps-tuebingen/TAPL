@@ -12,8 +12,8 @@ where
     T: Term,
     Ty: Type,
 {
-    ty: Ty,
-    term: Box<T>,
+    pub ty: Ty,
+    pub term: Box<T>,
 }
 
 impl<T, Ty> Unfold<T, Ty>

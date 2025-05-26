@@ -1,4 +1,4 @@
-use crate::{Eval, Value};
+use crate::{to_eval_err, values::ValueGroup, Eval};
 use common::errors::Error;
 use syntax::terms::{Term, Unpack};
 

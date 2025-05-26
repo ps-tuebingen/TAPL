@@ -12,9 +12,9 @@ pub struct LambdaSub<T, Ty>
 where
     T: Term,
 {
-    var: TypeVar,
-    sup_ty: Ty,
-    body: Box<T>,
+    pub var: TypeVar,
+    pub sup_ty: Ty,
+    pub body: Box<T>,
 }
 
 impl<T, Ty> LambdaSub<T, Ty>

@@ -1,5 +1,5 @@
-use crate::{Eval, Value};
-use common::errors::Error;
+use crate::{to_eval_err, Eval};
+use common::errors::{Error, ErrorKind};
 use syntax::terms::{Term, Variable};
 
 impl<T> Eval for Variable<T>

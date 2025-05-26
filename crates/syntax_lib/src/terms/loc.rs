@@ -11,7 +11,7 @@ pub struct Loc<T>
 where
     T: Term,
 {
-    loc: usize,
+    pub loc: usize,
     phantom: PhantomData<T>,
 }
 

@@ -11,7 +11,7 @@ pub struct Fst<T>
 where
     T: Term,
 {
-    term: Box<T>,
+    pub term: Box<T>,
 }
 
 impl<T> Fst<T>

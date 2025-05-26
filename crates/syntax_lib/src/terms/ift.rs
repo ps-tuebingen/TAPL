@@ -11,9 +11,9 @@ pub struct If<T>
 where
     T: Term,
 {
-    if_cond: Box<T>,
-    then_term: Box<T>,
-    else_term: Box<T>,
+    pub if_cond: Box<T>,
+    pub then_term: Box<T>,
+    pub else_term: Box<T>,
 }
 
 impl<T> If<T>

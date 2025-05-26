@@ -1,12 +1,20 @@
-use crate::{Eval, Value};
-use common::errors::Error;
-use syntax::terms::{IsNil, Term};
+use crate::{
+    to_eval_err,
+    values::{False, True, ValueGroup},
+    Eval,
+};
+use common::errors::{Error, ErrorKind};
+use syntax::{
+    terms::{IsNil, Term},
+    types::Type,
+};
 
-impl<T> Eval for IsNil<T>
+impl<T, Ty> Eval for IsNil<T, Ty>
 where
     T: Term + Eval,
-    True<T>: Into<<T as Term>::Value>,
-    False<T>: Into<<T as Term>::Value>,
+    Ty: Type,
+    True<T>: Into<<T as Eval>::Value>,
+    False<T>: Into<<T as Eval>::Value>,
 {
     type Env = <T as Eval>::Env;
     type Value = <T as Eval>::Value;

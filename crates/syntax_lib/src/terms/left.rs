@@ -12,8 +12,8 @@ where
     T: Term,
     Ty: Type,
 {
-    left_term: Box<T>,
-    ty: Ty,
+    pub left_term: Box<T>,
+    pub ty: Ty,
 }
 
 impl<T, Ty> Left<T, Ty>

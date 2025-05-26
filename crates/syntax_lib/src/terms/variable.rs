@@ -11,7 +11,7 @@ pub struct Variable<T>
 where
     T: Term,
 {
-    var: Var,
+    pub var: Var,
     phantom: PhantomData<T>,
 }
 

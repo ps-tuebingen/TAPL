@@ -11,9 +11,9 @@ pub struct Let<T>
 where
     T: Term,
 {
-    var: Var,
-    bound_term: Box<T>,
-    in_term: Box<T>,
+    pub var: Var,
+    pub bound_term: Box<T>,
+    pub in_term: Box<T>,
 }
 
 impl<T> Let<T>

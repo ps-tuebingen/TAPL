@@ -11,8 +11,8 @@ pub struct Tail<T, Ty>
 where
     T: Term,
 {
-    term: Box<T>,
-    ty: Ty,
+    pub term: Box<T>,
+    pub ty: Ty,
 }
 
 impl<T, Ty> Tail<T, Ty>

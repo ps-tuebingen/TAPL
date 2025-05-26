@@ -11,8 +11,8 @@ pub struct TryWithVal<T>
 where
     T: Term,
 {
-    term: Box<T>,
-    handler: Box<T>,
+    pub term: Box<T>,
+    pub handler: Box<T>,
 }
 
 impl<T> TryWithVal<T>

@@ -1,5 +1,5 @@
-use crate::{Eval, Value};
-use common::errors::Error;
+use crate::{to_eval_err, values::ValueGroup, Eval};
+use common::errors::{Error, ErrorKind};
 use syntax::terms::{Projection, Term};
 
 impl<T> Eval for Projection<T>

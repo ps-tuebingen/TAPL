@@ -12,8 +12,8 @@ where
     T: Term,
     Ty: Type,
 {
-    fun: Box<T>,
-    arg: Ty,
+    pub fun: Box<T>,
+    pub arg: Ty,
 }
 
 impl<T, Ty> TyApp<T, Ty>

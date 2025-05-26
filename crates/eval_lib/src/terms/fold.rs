@@ -1,11 +1,15 @@
-use crate::{Eval, Value};
+use crate::{values::Fold as FoldVal, Eval};
 use common::errors::Error;
-use syntax::terms::{Fold, Term};
+use syntax::{
+    terms::{Fold, Term},
+    types::Type,
+};
 
-impl<T> Eval for Fold<T>
+impl<T, Ty> Eval for Fold<T, Ty>
 where
     T: Term + Eval,
-    FoldVal<T>: Into<<T as Term>::Value>,
+    Ty: Type,
+    FoldVal<T>: Into<<T as Eval>::Value>,
 {
     type Env = <T as Eval>::Env;
     type Value = <T as Eval>::Value;

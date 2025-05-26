@@ -11,11 +11,11 @@ pub struct ListCase<T>
 where
     T: Term,
 {
-    bound_term: Box<T>,
-    nil_rhs: Box<T>,
-    cons_fst: Var,
-    cons_rst: Var,
-    cons_rhs: Box<T>,
+    pub bound_term: Box<T>,
+    pub nil_rhs: Box<T>,
+    pub cons_fst: Var,
+    pub cons_rst: Var,
+    pub cons_rhs: Box<T>,
 }
 
 impl<T> ListCase<T>
