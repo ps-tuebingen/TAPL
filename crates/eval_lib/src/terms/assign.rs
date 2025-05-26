@@ -1,11 +1,16 @@
-use crate::{Eval, Value};
+use crate::{
+    env::EvalEnvironment,
+    to_eval_err,
+    values::{Unit as UnitVal, ValueGroup},
+    Eval,
+};
 use common::errors::Error;
 use syntax::terms::{Assign, Term};
 
 impl<T> Eval for Assign<T>
 where
     T: Term + Eval,
-    UnitVal<T>: Into<<T as Term>::Value>,
+    UnitVal<T>: Into<<T as Eval>::Value>,
 {
     type Env = <T as Eval>::Env;
     type Value = <T as Eval>::Value;

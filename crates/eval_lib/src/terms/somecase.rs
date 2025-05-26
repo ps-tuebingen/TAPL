@@ -1,4 +1,4 @@
-use crate::{Eval, Value};
+use crate::Eval;
 use common::errors::Error;
 use syntax::terms::{SomeCase, Term};
 
@@ -19,7 +19,7 @@ where
         } else if bound_val.clone().into_nothing().is_ok() {
             self.none_term.eval(env)
         } else {
-            Err(to_check_err(ErrorKind::ValueMismatch {
+            Err(to_eval_err(ErrorKind::ValueMismatch {
                 found: bound_val.to_string(),
                 expected: "Option Value".to_owned(),
             }))

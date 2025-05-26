@@ -1,5 +1,5 @@
 use crate::values::Value;
-use common::errors::{Error, ErrorKind, ErrorLocation};
+use common::errors::{Error, ErrorKind};
 use syntax::Location;
 
 pub trait EvalEnvironment<V>
@@ -35,12 +35,5 @@ where
     fn save_location(&mut self, _: Location, _: V) {}
     fn get_location(&self, loc: Location) -> Result<V, ErrorKind> {
         Err(ErrorKind::UndefinedLocation(loc))
-    }
-}
-
-pub fn to_eval_err(knd: ErrorKind) -> Error {
-    Error {
-        kind: knd,
-        loc: ErrorLocation::Eval,
     }
 }

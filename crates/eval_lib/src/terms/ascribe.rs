@@ -1,10 +1,14 @@
-use crate::{Eval, Value};
+use crate::Eval;
 use common::errors::Error;
-use syntax::terms::{Ascribe, Term};
+use syntax::{
+    terms::{Ascribe, Term},
+    types::Type,
+};
 
-impl<T> Eval for Ascribe<T>
+impl<T, Ty> Eval for Ascribe<T, Ty>
 where
     T: Term + Eval,
+    Ty: Type,
 {
     type Env = <T as Eval>::Env;
     type Value = <T as Eval>::Value;

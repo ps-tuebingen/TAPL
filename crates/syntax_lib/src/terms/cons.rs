@@ -12,9 +12,9 @@ where
     T: Term,
     Ty: Type,
 {
-    head: Box<T>,
-    tail: Box<T>,
-    ty: Ty,
+    pub head: Box<T>,
+    pub tail: Box<T>,
+    pub ty: Ty,
 }
 
 impl<T, Ty> Cons<T, Ty>

@@ -11,8 +11,8 @@ pub struct Assign<T>
 where
     T: Term,
 {
-    lhs: Box<T>,
-    rhs: Box<T>,
+    pub lhs: Box<T>,
+    pub rhs: Box<T>,
 }
 
 impl<T> Assign<T>
