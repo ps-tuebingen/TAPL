@@ -1,7 +1,17 @@
-impl<T> Typecheck for Fold<T>
+use crate::{env::CheckEnvironment, to_check_err, Kindcheck, Normalize, Typecheck};
+use common::errors::Error;
+use syntax::{
+    kinds::Kind,
+    subst::SubstType,
+    terms::{Fold, Term},
+    types::{Mu, TypeGroup},
+};
+
+impl<T, Ty> Typecheck for Fold<T, Ty>
 where
-    T: LanguageTerm,
-    Mu<<T as LanguageTerm>::Type>: Into<<T as LanguageTerm>::Type>,
+    T: Term + Typecheck<Type = Ty>,
+    Ty: TypeGroup + Normalize<Ty> + Kindcheck<Ty> + SubstType<Ty, Target = Ty>,
+    Mu<Ty>: Into<Ty>,
 {
     type Env = <T as Typecheck>::Env;
     type Type = <T as Typecheck>::Type;

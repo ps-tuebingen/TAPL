@@ -1,7 +1,15 @@
-impl<T> Typecheck for LambdaSub<T>
+use crate::{env::CheckEnvironment, Kindcheck, Normalize, Typecheck};
+use common::errors::Error;
+use syntax::{
+    terms::{LambdaSub, Term},
+    types::{ForallBounded, Type},
+};
+
+impl<T, Ty> Typecheck for LambdaSub<T, Ty>
 where
-    T: LanguageTerm,
-    ForallBounded<<T as LanguageTerm>::Type>: Into<<T as LanguageTerm>::Type>,
+    T: Term + Typecheck<Type = Ty>,
+    Ty: Type + Kindcheck<Ty> + Normalize<Ty>,
+    ForallBounded<<T as Typecheck>::Type>: Into<<T as Typecheck>::Type>,
 {
     type Type = <T as Typecheck>::Type;
     type Env = <T as Typecheck>::Env;

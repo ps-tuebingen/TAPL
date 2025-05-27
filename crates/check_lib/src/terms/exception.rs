@@ -1,6 +1,14 @@
-impl<T> Typecheck for Exception<T>
+use crate::{Kindcheck, Normalize, Typecheck};
+use common::errors::Error;
+use syntax::{
+    terms::{Exception, Term},
+    types::Type,
+};
+
+impl<T, Ty> Typecheck for Exception<T, Ty>
 where
-    T: LanguageTerm,
+    T: Term + Typecheck<Type = Ty>,
+    Ty: Type + Normalize<Ty> + Kindcheck<Ty>,
 {
     type Type = <T as Typecheck>::Type;
     type Env = <T as Typecheck>::Env;

@@ -1,7 +1,15 @@
-impl<T> Typecheck for Lambda<T>
+use crate::{env::CheckEnvironment, Kindcheck, Normalize, Typecheck};
+use common::errors::Error;
+use syntax::{
+    terms::{Lambda, Term},
+    types::{Fun, Type},
+};
+
+impl<T, Ty> Typecheck for Lambda<T, Ty>
 where
-    T: LanguageTerm,
-    Fun<<T as LanguageTerm>::Type>: Into<<T as LanguageTerm>::Type>,
+    T: Term + Typecheck<Type = Ty>,
+    Ty: Type + Normalize<Ty> + Kindcheck<Ty>,
+    Fun<<T as Typecheck>::Type>: Into<<T as Typecheck>::Type>,
 {
     type Type = <T as Typecheck>::Type;
     type Env = <T as Typecheck>::Env;

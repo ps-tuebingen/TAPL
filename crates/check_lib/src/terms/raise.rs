@@ -1,6 +1,14 @@
-impl<T> Typecheck for Raise<T>
+use crate::{to_check_err, Kindcheck, Normalize, Typecheck};
+use common::errors::Error;
+use syntax::{
+    terms::{Raise, Term},
+    types::TypeGroup,
+};
+
+impl<T, Ty> Typecheck for Raise<T, Ty>
 where
-    T: LanguageTerm,
+    T: Term + Typecheck<Type = Ty>,
+    Ty: TypeGroup + Normalize<Ty> + Kindcheck<Ty>,
 {
     type Type = <T as Typecheck>::Type;
     type Env = <T as Typecheck>::Env;

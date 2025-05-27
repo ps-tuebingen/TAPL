@@ -1,6 +1,14 @@
-impl<T> Typecheck for TyApp<T>
+use crate::{to_check_err, Kindcheck, Normalize, Typecheck};
+use common::errors::{Error, ErrorKind};
+use syntax::{
+    terms::{Term, TyApp},
+    types::TypeGroup,
+};
+
+impl<T, Ty> Typecheck for TyApp<T, Ty>
 where
-    T: LanguageTerm,
+    T: Term + Typecheck,
+    Ty: TypeGroup + Normalize<Ty> + Kindcheck<Ty>,
 {
     type Type = <T as Typecheck>::Type;
     type Env = <T as Typecheck>::Env;

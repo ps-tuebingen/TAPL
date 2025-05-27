@@ -1,6 +1,11 @@
+use crate::{env::CheckEnvironment, Kindcheck, Normalize, Typecheck};
+use common::errors::Error;
+use syntax::terms::{Let, Term};
+
 impl<T> Typecheck for Let<T>
 where
-    T: LanguageTerm,
+    T: Term + Typecheck,
+    <T as Typecheck>::Type: Normalize<<T as Typecheck>::Type> + Kindcheck<<T as Typecheck>::Type>,
 {
     type Env = <T as Typecheck>::Env;
     type Type = <T as Typecheck>::Type;

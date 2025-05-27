@@ -3,12 +3,13 @@ use common::errors::Error;
 use std::collections::HashMap;
 use syntax::{
     terms::{Record, Term},
-    types::Record as RecordTy,
+    types::{Record as RecordTy, TypeGroup},
 };
 
 impl<T> Typecheck for Record<T>
 where
     T: Term + Typecheck,
+    <T as Typecheck>::Type: Normalize<<T as Typecheck>::Type> + Kindcheck<<T as Typecheck>::Type>,
     RecordTy<<T as Typecheck>::Type>: Into<<T as Typecheck>::Type>,
 {
     type Env = <T as Typecheck>::Env;

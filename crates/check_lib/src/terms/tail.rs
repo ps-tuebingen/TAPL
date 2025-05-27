@@ -1,6 +1,14 @@
-impl<T> Typecheck for Tail<T>
+use crate::{to_check_err, Kindcheck, Normalize, Typecheck};
+use common::errors::Error;
+use syntax::{
+    terms::{Tail, Term},
+    types::TypeGroup,
+};
+
+impl<T, Ty> Typecheck for Tail<T, Ty>
 where
-    T: LanguageTerm,
+    T: Term + Typecheck<Type = Ty>,
+    Ty: TypeGroup + Normalize<Ty> + Kindcheck<Ty>,
 {
     type Env = <T as Typecheck>::Env;
     type Type = <T as Typecheck>::Type;

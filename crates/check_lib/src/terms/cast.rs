@@ -1,6 +1,14 @@
-impl<T> Typecheck for Cast<T>
+use crate::{to_check_err, Kindcheck, Normalize, Typecheck};
+use common::errors::Error;
+use syntax::{
+    terms::{Cast, Term},
+    types::TypeGroup,
+};
+
+impl<T, Ty> Typecheck for Cast<T, Ty>
 where
-    T: LanguageTerm,
+    T: Term + Typecheck,
+    Ty: TypeGroup + Normalize<Ty> + Kindcheck<Ty>,
 {
     type Type = <T as Typecheck>::Type;
     type Env = <T as Typecheck>::Env;

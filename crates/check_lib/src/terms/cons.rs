@@ -1,7 +1,15 @@
-impl<T> Typecheck for Cons<T>
+use crate::{to_check_err, Normalize, Typecheck};
+use common::errors::Error;
+use syntax::{
+    terms::{Cons, Term},
+    types::{List, TypeGroup},
+};
+
+impl<T, Ty> Typecheck for Cons<T, Ty>
 where
-    T: LanguageTerm,
-    List<<T as LanguageTerm>::Type>: Into<<T as LanguageTerm>::Type>,
+    T: Term + Typecheck<Type = Ty>,
+    Ty: TypeGroup,
+    List<Ty>: Into<Ty>,
 {
     type Env = <T as Typecheck>::Env;
     type Type = <T as Typecheck>::Type;

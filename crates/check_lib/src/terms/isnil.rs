@@ -1,8 +1,16 @@
-impl<T> Typecheck for IsNil<T>
+use crate::{to_check_err, Kindcheck, Normalize, Typecheck};
+use common::errors::Error;
+use syntax::{
+    terms::{IsNil, Term},
+    types::{Bool, List, TypeGroup},
+};
+
+impl<T, Ty> Typecheck for IsNil<T, Ty>
 where
-    T: LanguageTerm,
-    List<<T as LanguageTerm>::Type>: Into<<T as LanguageTerm>::Type>,
-    Bool<<T as LanguageTerm>::Type>: Into<<T as LanguageTerm>::Type>,
+    T: Term + Typecheck<Type = Ty>,
+    Ty: TypeGroup + Normalize<Ty> + Kindcheck<Ty>,
+    List<Ty>: Into<Ty>,
+    Bool<Ty>: Into<Ty>,
 {
     type Env = <T as Typecheck>::Env;
     type Type = <T as Typecheck>::Type;

@@ -1,7 +1,15 @@
+use crate::{env::CheckEnvironment, to_check_err, Kindcheck, Normalize, Typecheck};
+use common::errors::Error;
+use syntax::{
+    terms::{Term, TyLambda},
+    types::Forall,
+};
+
 impl<T> Typecheck for TyLambda<T>
 where
-    T: LanguageTerm,
-    Forall<<T as LanguageTerm>::Type>: Into<<T as LanguageTerm>::Type>,
+    T: Term + Typecheck,
+    <T as Typecheck>::Type: Normalize<<T as Typecheck>::Type> + Kindcheck<<T as Typecheck>::Type>,
+    Forall<<T as Typecheck>::Type>: Into<<T as Typecheck>::Type>,
 {
     type Type = <T as Typecheck>::Type;
     type Env = <T as Typecheck>::Env;

@@ -1,6 +1,15 @@
+use crate::{to_check_err, Kindcheck, Normalize, Typecheck};
+use common::errors::Error;
+use syntax::{
+    terms::{If, Term},
+    types::TypeGroup,
+};
+
 impl<T> Typecheck for If<T>
 where
-    T: LanguageTerm,
+    T: Term + Typecheck,
+    <T as Typecheck>::Type:
+        TypeGroup + Normalize<<T as Typecheck>::Type> + Kindcheck<<T as Typecheck>::Type>,
 {
     type Type = <T as Typecheck>::Type;
     type Env = <T as Typecheck>::Env;

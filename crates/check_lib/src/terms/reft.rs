@@ -1,7 +1,15 @@
+use crate::{to_check_err, Kindcheck, Normalize, Typecheck};
+use common::errors::Error;
+use syntax::{
+    terms::{Ref, Term},
+    types::Reference,
+};
+
 impl<T> Typecheck for Ref<T>
 where
-    T: LanguageTerm,
-    Reference<<T as LanguageTerm>::Type>: Into<<T as LanguageTerm>::Type>,
+    T: Term + Typecheck,
+    <T as Typecheck>::Type: Normalize<<T as Typecheck>::Type> + Kindcheck<<T as Typecheck>::Type>,
+    Reference<<T as Typecheck>::Type>: Into<<T as Typecheck>::Type>,
 {
     type Env = <T as Typecheck>::Env;
     type Type = <T as Typecheck>::Type;

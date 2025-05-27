@@ -5,10 +5,10 @@ use syntax::{
     types::TypeGroup,
 };
 
-impl<T> Typecheck for Unpack<T>
+impl<T, Ty> Typecheck for Unpack<T, Ty>
 where
-    T: Term + Typecheck,
-    <T as Typecheck>::Type: TypeGroup + Normalize<<T as Typecheck>::Type>,
+    T: Term + Typecheck<Type = Ty>,
+    Ty: TypeGroup + Normalize<<T as Typecheck>::Type>,
 {
     type Type = <T as Typecheck>::Type;
     type Env = <T as Typecheck>::Env;

@@ -1,7 +1,14 @@
+use crate::Typecheck;
+use common::errors::Error;
+use syntax::{
+    terms::{Term, True},
+    types::Bool,
+};
+
 impl<T> Typecheck for True<T>
 where
-    T: LanguageTerm,
-    Bool<<T as LanguageTerm>::Type>: Into<<T as LanguageTerm>::Type>,
+    T: Term + Typecheck,
+    Bool<<T as Typecheck>::Type>: Into<<T as Typecheck>::Type>,
 {
     type Type = <T as Typecheck>::Type;
     type Env = <T as Typecheck>::Env;

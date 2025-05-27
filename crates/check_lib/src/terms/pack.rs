@@ -1,6 +1,15 @@
-impl<T> Typecheck for Pack<T>
+use crate::{env::CheckEnvironment, to_check_err, Kindcheck, Normalize, Subtypecheck, Typecheck};
+use common::errors::{Error, ErrorKind};
+use syntax::{
+    subst::SubstType,
+    terms::{Pack, Term},
+    types::TypeGroup,
+};
+
+impl<T, Ty> Typecheck for Pack<T, Ty>
 where
-    T: LanguageTerm,
+    T: Term + Typecheck<Type = Ty>,
+    Ty: TypeGroup + Normalize<Ty> + Kindcheck<Ty> + Subtypecheck<Ty> + SubstType<Ty, Target = Ty>,
 {
     type Type = <T as Typecheck>::Type;
     type Env = <T as Typecheck>::Env;
