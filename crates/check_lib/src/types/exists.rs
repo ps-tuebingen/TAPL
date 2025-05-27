@@ -1,4 +1,4 @@
-use crate::{env::CheckEnvironment, Kindcheck};
+use crate::{env::CheckEnvironment, Kindcheck, Normalize};
 use common::errors::Error;
 use syntax::{
     kinds::Kind,
@@ -19,7 +19,7 @@ where
 
 impl<Ty> Normalize<Ty> for Exists<Ty>
 where
-    Ty: TypeGroup,
+    Ty: Type + Normalize<Ty>,
     Self: Into<Ty>,
 {
     type Env = <Ty as Normalize<Ty>>::Env;

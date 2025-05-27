@@ -1,10 +1,13 @@
-use crate::{Kindcheck, Subtypecheck};
+use crate::{to_kind_err, Kindcheck};
 use common::errors::Error;
-use syntax::types::{Sum, TypeGroup};
+use syntax::{
+    kinds::Kind,
+    types::{Sum, Type},
+};
 
 impl<Ty> Kindcheck<Ty> for Sum<Ty>
 where
-    Ty: TypeGroup,
+    Ty: Type + Kindcheck<Ty>,
 {
     type Env = <Ty as Kindcheck<Ty>>::Env;
     fn check_kind(&self, env: &mut Self::Env) -> Result<Kind, Error> {

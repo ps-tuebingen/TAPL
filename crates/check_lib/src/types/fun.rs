@@ -1,10 +1,13 @@
-use crate::{Kindcheck, Subtypecheck};
-use common::errors::Error;
-use syntax::types::{Fun, TypeGroup};
+use crate::{to_kind_err, to_subty_err, Kindcheck, Normalize, Subtypecheck};
+use common::errors::{Error, ErrorKind};
+use syntax::{
+    kinds::Kind,
+    types::{Fun, Type, TypeGroup},
+};
 
 impl<Ty> Subtypecheck<Ty> for Fun<Ty>
 where
-    Ty: TypeGroup,
+    Ty: TypeGroup + Subtypecheck<Ty>,
 {
     type Env = <Ty as Subtypecheck<Ty>>::Env;
     fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Error> {
@@ -23,7 +26,7 @@ where
 
 impl<Ty> Kindcheck<Ty> for Fun<Ty>
 where
-    Ty: TypeGroup,
+    Ty: Type + Kindcheck<Ty>,
 {
     type Env = <Ty as Kindcheck<Ty>>::Env;
 
@@ -49,7 +52,7 @@ where
 
 impl<Ty> Normalize<Ty> for Fun<Ty>
 where
-    Ty: TypeGroup,
+    Ty: Type + Normalize<Ty>,
     Self: Into<Ty>,
 {
     type Env = <Ty as Normalize<Ty>>::Env;

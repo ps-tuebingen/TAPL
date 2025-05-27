@@ -1,10 +1,13 @@
-use crate::{Kindcheck, Subtypecheck};
-use common::errors::Error;
-use syntax::types::{ExistsBounded, TypeGroup};
+use crate::{env::CheckEnvironment, to_subty_err, Kindcheck, Normalize, Subtypecheck};
+use common::errors::{Error, ErrorKind};
+use syntax::{
+    kinds::Kind,
+    types::{ExistsBounded, Type, TypeGroup},
+};
 
 impl<Ty> Subtypecheck<Ty> for ExistsBounded<Ty>
 where
-    Ty: TypeGroup + Subtypecheck<Ty>,
+    Ty: TypeGroup + Subtypecheck<Ty> + Normalize<Ty, Env = <Ty as Subtypecheck<Ty>>::Env>,
 {
     type Env = <Ty as Subtypecheck<Ty>>::Env;
 
@@ -36,9 +39,10 @@ where
 
 impl<Ty> Kindcheck<Ty> for ExistsBounded<Ty>
 where
-    Ty: TypeGroup,
+    Ty: Type + Kindcheck<Ty>,
 {
     type Env = <Ty as Kindcheck<Ty>>::Env;
+
     fn check_kind(&self, env: &mut Self::Env) -> Result<Kind, Error> {
         let sup_kind = self.sup_ty.check_kind(env)?;
         env.add_tyvar_kind(self.var.clone(), sup_kind);
@@ -48,7 +52,7 @@ where
 
 impl<Ty> Normalize<Ty> for ExistsBounded<Ty>
 where
-    Ty: TypeGroup,
+    Ty: Type + Normalize<Ty>,
     Self: Into<Ty>,
 {
     type Env = <Ty as Normalize<Ty>>::Env;

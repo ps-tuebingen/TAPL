@@ -7,7 +7,7 @@ pub struct Top<Ty>
 where
     Ty: Type,
 {
-    kind: Kind,
+    pub kind: Kind,
     phantom: PhantomData<Ty>,
 }
 

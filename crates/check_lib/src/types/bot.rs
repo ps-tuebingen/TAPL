@@ -22,6 +22,6 @@ where
     type Env = <Ty as Kindcheck<Ty>>::Env;
 
     fn check_kind(&self, _: &mut Self::Env) -> Result<Kind, Error> {
-        Ok(self.kind)
+        Ok(self.kind.clone())
     }
 }

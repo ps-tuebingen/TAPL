@@ -7,8 +7,8 @@ pub struct OpApp<Ty>
 where
     Ty: Type,
 {
-    fun: Box<Ty>,
-    arg: Box<Ty>,
+    pub fun: Box<Ty>,
+    pub arg: Box<Ty>,
 }
 
 impl<Ty> OpApp<Ty>

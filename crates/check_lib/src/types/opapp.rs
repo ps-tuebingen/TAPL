@@ -1,10 +1,14 @@
-use crate::{Kindcheck, Subtypecheck};
-use common::errors::Error;
-use syntax::types::{OpApp, TypeGroup};
+use crate::{to_kind_err, to_subty_err, Kindcheck, Normalize, Subtypecheck};
+use common::errors::{Error, ErrorKind};
+use syntax::{
+    kinds::Kind,
+    subst::SubstType,
+    types::{OpApp, TypeGroup},
+};
 
 impl<Ty> Subtypecheck<Ty> for OpApp<Ty>
 where
-    Ty: TypeGroup,
+    Ty: TypeGroup + Subtypecheck<Ty>,
     Self: Into<Ty>,
 {
     type Env = <Ty as Subtypecheck<Ty>>::Env;
@@ -20,7 +24,7 @@ where
 
 impl<Ty> Kindcheck<Ty> for OpApp<Ty>
 where
-    Ty: TypeGroup,
+    Ty: TypeGroup + Kindcheck<Ty>,
 {
     type Env = <Ty as Kindcheck<Ty>>::Env;
 
@@ -41,7 +45,7 @@ where
 
 impl<Ty> Normalize<Ty> for OpApp<Ty>
 where
-    Ty: TypeGroup,
+    Ty: TypeGroup + Normalize<Ty> + SubstType<Ty, Target = Ty>,
     Self: Into<Ty>,
 {
     type Env = <Ty as Normalize<Ty>>::Env;

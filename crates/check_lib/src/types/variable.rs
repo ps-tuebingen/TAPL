@@ -7,7 +7,7 @@ use syntax::{
 
 impl<Ty> Subtypecheck<Ty> for TypeVariable<Ty>
 where
-    Ty: TypeGroup + Subtypecheck<Ty> + Normalize<Ty>,
+    Ty: TypeGroup + Subtypecheck<Ty> + Normalize<Ty, Env = <Ty as Subtypecheck<Ty>>::Env>,
 {
     type Env = <Ty as Subtypecheck<Ty>>::Env;
     fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Error> {

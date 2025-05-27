@@ -1,10 +1,10 @@
-use crate::{Kindcheck, Subtypecheck};
+use crate::{to_subty_err, Subtypecheck};
 use common::errors::Error;
 use syntax::types::{List, TypeGroup};
 
 impl<Ty> Subtypecheck<Ty> for List<Ty>
 where
-    Ty: TypeGroup,
+    Ty: TypeGroup + Subtypecheck<Ty>,
 {
     type Env = <Ty as Subtypecheck<Ty>>::Env;
     fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Error> {

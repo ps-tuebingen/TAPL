@@ -1,10 +1,13 @@
-use crate::{Kindcheck, Subtypecheck};
+use crate::{env::CheckEnvironment, Kindcheck, Normalize};
 use common::errors::Error;
-use syntax::types::{Forall, TypeGroup};
+use syntax::{
+    kinds::Kind,
+    types::{Forall, Type},
+};
 
 impl<Ty> Kindcheck<Ty> for Forall<Ty>
 where
-    Ty: TypeGroup,
+    Ty: Type + Kindcheck<Ty>,
 {
     type Env = <Ty as Kindcheck<Ty>>::Env;
 
@@ -17,7 +20,7 @@ where
 
 impl<Ty> Normalize<Ty> for Forall<Ty>
 where
-    Ty: TypeGroup,
+    Ty: Type + Normalize<Ty>,
     Self: Into<Ty>,
 {
     type Env = <Ty as Normalize<Ty>>::Env;

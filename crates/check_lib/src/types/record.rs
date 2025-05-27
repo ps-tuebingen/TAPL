@@ -1,10 +1,14 @@
-use crate::{Kindcheck, Subtypecheck};
-use common::errors::Error;
-use syntax::types::{Record, TypeGroup};
+use crate::{to_kind_err, to_subty_err, Kindcheck, Normalize, Subtypecheck};
+use common::errors::{Error, ErrorKind};
+use std::collections::HashMap;
+use syntax::{
+    kinds::Kind,
+    types::{Record, Type, TypeGroup},
+};
 
 impl<Ty> Subtypecheck<Ty> for Record<Ty>
 where
-    Ty: TypeGroup,
+    Ty: TypeGroup + Subtypecheck<Ty> + Normalize<Ty, Env = <Ty as Subtypecheck<Ty>>::Env>,
 {
     type Env = <Ty as Subtypecheck<Ty>>::Env;
 
@@ -28,7 +32,7 @@ where
 
 impl<Ty> Kindcheck<Ty> for Record<Ty>
 where
-    Ty: TypeGroup,
+    Ty: Type + Kindcheck<Ty>,
 {
     type Env = <Ty as Kindcheck<Ty>>::Env;
     fn check_kind(&self, env: &mut Self::Env) -> Result<Kind, Error> {
@@ -43,7 +47,7 @@ where
 
 impl<Ty> Normalize<Ty> for Record<Ty>
 where
-    Ty: TypeGroup,
+    Ty: Type + Normalize<Ty>,
     Self: Into<Ty>,
 {
     type Env = <Ty as Normalize<Ty>>::Env;

@@ -1,4 +1,4 @@
-use crate::{to_subty_err, Kindcheck, Subtypecheck};
+use crate::{to_subty_err, Kindcheck, Normalize, Subtypecheck};
 use common::errors::Error;
 use syntax::{
     kinds::Kind,
@@ -33,7 +33,7 @@ where
 
 impl<Ty> Normalize<Ty> for Bool<Ty>
 where
-    Ty: TypeGroup,
+    Ty: Type + Normalize<Ty>,
     Self: Into<Ty>,
 {
     type Env = <Ty as Normalize<Ty>>::Env;

@@ -1,10 +1,17 @@
-use crate::{Kindcheck, Subtypecheck};
+use crate::{env::CheckEnvironment, to_subty_err, Kindcheck, Normalize, Subtypecheck};
 use common::errors::Error;
-use syntax::types::{OpLambdaSub, TypeGroup};
+use syntax::{
+    kinds::Kind,
+    subst::SubstType,
+    types::{OpLambdaSub, Type, TypeGroup, TypeVariable},
+};
 
 impl<Ty> Subtypecheck<Ty> for OpLambdaSub<Ty>
 where
-    Ty: TypeGroup,
+    Ty: TypeGroup
+        + Subtypecheck<Ty>
+        + Normalize<Ty, Env = <Ty as Subtypecheck<Ty>>::Env>
+        + SubstType<Ty, Target = Ty>,
     TypeVariable<Ty>: Into<Ty>,
 {
     type Env = <Ty as Subtypecheck<Ty>>::Env;
@@ -29,7 +36,7 @@ where
 
 impl<Ty> Kindcheck<Ty> for OpLambdaSub<Ty>
 where
-    Ty: TypeGroup,
+    Ty: Type + Kindcheck<Ty>,
 {
     type Env = <Ty as Kindcheck<Ty>>::Env;
 
@@ -43,7 +50,7 @@ where
 
 impl<Ty> Normalize<Ty> for OpLambdaSub<Ty>
 where
-    Ty: TypeGroup,
+    Ty: Type + Normalize<Ty>,
     Self: Into<Ty>,
 {
     type Env = <Ty as Normalize<Ty>>::Env;
