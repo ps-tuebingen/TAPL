@@ -1,6 +1,14 @@
-impl<T> Typecheck for Ascribe<T>
+use crate::{to_check_err, Kindcheck, Normalize, Typecheck};
+use common::errors::Error;
+use syntax::{
+    terms::{Ascribe, Term},
+    types::TypeGroup,
+};
+
+impl<T, Ty> Typecheck for Ascribe<T, Ty>
 where
-    T: LanguageTerm,
+    T: Term + Typecheck<Type = Ty> + Kindcheck<Ty>,
+    Ty: TypeGroup + Normalize<Ty>,
 {
     type Type = <T as Typecheck>::Type;
     type Env = <T as Typecheck>::Env;

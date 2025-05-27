@@ -18,7 +18,7 @@ where
     V: Value,
     Ty: Type,
 {
-    pub fn new<V1, Ty1>(lb: &str, val: V, ty: Ty) -> Variant<V, Ty>
+    pub fn new<V1, Ty1>(lb: &str, val: V1, ty: Ty1) -> Variant<V, Ty>
     where
         V1: Into<V>,
         Ty1: Into<Ty>,

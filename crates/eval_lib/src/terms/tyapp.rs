@@ -9,6 +9,7 @@ use syntax::{
 impl<T, Ty> Eval for TyApp<T, Ty>
 where
     T: Term + Eval + SubstType<Ty, Target = T>,
+    <T as Eval>::Value: ValueGroup<Term = T>,
     Ty: Type,
 {
     type Value = <T as Eval>::Value;

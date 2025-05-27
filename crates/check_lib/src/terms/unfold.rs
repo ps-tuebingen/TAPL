@@ -1,6 +1,15 @@
-impl<T> Typecheck for Unfold<T>
+use crate::{to_check_err, Kindcheck, Normalize, Typecheck};
+use common::errors::Error;
+use syntax::{
+    subst::SubstType,
+    terms::{Term, Unfold},
+    types::TypeGroup,
+};
+
+impl<T, Ty> Typecheck for Unfold<T, Ty>
 where
-    T: LanguageTerm,
+    Ty: TypeGroup + Normalize<Ty> + Kindcheck<Ty> + SubstType<Ty, Target = Ty>,
+    T: Term + Typecheck<Type = Ty>,
 {
     type Env = <T as Typecheck>::Env;
     type Type = <T as Typecheck>::Type;

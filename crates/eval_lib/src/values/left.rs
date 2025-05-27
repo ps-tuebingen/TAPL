@@ -17,7 +17,7 @@ where
     V: Value,
     Ty: Type,
 {
-    pub fn new<V1, Ty1>(val: V, ty: Ty) -> Left<V, Ty>
+    pub fn new<V1, Ty1>(val: V1, ty: Ty1) -> Left<V, Ty>
     where
         V1: Into<V>,
         Ty1: Into<Ty>,

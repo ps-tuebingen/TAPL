@@ -13,7 +13,7 @@ where
     Ty: Type,
 {
     pub term: Box<T>,
-    ty: Ty,
+    pub ty: Ty,
 }
 
 impl<T, Ty> Ascribe<T, Ty>

@@ -20,7 +20,7 @@ where
     T: Term,
     Ty: Type,
 {
-    pub fn new<Typ>(ty: Ty) -> Nothing<T, Ty>
+    pub fn new<Typ>(ty: Typ) -> Nothing<T, Ty>
     where
         Typ: Into<Ty>,
     {

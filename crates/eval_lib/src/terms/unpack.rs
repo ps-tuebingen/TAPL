@@ -1,10 +1,20 @@
 use crate::{to_eval_err, values::ValueGroup, Eval};
 use common::errors::Error;
-use syntax::terms::{Term, Unpack};
+use syntax::{
+    subst::{SubstTerm, SubstType},
+    terms::{Term, Unpack},
+    types::Type,
+};
 
-impl<T> Eval for Unpack<T>
+impl<T, Ty> Eval for Unpack<T, Ty>
 where
-    T: Term + Eval,
+    T: Term
+        + Eval
+        + SubstTerm<T, Target = T>
+        + SubstType<Ty, Target = T>
+        + From<<T as Eval>::Value>,
+    <T as Eval>::Value: ValueGroup<Type = Ty>,
+    Ty: Type + SubstType<Ty, Target = Ty>,
 {
     type Value = <T as Eval>::Value;
     type Env = <T as Eval>::Env;

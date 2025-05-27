@@ -1,10 +1,13 @@
 use crate::Eval;
 use common::errors::Error;
-use syntax::terms::{Let, Term};
+use syntax::{
+    subst::SubstTerm,
+    terms::{Let, Term},
+};
 
 impl<T> Eval for Let<T>
 where
-    T: Term + Eval,
+    T: Term + Eval + SubstTerm<T, Target = T> + From<<T as Eval>::Value>,
 {
     type Env = <T as Eval>::Env;
     type Value = <T as Eval>::Value;
