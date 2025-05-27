@@ -1,53 +1,47 @@
 use super::Value;
-use std::{fmt, marker::PhantomData};
-use syntax::terms::{Something as SomethingT, Term};
+use std::fmt;
+use syntax::terms::Something as SomethingT;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct Something<T, V>
+pub struct Something<V>
 where
-    T: Term,
     V: Value,
 {
     pub val: Box<V>,
-    phantom: PhantomData<T>,
 }
 
-impl<T, V> Something<T, V>
+impl<V> Something<V>
 where
-    T: Term,
     V: Value,
 {
-    pub fn new<V1>(v: V1) -> Something<T, V>
+    pub fn new<V1>(v: V1) -> Something<V>
     where
         V1: Into<V>,
     {
         Something {
             val: Box::new(v.into()),
-            phantom: PhantomData,
         }
     }
 }
 
-impl<T, V> Value for Something<T, V>
+impl<V> Value for Something<V>
 where
-    T: Term,
     V: Value,
 {
-    type Term = SomethingT<T>;
+    type Term = SomethingT<<V as Value>::Term>;
 }
 
-impl<T, V> From<Something<T, V>> for SomethingT<T>
+impl<V> From<Something<V>> for SomethingT<<V as Value>::Term>
 where
-    T: Term,
+    V: Value,
 {
-    fn from(something: Something<T, V>) -> SomethingT<T> {
+    fn from(something: Something<V>) -> SomethingT<<V as Value>::Term> {
         SomethingT::new(*something.val)
     }
 }
 
-impl<T, V> fmt::Display for Something<T, V>
+impl<V> fmt::Display for Something<V>
 where
-    T: Term,
     V: Value,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {

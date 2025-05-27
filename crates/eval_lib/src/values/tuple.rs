@@ -1,54 +1,47 @@
 use super::Value;
-use std::{fmt, marker::PhantomData};
+use std::fmt;
 use syntax::terms::{Term, Tuple as TupleT};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct Tuple<T, V>
+pub struct Tuple<V>
 where
-    T: Term,
     V: Value,
 {
     pub vals: Vec<V>,
-    phantom: PhantomData<T>,
 }
 
-impl<T, V> Tuple<T, V>
+impl<V> Tuple<V>
 where
-    T: Term,
     V: Value,
 {
-    pub fn new<V1>(vals: Vec<V1>) -> Tuple<T, V>
+    pub fn new<V1>(vals: Vec<V1>) -> Tuple<V>
     where
         V1: Into<V>,
     {
         Tuple {
             vals: vals.into_iter().map(|v| v.into()).collect(),
-            phantom: PhantomData,
         }
     }
 }
 
-impl<T, V> Value for Tuple<T, V>
+impl<V> Value for Tuple<V>
 where
-    T: Term,
     V: Value,
 {
-    type Term = TupleT<T>;
+    type Term = TupleT<<V as Value>::Term>;
 }
 
-impl<T, V> From<Tuple<T, V>> for TupleT<T>
+impl<V> From<Tuple<V>> for TupleT<<V as Value>::Term>
 where
-    T: Term,
     V: Value,
 {
-    fn from(tup: Tuple<T, V>) -> TupleT<T> {
+    fn from(tup: Tuple<V>) -> TupleT<<V as Value>::Term> {
         TupleT::new(tup.vals)
     }
 }
 
-impl<T, V> fmt::Display for Tuple<T, V>
+impl<V> fmt::Display for Tuple<V>
 where
-    T: Term,
     V: Value,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {

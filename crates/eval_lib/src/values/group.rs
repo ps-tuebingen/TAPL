@@ -5,7 +5,7 @@ use crate::values::{
 use common::errors::ErrorKind;
 use syntax::{terms::Term as TermTrait, types::Type};
 
-pub trait ValueGroup: Value {
+pub trait ValueGroup: Value<Term = <Self as ValueGroup>::Term> {
     type Term: TermTrait;
     type Type: Type;
 

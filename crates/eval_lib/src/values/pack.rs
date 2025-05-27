@@ -1,67 +1,59 @@
 use super::Value;
-use std::{fmt, marker::PhantomData};
-use syntax::{
-    terms::{Pack as PackT, Term},
-    types::Type,
-};
+use std::fmt;
+use syntax::{terms::Pack as PackT, types::Type};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct Pack<V, Ty, T>
+pub struct Pack<V, Ty>
 where
     V: Value,
     Ty: Type,
-    T: Term,
 {
     pub inner_ty: Ty,
     pub val: Box<V>,
     pub outer_ty: Ty,
-    phantom: PhantomData<T>,
 }
 
-impl<V, Ty, T> Pack<V, Ty, T>
+impl<V, Ty> Pack<V, Ty>
 where
     V: Value,
     Ty: Type,
-    T: Term,
 {
-    pub fn new<Ty1, V1, Ty2>(inner: Ty1, v: V1, outer: Ty2) -> Pack<V, Ty, T>
+    pub fn new<Ty1, V1, Ty2>(inner: Ty1, v: V1, outer: Ty2) -> Pack<V, Ty>
     where
         Ty1: Into<Ty>,
         Ty2: Into<Ty>,
-        V: Into<V>,
+        V1: Into<V>,
     {
         Pack {
             inner_ty: inner.into(),
             val: Box::new(v.into()),
             outer_ty: outer.into(),
-            phantom: PhantomData,
         }
     }
 }
 
-impl<V, Ty, T> Value for Pack<V, Ty, T>
+impl<V, Ty> Value for Pack<V, Ty>
 where
     V: Value,
     Ty: Type,
-    T: Term,
 {
-    type Term = PackT<T, Ty>;
+    type Term = PackT<<V as Value>::Term, Ty>;
 }
 
-impl<V, Ty, T> From<Pack<V, Ty, T>> for PackT<T, Ty>
+impl<V, Ty> From<Pack<V, Ty>> for PackT<<V as Value>::Term, Ty>
 where
-    T: Term,
+    V: Value,
+    Ty: Type,
 {
-    fn from(pack: Pack<V, Ty, T>) -> PackT<T, Ty> {
+    fn from(pack: Pack<V, Ty>) -> PackT<<V as Value>::Term, Ty> {
         PackT::new(pack.inner_ty, *pack.val, pack.outer_ty)
     }
 }
 
-impl<V, Ty, T> fmt::Display for Pack<V, Ty, T>
+impl<V, Ty> fmt::Display for Pack<V, Ty>
 where
     V: Value,
     Ty: Type,
-    T: Term,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(

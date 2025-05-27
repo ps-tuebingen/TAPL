@@ -1,57 +1,50 @@
 use super::Value;
-use std::{collections::HashMap, fmt, marker::PhantomData};
+use std::{collections::HashMap, fmt};
 use syntax::{
     terms::{Record as RecordT, Term},
     Label,
 };
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct Record<T, V>
+pub struct Record<V>
 where
-    T: Term,
     V: Value,
 {
     pub records: HashMap<Label, V>,
-    phantom: PhantomData<T>,
 }
 
-impl<T, V> Record<T, V>
+impl<V> Record<V>
 where
-    T: Term,
     V: Value,
 {
-    pub fn new<V1>(recs: HashMap<Label, V1>) -> Record<T, V>
+    pub fn new<V1>(recs: HashMap<Label, V1>) -> Record<V>
     where
         V1: Into<V>,
     {
         Record {
             records: recs.into_iter().map(|(lb, t)| (lb, t.into())).collect(),
-            phantom: PhantomData,
         }
     }
 }
 
-impl<T, V> Value for Record<T, V>
+impl<V> Value for Record<V>
 where
-    T: Term,
     V: Value,
 {
-    type Term = RecordT<T>;
+    type Term = RecordT<<V as Value>::Term>;
 }
 
-impl<T, V> From<Record<T, V>> for RecordT<T>
+impl<V> From<Record<V>> for RecordT<<V as Value>::Term>
 where
-    T: Term,
     V: Value,
 {
-    fn from(rec: Record<T, V>) -> RecordT<T> {
+    fn from(rec: Record<V>) -> RecordT<<V as Value>::Term> {
         RecordT::new(rec.records)
     }
 }
 
-impl<T, V> fmt::Display for Record<T, V>
+impl<V> fmt::Display for Record<V>
 where
-    T: Term,
     V: Value,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {

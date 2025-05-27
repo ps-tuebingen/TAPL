@@ -1,29 +1,26 @@
 use super::Value;
-use std::{fmt, marker::PhantomData};
+use std::fmt;
 use syntax::{
     terms::{Left as LeftT, Term},
     types::Type,
 };
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct Left<V, Ty, T>
+pub struct Left<V, Ty>
 where
-    T: Term,
     V: Value,
     Ty: Type,
 {
     pub left_val: Box<V>,
     pub ty: Ty,
-    phantom: PhantomData<T>,
 }
 
-impl<V, Ty, T> Left<V, Ty, T>
+impl<V, Ty> Left<V, Ty>
 where
-    T: Term,
     V: Value,
     Ty: Type,
 {
-    pub fn new<V1, Ty1>(val: V, ty: Ty) -> Left<V, Ty, T>
+    pub fn new<V1, Ty1>(val: V, ty: Ty) -> Left<V, Ty>
     where
         V1: Into<V>,
         Ty1: Into<Ty>,
@@ -31,34 +28,30 @@ where
         Left {
             left_val: Box::new(val.into()),
             ty: ty.into(),
-            phantom: PhantomData,
         }
     }
 }
 
-impl<V, Ty, T> Value for Left<V, Ty, T>
+impl<V, Ty> Value for Left<V, Ty>
 where
     V: Value,
     Ty: Type,
-    T: Term,
 {
-    type Term = LeftT<T, Ty>;
+    type Term = LeftT<<V as Value>::Term, Ty>;
 }
 
-impl<V, Ty, T> From<Left<V, Ty, T>> for LeftT<T, Ty>
+impl<V, Ty> From<Left<V, Ty>> for LeftT<<V as Value>::Term, Ty>
 where
-    T: Term,
     V: Value,
     Ty: Type,
 {
-    fn from(lft: Left<V, Ty, T>) -> LeftT<T, Ty> {
+    fn from(lft: Left<V, Ty>) -> LeftT<<V as Value>::Term, Ty> {
         LeftT::new(*lft.left_val, lft.ty)
     }
 }
 
-impl<V, Ty, T> fmt::Display for Left<V, Ty, T>
+impl<V, Ty> fmt::Display for Left<V, Ty>
 where
-    T: Term,
     V: Value,
     Ty: Type,
 {

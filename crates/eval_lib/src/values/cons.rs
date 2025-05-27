@@ -1,4 +1,4 @@
-use super::{Value, ValueGroup};
+use super::Value;
 use std::fmt;
 use syntax::{
     terms::{Cons as ConsT, Term},
@@ -38,18 +38,17 @@ where
 impl<Ty, V> Value for Cons<Ty, V>
 where
     Ty: Type,
-    V: ValueGroup,
+    V: Value,
 {
-    type Term = ConsT<<V as ValueGroup>::Term, Ty>;
+    type Term = ConsT<<V as Value>::Term, Ty>;
 }
 
-impl<T, Ty, V> From<Cons<Ty, V>> for ConsT<T, Ty>
+impl<Ty, V> From<Cons<Ty, V>> for ConsT<<V as Value>::Term, Ty>
 where
-    T: Term,
     Ty: Type,
     V: Value,
 {
-    fn from(c: Cons<Ty, V>) -> ConsT<T, Ty> {
+    fn from(c: Cons<Ty, V>) -> ConsT<<V as Value>::Term, Ty> {
         ConsT::new(*c.head, *c.tail, c.ty)
     }
 }
