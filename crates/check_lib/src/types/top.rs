@@ -4,7 +4,7 @@ use syntax::types::{Top, TypeGroup};
 
 impl<Ty> Subtypecheck<Ty> for Top<Ty>
 where
-    Ty: LanguageType,
+    Ty: TypeGroup,
 {
     type Env = <Ty as Subtypecheck<Ty>>::Env;
 
@@ -22,7 +22,7 @@ where
 
 impl<Ty> Kindcheck<Ty> for Top<Ty>
 where
-    Ty: LanguageType,
+    Ty: TypeGroup,
 {
     type Env = <Ty as Kindcheck<Ty>>::Env;
     fn check_kind(&self, _: &mut Self::Env) -> Result<Kind, Error> {
@@ -32,7 +32,7 @@ where
 
 impl<Ty> Normalize<Ty> for Top<Ty>
 where
-    Ty: LanguageType,
+    Ty: TypeGroup,
     Self: Into<Ty>,
 {
     type Env = <Ty as Normalize<Ty>>::Env;

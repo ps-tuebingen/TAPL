@@ -1,18 +1,18 @@
 use super::Value;
-use crate::{language::LanguageTerm, terms::Unit as UnitT};
 use std::{fmt, marker::PhantomData};
+use syntax::terms::{Term, Unit as UnitT};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Unit<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     phantom: PhantomData<T>,
 }
 
 impl<T> Unit<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     pub fn new() -> Unit<T> {
         Unit {
@@ -23,7 +23,7 @@ where
 
 impl<T> Default for Unit<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     fn default() -> Unit<T> {
         Unit::new()
@@ -32,14 +32,14 @@ where
 
 impl<T> Value for Unit<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     type Term = UnitT<T>;
 }
 
 impl<T> From<Unit<T>> for UnitT<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     fn from(_: Unit<T>) -> UnitT<T> {
         UnitT::new()
@@ -48,7 +48,7 @@ where
 
 impl<T> fmt::Display for Unit<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.write_str("unit")

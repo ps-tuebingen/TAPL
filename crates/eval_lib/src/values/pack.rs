@@ -1,54 +1,67 @@
 use super::Value;
-use crate::{language::LanguageTerm, terms::Pack as PackT};
-use std::fmt;
+use std::{fmt, marker::PhantomData};
+use syntax::{
+    terms::{Pack as PackT, Term},
+    types::Type,
+};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct Pack<T>
+pub struct Pack<V, Ty, T>
 where
-    T: LanguageTerm,
+    V: Value,
+    Ty: Type,
+    T: Term,
 {
-    pub inner_ty: <T as LanguageTerm>::Type,
-    pub val: Box<<T as LanguageTerm>::Value>,
-    pub outer_ty: <T as LanguageTerm>::Type,
+    pub inner_ty: Ty,
+    pub val: Box<V>,
+    pub outer_ty: Ty,
+    phantom: PhantomData<T>,
 }
 
-impl<T> Pack<T>
+impl<V, Ty, T> Pack<V, Ty, T>
 where
-    T: LanguageTerm,
+    V: Value,
+    Ty: Type,
+    T: Term,
 {
-    pub fn new<Ty1, V, Ty2>(inner: Ty1, v: V, outer: Ty2) -> Pack<T>
+    pub fn new<Ty1, V1, Ty2>(inner: Ty1, v: V1, outer: Ty2) -> Pack<V, Ty, T>
     where
-        Ty1: Into<<T as LanguageTerm>::Type>,
-        Ty2: Into<<T as LanguageTerm>::Type>,
-        V: Into<<T as LanguageTerm>::Value>,
+        Ty1: Into<Ty>,
+        Ty2: Into<Ty>,
+        V: Into<V>,
     {
         Pack {
             inner_ty: inner.into(),
             val: Box::new(v.into()),
             outer_ty: outer.into(),
+            phantom: PhantomData,
         }
     }
 }
 
-impl<T> Value for Pack<T>
+impl<V, Ty, T> Value for Pack<V, Ty, T>
 where
-    T: LanguageTerm,
+    V: Value,
+    Ty: Type,
+    T: Term,
 {
-    type Term = PackT<T>;
+    type Term = PackT<T, Ty>;
 }
 
-impl<T> From<Pack<T>> for PackT<T>
+impl<V, Ty, T> From<Pack<V, Ty, T>> for PackT<T, Ty>
 where
-    T: LanguageTerm,
+    T: Term,
 {
-    fn from(pack: Pack<T>) -> PackT<T> {
+    fn from(pack: Pack<V, Ty, T>) -> PackT<T, Ty> {
         PackT::new(pack.inner_ty, *pack.val, pack.outer_ty)
     }
 }
 
-impl<T> fmt::Display for Pack<T>
+impl<V, Ty, T> fmt::Display for Pack<V, Ty, T>
 where
-    T: LanguageTerm,
+    V: Value,
+    Ty: Type,
+    T: Term,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(

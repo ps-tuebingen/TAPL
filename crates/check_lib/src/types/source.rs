@@ -4,7 +4,7 @@ use syntax::types::{Source, TypeGroup};
 
 impl<Ty> Subtypecheck<Ty> for Source<Ty>
 where
-    Ty: LanguageType,
+    Ty: TypeGroup,
 {
     type Env = <Ty as Subtypecheck<Ty>>::Env;
 

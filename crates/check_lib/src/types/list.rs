@@ -4,7 +4,7 @@ use syntax::types::{List, TypeGroup};
 
 impl<Ty> Subtypecheck<Ty> for List<Ty>
 where
-    Ty: LanguageType,
+    Ty: TypeGroup,
 {
     type Env = <Ty as Subtypecheck<Ty>>::Env;
     fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Error> {

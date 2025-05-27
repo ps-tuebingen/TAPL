@@ -1,11 +1,11 @@
 use super::Value;
-use crate::{language::LanguageTerm, terms::Loc as LocT};
 use std::{fmt, marker::PhantomData};
+use syntax::terms::{Loc as LocT, Term};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Loc<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     pub loc: usize,
     phantom: PhantomData<T>,
@@ -13,7 +13,7 @@ where
 
 impl<T> Loc<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     pub fn new(loc: usize) -> Loc<T> {
         Loc {
@@ -25,14 +25,14 @@ where
 
 impl<T> Value for Loc<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     type Term = LocT<T>;
 }
 
 impl<T> From<Loc<T>> for LocT<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     fn from(loc: Loc<T>) -> LocT<T> {
         LocT::new(loc.loc)
@@ -41,7 +41,7 @@ where
 
 impl<T> fmt::Display for Loc<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.loc)

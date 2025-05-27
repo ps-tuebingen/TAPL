@@ -1,46 +1,58 @@
 use super::Value;
-use crate::{language::LanguageTerm, terms::Nil as NilT};
-use std::fmt;
+use std::{fmt, marker::PhantomData};
+use syntax::{
+    terms::{Nil as NilT, Term},
+    types::Type,
+};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct Nil<T>
+pub struct Nil<T, Ty>
 where
-    T: LanguageTerm,
+    T: Term,
+    Ty: Type,
 {
-    ty: <T as LanguageTerm>::Type,
+    ty: Ty,
+    phantom: PhantomData<T>,
 }
 
-impl<T> Nil<T>
+impl<T, Ty> Nil<T, Ty>
 where
-    T: LanguageTerm,
+    T: Term,
+    Ty: Type,
 {
-    pub fn new<Ty>(ty: Ty) -> Nil<T>
+    pub fn new<Typ>(ty: Typ) -> Nil<T, Ty>
     where
-        Ty: Into<<T as LanguageTerm>::Type>,
+        Typ: Into<Ty>,
     {
-        Nil { ty: ty.into() }
+        Nil {
+            ty: ty.into(),
+            phantom: PhantomData,
+        }
     }
 }
 
-impl<T> Value for Nil<T>
+impl<T, Ty> Value for Nil<T, Ty>
 where
-    T: LanguageTerm,
+    T: Term,
+    Ty: Type,
 {
-    type Term = NilT<T>;
+    type Term = NilT<T, Ty>;
 }
 
-impl<T> From<Nil<T>> for NilT<T>
+impl<T, Ty> From<Nil<T, Ty>> for NilT<T, Ty>
 where
-    T: LanguageTerm,
+    T: Term,
+    Ty: Type,
 {
-    fn from(nil: Nil<T>) -> NilT<T> {
+    fn from(nil: Nil<T, Ty>) -> NilT<T, Ty> {
         NilT::new(nil.ty)
     }
 }
 
-impl<T> fmt::Display for Nil<T>
+impl<T, Ty> fmt::Display for Nil<T, Ty>
 where
-    T: LanguageTerm,
+    T: Term,
+    Ty: Type,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "Nil[{}]", self.ty)

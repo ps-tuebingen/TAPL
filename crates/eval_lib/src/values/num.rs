@@ -1,11 +1,11 @@
 use super::Value;
-use crate::{language::LanguageTerm, terms::Num as NumT};
 use std::{fmt, marker::PhantomData};
+use syntax::terms::{Num as NumT, Term};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Num<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     pub num: i64,
     phantom: PhantomData<T>,
@@ -13,7 +13,7 @@ where
 
 impl<T> Num<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     pub fn new(i: i64) -> Num<T> {
         Num {
@@ -25,14 +25,14 @@ where
 
 impl<T> Value for Num<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     type Term = NumT<T>;
 }
 
 impl<T> From<Num<T>> for NumT<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     fn from(n: Num<T>) -> NumT<T> {
         NumT::new(n.num)
@@ -41,7 +41,7 @@ where
 
 impl<T> fmt::Display for Num<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.num)

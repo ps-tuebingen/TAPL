@@ -4,7 +4,7 @@ use syntax::types::{OpApp, TypeGroup};
 
 impl<Ty> Subtypecheck<Ty> for OpApp<Ty>
 where
-    Ty: LanguageType,
+    Ty: TypeGroup,
     Self: Into<Ty>,
 {
     type Env = <Ty as Subtypecheck<Ty>>::Env;
@@ -20,7 +20,7 @@ where
 
 impl<Ty> Kindcheck<Ty> for OpApp<Ty>
 where
-    Ty: LanguageType,
+    Ty: TypeGroup,
 {
     type Env = <Ty as Kindcheck<Ty>>::Env;
 
@@ -41,7 +41,7 @@ where
 
 impl<Ty> Normalize<Ty> for OpApp<Ty>
 where
-    Ty: LanguageType,
+    Ty: TypeGroup,
     Self: Into<Ty>,
 {
     type Env = <Ty as Normalize<Ty>>::Env;

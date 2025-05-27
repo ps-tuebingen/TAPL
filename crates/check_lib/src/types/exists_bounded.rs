@@ -36,7 +36,7 @@ where
 
 impl<Ty> Kindcheck<Ty> for ExistsBounded<Ty>
 where
-    Ty: LanguageType,
+    Ty: TypeGroup,
 {
     type Env = <Ty as Kindcheck<Ty>>::Env;
     fn check_kind(&self, env: &mut Self::Env) -> Result<Kind, Error> {
@@ -48,7 +48,7 @@ where
 
 impl<Ty> Normalize<Ty> for ExistsBounded<Ty>
 where
-    Ty: LanguageType,
+    Ty: TypeGroup,
     Self: Into<Ty>,
 {
     type Env = <Ty as Normalize<Ty>>::Env;

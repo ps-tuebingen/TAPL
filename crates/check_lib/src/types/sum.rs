@@ -4,7 +4,7 @@ use syntax::types::{Sum, TypeGroup};
 
 impl<Ty> Kindcheck<Ty> for Sum<Ty>
 where
-    Ty: LanguageType,
+    Ty: TypeGroup,
 {
     type Env = <Ty as Kindcheck<Ty>>::Env;
     fn check_kind(&self, env: &mut Self::Env) -> Result<Kind, Error> {

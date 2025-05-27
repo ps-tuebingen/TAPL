@@ -1,10 +1,13 @@
-use crate::{Kindcheck, Subtypecheck};
+use crate::{to_subty_err, Kindcheck, Normalize, Subtypecheck};
 use common::errors::Error;
-use syntax::types::{TypeGroup, Unit};
+use syntax::{
+    kinds::Kind,
+    types::{TypeGroup, Unit},
+};
 
 impl<Ty> Kindcheck<Ty> for Unit<Ty>
 where
-    Ty: LanguageType,
+    Ty: TypeGroup + Kindcheck<Ty>,
 {
     type Env = <Ty as Kindcheck<Ty>>::Env;
 
@@ -15,7 +18,7 @@ where
 
 impl<Ty> Subtypecheck<Ty> for Unit<Ty>
 where
-    Ty: LanguageType,
+    Ty: TypeGroup + Subtypecheck<Ty>,
 {
     type Env = <Ty as Subtypecheck<Ty>>::Env;
 
@@ -30,7 +33,7 @@ where
 
 impl<Ty> Normalize<Ty> for Unit<Ty>
 where
-    Ty: LanguageType,
+    Ty: TypeGroup + Normalize<Ty>,
     Self: Into<Ty>,
 {
     type Env = <Ty as Normalize<Ty>>::Env;

@@ -1,52 +1,67 @@
 use super::Value;
-use crate::{language::LanguageTerm, terms::Fold as FoldT};
-use std::fmt;
+use std::{fmt, marker::PhantomData};
+use syntax::{
+    terms::{Fold as FoldT, Term},
+    types::Type,
+};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct Fold<T>
+pub struct Fold<V, Ty, T>
 where
-    T: LanguageTerm,
+    V: Value,
+    Ty: Type,
+    T: Term,
 {
-    ty: <T as LanguageTerm>::Type,
-    pub val: Box<<T as LanguageTerm>::Value>,
+    pub ty: Ty,
+    pub val: Box<V>,
+    phantom: PhantomData<T>,
 }
 
-impl<T> Fold<T>
+impl<V, Ty, T> Fold<V, Ty, T>
 where
-    T: LanguageTerm,
+    V: Value,
+    Ty: Type,
+    T: Term,
 {
-    pub fn new<Ty, V>(ty: Ty, v: V) -> Fold<T>
+    pub fn new<Ty1, V1>(ty: Ty1, v: V1) -> Fold<Ty, V, T>
     where
-        Ty: Into<<T as LanguageTerm>::Type>,
-        V: Into<<T as LanguageTerm>::Value>,
+        Ty1: Into<Ty>,
+        V1: Into<V>,
     {
         Fold {
             ty: ty.into(),
             val: Box::new(v.into()),
+            phantom: PhantomData,
         }
     }
 }
 
-impl<T> Value for Fold<T>
+impl<V, Ty, T> Value for Fold<V, Ty, T>
 where
-    T: LanguageTerm,
-    Self: Into<FoldT<T>>,
+    V: Value,
+    Ty: Type,
+    T: Term,
+    Self: Into<FoldT<T, Ty>>,
 {
-    type Term = FoldT<T>;
+    type Term = FoldT<T, Ty>;
 }
 
-impl<T> From<Fold<T>> for FoldT<T>
+impl<V, Ty, T> From<Fold<V, Ty, T>> for FoldT<T, Ty>
 where
-    T: LanguageTerm,
+    T: Term,
+    V: Value,
+    Ty: Type,
 {
-    fn from(fld: Fold<T>) -> FoldT<T> {
+    fn from(fld: Fold<V, Ty, T>) -> FoldT<T, Ty> {
         FoldT::new(*fld.val, fld.ty)
     }
 }
 
-impl<T> fmt::Display for Fold<T>
+impl<V, T, Ty> fmt::Display for Fold<V, T, Ty>
 where
-    T: LanguageTerm,
+    V: Value,
+    T: Term,
+    Ty: Type,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "fold[{}]({})", self.ty, self.val)

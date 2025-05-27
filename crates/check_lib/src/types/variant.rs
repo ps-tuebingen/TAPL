@@ -1,10 +1,10 @@
-use crate::{Kindcheck, Subtypecheck};
-use common::errors::Error;
+use crate::{to_subty_err, Subtypecheck};
+use common::errors::{Error, ErrorKind};
 use syntax::types::{TypeGroup, Variant};
 
 impl<Ty> Subtypecheck<Ty> for Variant<Ty>
 where
-    Ty: LanguageType,
+    Ty: TypeGroup + Subtypecheck<Ty>,
 {
     type Env = <Ty as Subtypecheck<Ty>>::Env;
 

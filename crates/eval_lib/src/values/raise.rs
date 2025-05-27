@@ -1,54 +1,69 @@
 use super::Value;
-use crate::{language::LanguageTerm, terms::Raise as RaiseT};
-use std::fmt;
+use std::{fmt, marker::PhantomData};
+use syntax::{
+    terms::{Raise as RaiseT, Term},
+    types::Type,
+};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct Raise<T>
+pub struct Raise<V, Ty, T>
 where
-    T: LanguageTerm,
+    V: Value,
+    Ty: Type,
+    T: Term,
 {
-    pub val: Box<<T as LanguageTerm>::Value>,
-    cont_ty: <T as LanguageTerm>::Type,
-    exception_ty: <T as LanguageTerm>::Type,
+    pub val: Box<V>,
+    cont_ty: Ty,
+    exception_ty: Ty,
+    phantom: PhantomData<T>,
 }
 
-impl<T> Raise<T>
+impl<V, Ty, T> Raise<V, Ty, T>
 where
-    T: LanguageTerm,
+    V: Value,
+    Ty: Type,
+    T: Term,
 {
-    pub fn new<V1, Ty1, Ty2>(v: V1, cont_ty: Ty1, ex_ty: Ty2) -> Raise<T>
+    pub fn new<V1, Ty1, Ty2>(v: V1, cont_ty: Ty1, ex_ty: Ty2) -> Raise<V, Ty, T>
     where
-        V1: Into<<T as LanguageTerm>::Value>,
-        Ty1: Into<<T as LanguageTerm>::Type>,
-        Ty2: Into<<T as LanguageTerm>::Type>,
+        V1: Into<V>,
+        Ty1: Into<Ty>,
+        Ty2: Into<Ty>,
     {
         Raise {
             val: Box::new(v.into()),
             cont_ty: cont_ty.into(),
             exception_ty: ex_ty.into(),
+            phantom: PhantomData,
         }
     }
 }
 
-impl<T> Value for Raise<T>
+impl<V, Ty, T> Value for Raise<V, Ty, T>
 where
-    T: LanguageTerm,
+    V: Value,
+    Ty: Type,
+    T: Term,
 {
-    type Term = RaiseT<T>;
+    type Term = RaiseT<T, Ty>;
 }
 
-impl<T> From<Raise<T>> for RaiseT<T>
+impl<V, Ty, T> From<Raise<V, Ty, T>> for RaiseT<T, Ty>
 where
-    T: LanguageTerm,
+    V: Value,
+    Ty: Type,
+    T: Term,
 {
-    fn from(r: Raise<T>) -> RaiseT<T> {
+    fn from(r: Raise<V, Ty, T>) -> RaiseT<T, Ty> {
         RaiseT::new(*r.val, r.exception_ty, r.cont_ty)
     }
 }
 
-impl<T> fmt::Display for Raise<T>
+impl<V, Ty, T> fmt::Display for Raise<V, Ty, T>
 where
-    T: LanguageTerm,
+    V: Value,
+    Ty: Type,
+    T: Term,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(

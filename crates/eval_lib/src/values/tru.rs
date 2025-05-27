@@ -1,18 +1,18 @@
 use super::Value;
-use crate::{language::LanguageTerm, terms::True as TrueT};
 use std::{fmt, marker::PhantomData};
+use syntax::terms::{Term, True as TrueT};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct True<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     phantom: PhantomData<T>,
 }
 
 impl<T> True<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     pub fn new() -> True<T> {
         True {
@@ -23,7 +23,7 @@ where
 
 impl<T> Default for True<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     fn default() -> True<T> {
         True::new()
@@ -32,14 +32,14 @@ where
 
 impl<T> Value for True<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     type Term = TrueT<T>;
 }
 
 impl<T> From<True<T>> for TrueT<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     fn from(_: True<T>) -> TrueT<T> {
         TrueT::new()
@@ -48,7 +48,7 @@ where
 
 impl<T> fmt::Display for True<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.write_str("true")

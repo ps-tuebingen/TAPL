@@ -1,48 +1,54 @@
 use super::Value;
-use crate::{language::LanguageTerm, terms::Something as SomethingT};
-use std::fmt;
+use std::{fmt, marker::PhantomData};
+use syntax::terms::{Something as SomethingT, Term};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct Something<T>
+pub struct Something<T, V>
 where
-    T: LanguageTerm,
+    T: Term,
+    V: Value,
 {
-    pub val: Box<<T as LanguageTerm>::Value>,
+    pub val: Box<V>,
+    phantom: PhantomData<T>,
 }
 
-impl<T> Something<T>
+impl<T, V> Something<T, V>
 where
-    T: LanguageTerm,
+    T: Term,
+    V: Value,
 {
-    pub fn new<V>(v: V) -> Something<T>
+    pub fn new<V1>(v: V1) -> Something<T, V>
     where
-        V: Into<<T as LanguageTerm>::Value>,
+        V1: Into<V>,
     {
         Something {
             val: Box::new(v.into()),
+            phantom: PhantomData,
         }
     }
 }
 
-impl<T> Value for Something<T>
+impl<T, V> Value for Something<T, V>
 where
-    T: LanguageTerm,
+    T: Term,
+    V: Value,
 {
     type Term = SomethingT<T>;
 }
 
-impl<T> From<Something<T>> for SomethingT<T>
+impl<T, V> From<Something<T, V>> for SomethingT<T>
 where
-    T: LanguageTerm,
+    T: Term,
 {
-    fn from(something: Something<T>) -> SomethingT<T> {
+    fn from(something: Something<T, V>) -> SomethingT<T> {
         SomethingT::new(*something.val)
     }
 }
 
-impl<T> fmt::Display for Something<T>
+impl<T, V> fmt::Display for Something<T, V>
 where
-    T: LanguageTerm,
+    T: Term,
+    V: Value,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "something({})", self.val)

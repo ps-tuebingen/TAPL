@@ -4,7 +4,7 @@ use syntax::types::{Fun, TypeGroup};
 
 impl<Ty> Subtypecheck<Ty> for Fun<Ty>
 where
-    Ty: LanguageType,
+    Ty: TypeGroup,
 {
     type Env = <Ty as Subtypecheck<Ty>>::Env;
     fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Error> {
@@ -23,7 +23,7 @@ where
 
 impl<Ty> Kindcheck<Ty> for Fun<Ty>
 where
-    Ty: LanguageType,
+    Ty: TypeGroup,
 {
     type Env = <Ty as Kindcheck<Ty>>::Env;
 
@@ -49,7 +49,7 @@ where
 
 impl<Ty> Normalize<Ty> for Fun<Ty>
 where
-    Ty: LanguageType,
+    Ty: TypeGroup,
     Self: Into<Ty>,
 {
     type Env = <Ty as Normalize<Ty>>::Env;

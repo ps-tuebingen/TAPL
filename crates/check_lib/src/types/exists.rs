@@ -19,7 +19,7 @@ where
 
 impl<Ty> Normalize<Ty> for Exists<Ty>
 where
-    Ty: LanguageType,
+    Ty: TypeGroup,
     Self: Into<Ty>,
 {
     type Env = <Ty as Normalize<Ty>>::Env;

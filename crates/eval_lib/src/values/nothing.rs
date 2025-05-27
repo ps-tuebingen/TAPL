@@ -1,46 +1,58 @@
 use super::Value;
-use crate::{language::LanguageTerm, terms::Nothing as NothingT};
-use std::fmt;
+use std::{fmt, marker::PhantomData};
+use syntax::{
+    terms::{Nothing as NothingT, Term},
+    types::Type,
+};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct Nothing<T>
+pub struct Nothing<T, Ty>
 where
-    T: LanguageTerm,
+    T: Term,
+    Ty: Type,
 {
-    ty: <T as LanguageTerm>::Type,
+    ty: Ty,
+    phantom: PhantomData<T>,
 }
 
-impl<T> Nothing<T>
+impl<T, Ty> Nothing<T, Ty>
 where
-    T: LanguageTerm,
+    T: Term,
+    Ty: Type,
 {
-    pub fn new<Ty>(ty: Ty) -> Nothing<T>
+    pub fn new<Typ>(ty: Ty) -> Nothing<T, Ty>
     where
-        Ty: Into<<T as LanguageTerm>::Type>,
+        Typ: Into<Ty>,
     {
-        Nothing { ty: ty.into() }
+        Nothing {
+            ty: ty.into(),
+            phantom: PhantomData,
+        }
     }
 }
 
-impl<T> Value for Nothing<T>
+impl<T, Ty> Value for Nothing<T, Ty>
 where
-    T: LanguageTerm,
+    T: Term,
+    Ty: Type,
 {
-    type Term = NothingT<T>;
+    type Term = NothingT<T, Ty>;
 }
 
-impl<T> From<Nothing<T>> for NothingT<T>
+impl<T, Ty> From<Nothing<T, Ty>> for NothingT<T, Ty>
 where
-    T: LanguageTerm,
+    T: Term,
+    Ty: Type,
 {
-    fn from(not: Nothing<T>) -> NothingT<T> {
+    fn from(not: Nothing<T, Ty>) -> NothingT<T, Ty> {
         NothingT::new(not.ty)
     }
 }
 
-impl<T> fmt::Display for Nothing<T>
+impl<T, Ty> fmt::Display for Nothing<T, Ty>
 where
-    T: LanguageTerm,
+    T: Term,
+    Ty: Type,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "Nothing[{}]", self.ty)
