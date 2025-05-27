@@ -1,9 +1,6 @@
 use super::Value;
 use std::fmt;
-use syntax::{
-    terms::{Cons as ConsT, Term},
-    types::Type,
-};
+use syntax::{terms::Cons as ConsT, types::Type};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Cons<Ty, V>

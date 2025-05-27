@@ -9,7 +9,7 @@ impl<T, Ty> Eval for LambdaSub<T, Ty>
 where
     T: Term + Eval,
     Ty: Type,
-    LambdaSubVal<T>: Into<<T as Eval>::Value>,
+    LambdaSubVal<T, Ty>: Into<<T as Eval>::Value>,
 {
     type Value = <T as Eval>::Value;
     type Env = <T as Eval>::Env;

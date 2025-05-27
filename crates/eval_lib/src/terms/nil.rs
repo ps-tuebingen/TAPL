@@ -9,12 +9,12 @@ impl<T, Ty> Eval for Nil<T, Ty>
 where
     T: Term + Eval,
     Ty: Type,
-    NilVal<T>: Into<<T as Eval>::Value>,
+    NilVal<T, Ty>: Into<<T as Eval>::Value>,
 {
     type Env = <T as Eval>::Env;
     type Value = <T as Eval>::Value;
 
     fn eval(self, _: &mut Self::Env) -> Result<Self::Value, Error> {
-        Ok(NilVal::<T>::new(self.ty).into())
+        Ok(NilVal::<T, Ty>::new(self.ty).into())
     }
 }

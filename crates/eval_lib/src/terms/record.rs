@@ -9,7 +9,7 @@ use syntax::{
 impl<T> Eval for Record<T>
 where
     T: Term + Eval,
-    RecordVal<T>: Into<<T as Eval>::Value>,
+    RecordVal<<T as Eval>::Value>: Into<<T as Eval>::Value>,
 {
     type Env = <T as Eval>::Env;
     type Value = <T as Eval>::Value;
@@ -20,6 +20,6 @@ where
             let val = t.eval(env)?;
             recs.insert(lb, val);
         }
-        Ok(RecordVal::<T>::new::<Self::Value>(recs).into())
+        Ok(RecordVal::<<T as Eval>::Value>::new::<Self::Value>(recs).into())
     }
 }

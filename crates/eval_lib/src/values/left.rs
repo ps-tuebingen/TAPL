@@ -1,9 +1,6 @@
 use super::Value;
 use std::fmt;
-use syntax::{
-    terms::{Left as LeftT, Term},
-    types::Type,
-};
+use syntax::{terms::Left as LeftT, types::Type};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Left<V, Ty>

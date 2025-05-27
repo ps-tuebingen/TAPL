@@ -1,10 +1,13 @@
 use crate::{to_eval_err, values::ValueGroup, Eval};
 use common::errors::{Error, ErrorKind};
-use syntax::terms::{Term, VariantCase};
+use syntax::{
+    subst::SubstTerm,
+    terms::{Term, VariantCase},
+};
 
 impl<T> Eval for VariantCase<T>
 where
-    T: Term + Eval,
+    T: Term + Eval + SubstTerm<T, Target = T> + From<<T as Eval>::Value>,
 {
     type Env = <T as Eval>::Env;
     type Value = <T as Eval>::Value;

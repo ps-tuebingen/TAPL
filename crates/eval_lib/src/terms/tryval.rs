@@ -8,7 +8,7 @@ use syntax::terms::{App, Term, TryWithVal};
 impl<T> Eval for TryWithVal<T>
 where
     T: Term + Eval,
-    Raise<T>: Into<<T as Eval>::Value>,
+    Raise<<T as Eval>::Value, <<T as Eval>::Value as ValueGroup>::Type>: Into<<T as Eval>::Value>,
     App<T>: Into<T>,
 {
     type Value = <T as Eval>::Value;

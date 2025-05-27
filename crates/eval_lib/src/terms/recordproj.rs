@@ -1,5 +1,5 @@
-use crate::{values::ValueGroup, Eval};
-use common::errors::Error;
+use crate::{to_eval_err, values::ValueGroup, Eval};
+use common::errors::{Error, ErrorKind};
 use syntax::terms::{RecordProj, Term};
 
 impl<T> Eval for RecordProj<T>

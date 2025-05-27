@@ -1,6 +1,6 @@
 use super::Value;
 use std::fmt;
-use syntax::terms::{Term, Tuple as TupleT};
+use syntax::terms::Tuple as TupleT;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Tuple<V>

@@ -5,13 +5,13 @@ use syntax::terms::{Something, Term};
 impl<T> Eval for Something<T>
 where
     T: Term + Eval,
-    SomethingVal<T>: Into<<T as Eval>::Value>,
+    SomethingVal<<T as Eval>::Value>: Into<<T as Eval>::Value>,
 {
     type Env = <T as Eval>::Env;
     type Value = <T as Eval>::Value;
 
     fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
         let term_val = self.term.eval(env)?;
-        Ok(SomethingVal::<T>::new(term_val).into())
+        Ok(SomethingVal::<<T as Eval>::Value>::new(term_val).into())
     }
 }

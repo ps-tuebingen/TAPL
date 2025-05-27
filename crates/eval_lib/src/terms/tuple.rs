@@ -5,7 +5,7 @@ use syntax::terms::{Term, Tuple};
 impl<T> Eval for Tuple<T>
 where
     T: Term + Eval,
-    TupleVal<T>: Into<<T as Eval>::Value>,
+    TupleVal<<T as Eval>::Value>: Into<<T as Eval>::Value>,
 {
     type Env = <T as Eval>::Env;
     type Value = <T as Eval>::Value;
@@ -15,6 +15,6 @@ where
             let val = t.eval(env)?;
             vals.push(val);
         }
-        Ok(TupleVal::<T>::new(vals).into())
+        Ok(TupleVal::<<T as Eval>::Value>::new(vals).into())
     }
 }

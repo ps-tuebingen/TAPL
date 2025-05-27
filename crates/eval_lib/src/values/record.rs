@@ -1,9 +1,6 @@
 use super::Value;
 use std::{collections::HashMap, fmt};
-use syntax::{
-    terms::{Record as RecordT, Term},
-    Label,
-};
+use syntax::{terms::Record as RecordT, Label};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Record<V>
@@ -48,7 +45,7 @@ where
     V: Value,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let mut recs: Vec<(&Label, &<T as Term>::Value)> = self.records.iter().collect();
+        let mut recs: Vec<(&Label, &V)> = self.records.iter().collect();
         recs.sort_by(|(lb1, _), (lb2, _)| lb1.cmp(lb2));
         write!(
             f,

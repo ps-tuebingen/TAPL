@@ -1,13 +1,14 @@
-use crate::{values::ValueGroup, Eval};
-use common::errors::Error;
+use crate::{to_eval_err, values::ValueGroup, Eval};
+use common::errors::{Error, ErrorKind};
 use syntax::{
+    subst::SubstType,
     terms::{Term, TyApp},
     types::Type,
 };
 
 impl<T, Ty> Eval for TyApp<T, Ty>
 where
-    T: Term + Eval,
+    T: Term + Eval + SubstType<Ty, Target = T>,
     Ty: Type,
 {
     type Value = <T as Eval>::Value;

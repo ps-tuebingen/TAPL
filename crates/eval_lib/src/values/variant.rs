@@ -1,10 +1,6 @@
 use super::Value;
 use std::fmt;
-use syntax::{
-    terms::{Term, Variant as VariantT},
-    types::Type,
-    Label,
-};
+use syntax::{terms::Variant as VariantT, types::Type, Label};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Variant<V, Ty>

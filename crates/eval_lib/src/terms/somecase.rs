@@ -1,10 +1,13 @@
-use crate::Eval;
-use common::errors::Error;
-use syntax::terms::{SomeCase, Term};
+use crate::{to_eval_err, values::ValueGroup, Eval};
+use common::errors::{Error, ErrorKind};
+use syntax::{
+    subst::SubstTerm,
+    terms::{SomeCase, Term},
+};
 
 impl<T> Eval for SomeCase<T>
 where
-    T: Term + Eval,
+    T: Term + Eval + SubstTerm<T, Target = T> + From<<T as Eval>::Value>,
 {
     type Env = <T as Eval>::Env;
     type Value = <T as Eval>::Value;

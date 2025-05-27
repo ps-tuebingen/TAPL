@@ -1,6 +1,6 @@
 use super::Value;
 use std::fmt;
-use syntax::terms::{Pair as PairT, Term};
+use syntax::terms::Pair as PairT;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Pair<V>
