@@ -2,6 +2,7 @@ use common::errors::{Error, ErrorKind, ErrorLocation};
 use syntax::{kinds::Kind, types::Type};
 
 pub mod env;
+pub mod terms;
 pub mod types;
 pub mod untyped;
 

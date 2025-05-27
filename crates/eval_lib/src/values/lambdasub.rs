@@ -22,7 +22,7 @@ where
     T: Term,
     Ty: Type,
 {
-    pub fn new<Ty1, T1>(v: &str, sup: Ty, t: T1) -> LambdaSub<T, Ty>
+    pub fn new<Ty1, T1>(v: &str, sup: Ty1, t: T1) -> LambdaSub<T, Ty>
     where
         Ty1: Into<Ty>,
         T1: Into<T>,

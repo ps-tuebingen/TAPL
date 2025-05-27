@@ -15,6 +15,6 @@ where
     type Env = <T as Eval>::Env;
 
     fn eval(self, _: &mut Self::Env) -> Result<Self::Value, Error> {
-        Ok(LambdaSubVal::new(&self.var, self.sup_ty, *self.body).into())
+        Ok(LambdaSubVal::<T, Ty>::new(&self.var, self.sup_ty, *self.body).into())
     }
 }

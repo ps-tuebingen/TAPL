@@ -1,6 +1,6 @@
-use crate::{Kindcheck, Normalize, Subtypecheck, Typecheck};
+use crate::{Kindcheck, Normalize, Subtypecheck};
 use common::errors::Error;
-use syntax::{kinds::Kind, terms::Term, untyped::Untyped};
+use syntax::{kinds::Kind, untyped::Untyped};
 
 impl Subtypecheck<Untyped> for Untyped {
     type Env = ();
@@ -14,18 +14,6 @@ impl Kindcheck<Untyped> for Untyped {
     type Env = ();
     fn check_kind(&self, _: &mut Self::Env) -> Result<Kind, Error> {
         Ok(Kind::Star)
-    }
-}
-
-impl<T> Typecheck for T
-where
-    T: Term,
-{
-    type Type = Untyped;
-    type Env = ();
-
-    fn check(&self, _: &mut Self::Env) -> Result<Self::Type, Error> {
-        Ok(Untyped)
     }
 }
 

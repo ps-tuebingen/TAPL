@@ -11,6 +11,7 @@ use std::fmt;
 pub struct LambdaSub<T, Ty>
 where
     T: Term,
+    Ty: Type,
 {
     pub var: TypeVar,
     pub sup_ty: Ty,
@@ -57,6 +58,7 @@ where
 impl<T, Ty> SubstTerm<T> for LambdaSub<T, Ty>
 where
     T: Term + SubstTerm<T, Target = T>,
+    Ty: Type,
     Self: Into<T>,
 {
     type Target = T;

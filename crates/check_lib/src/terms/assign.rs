@@ -1,7 +1,15 @@
+use crate::{to_check_err, Kindcheck, Normalize, Typecheck};
+use common::errors::Error;
+use syntax::{
+    terms::{Assign, Term},
+    types::{TypeGroup, Unit as UnitTy},
+};
+
 impl<T> Typecheck for Assign<T>
 where
-    T: LanguageTerm,
-    UnitTy<<T as LanguageTerm>::Type>: Into<<T as LanguageTerm>::Type>,
+    T: Term + Typecheck,
+    <T as Typecheck>::Type: TypeGroup,
+    UnitTy<<T as Typecheck>::Type>: Into<<T as Typecheck>::Type>,
 {
     type Env = <T as Typecheck>::Env;
     type Type = <T as Typecheck>::Type;

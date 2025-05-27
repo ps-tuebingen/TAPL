@@ -3,26 +3,29 @@ use crate::values::{
     Raise, Record, Right, Something, True, Tuple, TyLambda, Value, Variant,
 };
 use common::errors::ErrorKind;
-use syntax::types::Type;
+use syntax::{terms::Term, types::Type};
 
 pub trait ValueGroup: Value {
+    type Term: Term + From<Self>;
     type Type: Type;
 
-    fn into_lambda(self) -> Result<Lambda<<Self as Value>::Term, Self::Type>, ErrorKind> {
+    fn into_lambda(self) -> Result<Lambda<<Self as ValueGroup>::Term, Self::Type>, ErrorKind> {
         Err(ErrorKind::ValueMismatch {
             found: self.to_string(),
             expected: "Lambda Abstraction".to_owned(),
         })
     }
 
-    fn into_tylambda(self) -> Result<TyLambda<<Self as Value>::Term>, ErrorKind> {
+    fn into_tylambda(self) -> Result<TyLambda<<Self as ValueGroup>::Term>, ErrorKind> {
         Err(ErrorKind::ValueMismatch {
             found: self.to_string(),
             expected: "Type Abstraction".to_owned(),
         })
     }
 
-    fn into_lambdasub(self) -> Result<LambdaSub<<Self as Value>::Term, Self::Type>, ErrorKind> {
+    fn into_lambdasub(
+        self,
+    ) -> Result<LambdaSub<<Self as ValueGroup>::Term, Self::Type>, ErrorKind> {
         Err(ErrorKind::ValueMismatch {
             found: self.to_string(),
             expected: "Type Abstraction".to_owned(),
@@ -71,7 +74,7 @@ pub trait ValueGroup: Value {
         })
     }
 
-    fn into_nothing(self) -> Result<Nothing<<Self as Value>::Term, Self::Type>, ErrorKind> {
+    fn into_nothing(self) -> Result<Nothing<<Self as ValueGroup>::Term, Self::Type>, ErrorKind> {
         Err(ErrorKind::ValueMismatch {
             found: self.to_string(),
             expected: "Nothing".to_owned(),
@@ -85,7 +88,7 @@ pub trait ValueGroup: Value {
         })
     }
 
-    fn into_nil(self) -> Result<Nil<<Self as Value>::Term, Self::Type>, ErrorKind> {
+    fn into_nil(self) -> Result<Nil<<Self as ValueGroup>::Term, Self::Type>, ErrorKind> {
         Err(ErrorKind::ValueMismatch {
             found: self.to_string(),
             expected: "Nil".to_owned(),
@@ -99,7 +102,7 @@ pub trait ValueGroup: Value {
         })
     }
 
-    fn into_loc(self) -> Result<Loc<<Self as Value>::Term>, ErrorKind> {
+    fn into_loc(self) -> Result<Loc<<Self as ValueGroup>::Term>, ErrorKind> {
         Err(ErrorKind::ValueMismatch {
             found: self.to_string(),
             expected: "Location".to_owned(),
@@ -113,7 +116,9 @@ pub trait ValueGroup: Value {
         })
     }
 
-    fn into_exception(self) -> Result<Exception<<Self as Value>::Term, Self::Type>, ErrorKind> {
+    fn into_exception(
+        self,
+    ) -> Result<Exception<<Self as ValueGroup>::Term, Self::Type>, ErrorKind> {
         Err(ErrorKind::ValueMismatch {
             found: self.to_string(),
             expected: "Exception".to_owned(),
@@ -134,21 +139,21 @@ pub trait ValueGroup: Value {
         })
     }
 
-    fn into_true(self) -> Result<True<<Self as Value>::Term>, ErrorKind> {
+    fn into_true(self) -> Result<True<<Self as ValueGroup>::Term>, ErrorKind> {
         Err(ErrorKind::ValueMismatch {
             found: self.to_string(),
             expected: "True".to_owned(),
         })
     }
 
-    fn into_false(self) -> Result<False<<Self as Value>::Term>, ErrorKind> {
+    fn into_false(self) -> Result<False<<Self as ValueGroup>::Term>, ErrorKind> {
         Err(ErrorKind::ValueMismatch {
             found: self.to_string(),
             expected: "False".to_owned(),
         })
     }
 
-    fn into_num(self) -> Result<Num<<Self as Value>::Term>, ErrorKind> {
+    fn into_num(self) -> Result<Num<<Self as ValueGroup>::Term>, ErrorKind> {
         Err(ErrorKind::ValueMismatch {
             found: self.to_string(),
             expected: "Number".to_owned(),

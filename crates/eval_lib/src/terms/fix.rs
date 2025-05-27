@@ -1,10 +1,14 @@
 use crate::{to_eval_err, values::ValueGroup, Eval};
 use common::errors::Error;
-use syntax::terms::{Fix, Term};
+use syntax::{
+    subst::SubstTerm,
+    terms::{Fix, Term},
+};
 
 impl<T> Eval for Fix<T>
 where
-    T: Term + Eval,
+    T: Term + Eval + SubstTerm<T, Target = T>,
+    <T as Eval>::Value: ValueGroup<Term = T>,
     Self: Into<T>,
 {
     type Env = <T as Eval>::Env;

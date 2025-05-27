@@ -8,6 +8,7 @@ use syntax::{
 impl<T> Eval for App<T>
 where
     T: Term + Eval + SubstTerm<T, Target = T> + From<<T as Eval>::Value>,
+    <T as Eval>::Value: ValueGroup<Term = T>,
     Self: Into<T>,
 {
     type Env = <T as Eval>::Env;

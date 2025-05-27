@@ -1,6 +1,14 @@
+use crate::{env::CheckEnvironment, to_check_err, Normalize, Typecheck};
+use common::errors::{Error, ErrorKind};
+use syntax::{
+    terms::{Term, Unpack},
+    types::TypeGroup,
+};
+
 impl<T> Typecheck for Unpack<T>
 where
-    T: LanguageTerm,
+    T: Term + Typecheck,
+    <T as Typecheck>::Type: TypeGroup + Normalize<<T as Typecheck>::Type>,
 {
     type Type = <T as Typecheck>::Type;
     type Env = <T as Typecheck>::Env;

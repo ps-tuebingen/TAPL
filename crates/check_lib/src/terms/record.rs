@@ -1,7 +1,15 @@
+use crate::{to_check_err, Kindcheck, Normalize, Typecheck};
+use common::errors::Error;
+use std::collections::HashMap;
+use syntax::{
+    terms::{Record, Term},
+    types::Record as RecordTy,
+};
+
 impl<T> Typecheck for Record<T>
 where
-    T: LanguageTerm,
-    RecordTy<<T as LanguageTerm>::Type>: Into<<T as LanguageTerm>::Type>,
+    T: Term + Typecheck,
+    RecordTy<<T as Typecheck>::Type>: Into<<T as Typecheck>::Type>,
 {
     type Env = <T as Typecheck>::Env;
     type Type = <T as Typecheck>::Type;
