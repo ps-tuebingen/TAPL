@@ -9,9 +9,9 @@ impl<T> Typecheck for App<T>
 where
     T: Term + Typecheck,
     <T as Typecheck>::Type: TypeGroup
-        + Normalize<<T as Typecheck>::Type>
-        + Kindcheck<<T as Typecheck>::Type>
-        + Subtypecheck<<T as Typecheck>::Type>,
+        + Normalize<<T as Typecheck>::Type, Env = <T as Typecheck>::Env>
+        + Kindcheck<<T as Typecheck>::Type, Env = <T as Typecheck>::Env>
+        + Subtypecheck<<T as Typecheck>::Type, Env = <T as Typecheck>::Env>,
 {
     type Type = <T as Typecheck>::Type;
     type Env = <T as Typecheck>::Env;

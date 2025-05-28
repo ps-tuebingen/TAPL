@@ -7,8 +7,10 @@ use syntax::{
 
 impl<T, Ty> Typecheck for Variant<T, Ty>
 where
-    Ty: TypeGroup + Normalize<Ty> + Kindcheck<Ty>,
     T: Term + Typecheck<Type = Ty>,
+    Ty: TypeGroup
+        + Normalize<Ty, Env = <T as Typecheck>::Env>
+        + Kindcheck<Ty, Env = <T as Typecheck>::Env>,
     VariantTy<Ty>: Into<Ty>,
 {
     type Env = <T as Typecheck>::Env;

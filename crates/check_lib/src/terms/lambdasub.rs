@@ -8,7 +8,9 @@ use syntax::{
 impl<T, Ty> Typecheck for LambdaSub<T, Ty>
 where
     T: Term + Typecheck<Type = Ty>,
-    Ty: Type + Kindcheck<Ty> + Normalize<Ty>,
+    Ty: Type
+        + Kindcheck<Ty, Env = <T as Typecheck>::Env>
+        + Normalize<Ty, Env = <T as Typecheck>::Env>,
     ForallBounded<<T as Typecheck>::Type>: Into<<T as Typecheck>::Type>,
 {
     type Type = <T as Typecheck>::Type;

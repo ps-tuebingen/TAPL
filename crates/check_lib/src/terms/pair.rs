@@ -2,13 +2,14 @@ use crate::{to_check_err, Kindcheck, Normalize, Typecheck};
 use common::errors::Error;
 use syntax::{
     terms::{Pair, Term},
-    types::{Product, TypeGroup},
+    types::Product,
 };
 
 impl<T> Typecheck for Pair<T>
 where
     T: Term + Typecheck,
-    <T as Typecheck>::Type: Normalize<<T as Typecheck>::Type> + Kindcheck<<T as Typecheck>::Type>,
+    <T as Typecheck>::Type: Normalize<<T as Typecheck>::Type, Env = <T as Typecheck>::Env>
+        + Kindcheck<<T as Typecheck>::Type, Env = <T as Typecheck>::Env>,
     Product<<T as Typecheck>::Type>: Into<<T as Typecheck>::Type>,
 {
     type Env = <T as Typecheck>::Env;

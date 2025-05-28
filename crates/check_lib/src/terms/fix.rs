@@ -8,8 +8,9 @@ use syntax::{
 impl<T> Typecheck for Fix<T>
 where
     T: Term + Typecheck,
-    <T as Typecheck>::Type:
-        TypeGroup + Normalize<<T as Typecheck>::Type> + Kindcheck<<T as Typecheck>::Type>,
+    <T as Typecheck>::Type: TypeGroup
+        + Normalize<<T as Typecheck>::Type, Env = <T as Typecheck>::Env>
+        + Kindcheck<<T as Typecheck>::Type, Env = <T as Typecheck>::Env>,
 {
     type Env = <T as Typecheck>::Env;
     type Type = <T as Typecheck>::Type;

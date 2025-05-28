@@ -1,4 +1,4 @@
-use crate::{to_check_err, Kindcheck, Normalize, Typecheck};
+use crate::{env::CheckEnvironment, to_check_err, Kindcheck, Normalize, Typecheck};
 use common::errors::{Error, ErrorKind};
 use syntax::{
     terms::{Term, VariantCase},
@@ -8,8 +8,9 @@ use syntax::{
 impl<T> Typecheck for VariantCase<T>
 where
     T: Term + Typecheck,
-    <T as Typecheck>::Type:
-        TypeGroup + Normalize<<T as Typecheck>::Type> + Kindcheck<<T as Typecheck>::Type>,
+    <T as Typecheck>::Type: TypeGroup
+        + Normalize<<T as Typecheck>::Type, Env = <T as Typecheck>::Env>
+        + Kindcheck<<T as Typecheck>::Type, Env = <T as Typecheck>::Env>,
 {
     type Env = <T as Typecheck>::Env;
     type Type = <T as Typecheck>::Type;

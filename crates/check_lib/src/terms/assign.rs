@@ -8,7 +8,9 @@ use syntax::{
 impl<T> Typecheck for Assign<T>
 where
     T: Term + Typecheck,
-    <T as Typecheck>::Type: TypeGroup,
+    <T as Typecheck>::Type: TypeGroup
+        + Normalize<<T as Typecheck>::Type, Env = <T as Typecheck>::Env>
+        + Kindcheck<<T as Typecheck>::Type, Env = <T as Typecheck>::Env>,
     UnitTy<<T as Typecheck>::Type>: Into<<T as Typecheck>::Type>,
 {
     type Env = <T as Typecheck>::Env;

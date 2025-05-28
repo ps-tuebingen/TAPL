@@ -8,7 +8,9 @@ use syntax::{
 impl<T, Ty> Typecheck for Tail<T, Ty>
 where
     T: Term + Typecheck<Type = Ty>,
-    Ty: TypeGroup + Normalize<Ty> + Kindcheck<Ty>,
+    Ty: TypeGroup
+        + Normalize<Ty, Env = <T as Typecheck>::Env>
+        + Kindcheck<Ty, Env = <T as Typecheck>::Env>,
 {
     type Env = <T as Typecheck>::Env;
     type Type = <T as Typecheck>::Type;

@@ -2,14 +2,15 @@ use crate::{to_check_err, Kindcheck, Normalize, Typecheck};
 use common::errors::Error;
 use syntax::{
     terms::{Something, Term},
-    types::{Optional, TypeGroup},
+    types::Optional,
 };
 
 impl<T> Typecheck for Something<T>
 where
     T: Term + Typecheck,
     Optional<<T as Typecheck>::Type>: Into<<T as Typecheck>::Type>,
-    <T as Typecheck>::Type: Normalize<<T as Typecheck>::Type> + Kindcheck<<T as Typecheck>::Type>,
+    <T as Typecheck>::Type: Normalize<<T as Typecheck>::Type, Env = <T as Typecheck>::Env>
+        + Kindcheck<<T as Typecheck>::Type, Env = <T as Typecheck>::Env>,
 {
     type Env = <T as Typecheck>::Env;
     type Type = <T as Typecheck>::Type;

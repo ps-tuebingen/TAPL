@@ -1,4 +1,4 @@
-use crate::{to_check_err, Normalize, Typecheck};
+use crate::{to_check_err, Kindcheck, Normalize, Typecheck};
 use common::errors::Error;
 use syntax::{
     terms::{Cons, Term},
@@ -8,7 +8,9 @@ use syntax::{
 impl<T, Ty> Typecheck for Cons<T, Ty>
 where
     T: Term + Typecheck<Type = Ty>,
-    Ty: TypeGroup,
+    Ty: TypeGroup
+        + Normalize<Ty, Env = <T as Typecheck>::Env>
+        + Kindcheck<Ty, Env = <T as Typecheck>::Env>,
     List<Ty>: Into<Ty>,
 {
     type Env = <T as Typecheck>::Env;

@@ -8,7 +8,9 @@ use syntax::{
 impl<T, Ty> Typecheck for Exception<T, Ty>
 where
     T: Term + Typecheck<Type = Ty>,
-    Ty: Type + Normalize<Ty> + Kindcheck<Ty>,
+    Ty: Type
+        + Normalize<Ty, Env = <T as Typecheck>::Env>
+        + Kindcheck<Ty, Env = <T as Typecheck>::Env>,
 {
     type Type = <T as Typecheck>::Type;
     type Env = <T as Typecheck>::Env;

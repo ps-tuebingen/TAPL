@@ -1,14 +1,19 @@
-use crate::{to_check_err, Kindcheck, Normalize, Typecheck};
+use crate::{to_check_err, Kindcheck, Normalize, Subtypecheck, Typecheck};
 use common::errors::{Error, ErrorKind};
 use syntax::{
+    subst::SubstType,
     terms::{Term, TyApp},
     types::TypeGroup,
 };
 
 impl<T, Ty> Typecheck for TyApp<T, Ty>
 where
-    T: Term + Typecheck,
-    Ty: TypeGroup + Normalize<Ty> + Kindcheck<Ty>,
+    T: Term + Typecheck<Type = Ty>,
+    Ty: TypeGroup
+        + SubstType<Ty, Target = Ty>
+        + Normalize<Ty, Env = <T as Typecheck>::Env>
+        + Kindcheck<Ty, Env = <T as Typecheck>::Env>
+        + Subtypecheck<Ty, Env = <T as Typecheck>::Env>,
 {
     type Type = <T as Typecheck>::Type;
     type Env = <T as Typecheck>::Env;

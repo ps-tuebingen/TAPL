@@ -2,13 +2,15 @@ use crate::{to_check_err, Kindcheck, Normalize, Typecheck};
 use common::errors::Error;
 use syntax::{
     terms::{Nil, Term},
-    types::{List, TypeGroup},
+    types::{List, Type},
 };
 
-impl<T> Typecheck for Nil<T>
+impl<T, Ty> Typecheck for Nil<T, Ty>
 where
-    T: Term + Typecheck,
-    <T as Typecheck>::Type: Normalize<<T as Typecheck>::Type> + Kindcheck<<T as Typecheck>::Type>,
+    T: Term + Typecheck<Type = Ty>,
+    Ty: Type
+        + Normalize<Ty, Env = <T as Typecheck>::Env>
+        + Kindcheck<Ty, Env = <T as Typecheck>::Env>,
     List<<T as Typecheck>::Type>: Into<<T as Typecheck>::Type>,
 {
     type Env = <T as Typecheck>::Env;

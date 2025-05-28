@@ -8,7 +8,10 @@ use syntax::{
 
 impl<T, Ty> Typecheck for Unfold<T, Ty>
 where
-    Ty: TypeGroup + Normalize<Ty> + Kindcheck<Ty> + SubstType<Ty, Target = Ty>,
+    Ty: TypeGroup
+        + Normalize<Ty, Env = <T as Typecheck>::Env>
+        + Kindcheck<Ty, Env = <T as Typecheck>::Env>
+        + SubstType<Ty, Target = Ty>,
     T: Term + Typecheck<Type = Ty>,
 {
     type Env = <T as Typecheck>::Env;

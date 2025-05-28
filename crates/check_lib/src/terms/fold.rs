@@ -10,7 +10,10 @@ use syntax::{
 impl<T, Ty> Typecheck for Fold<T, Ty>
 where
     T: Term + Typecheck<Type = Ty>,
-    Ty: TypeGroup + Normalize<Ty> + Kindcheck<Ty> + SubstType<Ty, Target = Ty>,
+    Ty: TypeGroup
+        + Normalize<Ty, Env = <T as Typecheck>::Env>
+        + Kindcheck<Ty, Env = <T as Typecheck>::Env>
+        + SubstType<Ty, Target = Ty>,
     Mu<Ty>: Into<Ty>,
 {
     type Env = <T as Typecheck>::Env;

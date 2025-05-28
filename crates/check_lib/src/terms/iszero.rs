@@ -8,8 +8,9 @@ use syntax::{
 impl<T> Typecheck for IsZero<T>
 where
     T: Term + Typecheck,
-    <T as Typecheck>::Type:
-        TypeGroup + Normalize<<T as Typecheck>::Type> + Kindcheck<<T as Typecheck>::Type>,
+    <T as Typecheck>::Type: TypeGroup
+        + Normalize<<T as Typecheck>::Type, Env = <T as Typecheck>::Env>
+        + Kindcheck<<T as Typecheck>::Type, Env = <T as Typecheck>::Env>,
     Bool<<T as Typecheck>::Type>: Into<<T as Typecheck>::Type>,
 {
     type Type = <T as Typecheck>::Type;

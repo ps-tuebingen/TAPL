@@ -1,4 +1,4 @@
-use crate::{env::CheckEnvironment, to_check_err, Normalize, Typecheck};
+use crate::{env::CheckEnvironment, to_check_err, Kindcheck, Normalize, Typecheck};
 use common::errors::{Error, ErrorKind};
 use syntax::{
     terms::{Term, Unpack},
@@ -8,7 +8,9 @@ use syntax::{
 impl<T, Ty> Typecheck for Unpack<T, Ty>
 where
     T: Term + Typecheck<Type = Ty>,
-    Ty: TypeGroup + Normalize<<T as Typecheck>::Type>,
+    Ty: TypeGroup
+        + Normalize<<T as Typecheck>::Type, Env = <T as Typecheck>::Env>
+        + Kindcheck<Ty, Env = <T as Typecheck>::Env>,
 {
     type Type = <T as Typecheck>::Type;
     type Env = <T as Typecheck>::Env;

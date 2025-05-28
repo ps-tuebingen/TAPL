@@ -7,8 +7,10 @@ use syntax::{
 
 impl<T, Ty> Typecheck for Ascribe<T, Ty>
 where
-    T: Term + Typecheck<Type = Ty> + Kindcheck<Ty>,
-    Ty: TypeGroup + Normalize<Ty>,
+    T: Term + Typecheck<Type = Ty>,
+    Ty: TypeGroup
+        + Normalize<Ty, Env = <T as Typecheck>::Env>
+        + Kindcheck<Ty, Env = <T as Typecheck>::Env>,
 {
     type Type = <T as Typecheck>::Type;
     type Env = <T as Typecheck>::Env;
