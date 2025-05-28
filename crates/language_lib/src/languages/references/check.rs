@@ -1,11 +1,8 @@
 use super::{terms::Term, types::Type};
-use common::{
-    check::{CheckEnvironment, Kindcheck, Subtypecheck, Typecheck},
-    errors::{Error, ErrorKind},
-    kinds::Kind,
-    Location, TypeVar, Var,
-};
+use check::{CheckEnvironment, Kindcheck, Subtypecheck, Typecheck};
+use common::errors::{Error, ErrorKind};
 use std::collections::HashMap;
+use syntax::{kinds::Kind, Location, TypeVar, Var};
 
 pub type Env = HashMap<Var, Type>;
 pub type StoreTy = HashMap<Location, Type>;
@@ -88,12 +85,12 @@ impl Kindcheck<Type> for Type {
 #[cfg(test)]
 mod check_tests {
     use super::{Environment, Term};
-    use common::{
-        check::Typecheck,
+    use check::Typecheck;
+    use std::collections::HashMap;
+    use syntax::{
         terms::{App, Assign, Deref, Lambda, Loc, Num, Ref, Unit, Variable},
         types::{Reference, Unit as UnitTy},
     };
-    use std::collections::HashMap;
 
     #[test]
     fn check1() {

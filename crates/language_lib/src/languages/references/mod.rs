@@ -5,8 +5,8 @@ pub mod terms;
 pub mod types;
 pub mod values;
 
+use crate::Language;
 use check::Environment;
-use common::language::Language;
 use eval::Store;
 use terms::Term;
 use types::Type;

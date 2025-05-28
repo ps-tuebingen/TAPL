@@ -1,17 +1,14 @@
-use super::terms::Term;
-use common::{
-    errors::ErrorKind,
-    language::LanguageValue,
-    values::{
-        Cons, False, Lambda, Left, Nil, Nothing, Num, Pair, Record, Right, Something, True, Tuple,
-        Unit, Value as ValueTrait, Variant,
-    },
+use super::{terms::Term, types::Type};
+use common::errors::ErrorKind;
+use eval::values::{
+    Cons, False, Lambda, Left, Nil, Nothing, Num, Pair, Record, Right, Something, True, Tuple,
+    Unit, Value as ValueTrait, ValueGroup, Variant,
 };
 use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Value {
-    Lambda(Lambda<Term>),
+    Lambda(Lambda<Term, Type>),
     Unit(Unit<Term>),
     True(True<Term>),
     False(False<Term>),
@@ -28,11 +25,11 @@ pub enum Value {
     Cons(Cons<Term>),
 }
 
-impl common::values::Value for Value {
+impl syntax::values::Value for Value {
     type Term = Term;
 }
 
-impl LanguageValue for Value {
+impl ValueGroup for Value {
     type Term = Term;
 
     fn into_lambda(self) -> Result<Lambda<Term>, ErrorKind> {

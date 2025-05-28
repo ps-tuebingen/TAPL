@@ -1,6 +1,6 @@
 use super::{types::Type, values::Value};
-use common::{
-    language::LanguageTerm,
+use std::fmt;
+use syntax::{
     subst::{SubstTerm, SubstType},
     terms::{
         App, False, Fix, If, IsZero, Lambda, Num, Pack, Pred, Record, RecordProj, Succ, True, Unit,
@@ -8,7 +8,6 @@ use common::{
     },
     TypeVar, Var,
 };
-use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Term {

@@ -1,9 +1,7 @@
 use super::{get_n_inner, next_rule, pair_to_term, to_parse_err, Rule, Term};
-use common::{
-    errors::{Error, ErrorKind},
-    terms::{variantcase::VariantPattern, SomeCase, SumCase, VariantCase},
-};
+use common::errors::{Error, ErrorKind};
 use pest::iterators::Pair;
+use syntax::terms::{variantcase::VariantPattern, SomeCase, SumCase, VariantCase};
 
 #[derive(Debug)]
 enum PatternBinding {

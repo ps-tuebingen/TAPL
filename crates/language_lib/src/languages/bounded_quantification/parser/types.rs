@@ -1,10 +1,8 @@
 use super::{pair_to_n_inner, to_parse_err, Error, Rule, Type};
-use common::{
-    errors::ErrorKind,
-    types::{ExistsBounded, ForallBounded, Fun, Nat, Record, Top, TypeVariable},
-};
+use common::errors::ErrorKind;
 use pest::iterators::Pair;
 use std::collections::HashMap;
+use syntax::types::{ExistsBounded, ForallBounded, Fun, Nat, Record, Top, TypeVariable};
 
 pub fn pair_to_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
     let mut inner = p.into_inner();

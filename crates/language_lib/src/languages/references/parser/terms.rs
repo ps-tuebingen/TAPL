@@ -1,13 +1,13 @@
 use super::{pair_to_n_inner, to_parse_err, types::pair_to_type, Rule, Term};
-use common::{
-    errors::{Error, ErrorKind},
+use common::errors::{Error, ErrorKind};
+use pest::iterators::Pair;
+use syntax::{
     terms::{
         App, Assign, Deref, False, Fix, If, IsZero, Lambda, Let, Num, Pred, Ref, Succ, True, Unit,
         Variable,
     },
     types::Unit as UnitTy,
 };
-use pest::iterators::Pair;
 
 pub fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
     if p.as_rule() != Rule::term {

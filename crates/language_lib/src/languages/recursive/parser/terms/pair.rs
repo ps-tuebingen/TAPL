@@ -1,6 +1,6 @@
 use super::{pair_to_n_inner, pair_to_term, Error, Rule, Term};
-use common::terms::Pair as PairT;
 use pest::iterators::Pair;
+use syntax::terms::Pair as PairT;
 
 pub fn pair_to_pair(p: Pair<'_, Rule>) -> Result<PairT<Term>, Error> {
     let mut inner = pair_to_n_inner(p, vec!["Pair First", "Pair Second"])?;

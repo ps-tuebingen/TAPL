@@ -1,10 +1,8 @@
 use super::{pair_to_type, to_parse_err, Rule, Type};
-use common::{
-    errors::{Error, ErrorKind},
-    types::Record,
-};
+use common::errors::{Error, ErrorKind};
 use pest::iterators::Pair;
 use std::collections::HashMap;
+use syntax::types::Record;
 
 pub fn pair_to_rec_ty(p: Pair<'_, Rule>) -> Result<Record<Type>, Error> {
     let mut inner = p.into_inner();

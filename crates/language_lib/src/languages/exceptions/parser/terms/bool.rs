@@ -1,6 +1,7 @@
 use super::{pair_to_n_inner, pair_to_term, Rule, Term};
-use common::{errors::Error, terms::If};
+use common::errors::Error;
 use pest::iterators::Pair;
+use syntax::terms::If;
 
 pub fn pair_to_if(p: Pair<'_, Rule>) -> Result<If<Term>, Error> {
     let mut inner = pair_to_n_inner(

@@ -1,7 +1,7 @@
 use super::{terms::Term, types::Type};
 use common::{
     errors::{Error, ErrorKind, ErrorLocation},
-    Parse,
+    parse::Parse,
 };
 use pest::{iterators::Pair, Parser};
 use pest_derive::Parser;
@@ -22,7 +22,7 @@ where
 }
 
 #[derive(Parser)]
-#[grammar = "stlc/parser/stlc.pest"]
+#[grammar = "languages/stlc/parser/stlc.pest"]
 struct StlcParser;
 
 impl Parse for Term {

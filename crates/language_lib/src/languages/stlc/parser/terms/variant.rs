@@ -1,6 +1,7 @@
 use super::{get_n_inner, next_rule, pair_to_term, pair_to_type, Rule, Term};
-use common::{errors::Error, terms::Variant};
+use common::errors::Error;
 use pest::iterators::Pair;
+use syntax::terms::Variant;
 
 pub fn pair_to_variant(p: Pair<'_, Rule>) -> Result<Variant<Term>, Error> {
     let mut inner = get_n_inner(p, vec!["Variant Label", "Variant Term", "Variant Type"])?;

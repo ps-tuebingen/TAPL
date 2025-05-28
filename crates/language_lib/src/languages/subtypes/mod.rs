@@ -5,8 +5,8 @@ pub mod terms;
 pub mod types;
 pub mod values;
 
+use crate::Language;
 use check::TypingContext;
-use common::language::Language;
 use terms::Term;
 use types::Type;
 use values::Value;

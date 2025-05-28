@@ -1,11 +1,8 @@
 use super::{terms::Term, types::Type};
-use common::{
-    check::{Kindcheck, Subtypecheck, Typecheck},
-    errors::Error,
-    kinds::Kind,
-    Var,
-};
+use check::{Kindcheck, Subtypecheck, Typecheck};
+use common::errors::Error;
 use std::collections::HashMap;
+use syntax::{kinds::Kind, Var};
 
 impl Typecheck for Term {
     type Type = Type;

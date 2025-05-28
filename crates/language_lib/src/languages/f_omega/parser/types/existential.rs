@@ -1,6 +1,6 @@
 use super::{pair_to_kind, pair_to_n_inner, pair_to_type, Error, Rule, Type};
-use common::types::Exists;
 use pest::iterators::Pair;
+use syntax::types::Exists;
 
 pub fn pair_to_exists(p: Pair<'_, Rule>) -> Result<Exists<Type>, Error> {
     let mut inner = pair_to_n_inner(p, vec!["Exists Variable", "Exists Kind", "Exists Body"])?;

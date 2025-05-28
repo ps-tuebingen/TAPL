@@ -1,11 +1,10 @@
-use common::{
-    errors::ErrorKind,
-    language::LanguageType,
+use common::errors::ErrorKind;
+use std::fmt;
+use syntax::{
     subst::SubstType,
-    types::{Bool, Nat},
+    types::{Bool, Nat, TypeGroup},
     TypeVar,
 };
-use std::fmt;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum Type {
@@ -13,9 +12,9 @@ pub enum Type {
     Bool(Bool<Type>),
 }
 
-impl common::types::Type for Type {}
+impl syntax::types::Type for Type {}
 
-impl LanguageType for Type {
+impl TypeGroup for Type {
     fn into_nat(self) -> Result<Nat<Type>, ErrorKind> {
         if let Type::Nat(nat) = self {
             Ok(nat)

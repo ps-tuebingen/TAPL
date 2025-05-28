@@ -1,13 +1,13 @@
 use common::{
     errors::{Error, ErrorKind, ErrorLocation},
-    Parse,
+    parse::Parse,
 };
 pub mod lexer;
 
 use super::terms::Term;
-use common::terms::{False, If, IsZero, Num, Pred, Succ, True};
 use lexer::{lex, Token};
 use std::collections::VecDeque;
+use syntax::terms::{False, If, IsZero, Num, Pred, Succ, True};
 
 pub fn to_parse_err(knd: ErrorKind) -> Error {
     Error {
@@ -141,7 +141,7 @@ fn digits_to_num(mut digits: Vec<u8>) -> u64 {
 #[cfg(test)]
 mod parser_tests {
     use super::{digits_to_num, digits_to_term, parse};
-    use common::terms::{False, If, IsZero, Num, Pred, Succ, True};
+    use syntax::terms::{False, If, IsZero, Num, Pred, Succ, True};
 
     #[test]
     fn parse_true() {

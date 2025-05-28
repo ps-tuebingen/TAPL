@@ -1,8 +1,7 @@
 use super::{terms::Term, types::Type};
 use common::{
     errors::{Error, ErrorKind},
-    parse::to_parse_err,
-    Parse,
+    parse::{to_parse_err, Parse},
 };
 use pest::{iterators::Pair, Parser};
 use pest_derive::Parser;
@@ -13,7 +12,7 @@ use terms::pair_to_term;
 use types::pair_to_type;
 
 #[derive(Parser)]
-#[grammar = "system_f/parser/systemf.pest"]
+#[grammar = "languages/system_f/parser/systemf.pest"]
 struct SystemFParser;
 
 impl Parse for Term {

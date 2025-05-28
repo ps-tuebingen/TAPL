@@ -1,26 +1,20 @@
-use super::values::Value;
-use common::{
-    language::{untyped::Untyped, LanguageTerm},
+use std::fmt;
+use syntax::untyped::Untyped;
+use syntax::{
     subst::SubstTerm,
     terms::{App, Lambda, Variable},
 };
-use std::fmt;
 
 pub type Var = String;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Term {
     Var(Variable<Term>),
-    Lambda(Lambda<Term>),
+    Lambda(Lambda<Term, Untyped>),
     App(App<Term>),
 }
 
-impl common::terms::Term for Term {}
-
-impl LanguageTerm for Term {
-    type Type = Untyped;
-    type Value = Value;
-}
+impl syntax::terms::Term for Term {}
 
 impl fmt::Display for Term {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {

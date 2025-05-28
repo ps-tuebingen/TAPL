@@ -1,10 +1,10 @@
 use super::{pair_to_n_inner, pair_to_term, pair_to_type, to_parse_err, Rule, Term};
-use common::{
-    errors::{Error, ErrorKind},
+use common::errors::{Error, ErrorKind};
+use pest::iterators::Pair;
+use syntax::{
     terms::{Cons, ListCase, Nil},
     Var,
 };
-use pest::iterators::Pair;
 
 enum ListPattern {
     NilPattern {

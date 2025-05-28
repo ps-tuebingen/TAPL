@@ -1,8 +1,7 @@
 use super::terms::Term;
-use common::{
-    errors::ErrorKind,
-    language::LanguageValue,
-    values::{False, Fold, Lambda, Num, Pair, Record, True, Unit, Value as ValueTrait, Variant},
+use common::errors::ErrorKind;
+use eval::values::{
+    False, Fold, Lambda, Num, Pair, Record, True, Unit, Value as ValueTrait, ValueGroup, Variant,
 };
 use std::fmt;
 
@@ -19,11 +18,11 @@ pub enum Value {
     Variant(Variant<Term>),
 }
 
-impl common::values::Value for Value {
+impl syntax::values::Value for Value {
     type Term = Term;
 }
 
-impl LanguageValue for Value {
+impl ValueGroup for Value {
     type Term = Term;
     fn into_true(self) -> Result<True<Term>, ErrorKind> {
         if let Value::True(tru) = self {

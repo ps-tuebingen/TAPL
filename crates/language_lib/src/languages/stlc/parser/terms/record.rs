@@ -2,10 +2,10 @@ use super::{pair_to_term, Rule, Term};
 use common::{
     errors::{Error, ErrorKind},
     parse::to_parse_err,
-    terms::Record,
 };
 use pest::iterators::Pair;
 use std::collections::HashMap;
+use syntax::terms::Record;
 
 pub fn pair_to_rec(p: Pair<'_, Rule>) -> Result<Record<Term>, Error> {
     let mut records = HashMap::new();

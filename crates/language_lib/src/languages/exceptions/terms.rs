@@ -1,6 +1,6 @@
-use super::{types::Type, values::Value};
-use common::{
-    language::LanguageTerm,
+use super::types::Type;
+use std::fmt;
+use syntax::{
     subst::{SubstTerm, SubstType},
     terms::{
         App, Exception, False, If, IsZero, Lambda, Num, Pred, Raise, Succ, True, Try, TryWithVal,
@@ -8,7 +8,6 @@ use common::{
     },
     TypeVar, Var,
 };
-use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Term {
@@ -20,21 +19,16 @@ pub enum Term {
     Pred(Pred<Term>),
     IsZero(IsZero<Term>),
     If(If<Term>),
-    Lambda(Lambda<Term>),
+    Lambda(Lambda<Term, Type>),
     App(App<Term>),
     Unit(Unit<Term>),
-    Exception(Exception<Term>),
+    Exception(Exception<Term, Type>),
     Try(Try<Term>),
-    Raise(Raise<Term>),
+    Raise(Raise<Term, Type>),
     TryWithVal(TryWithVal<Term>),
 }
 
-impl common::terms::Term for Term {}
-
-impl LanguageTerm for Term {
-    type Type = Type;
-    type Value = Value;
-}
+impl syntax::terms::Term for Term {}
 
 impl fmt::Display for Term {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -152,8 +146,8 @@ impl From<If<Term>> for Term {
     }
 }
 
-impl From<Lambda<Term>> for Term {
-    fn from(lam: Lambda<Term>) -> Term {
+impl From<Lambda<Term, Type>> for Term {
+    fn from(lam: Lambda<Term, Type>) -> Term {
         Term::Lambda(lam)
     }
 }
@@ -170,8 +164,8 @@ impl From<Unit<Term>> for Term {
     }
 }
 
-impl From<Exception<Term>> for Term {
-    fn from(exc: Exception<Term>) -> Term {
+impl From<Exception<Term, Type>> for Term {
+    fn from(exc: Exception<Term, Type>) -> Term {
         Term::Exception(exc)
     }
 }
@@ -182,8 +176,8 @@ impl From<Try<Term>> for Term {
     }
 }
 
-impl From<Raise<Term>> for Term {
-    fn from(raise: Raise<Term>) -> Term {
+impl From<Raise<Term, Type>> for Term {
+    fn from(raise: Raise<Term, Type>) -> Term {
         Term::Raise(raise)
     }
 }
@@ -197,7 +191,7 @@ impl From<TryWithVal<Term>> for Term {
 #[cfg(test)]
 pub mod term_tests {
     use super::{App, Lambda, Raise, Term, Try, TryWithVal, Unit, Variable};
-    use common::types::Unit as UnitTy;
+    use syntax::types::Unit as UnitTy;
 
     pub fn example_term1() -> Term {
         Try::<Term>::new(

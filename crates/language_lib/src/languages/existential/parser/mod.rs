@@ -1,7 +1,7 @@
 use super::{terms::Term, types::Type};
 use common::{
     errors::{Error, ErrorKind, ErrorLocation},
-    Parse,
+    parse::Parse,
 };
 use pest::{iterators::Pair, Parser};
 use pest_derive::Parser;
@@ -28,7 +28,7 @@ impl Parse for Term {
 }
 
 #[derive(Parser)]
-#[grammar = "existential/parser/existential.pest"]
+#[grammar = "languages/existential/parser/existential.pest"]
 struct ExistentialParser;
 
 pub fn parse(input: String) -> Result<Term, Error> {

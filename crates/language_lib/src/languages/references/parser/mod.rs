@@ -2,7 +2,7 @@ use super::{terms::Term, types::Type};
 use common::{
     errors::{Error, ErrorKind},
     parse::to_parse_err,
-    Parse,
+    parse::Parse,
 };
 use pest::{iterators::Pair, Parser};
 use pest_derive::Parser;
@@ -12,7 +12,7 @@ mod types;
 use terms::pair_to_term;
 
 #[derive(Parser)]
-#[grammar = "references/parser/references.pest"]
+#[grammar = "languages/references/parser/references.pest"]
 struct ReferencesParser;
 
 impl Parse for Term {

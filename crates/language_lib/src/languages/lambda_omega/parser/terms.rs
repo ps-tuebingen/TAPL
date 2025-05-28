@@ -1,9 +1,7 @@
 use super::{pair_to_kind, pair_to_n_inner, pair_to_type, to_parse_err, Rule, Term};
-use common::{
-    errors::{Error, ErrorKind},
-    terms::{App, False, Lambda, Num, True, TyApp, TyLambda, Unit, Variable},
-};
+use common::errors::{Error, ErrorKind};
 use pest::iterators::Pair;
+use syntax::terms::{App, False, Lambda, Num, True, TyApp, TyLambda, Unit, Variable};
 
 pub fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
     let mut inner = p.into_inner();

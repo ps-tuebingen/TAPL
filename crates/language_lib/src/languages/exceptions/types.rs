@@ -1,11 +1,10 @@
-use common::{
-    errors::ErrorKind,
-    language::LanguageType,
+use common::errors::ErrorKind;
+use std::fmt;
+use syntax::{
     subst::SubstType,
-    types::{Bool, Fun, Nat, Unit},
+    types::{Bool, Fun, Nat, TypeGroup, Unit},
     TypeVar,
 };
-use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Type {
@@ -15,9 +14,9 @@ pub enum Type {
     Fun(Fun<Type>),
 }
 
-impl common::types::Type for Type {}
+impl syntax::types::Type for Type {}
 
-impl LanguageType for Type {
+impl TypeGroup for Type {
     fn into_unit(self) -> Result<Unit<Type>, ErrorKind> {
         if let Type::Unit(u) = self {
             Ok(u)

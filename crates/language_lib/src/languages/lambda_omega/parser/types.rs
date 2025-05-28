@@ -1,10 +1,10 @@
 use super::{pair_to_kind, pair_to_n_inner, to_parse_err, Rule, Type};
-use common::{
-    errors::{Error, ErrorKind},
+use common::errors::{Error, ErrorKind};
+use pest::iterators::Pair;
+use syntax::{
     kinds::Kind,
     types::{Bool, Forall, Fun, Nat, OpApp, OpLambda, TypeVariable, Unit},
 };
-use pest::iterators::Pair;
 
 pub fn pair_to_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
     let mut inner = p.into_inner();

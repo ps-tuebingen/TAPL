@@ -1,6 +1,6 @@
 use super::{pair_to_kind, pair_to_n_inner, pair_to_type, Error, Rule, Type};
-use common::{kinds::Kind, types::OpLambda};
 use pest::iterators::Pair;
+use syntax::{kinds::Kind, types::OpLambda};
 
 pub fn pair_to_op_lambda(p: Pair<'_, Rule>) -> Result<OpLambda<Type>, Error> {
     let mut inner = pair_to_n_inner(

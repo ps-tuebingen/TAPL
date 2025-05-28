@@ -1,10 +1,8 @@
 use super::{get_n_inner, next_rule, to_parse_err, Rule, Type};
-use common::{
-    errors::{Error, ErrorKind},
-    types::{Bool, Fun, Nat, Product, Record, Sum, Tuple, Unit, Variant},
-};
+use common::errors::{Error, ErrorKind};
 use pest::iterators::Pair;
 use std::collections::HashMap;
+use syntax::types::{Bool, Fun, Nat, Product, Record, Sum, Tuple, Unit, Variant};
 
 pub fn pair_to_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
     match p.as_rule() {

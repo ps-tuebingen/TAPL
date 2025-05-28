@@ -1,9 +1,7 @@
 use super::{pair_to_n_inner, pair_to_prim_term, pair_to_term, Rule, Term};
-use common::{
-    errors::Error,
-    terms::{Assign, Deref, Ref},
-};
+use common::errors::Error;
 use pest::iterators::Pair;
+use syntax::terms::{Assign, Deref, Ref};
 
 pub fn pair_to_ref(p: Pair<'_, Rule>) -> Result<Ref<Term>, Error> {
     let mut inner = pair_to_n_inner(p, vec!["Ref Keyword", "Ref Term"])?;

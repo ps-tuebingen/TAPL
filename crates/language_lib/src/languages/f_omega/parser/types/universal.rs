@@ -1,6 +1,6 @@
 use super::{pair_to_kind, pair_to_n_inner, pair_to_type, Error, Rule, Type};
-use common::{kinds::Kind, types::Forall};
 use pest::iterators::Pair;
+use syntax::{kinds::Kind, types::Forall};
 
 pub fn pair_to_universal(p: Pair<'_, Rule>) -> Result<Forall<Type>, Error> {
     let mut inner = pair_to_n_inner(p, vec!["Forall Variable", "Forall Kind", "Forall Body"])?;

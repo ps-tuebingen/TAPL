@@ -1,28 +1,28 @@
-use super::terms::Term;
-use common::{
-    errors::ErrorKind,
-    language::LanguageValue,
-    values::{Exception, False, Lambda, Num, Raise, True, Unit, Value as ValueTrait},
+use super::{terms::Term, types::Type};
+use common::errors::ErrorKind;
+use eval::values::{
+    Exception, False, Lambda, Num, Raise, True, Unit, Value as ValueTrait, ValueGroup,
 };
 use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Value {
-    Lambda(Lambda<Term>),
+    Lambda(Lambda<Term, Type>),
     Num(Num<Term>),
     Unit(Unit<Term>),
     True(True<Term>),
     False(False<Term>),
-    Exception(Exception<Term>),
-    Raise(Raise<Term>),
+    Exception(Exception<Term, Type>),
+    Raise(Raise<Value, Type>),
 }
 
-impl common::values::Value for Value {
+impl eval::values::Value for Value {
     type Term = Term;
 }
 
-impl LanguageValue for Value {
+impl ValueGroup for Value {
     type Term = Term;
+    type Type = Type;
 
     fn into_true(self) -> Result<True<Term>, ErrorKind> {
         if let Value::True(tru) = self {
@@ -46,7 +46,7 @@ impl LanguageValue for Value {
         }
     }
 
-    fn into_exception(self) -> Result<Exception<Term>, ErrorKind> {
+    fn into_exception(self) -> Result<Exception<Term, Type>, ErrorKind> {
         if let Value::Exception(ex) = self {
             Ok(ex)
         } else {
@@ -57,7 +57,7 @@ impl LanguageValue for Value {
         }
     }
 
-    fn into_lambda(self) -> Result<Lambda<Term>, ErrorKind> {
+    fn into_lambda(self) -> Result<Lambda<Term, Type>, ErrorKind> {
         if let Value::Lambda(lam) = self {
             Ok(lam)
         } else {
@@ -68,7 +68,7 @@ impl LanguageValue for Value {
         }
     }
 
-    fn into_raise(self) -> Result<Raise<Term>, ErrorKind> {
+    fn into_raise(self) -> Result<Raise<Term, Type>, ErrorKind> {
         if let Value::Raise(raise) = self {
             Ok(raise)
         } else {
@@ -119,8 +119,8 @@ impl fmt::Display for Value {
     }
 }
 
-impl From<Lambda<Term>> for Value {
-    fn from(lam: Lambda<Term>) -> Value {
+impl From<Lambda<Term, Type>> for Value {
+    fn from(lam: Lambda<Term, Type>) -> Value {
         Value::Lambda(lam)
     }
 }
@@ -149,14 +149,14 @@ impl From<False<Term>> for Value {
     }
 }
 
-impl From<Exception<Term>> for Value {
-    fn from(exc: Exception<Term>) -> Value {
+impl From<Exception<Term, Type>> for Value {
+    fn from(exc: Exception<Term, Type>) -> Value {
         Value::Exception(exc)
     }
 }
 
-impl From<Raise<Term>> for Value {
-    fn from(raise: Raise<Term>) -> Value {
+impl From<Raise<Term, Type>> for Value {
+    fn from(raise: Raise<Term, Type>) -> Value {
         Value::Raise(raise)
     }
 }

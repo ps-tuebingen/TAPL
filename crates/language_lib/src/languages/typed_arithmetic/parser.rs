@@ -1,14 +1,14 @@
 use super::terms::Term;
 use common::{
     errors::{Error, ErrorKind, ErrorLocation},
-    terms::{False, If, IsZero, Num, Pred, Succ, True},
-    Parse,
+    parse::Parse,
 };
 use pest::{iterators::Pair, Parser};
 use pest_derive::Parser;
+use syntax::terms::{False, If, IsZero, Num, Pred, Succ, True};
 
 #[derive(Parser)]
-#[grammar = "typed_arithmetic/typed_arith.pest"]
+#[grammar = "languages/typed_arithmetic/typed_arith.pest"]
 struct TypedArithParser;
 
 pub fn to_parse_err<T>(knd: T) -> Error

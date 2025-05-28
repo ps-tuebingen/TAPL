@@ -1,9 +1,7 @@
 use super::{Rule, Term};
-use common::{
-    errors::Error,
-    terms::{Projection, RecordProj},
-};
+use common::errors::Error;
 use pest::iterators::Pair;
+use syntax::terms::{Projection, RecordProj};
 
 pub fn pair_to_proj(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
     let target_pair_str = p.as_str().trim();

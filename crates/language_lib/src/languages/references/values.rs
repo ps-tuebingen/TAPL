@@ -1,9 +1,6 @@
 use super::terms::Term;
-use common::{
-    errors::ErrorKind,
-    language::LanguageValue,
-    values::{False, Lambda, Loc, Num, True, Unit, Value as ValueTrait},
-};
+use common::errors::ErrorKind;
+use eval::values::{False, Lambda, Loc, Num, True, Unit, Value as ValueTrait};
 use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]

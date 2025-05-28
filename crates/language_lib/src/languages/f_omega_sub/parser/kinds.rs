@@ -1,6 +1,7 @@
 use super::{pair_to_n_inner, to_parse_err, Error, Rule};
-use common::{errors::ErrorKind, kinds::Kind};
+use common::errors::ErrorKind;
 use pest::iterators::Pair;
+use syntax::kinds::Kind;
 
 pub fn pair_to_kind(p: Pair<'_, Rule>) -> Result<Kind, Error> {
     let mut inner = p.into_inner();

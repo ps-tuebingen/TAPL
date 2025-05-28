@@ -1,6 +1,6 @@
 use super::{pair_to_n_inner, pair_to_term, pair_to_type, Error, Rule, Term};
-use common::terms::{Pack, Unpack};
 use pest::iterators::Pair;
+use syntax::terms::{Pack, Unpack};
 
 pub fn pair_to_pack(p: Pair<'_, Rule>) -> Result<Pack<Term>, Error> {
     let mut inner = pair_to_n_inner(

@@ -2,9 +2,9 @@ use super::{get_n_inner, next_rule, pair_to_term, pair_to_type, Rule, Term};
 use common::{
     errors::{Error, ErrorKind},
     parse::to_parse_err,
-    terms::{Cons, Head, IsNil, Nil, Tail},
 };
 use pest::iterators::Pair;
+use syntax::terms::{Cons, Head, IsNil, Nil, Tail};
 
 pub fn pair_to_nil(p: Pair<'_, Rule>) -> Result<Nil<Term>, Error> {
     let ty_pair = get_n_inner(p, vec!["Nil Type"])?.remove(0);

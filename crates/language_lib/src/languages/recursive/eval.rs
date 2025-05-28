@@ -1,10 +1,9 @@
 use super::{terms::Term, types::Type, values::Value};
-use common::{
-    errors::Error,
-    eval::{Eval, Normalize},
-    Var,
-};
+use check::Normalize;
+use common::errors::Error;
+use eval::Eval;
 use std::collections::HashMap;
+use syntax::Var;
 
 impl Eval for Term {
     type Env = ();

@@ -1,6 +1,6 @@
 use super::{pair_to_kind, pair_to_n_inner, pair_to_type, Error, Rule, Type};
-use common::types::{ExistsBounded, Top};
 use pest::iterators::Pair;
+use syntax::types::{ExistsBounded, Top};
 
 pub fn pair_to_exists(p: Pair<'_, Rule>) -> Result<ExistsBounded<Type>, Error> {
     let mut inner = pair_to_n_inner(

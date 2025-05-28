@@ -1,9 +1,9 @@
 use super::{pair_to_kind, pair_to_n_inner, pair_to_term, pair_to_type, Error, Rule, Term};
-use common::{
+use pest::iterators::Pair;
+use syntax::{
     terms::{LambdaSub, TyApp},
     types::Top,
 };
-use pest::iterators::Pair;
 
 pub fn pair_to_ty_lambda(p: Pair<'_, Rule>) -> Result<LambdaSub<Term>, Error> {
     let mut inner = pair_to_n_inner(

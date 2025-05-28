@@ -1,11 +1,10 @@
-use common::{
-    errors::ErrorKind,
-    language::LanguageType,
+use common::errors::ErrorKind;
+use std::fmt;
+use syntax::{
     subst::SubstType,
     types::{Bool, Fun, Nat, Reference, Unit},
     TypeVar,
 };
-use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Type {

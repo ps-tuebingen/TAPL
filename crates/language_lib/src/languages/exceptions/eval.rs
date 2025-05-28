@@ -1,9 +1,8 @@
 use super::{check::ExceptionEnv, terms::Term, types::Type, values::Value};
-use common::{
-    errors::Error,
-    eval::{Eval, Normalize},
-    terms::{False, Num, True, Unit, Variable},
-};
+use check::Normalize;
+use common::errors::Error;
+use eval::Eval;
+use syntax::terms::{False, Num, True, Unit, Variable};
 
 impl Eval for Term {
     type Value = Value;
@@ -40,7 +39,7 @@ impl Normalize<Type> for Type {
 #[cfg(test)]
 mod eval_tests {
     use super::super::terms::term_tests::{example_term1, example_term2};
-    use common::{values::Unit, Eval};
+    use eval::{values::Unit, Eval};
 
     #[test]
     fn eval1() {

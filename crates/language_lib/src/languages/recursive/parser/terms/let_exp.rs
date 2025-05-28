@@ -1,6 +1,6 @@
 use super::{pair_to_n_inner, pair_to_term, Error, Rule, Term};
-use common::terms::Let;
 use pest::iterators::Pair;
+use syntax::terms::Let;
 
 pub fn pair_to_let(p: Pair<'_, Rule>) -> Result<Let<Term>, Error> {
     let mut inner = pair_to_n_inner(

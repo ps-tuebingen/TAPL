@@ -1,6 +1,7 @@
 use super::{pair_to_term, Rule, Term};
-use common::{errors::Error, terms::Tuple};
+use common::errors::Error;
 use pest::iterators::Pair;
+use syntax::terms::Tuple;
 
 pub fn pair_to_tup(p: Pair<'_, Rule>) -> Result<Tuple<Term>, Error> {
     let mut terms = vec![];

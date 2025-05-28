@@ -1,10 +1,10 @@
 use super::{pair_to_n_inner, pair_to_type, to_parse_err, Rule, Term};
-use common::{
-    errors::{Error, ErrorKind},
+use common::errors::{Error, ErrorKind};
+use pest::iterators::Pair;
+use syntax::{
     terms::{App, False, Lambda, Num, True, Unit, Variable},
     types::Unit as UnitTy,
 };
-use pest::iterators::Pair;
 
 mod bool;
 mod cast;

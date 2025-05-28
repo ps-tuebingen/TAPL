@@ -1,6 +1,7 @@
 use super::{get_n_inner, pair_to_type, Rule, Term};
-use common::{errors::Error, terms::Ascribe};
+use common::errors::Error;
 use pest::iterators::Pair;
+use syntax::terms::Ascribe;
 
 pub fn pair_to_ascribe(p: Pair<'_, Rule>, t: Term) -> Result<Ascribe<Term>, Error> {
     let mut inner = get_n_inner(p, vec!["Ascribed Type"])?;

@@ -2,7 +2,7 @@ use super::{terms::Term, types::Type};
 use common::{
     errors::{Error, ErrorKind},
     parse::to_parse_err,
-    Parse,
+    parse::Parse,
 };
 use pest::{iterators::Pair, Parser};
 use pest_derive::Parser;
@@ -13,7 +13,7 @@ use terms::pair_to_term;
 use types::pair_to_type;
 
 #[derive(Parser)]
-#[grammar = "subtypes/parser/subtypes.pest"]
+#[grammar = "languages/subtypes/parser/subtypes.pest"]
 struct SubtypesParser;
 
 impl Parse for Term {

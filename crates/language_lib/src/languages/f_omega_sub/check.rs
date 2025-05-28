@@ -1,12 +1,8 @@
 use super::{terms::Term, types::Type};
-use common::{
-    check::{CheckEnvironment, Kindcheck, Subtypecheck, Typecheck},
-    errors::{Error, ErrorKind},
-    kinds::Kind,
-    types::Top,
-    Location, TypeVar, Var,
-};
+use check::{CheckEnvironment, Kindcheck, Subtypecheck, Typecheck};
+use common::errors::{Error, ErrorKind};
 use std::collections::HashMap;
+use syntax::{kinds::Kind, types::Top, Location, TypeVar, Var};
 
 #[derive(Clone, Default)]
 pub struct Env {

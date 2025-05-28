@@ -1,13 +1,12 @@
-use common::{
-    errors::ErrorKind,
-    language::LanguageType,
+use common::errors::ErrorKind;
+use std::fmt;
+use syntax::{
     subst::SubstType,
     types::{
         ExistsBounded, ForallBounded, Fun, Nat, OpApp, OpLambdaSub, Record, Top, TypeVariable,
     },
     TypeVar,
 };
-use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Type {

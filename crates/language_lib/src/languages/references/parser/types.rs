@@ -1,9 +1,7 @@
 use super::{pair_to_n_inner, to_parse_err, Rule, Type};
-use common::{
-    errors::{Error, ErrorKind},
-    types::{Bool, Fun, Nat, Reference, Unit},
-};
+use common::errors::{Error, ErrorKind};
 use pest::iterators::Pair;
+use syntax::types::{Bool, Fun, Nat, Reference, Unit};
 
 pub fn pair_to_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
     if p.as_rule() != Rule::r#type {

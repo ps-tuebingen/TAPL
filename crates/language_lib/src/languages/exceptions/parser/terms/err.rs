@@ -1,9 +1,7 @@
 use super::{pair_to_n_inner, pair_to_term, pair_to_type, Rule, Term};
-use common::{
-    errors::Error,
-    terms::{Exception, Raise, Try, TryWithVal},
-};
+use common::errors::Error;
 use pest::iterators::Pair;
+use syntax::terms::{Exception, Raise, Try, TryWithVal};
 
 pub fn pair_to_try_with(p: Pair<'_, Rule>) -> Result<Try<Term>, Error> {
     let mut inner = pair_to_n_inner(

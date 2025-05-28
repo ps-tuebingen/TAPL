@@ -1,9 +1,7 @@
 use super::{get_n_inner, next_rule, pair_to_term, pair_to_type, Rule, Term};
-use common::{
-    errors::Error,
-    terms::{Left, Right},
-};
+use common::errors::Error;
 use pest::iterators::Pair;
+use syntax::terms::{Left, Right};
 
 pub fn pair_to_left(p: Pair<'_, Rule>) -> Result<Left<Term>, Error> {
     let mut inner = get_n_inner(p, vec!["Inl Argument", "Inl Type"])?;

@@ -1,10 +1,7 @@
 use super::terms::Term;
-use common::{
-    errors::ErrorKind,
-    language::LanguageValue,
-    values::{
-        Cons, False, Lambda, Loc, Nil, Num, Record, True, Unit, Value as ValueTrait, Variant,
-    },
+use common::errors::ErrorKind;
+use eval::values::{
+    Cons, False, Lambda, Loc, Nil, Num, Record, True, Unit, Value as ValueTrait, Variant,
 };
 use std::fmt;
 

@@ -2,7 +2,7 @@ use super::{terms::Term, types::Type};
 use common::{
     errors::{Error, ErrorKind},
     parse::to_parse_err,
-    Parse,
+    parse::Parse,
 };
 use pest::{iterators::Pair, Parser};
 use pest_derive::Parser;
@@ -15,7 +15,7 @@ use terms::pair_to_term;
 use types::pair_to_type;
 
 #[derive(Parser)]
-#[grammar = "lambda_omega/parser/lambda_omega.pest"]
+#[grammar = "languages/lambda_omega/parser/lambda_omega.pest"]
 struct LambdaOmegaParser;
 
 impl Parse for Term {

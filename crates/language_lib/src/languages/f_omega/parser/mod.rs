@@ -1,7 +1,7 @@
 use super::{terms::Term, types::Type};
 use common::{
     errors::{Error, ErrorKind, ErrorLocation},
-    Parse,
+    parse::Parse,
 };
 use pest::{iterators::Pair, Parser};
 use pest_derive::Parser;
@@ -24,7 +24,7 @@ where
 }
 
 #[derive(Parser)]
-#[grammar = "f_omega/parser/fomega.pest"]
+#[grammar = "languages/f_omega/parser/fomega.pest"]
 struct FOmegaParser;
 
 impl Parse for Term {

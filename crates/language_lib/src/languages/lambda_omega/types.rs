@@ -1,10 +1,9 @@
-use common::{
-    errors::ErrorKind,
-    language::LanguageType,
+use common::errors::ErrorKind;
+use std::fmt;
+use syntax::{
     subst::SubstType,
     types::{Bool, Forall, Fun, Nat, OpApp, OpLambda, TypeVariable, Unit},
 };
-use std::fmt;
 
 pub type TypeVar = String;
 

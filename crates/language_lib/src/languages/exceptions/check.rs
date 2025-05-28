@@ -1,11 +1,8 @@
 use super::{terms::Term, types::Type};
-use common::{
-    check::{CheckEnvironment, Kindcheck, Subtypecheck, Typecheck},
-    errors::{Error, ErrorKind},
-    kinds::Kind,
-    Location, TypeVar, Var,
-};
+use check::{env::CheckEnvironment, Kindcheck, Subtypecheck, Typecheck};
+use common::errors::{Error, ErrorKind};
 use std::collections::HashMap;
+use syntax::{kinds::Kind, Location, TypeVar, Var};
 
 #[derive(Default, Clone)]
 pub struct ExceptionEnv {
@@ -80,7 +77,8 @@ impl Kindcheck<Type> for Type {
 #[cfg(test)]
 mod check_tests {
     use super::super::terms::term_tests::{example_term1, example_term2};
-    use common::{check::Typecheck, types::Unit};
+    use check::Typecheck;
+    use syntax::types::Unit;
 
     #[test]
     fn check1() {

@@ -1,9 +1,7 @@
 use super::{get_n_inner, next_rule, pair_to_term, pair_to_type, Rule, Term};
-use common::{
-    errors::Error,
-    terms::{Nothing, Something},
-};
+use common::errors::Error;
 use pest::iterators::Pair;
+use syntax::terms::{Nothing, Something};
 
 pub fn pair_to_some(p: Pair<'_, Rule>) -> Result<Something<Term>, Error> {
     let arg_pair = get_n_inner(p, vec!["Something Argument"])?.remove(0);

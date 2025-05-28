@@ -1,10 +1,9 @@
 use super::{check::Environment, terms::Term, types::Type, values::Value};
-use common::{
-    errors::{Error, ErrorKind},
-    eval::{Eval, EvalEnvironment, Normalize},
-    Location,
-};
+use check::Normalize;
+use common::errors::{Error, ErrorKind};
+use eval::{env::EvalEnvironment, Eval};
 use std::collections::HashMap;
+use syntax::Location;
 
 #[derive(Default)]
 pub struct Store(HashMap<Location, Value>);
@@ -66,10 +65,10 @@ impl Normalize<Type> for Type {
 #[cfg(test)]
 mod check_tests {
     use super::{Eval, Term};
-    use common::{
+    use eval::values::Unit as UnitVal;
+    use syntax::{
         terms::{App, Assign, Deref, Lambda, Loc, Ref, Unit, Variable},
         types::{Reference, Unit as UnitTy},
-        values::Unit as UnitVal,
     };
 
     #[test]

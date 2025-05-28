@@ -1,9 +1,7 @@
 use super::{pair_to_n_inner, pair_to_prim_term, Rule, Term};
-use common::{
-    errors::Error,
-    terms::{IsZero, Pred, Succ},
-};
+use common::errors::Error;
 use pest::iterators::Pair;
+use syntax::terms::{IsZero, Pred, Succ};
 
 pub fn pair_to_succ(p: Pair<'_, Rule>) -> Result<Succ<Term>, Error> {
     let mut inner = pair_to_n_inner(p, vec!["Succ Keyword", "Succ Argument"])?;

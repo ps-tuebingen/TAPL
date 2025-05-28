@@ -1,9 +1,7 @@
 use super::{pair_to_kind, pair_to_n_inner, to_parse_err, Rule, Type};
-use common::{
-    errors::{Error, ErrorKind},
-    types::{Bool, Fun, Nat, OpApp, TypeVariable, Unit},
-};
+use common::errors::{Error, ErrorKind};
 use pest::iterators::Pair;
+use syntax::types::{Bool, Fun, Nat, OpApp, TypeVariable, Unit};
 
 mod existential;
 mod op_lambda;

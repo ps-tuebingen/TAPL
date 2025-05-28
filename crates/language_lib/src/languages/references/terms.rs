@@ -1,6 +1,6 @@
 use super::{types::Type, values::Value};
-use common::{
-    language::LanguageTerm,
+use std::fmt;
+use syntax::{
     subst::{SubstTerm, SubstType},
     terms::{
         App, Assign, Deref, False, Fix, If, IsZero, Lambda, Let, Loc, Num, Pred, Ref, Succ, True,
@@ -8,7 +8,6 @@ use common::{
     },
     TypeVar, Var,
 };
-use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Term {
@@ -195,7 +194,7 @@ impl From<IsZero<Term>> for Term {
 #[cfg(test)]
 mod term_tests {
     use super::Term;
-    use common::{
+    use syntax::{
         subst::SubstTerm,
         terms::{App, Assign, Deref, Lambda, Num, Ref, Unit, Variable},
         types::Unit as UnitTy,

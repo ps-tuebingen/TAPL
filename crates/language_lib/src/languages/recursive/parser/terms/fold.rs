@@ -1,6 +1,6 @@
 use super::{pair_to_n_inner, pair_to_term, pair_to_type, Error, Rule, Term};
-use common::terms::{Fold, Unfold};
 use pest::iterators::Pair;
+use syntax::terms::{Fold, Unfold};
 
 pub fn pair_to_fold(p: Pair<'_, Rule>) -> Result<Fold<Term>, Error> {
     let mut inner = pair_to_n_inner(p, vec!["Fold Keyword", "Fold Type", "fold Term"])?;

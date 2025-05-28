@@ -2,9 +2,9 @@ use super::{get_n_inner, next_rule, pair_to_term, Rule, Term};
 use common::{
     errors::{Error, ErrorKind},
     parse::to_parse_err,
-    terms::{IsZero, Num, Pred, Succ},
 };
 use pest::iterators::Pair;
+use syntax::terms::{IsZero, Num, Pred, Succ};
 
 pub fn pair_to_num(p: Pair<'_, Rule>) -> Result<Term, Error> {
     let num_str = p.as_str().trim();

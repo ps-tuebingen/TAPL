@@ -1,9 +1,7 @@
 use super::{pair_to_n_inner, pair_to_type, to_parse_err, Rule, Term};
-use common::{
-    errors::{Error, ErrorKind},
-    terms::{App, Num, Variable},
-};
+use common::errors::{Error, ErrorKind};
 use pest::iterators::Pair;
+use syntax::terms::{App, Num, Variable};
 
 mod lambda;
 mod lambda_sub;

@@ -1,6 +1,6 @@
 use super::{pair_to_n_inner, pair_to_primterm, Error, Rule, Term};
-use common::terms::{Pred, Succ};
 use pest::iterators::Pair;
+use syntax::terms::{Pred, Succ};
 
 pub fn pair_to_succ(p: Pair<'_, Rule>) -> Result<Succ<Term>, Error> {
     let arg_rule = pair_to_n_inner(p, vec!["Succ Argument"])?.remove(0);

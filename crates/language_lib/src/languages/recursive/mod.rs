@@ -5,8 +5,9 @@ pub mod terms;
 pub mod types;
 pub mod values;
 
-use common::{language::Language, Var};
+use crate::Language;
 use std::collections::HashMap;
+use syntax::Var;
 use terms::Term;
 use types::Type;
 use values::Value;

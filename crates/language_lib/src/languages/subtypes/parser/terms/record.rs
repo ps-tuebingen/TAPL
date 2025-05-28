@@ -2,10 +2,10 @@ use super::{pair_to_n_inner, pair_to_term, Rule, Term};
 use common::{
     errors::{Error, ErrorKind},
     parse::to_parse_err,
-    terms::{Record, RecordProj},
 };
 use pest::iterators::Pair;
 use std::collections::HashMap;
+use syntax::terms::{Record, RecordProj};
 
 pub fn pair_to_record(p: Pair<'_, Rule>) -> Result<Record<Term>, Error> {
     let mut inner = p.into_inner();

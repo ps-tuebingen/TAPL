@@ -1,9 +1,7 @@
-use super::{pair_to_n_inner, pair_to_type, to_parse_err, Rule, Term};
-use common::{
-    errors::{Error, ErrorKind},
-    terms::{App, False, Num, RecordProj, True, Unit, Variable},
-};
+use super::{pair_to_n_inner, pair_to_type, to_parse_err, Rule, Term, Type};
+use common::errors::{Error, ErrorKind};
 use pest::iterators::Pair;
+use syntax::terms::{App, False, Num, RecordProj, True, Unit, Variable};
 
 mod bool;
 mod fix;
