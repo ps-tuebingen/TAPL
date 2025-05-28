@@ -1,11 +1,9 @@
 [package]
-name = "language_core"
+name = "language"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 common={ path="../common_lib" }
-check={path="../check_lib"}
-eval={path="../eval_lib"}
 pest={version="2.7.15"}
 pest_derive={version="2.7.15"}

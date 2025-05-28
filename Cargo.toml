@@ -6,8 +6,7 @@ members = [
     "crates/eval_lib",
     "crates/check_lib",
     "crates/common_lib",
-    "crates/language_core_lib",
-    "crates/language_impl_lib",
+    "crates/language_lib",
     "crates/test_utils",
     "tests",
 ]

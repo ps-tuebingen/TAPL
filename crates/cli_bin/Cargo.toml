@@ -10,4 +10,4 @@ path = "src/main.rs"
 [dependencies]
 clap = { version = "4", features=["derive"]}
 common = { path="../common_lib" }
-language_impl = {path="../language_impl_lib"}
+language = {path="../language_lib"}
