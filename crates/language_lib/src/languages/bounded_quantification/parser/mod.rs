@@ -1,8 +1,7 @@
 use super::{terms::Term, types::Type};
 use common::{
     errors::{Error, ErrorKind},
-    parse::to_parse_err,
-    Parse,
+    parse::{to_parse_err, Parse},
 };
 use pest::{iterators::Pair, Parser};
 use pest_derive::Parser;
@@ -12,7 +11,7 @@ use terms::pair_to_term;
 use types::pair_to_type;
 
 #[derive(Parser)]
-#[grammar = "bounded_quantification/parser/bounded.pest"]
+#[grammar = "languages/bounded_quantification/parser/bounded.pest"]
 struct BoundedParser;
 
 impl Parse for Term {

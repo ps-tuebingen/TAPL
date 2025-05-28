@@ -1,9 +1,6 @@
 use super::terms::Term;
-use common::{
-    errors::ErrorKind,
-    language::LanguageValue,
-    values::{Lambda, LambdaSub, Num, Pack, Record, Value as ValueTrait},
-};
+use common::errors::ErrorKind;
+use eval::values::{Lambda, LambdaSub, Num, Pack, Record, Value as ValueTrait, ValueGroup};
 use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -15,11 +12,11 @@ pub enum Value {
     Record(Record<Term>),
 }
 
-impl common::values::Value for Value {
+impl eval::values::Value for Value {
     type Term = Term;
 }
 
-impl LanguageValue for Value {
+impl ValueGroup for Value {
     type Term = Term;
 
     fn into_lambda(self) -> Result<Lambda<Term>, ErrorKind> {

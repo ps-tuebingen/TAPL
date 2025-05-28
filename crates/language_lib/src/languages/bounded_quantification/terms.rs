@@ -1,13 +1,12 @@
-use super::{types::Type, values::Value};
-use common::{
-    language::LanguageTerm,
+use super::types::Type;
+use std::fmt;
+use syntax::{
     subst::{SubstTerm, SubstType},
     terms::{
         App, Lambda, LambdaSub, Num, Pack, Pred, Record, RecordProj, Succ, TyApp, Unpack, Variable,
     },
     TypeVar, Var,
 };
-use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Term {
@@ -15,22 +14,17 @@ pub enum Term {
     Num(Num<Term>),
     Succ(Succ<Term>),
     Pred(Pred<Term>),
-    Lambda(Lambda<Term>),
+    Lambda(Lambda<Term, Type>),
     App(App<Term>),
-    LambdaSub(LambdaSub<Term>),
-    TyApp(TyApp<Term>),
-    Pack(Pack<Term>),
-    Unpack(Unpack<Term>),
+    LambdaSub(LambdaSub<Term, Type>),
+    TyApp(TyApp<Term, Type>),
+    Pack(Pack<Term, Type>),
+    Unpack(Unpack<Term, Type>),
     Record(Record<Term>),
     Projection(RecordProj<Term>),
 }
 
-impl common::terms::Term for Term {}
-
-impl LanguageTerm for Term {
-    type Type = Type;
-    type Value = Value;
-}
+impl syntax::terms::Term for Term {}
 
 impl fmt::Display for Term {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -115,8 +109,8 @@ impl From<Pred<Term>> for Term {
     }
 }
 
-impl From<Lambda<Term>> for Term {
-    fn from(lam: Lambda<Term>) -> Term {
+impl From<Lambda<Term, Type>> for Term {
+    fn from(lam: Lambda<Term, Type>) -> Term {
         Term::Lambda(lam)
     }
 }
@@ -127,26 +121,26 @@ impl From<App<Term>> for Term {
     }
 }
 
-impl From<LambdaSub<Term>> for Term {
-    fn from(lam: LambdaSub<Term>) -> Term {
+impl From<LambdaSub<Term, Type>> for Term {
+    fn from(lam: LambdaSub<Term, Type>) -> Term {
         Term::LambdaSub(lam)
     }
 }
 
-impl From<TyApp<Term>> for Term {
-    fn from(app: TyApp<Term>) -> Term {
+impl From<TyApp<Term, Type>> for Term {
+    fn from(app: TyApp<Term, Type>) -> Term {
         Term::TyApp(app)
     }
 }
 
-impl From<Pack<Term>> for Term {
-    fn from(pack: Pack<Term>) -> Term {
+impl From<Pack<Term, Type>> for Term {
+    fn from(pack: Pack<Term, Type>) -> Term {
         Term::Pack(pack)
     }
 }
 
-impl From<Unpack<Term>> for Term {
-    fn from(unpack: Unpack<Term>) -> Term {
+impl From<Unpack<Term, Type>> for Term {
+    fn from(unpack: Unpack<Term, Type>) -> Term {
         Term::Unpack(unpack)
     }
 }

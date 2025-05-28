@@ -1,11 +1,12 @@
-use common::{
-    errors::ErrorKind,
-    language::LanguageType,
+use super::check::Env;
+use check::Normalize;
+use common::errors::ErrorKind;
+use std::fmt;
+use syntax::{
     subst::SubstType,
-    types::{ExistsBounded, ForallBounded, Fun, Nat, Record, Top, TypeVariable},
+    types::{ExistsBounded, ForallBounded, Fun, Nat, Record, Top, TypeGroup, TypeVariable},
     TypeVar,
 };
-use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Type {
@@ -18,9 +19,9 @@ pub enum Type {
     Record(Record<Type>),
 }
 
-impl common::types::Type for Type {}
+impl syntax::types::Type for Type {}
 
-impl LanguageType for Type {
+impl TypeGroup for Type {
     fn into_variable(self) -> Result<TypeVariable<Type>, ErrorKind> {
         if let Type::Var(var) = self {
             Ok(var)
@@ -151,6 +152,12 @@ impl SubstType<Self> for Type {
             Type::Exists(e) => e.subst_type(v, ty),
             Type::Record(rec) => rec.subst_type(v, ty),
         }
+    }
+}
+impl Normalize<Type> for Type {
+    type Env = Env;
+    fn normalize(self, _: &mut Self::Env) -> Type {
+        self
     }
 }
 
