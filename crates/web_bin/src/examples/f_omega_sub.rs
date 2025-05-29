@@ -12,11 +12,6 @@ pub const RESETCOUNTERCLASS: &str = include_str!("../../../../examples/f_omega_s
 
 pub fn f_omega_sub_all() -> Vec<&'static str> { 
     vec![
-        SENDGET,
-        COUNTERCLASS,
-        SENDRESET,
-        SENDINC,
-        NEWCOUNTER,
-        RESETCOUNTERCLASS,
+        SENDGET, COUNTERCLASS, SENDRESET, SENDINC, NEWCOUNTER, RESETCOUNTERCLASS, 
     ]
 }

@@ -36,23 +36,6 @@ pub const TAIL: &str = include_str!("../../../../examples/recursive/tail/tail.re
 
 pub fn recursive_all() -> Vec<&'static str> { 
     vec![
-        HEAD,
-        PROCESS,
-        CURR,
-        LAM,
-        STREAMHEAD,
-        SUMLIST,
-        FIXD,
-        NIL,
-        CONS,
-        UPFROM0,
-        STREAMTAIL,
-        COUNTER,
-        AP,
-        ISNIL,
-        HUNGRY,
-        SEND,
-        PLUS,
-        TAIL,
+        HEAD, PROCESS, CURR, LAM, STREAMHEAD, SUMLIST, FIXD, NIL, CONS, UPFROM0, STREAMTAIL, COUNTER, AP, ISNIL, HUNGRY, SEND, PLUS, TAIL, 
     ]
 }

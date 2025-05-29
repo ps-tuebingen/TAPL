@@ -26,15 +26,17 @@ do
   OUT_FILE="$EXAMPLE_DIR_BASE.rs";
   OUT_PATH="$OUT_DIR/$OUT_FILE";
   NUM_EXAMPLES=$(ls $example_dir | wc -l);
+  NUM_EXAMPLES_STR=$(printf "02d" $NUM_EXAMPLES);
   CURRENT_NUM=0;
   EXAMPLE_NAMES=();
 
   echo "Loading examples for $EXAMPLE_DIR_BASE";
 
   #declar examples mod and use array of all examples
-  echo "pub mod $EXAMPLE_DIR_BASE;" >> $OUT_MOD
-  echo "pub use $EXAMPLE_DIR_BASE::$ALL_EXAMPLES_NAME;" >> $OUT_MOD
-  echo "" >> $OUT_MOD
+  echo "#[rustfmt::skip]" >> $OUT_MOD;
+  echo "pub mod $EXAMPLE_DIR_BASE;" >> $OUT_MOD;
+  echo "pub use $EXAMPLE_DIR_BASE::$ALL_EXAMPLES_NAME;" >> $OUT_MOD;
+  echo "" >> $OUT_MOD;
 
   #fill example mod with example strings
   > $OUT_PATH;
@@ -54,7 +56,7 @@ do
     EXAMPLE_NAMES+=("$EXAMPLE_UPPER");
     NUM_STR=$(printf "%02d" $CURRENT_NUM);
 
-    echo "($NUM_STR/$NUM_EXAMPLES) $EXAMPLE_NAME";
+    echo "($NUM_STR/$NUM_EXAMPLES_STR) $EXAMPLE_NAME";
 
     #write the file as include_str into the file
     echo "pub const $EXAMPLE_UPPER: &str = include_str!(\"../../../../$example\");" >> $OUT_PATH;
@@ -64,13 +66,14 @@ do
 
   #write all examples into an array
   echo "pub fn $ALL_EXAMPLES_NAME() -> Vec<&'static str> { " >> $OUT_PATH;
-  echo "    vec![" >> $OUT_PATH;
-
+  printf "    vec![\n" >> $OUT_PATH;
+  printf "        " >> $OUT_PATH;
   for example_name in ${EXAMPLE_NAMES[@]};
   do
-    echo "        $example_name," >> $OUT_PATH
+    printf "$example_name, " >> $OUT_PATH
   done 
-  echo "    ]" >> $OUT_PATH;
+  printf "\n" >> $OUT_PATH;
+  printf "    ]\n" >> $OUT_PATH;
   echo "}" >> $OUT_PATH;
 done < <(find $EXAMPLES_DIR -maxdepth 1 -type d -print0);
 
@@ -79,7 +82,6 @@ echo "pub fn all_examples() -> HashMap<&'static str, Vec<&'static str>> {" >> $O
 echo "    HashMap::from([" >> $OUT_MOD;
 for dir_tuple in "${EXAMPLE_DIR_TUPLES[@]}";
 do 
-  echo $dir_tuple
   echo "        $dir_tuple," >> $OUT_MOD;
 done 
 echo "    ])" >> $OUT_MOD;

@@ -34,22 +34,6 @@ pub const FLS: &str = include_str!("../../../../examples/system_f/fls/fls.f");
 
 pub fn system_f_all() -> Vec<&'static str> { 
     vec![
-        C2,
-        NOT,
-        CTIMES,
-        C0,
-        ID,
-        TRU,
-        NIL,
-        CONS,
-        CEXP,
-        DOUBLE,
-        ISNIL,
-        CSUCC,
-        QUADRUPLE,
-        SELFAPP,
-        CPLUS,
-        C1,
-        FLS,
+        C2, NOT, CTIMES, C0, ID, TRU, NIL, CONS, CEXP, DOUBLE, ISNIL, CSUCC, QUADRUPLE, SELFAPP, CPLUS, C1, FLS, 
     ]
 }

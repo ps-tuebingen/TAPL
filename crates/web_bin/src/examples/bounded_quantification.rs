@@ -26,18 +26,6 @@ pub const SONE: &str = include_str!("../../../../examples/bounded_quantification
 
 pub fn bounded_quantification_all() -> Vec<&'static str> { 
     vec![
-        SZERO,
-        COUNTERADT,
-        SND,
-        PAIR,
-        UNBOUNDID,
-        RECORDPOLY,
-        STHREE,
-        FST,
-        SPLUSPP,
-        COUNTERTHREE,
-        STWO,
-        SSUCC,
-        SONE,
+        SZERO, COUNTERADT, SND, PAIR, UNBOUNDID, RECORDPOLY, STHREE, FST, SPLUSPP, COUNTERTHREE, STWO, SSUCC, SONE, 
     ]
 }

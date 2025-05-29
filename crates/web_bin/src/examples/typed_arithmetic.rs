@@ -6,8 +6,6 @@ pub const IFTHENELSE: &str = include_str!("../../../../examples/typed_arithmetic
 
 pub fn typed_arithmetic_all() -> Vec<&'static str> { 
     vec![
-        IF_NESTED,
-        ISZZ,
-        IFTHENELSE,
+        IF_NESTED, ISZZ, IFTHENELSE, 
     ]
 }

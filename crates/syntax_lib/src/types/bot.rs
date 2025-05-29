@@ -13,6 +13,12 @@ impl Bot {
     }
 }
 
+impl Default for Bot {
+    fn default() -> Bot {
+        Bot::new()
+    }
+}
+
 impl Type for Bot {}
 
 impl<Ty> SubstType<Ty> for Bot

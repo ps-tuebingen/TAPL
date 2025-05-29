@@ -42,26 +42,6 @@ pub const BOOLBOOL: &str = include_str!("../../../../examples/stlc/boolbool/bool
 
 pub fn stlc_all() -> Vec<&'static str> { 
     vec![
-        LEFT,
-        VARIANTCASE,
-        PROJ,
-        PREDSUCC,
-        SUMCASE,
-        IDFUN,
-        SND,
-        RECORD,
-        PAIR,
-        LET,
-        UNIT,
-        IDNAT,
-        LIST,
-        IF,
-        SOMECASE,
-        SWAP,
-        BOOL,
-        FIX,
-        TUPLE,
-        VARIANT,
-        BOOLBOOL,
+        LEFT, VARIANTCASE, PROJ, PREDSUCC, SUMCASE, IDFUN, SND, RECORD, PAIR, LET, UNIT, IDNAT, LIST, IF, SOMECASE, SWAP, BOOL, FIX, TUPLE, VARIANT, BOOLBOOL, 
     ]
 }

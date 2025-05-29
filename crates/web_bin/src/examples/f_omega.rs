@@ -8,9 +8,6 @@ pub const PAIRADT: &str = include_str!("../../../../examples/f_omega/pairadt/pai
 
 pub fn f_omega_all() -> Vec<&'static str> { 
     vec![
-        LISTADT,
-        UNPACKLIST,
-        UNPACKPAIR,
-        PAIRADT,
+        LISTADT, UNPACKLIST, UNPACKPAIR, PAIRADT, 
     ]
 }
