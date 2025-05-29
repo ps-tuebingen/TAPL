@@ -1,4 +1,5 @@
 use common::errors::Error;
+use language::languages::stlc::terms::Term;
 use std::path::PathBuf;
 use test_utils::{
     check_test::CheckTest,
@@ -52,23 +53,18 @@ impl TestSuite for StlcTests {
         let contents: Vec<TestContents<StlcConf>> = load_dir(&self.source_dir, "stlc")?;
         let mut tests = vec![];
         for content in contents {
-            let parse_test = ParseTest::<languages::stlc::terms::Term>::new(
-                &content.source_name,
-                &content.source_contents,
-            );
+            let parse_test = ParseTest::<Term>::new(&content.source_name, &content.source_contents);
             tests.push(Box::new(parse_test) as Box<dyn Test>);
-            let reparse_test = ReparseTest::<languages::stlc::terms::Term>::new(
-                &content.source_name,
-                &content.source_contents,
-            );
+            let reparse_test =
+                ReparseTest::<Term>::new(&content.source_name, &content.source_contents);
             tests.push(Box::new(reparse_test) as Box<dyn Test>);
-            let check_test = CheckTest::<languages::stlc::terms::Term>::new(
+            let check_test = CheckTest::<Term>::new(
                 &content.source_name,
                 &content.source_contents,
                 &content.conf.ty,
             );
             tests.push(Box::new(check_test) as Box<dyn Test>);
-            let eval_test = EvalTest::<languages::stlc::terms::Term>::new(
+            let eval_test = EvalTest::<Term>::new(
                 &content.source_name,
                 &content.source_contents,
                 &content.conf.evaled,

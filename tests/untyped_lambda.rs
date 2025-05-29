@@ -1,4 +1,5 @@
 use common::errors::Error;
+use language::languages::untyped_lambda::terms::Term;
 use std::path::PathBuf;
 use test_utils::{
     eval_test::EvalTest,
@@ -49,17 +50,12 @@ impl TestSuite for UntypedLambdaTests {
         let contents: Vec<TestContents<UntypedLambdaConf>> = load_dir(&self.source_dir, "lam")?;
         let mut tests = vec![];
         for content in contents {
-            let parse_test = ParseTest::<languages::untyped_lambda::terms::Term>::new(
-                &content.source_name,
-                &content.source_contents,
-            );
+            let parse_test = ParseTest::<Term>::new(&content.source_name, &content.source_contents);
             tests.push(Box::new(parse_test) as Box<dyn Test>);
-            let reparse_test = ReparseTest::<languages::untyped_lambda::terms::Term>::new(
-                &content.source_name,
-                &content.source_contents,
-            );
+            let reparse_test =
+                ReparseTest::<Term>::new(&content.source_name, &content.source_contents);
             tests.push(Box::new(reparse_test) as Box<dyn Test>);
-            let eval_test = EvalTest::<languages::untyped_lambda::terms::Term>::new(
+            let eval_test = EvalTest::<Term>::new(
                 &content.source_name,
                 &content.source_contents,
                 &content.conf.evaluated,

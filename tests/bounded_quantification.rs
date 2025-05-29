@@ -1,5 +1,5 @@
 use common::errors::Error;
-use languages::bounded_quantification::terms::Term;
+use language::languages::bounded_quantification::terms::Term;
 use std::path::PathBuf;
 use test_utils::{
     check_test::CheckTest,

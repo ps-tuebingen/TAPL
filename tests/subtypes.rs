@@ -1,4 +1,5 @@
 use common::errors::Error;
+use language::languages::subtypes::terms::Term;
 use std::path::PathBuf;
 use test_utils::{
     check_test::CheckTest,
@@ -50,21 +51,12 @@ impl TestSuite for SubtypesTests {
         let contents: Vec<TestContents<SubtypesConf>> = load_dir(&self.source_path, "sub")?;
         let mut tests = vec![];
         for tst in contents {
-            let parse_test = ParseTest::<languages::subtypes::terms::Term>::new(
-                &tst.source_name,
-                &tst.source_contents,
-            );
+            let parse_test = ParseTest::<Term>::new(&tst.source_name, &tst.source_contents);
             tests.push(Box::new(parse_test) as Box<dyn Test>);
-            let reparse_test = ReparseTest::<languages::subtypes::terms::Term>::new(
-                &tst.source_name,
-                &tst.source_contents,
-            );
+            let reparse_test = ReparseTest::<Term>::new(&tst.source_name, &tst.source_contents);
             tests.push(Box::new(reparse_test) as Box<dyn Test>);
-            let check_test = CheckTest::<languages::subtypes::terms::Term>::new(
-                &tst.source_name,
-                &tst.source_contents,
-                &tst.conf.ty,
-            );
+            let check_test =
+                CheckTest::<Term>::new(&tst.source_name, &tst.source_contents, &tst.conf.ty);
             tests.push(Box::new(check_test) as Box<dyn Test>);
         }
         Ok(tests)

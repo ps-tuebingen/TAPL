@@ -1,4 +1,5 @@
 use common::errors::Error;
+use language::languages::system_f::terms::Term;
 use std::path::PathBuf;
 use test_utils::{
     check_test::CheckTest,
@@ -52,27 +53,15 @@ impl TestSuite for SystemFTests {
         let contents: Vec<TestContents<SystemFConf>> = load_dir(&self.source_path, "f")?;
         let mut tests = vec![];
         for tst in contents {
-            let parse_test = ParseTest::<languages::system_f::terms::Term>::new(
-                &tst.source_name,
-                &tst.source_contents,
-            );
+            let parse_test = ParseTest::<Term>::new(&tst.source_name, &tst.source_contents);
             tests.push(Box::new(parse_test) as Box<dyn Test>);
-            let reparse_test = ReparseTest::<languages::system_f::terms::Term>::new(
-                &tst.source_name,
-                &tst.source_contents,
-            );
+            let reparse_test = ReparseTest::<Term>::new(&tst.source_name, &tst.source_contents);
             tests.push(Box::new(reparse_test) as Box<dyn Test>);
-            let check_test = CheckTest::<languages::system_f::terms::Term>::new(
-                &tst.source_name,
-                &tst.source_contents,
-                &tst.conf.ty,
-            );
+            let check_test =
+                CheckTest::<Term>::new(&tst.source_name, &tst.source_contents, &tst.conf.ty);
             tests.push(Box::new(check_test) as Box<dyn Test>);
-            let eval_test = EvalTest::<languages::system_f::terms::Term>::new(
-                &tst.source_name,
-                &tst.source_contents,
-                &tst.conf.evaluated,
-            );
+            let eval_test =
+                EvalTest::<Term>::new(&tst.source_name, &tst.source_contents, &tst.conf.evaluated);
             tests.push(Box::new(eval_test) as Box<dyn Test>);
         }
         Ok(tests)
