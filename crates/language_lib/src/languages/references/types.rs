@@ -2,7 +2,7 @@ use common::errors::ErrorKind;
 use std::fmt;
 use syntax::{
     subst::SubstType,
-    types::{Bool, Fun, Nat, Reference, Unit},
+    types::{Bool, Fun, Nat, Reference, TypeGroup, Unit},
     TypeVar,
 };
 
@@ -15,9 +15,9 @@ pub enum Type {
     Ref(Reference<Type>),
 }
 
-impl common::types::Type for Type {}
+impl syntax::types::Type for Type {}
 
-impl LanguageType for Type {
+impl TypeGroup for Type {
     fn into_unit(self) -> Result<Unit<Type>, ErrorKind> {
         if let Type::Unit(u) = self {
             Ok(u)

@@ -21,7 +21,7 @@ where
     T: Term,
     Ty: Type,
 {
-    pub fn new<T1, Typ>(t: T1, ty: Ty) -> IsNil<T, Ty>
+    pub fn new<T1, Typ>(t: T1, ty: Typ) -> IsNil<T, Ty>
     where
         T1: Into<T>,
         Typ: Into<Ty>,

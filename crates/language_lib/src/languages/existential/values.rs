@@ -1,26 +1,28 @@
-use super::terms::Term;
+use super::{terms::Term, types::Type};
 use common::errors::ErrorKind;
-use eval::values::{False, Lambda, Num, Pack, Record, True, Unit, Value as ValueTrait};
+use eval::values::{False, Lambda, Num, Pack, Record, True, Unit, Value as ValueTrait, ValueGroup};
 use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Value {
     Unit(Unit<Term>),
-    Lambda(Lambda<Term>),
-    Pack(Pack<Term>),
+    Lambda(Lambda<Term, Type>),
+    Pack(Pack<Value, Type>),
     Num(Num<Term>),
-    Record(Record<Term>),
+    Record(Record<Value>),
     True(True<Term>),
     False(False<Term>),
 }
 
-impl common::values::Value for Value {
+impl eval::values::Value for Value {
     type Term = Term;
 }
 
-impl LanguageValue for Value {
+impl ValueGroup for Value {
     type Term = Term;
-    fn into_lambda(self) -> Result<Lambda<Term>, ErrorKind> {
+    type Type = Type;
+
+    fn into_lambda(self) -> Result<Lambda<Term, Type>, ErrorKind> {
         if let Value::Lambda(lam) = self {
             Ok(lam)
         } else {
@@ -31,7 +33,7 @@ impl LanguageValue for Value {
         }
     }
 
-    fn into_pack(self) -> Result<Pack<Term>, ErrorKind> {
+    fn into_pack(self) -> Result<Pack<Value, Type>, ErrorKind> {
         if let Value::Pack(pack) = self {
             Ok(pack)
         } else {
@@ -53,7 +55,7 @@ impl LanguageValue for Value {
         }
     }
 
-    fn into_record(self) -> Result<Record<Term>, ErrorKind> {
+    fn into_record(self) -> Result<Record<Value>, ErrorKind> {
         if let Value::Record(rec) = self {
             Ok(rec)
         } else {
@@ -115,8 +117,8 @@ impl fmt::Display for Value {
     }
 }
 
-impl From<Lambda<Term>> for Value {
-    fn from(lam: Lambda<Term>) -> Value {
+impl From<Lambda<Term, Type>> for Value {
+    fn from(lam: Lambda<Term, Type>) -> Value {
         Value::Lambda(lam)
     }
 }
@@ -140,14 +142,14 @@ impl From<Num<Term>> for Value {
         Value::Num(num)
     }
 }
-impl From<Record<Term>> for Value {
-    fn from(rec: Record<Term>) -> Value {
+impl From<Record<Value>> for Value {
+    fn from(rec: Record<Value>) -> Value {
         Value::Record(rec)
     }
 }
 
-impl From<Pack<Term>> for Value {
-    fn from(pack: Pack<Term>) -> Value {
+impl From<Pack<Value, Type>> for Value {
+    fn from(pack: Pack<Value, Type>) -> Value {
         Value::Pack(pack)
     }
 }

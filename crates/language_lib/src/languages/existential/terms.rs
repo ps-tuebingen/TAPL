@@ -1,4 +1,4 @@
-use super::{types::Type, values::Value};
+use super::types::Type;
 use std::fmt;
 use syntax::{
     subst::{SubstTerm, SubstType},
@@ -13,10 +13,10 @@ use syntax::{
 pub enum Term {
     Var(Variable<Term>),
     Unit(Unit<Term>),
-    Lambda(Lambda<Term>),
+    Lambda(Lambda<Term, Type>),
     App(App<Term>),
-    Pack(Pack<Term>),
-    Unpack(Unpack<Term>),
+    Pack(Pack<Term, Type>),
+    Unpack(Unpack<Term, Type>),
     Num(Num<Term>),
     Succ(Succ<Term>),
     Pred(Pred<Term>),
@@ -29,12 +29,7 @@ pub enum Term {
     Fix(Fix<Term>),
 }
 
-impl common::terms::Term for Term {}
-
-impl LanguageTerm for Term {
-    type Type = Type;
-    type Value = Value;
-}
+impl syntax::terms::Term for Term {}
 
 impl SubstTerm<Term> for Term {
     type Target = Self;
@@ -107,19 +102,19 @@ impl fmt::Display for Term {
     }
 }
 
-impl From<Pack<Term>> for Term {
-    fn from(pack: Pack<Term>) -> Term {
+impl From<Pack<Term, Type>> for Term {
+    fn from(pack: Pack<Term, Type>) -> Term {
         Term::Pack(pack)
     }
 }
 
-impl From<Unpack<Term>> for Term {
-    fn from(unp: Unpack<Term>) -> Term {
+impl From<Unpack<Term, Type>> for Term {
+    fn from(unp: Unpack<Term, Type>) -> Term {
         Term::Unpack(unp)
     }
 }
-impl From<Lambda<Term>> for Term {
-    fn from(lam: Lambda<Term>) -> Term {
+impl From<Lambda<Term, Type>> for Term {
+    fn from(lam: Lambda<Term, Type>) -> Term {
         Term::Lambda(lam)
     }
 }

@@ -1,4 +1,8 @@
-use crate::{subst::SubstType, types::Type, TypeVar};
+use crate::{
+    subst::SubstType,
+    types::{Type, TypeGroup},
+    TypeVar,
+};
 use std::fmt;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -18,3 +22,5 @@ impl SubstType<Untyped> for Untyped {
         self
     }
 }
+
+impl TypeGroup for Untyped {}

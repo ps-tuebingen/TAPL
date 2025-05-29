@@ -1,4 +1,4 @@
-use super::{pair_to_n_inner, pair_to_term, pair_to_type, Rule, Term};
+use super::{pair_to_n_inner, pair_to_term, pair_to_type, Rule, Term, Type};
 use common::errors::Error;
 use pest::iterators::Pair;
 use syntax::terms::{Exception, Raise, Try, TryWithVal};
@@ -34,7 +34,7 @@ pub fn pair_to_try_catch(p: Pair<'_, Rule>) -> Result<TryWithVal<Term>, Error> {
     Ok(TryWithVal::new(tryt, catch_term))
 }
 
-pub fn pair_to_raise(p: Pair<'_, Rule>) -> Result<Raise<Term>, Error> {
+pub fn pair_to_raise(p: Pair<'_, Rule>) -> Result<Raise<Term, Type>, Error> {
     let mut inner = pair_to_n_inner(
         p,
         vec![
@@ -56,7 +56,7 @@ pub fn pair_to_raise(p: Pair<'_, Rule>) -> Result<Raise<Term>, Error> {
     Ok(Raise::new(catch_term, cont_ty, ex_ty))
 }
 
-pub fn pair_to_err(p: Pair<'_, Rule>) -> Result<Exception<Term>, Error> {
+pub fn pair_to_err(p: Pair<'_, Rule>) -> Result<Exception<Term, Type>, Error> {
     let mut inner = pair_to_n_inner(p, vec!["Error Keyword", "Error Type"])?;
     inner.remove(0);
     let ty_rule = inner.remove(0);

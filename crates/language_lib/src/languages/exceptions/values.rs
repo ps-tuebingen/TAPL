@@ -68,7 +68,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_raise(self) -> Result<Raise<Term, Type>, ErrorKind> {
+    fn into_raise(self) -> Result<Raise<Value, Type>, ErrorKind> {
         if let Value::Raise(raise) = self {
             Ok(raise)
         } else {
@@ -155,8 +155,8 @@ impl From<Exception<Term, Type>> for Value {
     }
 }
 
-impl From<Raise<Term, Type>> for Value {
-    fn from(raise: Raise<Term, Type>) -> Value {
+impl From<Raise<Value, Type>> for Value {
+    fn from(raise: Raise<Value, Type>) -> Value {
         Value::Raise(raise)
     }
 }

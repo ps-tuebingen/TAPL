@@ -1,4 +1,4 @@
-use super::{pair_to_kind, pair_to_n_inner, pair_to_term, pair_to_type, Error, Rule, Term};
+use super::{pair_to_kind, pair_to_n_inner, pair_to_term, pair_to_type, Error, Rule, Term, Type};
 use pest::iterators::Pair;
 use syntax::{
     kinds::Kind,
@@ -26,7 +26,7 @@ pub fn pair_to_ty_lambda_star(p: Pair<'_, Rule>) -> Result<TyLambda<Term>, Error
     Ok(TyLambda::new(var, Kind::Star, term))
 }
 
-pub fn pair_to_tyapp(p: Pair<'_, Rule>, t: Term) -> Result<TyApp<Term>, Error> {
+pub fn pair_to_tyapp(p: Pair<'_, Rule>, t: Term) -> Result<TyApp<Term, Type>, Error> {
     let ty_rule = pair_to_n_inner(p, vec!["Applied Type"])?.remove(0);
     let ty = pair_to_type(ty_rule)?;
     Ok(TyApp::new(t, ty))

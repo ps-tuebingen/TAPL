@@ -2,7 +2,7 @@ use common::errors::ErrorKind;
 use std::fmt;
 use syntax::{
     subst::SubstType,
-    types::{Bool, Exists, Fun, Nat, Record, TypeVariable, Unit},
+    types::{Bool, Exists, Fun, Nat, Record, TypeGroup, TypeVariable, Unit},
     TypeVar,
 };
 
@@ -17,9 +17,9 @@ pub enum Type {
     Record(Record<Type>),
 }
 
-impl common::types::Type for Type {}
+impl syntax::types::Type for Type {}
 
-impl LanguageType for Type {
+impl TypeGroup for Type {
     fn into_unit(self) -> Result<Unit<Type>, ErrorKind> {
         if let Type::Unit(u) = self {
             Ok(u)

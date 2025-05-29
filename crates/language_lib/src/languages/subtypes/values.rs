@@ -13,7 +13,7 @@ pub enum Value {
     Record(Record<Value>),
     Variant(Variant<Value, Type>),
     Nil(Nil<Term, Type>),
-    Cons(Cons<Type, Value>),
+    Cons(Cons<Value, Type>),
     Loc(Loc<Term>),
     Num(Num<Term>),
     True(True<Term>),
@@ -39,7 +39,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_record(self) -> Result<Record<Term>, ErrorKind> {
+    fn into_record(self) -> Result<Record<Value>, ErrorKind> {
         if let Value::Record(rec) = self {
             Ok(rec)
         } else {
@@ -50,7 +50,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_variant(self) -> Result<Variant<Term>, ErrorKind> {
+    fn into_variant(self) -> Result<Variant<Value, Type>, ErrorKind> {
         if let Value::Variant(var) = self {
             Ok(var)
         } else {
@@ -61,7 +61,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_nil(self) -> Result<Nil<Term>, ErrorKind> {
+    fn into_nil(self) -> Result<Nil<Term, Type>, ErrorKind> {
         if let Value::Nil(nil) = self {
             Ok(nil)
         } else {
@@ -72,7 +72,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_cons(self) -> Result<Cons<Term>, ErrorKind> {
+    fn into_cons(self) -> Result<Cons<Value, Type>, ErrorKind> {
         if let Value::Cons(cons) = self {
             Ok(cons)
         } else {
@@ -193,8 +193,8 @@ impl From<Num<Term>> for Value {
     }
 }
 
-impl From<Record<Term>> for Value {
-    fn from(rec: Record<Term>) -> Value {
+impl From<Record<Value>> for Value {
+    fn from(rec: Record<Value>) -> Value {
         Value::Record(rec)
     }
 }

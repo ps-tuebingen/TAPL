@@ -1,4 +1,4 @@
-use super::{get_n_inner, next_rule, pair_to_type, to_parse_err, Rule, Term};
+use super::{get_n_inner, next_rule, pair_to_type, to_parse_err, Rule, Term, Type};
 use common::errors::{Error, ErrorKind};
 use pest::iterators::Pair;
 use syntax::terms::{App, False, Num, True, Unit, Variable};

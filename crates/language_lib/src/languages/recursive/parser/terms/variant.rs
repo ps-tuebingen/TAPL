@@ -1,9 +1,9 @@
-use super::{pair_to_n_inner, pair_to_term, pair_to_type, to_parse_err, Rule, Term};
+use super::{pair_to_n_inner, pair_to_term, pair_to_type, to_parse_err, Rule, Term, Type};
 use common::errors::{Error, ErrorKind};
 use pest::iterators::Pair;
 use syntax::terms::{variantcase::VariantPattern, Variant, VariantCase};
 
-pub fn pair_to_variant(p: Pair<'_, Rule>) -> Result<Variant<Term>, Error> {
+pub fn pair_to_variant(p: Pair<'_, Rule>) -> Result<Variant<Term, Type>, Error> {
     let mut inner = pair_to_n_inner(
         p,
         vec![

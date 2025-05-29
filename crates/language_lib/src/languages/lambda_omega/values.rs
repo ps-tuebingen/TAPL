@@ -1,6 +1,6 @@
-use super::terms::Term;
+use super::{terms::Term, types::Type};
 use common::errors::ErrorKind;
-use eval::values::{False, Lambda, Num, True, TyLambda, Unit, Value as ValueTrait};
+use eval::values::{False, Lambda, Num, True, TyLambda, Unit, Value as ValueTrait, ValueGroup};
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -9,16 +9,17 @@ pub enum Value {
     True(True<Term>),
     False(False<Term>),
     Num(Num<Term>),
-    Lambda(Lambda<Term>),
+    Lambda(Lambda<Term, Type>),
     TyLambda(TyLambda<Term>),
 }
 
-impl common::values::Value for Value {
+impl eval::values::Value for Value {
     type Term = Term;
 }
 
-impl LanguageValue for Value {
+impl ValueGroup for Value {
     type Term = Term;
+    type Type = Type;
 
     fn into_true(self) -> Result<True<Term>, ErrorKind> {
         if let Value::True(tru) = self {
@@ -53,7 +54,7 @@ impl LanguageValue for Value {
         }
     }
 
-    fn into_lambda(self) -> Result<Lambda<Term>, ErrorKind> {
+    fn into_lambda(self) -> Result<Lambda<Term, Type>, ErrorKind> {
         if let Value::Lambda(lam) = self {
             Ok(lam)
         } else {
@@ -122,8 +123,8 @@ impl From<Num<Term>> for Value {
         Value::Num(num)
     }
 }
-impl From<Lambda<Term>> for Value {
-    fn from(lam: Lambda<Term>) -> Value {
+impl From<Lambda<Term, Type>> for Value {
+    fn from(lam: Lambda<Term, Type>) -> Value {
         Value::Lambda(lam)
     }
 }

@@ -1,8 +1,8 @@
-use super::{pair_to_n_inner, pair_to_term, pair_to_type, Error, Rule, Term};
+use super::{pair_to_n_inner, pair_to_term, pair_to_type, Error, Rule, Term, Type};
 use pest::iterators::Pair;
 use syntax::terms::{Pack, Unpack};
 
-pub fn pair_to_pack(p: Pair<'_, Rule>) -> Result<Pack<Term>, Error> {
+pub fn pair_to_pack(p: Pair<'_, Rule>) -> Result<Pack<Term, Type>, Error> {
     let mut inner = pair_to_n_inner(
         p,
         vec!["Packed Type", "Packed Term", "As Keyword", "Pack Type"],
@@ -20,7 +20,7 @@ pub fn pair_to_pack(p: Pair<'_, Rule>) -> Result<Pack<Term>, Error> {
     Ok(Pack::new(packed_ty, term, pack_ty))
 }
 
-pub fn pair_to_unpack(p: Pair<'_, Rule>) -> Result<Unpack<Term>, Error> {
+pub fn pair_to_unpack(p: Pair<'_, Rule>) -> Result<Unpack<Term, Type>, Error> {
     let mut inner = pair_to_n_inner(
         p,
         vec![

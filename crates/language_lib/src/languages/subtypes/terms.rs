@@ -12,16 +12,16 @@ use syntax::{
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum Term {
     Var(Variable<Term>),
-    Lambda(Lambda<Term>),
+    Lambda(Lambda<Term, Type>),
     App(App<Term>),
     Unit(Unit<Term>),
-    Cast(Cast<Term>),
+    Cast(Cast<Term, Type>),
     Record(Record<Term>),
     RecordProj(RecordProj<Term>),
-    Variant(Variant<Term>),
+    Variant(Variant<Term, Type>),
     VariantCase(VariantCase<Term>),
-    Nil(Nil<Term>),
-    Cons(Cons<Term>),
+    Nil(Nil<Term, Type>),
+    Cons(Cons<Term, Type>),
     ListCase(ListCase<Term>),
     Ref(Ref<Term>),
     Deref(Deref<Term>),
@@ -135,14 +135,14 @@ impl From<ListCase<Term>> for Term {
     }
 }
 
-impl From<Cast<Term>> for Term {
-    fn from(cast: Cast<Term>) -> Term {
+impl From<Cast<Term, Type>> for Term {
+    fn from(cast: Cast<Term, Type>) -> Term {
         Term::Cast(cast)
     }
 }
 
-impl From<Lambda<Term>> for Term {
-    fn from(lam: Lambda<Term>) -> Term {
+impl From<Lambda<Term, Type>> for Term {
+    fn from(lam: Lambda<Term, Type>) -> Term {
         Term::Lambda(lam)
     }
 }
@@ -177,20 +177,20 @@ impl From<Record<Term>> for Term {
     }
 }
 
-impl From<Variant<Term>> for Term {
-    fn from(var: Variant<Term>) -> Term {
+impl From<Variant<Term, Type>> for Term {
+    fn from(var: Variant<Term, Type>) -> Term {
         Term::Variant(var)
     }
 }
 
-impl From<Nil<Term>> for Term {
-    fn from(nil: Nil<Term>) -> Term {
+impl From<Nil<Term, Type>> for Term {
+    fn from(nil: Nil<Term, Type>) -> Term {
         Term::Nil(nil)
     }
 }
 
-impl From<Cons<Term>> for Term {
-    fn from(cons: Cons<Term>) -> Term {
+impl From<Cons<Term, Type>> for Term {
+    fn from(cons: Cons<Term, Type>) -> Term {
         Term::Cons(cons)
     }
 }

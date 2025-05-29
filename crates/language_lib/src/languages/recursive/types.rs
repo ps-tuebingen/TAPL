@@ -2,7 +2,7 @@ use common::errors::ErrorKind;
 use std::fmt;
 use syntax::{
     subst::SubstType,
-    types::{Bool, Fun, Mu, Nat, Product, Record, TypeVariable, Unit, Variant},
+    types::{Bool, Fun, Mu, Nat, Product, Record, TypeGroup, TypeVariable, Unit, Variant},
 };
 
 pub type TypeVar = String;
@@ -20,9 +20,9 @@ pub enum Type {
     Record(Record<Type>),
 }
 
-impl common::types::Type for Type {}
+impl syntax::types::Type for Type {}
 
-impl LanguageType for Type {
+impl TypeGroup for Type {
     fn into_unit(self) -> Result<Unit<Self>, ErrorKind> {
         if let Type::Unit(u) = self {
             Ok(u)

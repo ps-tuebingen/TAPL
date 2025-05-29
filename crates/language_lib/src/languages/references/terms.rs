@@ -1,4 +1,4 @@
-use super::{types::Type, values::Value};
+use super::types::Type;
 use std::fmt;
 use syntax::{
     subst::{SubstTerm, SubstType},
@@ -16,7 +16,7 @@ pub enum Term {
     Succ(Succ<Term>),
     Pred(Pred<Term>),
     IsZero(IsZero<Term>),
-    Lambda(Lambda<Term>),
+    Lambda(Lambda<Term, Type>),
     App(App<Term>),
     Unit(Unit<Term>),
     Ref(Ref<Term>),
@@ -30,12 +30,7 @@ pub enum Term {
     Fix(Fix<Term>),
 }
 
-impl common::terms::Term for Term {}
-
-impl LanguageTerm for Term {
-    type Type = Type;
-    type Value = Value;
-}
+impl syntax::terms::Term for Term {}
 
 impl SubstType<Type> for Term {
     type Target = Self;
@@ -114,8 +109,8 @@ impl From<Pred<Term>> for Term {
         Term::Pred(p)
     }
 }
-impl From<Lambda<Term>> for Term {
-    fn from(lam: Lambda<Term>) -> Term {
+impl From<Lambda<Term, Type>> for Term {
+    fn from(lam: Lambda<Term, Type>) -> Term {
         Term::Lambda(lam)
     }
 }

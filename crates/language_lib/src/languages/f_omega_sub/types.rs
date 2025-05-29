@@ -3,7 +3,8 @@ use std::fmt;
 use syntax::{
     subst::SubstType,
     types::{
-        ExistsBounded, ForallBounded, Fun, Nat, OpApp, OpLambdaSub, Record, Top, TypeVariable,
+        ExistsBounded, ForallBounded, Fun, Nat, OpApp, OpLambdaSub, Record, Top, TypeGroup,
+        TypeVariable,
     },
     TypeVar,
 };
@@ -21,9 +22,9 @@ pub enum Type {
     Nat(Nat<Type>),
 }
 
-impl common::types::Type for Type {}
+impl syntax::types::Type for Type {}
 
-impl LanguageType for Type {
+impl TypeGroup for Type {
     fn into_variable(self) -> Result<TypeVariable<Type>, ErrorKind> {
         if let Type::Var(var) = self {
             Ok(var)

@@ -2,7 +2,7 @@ use common::errors::ErrorKind;
 use std::fmt;
 use syntax::{
     subst::SubstType,
-    types::{Bool, Forall, Fun, Nat, OpApp, OpLambda, TypeVariable, Unit},
+    types::{Bool, Forall, Fun, Nat, OpApp, OpLambda, TypeGroup, TypeVariable, Unit},
 };
 
 pub type TypeVar = String;
@@ -19,9 +19,9 @@ pub enum Type {
     Forall(Forall<Type>),
 }
 
-impl common::types::Type for Type {}
+impl syntax::types::Type for Type {}
 
-impl LanguageType for Type {
+impl TypeGroup for Type {
     fn into_variable(self) -> Result<TypeVariable<Type>, ErrorKind> {
         if let Type::Var(v) = self {
             Ok(v)

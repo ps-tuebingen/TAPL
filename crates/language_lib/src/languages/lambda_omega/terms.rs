@@ -1,4 +1,4 @@
-use super::{types::Type, values::Value};
+use super::types::Type;
 use std::fmt;
 use syntax::{
     subst::{SubstTerm, SubstType},
@@ -13,18 +13,13 @@ pub enum Term {
     True(True<Term>),
     False(False<Term>),
     Unit(Unit<Term>),
-    Lambda(Lambda<Term>),
+    Lambda(Lambda<Term, Type>),
     TyLambda(TyLambda<Term>),
     App(App<Term>),
-    TyApp(TyApp<Term>),
+    TyApp(TyApp<Term, Type>),
 }
 
-impl common::terms::Term for Term {}
-
-impl LanguageTerm for Term {
-    type Type = Type;
-    type Value = Value;
-}
+impl syntax::terms::Term for Term {}
 
 impl SubstType<Type> for Term {
     type Target = Self;
@@ -100,8 +95,8 @@ impl From<False<Term>> for Term {
     }
 }
 
-impl From<Lambda<Term>> for Term {
-    fn from(lam: Lambda<Term>) -> Term {
+impl From<Lambda<Term, Type>> for Term {
+    fn from(lam: Lambda<Term, Type>) -> Term {
         Term::Lambda(lam)
     }
 }
@@ -124,8 +119,8 @@ impl From<TyLambda<Term>> for Term {
     }
 }
 
-impl From<TyApp<Term>> for Term {
-    fn from(tyapp: TyApp<Term>) -> Term {
+impl From<TyApp<Term, Type>> for Term {
+    fn from(tyapp: TyApp<Term, Type>) -> Term {
         Term::TyApp(tyapp)
     }
 }

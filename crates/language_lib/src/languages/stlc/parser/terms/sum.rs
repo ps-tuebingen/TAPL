@@ -1,9 +1,9 @@
-use super::{get_n_inner, next_rule, pair_to_term, pair_to_type, Rule, Term};
+use super::{get_n_inner, next_rule, pair_to_term, pair_to_type, Rule, Term, Type};
 use common::errors::Error;
 use pest::iterators::Pair;
 use syntax::terms::{Left, Right};
 
-pub fn pair_to_left(p: Pair<'_, Rule>) -> Result<Left<Term>, Error> {
+pub fn pair_to_left(p: Pair<'_, Rule>) -> Result<Left<Term, Type>, Error> {
     let mut inner = get_n_inner(p, vec!["Inl Argument", "Inl Type"])?;
 
     let arg_pair = inner.remove(0);
@@ -17,7 +17,7 @@ pub fn pair_to_left(p: Pair<'_, Rule>) -> Result<Left<Term>, Error> {
     Ok(Left::new(arg_term, ty))
 }
 
-pub fn pair_to_right(p: Pair<'_, Rule>) -> Result<Right<Term>, Error> {
+pub fn pair_to_right(p: Pair<'_, Rule>) -> Result<Right<Term, Type>, Error> {
     let mut inner = get_n_inner(p, vec!["Inr Argument", "Inr Type"])?;
 
     let arg_pair = inner.remove(0);

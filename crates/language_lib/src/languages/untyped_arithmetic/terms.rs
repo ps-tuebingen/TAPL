@@ -1,9 +1,11 @@
+use check::Typecheck;
+use common::errors::Error;
 use std::fmt;
 use syntax::{
-    subst::SubstTerm,
+    subst::{SubstTerm, SubstType},
     terms::{False, If, IsZero, Num, Pred, Succ, True},
     untyped::Untyped,
-    Var,
+    TypeVar, Var,
 };
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -23,6 +25,22 @@ impl SubstTerm<Term> for Term {
     type Target = Term;
     fn subst(self, _: &Var, _: &Term) -> Self::Target {
         self
+    }
+}
+
+impl SubstType<Untyped> for Term {
+    type Target = Self;
+    fn subst_type(self, _: &TypeVar, _: &Untyped) -> Self::Target {
+        self
+    }
+}
+
+impl Typecheck for Term {
+    type Type = Untyped;
+    type Env = ();
+
+    fn check(&self, _: &mut Self::Env) -> Result<Self::Type, Error> {
+        Ok(Untyped)
     }
 }
 

@@ -1,4 +1,4 @@
-use super::{types::Type, values::Value};
+use super::types::Type;
 use std::fmt;
 use syntax::{
     subst::{SubstTerm, SubstType},
@@ -13,7 +13,7 @@ use syntax::{
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Term {
     Var(Variable<Term>),
-    Lambda(Lambda<Term>),
+    Lambda(Lambda<Term, Type>),
     App(App<Term>),
     Unit(Unit<Term>),
     True(True<Term>),
@@ -23,7 +23,7 @@ pub enum Term {
     Pred(Pred<Term>),
     Succ(Succ<Term>),
     IsZero(IsZero<Term>),
-    Ascribe(Ascribe<Term>),
+    Ascribe(Ascribe<Term, Type>),
     Let(Let<Term>),
     Pair(Pair<Term>),
     Fst(Fst<Term>),
@@ -32,28 +32,23 @@ pub enum Term {
     Projection(Projection<Term>),
     Record(Record<Term>),
     RecordProj(RecordProj<Term>),
-    Left(Left<Term>),
-    Right(Right<Term>),
+    Left(Left<Term, Type>),
+    Right(Right<Term, Type>),
     SumCase(SumCase<Term>),
-    Variant(Variant<Term>),
+    Variant(Variant<Term, Type>),
     VariantCase(VariantCase<Term>),
-    Nothing(Nothing<Term>),
+    Nothing(Nothing<Term, Type>),
     Something(Something<Term>),
     SomeCase(SomeCase<Term>),
     Fix(Fix<Term>),
-    Nil(Nil<Term>),
-    Cons(Cons<Term>),
-    IsNil(IsNil<Term>),
-    Head(Head<Term>),
-    Tail(Tail<Term>),
+    Nil(Nil<Term, Type>),
+    Cons(Cons<Term, Type>),
+    IsNil(IsNil<Term, Type>),
+    Head(Head<Term, Type>),
+    Tail(Tail<Term, Type>),
 }
 
-impl common::terms::Term for Term {}
-
-impl LanguageTerm for Term {
-    type Type = Type;
-    type Value = Value;
-}
+impl syntax::terms::Term for Term {}
 
 impl SubstType<Type> for Term {
     type Target = Term;
@@ -145,8 +140,8 @@ impl fmt::Display for Term {
     }
 }
 
-impl From<Lambda<Term>> for Term {
-    fn from(lam: Lambda<Term>) -> Term {
+impl From<Lambda<Term, Type>> for Term {
+    fn from(lam: Lambda<Term, Type>) -> Term {
         Term::Lambda(lam)
     }
 }
@@ -193,26 +188,26 @@ impl From<Record<Term>> for Term {
     }
 }
 
-impl From<Left<Term>> for Term {
-    fn from(lft: Left<Term>) -> Term {
+impl From<Left<Term, Type>> for Term {
+    fn from(lft: Left<Term, Type>) -> Term {
         Term::Left(lft)
     }
 }
 
-impl From<Right<Term>> for Term {
-    fn from(right: Right<Term>) -> Term {
+impl From<Right<Term, Type>> for Term {
+    fn from(right: Right<Term, Type>) -> Term {
         Term::Right(right)
     }
 }
 
-impl From<Variant<Term>> for Term {
-    fn from(var: Variant<Term>) -> Term {
+impl From<Variant<Term, Type>> for Term {
+    fn from(var: Variant<Term, Type>) -> Term {
         Term::Variant(var)
     }
 }
 
-impl From<Nothing<Term>> for Term {
-    fn from(not: Nothing<Term>) -> Term {
+impl From<Nothing<Term, Type>> for Term {
+    fn from(not: Nothing<Term, Type>) -> Term {
         Term::Nothing(not)
     }
 }
@@ -223,14 +218,14 @@ impl From<Something<Term>> for Term {
     }
 }
 
-impl From<Nil<Term>> for Term {
-    fn from(nil: Nil<Term>) -> Term {
+impl From<Nil<Term, Type>> for Term {
+    fn from(nil: Nil<Term, Type>) -> Term {
         Term::Nil(nil)
     }
 }
 
-impl From<Cons<Term>> for Term {
-    fn from(cons: Cons<Term>) -> Term {
+impl From<Cons<Term, Type>> for Term {
+    fn from(cons: Cons<Term, Type>) -> Term {
         Term::Cons(cons)
     }
 }
@@ -271,8 +266,8 @@ impl From<IsZero<Term>> for Term {
     }
 }
 
-impl From<Ascribe<Term>> for Term {
-    fn from(asc: Ascribe<Term>) -> Term {
+impl From<Ascribe<Term, Type>> for Term {
+    fn from(asc: Ascribe<Term, Type>) -> Term {
         Term::Ascribe(asc)
     }
 }
@@ -331,20 +326,20 @@ impl From<Fix<Term>> for Term {
     }
 }
 
-impl From<IsNil<Term>> for Term {
-    fn from(isn: IsNil<Term>) -> Term {
+impl From<IsNil<Term, Type>> for Term {
+    fn from(isn: IsNil<Term, Type>) -> Term {
         Term::IsNil(isn)
     }
 }
 
-impl From<Head<Term>> for Term {
-    fn from(hd: Head<Term>) -> Term {
+impl From<Head<Term, Type>> for Term {
+    fn from(hd: Head<Term, Type>) -> Term {
         Term::Head(hd)
     }
 }
 
-impl From<Tail<Term>> for Term {
-    fn from(tl: Tail<Term>) -> Term {
+impl From<Tail<Term, Type>> for Term {
+    fn from(tl: Tail<Term, Type>) -> Term {
         Term::Tail(tl)
     }
 }

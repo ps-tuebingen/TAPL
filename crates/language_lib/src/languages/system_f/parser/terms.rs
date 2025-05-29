@@ -1,4 +1,4 @@
-use super::{pair_to_n_inner, pair_to_type, to_parse_err, Rule, Term};
+use super::{pair_to_n_inner, pair_to_type, to_parse_err, Rule, Term, Type};
 use common::errors::{Error, ErrorKind};
 use pest::iterators::Pair;
 use syntax::{
@@ -74,7 +74,7 @@ fn pair_to_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
     }
 }
 
-fn pair_to_lambda(p: Pair<'_, Rule>) -> Result<Lambda<Term>, Error> {
+fn pair_to_lambda(p: Pair<'_, Rule>) -> Result<Lambda<Term, Type>, Error> {
     let mut inner = pair_to_n_inner(p, vec!["Lambda Variable", "Lambda Annot", "Lambda Body"])?;
     let var = inner.remove(0).as_str().trim();
     let ty_rule = inner.remove(0);

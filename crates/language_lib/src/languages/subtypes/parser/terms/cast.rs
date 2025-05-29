@@ -1,9 +1,9 @@
-use super::{pair_to_n_inner, pair_to_type, Rule, Term};
+use super::{pair_to_n_inner, pair_to_type, Rule, Term, Type};
 use common::errors::Error;
 use pest::iterators::Pair;
 use syntax::terms::Cast;
 
-pub fn pair_to_cast(p: Pair<'_, Rule>, t: Term) -> Result<Cast<Term>, Error> {
+pub fn pair_to_cast(p: Pair<'_, Rule>, t: Term) -> Result<Cast<Term, Type>, Error> {
     let mut inner = pair_to_n_inner(p, vec!["As Keyword", "Cast Type"])?;
     inner.remove(0);
     let ty_rule = inner.remove(0);

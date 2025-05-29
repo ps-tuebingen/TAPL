@@ -1,4 +1,4 @@
-use super::{types::Type, values::Value};
+use super::types::Type;
 use std::fmt;
 use syntax::{
     subst::{SubstTerm, SubstType},
@@ -12,12 +12,12 @@ use syntax::{
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Term {
     Var(Variable<Term>),
-    Lambda(Lambda<Term>),
+    Lambda(Lambda<Term, Type>),
     App(App<Term>),
     Unit(Unit<Term>),
-    Fold(Fold<Term>),
-    Unfold(Unfold<Term>),
-    Variant(Variant<Term>),
+    Fold(Fold<Term, Type>),
+    Unfold(Unfold<Term, Type>),
+    Variant(Variant<Term, Type>),
     VariantCase(VariantCase<Term>),
     Pair(Pair<Term>),
     Fst(Fst<Term>),
@@ -35,12 +35,7 @@ pub enum Term {
     RecordProj(RecordProj<Term>),
 }
 
-impl common::terms::Term for Term {}
-
-impl LanguageTerm for Term {
-    type Type = Type;
-    type Value = Value;
-}
+impl syntax::terms::Term for Term {}
 
 impl SubstType<Type> for Term {
     type Target = Self;
@@ -131,19 +126,19 @@ impl fmt::Display for Term {
     }
 }
 
-impl From<Fold<Term>> for Term {
-    fn from(fld: Fold<Term>) -> Term {
+impl From<Fold<Term, Type>> for Term {
+    fn from(fld: Fold<Term, Type>) -> Term {
         Term::Fold(fld)
     }
 }
 
-impl From<Unfold<Term>> for Term {
-    fn from(unfld: Unfold<Term>) -> Term {
+impl From<Unfold<Term, Type>> for Term {
+    fn from(unfld: Unfold<Term, Type>) -> Term {
         Term::Unfold(unfld)
     }
 }
-impl From<Lambda<Term>> for Term {
-    fn from(lam: Lambda<Term>) -> Term {
+impl From<Lambda<Term, Type>> for Term {
+    fn from(lam: Lambda<Term, Type>) -> Term {
         Term::Lambda(lam)
     }
 }
@@ -184,8 +179,8 @@ impl From<Record<Term>> for Term {
     }
 }
 
-impl From<Variant<Term>> for Term {
-    fn from(var: Variant<Term>) -> Term {
+impl From<Variant<Term, Type>> for Term {
+    fn from(var: Variant<Term, Type>) -> Term {
         Term::Variant(var)
     }
 }

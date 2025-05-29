@@ -60,8 +60,8 @@ impl From<Variable<Term>> for Term {
         Term::Var(var)
     }
 }
-impl From<Lambda<Term>> for Term {
-    fn from(lam: Lambda<Term>) -> Term {
+impl From<Lambda<Term, Type>> for Term {
+    fn from(lam: Lambda<Term, Type>) -> Term {
         Term::Lambda(lam)
     }
 }
@@ -75,8 +75,8 @@ impl From<TyLambda<Term>> for Term {
         Term::TyLambda(tylam)
     }
 }
-impl From<TyApp<Term>> for Term {
-    fn from(tyapp: TyApp<Term>) -> Term {
+impl From<TyApp<Term, Type>> for Term {
+    fn from(tyapp: TyApp<Term, Type>) -> Term {
         Term::TyApp(tyapp)
     }
 }

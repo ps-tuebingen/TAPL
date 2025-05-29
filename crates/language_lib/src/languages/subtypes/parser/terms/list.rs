@@ -1,4 +1,4 @@
-use super::{pair_to_n_inner, pair_to_term, pair_to_type, to_parse_err, Rule, Term};
+use super::{pair_to_n_inner, pair_to_term, pair_to_type, to_parse_err, Rule, Term, Type};
 use common::errors::{Error, ErrorKind};
 use pest::iterators::Pair;
 use syntax::{
@@ -17,7 +17,7 @@ enum ListPattern {
     },
 }
 
-pub fn pair_to_nil(p: Pair<'_, Rule>) -> Result<Nil<Term>, Error> {
+pub fn pair_to_nil(p: Pair<'_, Rule>) -> Result<Nil<Term, Type>, Error> {
     let mut inner = pair_to_n_inner(p, vec!["Nil Keyword", "Nil Type"])?;
     inner.remove(0);
     let ty_rule = inner.remove(0);
@@ -26,7 +26,7 @@ pub fn pair_to_nil(p: Pair<'_, Rule>) -> Result<Nil<Term>, Error> {
     Ok(Nil::new(ty))
 }
 
-pub fn pair_to_cons(p: Pair<'_, Rule>) -> Result<Cons<Term>, Error> {
+pub fn pair_to_cons(p: Pair<'_, Rule>) -> Result<Cons<Term, Type>, Error> {
     let mut inner = pair_to_n_inner(
         p,
         vec![

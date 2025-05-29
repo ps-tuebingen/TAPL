@@ -1,4 +1,4 @@
-use super::{get_n_inner, next_rule, pair_to_term, pair_to_type, Rule, Term};
+use super::{get_n_inner, next_rule, pair_to_term, pair_to_type, Rule, Term, Type};
 use common::errors::Error;
 use pest::iterators::Pair;
 use syntax::terms::{Nothing, Something};
@@ -9,7 +9,7 @@ pub fn pair_to_some(p: Pair<'_, Rule>) -> Result<Something<Term>, Error> {
     let arg = pair_to_term(arg_rule)?;
     Ok(Something::new(arg))
 }
-pub fn pair_to_none(p: Pair<'_, Rule>) -> Result<Nothing<Term>, Error> {
+pub fn pair_to_none(p: Pair<'_, Rule>) -> Result<Nothing<Term, Type>, Error> {
     let ty_pair = get_n_inner(p, vec!["Nothing Type"])?.remove(0);
     let ty_rule = next_rule(ty_pair, Rule::r#type)?;
     let ty = pair_to_type(ty_rule)?;

@@ -1,4 +1,4 @@
-use super::{types::Type, values::Value};
+use super::types::Type;
 use std::fmt;
 use syntax::{
     subst::{SubstTerm, SubstType},
@@ -12,12 +12,12 @@ use syntax::{
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Term {
     Var(Variable<Term>),
-    Lambda(Lambda<Term>),
+    Lambda(Lambda<Term, Type>),
     App(App<Term>),
-    LambdaSub(LambdaSub<Term>),
-    TyApp(TyApp<Term>),
-    Pack(Pack<Term>),
-    Unpack(Unpack<Term>),
+    LambdaSub(LambdaSub<Term, Type>),
+    TyApp(TyApp<Term, Type>),
+    Pack(Pack<Term, Type>),
+    Unpack(Unpack<Term, Type>),
     Record(Record<Term>),
     RecordProj(RecordProj<Term>),
     Num(Num<Term>),
@@ -26,12 +26,7 @@ pub enum Term {
     Let(Let<Term>),
 }
 
-impl common::terms::Term for Term {}
-
-impl LanguageTerm for Term {
-    type Type = Type;
-    type Value = Value;
-}
+impl syntax::terms::Term for Term {}
 
 impl SubstTerm<Term> for Term {
     type Target = Self;
@@ -102,24 +97,24 @@ impl From<Let<Term>> for Term {
         Term::Let(lt)
     }
 }
-impl From<Pack<Term>> for Term {
-    fn from(pack: Pack<Term>) -> Term {
+impl From<Pack<Term, Type>> for Term {
+    fn from(pack: Pack<Term, Type>) -> Term {
         Term::Pack(pack)
     }
 }
-impl From<Unpack<Term>> for Term {
-    fn from(unpack: Unpack<Term>) -> Term {
+impl From<Unpack<Term, Type>> for Term {
+    fn from(unpack: Unpack<Term, Type>) -> Term {
         Term::Unpack(unpack)
     }
 }
-impl From<TyApp<Term>> for Term {
-    fn from(tyapp: TyApp<Term>) -> Term {
+impl From<TyApp<Term, Type>> for Term {
+    fn from(tyapp: TyApp<Term, Type>) -> Term {
         Term::TyApp(tyapp)
     }
 }
 
-impl From<Lambda<Term>> for Term {
-    fn from(lam: Lambda<Term>) -> Term {
+impl From<Lambda<Term, Type>> for Term {
+    fn from(lam: Lambda<Term, Type>) -> Term {
         Term::Lambda(lam)
     }
 }
@@ -159,8 +154,8 @@ impl From<Succ<Term>> for Term {
         Term::Succ(succ)
     }
 }
-impl From<LambdaSub<Term>> for Term {
-    fn from(lam: LambdaSub<Term>) -> Term {
+impl From<LambdaSub<Term, Type>> for Term {
+    fn from(lam: LambdaSub<Term, Type>) -> Term {
         Term::LambdaSub(lam)
     }
 }

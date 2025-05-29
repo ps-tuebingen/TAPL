@@ -1,9 +1,9 @@
-use super::{pair_to_n_inner, pair_to_term, pair_to_type, Rule, Term};
+use super::{pair_to_n_inner, pair_to_term, pair_to_type, Rule, Term, Type};
 use common::errors::Error;
 use pest::iterators::Pair;
 use syntax::terms::Lambda;
 
-pub fn pair_to_lambda(p: Pair<'_, Rule>) -> Result<Lambda<Term>, Error> {
+pub fn pair_to_lambda(p: Pair<'_, Rule>) -> Result<Lambda<Term, Type>, Error> {
     let mut inner = pair_to_n_inner(p, vec!["Lambda Variable", "Lambda Annot", "LambdaBody"])?;
     let var = inner.remove(0).as_str().trim().to_owned();
     let ty_pair = inner.remove(0);

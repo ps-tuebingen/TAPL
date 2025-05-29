@@ -190,13 +190,13 @@ impl From<TryWithVal<Term>> for Term {
 
 #[cfg(test)]
 pub mod term_tests {
-    use super::{App, Lambda, Raise, Term, Try, TryWithVal, Unit, Variable};
+    use super::{App, Lambda, Raise, Term, Try, TryWithVal, Type, Unit, Variable};
     use syntax::types::Unit as UnitTy;
 
     pub fn example_term1() -> Term {
         Try::<Term>::new(
             App::<Term>::new(
-                Lambda::<Term>::new("x", UnitTy::new(), Variable::<Term>::new("x")),
+                Lambda::<Term, Type>::new("x", UnitTy::new(), Variable::<Term>::new("x")),
                 Unit::<Term>::new(),
             ),
             Unit::<Term>::new(),
@@ -206,8 +206,8 @@ pub mod term_tests {
 
     pub fn example_term2() -> Term {
         TryWithVal::<Term>::new(
-            Raise::<Term>::new(Unit::<Term>::new(), UnitTy::new(), UnitTy::new()),
-            Lambda::<Term>::new("x", UnitTy::new(), Unit::new()),
+            Raise::<Term, Type>::new(Unit::<Term>::new(), UnitTy::new(), UnitTy::new()),
+            Lambda::<Term, Type>::new("x", UnitTy::new(), Unit::new()),
         )
         .into()
     }

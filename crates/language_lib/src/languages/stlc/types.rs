@@ -2,7 +2,9 @@ use common::errors::ErrorKind;
 use std::fmt;
 use syntax::{
     subst::SubstType,
-    types::{Bool, Fun, List, Nat, Optional, Product, Record, Sum, Tuple, Unit, Variant},
+    types::{
+        Bool, Fun, List, Nat, Optional, Product, Record, Sum, Tuple, TypeGroup, Unit, Variant,
+    },
     TypeVar,
 };
 
@@ -21,9 +23,9 @@ pub enum Type {
     List(List<Type>),
 }
 
-impl common::types::Type for Type {}
+impl syntax::types::Type for Type {}
 
-impl LanguageType for Type {
+impl TypeGroup for Type {
     fn into_unit(self) -> Result<Unit<Type>, ErrorKind> {
         if let Type::Unit(u) = self {
             Ok(u)

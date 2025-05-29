@@ -111,18 +111,18 @@ impl fmt::Display for Term {
     }
 }
 
-impl From<Pack<Term>> for Term {
-    fn from(pack: Pack<Term>) -> Term {
+impl From<Pack<Term, Type>> for Term {
+    fn from(pack: Pack<Term, Type>) -> Term {
         Term::Pack(pack)
     }
 }
-impl From<Unpack<Term>> for Term {
-    fn from(unpack: Unpack<Term>) -> Term {
+impl From<Unpack<Term, Type>> for Term {
+    fn from(unpack: Unpack<Term, Type>) -> Term {
         Term::Unpack(unpack)
     }
 }
-impl From<TyApp<Term>> for Term {
-    fn from(tyapp: TyApp<Term>) -> Term {
+impl From<TyApp<Term, Type>> for Term {
+    fn from(tyapp: TyApp<Term, Type>) -> Term {
         Term::TyApp(tyapp)
     }
 }
@@ -132,8 +132,8 @@ impl From<TyLambda<Term>> for Term {
         Term::TyLambda(tylam)
     }
 }
-impl From<Lambda<Term>> for Term {
-    fn from(lam: Lambda<Term>) -> Term {
+impl From<Lambda<Term, Type>> for Term {
+    fn from(lam: Lambda<Term, Type>) -> Term {
         Term::Lambda(lam)
     }
 }

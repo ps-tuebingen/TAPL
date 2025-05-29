@@ -1,11 +1,11 @@
-use super::terms::Term;
+use super::{terms::Term, types::Type};
 use common::errors::ErrorKind;
-use eval::values::{False, Lambda, Loc, Num, True, Unit, Value as ValueTrait};
+use eval::values::{False, Lambda, Loc, Num, True, Unit, Value as ValueTrait, ValueGroup};
 use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Value {
-    Lambda(Lambda<Term>),
+    Lambda(Lambda<Term, Type>),
     Unit(Unit<Term>),
     Num(Num<Term>),
     Loc(Loc<Term>),
@@ -17,10 +17,11 @@ impl ValueTrait for Value {
     type Term = Term;
 }
 
-impl LanguageValue for Value {
+impl ValueGroup for Value {
     type Term = Term;
+    type Type = Type;
 
-    fn into_lambda(self) -> Result<Lambda<Term>, ErrorKind> {
+    fn into_lambda(self) -> Result<Lambda<Term, Type>, ErrorKind> {
         if let Value::Lambda(lam) = self {
             Ok(lam)
         } else {
@@ -102,8 +103,8 @@ impl fmt::Display for Value {
     }
 }
 
-impl From<Lambda<Term>> for Value {
-    fn from(lam: Lambda<Term>) -> Value {
+impl From<Lambda<Term, Type>> for Value {
+    fn from(lam: Lambda<Term, Type>) -> Value {
         Value::Lambda(lam)
     }
 }

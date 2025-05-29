@@ -1,9 +1,9 @@
-use super::{get_n_inner, next_rule, pair_to_term, pair_to_type, Rule, Term};
+use super::{get_n_inner, next_rule, pair_to_term, pair_to_type, Rule, Term, Type};
 use common::errors::Error;
 use pest::iterators::Pair;
 use syntax::terms::Variant;
 
-pub fn pair_to_variant(p: Pair<'_, Rule>) -> Result<Variant<Term>, Error> {
+pub fn pair_to_variant(p: Pair<'_, Rule>) -> Result<Variant<Term, Type>, Error> {
     let mut inner = get_n_inner(p, vec!["Variant Label", "Variant Term", "Variant Type"])?;
 
     let var_pair = inner.remove(0);

@@ -1,8 +1,11 @@
+use check::Typecheck;
+use common::errors::Error;
 use std::fmt;
 use syntax::untyped::Untyped;
 use syntax::{
-    subst::SubstTerm,
+    subst::{SubstTerm, SubstType},
     terms::{App, Lambda, Variable},
+    TypeVar,
 };
 
 pub type Var = String;
@@ -15,6 +18,22 @@ pub enum Term {
 }
 
 impl syntax::terms::Term for Term {}
+
+impl Typecheck for Term {
+    type Type = Untyped;
+    type Env = ();
+
+    fn check(&self, _: &mut Self::Env) -> Result<Self::Type, Error> {
+        Ok(Untyped)
+    }
+}
+
+impl SubstType<Untyped> for Term {
+    type Target = Term;
+    fn subst_type(self, _: &TypeVar, _: &Untyped) -> Self::Target {
+        self
+    }
+}
 
 impl fmt::Display for Term {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
