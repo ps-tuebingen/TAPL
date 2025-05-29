@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 pub const SUMCASE: &str = include_str!("../../../../examples/inference/sumcase/sumcase.inf");
 
 pub const DOUBLENAT: &str = include_str!("../../../../examples/inference/doublenat/doublenat.inf");
@@ -18,8 +19,18 @@ pub const SWAP: &str = include_str!("../../../../examples/inference/swap/swap.in
 
 pub const FIX: &str = include_str!("../../../../examples/inference/fix/fix.inf");
 
-pub fn inference_all() -> Vec<&'static str> { 
-    vec![
-        SUMCASE, DOUBLENAT, SUM, LIST, NATNATNAT, SOMETHING, DOUBLEBOOL, SOMECASE, SWAP, FIX, 
-    ]
+pub fn inference_all() -> HashMap<&'static str,&'static str> { 
+    HashMap::from([
+        ("SUMCASE",SUMCASE), 
+("DOUBLENAT",DOUBLENAT), 
+("SUM",SUM), 
+("LIST",LIST), 
+("NATNATNAT",NATNATNAT), 
+("SOMETHING",SOMETHING), 
+("DOUBLEBOOL",DOUBLEBOOL), 
+("SOMECASE",SOMECASE), 
+("SWAP",SWAP), 
+("FIX",FIX), 
+
+    ])
 }

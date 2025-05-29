@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 pub const TIMES: &str = include_str!("../../../../examples/untyped_lambda/times/times.lam");
 
 pub const FALSE: &str = include_str!("../../../../examples/untyped_lambda/false/false.lam");
@@ -28,8 +29,23 @@ pub const PLUS: &str = include_str!("../../../../examples/untyped_lambda/plus/pl
 
 pub const PRD: &str = include_str!("../../../../examples/untyped_lambda/prd/prd.lam");
 
-pub fn untyped_lambda_all() -> Vec<&'static str> { 
-    vec![
-        TIMES, FALSE, ONE, ID, SND, TRU, PAIR, FST, IFTHENELSE, ZERO, ISZERO, SUCC, AND, PLUS, PRD, 
-    ]
+pub fn untyped_lambda_all() -> HashMap<&'static str,&'static str> { 
+    HashMap::from([
+        ("TIMES",TIMES), 
+("FALSE",FALSE), 
+("ONE",ONE), 
+("ID",ID), 
+("SND",SND), 
+("TRU",TRU), 
+("PAIR",PAIR), 
+("FST",FST), 
+("IFTHENELSE",IFTHENELSE), 
+("ZERO",ZERO), 
+("ISZERO",ISZERO), 
+("SUCC",SUCC), 
+("AND",AND), 
+("PLUS",PLUS), 
+("PRD",PRD), 
+
+    ])
 }

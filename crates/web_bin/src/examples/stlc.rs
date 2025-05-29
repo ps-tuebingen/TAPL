@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 pub const LEFT: &str = include_str!("../../../../examples/stlc/left/left.stlc");
 
 pub const VARIANTCASE: &str = include_str!("../../../../examples/stlc/variantcase/variantcase.stlc");
@@ -40,8 +41,29 @@ pub const VARIANT: &str = include_str!("../../../../examples/stlc/variant/varian
 
 pub const BOOLBOOL: &str = include_str!("../../../../examples/stlc/boolbool/boolbool.stlc");
 
-pub fn stlc_all() -> Vec<&'static str> { 
-    vec![
-        LEFT, VARIANTCASE, PROJ, PREDSUCC, SUMCASE, IDFUN, SND, RECORD, PAIR, LET, UNIT, IDNAT, LIST, IF, SOMECASE, SWAP, BOOL, FIX, TUPLE, VARIANT, BOOLBOOL, 
-    ]
+pub fn stlc_all() -> HashMap<&'static str,&'static str> { 
+    HashMap::from([
+        ("LEFT",LEFT), 
+("VARIANTCASE",VARIANTCASE), 
+("PROJ",PROJ), 
+("PREDSUCC",PREDSUCC), 
+("SUMCASE",SUMCASE), 
+("IDFUN",IDFUN), 
+("SND",SND), 
+("RECORD",RECORD), 
+("PAIR",PAIR), 
+("LET",LET), 
+("UNIT",UNIT), 
+("IDNAT",IDNAT), 
+("LIST",LIST), 
+("IF",IF), 
+("SOMECASE",SOMECASE), 
+("SWAP",SWAP), 
+("BOOL",BOOL), 
+("FIX",FIX), 
+("TUPLE",TUPLE), 
+("VARIANT",VARIANT), 
+("BOOLBOOL",BOOLBOOL), 
+
+    ])
 }

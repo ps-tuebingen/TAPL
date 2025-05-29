@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 pub const SENDGET: &str = include_str!("../../../../examples/existential/sendget/sendget.ex");
 
 pub const ISEVEN: &str = include_str!("../../../../examples/existential/iseven/iseven.ex");
@@ -22,8 +23,20 @@ pub const SENDINC: &str = include_str!("../../../../examples/existential/sendinc
 
 pub const UNPACKNAT: &str = include_str!("../../../../examples/existential/unpacknat/unpacknat.ex");
 
-pub fn existential_all() -> Vec<&'static str> { 
-    vec![
-        SENDGET, ISEVEN, ADD3, FLIPFLOP, UNPACKCOUNTER, COUNTERADT, PACKBOOL, COUNTEROBJECT, COUNTERREC, PACKNAT, SENDINC, UNPACKNAT, 
-    ]
+pub fn existential_all() -> HashMap<&'static str,&'static str> { 
+    HashMap::from([
+        ("SENDGET",SENDGET), 
+("ISEVEN",ISEVEN), 
+("ADD3",ADD3), 
+("FLIPFLOP",FLIPFLOP), 
+("UNPACKCOUNTER",UNPACKCOUNTER), 
+("COUNTERADT",COUNTERADT), 
+("PACKBOOL",PACKBOOL), 
+("COUNTEROBJECT",COUNTEROBJECT), 
+("COUNTERREC",COUNTERREC), 
+("PACKNAT",PACKNAT), 
+("SENDINC",SENDINC), 
+("UNPACKNAT",UNPACKNAT), 
+
+    ])
 }

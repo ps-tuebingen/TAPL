@@ -39,7 +39,7 @@ do
   echo "" >> $OUT_MOD;
 
   #fill example mod with example strings
-  > $OUT_PATH;
+  echo "use std::collections::HashMap;" > $OUT_PATH;
   while IFS='' read -r -d '' example;
   do
     #skip toml configs
@@ -65,20 +65,20 @@ do
   done < <(find $example_dir -type f -print0);
 
   #write all examples into an array
-  echo "pub fn $ALL_EXAMPLES_NAME() -> Vec<&'static str> { " >> $OUT_PATH;
-  printf "    vec![\n" >> $OUT_PATH;
+  echo "pub fn $ALL_EXAMPLES_NAME() -> HashMap<&'static str,&'static str> { " >> $OUT_PATH;
+  printf "    HashMap::from([\n" >> $OUT_PATH;
   printf "        " >> $OUT_PATH;
   for example_name in ${EXAMPLE_NAMES[@]};
   do
-    printf "$example_name, " >> $OUT_PATH
+    echo "(\"$example_name\",$example_name), " >> $OUT_PATH
   done 
   printf "\n" >> $OUT_PATH;
-  printf "    ]\n" >> $OUT_PATH;
+  printf "    ])\n" >> $OUT_PATH;
   echo "}" >> $OUT_PATH;
 done < <(find $EXAMPLES_DIR -maxdepth 1 -type d -print0);
 
 #write all arrays into another array 
-echo "pub fn all_examples() -> HashMap<&'static str, Vec<&'static str>> {" >> $OUT_MOD;
+echo "pub fn all_examples() -> HashMap<&'static str, HashMap<&'static str,&'static str>> {" >> $OUT_MOD;
 echo "    HashMap::from([" >> $OUT_MOD;
 for dir_tuple in "${EXAMPLE_DIR_TUPLES[@]}";
 do 

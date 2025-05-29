@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 pub const SZERO: &str = include_str!("../../../../examples/bounded_quantification/szero/szero.bd");
 
 pub const COUNTERADT: &str = include_str!("../../../../examples/bounded_quantification/counteradt/counteradt.bd");
@@ -24,8 +25,21 @@ pub const SSUCC: &str = include_str!("../../../../examples/bounded_quantificatio
 
 pub const SONE: &str = include_str!("../../../../examples/bounded_quantification/sone/sone.bd");
 
-pub fn bounded_quantification_all() -> Vec<&'static str> { 
-    vec![
-        SZERO, COUNTERADT, SND, PAIR, UNBOUNDID, RECORDPOLY, STHREE, FST, SPLUSPP, COUNTERTHREE, STWO, SSUCC, SONE, 
-    ]
+pub fn bounded_quantification_all() -> HashMap<&'static str,&'static str> { 
+    HashMap::from([
+        ("SZERO",SZERO), 
+("COUNTERADT",COUNTERADT), 
+("SND",SND), 
+("PAIR",PAIR), 
+("UNBOUNDID",UNBOUNDID), 
+("RECORDPOLY",RECORDPOLY), 
+("STHREE",STHREE), 
+("FST",FST), 
+("SPLUSPP",SPLUSPP), 
+("COUNTERTHREE",COUNTERTHREE), 
+("STWO",STWO), 
+("SSUCC",SSUCC), 
+("SONE",SONE), 
+
+    ])
 }

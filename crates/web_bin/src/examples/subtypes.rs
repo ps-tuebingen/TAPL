@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 pub const COUNTERCLASS: &str = include_str!("../../../../examples/subtypes/counterclass/counterclass.sub");
 
 pub const VARIANTCASE: &str = include_str!("../../../../examples/subtypes/variantcase/variantcase.sub");
@@ -34,8 +35,26 @@ pub const RESETCOUNTERCLASS: &str = include_str!("../../../../examples/subtypes/
 
 pub const VARIANT: &str = include_str!("../../../../examples/subtypes/variant/variant.sub");
 
-pub fn subtypes_all() -> Vec<&'static str> { 
-    vec![
-        COUNTERCLASS, VARIANTCASE, NEWRESETCOUNTER, LAMBDAREC, INSTRCOUNTERCLASS, DOWNCAST, NEWINSTRCOUNTER, REFNAT, SETCOUNTERCLASS, LIST, BACKUPCOUNTERCLASS, COUNTER, NEWCOUNTER, NEWDECCOUNTER, DECCOUNTERCLASS, NEWSETCOUNTER, RESETCOUNTERCLASS, VARIANT, 
-    ]
+pub fn subtypes_all() -> HashMap<&'static str,&'static str> { 
+    HashMap::from([
+        ("COUNTERCLASS",COUNTERCLASS), 
+("VARIANTCASE",VARIANTCASE), 
+("NEWRESETCOUNTER",NEWRESETCOUNTER), 
+("LAMBDAREC",LAMBDAREC), 
+("INSTRCOUNTERCLASS",INSTRCOUNTERCLASS), 
+("DOWNCAST",DOWNCAST), 
+("NEWINSTRCOUNTER",NEWINSTRCOUNTER), 
+("REFNAT",REFNAT), 
+("SETCOUNTERCLASS",SETCOUNTERCLASS), 
+("LIST",LIST), 
+("BACKUPCOUNTERCLASS",BACKUPCOUNTERCLASS), 
+("COUNTER",COUNTER), 
+("NEWCOUNTER",NEWCOUNTER), 
+("NEWDECCOUNTER",NEWDECCOUNTER), 
+("DECCOUNTERCLASS",DECCOUNTERCLASS), 
+("NEWSETCOUNTER",NEWSETCOUNTER), 
+("RESETCOUNTERCLASS",RESETCOUNTERCLASS), 
+("VARIANT",VARIANT), 
+
+    ])
 }
