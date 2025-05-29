@@ -2,7 +2,9 @@ use common::errors::ErrorKind;
 use std::fmt;
 use syntax::{
     subst::SubstType,
-    types::{Bool, Exists, Forall, Fun, Nat, OpApp, OpLambda, Record, TypeVariable, Unit},
+    types::{
+        Bool, Exists, Forall, Fun, Nat, OpApp, OpLambda, Record, TypeGroup, TypeVariable, Unit,
+    },
     TypeVar,
 };
 
@@ -20,9 +22,9 @@ pub enum Type {
     Nat(Nat<Type>),
 }
 
-impl common::types::Type for Type {}
+impl syntax::types::Type for Type {}
 
-impl LanguageType for Type {
+impl TypeGroup for Type {
     fn into_fun(self) -> Result<Fun<Type>, ErrorKind> {
         if let Type::Fun(fun) = self {
             Ok(fun)

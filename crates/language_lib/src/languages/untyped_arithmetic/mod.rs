@@ -3,7 +3,8 @@ pub mod parse;
 pub mod terms;
 pub mod values;
 
-use common::language::{untyped::Untyped, Language};
+use crate::Language;
+use syntax::untyped::Untyped;
 use terms::Term;
 use values::Value;
 
@@ -21,11 +22,9 @@ impl Language for UntypedArithmetic {
 #[cfg(test)]
 mod term_tests {
     use super::terms::Term;
-    use common::{
-        eval::Eval,
-        terms::{If, IsZero, Num, Pred, Succ},
-        values::Num as NumVal,
-    };
+    use eval::values::Num as NumVal;
+    use eval::Eval;
+    use syntax::terms::{If, IsZero, Num, Pred, Succ};
 
     #[test]
     fn eval_simple() {

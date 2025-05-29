@@ -1,4 +1,4 @@
-use super::{types::Type, values::Value};
+use super::types::Type;
 use std::fmt;
 use syntax::{
     subst::{SubstTerm, SubstType},
@@ -17,12 +17,7 @@ pub enum Term {
     IsZero(IsZero<Term>),
 }
 
-impl common::terms::Term for Term {}
-
-impl LanguageTerm for Term {
-    type Type = Type;
-    type Value = Value;
-}
+impl syntax::terms::Term for Term {}
 
 impl SubstType<Type> for Term {
     type Target = Term;

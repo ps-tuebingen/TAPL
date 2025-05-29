@@ -1,10 +1,8 @@
 use super::terms::Term;
-use common::{
-    errors::ErrorKind,
-    language::LanguageValue,
-    values::{False, Num, True, Value as ValueTrait},
-};
+use common::errors::ErrorKind;
+use eval::values::{False, Num, True, Value as ValueTrait, ValueGroup};
 use std::fmt;
+use syntax::untyped::Untyped;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Value {
@@ -13,12 +11,13 @@ pub enum Value {
     Num(Num<Term>),
 }
 
-impl common::values::Value for Value {
+impl eval::values::Value for Value {
     type Term = Term;
 }
 
-impl LanguageValue for Value {
+impl ValueGroup for Value {
     type Term = Term;
+    type Type = Untyped;
 
     fn into_true(self) -> Result<True<Term>, ErrorKind> {
         if let Value::True(tru) = self {

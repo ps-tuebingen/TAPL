@@ -1,8 +1,7 @@
 use super::{check::Env, terms::Term, types::Type, values::Value};
-use common::{
-    errors::Error,
-    eval::{Eval, Normalize},
-};
+use check::Normalize;
+use common::errors::Error;
+use eval::Eval;
 
 impl Eval for Term {
     type Value = Value;

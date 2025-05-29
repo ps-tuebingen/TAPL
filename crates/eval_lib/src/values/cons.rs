@@ -3,7 +3,7 @@ use std::fmt;
 use syntax::{terms::Cons as ConsT, types::Type};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct Cons<Ty, V>
+pub struct Cons<V, Ty>
 where
     Ty: Type,
     V: Value,
@@ -13,12 +13,12 @@ where
     ty: Ty,
 }
 
-impl<Ty, V> Cons<Ty, V>
+impl<V, Ty> Cons<V, Ty>
 where
     Ty: Type,
     V: Value,
 {
-    pub fn new<V1, V2, Typ>(hd: V1, tl: V2, ty: Typ) -> Cons<Ty, V>
+    pub fn new<V1, V2, Typ>(hd: V1, tl: V2, ty: Typ) -> Cons<V, Ty>
     where
         V1: Into<V>,
         V2: Into<V>,
@@ -32,7 +32,7 @@ where
     }
 }
 
-impl<Ty, V> Value for Cons<Ty, V>
+impl<V, Ty> Value for Cons<V, Ty>
 where
     Ty: Type,
     V: Value,
@@ -40,17 +40,17 @@ where
     type Term = ConsT<<V as Value>::Term, Ty>;
 }
 
-impl<Ty, V> From<Cons<Ty, V>> for ConsT<<V as Value>::Term, Ty>
+impl<V, Ty> From<Cons<V, Ty>> for ConsT<<V as Value>::Term, Ty>
 where
     Ty: Type,
     V: Value,
 {
-    fn from(c: Cons<Ty, V>) -> ConsT<<V as Value>::Term, Ty> {
+    fn from(c: Cons<V, Ty>) -> ConsT<<V as Value>::Term, Ty> {
         ConsT::new(*c.head, *c.tail, c.ty)
     }
 }
 
-impl<Ty, V> fmt::Display for Cons<Ty, V>
+impl<V, Ty> fmt::Display for Cons<V, Ty>
 where
     Ty: Type,
     V: Value,

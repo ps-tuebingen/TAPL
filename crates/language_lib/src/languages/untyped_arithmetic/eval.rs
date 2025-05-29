@@ -1,5 +1,6 @@
 use super::{terms::Term, values::Value};
-use common::{errors::Error, eval::Eval};
+use common::errors::Error;
+use eval::Eval;
 
 impl Eval for Term {
     type Value = Value;

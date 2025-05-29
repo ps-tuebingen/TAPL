@@ -1,24 +1,23 @@
 use super::terms::Term;
-use common::{
-    errors::ErrorKind,
-    language::LanguageValue,
-    values::{Lambda, Value as ValueTrait},
-};
+use common::errors::ErrorKind;
+use eval::values::{Lambda, Value as ValueTrait, ValueGroup};
+use syntax::untyped::Untyped;
 
 use std::fmt;
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Value {
-    Lambda(Lambda<Term>),
+    Lambda(Lambda<Term, Untyped>),
 }
 
-impl common::values::Value for Value {
+impl eval::values::Value for Value {
     type Term = Term;
 }
 
-impl LanguageValue for Value {
+impl ValueGroup for Value {
     type Term = Term;
+    type Type = Untyped;
 
-    fn into_lambda(self) -> Result<Lambda<Term>, ErrorKind> {
+    fn into_lambda(self) -> Result<Lambda<Term, Untyped>, ErrorKind> {
         match self {
             Value::Lambda(lam) => Ok(lam),
         }
@@ -41,8 +40,8 @@ impl From<Value> for Term {
     }
 }
 
-impl From<Lambda<Term>> for Value {
-    fn from(lam: Lambda<Term>) -> Value {
+impl From<Lambda<Term, Untyped>> for Value {
+    fn from(lam: Lambda<Term, Untyped>) -> Value {
         Value::Lambda(lam)
     }
 }

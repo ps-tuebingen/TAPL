@@ -1,11 +1,13 @@
 use super::terms::{Term, Var};
 use common::{
     errors::{Error, ErrorKind, ErrorLocation},
-    language::untyped::Untyped,
-    terms::{App, Lambda, Variable},
-    Parse,
+    parse::Parse,
 };
 use std::collections::VecDeque;
+use syntax::{
+    terms::{App, Lambda, Variable},
+    untyped::Untyped,
+};
 
 pub mod lexer;
 
@@ -185,9 +187,9 @@ pub fn parse(source: &mut String) -> Result<Term, Error> {
 #[cfg(test)]
 mod parser_tests {
     use super::parse;
-    use common::{
-        language::untyped::Untyped,
+    use syntax::{
         terms::{App, Lambda, Variable},
+        untyped::Untyped,
     };
 
     #[test]

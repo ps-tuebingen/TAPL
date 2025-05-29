@@ -1,32 +1,34 @@
-use super::terms::Term;
+use super::{terms::Term, types::Type};
 use common::errors::ErrorKind;
 use eval::values::{
-    Cons, False, Lambda, Loc, Nil, Num, Record, True, Unit, Value as ValueTrait, Variant,
+    Cons, False, Lambda, Loc, Nil, Num, Record, True, Unit, Value as ValueTrait, ValueGroup,
+    Variant,
 };
 use std::fmt;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum Value {
-    Lambda(Lambda<Term>),
+    Lambda(Lambda<Term, Type>),
     Unit(Unit<Term>),
-    Record(Record<Term>),
-    Variant(Variant<Term>),
-    Nil(Nil<Term>),
-    Cons(Cons<Term>),
+    Record(Record<Value>),
+    Variant(Variant<Value, Type>),
+    Nil(Nil<Term, Type>),
+    Cons(Cons<Type, Value>),
     Loc(Loc<Term>),
     Num(Num<Term>),
     True(True<Term>),
     False(False<Term>),
 }
 
-impl common::values::Value for Value {
+impl eval::values::Value for Value {
     type Term = Term;
 }
 
-impl LanguageValue for Value {
+impl ValueGroup for Value {
     type Term = Term;
+    type Type = Type;
 
-    fn into_lambda(self) -> Result<Lambda<Term>, ErrorKind> {
+    fn into_lambda(self) -> Result<Lambda<Term, Type>, ErrorKind> {
         if let Value::Lambda(lam) = self {
             Ok(lam)
         } else {
@@ -165,8 +167,8 @@ impl From<Loc<Term>> for Value {
         Value::Loc(loc)
     }
 }
-impl From<Lambda<Term>> for Value {
-    fn from(lam: Lambda<Term>) -> Value {
+impl From<Lambda<Term, Type>> for Value {
+    fn from(lam: Lambda<Term, Type>) -> Value {
         Value::Lambda(lam)
     }
 }
@@ -197,19 +199,19 @@ impl From<Record<Term>> for Value {
     }
 }
 
-impl From<Variant<Term>> for Value {
-    fn from(var: Variant<Term>) -> Value {
+impl From<Variant<Value, Type>> for Value {
+    fn from(var: Variant<Value, Type>) -> Value {
         Value::Variant(var)
     }
 }
 
-impl From<Nil<Term>> for Value {
-    fn from(nil: Nil<Term>) -> Value {
+impl From<Nil<Term, Type>> for Value {
+    fn from(nil: Nil<Term, Type>) -> Value {
         Value::Nil(nil)
     }
 }
-impl From<Cons<Term>> for Value {
-    fn from(cons: Cons<Term>) -> Value {
+impl From<Cons<Value, Type>> for Value {
+    fn from(cons: Cons<Value, Type>) -> Value {
         Value::Cons(cons)
     }
 }

@@ -1,4 +1,4 @@
-use super::{types::Type, values::Value};
+use super::types::Type;
 use std::fmt;
 use syntax::{
     subst::{SubstTerm, SubstType},
@@ -13,12 +13,12 @@ pub type Var = String;
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Term {
     Var(Variable<Term>),
-    Lambda(Lambda<Term>),
+    Lambda(Lambda<Term, Type>),
     App(App<Term>),
     TyLambda(TyLambda<Term>),
-    TyApp(TyApp<Term>),
-    Pack(Pack<Term>),
-    Unpack(Unpack<Term>),
+    TyApp(TyApp<Term, Type>),
+    Pack(Pack<Term, Type>),
+    Unpack(Unpack<Term, Type>),
     Record(Record<Term>),
     RecordProj(RecordProj<Term>),
     True(True<Term>),
@@ -32,12 +32,7 @@ pub enum Term {
     IsZero(IsZero<Term>),
 }
 
-impl common::terms::Term for Term {}
-
-impl LanguageTerm for Term {
-    type Type = Type;
-    type Value = Value;
-}
+impl syntax::terms::Term for Term {}
 
 impl SubstTerm<Term> for Term {
     type Target = Self;

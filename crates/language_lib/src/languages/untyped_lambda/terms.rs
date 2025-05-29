@@ -43,8 +43,8 @@ impl From<Variable<Term>> for Term {
     }
 }
 
-impl From<Lambda<Term>> for Term {
-    fn from(lam: Lambda<Term>) -> Term {
+impl From<Lambda<Term, Untyped>> for Term {
+    fn from(lam: Lambda<Term, Untyped>) -> Term {
         Term::Lambda(lam)
     }
 }
@@ -58,10 +58,10 @@ impl From<App<Term>> for Term {
 #[cfg(test)]
 mod term_tests {
     use super::Term;
-    use common::{
-        language::untyped::Untyped,
+    use syntax::{
         subst::SubstTerm,
         terms::{App, Lambda, Variable},
+        untyped::Untyped,
     };
 
     #[test]

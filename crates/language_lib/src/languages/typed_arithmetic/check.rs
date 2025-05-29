@@ -1,11 +1,7 @@
 use super::{terms::Term, types::Type};
-use common::{
-    check::{CheckEnvironment, Typecheck},
-    check::{Kindcheck, Subtypecheck},
-    errors::{Error, ErrorKind},
-    kinds::Kind,
-    Location, TypeVar, Var,
-};
+use check::{CheckEnvironment, Kindcheck, Subtypecheck, Typecheck};
+use common::errors::{Error, ErrorKind};
+use syntax::{kinds::Kind, Location, TypeVar, Var};
 
 #[derive(Default, Clone)]
 pub struct Env;

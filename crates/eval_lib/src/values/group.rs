@@ -95,7 +95,7 @@ pub trait ValueGroup: Value {
         })
     }
 
-    fn into_cons(self) -> Result<Cons<Self::Type, Self>, ErrorKind> {
+    fn into_cons(self) -> Result<Cons<Self, Self::Type>, ErrorKind> {
         Err(ErrorKind::ValueMismatch {
             found: self.to_string(),
             expected: "Cons".to_owned(),

@@ -1,23 +1,21 @@
-use super::terms::Term;
-use common::{
-    errors::ErrorKind,
-    language::LanguageValue,
-    values::{Lambda, TyLambda, Value as ValueTrait},
-};
+use super::{terms::Term, types::Type};
+use common::errors::ErrorKind;
+use eval::values::{Lambda, TyLambda, Value as ValueTrait, ValueGroup};
 use std::fmt;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum Value {
-    Lambda(Lambda<Term>),
+    Lambda(Lambda<Term, Type>),
     TyLambda(TyLambda<Term>),
 }
 
-impl common::values::Value for Value {
+impl eval::values::Value for Value {
     type Term = Term;
 }
 
-impl LanguageValue for Value {
+impl ValueGroup for Value {
     type Term = Term;
+    type Type = Type;
 
     fn into_lambda(self) -> Result<Lambda<Term>, ErrorKind> {
         if let Value::Lambda(lam) = self {

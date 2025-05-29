@@ -3,7 +3,8 @@ pub mod parse;
 pub mod terms;
 pub mod values;
 
-use common::language::{untyped::Untyped, Language};
+use crate::Language;
+use syntax::untyped::Untyped;
 use terms::Term;
 use values::Value;
 

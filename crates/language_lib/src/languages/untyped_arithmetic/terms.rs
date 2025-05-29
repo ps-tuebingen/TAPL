@@ -1,11 +1,10 @@
-use super::values::Value;
-use common::{
-    language::{untyped::Untyped, LanguageTerm},
+use std::fmt;
+use syntax::{
     subst::SubstTerm,
     terms::{False, If, IsZero, Num, Pred, Succ, True},
+    untyped::Untyped,
     Var,
 };
-use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Term {
@@ -18,12 +17,7 @@ pub enum Term {
     IsZero(IsZero<Term>),
 }
 
-impl common::terms::Term for Term {}
-
-impl LanguageTerm for Term {
-    type Type = Untyped;
-    type Value = Value;
-}
+impl syntax::terms::Term for Term {}
 
 impl SubstTerm<Term> for Term {
     type Target = Term;

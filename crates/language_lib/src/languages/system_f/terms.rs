@@ -1,27 +1,21 @@
-use super::{types::Type, values::Value};
-use common::{
-    language::LanguageTerm,
+use super::types::Type;
+use std::fmt;
+use syntax::{
     subst::{SubstTerm, SubstType},
     terms::{App, Lambda, TyApp, TyLambda, Variable},
     TypeVar, Var,
 };
-use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Term {
     Var(Variable<Term>),
-    Lambda(Lambda<Term>),
+    Lambda(Lambda<Term, Type>),
     App(App<Term>),
     TyLambda(TyLambda<Term>),
-    TyApp(TyApp<Term>),
+    TyApp(TyApp<Term, Type>),
 }
 
-impl common::terms::Term for Term {}
-
-impl LanguageTerm for Term {
-    type Type = Type;
-    type Value = Value;
-}
+impl syntax::terms::Term for Term {}
 
 impl SubstType<Type> for Term {
     type Target = Self;

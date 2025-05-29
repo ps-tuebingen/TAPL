@@ -8,12 +8,12 @@ use syntax::{
     types::Type,
 };
 
-impl<T, Ty, V> Eval for Cons<T, Ty>
+impl<T, V, Ty> Eval for Cons<T, Ty>
 where
     T: Term + Eval<Value = V>,
     Ty: Type,
     V: ValueGroup,
-    ConsVal<Ty, V>: Into<<T as Eval>::Value>,
+    ConsVal<V, Ty>: Into<<T as Eval>::Value>,
 {
     type Env = <T as Eval>::Env;
     type Value = <T as Eval>::Value;
@@ -21,6 +21,6 @@ where
     fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
         let hd_val = self.head.eval(env)?;
         let tail_val = self.tail.eval(env)?;
-        Ok(ConsVal::<Ty, V>::new(hd_val, tail_val, self.ty).into())
+        Ok(ConsVal::<V, Ty>::new(hd_val, tail_val, self.ty).into())
     }
 }
