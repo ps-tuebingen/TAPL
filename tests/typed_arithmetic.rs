@@ -6,7 +6,7 @@ use test_utils::{
     eval_test::EvalTest,
     load_tests::{load_dir, TestContents},
     parse_test::ParseTest,
-    paths::{EXAMPLES_PATH, UNTYPED_ARITH_PATH},
+    paths::{EXAMPLES_PATH, TYPED_ARITH_PATH},
     reparse_test::ReparseTest,
     setup,
     testsuite::{Test, TestSuite},
@@ -32,7 +32,7 @@ fn main() -> Result<(), Error> {
     setup()?;
 
     let examples_dir = PathBuf::from(EXAMPLES_PATH);
-    let fails = TypedArithTests::new(examples_dir.join(UNTYPED_ARITH_PATH)).run_all()?;
+    let fails = TypedArithTests::new(examples_dir.join(TYPED_ARITH_PATH)).run_all()?;
 
     println!(
         "Finished running tests with \x1b[31m{} fails\x1b[39m",

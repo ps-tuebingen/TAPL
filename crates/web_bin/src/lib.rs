@@ -6,6 +6,8 @@ use web_sys::{
     HtmlTextAreaElement,
 };
 
+pub mod examples;
+
 #[derive(Clone)]
 struct OutDivs {
     parsed: HtmlDivElement,

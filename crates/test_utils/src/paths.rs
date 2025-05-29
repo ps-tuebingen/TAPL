@@ -1,5 +1,6 @@
 pub const EXAMPLES_PATH: &str = "examples";
 pub const UNTYPED_ARITH_PATH: &str = "untyped_arithmetic";
+pub const TYPED_ARITH_PATH: &str = "typed_arithmetic";
 pub const UNTYPED_LAMBDA_PATH: &str = "untyped_lambda";
 pub const STLC_PATH: &str = "stlc";
 pub const REFERENCES_PATH: &str = "references";
@@ -9,8 +10,8 @@ pub const FEATHERWEIGHT_PATH: &str = "featherweight";
 pub const RECURSIVE_PATH: &str = "recursive";
 pub const EXISTENTIAL_PATH: &str = "existential";
 pub const INFERENCE_PATH: &str = "inference";
-pub const SYSTEMF_PATH: &str = "systemf";
-pub const BOUNDED_PATH: &str = "bounded";
+pub const SYSTEMF_PATH: &str = "system_f";
+pub const BOUNDED_PATH: &str = "bounded_quantification";
 pub const LAMBDA_OMEGA_PATH: &str = "lambda_omega";
 pub const F_OMEGA_PATH: &str = "f_omega";
 pub const F_OMEGA_SUB_PATH: &str = "f_omega_sub";
