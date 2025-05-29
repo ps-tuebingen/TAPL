@@ -1,5 +1,5 @@
 use super::testsuite::{Test, TestResult};
-use common::Parse;
+use common::parse::Parse;
 use std::marker::PhantomData;
 
 pub struct ParseTest<T>

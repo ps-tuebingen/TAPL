@@ -9,6 +9,8 @@ use syntax::{
 
 pub mod languages;
 
+pub use languages::AllLanguages;
+
 pub trait Language {
     type Term: Term
         + Parse

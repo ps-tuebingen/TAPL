@@ -1,6 +1,5 @@
 use clap::Parser;
-use common::{errors::Error, language::LanguageTerm};
-use languages::AllLanguages;
+use language::AllLanguages;
 use std::{fmt, fs::read_to_string, path::PathBuf};
 
 #[derive(Parser)]
@@ -38,19 +37,6 @@ impl Source {
 
         panic!("Either --file or --input must be provided")
     }
-}
-
-pub fn run<T>(src: String, debug: bool) -> Result<(), Error>
-where
-    T: LanguageTerm,
-{
-    let parsed = T::parse(src)?;
-    display_or_debug(&parsed, debug);
-    let checked = parsed.check_start()?;
-    display_or_debug(&checked, debug);
-    let evaled = parsed.eval_start()?;
-    println!("evaled: {}", evaled);
-    Ok(())
 }
 
 pub fn display_or_debug<T: fmt::Debug + fmt::Display>(t: &T, debug: bool) -> String {

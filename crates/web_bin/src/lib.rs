@@ -1,4 +1,4 @@
-use languages::AllLanguages;
+use language::AllLanguages;
 use std::rc::Rc;
 use wasm_bindgen::{prelude::wasm_bindgen, JsCast};
 use web_sys::{

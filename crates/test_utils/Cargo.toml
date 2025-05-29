@@ -8,4 +8,6 @@ edition = "2021"
 basic-toml = {version="0.1.10"}
 serde = {version="1.0.219", features=["derive"]}
 common = { path="../../crates/common_lib" }
+check = { path="../../crates/check_lib" }
+eval = { path="../../crates/eval_lib" }
 language = { path="../../crates/language_lib" }

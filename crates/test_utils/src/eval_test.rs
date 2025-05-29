@@ -1,5 +1,6 @@
 use super::testsuite::{Test, TestResult};
-use common::{Eval, Parse};
+use common::parse::Parse;
+use eval::Eval;
 use std::fmt;
 use std::marker::PhantomData;
 

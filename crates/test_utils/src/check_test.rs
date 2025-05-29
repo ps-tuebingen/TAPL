@@ -1,5 +1,6 @@
 use super::testsuite::{Test, TestResult};
-use common::{check::Typecheck, parse::Parse};
+use check::Typecheck;
+use common::parse::Parse;
 use std::{fmt, marker::PhantomData};
 
 pub struct CheckTest<T>
