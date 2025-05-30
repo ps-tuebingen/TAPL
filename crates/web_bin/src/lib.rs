@@ -14,6 +14,12 @@ pub fn setup() {
     HtmlContext::new();
 }
 
+#[wasm_bindgen]
+extern "C" {
+    #[wasm_bindgen(js_namespace=console)]
+    pub fn log(msg: &str);
+}
+
 pub fn get_by_id<T>(id: &str, doc: &Document) -> T
 where
     T: JsCast,

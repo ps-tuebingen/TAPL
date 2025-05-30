@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 pub const HEAD: &str = include_str!("../../../../examples/recursive/head/head.rec");
 
 pub const PROCESS: &str = include_str!("../../../../examples/recursive/process/process.rec");
@@ -35,26 +34,26 @@ pub const PLUS: &str = include_str!("../../../../examples/recursive/plus/plus.re
 
 pub const TAIL: &str = include_str!("../../../../examples/recursive/tail/tail.rec");
 
-pub fn recursive_all() -> HashMap<&'static str,&'static str> { 
-    HashMap::from([
-        ("HEAD",HEAD), 
-("PROCESS",PROCESS), 
-("CURR",CURR), 
-("LAM",LAM), 
-("STREAMHEAD",STREAMHEAD), 
-("SUMLIST",SUMLIST), 
-("FIXD",FIXD), 
-("NIL",NIL), 
-("CONS",CONS), 
-("UPFROM0",UPFROM0), 
-("STREAMTAIL",STREAMTAIL), 
-("COUNTER",COUNTER), 
-("AP",AP), 
-("ISNIL",ISNIL), 
-("HUNGRY",HUNGRY), 
-("SEND",SEND), 
-("PLUS",PLUS), 
-("TAIL",TAIL), 
+pub fn recursive_all() -> Vec<(&'static str,&'static str)> { 
+    vec![
+        ("head",HEAD), 
+("process",PROCESS), 
+("curr",CURR), 
+("lam",LAM), 
+("streamhead",STREAMHEAD), 
+("sumlist",SUMLIST), 
+("fixd",FIXD), 
+("nil",NIL), 
+("cons",CONS), 
+("upfrom0",UPFROM0), 
+("streamtail",STREAMTAIL), 
+("counter",COUNTER), 
+("ap",AP), 
+("isnil",ISNIL), 
+("hungry",HUNGRY), 
+("send",SEND), 
+("plus",PLUS), 
+("tail",TAIL), 
 
-    ])
+    ]
 }

@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 pub const SENDGET: &str = include_str!("../../../../examples/f_omega_sub/sendget/sendget.omega");
 
 pub const COUNTERCLASS: &str = include_str!("../../../../examples/f_omega_sub/counterclass/counterclass.omega");
@@ -11,14 +10,14 @@ pub const NEWCOUNTER: &str = include_str!("../../../../examples/f_omega_sub/newc
 
 pub const RESETCOUNTERCLASS: &str = include_str!("../../../../examples/f_omega_sub/resetcounterclass/resetcounterclass.omega");
 
-pub fn f_omega_sub_all() -> HashMap<&'static str,&'static str> { 
-    HashMap::from([
-        ("SENDGET",SENDGET), 
-("COUNTERCLASS",COUNTERCLASS), 
-("SENDRESET",SENDRESET), 
-("SENDINC",SENDINC), 
-("NEWCOUNTER",NEWCOUNTER), 
-("RESETCOUNTERCLASS",RESETCOUNTERCLASS), 
+pub fn f_omega_sub_all() -> Vec<(&'static str,&'static str)> { 
+    vec![
+        ("sendget",SENDGET), 
+("counterclass",COUNTERCLASS), 
+("sendreset",SENDRESET), 
+("sendinc",SENDINC), 
+("newcounter",NEWCOUNTER), 
+("resetcounterclass",RESETCOUNTERCLASS), 
 
-    ])
+    ]
 }

@@ -64,7 +64,7 @@ pub use existential::existential_all;
 pub mod recursive;
 pub use recursive::recursive_all;
 
-pub fn all_examples() -> HashMap<&'static str, HashMap<&'static str,&'static str>> {
+pub fn all_examples() -> HashMap<&'static str, Vec<(&'static str,&'static str)>> {
     HashMap::from([
         ("typed-arithmetic", typed_arithmetic_all()),
         ("subtypes", subtypes_all()),

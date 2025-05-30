@@ -77,6 +77,7 @@ h2 {
   grid-template-columns: auto 2fr 1fr;
   align-content:start;
   column-gap:0.8em;
+  row-gap:1em;
 }
 
 #source_code{

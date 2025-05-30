@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 pub const C2: &str = include_str!("../../../../examples/system_f/c2/c2.f");
 
 pub const NOT: &str = include_str!("../../../../examples/system_f/not/not.f");
@@ -33,25 +32,25 @@ pub const C1: &str = include_str!("../../../../examples/system_f/c1/c1.f");
 
 pub const FLS: &str = include_str!("../../../../examples/system_f/fls/fls.f");
 
-pub fn system_f_all() -> HashMap<&'static str,&'static str> { 
-    HashMap::from([
-        ("C2",C2), 
-("NOT",NOT), 
-("CTIMES",CTIMES), 
-("C0",C0), 
-("ID",ID), 
-("TRU",TRU), 
-("NIL",NIL), 
-("CONS",CONS), 
-("CEXP",CEXP), 
-("DOUBLE",DOUBLE), 
-("ISNIL",ISNIL), 
-("CSUCC",CSUCC), 
-("QUADRUPLE",QUADRUPLE), 
-("SELFAPP",SELFAPP), 
-("CPLUS",CPLUS), 
-("C1",C1), 
-("FLS",FLS), 
+pub fn system_f_all() -> Vec<(&'static str,&'static str)> { 
+    vec![
+        ("c2",C2), 
+("not",NOT), 
+("ctimes",CTIMES), 
+("c0",C0), 
+("id",ID), 
+("tru",TRU), 
+("nil",NIL), 
+("cons",CONS), 
+("cexp",CEXP), 
+("double",DOUBLE), 
+("isnil",ISNIL), 
+("csucc",CSUCC), 
+("quadruple",QUADRUPLE), 
+("selfapp",SELFAPP), 
+("cplus",CPLUS), 
+("c1",C1), 
+("fls",FLS), 
 
-    ])
+    ]
 }

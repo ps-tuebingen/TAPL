@@ -1,7 +1,7 @@
 use super::{example_select::ExampleSelect, get_by_id, out_divs::OutDivs};
 use language::AllLanguages;
 use std::rc::Rc;
-use wasm_bindgen::JsCast;
+use wasm_bindgen::{closure::Closure, JsCast};
 use web_sys::{
     Document, HtmlButtonElement, HtmlOptionElement, HtmlSelectElement, HtmlTextAreaElement,
 };
@@ -18,11 +18,14 @@ pub struct HtmlContext {
 impl HtmlContext {
     pub fn new() -> Rc<HtmlContext> {
         let document = web_sys::window().unwrap().document().unwrap();
+
+        let example_select = ExampleSelect::new(&document);
+        let out_divs = OutDivs::new(&document);
+
         let run_button = get_by_id("run_button", &document);
         let source_area = get_by_id("source_code", &document);
-        let out_divs = OutDivs::new(&document);
         let language_select: HtmlSelectElement = get_by_id("language_select", &document);
-        let example_select = ExampleSelect::new(&document);
+
         let ctx = Rc::new(Self {
             document,
             run_button,
@@ -32,7 +35,7 @@ impl HtmlContext {
             example_select,
         });
         ctx.setup_languages();
-        Self::setup_events(&ctx);
+        ctx.setup_events();
         ctx
     }
 
@@ -50,19 +53,32 @@ impl HtmlContext {
         }
     }
 
-    pub fn setup_events(&self) {
-        let button_handler = wasm_bindgen::closure::Closure::wrap(
-            Box::new(|| self.handle_button()) as Box<dyn Fn()>,
-        );
+    pub fn setup_events(self: &Rc<Self>) {
+        let self_ = self.clone();
+        let button_handler =
+            Closure::wrap(Box::new(move || self_.handle_button()) as Box<dyn Fn()>);
         self.run_button
             .add_event_listener_with_callback("click", button_handler.as_ref().unchecked_ref())
             .unwrap();
         button_handler.forget();
 
-        let change_handler = wasm_bindgen::closure::Closure::wrap(Box::new(|| {
-            self.example_select
-                .handle_change(&self.get_lang(), &self.document)
+        let self_ = self.clone();
+        let change_handler = Closure::wrap(Box::new(move || {
+            self_
+                .example_select
+                .change_language(&self_.get_lang(), &self_.document)
         }) as Box<dyn Fn()>);
+        self.language_select
+            .add_event_listener_with_callback("change", change_handler.as_ref().unchecked_ref())
+            .unwrap();
+        change_handler.forget();
+
+        let self_ = self.clone();
+        let change_handler =
+            Closure::wrap(
+                Box::new(move || self_.example_select.change_contents(&self_.get_lang()))
+                    as Box<dyn Fn()>,
+            );
         self.example_select
             .element
             .add_event_listener_with_callback("change", change_handler.as_ref().unchecked_ref())
