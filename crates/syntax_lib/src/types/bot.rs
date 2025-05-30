@@ -1,5 +1,5 @@
 use super::Type;
-use crate::{kinds::Kind, subst::SubstType, TypeVar};
+use crate::{errors::TypeKind, kinds::Kind, subst::SubstType, TypeVar};
 use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -19,7 +19,11 @@ impl Default for Bot {
     }
 }
 
-impl Type for Bot {}
+impl Type for Bot {
+    fn knd(&self) -> TypeKind {
+        TypeKind::Bot
+    }
+}
 
 impl<Ty> SubstType<Ty> for Bot
 where

@@ -1,193 +1,117 @@
-use crate::types::{
-    Bool, Bot, Exists, ExistsBounded, Forall, ForallBounded, Fun, List, Mu, Nat, OpApp, OpLambda,
-    OpLambdaSub, Optional, Product, Record, Reference, Sink, Source, Sum, Top, Tuple, Type,
-    TypeVariable, Unit, Variant,
+use crate::{
+    errors::{Error, TypeKind},
+    types::{
+        Bool, Bot, Exists, ExistsBounded, Forall, ForallBounded, Fun, List, Mu, Nat, OpApp,
+        OpLambda, OpLambdaSub, Optional, Product, Record, Reference, Sink, Source, Sum, Top, Tuple,
+        Type, TypeVariable, Unit, Variant,
+    },
 };
-use common::errors::ErrorKind;
 
 pub trait TypeGroup: Type {
-    fn check_equal(&self, other: &Self) -> Result<(), ErrorKind> {
+    fn check_equal(&self, other: &Self) -> Result<(), Error> {
         if self == other {
             Ok(())
         } else {
-            Err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
-                expected: other.to_string(),
-            })
+            Err(Error::ty(self, other.knd()))
         }
     }
 
-    fn into_variable(self) -> Result<TypeVariable<Self>, ErrorKind> {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "Type Varirable".to_owned(),
-        })
+    fn into_variable(self) -> Result<TypeVariable<Self>, Error> {
+        Err(Error::ty(&self, TypeKind::Variable))
     }
 
-    fn into_fun(self) -> Result<Fun<Self>, ErrorKind> {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "Function Type".to_owned(),
-        })
+    fn into_fun(self) -> Result<Fun<Self>, Error> {
+        Err(Error::ty(&self, TypeKind::Function))
     }
 
-    fn into_forall(self) -> Result<Forall<Self>, ErrorKind> {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "Universal Type".to_owned(),
-        })
+    fn into_forall(self) -> Result<Forall<Self>, Error> {
+        Err(Error::ty(&self, TypeKind::Universal))
     }
 
-    fn into_forall_bounded(self) -> Result<ForallBounded<Self>, ErrorKind> {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "Universal Type".to_owned(),
-        })
+    fn into_forall_bounded(self) -> Result<ForallBounded<Self>, Error> {
+        Err(Error::ty(&self, TypeKind::Universal))
     }
 
-    fn into_product(self) -> Result<Product<Self>, ErrorKind> {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "Product Type".to_owned(),
-        })
+    fn into_product(self) -> Result<Product<Self>, Error> {
+        Err(Error::ty(&self, TypeKind::Product))
     }
 
-    fn into_tuple(self) -> Result<Tuple<Self>, ErrorKind> {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "Tuple".to_owned(),
-        })
+    fn into_tuple(self) -> Result<Tuple<Self>, Error> {
+        Err(Error::ty(&self, TypeKind::Tuple))
     }
 
-    fn into_record(self) -> Result<Record<Self>, ErrorKind> {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "Record".to_owned(),
-        })
+    fn into_record(self) -> Result<Record<Self>, Error> {
+        Err(Error::ty(&self, TypeKind::Record))
     }
 
-    fn into_variant(self) -> Result<Variant<Self>, ErrorKind> {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "Variant".to_owned(),
-        })
+    fn into_variant(self) -> Result<Variant<Self>, Error> {
+        Err(Error::ty(&self, TypeKind::Variant))
     }
 
-    fn into_sum(self) -> Result<Sum<Self>, ErrorKind> {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "Sum".to_owned(),
-        })
+    fn into_sum(self) -> Result<Sum<Self>, Error> {
+        Err(Error::ty(&self, TypeKind::Sum))
     }
 
-    fn into_optional(self) -> Result<Optional<Self>, ErrorKind> {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "Option".to_owned(),
-        })
+    fn into_optional(self) -> Result<Optional<Self>, Error> {
+        Err(Error::ty(&self, TypeKind::Option))
     }
 
-    fn into_list(self) -> Result<List<Self>, ErrorKind> {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "List".to_owned(),
-        })
+    fn into_list(self) -> Result<List<Self>, Error> {
+        Err(Error::ty(&self, TypeKind::List))
     }
 
-    fn into_ref(self) -> Result<Reference<Self>, ErrorKind> {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "Reference".to_owned(),
-        })
+    fn into_ref(self) -> Result<Reference<Self>, Error> {
+        Err(Error::ty(&self, TypeKind::Reference))
     }
 
-    fn into_source(self) -> Result<Source<Self>, ErrorKind> {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "Source".to_owned(),
-        })
+    fn into_source(self) -> Result<Source<Self>, Error> {
+        Err(Error::ty(&self, TypeKind::Source))
     }
 
-    fn into_sink(self) -> Result<Sink<Self>, ErrorKind> {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "Sink".to_owned(),
-        })
+    fn into_sink(self) -> Result<Sink<Self>, Error> {
+        Err(Error::ty(&self, TypeKind::Sink))
     }
 
-    fn into_exists(self) -> Result<Exists<Self>, ErrorKind> {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "Existential Type".to_owned(),
-        })
+    fn into_exists(self) -> Result<Exists<Self>, Error> {
+        Err(Error::ty(&self, TypeKind::Existential))
     }
-    fn into_exists_bounded(self) -> Result<ExistsBounded<Self>, ErrorKind> {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "Existential Type".to_owned(),
-        })
+    fn into_exists_bounded(self) -> Result<ExistsBounded<Self>, Error> {
+        Err(Error::ty(&self, TypeKind::Existential))
     }
 
-    fn into_mu(self) -> Result<Mu<Self>, ErrorKind> {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "Mu".to_owned(),
-        })
+    fn into_mu(self) -> Result<Mu<Self>, Error> {
+        Err(Error::ty(&self, TypeKind::Mu))
     }
 
-    fn into_oplambda(self) -> Result<OpLambda<Self>, ErrorKind> {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "Operator Abstraction".to_owned(),
-        })
+    fn into_oplambda(self) -> Result<OpLambda<Self>, Error> {
+        Err(Error::ty(self, TypeKind::OpLambda))
     }
 
-    fn into_oplambdasub(self) -> Result<OpLambdaSub<Self>, ErrorKind> {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "Operator Abstraction".to_owned(),
-        })
+    fn into_oplambdasub(self) -> Result<OpLambdaSub<Self>, Error> {
+        Err(Error::ty(&self, TypeKind::OpLambda))
     }
 
-    fn into_opapp(self) -> Result<OpApp<Self>, ErrorKind> {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "Operator Application".to_owned(),
-        })
+    fn into_opapp(self) -> Result<OpApp<Self>, Error> {
+        Err(Error::ty(&self, TypeKind::OpLambda))
     }
 
-    fn into_nat(self) -> Result<Nat<Self>, ErrorKind> {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "Nat".to_owned(),
-        })
+    fn into_nat(self) -> Result<Nat<Self>, Error> {
+        Err(Error::ty(&self, TypeKind::Nat))
     }
 
-    fn into_bool(self) -> Result<Bool<Self>, ErrorKind> {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "Bool".to_owned(),
-        })
+    fn into_bool(self) -> Result<Bool<Self>, Error> {
+        Err(Error::ty(&self, TypeKind::Bool))
     }
 
-    fn into_unit(self) -> Result<Unit<Self>, ErrorKind> {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "Unit".to_owned(),
-        })
+    fn into_unit(self) -> Result<Unit<Self>, Error> {
+        Err(Error::ty(&self, TypeKind::Unit))
     }
 
-    fn into_top(self) -> Result<Top<Self>, ErrorKind> {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "Top".to_owned(),
-        })
+    fn into_top(self) -> Result<Top<Self>, Error> {
+        Err(Error::ty(&self, TypeKind::Top))
     }
 
-    fn into_bot(self) -> Result<Bot, ErrorKind> {
-        Err(ErrorKind::TypeMismatch {
-            found: self.to_string(),
-            expected: "Bot".to_owned(),
-        })
+    fn into_bot(self) -> Result<Bot, Error> {
+        Err(Error::ty(&self, TypeKind::Bot))
     }
 }

@@ -1,5 +1,5 @@
 use super::Type;
-use crate::{kinds::Kind, subst::SubstType, TypeVar};
+use crate::{errors::TypeKind, kinds::Kind, subst::SubstType, TypeVar};
 use std::{fmt, marker::PhantomData};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -30,7 +30,14 @@ where
     }
 }
 
-impl<Ty> Type for Top<Ty> where Ty: Type {}
+impl<Ty> Type for Top<Ty>
+where
+    Ty: Type,
+{
+    fn knd(&self) -> TypeKind {
+        TypeKind::Top
+    }
+}
 
 impl<Ty> SubstType<Ty> for Top<Ty>
 where

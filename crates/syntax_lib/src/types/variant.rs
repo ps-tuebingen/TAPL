@@ -1,5 +1,5 @@
 use super::Type;
-use crate::{subst::SubstType, Label, TypeVar};
+use crate::{errors::TypeKind, subst::SubstType, Label, TypeVar};
 use std::{collections::HashMap, fmt};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -33,7 +33,14 @@ where
     }
 }
 
-impl<Ty> Type for Variant<Ty> where Ty: Type {}
+impl<Ty> Type for Variant<Ty>
+where
+    Ty: Type,
+{
+    fn knd(&self) -> TypeKind {
+        TypeKind::Variant
+    }
+}
 
 impl<Ty> SubstType<Ty> for Variant<Ty>
 where

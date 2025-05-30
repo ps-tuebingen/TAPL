@@ -1,4 +1,4 @@
-use common::errors::ErrorKind;
+use super::errors::{Error, KindKind};
 use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -12,36 +12,27 @@ impl Kind {
         Kind::Arrow(Box::new(Kind::Star), Box::new(self))
     }
 
-    pub fn into_star(self) -> Result<Kind, ErrorKind> {
+    pub fn into_star(self) -> Result<Kind, Error> {
         if let Kind::Star = self {
             Ok(self)
         } else {
-            Err(ErrorKind::KindMismatch {
-                found: self.to_string(),
-                expected: "*".to_owned(),
-            })
+            Err(Error::kind(self, KindKind::Star))
         }
     }
 
-    pub fn into_arrow(self) -> Result<(Kind, Kind), ErrorKind> {
+    pub fn into_arrow(self) -> Result<(Kind, Kind), Error> {
         if let Kind::Arrow(from, to) = self {
             Ok((*from, *to))
         } else {
-            Err(ErrorKind::KindMismatch {
-                found: self.to_string(),
-                expected: "Arrow Kind".to_owned(),
-            })
+            Err(Error::kind(self, KindKind::Arrow))
         }
     }
 
-    pub fn check_equal(&self, other: &Kind) -> Result<(), ErrorKind> {
+    pub fn check_equal(&self, other: &Kind) -> Result<(), Error> {
         if *self == *other {
             Ok(())
         } else {
-            Err(ErrorKind::KindMismatch {
-                found: other.to_string(),
-                expected: self.to_string(),
-            })
+            Err(Error::kind(other.clone(), self.clone().into()))
         }
     }
 }

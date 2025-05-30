@@ -1,5 +1,5 @@
 use super::Type;
-use crate::{subst::SubstType, Label, TypeVar};
+use crate::{errors::TypeKind, subst::SubstType, Label, TypeVar};
 use std::collections::HashMap;
 use std::fmt;
 
@@ -25,7 +25,14 @@ where
     }
 }
 
-impl<Ty> Type for Record<Ty> where Ty: Type {}
+impl<Ty> Type for Record<Ty>
+where
+    Ty: Type,
+{
+    fn knd(&self) -> TypeKind {
+        TypeKind::Record
+    }
+}
 
 impl<Ty> SubstType<Ty> for Record<Ty>
 where

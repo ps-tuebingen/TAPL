@@ -1,5 +1,5 @@
 use super::Type;
-use crate::{subst::SubstType, TypeVar};
+use crate::{errors::TypeKind, subst::SubstType, TypeVar};
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -24,7 +24,14 @@ where
     }
 }
 
-impl<Ty> Type for Optional<Ty> where Ty: Type {}
+impl<Ty> Type for Optional<Ty>
+where
+    Ty: Type,
+{
+    fn knd(&self) -> TypeKind {
+        TypeKind::Option
+    }
+}
 
 impl<Ty> SubstType<Ty> for Optional<Ty>
 where

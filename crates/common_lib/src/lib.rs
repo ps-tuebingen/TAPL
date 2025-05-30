@@ -1,2 +1,2 @@
-pub mod errors;
+mod errors;
 pub mod parse;
