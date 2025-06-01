@@ -9,6 +9,7 @@ pub enum KindKind {
 
 #[derive(Debug)]
 pub enum TypeKind {
+    Untyped,
     Variable,
     Function,
     Universal,
@@ -54,6 +55,7 @@ impl fmt::Display for KindKind {
 impl fmt::Display for TypeKind {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
+            TypeKind::Untyped => f.write_str("untyped"),
             TypeKind::Variable => f.write_str("Type Variable"),
             TypeKind::Function => f.write_str("Function Type"),
             TypeKind::Universal => f.write_str("Universal Type"),
@@ -75,6 +77,7 @@ impl fmt::Display for TypeKind {
             TypeKind::Unit => f.write_str("Unit"),
             TypeKind::Top => f.write_str("Top"),
             TypeKind::Bot => f.write_str("Bot"),
+            TypeKind::OpApp => f.write_str("Operator Application"),
         }
     }
 }

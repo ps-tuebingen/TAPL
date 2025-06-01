@@ -84,7 +84,7 @@ pub trait TypeGroup: Type {
     }
 
     fn into_oplambda(self) -> Result<OpLambda<Self>, Error> {
-        Err(Error::ty(self, TypeKind::OpLambda))
+        Err(Error::ty(&self, TypeKind::OpLambda))
     }
 
     fn into_oplambdasub(self) -> Result<OpLambdaSub<Self>, Error> {

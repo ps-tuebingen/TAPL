@@ -26,7 +26,7 @@ do
   OUT_FILE="$EXAMPLE_DIR_BASE.rs";
   OUT_PATH="$OUT_DIR/$OUT_FILE";
   NUM_EXAMPLES=$(ls $example_dir | wc -l);
-  NUM_EXAMPLES_STR=$(printf "02d" $NUM_EXAMPLES);
+  NUM_EXAMPLES_STR=$(printf "%02d" $NUM_EXAMPLES);
   CURRENT_NUM=0;
   EXAMPLE_NAMES=();
 
