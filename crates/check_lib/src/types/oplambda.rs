@@ -1,5 +1,4 @@
-use crate::{env::CheckEnvironment, to_subty_err, Kindcheck, Normalize, Subtypecheck};
-use common::errors::Error;
+use crate::{env::CheckEnvironment, Kindcheck, Normalize, Subtypecheck};
 use syntax::{
     kinds::Kind,
     subst::SubstType,
@@ -10,18 +9,18 @@ impl<Ty> Subtypecheck<Ty> for OpLambda<Ty>
 where
     Ty: TypeGroup + Subtypecheck<Ty> + SubstType<Ty, Target = Ty>,
     TypeVariable<Ty>: Into<Ty>,
+    <Ty as Subtypecheck<Ty>>::CheckError: From<syntax::errors::Error>,
 {
     type Env = <Ty as Subtypecheck<Ty>>::Env;
-    fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Error> {
+    type CheckError = <Ty as Subtypecheck<Ty>>::CheckError;
+
+    fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Self::CheckError> {
         if sup.clone().into_top().is_ok() {
             return Ok(());
         }
 
-        let sup_op = sup.clone().into_oplambda().map_err(to_subty_err)?;
-        sup_op
-            .annot
-            .check_equal(&self.annot)
-            .map_err(to_subty_err)?;
+        let sup_op = sup.clone().into_oplambda()?;
+        sup_op.annot.check_equal(&self.annot)?;
         env.add_tyvar_kind(self.var.clone(), self.annot.clone());
 
         self.body.check_subtype(
@@ -38,8 +37,9 @@ where
     Ty: Type + Kindcheck<Ty>,
 {
     type Env = <Ty as Kindcheck<Ty>>::Env;
+    type CheckError = <Ty as Kindcheck<Ty>>::CheckError;
 
-    fn check_kind(&self, env: &mut Self::Env) -> Result<Kind, Error> {
+    fn check_kind(&self, env: &mut Self::Env) -> Result<Kind, Self::CheckError> {
         env.add_tyvar_kind(self.var.clone(), self.annot.clone());
         let body_kind = self.body.check_kind(env)?;
         Ok(Kind::Arrow(

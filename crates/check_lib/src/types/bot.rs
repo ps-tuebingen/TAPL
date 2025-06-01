@@ -1,5 +1,4 @@
 use crate::{Kindcheck, Subtypecheck};
-use common::errors::Error;
 use syntax::{
     kinds::Kind,
     types::{Bot, Type, TypeGroup},
@@ -10,7 +9,9 @@ where
     Ty: TypeGroup + Subtypecheck<Ty>,
 {
     type Env = <Ty as Subtypecheck<Ty>>::Env;
-    fn check_subtype(&self, _: &Ty, _: &mut Self::Env) -> Result<(), Error> {
+    type CheckError = <Ty as Subtypecheck<Ty>>::CheckError;
+
+    fn check_subtype(&self, _: &Ty, _: &mut Self::Env) -> Result<(), Self::CheckError> {
         Ok(())
     }
 }
@@ -20,8 +21,9 @@ where
     Ty: Type + Kindcheck<Ty>,
 {
     type Env = <Ty as Kindcheck<Ty>>::Env;
+    type CheckError = <Ty as Kindcheck<Ty>>::CheckError;
 
-    fn check_kind(&self, _: &mut Self::Env) -> Result<Kind, Error> {
+    fn check_kind(&self, _: &mut Self::Env) -> Result<Kind, Self::CheckError> {
         Ok(self.kind.clone())
     }
 }

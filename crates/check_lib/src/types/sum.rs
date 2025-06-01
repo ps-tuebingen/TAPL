@@ -1,5 +1,4 @@
-use crate::{to_kind_err, Kindcheck};
-use common::errors::Error;
+use crate::Kindcheck;
 use syntax::{
     kinds::Kind,
     types::{Sum, Type},
@@ -8,12 +7,15 @@ use syntax::{
 impl<Ty> Kindcheck<Ty> for Sum<Ty>
 where
     Ty: Type + Kindcheck<Ty>,
+    <Ty as Kindcheck<Ty>>::CheckError: From<syntax::errors::Error>,
 {
     type Env = <Ty as Kindcheck<Ty>>::Env;
-    fn check_kind(&self, env: &mut Self::Env) -> Result<Kind, Error> {
+    type CheckError = <Ty as Kindcheck<Ty>>::CheckError;
+
+    fn check_kind(&self, env: &mut Self::Env) -> Result<Kind, Self::CheckError> {
         let left_kind = self.left.check_kind(env)?;
         let right_kind = self.right.check_kind(env)?;
-        left_kind.check_equal(&right_kind).map_err(to_kind_err)?;
+        left_kind.check_equal(&right_kind)?;
         Ok(left_kind)
     }
 }

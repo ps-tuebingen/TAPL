@@ -1,5 +1,4 @@
-use crate::{env::CheckEnvironment, to_kind_err, to_subty_err, Kindcheck, Normalize, Subtypecheck};
-use common::errors::Error;
+use crate::{env::CheckEnvironment, Kindcheck, Normalize, Subtypecheck};
 use syntax::{
     kinds::Kind,
     types::{TypeGroup, TypeVariable},
@@ -8,10 +7,15 @@ use syntax::{
 impl<Ty> Subtypecheck<Ty> for TypeVariable<Ty>
 where
     Ty: TypeGroup + Subtypecheck<Ty> + Normalize<Ty, Env = <Ty as Subtypecheck<Ty>>::Env>,
+    <Ty as Subtypecheck<Ty>>::CheckError: From<syntax::errors::Error>,
+    <Ty as Subtypecheck<Ty>>::Env:
+        CheckEnvironment<CheckError = <Ty as Subtypecheck<Ty>>::CheckError>,
 {
     type Env = <Ty as Subtypecheck<Ty>>::Env;
-    fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Error> {
-        let ty_super = env.get_tyvar_super(&self.v).map_err(to_subty_err)?;
+    type CheckError = <Ty as Subtypecheck<Ty>>::CheckError;
+
+    fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Self::CheckError> {
+        let ty_super = env.get_tyvar_super(&self.v)?;
         let sup_norm = sup.clone().normalize(env);
 
         if sup_norm.clone().into_top().is_ok() {
@@ -23,7 +27,8 @@ where
                 return Ok(());
             }
         }
-        ty_super.check_equal(&sup_norm).map_err(to_subty_err)
+        ty_super.check_equal(&sup_norm)?;
+        Ok(())
     }
 }
 
@@ -32,8 +37,10 @@ where
     Ty: TypeGroup + Kindcheck<Ty>,
 {
     type Env = <Ty as Kindcheck<Ty>>::Env;
-    fn check_kind(&self, env: &mut Self::Env) -> Result<Kind, Error> {
-        env.get_tyvar_kind(&self.v).map_err(to_kind_err)
+    type CheckError = <Ty as Kindcheck<Ty>>::CheckError;
+
+    fn check_kind(&self, env: &mut Self::Env) -> Result<Kind, Self::CheckError> {
+        env.get_tyvar_kind(&self.v)
     }
 }
 

@@ -1,16 +1,20 @@
-use crate::{env::CheckEnvironment, Kindcheck, Normalize, Typecheck};
-use common::errors::Error;
+use crate::{CheckEnvironment, Kindcheck, Normalize, Typecheck};
 use syntax::terms::{Let, Term};
 
 impl<T> Typecheck for Let<T>
 where
     T: Term + Typecheck,
     <T as Typecheck>::Type: Normalize<<T as Typecheck>::Type, Env = <T as Typecheck>::Env>
-        + Kindcheck<<T as Typecheck>::Type, Env = <T as Typecheck>::Env>,
+        + Kindcheck<
+            <T as Typecheck>::Type,
+            Env = <T as Typecheck>::Env,
+            CheckError = <T as Typecheck>::CheckError,
+        >,
 {
     type Env = <T as Typecheck>::Env;
     type Type = <T as Typecheck>::Type;
-    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
+    type CheckError = <T as Typecheck>::CheckError;
+    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Self::CheckError> {
         let bound_ty = self
             .bound_term
             .check(&mut env.clone())?

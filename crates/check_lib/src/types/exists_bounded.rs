@@ -1,5 +1,4 @@
-use crate::{env::CheckEnvironment, to_subty_err, Kindcheck, Normalize, Subtypecheck};
-use common::errors::{Error, ErrorKind};
+use crate::{env::CheckEnvironment, errors::NameMismatch, Kindcheck, Normalize, Subtypecheck};
 use syntax::{
     kinds::Kind,
     types::{ExistsBounded, Type, TypeGroup},
@@ -8,26 +7,22 @@ use syntax::{
 impl<Ty> Subtypecheck<Ty> for ExistsBounded<Ty>
 where
     Ty: TypeGroup + Subtypecheck<Ty> + Normalize<Ty, Env = <Ty as Subtypecheck<Ty>>::Env>,
+    <Ty as Subtypecheck<Ty>>::CheckError: From<NameMismatch> + From<syntax::errors::Error>,
 {
     type Env = <Ty as Subtypecheck<Ty>>::Env;
+    type CheckError = <Ty as Subtypecheck<Ty>>::CheckError;
 
-    fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Error> {
+    fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Self::CheckError> {
         if sup.clone().into_top().is_ok() {
             return Ok(());
         }
 
         let sup_norm = sup.clone().normalize(env);
         let self_norm = self.sup_ty.clone().normalize(env);
-        let other_exists = sup_norm.into_exists_bounded().map_err(to_subty_err)?;
-        other_exists
-            .sup_ty
-            .check_equal(&self_norm)
-            .map_err(to_subty_err)?;
+        let other_exists = sup_norm.into_exists_bounded()?;
+        other_exists.sup_ty.check_equal(&self_norm)?;
         if self.var != other_exists.var {
-            return Err(to_subty_err(ErrorKind::TypeMismatch {
-                found: other_exists.var.clone(),
-                expected: self.var.clone(),
-            }));
+            return Err(NameMismatch::new(&other_exists.var, &self.var).into());
         }
         env.add_tyvar_super(other_exists.var, *self.sup_ty.clone());
         self.ty
@@ -42,8 +37,9 @@ where
     Ty: Type + Kindcheck<Ty>,
 {
     type Env = <Ty as Kindcheck<Ty>>::Env;
+    type CheckError = <Ty as Kindcheck<Ty>>::CheckError;
 
-    fn check_kind(&self, env: &mut Self::Env) -> Result<Kind, Error> {
+    fn check_kind(&self, env: &mut Self::Env) -> Result<Kind, Self::CheckError> {
         let sup_kind = self.sup_ty.check_kind(env)?;
         env.add_tyvar_kind(self.var.clone(), sup_kind);
         self.ty.check_kind(env)

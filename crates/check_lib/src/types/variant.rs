@@ -1,24 +1,23 @@
-use crate::{to_subty_err, Subtypecheck};
-use common::errors::{Error, ErrorKind};
+use crate::{errors::UndefinedLabel, Subtypecheck};
 use syntax::types::{TypeGroup, Variant};
 
 impl<Ty> Subtypecheck<Ty> for Variant<Ty>
 where
     Ty: TypeGroup + Subtypecheck<Ty>,
+    <Ty as Subtypecheck<Ty>>::CheckError: From<syntax::errors::Error>,
+    <Ty as Subtypecheck<Ty>>::CheckError: From<UndefinedLabel>,
 {
     type Env = <Ty as Subtypecheck<Ty>>::Env;
+    type CheckError = <Ty as Subtypecheck<Ty>>::CheckError;
 
-    fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Error> {
+    fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Self::CheckError> {
         if sup.clone().into_top().is_ok() {
             return Ok(());
         }
 
-        let sup_var = sup.clone().into_variant().map_err(to_subty_err)?;
+        let sup_var = sup.clone().into_variant()?;
         for (lb, ty) in sup_var.variants.iter() {
-            let self_ty = self
-                .variants
-                .get(lb)
-                .ok_or(to_subty_err(ErrorKind::UndefinedLabel(lb.clone())))?;
+            let self_ty = self.variants.get(lb).ok_or(UndefinedLabel::new(&lb))?;
             self_ty.check_subtype(ty, &mut env.clone())?;
         }
         Ok(())

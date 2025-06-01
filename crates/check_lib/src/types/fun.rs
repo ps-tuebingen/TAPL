@@ -1,6 +1,6 @@
-use crate::{to_kind_err, to_subty_err, Kindcheck, Normalize, Subtypecheck};
-use common::errors::{Error, ErrorKind};
+use crate::{Kindcheck, Normalize, Subtypecheck};
 use syntax::{
+    errors::KindKind,
     kinds::Kind,
     types::{Fun, Type, TypeGroup},
 };
@@ -8,14 +8,17 @@ use syntax::{
 impl<Ty> Subtypecheck<Ty> for Fun<Ty>
 where
     Ty: TypeGroup + Subtypecheck<Ty>,
+    <Ty as Subtypecheck<Ty>>::CheckError: From<syntax::errors::Error>,
 {
     type Env = <Ty as Subtypecheck<Ty>>::Env;
-    fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Error> {
+    type CheckError = <Ty as Subtypecheck<Ty>>::CheckError;
+
+    fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Self::CheckError> {
         if sup.clone().into_top().is_ok() {
             return Ok(());
         }
 
-        let sup_fun = sup.clone().into_fun().map_err(to_subty_err)?;
+        let sup_fun = sup.clone().into_fun()?;
         sup_fun
             .from
             .check_subtype(&(*self.from), &mut env.clone())?;
@@ -27,24 +30,28 @@ where
 impl<Ty> Kindcheck<Ty> for Fun<Ty>
 where
     Ty: Type + Kindcheck<Ty>,
+    <Ty as Kindcheck<Ty>>::CheckError: From<syntax::errors::Error>,
 {
     type Env = <Ty as Kindcheck<Ty>>::Env;
+    type CheckError = <Ty as Kindcheck<Ty>>::CheckError;
 
-    fn check_kind(&self, env: &mut Self::Env) -> Result<Kind, Error> {
+    fn check_kind(&self, env: &mut Self::Env) -> Result<Kind, Self::CheckError> {
         let from_kind = self.from.check_kind(&mut env.clone())?;
         if from_kind != Kind::Star {
-            return Err(to_kind_err(ErrorKind::KindMismatch {
-                found: from_kind.to_string(),
-                expected: "*".to_owned(),
-            }));
+            return Err(syntax::errors::Error::KindMismatch {
+                found: from_kind,
+                expected: KindKind::Star,
+            }
+            .into());
         };
 
         let to_kind = self.to.check_kind(env)?;
         if to_kind != Kind::Star {
-            return Err(to_kind_err(ErrorKind::KindMismatch {
-                found: to_kind.to_string(),
-                expected: "*".to_owned(),
-            }));
+            return Err(syntax::errors::Error::KindMismatch {
+                found: to_kind,
+                expected: KindKind::Star,
+            }
+            .into());
         }
         Ok(Kind::Star)
     }

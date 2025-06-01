@@ -1,5 +1,4 @@
-use crate::{env::CheckEnvironment, to_check_err, Kindcheck, Normalize, Typecheck};
-use common::errors::Error;
+use crate::{CheckEnvironment, Kindcheck, Normalize, Typecheck};
 use syntax::{
     terms::{ListCase, Term},
     types::TypeGroup,
@@ -10,21 +9,24 @@ where
     T: Term + Typecheck,
     <T as Typecheck>::Type: TypeGroup
         + Normalize<<T as Typecheck>::Type, Env = <T as Typecheck>::Env>
-        + Kindcheck<<T as Typecheck>::Type, Env = <T as Typecheck>::Env>,
+        + Kindcheck<
+            <T as Typecheck>::Type,
+            Env = <T as Typecheck>::Env,
+            CheckError = <T as Typecheck>::CheckError,
+        >,
+    <T as Typecheck>::CheckError: From<syntax::errors::Error>,
 {
     type Env = <T as Typecheck>::Env;
     type Type = <T as Typecheck>::Type;
+    type CheckError = <T as Typecheck>::CheckError;
 
-    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
+    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Self::CheckError> {
         let bound_ty = self
             .bound_term
             .check(&mut env.clone())?
             .normalize(&mut env.clone());
-        bound_ty
-            .check_kind(&mut env.clone())?
-            .into_star()
-            .map_err(to_check_err)?;
-        let bound_list = bound_ty.clone().into_list().map_err(to_check_err)?;
+        bound_ty.check_kind(&mut env.clone())?.into_star()?;
+        let bound_list = bound_ty.clone().into_list()?;
 
         let nil_ty = self
             .nil_rhs
@@ -40,8 +42,8 @@ where
             .normalize(&mut env.clone());
         let cons_kind = cons_ty.check_kind(env)?;
 
-        nil_kind.check_equal(&cons_kind).map_err(to_check_err)?;
-        nil_ty.check_equal(&cons_ty).map_err(to_check_err)?;
+        nil_kind.check_equal(&cons_kind)?;
+        nil_ty.check_equal(&cons_ty)?;
         Ok(cons_ty)
     }
 }

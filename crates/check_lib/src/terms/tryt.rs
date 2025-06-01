@@ -1,5 +1,4 @@
-use crate::{to_check_err, Kindcheck, Normalize, Typecheck};
-use common::errors::Error;
+use crate::{Kindcheck, Normalize, Typecheck};
 use syntax::{
     terms::{Term, Try},
     types::TypeGroup,
@@ -10,12 +9,18 @@ where
     T: Term + Typecheck,
     <T as Typecheck>::Type: TypeGroup
         + Normalize<<T as Typecheck>::Type, Env = <T as Typecheck>::Env>
-        + Kindcheck<<T as Typecheck>::Type, Env = <T as Typecheck>::Env>,
+        + Kindcheck<
+            <T as Typecheck>::Type,
+            Env = <T as Typecheck>::Env,
+            CheckError = <T as Typecheck>::CheckError,
+        >,
+    <T as Typecheck>::CheckError: From<syntax::errors::Error>,
 {
     type Type = <T as Typecheck>::Type;
+    type CheckError = <T as Typecheck>::CheckError;
     type Env = <T as Typecheck>::Env;
 
-    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
+    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Self::CheckError> {
         let term_ty = self
             .term
             .check(&mut env.clone())?
@@ -28,8 +33,8 @@ where
             .normalize(&mut env.clone());
         let handler_knd = handler_ty.check_kind(env)?;
 
-        term_knd.check_equal(&handler_knd).map_err(to_check_err)?;
-        term_ty.check_equal(&handler_ty).map_err(to_check_err)?;
+        term_knd.check_equal(&handler_knd)?;
+        term_ty.check_equal(&handler_ty)?;
         Ok(term_ty)
     }
 }

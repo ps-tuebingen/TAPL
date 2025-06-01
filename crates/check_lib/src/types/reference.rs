@@ -1,14 +1,15 @@
-use crate::{to_subty_err, Subtypecheck};
-use common::errors::Error;
+use crate::Subtypecheck;
 use syntax::types::{Reference, TypeGroup};
 
 impl<Ty> Subtypecheck<Ty> for Reference<Ty>
 where
     Ty: TypeGroup + Subtypecheck<Ty>,
+    <Ty as Subtypecheck<Ty>>::CheckError: From<syntax::errors::Error>,
 {
     type Env = <Ty as Subtypecheck<Ty>>::Env;
+    type CheckError = <Ty as Subtypecheck<Ty>>::CheckError;
 
-    fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Error> {
+    fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Self::CheckError> {
         if sup.clone().into_top().is_ok() {
             return Ok(());
         }
@@ -18,7 +19,7 @@ where
         } else if let Ok(sink) = sup.clone().into_sink() {
             sink.ty.check_subtype(&(*sink.ty), env)
         } else {
-            let sup_ref = sup.clone().into_ref().map_err(to_subty_err)?;
+            let sup_ref = sup.clone().into_ref()?;
             sup_ref.ty.check_subtype(&(*self.ty), &mut env.clone())?;
             self.ty.check_subtype(&(*sup_ref.ty), env)
         }

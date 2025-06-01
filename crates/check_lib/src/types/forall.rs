@@ -1,5 +1,4 @@
 use crate::{env::CheckEnvironment, Kindcheck, Normalize};
-use common::errors::Error;
 use syntax::{
     kinds::Kind,
     types::{Forall, Type},
@@ -10,8 +9,9 @@ where
     Ty: Type + Kindcheck<Ty>,
 {
     type Env = <Ty as Kindcheck<Ty>>::Env;
+    type CheckError = <Ty as Kindcheck<Ty>>::CheckError;
 
-    fn check_kind(&self, env: &mut Self::Env) -> Result<Kind, Error> {
+    fn check_kind(&self, env: &mut Self::Env) -> Result<Kind, Self::CheckError> {
         env.add_tyvar_kind(self.var.clone(), self.kind.clone());
         let ty_kind = self.ty.check_kind(env)?;
         Ok(ty_kind)

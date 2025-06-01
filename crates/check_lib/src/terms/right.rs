@@ -1,5 +1,4 @@
-use crate::{to_check_err, Kindcheck, Normalize, Typecheck};
-use common::errors::Error;
+use crate::{Kindcheck, Normalize, Typecheck};
 use syntax::{
     terms::{Right, Term},
     types::TypeGroup,
@@ -10,28 +9,25 @@ where
     T: Term + Typecheck<Type = Ty>,
     Ty: TypeGroup
         + Normalize<Ty, Env = <T as Typecheck>::Env>
-        + Kindcheck<Ty, Env = <T as Typecheck>::Env>,
+        + Kindcheck<Ty, Env = <T as Typecheck>::Env, CheckError = <T as Typecheck>::CheckError>,
+    <T as Typecheck>::CheckError: From<syntax::errors::Error>,
 {
     type Type = <T as Typecheck>::Type;
+    type CheckError = <T as Typecheck>::CheckError;
     type Env = <T as Typecheck>::Env;
 
-    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
+    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Self::CheckError> {
         let right_ty = self
             .right_term
             .check(&mut env.clone())?
             .normalize(&mut env.clone());
         let right_knd = right_ty.check_kind(&mut env.clone())?;
 
-        let sum_ty = self
-            .ty
-            .clone()
-            .normalize(&mut env.clone())
-            .into_sum()
-            .map_err(to_check_err)?;
+        let sum_ty = self.ty.clone().normalize(&mut env.clone()).into_sum()?;
         let sum_knd = sum_ty.check_kind(env)?;
 
-        right_knd.check_equal(&sum_knd).map_err(to_check_err)?;
-        sum_ty.right.check_equal(&right_ty).map_err(to_check_err)?;
+        right_knd.check_equal(&sum_knd)?;
+        sum_ty.right.check_equal(&right_ty)?;
         Ok(self.ty.clone())
     }
 }

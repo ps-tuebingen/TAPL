@@ -1,6 +1,6 @@
-use crate::{env::CheckEnvironment, to_check_err, Kindcheck, Normalize, Typecheck};
-use common::errors::{Error, ErrorKind};
+use crate::{errors::NameMismatch, CheckEnvironment, Kindcheck, Normalize, Typecheck};
 use syntax::{
+    errors::TypeKind,
     terms::{Term, Unpack},
     types::TypeGroup,
 };
@@ -10,32 +10,28 @@ where
     T: Term + Typecheck<Type = Ty>,
     Ty: TypeGroup
         + Normalize<<T as Typecheck>::Type, Env = <T as Typecheck>::Env>
-        + Kindcheck<Ty, Env = <T as Typecheck>::Env>,
+        + Kindcheck<Ty, Env = <T as Typecheck>::Env, CheckError = <T as Typecheck>::CheckError>,
+    <T as Typecheck>::CheckError: From<syntax::errors::Error> + From<NameMismatch>,
 {
     type Type = <T as Typecheck>::Type;
+    type CheckError = <T as Typecheck>::CheckError;
     type Env = <T as Typecheck>::Env;
 
-    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
+    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Self::CheckError> {
         let bound_ty = self
             .bound_term
             .check(&mut env.clone())?
             .normalize(&mut env.clone());
         if let Ok(bound_exists) = bound_ty.clone().into_exists() {
             if self.ty_name != bound_exists.var {
-                return Err(to_check_err(ErrorKind::TypeMismatch {
-                    found: bound_exists.var,
-                    expected: self.ty_name.clone(),
-                }));
+                return Err(NameMismatch::new(&bound_exists.var, &self.ty_name).into());
             }
             env.add_tyvar_kind(bound_exists.var, bound_exists.kind);
             env.add_var(self.term_name.clone(), *bound_exists.ty);
             Ok(self.in_term.check(&mut env.clone())?.normalize(env))
         } else if let Ok(bound_bound) = bound_ty.clone().into_exists_bounded() {
             if self.ty_name != bound_bound.var {
-                return Err(to_check_err(ErrorKind::TypeMismatch {
-                    found: bound_bound.var,
-                    expected: self.ty_name.clone(),
-                }));
+                return Err(NameMismatch::new(&bound_bound.var, &self.ty_name).into());
             }
             let sup_kind = bound_bound.sup_ty.check_kind(env)?;
             env.add_tyvar_super(bound_bound.var, *bound_bound.sup_ty.clone());
@@ -44,10 +40,11 @@ where
             let inner_ty = self.in_term.check(&mut env.clone())?;
             Ok(inner_ty.normalize(env))
         } else {
-            Err(to_check_err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
-                expected: "Existential Type".to_owned(),
-            }))
+            Err(syntax::errors::Error::TypeMismatch {
+                found: bound_ty.knd(),
+                expected: TypeKind::Existential,
+            }
+            .into())
         }
     }
 }

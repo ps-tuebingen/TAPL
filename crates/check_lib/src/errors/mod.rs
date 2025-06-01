@@ -1,0 +1,42 @@
+use std::fmt;
+
+pub mod empty_case;
+pub mod free_type_variable;
+pub mod free_variable;
+pub mod index_out_of_bounds;
+pub mod name_mismatch;
+pub mod not_a_subtype;
+pub mod not_implemented;
+pub mod undefined_label;
+pub mod undefined_location;
+
+pub use empty_case::EmptyCase;
+pub use free_type_variable::FreeTypeVariable;
+pub use free_variable::FreeVariable;
+pub use index_out_of_bounds::IndexOutOfBounds;
+pub use name_mismatch::NameMismatch;
+pub use not_a_subtype::NotASubtype;
+pub use not_implemented::NotImplemented;
+pub use undefined_label::UndefinedLabel;
+pub use undefined_location::UndefinedLocation;
+
+#[derive(Debug)]
+pub enum EnvError {
+    NotImplemented(NotImplemented),
+    FreeVariable(FreeVariable),
+    FreeTypeVariable(FreeTypeVariable),
+    UndefinedLocation(UndefinedLocation),
+}
+
+impl fmt::Display for EnvError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            EnvError::NotImplemented(ni) => ni.fmt(f),
+            EnvError::FreeVariable(fv) => fv.fmt(f),
+            EnvError::FreeTypeVariable(ftv) => ftv.fmt(f),
+            EnvError::UndefinedLocation(ul) => ul.fmt(f),
+        }
+    }
+}
+
+impl std::error::Error for EnvError {}

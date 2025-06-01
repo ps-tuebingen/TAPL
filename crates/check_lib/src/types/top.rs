@@ -1,5 +1,4 @@
-use crate::{to_subty_err, Kindcheck, Normalize, Subtypecheck};
-use common::errors::{Error, ErrorKind};
+use crate::{errors::NotASubtype, Kindcheck, Normalize, Subtypecheck};
 use syntax::{
     kinds::Kind,
     types::{Top, Type, TypeGroup},
@@ -7,18 +6,17 @@ use syntax::{
 
 impl<Ty> Subtypecheck<Ty> for Top<Ty>
 where
-    Ty: TypeGroup + Subtypecheck<Ty>,
+    Ty: TypeGroup + Subtypecheck<Ty> + From<Self>,
+    <Ty as Subtypecheck<Ty>>::CheckError: From<NotASubtype<Ty, Ty>>,
 {
     type Env = <Ty as Subtypecheck<Ty>>::Env;
+    type CheckError = <Ty as Subtypecheck<Ty>>::CheckError;
 
-    fn check_subtype(&self, sup: &Ty, _: &mut Self::Env) -> Result<(), Error> {
+    fn check_subtype(&self, sup: &Ty, _: &mut Self::Env) -> Result<(), Self::CheckError> {
         if sup.clone().into_top().is_ok() {
             Ok(())
         } else {
-            Err(to_subty_err(ErrorKind::Subtype {
-                sub: self.to_string(),
-                sup: sup.to_string(),
-            }))
+            Err(NotASubtype::<Ty, Ty>::new(self.clone().into(), sup.clone()).into())
         }
     }
 }
@@ -28,7 +26,9 @@ where
     Ty: Type + Kindcheck<Ty>,
 {
     type Env = <Ty as Kindcheck<Ty>>::Env;
-    fn check_kind(&self, _: &mut Self::Env) -> Result<Kind, Error> {
+    type CheckError = <Ty as Kindcheck<Ty>>::CheckError;
+
+    fn check_kind(&self, _: &mut Self::Env) -> Result<Kind, Self::CheckError> {
         Ok(self.kind.clone())
     }
 }

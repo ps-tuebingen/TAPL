@@ -1,7 +1,7 @@
-use common::errors::{Error, ErrorKind, ErrorLocation};
 use syntax::{kinds::Kind, types::Type};
 
 pub mod env;
+pub mod errors;
 pub mod terms;
 pub mod types;
 pub mod untyped;
@@ -9,14 +9,15 @@ pub mod untyped;
 pub use env::CheckEnvironment;
 
 pub trait Typecheck {
+    type CheckError: std::error::Error;
     type Type: Type;
-    type Env: CheckEnvironment<Type = Self::Type>;
+    type Env: CheckEnvironment<Type = Self::Type, CheckError = <Self as Typecheck>::CheckError>;
 
-    fn check_start(&self) -> Result<Self::Type, Error> {
+    fn check_start(&self) -> Result<Self::Type, Self::CheckError> {
         self.check(&mut Self::Env::default())
     }
 
-    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error>;
+    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Self::CheckError>;
 }
 
 pub trait Subtypecheck<Ty>
@@ -24,17 +25,20 @@ where
     Self: Type,
     Ty: Type,
 {
-    type Env: CheckEnvironment<Type = Ty>;
+    type Env: CheckEnvironment<Type = Ty, CheckError = <Self as Subtypecheck<Ty>>::CheckError>;
+    type CheckError: std::error::Error;
 
-    fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Error>;
+    fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Self::CheckError>;
 }
 
 pub trait Kindcheck<Ty>
 where
     Ty: Type,
 {
-    type Env: CheckEnvironment<Type = Ty>;
-    fn check_kind(&self, env: &mut Self::Env) -> Result<Kind, Error>;
+    type Env: CheckEnvironment<Type = Ty, CheckError = <Self as Kindcheck<Ty>>::CheckError>;
+    type CheckError: std::error::Error;
+
+    fn check_kind(&self, env: &mut Self::Env) -> Result<Kind, Self::CheckError>;
 }
 
 pub trait Normalize<Ty>
@@ -43,25 +47,4 @@ where
 {
     type Env: CheckEnvironment<Type = Ty>;
     fn normalize(self, env: &mut Self::Env) -> Ty;
-}
-
-pub fn to_check_err(knd: ErrorKind) -> Error {
-    Error {
-        kind: knd,
-        loc: ErrorLocation::Check,
-    }
-}
-
-pub fn to_subty_err(knd: ErrorKind) -> Error {
-    Error {
-        kind: knd,
-        loc: ErrorLocation::Subtyping,
-    }
-}
-
-pub fn to_kind_err(knd: ErrorKind) -> Error {
-    Error {
-        kind: knd,
-        loc: ErrorLocation::Kind,
-    }
 }

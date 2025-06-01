@@ -1,6 +1,6 @@
-use crate::{env::CheckEnvironment, to_check_err, Kindcheck, Normalize, Subtypecheck, Typecheck};
-use common::errors::{Error, ErrorKind};
+use crate::{CheckEnvironment, Kindcheck, Normalize, Subtypecheck, Typecheck};
 use syntax::{
+    errors::TypeKind,
     subst::SubstType,
     terms::{Pack, Term},
     types::TypeGroup,
@@ -11,14 +11,16 @@ where
     T: Term + Typecheck<Type = Ty>,
     Ty: TypeGroup
         + Normalize<Ty, Env = <T as Typecheck>::Env>
-        + Kindcheck<Ty, Env = <T as Typecheck>::Env>
-        + Subtypecheck<Ty, Env = <T as Typecheck>::Env>
+        + Kindcheck<Ty, Env = <T as Typecheck>::Env, CheckError = <T as Typecheck>::CheckError>
+        + Subtypecheck<Ty, Env = <T as Typecheck>::Env, CheckError = <T as Typecheck>::CheckError>
         + SubstType<Ty, Target = Ty>,
+    <T as Typecheck>::CheckError: From<syntax::errors::Error>,
 {
     type Type = <T as Typecheck>::Type;
+    type CheckError = <T as Typecheck>::CheckError;
     type Env = <T as Typecheck>::Env;
 
-    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
+    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Self::CheckError> {
         let outer_norm = self.outer_ty.clone().normalize(env);
         let inner_kind = self.inner_ty.check_kind(env)?;
         let outer_knd = outer_norm.check_kind(env)?;
@@ -28,16 +30,14 @@ where
             let term_ty = self.term.check(env)?.normalize(env);
             let term_kind = term_ty.check_kind(env)?;
 
-            term_kind.check_equal(&outer_knd).map_err(to_check_err)?;
-            inner_kind
-                .check_equal(&outer_exists.kind)
-                .map_err(to_check_err)?;
+            term_kind.check_equal(&outer_knd)?;
+            inner_kind.check_equal(&outer_exists.kind)?;
 
             let outer_subst = dbg!(outer_exists
                 .ty
                 .subst_type(&outer_exists.var, &self.inner_ty))
             .normalize(env);
-            outer_subst.check_equal(&term_ty).map_err(to_check_err)?;
+            outer_subst.check_equal(&term_ty)?;
             Ok(self.outer_ty.clone())
         } else if let Ok(outer_bound) = outer_norm.clone().into_exists_bounded() {
             let sup_norm = outer_bound.sup_ty.clone().normalize(env);
@@ -47,16 +47,17 @@ where
 
             let term_ty = self.term.check(env)?;
             let term_kind = term_ty.check_kind(env)?;
-            term_kind.check_equal(&outer_knd).map_err(to_check_err)?;
+            term_kind.check_equal(&outer_knd)?;
 
             let outer_subst = outer_bound.ty.subst_type(&outer_bound.var, &self.inner_ty);
             term_ty.check_subtype(&outer_subst, env)?;
             Ok(self.outer_ty.clone())
         } else {
-            Err(to_check_err(ErrorKind::TypeMismatch {
-                found: outer_norm.to_string(),
-                expected: "Existential Type".to_owned(),
-            }))
+            Err(syntax::errors::Error::TypeMismatch {
+                found: outer_norm.knd(),
+                expected: TypeKind::Existential,
+            }
+            .into())
         }
     }
 }

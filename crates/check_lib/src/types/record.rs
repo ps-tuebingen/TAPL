@@ -1,5 +1,4 @@
-use crate::{to_kind_err, to_subty_err, Kindcheck, Normalize, Subtypecheck};
-use common::errors::{Error, ErrorKind};
+use crate::{errors::UndefinedLabel, Kindcheck, Normalize, Subtypecheck};
 use std::collections::HashMap;
 use syntax::{
     kinds::Kind,
@@ -9,21 +8,20 @@ use syntax::{
 impl<Ty> Subtypecheck<Ty> for Record<Ty>
 where
     Ty: TypeGroup + Subtypecheck<Ty> + Normalize<Ty, Env = <Ty as Subtypecheck<Ty>>::Env>,
+    <Ty as Subtypecheck<Ty>>::CheckError: From<syntax::errors::Error> + From<UndefinedLabel>,
 {
     type Env = <Ty as Subtypecheck<Ty>>::Env;
+    type CheckError = <Ty as Subtypecheck<Ty>>::CheckError;
 
-    fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Error> {
+    fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Self::CheckError> {
         if sup.clone().into_top().is_ok() {
             return Ok(());
         }
 
         let sup_norm = sup.clone().normalize(env);
-        let sup_rec = sup_norm.into_record().map_err(to_subty_err)?;
+        let sup_rec = sup_norm.into_record()?;
         for (lb, ty) in sup_rec.records.iter() {
-            let sub_ty = self
-                .records
-                .get(lb)
-                .ok_or(to_subty_err(ErrorKind::UndefinedLabel(lb.clone())))?;
+            let sub_ty = self.records.get(lb).ok_or(UndefinedLabel::new(&lb))?;
             sub_ty.check_subtype(ty, &mut env.clone())?;
         }
         Ok(())
@@ -33,13 +31,14 @@ where
 impl<Ty> Kindcheck<Ty> for Record<Ty>
 where
     Ty: Type + Kindcheck<Ty>,
+    <Ty as Kindcheck<Ty>>::CheckError: From<syntax::errors::Error>,
 {
     type Env = <Ty as Kindcheck<Ty>>::Env;
-    fn check_kind(&self, env: &mut Self::Env) -> Result<Kind, Error> {
+    type CheckError = <Ty as Kindcheck<Ty>>::CheckError;
+
+    fn check_kind(&self, env: &mut Self::Env) -> Result<Kind, Self::CheckError> {
         for (_, t) in self.records.iter() {
-            t.check_kind(&mut env.clone())?
-                .into_star()
-                .map_err(to_kind_err)?;
+            t.check_kind(&mut env.clone())?.into_star()?;
         }
         Ok(Kind::Star)
     }

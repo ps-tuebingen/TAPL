@@ -1,5 +1,4 @@
-use crate::{to_check_err, Kindcheck, Normalize, Typecheck};
-use common::errors::Error;
+use crate::{Kindcheck, Normalize, Typecheck};
 use syntax::{
     terms::{Term, Tuple},
     types::Tuple as TupleTy,
@@ -9,13 +8,19 @@ impl<T> Typecheck for Tuple<T>
 where
     T: Term + Typecheck,
     <T as Typecheck>::Type: Normalize<<T as Typecheck>::Type, Env = <T as Typecheck>::Env>
-        + Kindcheck<<T as Typecheck>::Type, Env = <T as Typecheck>::Env>,
+        + Kindcheck<
+            <T as Typecheck>::Type,
+            Env = <T as Typecheck>::Env,
+            CheckError = <T as Typecheck>::CheckError,
+        >,
+    <T as Typecheck>::CheckError: From<syntax::errors::Error>,
     TupleTy<<T as Typecheck>::Type>: Into<<T as Typecheck>::Type>,
 {
     type Env = <T as Typecheck>::Env;
     type Type = <T as Typecheck>::Type;
+    type CheckError = <T as Typecheck>::CheckError;
 
-    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
+    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Self::CheckError> {
         let mut tys: Vec<Self::Type> = vec![];
         let mut knd = None;
         for t in self.terms.iter() {
@@ -28,7 +33,7 @@ where
                     knd = Some(ty_knd);
                 }
                 Some(ref knd) => {
-                    ty_knd.check_equal(knd).map_err(to_check_err)?;
+                    ty_knd.check_equal(knd)?;
                 }
             }
         }

@@ -1,5 +1,4 @@
 use crate::Typecheck;
-use common::errors::Error;
 use syntax::{
     terms::{Term, True},
     types::Bool,
@@ -11,9 +10,10 @@ where
     Bool<<T as Typecheck>::Type>: Into<<T as Typecheck>::Type>,
 {
     type Type = <T as Typecheck>::Type;
+    type CheckError = <T as Typecheck>::CheckError;
     type Env = <T as Typecheck>::Env;
 
-    fn check(&self, _: &mut Self::Env) -> Result<Self::Type, Error> {
+    fn check(&self, _: &mut Self::Env) -> Result<Self::Type, Self::CheckError> {
         Ok(Bool::new().into())
     }
 }
