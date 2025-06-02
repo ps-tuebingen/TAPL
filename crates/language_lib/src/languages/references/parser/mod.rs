@@ -1,9 +1,5 @@
-use super::{terms::Term, types::Type};
-use common::{
-    errors::{Error, ErrorKind},
-    parse::to_parse_err,
-    parse::Parse,
-};
+use super::{errors::Error, terms::Term, types::Type};
+use common::parse::{MissingInput, Parse, RemainingInput};
 use pest::{iterators::Pair, Parser};
 use pest_derive::Parser;
 
@@ -16,35 +12,26 @@ use terms::pair_to_term;
 struct ReferencesParser;
 
 impl Parse for Term {
+    type Rule = Rule;
+    type ParseError = Error;
+
     fn parse(input: String) -> Result<Self, Error> {
         parse(input)
     }
 }
 
 pub fn parse(input: String) -> Result<Term, Error> {
-    let mut parsed = ReferencesParser::parse(Rule::program, &input).map_err(to_parse_err)?;
-    let prog_rule = parsed
-        .next()
-        .ok_or(to_parse_err(ErrorKind::MissingInput("Program".to_owned())))?;
+    let mut parsed = ReferencesParser::parse(Rule::program, &input)?;
+    let prog_rule = parsed.next().ok_or(MissingInput::new("Program"))?;
     if let Some(n) = parsed.next() {
-        return Err(to_parse_err(ErrorKind::RemainingInput(format!(
-            "{:?}",
-            n.as_rule()
-        ))));
+        return Err(RemainingInput::new(&format!("{:?}", n.as_rule())).into());
     }
 
     let mut prog_inner = prog_rule.into_inner();
-    let term_rule = prog_inner
-        .next()
-        .ok_or(to_parse_err(ErrorKind::MissingInput("Term".to_owned())))?;
-    prog_inner
-        .next()
-        .ok_or(to_parse_err(ErrorKind::MissingInput("EOI".to_owned())))?;
+    let term_rule = prog_inner.next().ok_or(MissingInput::new("Term"))?;
+    prog_inner.next().ok_or(MissingInput::new("EOI"))?;
     if let Some(n) = parsed.next() {
-        return Err(to_parse_err(ErrorKind::RemainingInput(format!(
-            "{:?}",
-            n.as_rule()
-        ))));
+        return Err(RemainingInput::new(&format!("{:?}", n.as_rule())).into());
     }
     pair_to_term(term_rule)
 }
@@ -56,16 +43,11 @@ pub fn pair_to_n_inner<'a>(
     let mut p_inner = p.into_inner();
     let mut pairs = vec![];
     for name in names {
-        let p_next = p_inner
-            .next()
-            .ok_or(to_parse_err(ErrorKind::MissingInput(name.to_owned())))?;
+        let p_next = p_inner.next().ok_or(MissingInput::new(name))?;
         pairs.push(p_next);
     }
     if let Some(n) = p_inner.next() {
-        return Err(to_parse_err(ErrorKind::RemainingInput(format!(
-            "{:?}",
-            n.as_rule()
-        ))));
+        return Err(RemainingInput::new(&format!("{:?}", n.as_rule())).into());
     }
     Ok(pairs)
 }

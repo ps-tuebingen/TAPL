@@ -1,6 +1,5 @@
-use super::EnvError;
+use crate::Location;
 use std::fmt;
-use syntax::Location;
 
 #[derive(Debug)]
 pub struct UndefinedLocation {
@@ -16,12 +15,6 @@ impl UndefinedLocation {
 impl fmt::Display for UndefinedLocation {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "Undefined Location {}", self.loc)
-    }
-}
-
-impl From<UndefinedLocation> for EnvError {
-    fn from(ul: UndefinedLocation) -> EnvError {
-        EnvError::UndefinedLocation(ul)
     }
 }
 

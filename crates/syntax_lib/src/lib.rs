@@ -4,8 +4,6 @@ pub mod terms;
 pub mod types;
 pub mod untyped;
 
-pub use common::Label;
-pub use common::Var;
+pub use common::{Label, Location, Var};
 
 pub type TypeVar = String;
-pub type Location = usize;

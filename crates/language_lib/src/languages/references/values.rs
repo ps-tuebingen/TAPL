@@ -1,6 +1,8 @@
 use super::{terms::Term, types::Type};
-use common::errors::ErrorKind;
-use eval::values::{False, Lambda, Loc, Num, True, Unit, Value as ValueTrait, ValueGroup};
+use eval::{
+    errors::{ValueKind, ValueMismatch},
+    values::{False, Lambda, Loc, Num, True, Unit, Value as ValueTrait, ValueGroup},
+};
 use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -15,64 +17,60 @@ pub enum Value {
 
 impl ValueTrait for Value {
     type Term = Term;
+
+    fn knd(&self) -> ValueKind {
+        match self {
+            Value::Lambda(v) => v.knd(),
+            Value::Unit(v) => v.knd(),
+            Value::Num(v) => v.knd(),
+            Value::Loc(v) => v.knd(),
+            Value::True(v) => v.knd(),
+            Value::False(v) => v.knd(),
+        }
+    }
 }
 
 impl ValueGroup for Value {
     type Term = Term;
     type Type = Type;
 
-    fn into_lambda(self) -> Result<Lambda<Term, Type>, ErrorKind> {
+    fn into_lambda(self) -> Result<Lambda<Term, Type>, ValueMismatch> {
         if let Value::Lambda(lam) = self {
             Ok(lam)
         } else {
-            Err(ErrorKind::ValueMismatch {
-                found: self.to_string(),
-                expected: "Lambda Abstraction".to_owned(),
-            })
+            Err(ValueMismatch::new(&self, ValueKind::Lambda))
         }
     }
 
-    fn into_num(self) -> Result<Num<Term>, ErrorKind> {
+    fn into_num(self) -> Result<Num<Term>, ValueMismatch> {
         if let Value::Num(num) = self {
             Ok(num)
         } else {
-            Err(ErrorKind::ValueMismatch {
-                found: self.to_string(),
-                expected: "Number".to_owned(),
-            })
+            Err(ValueMismatch::new(&self, ValueKind::Number))
         }
     }
 
-    fn into_loc(self) -> Result<Loc<Term>, ErrorKind> {
+    fn into_loc(self) -> Result<Loc<Term>, ValueMismatch> {
         if let Value::Loc(loc) = self {
             Ok(loc)
         } else {
-            Err(ErrorKind::ValueMismatch {
-                found: self.to_string(),
-                expected: "Location".to_owned(),
-            })
+            Err(ValueMismatch::new(&self, ValueKind::Location))
         }
     }
 
-    fn into_true(self) -> Result<True<Term>, ErrorKind> {
+    fn into_true(self) -> Result<True<Term>, ValueMismatch> {
         if let Value::True(tru) = self {
             Ok(tru)
         } else {
-            Err(ErrorKind::ValueMismatch {
-                found: self.to_string(),
-                expected: "True".to_owned(),
-            })
+            Err(ValueMismatch::new(&self, ValueKind::True))
         }
     }
 
-    fn into_false(self) -> Result<False<Term>, ErrorKind> {
+    fn into_false(self) -> Result<False<Term>, ValueMismatch> {
         if let Value::False(fls) = self {
             Ok(fls)
         } else {
-            Err(ErrorKind::ValueMismatch {
-                found: self.to_string(),
-                expected: "False".to_owned(),
-            })
+            Err(ValueMismatch::new(&self, ValueKind::False))
         }
     }
 }

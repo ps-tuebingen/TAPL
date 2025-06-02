@@ -5,6 +5,7 @@ pub mod kinds;
 pub mod not_implemented;
 pub mod type_mismatch;
 pub mod undefined_label;
+pub mod undefined_location;
 
 pub use free_variable::FreeVariable;
 pub use index_out_of_bounds::IndexOutOfBounds;
@@ -13,3 +14,4 @@ pub use kinds::{KindKind, TypeKind};
 pub use not_implemented::NotImplemented;
 pub use type_mismatch::TypeMismatch;
 pub use undefined_label::UndefinedLabel;
+pub use undefined_location::UndefinedLocation;

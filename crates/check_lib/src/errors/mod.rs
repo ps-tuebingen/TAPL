@@ -1,17 +1,15 @@
-use common::errors::{FreeVariable, NotImplemented};
+use common::errors::{FreeVariable, NotImplemented, UndefinedLocation};
 use std::fmt;
 
 pub mod empty_case;
 pub mod free_type_variable;
 pub mod name_mismatch;
 pub mod not_a_subtype;
-pub mod undefined_location;
 
 pub use empty_case::EmptyCase;
 pub use free_type_variable::FreeTypeVariable;
 pub use name_mismatch::NameMismatch;
 pub use not_a_subtype::NotASubtype;
-pub use undefined_location::UndefinedLocation;
 
 #[derive(Debug)]
 pub enum EnvError {
@@ -43,5 +41,11 @@ impl From<NotImplemented> for EnvError {
 impl From<FreeVariable> for EnvError {
     fn from(fv: FreeVariable) -> EnvError {
         EnvError::FreeVariable(fv)
+    }
+}
+
+impl From<UndefinedLocation> for EnvError {
+    fn from(ul: UndefinedLocation) -> EnvError {
+        EnvError::UndefinedLocation(ul)
     }
 }

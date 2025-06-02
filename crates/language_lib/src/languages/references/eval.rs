@@ -1,6 +1,6 @@
-use super::{check::Environment, terms::Term, types::Type, values::Value};
+use super::{check::Environment, errors::Error, terms::Term, types::Type, values::Value};
 use check::Normalize;
-use common::errors::{Error, ErrorKind};
+use common::errors::UndefinedLocation;
 use eval::{env::EvalEnvironment, Eval};
 use std::collections::HashMap;
 use syntax::Location;
@@ -9,6 +9,8 @@ use syntax::Location;
 pub struct Store(HashMap<Location, Value>);
 
 impl EvalEnvironment<Value> for Store {
+    type EvalError = Error;
+
     fn fresh_location(&self) -> Location {
         let mut next_loc = 0;
         while self.0.contains_key(&next_loc) {
@@ -16,10 +18,10 @@ impl EvalEnvironment<Value> for Store {
         }
         next_loc
     }
-    fn get_location(&self, loc: Location) -> Result<Value, ErrorKind> {
+    fn get_location(&self, loc: Location) -> Result<Value, Self::EvalError> {
         self.0
             .get(&loc)
-            .ok_or(ErrorKind::UndefinedLocation(loc))
+            .ok_or(UndefinedLocation::new(loc).into())
             .cloned()
     }
 
@@ -31,6 +33,7 @@ impl EvalEnvironment<Value> for Store {
 impl Eval for Term {
     type Value = Value;
     type Env = Store;
+    type EvalError = Error;
 
     fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
         match self {

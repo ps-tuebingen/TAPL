@@ -1,8 +1,8 @@
-use common::errors::ErrorKind;
+use common::errors::{TypeKind, TypeMismatch};
 use std::fmt;
 use syntax::{
     subst::SubstType,
-    types::{Bool, Fun, Nat, Reference, TypeGroup, Unit},
+    types::{Bool, Fun, Nat, Reference, Type as TypeTrait, TypeGroup, Unit},
     TypeVar,
 };
 
@@ -15,60 +15,55 @@ pub enum Type {
     Ref(Reference<Type>),
 }
 
-impl syntax::types::Type for Type {}
+impl TypeTrait for Type {
+    fn knd(&self) -> TypeKind {
+        match self {
+            Type::Unit(t) => t.knd(),
+            Type::Nat(t) => t.knd(),
+            Type::Bool(t) => t.knd(),
+            Type::Fun(t) => t.knd(),
+            Type::Ref(t) => t.knd(),
+        }
+    }
+}
 
 impl TypeGroup for Type {
-    fn into_unit(self) -> Result<Unit<Type>, ErrorKind> {
+    fn into_unit(self) -> Result<Unit<Type>, TypeMismatch> {
         if let Type::Unit(u) = self {
             Ok(u)
         } else {
-            Err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
-                expected: "Nat".to_owned(),
-            })
+            Err(TypeMismatch::new(self.knd(), TypeKind::Unit))
         }
     }
-    fn into_nat(self) -> Result<Nat<Type>, ErrorKind> {
+    fn into_nat(self) -> Result<Nat<Type>, TypeMismatch> {
         if let Type::Nat(nat) = self {
             Ok(nat)
         } else {
-            Err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
-                expected: "Nat".to_owned(),
-            })
+            Err(TypeMismatch::new(self.knd(), TypeKind::Unit))
         }
     }
 
-    fn into_fun(self) -> Result<Fun<Self>, ErrorKind> {
+    fn into_fun(self) -> Result<Fun<Self>, TypeMismatch> {
         if let Type::Fun(fun) = self {
             Ok(fun)
         } else {
-            Err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
-                expected: "Function Type".to_owned(),
-            })
+            Err(TypeMismatch::new(self.knd(), TypeKind::Function))
         }
     }
 
-    fn into_bool(self) -> Result<Bool<Self>, ErrorKind> {
+    fn into_bool(self) -> Result<Bool<Self>, TypeMismatch> {
         if let Type::Bool(b) = self {
             Ok(b)
         } else {
-            Err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
-                expected: "Bool".to_owned(),
-            })
+            Err(TypeMismatch::new(self.knd(), TypeKind::Bool))
         }
     }
 
-    fn into_ref(self) -> Result<Reference<Self>, ErrorKind> {
+    fn into_ref(self) -> Result<Reference<Self>, TypeMismatch> {
         if let Type::Ref(reft) = self {
             Ok(reft)
         } else {
-            Err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
-                expected: "Reference".to_owned(),
-            })
+            Err(TypeMismatch::new(self.knd(), TypeKind::Reference))
         }
     }
 }
