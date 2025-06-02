@@ -1,5 +1,5 @@
-use super::{get_n_inner, next_rule, to_parse_err, Rule, Type};
-use common::errors::{Error, ErrorKind};
+use super::{get_n_inner, next_rule, Error, MissingInput, Rule, Type, UnexpectedRule};
+use common::parse::UnknownKeyword;
 use pest::iterators::Pair;
 use std::collections::HashMap;
 use syntax::types::{Bool, Fun, Nat, Product, Record, Sum, Tuple, Unit, Variant};
@@ -13,10 +13,7 @@ pub fn pair_to_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
         Rule::sum_type => pair_to_sum_type(p),
         Rule::variant_type => pair_to_variant_type(p),
         Rule::tuple_type => pair_to_tuple_type(p),
-        r => Err(to_parse_err(ErrorKind::UnexpectedRule {
-            found: format!("{r:?}"),
-            expected: "Non Left-Recursive Type".to_owned(),
-        })),
+        r => Err(UnexpectedRule::new(r, "Non Left-Recursive Type").into()),
     }
 }
 
@@ -52,9 +49,7 @@ fn pair_to_rec_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
     let mut inner = p.into_inner();
     while let Some(n) = inner.next() {
         let next_var = n.as_str().to_owned();
-        let next_pair = inner.next().ok_or(to_parse_err(ErrorKind::MissingInput(
-            "Record Type".to_owned(),
-        )))?;
+        let next_pair = inner.next().ok_or(MissingInput::new("Record Type"))?;
         let next_rule = next_rule(next_pair, Rule::r#type)?;
         let next_ty = pair_to_type(next_rule)?;
         recs.insert(next_var, next_ty);
@@ -81,9 +76,7 @@ fn pair_to_variant_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
     let mut variants = HashMap::new();
     while let Some(n) = inner.next() {
         let label = n.as_str().to_owned();
-        let next_pair = inner.next().ok_or(to_parse_err(ErrorKind::MissingInput(
-            "Variant Type".to_owned(),
-        )))?;
+        let next_pair = inner.next().ok_or(MissingInput::new("Variant Type"))?;
         let n_rule = next_rule(next_pair, Rule::r#type)?;
         let n_ty = pair_to_type(n_rule)?;
         variants.insert(label, n_ty);
@@ -106,6 +99,6 @@ fn str_to_ty(s: &str) -> Result<Type, Error> {
         "bool" => Ok(Bool::new().into()),
         "nat" => Ok(Nat::new().into()),
         "unit" => Ok(Unit::new().into()),
-        _ => Err(to_parse_err(ErrorKind::UnknownKeyword(s.to_owned()))),
+        _ => Err(UnknownKeyword::new(s)),
     }
 }

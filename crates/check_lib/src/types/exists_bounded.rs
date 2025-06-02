@@ -1,5 +1,5 @@
-use crate::{env::CheckEnvironment, errors::NameMismatch, Kindcheck, Normalize, Subtypecheck};
-use common::errors::TypeMismatch;
+use crate::{env::CheckEnvironment, Kindcheck, Normalize, Subtypecheck};
+use common::errors::{NameMismatch, TypeMismatch};
 use syntax::{
     kinds::Kind,
     types::{ExistsBounded, Type, TypeGroup},

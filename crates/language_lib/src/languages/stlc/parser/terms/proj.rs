@@ -1,5 +1,4 @@
-use super::{Rule, Term};
-use common::errors::Error;
+use super::{Error, Rule, Term};
 use pest::iterators::Pair;
 use syntax::terms::{Projection, RecordProj};
 

@@ -1,7 +1,7 @@
 use super::{parser::Rule, types::Type};
-use check::errors::{EnvError, FreeTypeVariable, NameMismatch, NotASubtype};
+use check::errors::{EnvError, FreeTypeVariable, NotASubtype};
 use common::{
-    errors::{KindMismatch, NotImplemented, TypeMismatch},
+    errors::{KindMismatch, NameMismatch, NotImplemented, TypeMismatch},
     parse::{MissingInput, RemainingInput, UnexpectedRule, UnknownKeyword},
 };
 use pest::error::Error as PestErr;

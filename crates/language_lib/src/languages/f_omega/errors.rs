@@ -1,7 +1,9 @@
 use super::parser::Rule;
-use check::errors::{EnvError, FreeTypeVariable, NameMismatch};
+use check::errors::{EnvError, FreeTypeVariable};
 use common::{
-    errors::{FreeVariable, KindMismatch, NotImplemented, TypeMismatch, UndefinedLabel},
+    errors::{
+        FreeVariable, KindMismatch, NameMismatch, NotImplemented, TypeMismatch, UndefinedLabel,
+    },
     parse::{MissingInput, RemainingInput, UnexpectedRule, UnknownKeyword},
 };
 use eval::errors::ValueMismatch;

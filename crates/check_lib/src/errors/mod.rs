@@ -3,12 +3,10 @@ use std::fmt;
 
 pub mod empty_case;
 pub mod free_type_variable;
-pub mod name_mismatch;
 pub mod not_a_subtype;
 
 pub use empty_case::EmptyCase;
 pub use free_type_variable::FreeTypeVariable;
-pub use name_mismatch::NameMismatch;
 pub use not_a_subtype::NotASubtype;
 
 #[derive(Debug)]

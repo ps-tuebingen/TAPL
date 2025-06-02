@@ -1,5 +1,8 @@
-use super::{get_n_inner, next_rule, pair_to_type, to_parse_err, Rule, Term, Type};
-use common::errors::{Error, ErrorKind};
+use super::{
+    get_n_inner, next_rule, pair_to_type, Error, MissingInput, RemainingInput, Rule, Term, Type,
+    UnexpectedRule,
+};
+use common::parse::UnknownKeyword;
 use pest::iterators::Pair;
 use syntax::terms::{App, False, Num, True, Unit, Variable};
 
@@ -34,16 +37,11 @@ use variant::pair_to_variant;
 
 pub fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
     if p.as_rule() != Rule::term {
-        return Err(to_parse_err(ErrorKind::UnexpectedRule {
-            found: format!("{:?}", p.as_rule()),
-            expected: "Term".to_owned(),
-        }));
+        return Err(UnexpectedRule::new(p.as_rule(), "Term").into());
     }
 
     let mut inner = p.into_inner();
-    let prim_term_pair = inner
-        .next()
-        .ok_or(to_parse_err(ErrorKind::MissingInput("Term".to_owned())))?;
+    let prim_term_pair = inner.next().ok_or(MissingInput::new("Term"))?;
     let prim_term_rule = get_n_inner(prim_term_pair, vec!["Prim Term"])?.remove(0);
     let prim_term = pair_to_primterm(prim_term_rule)?;
 
@@ -54,10 +52,7 @@ pub fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
     };
 
     if let Some(n) = inner.next() {
-        return Err(to_parse_err(ErrorKind::RemainingInput(format!(
-            "{:?}",
-            n.as_rule()
-        ))));
+        return Err(RemainingInput::new(&format!("{:?}", n.as_rule())).into());
     }
     Ok(term)
 }
@@ -88,10 +83,7 @@ pub fn pair_to_primterm(p: Pair<'_, Rule>) -> Result<Term, Error> {
         Rule::number => pair_to_num(p),
         Rule::case_term => pair_to_case(p),
         Rule::paren_term => paren_to_term(p),
-        r => Err(to_parse_err(ErrorKind::UnexpectedRule {
-            found: format!("{r:?}"),
-            expected: "NOn Left-Recursive Term".to_owned(),
-        })),
+        r => Err(UnexpectedRule::new(r, "Non Left-Recursive Term").into()),
     }
 }
 
@@ -101,7 +93,7 @@ fn const_to_term(s: &str) -> Result<Term, Error> {
         "false" => Ok(False::new().into()),
         "zero" => Ok(Num::new(0).into()),
         "unit" => Ok(Unit::new().into()),
-        _ => Err(to_parse_err(ErrorKind::UnknownKeyword(s.to_owned()))),
+        _ => Err(UnknownKeyword::new(s).into()),
     }
 }
 
@@ -131,16 +123,10 @@ pub fn pair_to_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
                     }
                     .into())
                 }
-                r => Err(to_parse_err(ErrorKind::UnexpectedRule {
-                    found: format!("{r:?}"),
-                    expected: "Ascription, Projection or Term".to_owned(),
-                })),
+                r => Err(UnexpectedRule::new(r, "Ascription, Projection or Term").into()),
             }
         }
         Rule::EOI => Ok(t),
-        r => Err(to_parse_err(ErrorKind::UnexpectedRule {
-            found: format!("{r:?}"),
-            expected: "Left Recursive Term or End of Input".to_owned(),
-        })),
+        r => Err(UnexpectedRule::new(r, "Left Recursive Term or End of Input").into()),
     }
 }

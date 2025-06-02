@@ -1,5 +1,5 @@
-use crate::{errors::NameMismatch, CheckEnvironment, Kindcheck, Normalize, Typecheck};
-use common::errors::{TypeKind, TypeMismatch};
+use crate::{CheckEnvironment, Kindcheck, Normalize, Typecheck};
+use common::errors::{NameMismatch, TypeKind, TypeMismatch};
 use syntax::{
     terms::{Term, Unpack},
     types::TypeGroup,

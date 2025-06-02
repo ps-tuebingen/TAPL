@@ -1,7 +1,7 @@
 use super::parser::Rule;
-use check::errors::{EnvError, FreeTypeVariable, NameMismatch};
+use check::errors::{EnvError, FreeTypeVariable};
 use common::{
-    errors::{FreeVariable, KindMismatch, NotImplemented, TypeMismatch},
+    errors::{FreeVariable, KindMismatch, NameMismatch, NotImplemented, TypeMismatch},
     parse::{MissingInput, RemainingInput, UnexpectedRule, UnknownKeyword},
 };
 use eval::errors::ValueMismatch;

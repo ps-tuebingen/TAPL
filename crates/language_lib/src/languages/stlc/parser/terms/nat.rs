@@ -1,8 +1,4 @@
-use super::{get_n_inner, next_rule, pair_to_term, Rule, Term};
-use common::{
-    errors::{Error, ErrorKind},
-    parse::to_parse_err,
-};
+use super::{get_n_inner, next_rule, pair_to_term, Error, Rule, Term, UnknownKeyword};
 use pest::iterators::Pair;
 use syntax::terms::{IsZero, Num, Pred, Succ};
 
@@ -10,7 +6,7 @@ pub fn pair_to_num(p: Pair<'_, Rule>) -> Result<Term, Error> {
     let num_str = p.as_str().trim();
     let num = num_str
         .parse::<i64>()
-        .map_err(|_| to_parse_err(ErrorKind::UnknownKeyword(num_str.to_owned())))?;
+        .map_err(|_| UnknownKeyword::new(num_str))?;
     Ok(Num::new(num).into())
 }
 

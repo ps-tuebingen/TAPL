@@ -1,6 +1,5 @@
-use super::{terms::Term, types::Type, values::Value};
+use super::{errors::Error, terms::Term, types::Type, values::Value};
 use check::Normalize;
-use common::errors::Error;
 use eval::Eval;
 use std::collections::HashMap;
 use syntax::Var;
@@ -8,6 +7,7 @@ use syntax::Var;
 impl Eval for Term {
     type Env = ();
     type Value = Value;
+    type EvalError = Error;
 
     fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
         match self {
