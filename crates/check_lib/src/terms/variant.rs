@@ -1,4 +1,5 @@
 use crate::{errors::UndefinedLabel, Kindcheck, Normalize, Typecheck};
+use common::errors::{KindMismatch, TypeMismatch};
 use syntax::{
     terms::{Term, Variant},
     types::{TypeGroup, Variant as VariantTy},
@@ -11,7 +12,7 @@ where
         + Normalize<Ty, Env = <T as Typecheck>::Env>
         + Kindcheck<Ty, Env = <T as Typecheck>::Env, CheckError = <T as Typecheck>::CheckError>,
     VariantTy<Ty>: Into<Ty>,
-    <T as Typecheck>::CheckError: From<UndefinedLabel> + From<syntax::errors::Error>,
+    <T as Typecheck>::CheckError: From<UndefinedLabel> + From<TypeMismatch> + From<KindMismatch>,
 {
     type Env = <T as Typecheck>::Env;
     type Type = <T as Typecheck>::Type;

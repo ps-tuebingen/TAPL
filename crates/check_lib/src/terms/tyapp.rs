@@ -1,6 +1,6 @@
 use crate::{Kindcheck, Normalize, Subtypecheck, Typecheck};
+use common::errors::{KindMismatch, TypeKind, TypeMismatch};
 use syntax::{
-    errors::TypeKind,
     subst::SubstType,
     terms::{Term, TyApp},
     types::TypeGroup,
@@ -14,7 +14,7 @@ where
         + Normalize<Ty, Env = <T as Typecheck>::Env>
         + Kindcheck<Ty, Env = <T as Typecheck>::Env, CheckError = <T as Typecheck>::CheckError>
         + Subtypecheck<Ty, Env = <T as Typecheck>::Env, CheckError = <T as Typecheck>::CheckError>,
-    <T as Typecheck>::CheckError: From<syntax::errors::Error>,
+    <T as Typecheck>::CheckError: From<TypeMismatch> + From<KindMismatch>,
 {
     type Type = <T as Typecheck>::Type;
     type CheckError = <T as Typecheck>::CheckError;
@@ -36,11 +36,7 @@ where
             arg_norm.check_subtype(&forall.sup_ty, env)?;
             Ok(forall.ty.subst_type(&forall.var, &arg_norm))
         } else {
-            Err(syntax::errors::Error::TypeMismatch {
-                found: fun_ty.knd(),
-                expected: TypeKind::Universal,
-            }
-            .into())
+            Err(TypeMismatch::new(fun_ty.knd(), TypeKind::Universal).into())
         }
     }
 }

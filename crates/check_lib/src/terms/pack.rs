@@ -1,6 +1,6 @@
 use crate::{CheckEnvironment, Kindcheck, Normalize, Subtypecheck, Typecheck};
+use common::errors::{KindMismatch, TypeKind, TypeMismatch};
 use syntax::{
-    errors::TypeKind,
     subst::SubstType,
     terms::{Pack, Term},
     types::TypeGroup,
@@ -14,7 +14,7 @@ where
         + Kindcheck<Ty, Env = <T as Typecheck>::Env, CheckError = <T as Typecheck>::CheckError>
         + Subtypecheck<Ty, Env = <T as Typecheck>::Env, CheckError = <T as Typecheck>::CheckError>
         + SubstType<Ty, Target = Ty>,
-    <T as Typecheck>::CheckError: From<syntax::errors::Error>,
+    <T as Typecheck>::CheckError: From<TypeMismatch> + From<KindMismatch>,
 {
     type Type = <T as Typecheck>::Type;
     type CheckError = <T as Typecheck>::CheckError;
@@ -53,11 +53,7 @@ where
             term_ty.check_subtype(&outer_subst, env)?;
             Ok(self.outer_ty.clone())
         } else {
-            Err(syntax::errors::Error::TypeMismatch {
-                found: outer_norm.knd(),
-                expected: TypeKind::Existential,
-            }
-            .into())
+            Err(TypeMismatch::new(outer_norm.knd(), TypeKind::Existential).into())
         }
     }
 }

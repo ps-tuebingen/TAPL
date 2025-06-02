@@ -1,13 +1,13 @@
 use crate::{env::CheckEnvironment, Kindcheck, Normalize, Subtypecheck};
+use common::errors::TypeMismatch;
 use syntax::{
     kinds::Kind,
     types::{TypeGroup, TypeVariable},
 };
-
 impl<Ty> Subtypecheck<Ty> for TypeVariable<Ty>
 where
     Ty: TypeGroup + Subtypecheck<Ty> + Normalize<Ty, Env = <Ty as Subtypecheck<Ty>>::Env>,
-    <Ty as Subtypecheck<Ty>>::CheckError: From<syntax::errors::Error>,
+    <Ty as Subtypecheck<Ty>>::CheckError: From<TypeMismatch>,
     <Ty as Subtypecheck<Ty>>::Env:
         CheckEnvironment<CheckError = <Ty as Subtypecheck<Ty>>::CheckError>,
 {

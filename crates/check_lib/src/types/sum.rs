@@ -1,13 +1,13 @@
 use crate::Kindcheck;
+use common::errors::KindMismatch;
 use syntax::{
     kinds::Kind,
     types::{Sum, Type},
 };
-
 impl<Ty> Kindcheck<Ty> for Sum<Ty>
 where
     Ty: Type + Kindcheck<Ty>,
-    <Ty as Kindcheck<Ty>>::CheckError: From<syntax::errors::Error>,
+    <Ty as Kindcheck<Ty>>::CheckError: From<KindMismatch>,
 {
     type Env = <Ty as Kindcheck<Ty>>::Env;
     type CheckError = <Ty as Kindcheck<Ty>>::CheckError;

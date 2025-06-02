@@ -1,14 +1,14 @@
 use crate::{errors::UndefinedLabel, Kindcheck, Normalize, Subtypecheck};
+use common::errors::{KindMismatch, TypeMismatch};
 use std::collections::HashMap;
 use syntax::{
     kinds::Kind,
     types::{Record, Type, TypeGroup},
 };
-
 impl<Ty> Subtypecheck<Ty> for Record<Ty>
 where
     Ty: TypeGroup + Subtypecheck<Ty> + Normalize<Ty, Env = <Ty as Subtypecheck<Ty>>::Env>,
-    <Ty as Subtypecheck<Ty>>::CheckError: From<syntax::errors::Error> + From<UndefinedLabel>,
+    <Ty as Subtypecheck<Ty>>::CheckError: From<TypeMismatch> + From<UndefinedLabel>,
 {
     type Env = <Ty as Subtypecheck<Ty>>::Env;
     type CheckError = <Ty as Subtypecheck<Ty>>::CheckError;
@@ -31,7 +31,7 @@ where
 impl<Ty> Kindcheck<Ty> for Record<Ty>
 where
     Ty: Type + Kindcheck<Ty>,
-    <Ty as Kindcheck<Ty>>::CheckError: From<syntax::errors::Error>,
+    <Ty as Kindcheck<Ty>>::CheckError: From<KindMismatch>,
 {
     type Env = <Ty as Kindcheck<Ty>>::Env;
     type CheckError = <Ty as Kindcheck<Ty>>::CheckError;

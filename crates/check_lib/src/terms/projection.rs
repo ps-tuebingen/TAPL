@@ -1,4 +1,5 @@
 use crate::{errors::IndexOutOfBounds, Kindcheck, Normalize, Typecheck};
+use common::errors::{KindMismatch, TypeMismatch};
 use syntax::{
     terms::{Projection, Term},
     types::TypeGroup,
@@ -15,7 +16,7 @@ where
             CheckError = <T as Typecheck>::CheckError,
         >,
     <T as Typecheck>::CheckError: From<IndexOutOfBounds>,
-    <T as Typecheck>::CheckError: From<syntax::errors::Error>,
+    <T as Typecheck>::CheckError: From<TypeMismatch> + From<KindMismatch>,
 {
     type Env = <T as Typecheck>::Env;
     type Type = <T as Typecheck>::Type;

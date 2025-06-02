@@ -1,4 +1,5 @@
 use crate::{Kindcheck, Normalize, Typecheck};
+use common::errors::{KindMismatch, TypeMismatch};
 use syntax::{
     terms::{Nil, Term},
     types::{List, Type},
@@ -11,7 +12,7 @@ where
         + Normalize<Ty, Env = <T as Typecheck>::Env>
         + Kindcheck<Ty, Env = <T as Typecheck>::Env, CheckError = <T as Typecheck>::CheckError>,
     List<<T as Typecheck>::Type>: Into<<T as Typecheck>::Type>,
-    <T as Typecheck>::CheckError: From<syntax::errors::Error>,
+    <T as Typecheck>::CheckError: From<TypeMismatch> + From<KindMismatch>,
 {
     type Env = <T as Typecheck>::Env;
     type Type = <T as Typecheck>::Type;

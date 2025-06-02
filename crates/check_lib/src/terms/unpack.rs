@@ -1,6 +1,6 @@
 use crate::{errors::NameMismatch, CheckEnvironment, Kindcheck, Normalize, Typecheck};
+use common::errors::{TypeKind, TypeMismatch};
 use syntax::{
-    errors::TypeKind,
     terms::{Term, Unpack},
     types::TypeGroup,
 };
@@ -11,7 +11,7 @@ where
     Ty: TypeGroup
         + Normalize<<T as Typecheck>::Type, Env = <T as Typecheck>::Env>
         + Kindcheck<Ty, Env = <T as Typecheck>::Env, CheckError = <T as Typecheck>::CheckError>,
-    <T as Typecheck>::CheckError: From<syntax::errors::Error> + From<NameMismatch>,
+    <T as Typecheck>::CheckError: From<TypeMismatch> + From<NameMismatch>,
 {
     type Type = <T as Typecheck>::Type;
     type CheckError = <T as Typecheck>::CheckError;
@@ -40,11 +40,7 @@ where
             let inner_ty = self.in_term.check(&mut env.clone())?;
             Ok(inner_ty.normalize(env))
         } else {
-            Err(syntax::errors::Error::TypeMismatch {
-                found: bound_ty.knd(),
-                expected: TypeKind::Existential,
-            }
-            .into())
+            Err(TypeMismatch::new(bound_ty.knd(), TypeKind::Existential).into())
         }
     }
 }

@@ -2,6 +2,7 @@ use crate::{
     errors::{EmptyCase, UndefinedLabel},
     CheckEnvironment, Kindcheck, Normalize, Typecheck,
 };
+use common::errors::{KindMismatch, TypeMismatch};
 use syntax::{
     terms::{Term, VariantCase},
     types::{Type, TypeGroup},
@@ -18,7 +19,7 @@ where
             CheckError = <T as Typecheck>::CheckError,
         >,
     <T as Typecheck>::CheckError:
-        From<syntax::errors::Error> + From<EmptyCase> + From<UndefinedLabel>,
+        From<TypeMismatch> + From<EmptyCase> + From<UndefinedLabel> + From<KindMismatch>,
 {
     type Env = <T as Typecheck>::Env;
     type Type = <T as Typecheck>::Type;
@@ -66,11 +67,7 @@ where
 
         let rhs_fst = rhs_tys.remove(0);
         if let Some(ty) = rhs_tys.iter().find(|ty| rhs_fst.check_equal(ty).is_err()) {
-            return Err(syntax::errors::Error::TypeMismatch {
-                found: ty.knd(),
-                expected: rhs_fst.knd(),
-            }
-            .into());
+            return Err(TypeMismatch::new(ty.knd(), rhs_fst.knd()).into());
         }
 
         Ok(rhs_fst)

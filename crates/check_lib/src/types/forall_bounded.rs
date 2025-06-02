@@ -1,4 +1,5 @@
 use crate::{env::CheckEnvironment, errors::NameMismatch, Kindcheck, Normalize, Subtypecheck};
+use common::errors::TypeMismatch;
 use syntax::{
     kinds::Kind,
     types::{ForallBounded, Type, TypeGroup},
@@ -7,7 +8,7 @@ use syntax::{
 impl<Ty> Subtypecheck<Ty> for ForallBounded<Ty>
 where
     Ty: TypeGroup + Subtypecheck<Ty> + Normalize<Ty, Env = <Ty as Subtypecheck<Ty>>::Env>,
-    <Ty as Subtypecheck<Ty>>::CheckError: From<syntax::errors::Error> + From<NameMismatch>,
+    <Ty as Subtypecheck<Ty>>::CheckError: From<TypeMismatch> + From<NameMismatch>,
 {
     type Env = <Ty as Subtypecheck<Ty>>::Env;
     type CheckError = <Ty as Subtypecheck<Ty>>::CheckError;

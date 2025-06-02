@@ -1,9 +1,9 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
+use common::errors::TypeMismatch;
 use syntax::{
     kinds::Kind,
     types::{TypeGroup, Unit},
 };
-
 impl<Ty> Kindcheck<Ty> for Unit<Ty>
 where
     Ty: TypeGroup + Kindcheck<Ty>,
@@ -19,7 +19,7 @@ where
 impl<Ty> Subtypecheck<Ty> for Unit<Ty>
 where
     Ty: TypeGroup + Subtypecheck<Ty>,
-    <Ty as Subtypecheck<Ty>>::CheckError: From<syntax::errors::Error>,
+    <Ty as Subtypecheck<Ty>>::CheckError: From<TypeMismatch>,
 {
     type Env = <Ty as Subtypecheck<Ty>>::Env;
     type CheckError = <Ty as Subtypecheck<Ty>>::CheckError;

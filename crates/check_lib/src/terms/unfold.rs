@@ -1,4 +1,5 @@
 use crate::{Kindcheck, Normalize, Typecheck};
+use common::errors::{KindMismatch, TypeMismatch};
 use syntax::{
     subst::SubstType,
     terms::{Term, Unfold},
@@ -11,7 +12,7 @@ where
         + Normalize<Ty, Env = <T as Typecheck>::Env>
         + Kindcheck<Ty, Env = <T as Typecheck>::Env, CheckError = <T as Typecheck>::CheckError>
         + SubstType<Ty, Target = Ty>,
-    <T as Typecheck>::CheckError: From<syntax::errors::Error>,
+    <T as Typecheck>::CheckError: From<TypeMismatch> + From<KindMismatch>,
     T: Term + Typecheck<Type = Ty>,
 {
     type Env = <T as Typecheck>::Env;

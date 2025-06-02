@@ -1,6 +1,6 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
+use common::errors::{KindKind, KindMismatch, TypeMismatch};
 use syntax::{
-    errors::KindKind,
     kinds::Kind,
     types::{Fun, Type, TypeGroup},
 };
@@ -8,7 +8,7 @@ use syntax::{
 impl<Ty> Subtypecheck<Ty> for Fun<Ty>
 where
     Ty: TypeGroup + Subtypecheck<Ty>,
-    <Ty as Subtypecheck<Ty>>::CheckError: From<syntax::errors::Error>,
+    <Ty as Subtypecheck<Ty>>::CheckError: From<TypeMismatch>,
 {
     type Env = <Ty as Subtypecheck<Ty>>::Env;
     type CheckError = <Ty as Subtypecheck<Ty>>::CheckError;
@@ -30,7 +30,7 @@ where
 impl<Ty> Kindcheck<Ty> for Fun<Ty>
 where
     Ty: Type + Kindcheck<Ty>,
-    <Ty as Kindcheck<Ty>>::CheckError: From<syntax::errors::Error>,
+    <Ty as Kindcheck<Ty>>::CheckError: From<KindMismatch>,
 {
     type Env = <Ty as Kindcheck<Ty>>::Env;
     type CheckError = <Ty as Kindcheck<Ty>>::CheckError;
@@ -38,20 +38,12 @@ where
     fn check_kind(&self, env: &mut Self::Env) -> Result<Kind, Self::CheckError> {
         let from_kind = self.from.check_kind(&mut env.clone())?;
         if from_kind != Kind::Star {
-            return Err(syntax::errors::Error::KindMismatch {
-                found: from_kind,
-                expected: KindKind::Star,
-            }
-            .into());
+            return Err(KindMismatch::new(from_kind.into(), KindKind::Star).into());
         };
 
         let to_kind = self.to.check_kind(env)?;
         if to_kind != Kind::Star {
-            return Err(syntax::errors::Error::KindMismatch {
-                found: to_kind,
-                expected: KindKind::Star,
-            }
-            .into());
+            return Err(KindMismatch::new(to_kind.into(), KindKind::Star).into());
         }
         Ok(Kind::Star)
     }

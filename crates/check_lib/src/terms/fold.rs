@@ -1,4 +1,5 @@
 use crate::{CheckEnvironment, Kindcheck, Normalize, Typecheck};
+use common::errors::{KindMismatch, TypeMismatch};
 use syntax::{
     kinds::Kind,
     subst::SubstType,
@@ -14,7 +15,7 @@ where
         + Kindcheck<Ty, Env = <T as Typecheck>::Env, CheckError = <T as Typecheck>::CheckError>
         + SubstType<Ty, Target = Ty>,
     Mu<Ty>: Into<Ty>,
-    <T as Typecheck>::CheckError: From<syntax::errors::Error>,
+    <T as Typecheck>::CheckError: From<TypeMismatch> + From<KindMismatch>,
 {
     type Env = <T as Typecheck>::Env;
     type Type = <T as Typecheck>::Type;

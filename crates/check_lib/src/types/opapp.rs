@@ -1,4 +1,5 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
+use common::errors::{KindMismatch, TypeMismatch};
 use syntax::{
     kinds::Kind,
     subst::SubstType,
@@ -8,7 +9,7 @@ use syntax::{
 impl<Ty> Subtypecheck<Ty> for OpApp<Ty>
 where
     Ty: TypeGroup + Subtypecheck<Ty>,
-    <Ty as Subtypecheck<Ty>>::CheckError: From<syntax::errors::Error>,
+    <Ty as Subtypecheck<Ty>>::CheckError: From<TypeMismatch>,
     Self: Into<Ty>,
 {
     type Env = <Ty as Subtypecheck<Ty>>::Env;
@@ -26,7 +27,7 @@ where
 impl<Ty> Kindcheck<Ty> for OpApp<Ty>
 where
     Ty: TypeGroup + Kindcheck<Ty>,
-    <Ty as Kindcheck<Ty>>::CheckError: From<syntax::errors::Error>,
+    <Ty as Kindcheck<Ty>>::CheckError: From<KindMismatch>,
 {
     type Env = <Ty as Kindcheck<Ty>>::Env;
     type CheckError = <Ty as Kindcheck<Ty>>::CheckError;
@@ -38,11 +39,7 @@ where
         if fun_from == arg_kind {
             Ok(fun_to)
         } else {
-            Err(syntax::errors::Error::KindMismatch {
-                found: arg_kind,
-                expected: fun_from.into(),
-            }
-            .into())
+            Err(KindMismatch::new(arg_kind.into(), fun_from.into()).into())
         }
     }
 }

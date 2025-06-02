@@ -1,4 +1,5 @@
 use crate::{Kindcheck, Normalize, Typecheck};
+use common::errors::KindMismatch;
 use syntax::{
     terms::{Something, Term},
     types::Optional,
@@ -14,7 +15,7 @@ where
             Env = <T as Typecheck>::Env,
             CheckError = <T as Typecheck>::CheckError,
         >,
-    <T as Typecheck>::CheckError: From<syntax::errors::Error>,
+    <T as Typecheck>::CheckError: From<KindMismatch>,
 {
     type Env = <T as Typecheck>::Env;
     type Type = <T as Typecheck>::Type;

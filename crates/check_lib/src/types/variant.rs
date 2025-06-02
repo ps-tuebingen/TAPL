@@ -1,10 +1,11 @@
 use crate::{errors::UndefinedLabel, Subtypecheck};
+use common::errors::TypeMismatch;
 use syntax::types::{TypeGroup, Variant};
 
 impl<Ty> Subtypecheck<Ty> for Variant<Ty>
 where
     Ty: TypeGroup + Subtypecheck<Ty>,
-    <Ty as Subtypecheck<Ty>>::CheckError: From<syntax::errors::Error>,
+    <Ty as Subtypecheck<Ty>>::CheckError: From<TypeMismatch>,
     <Ty as Subtypecheck<Ty>>::CheckError: From<UndefinedLabel>,
 {
     type Env = <Ty as Subtypecheck<Ty>>::Env;

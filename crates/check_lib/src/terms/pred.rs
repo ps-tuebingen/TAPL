@@ -1,4 +1,5 @@
 use crate::{Normalize, Typecheck};
+use common::errors::TypeMismatch;
 use syntax::{
     terms::{Pred, Term},
     types::{Nat, TypeGroup},
@@ -10,7 +11,7 @@ where
     <T as Typecheck>::Type:
         TypeGroup + Normalize<<T as Typecheck>::Type, Env = <T as Typecheck>::Env>,
     Nat<<T as Typecheck>::Type>: Into<<T as Typecheck>::Type>,
-    <T as Typecheck>::CheckError: From<syntax::errors::Error>,
+    <T as Typecheck>::CheckError: From<TypeMismatch>,
 {
     type Type = <T as Typecheck>::Type;
     type CheckError = <T as Typecheck>::CheckError;

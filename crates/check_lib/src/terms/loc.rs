@@ -1,4 +1,5 @@
 use crate::{CheckEnvironment, Kindcheck, Normalize, Typecheck};
+use common::errors::{KindMismatch, TypeMismatch};
 use syntax::{
     terms::{Loc, Term},
     types::Reference,
@@ -15,7 +16,7 @@ where
         >,
     Reference<<T as Typecheck>::Type>: Into<<T as Typecheck>::Type>,
     <T as Typecheck>::Env: CheckEnvironment<CheckError = <T as Typecheck>::CheckError>,
-    <T as Typecheck>::CheckError: From<syntax::errors::Error>,
+    <T as Typecheck>::CheckError: From<TypeMismatch> + From<KindMismatch>,
 {
     type Env = <T as Typecheck>::Env;
     type Type = <T as Typecheck>::Type;

@@ -1,4 +1,5 @@
 use crate::{Kindcheck, Normalize, Typecheck};
+use common::errors::{KindMismatch, TypeMismatch};
 use syntax::{
     terms::{Assign, Term},
     types::{TypeGroup, Unit as UnitTy},
@@ -15,7 +16,7 @@ where
             CheckError = <T as Typecheck>::CheckError,
         >,
     UnitTy<<T as Typecheck>::Type>: Into<<T as Typecheck>::Type>,
-    <T as Typecheck>::CheckError: From<syntax::errors::Error>,
+    <T as Typecheck>::CheckError: From<TypeMismatch> + From<KindMismatch>,
 {
     type Env = <T as Typecheck>::Env;
     type Type = <T as Typecheck>::Type;

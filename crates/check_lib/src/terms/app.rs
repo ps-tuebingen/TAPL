@@ -1,4 +1,5 @@
 use crate::{Kindcheck, Normalize, Subtypecheck, Typecheck};
+use common::errors::{KindMismatch, TypeMismatch};
 use syntax::{
     terms::{App, Term},
     types::{Fun, TypeGroup},
@@ -18,7 +19,7 @@ where
             Env = <T as Typecheck>::Env,
             CheckError = <T as Typecheck>::CheckError,
         >,
-    <T as Typecheck>::CheckError: From<syntax::errors::Error>,
+    <T as Typecheck>::CheckError: From<TypeMismatch> + From<KindMismatch>,
 {
     type Type = <T as Typecheck>::Type;
     type CheckError = <T as Typecheck>::CheckError;

@@ -1,4 +1,5 @@
 use crate::{CheckEnvironment, Kindcheck, Normalize, Typecheck};
+use common::errors::{KindMismatch, TypeMismatch};
 use syntax::{
     terms::{Term, TyLambda},
     types::Forall,
@@ -14,7 +15,7 @@ where
             CheckError = <T as Typecheck>::CheckError,
         >,
     Forall<<T as Typecheck>::Type>: Into<<T as Typecheck>::Type>,
-    <T as Typecheck>::CheckError: From<syntax::errors::Error>,
+    <T as Typecheck>::CheckError: From<TypeMismatch> + From<KindMismatch>,
 {
     type Type = <T as Typecheck>::Type;
     type CheckError = <T as Typecheck>::CheckError;

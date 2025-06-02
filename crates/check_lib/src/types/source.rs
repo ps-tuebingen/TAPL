@@ -1,10 +1,10 @@
 use crate::Subtypecheck;
+use common::errors::TypeMismatch;
 use syntax::types::{Source, TypeGroup};
-
 impl<Ty> Subtypecheck<Ty> for Source<Ty>
 where
     Ty: TypeGroup + Subtypecheck<Ty>,
-    <Ty as Subtypecheck<Ty>>::CheckError: From<syntax::errors::Error>,
+    <Ty as Subtypecheck<Ty>>::CheckError: From<TypeMismatch>,
 {
     type Env = <Ty as Subtypecheck<Ty>>::Env;
     type CheckError = <Ty as Subtypecheck<Ty>>::CheckError;
