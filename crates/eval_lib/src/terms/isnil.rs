@@ -1,9 +1,8 @@
 use crate::{
-    to_eval_err,
+    errors::{ValueKind, ValueMismatch},
     values::{False, True, ValueGroup},
     Eval,
 };
-use common::errors::{Error, ErrorKind};
 use syntax::{
     terms::{IsNil, Term},
     types::Type,
@@ -15,21 +14,20 @@ where
     Ty: Type,
     True<T>: Into<<T as Eval>::Value>,
     False<T>: Into<<T as Eval>::Value>,
+    <T as Eval>::EvalError: From<ValueMismatch>,
 {
     type Env = <T as Eval>::Env;
     type Value = <T as Eval>::Value;
+    type EvalError = <T as Eval>::EvalError;
 
-    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
+    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Self::EvalError> {
         let term_val = self.term.eval(env)?;
         if term_val.clone().into_nil().is_ok() {
             Ok(True::new().into())
         } else if term_val.clone().into_cons().is_ok() {
             Ok(False::new().into())
         } else {
-            Err(to_eval_err(ErrorKind::ValueMismatch {
-                found: term_val.to_string(),
-                expected: "List Value".to_owned(),
-            }))
+            Err(ValueMismatch::new(&term_val, ValueKind::List).into())
         }
     }
 }

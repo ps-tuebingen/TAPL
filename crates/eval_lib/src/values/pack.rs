@@ -1,4 +1,5 @@
 use super::Value;
+use crate::errors::ValueKind;
 use std::fmt;
 use syntax::{terms::Pack as PackT, types::Type};
 
@@ -38,6 +39,10 @@ where
     Ty: Type,
 {
     type Term = PackT<<V as Value>::Term, Ty>;
+
+    fn knd(&self) -> ValueKind {
+        ValueKind::Package
+    }
 }
 
 impl<V, Ty> From<Pack<V, Ty>> for PackT<<V as Value>::Term, Ty>

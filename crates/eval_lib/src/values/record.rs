@@ -1,4 +1,5 @@
 use super::Value;
+use crate::errors::ValueKind;
 use std::{collections::HashMap, fmt};
 use syntax::{terms::Record as RecordT, Label};
 
@@ -29,6 +30,10 @@ where
     V: Value,
 {
     type Term = RecordT<<V as Value>::Term>;
+
+    fn knd(&self) -> ValueKind {
+        ValueKind::Record
+    }
 }
 
 impl<V> From<Record<V>> for RecordT<<V as Value>::Term>

@@ -1,48 +1,15 @@
-use std::fmt;
-
+pub mod free_variable;
+pub mod index_out_of_bounds;
+pub mod kind_mismatch;
 pub mod kinds;
+pub mod not_implemented;
+pub mod type_mismatch;
+pub mod undefined_label;
+
+pub use free_variable::FreeVariable;
+pub use index_out_of_bounds::IndexOutOfBounds;
+pub use kind_mismatch::KindMismatch;
 pub use kinds::{KindKind, TypeKind};
-
-#[derive(Debug)]
-pub struct TypeMismatch {
-    found: TypeKind,
-    expected: TypeKind,
-}
-
-impl TypeMismatch {
-    pub fn new(found: TypeKind, expected: TypeKind) -> TypeMismatch {
-        TypeMismatch { found, expected }
-    }
-}
-
-#[derive(Debug)]
-pub struct KindMismatch {
-    found: KindKind,
-    expected: KindKind,
-}
-
-impl KindMismatch {
-    pub fn new(found: KindKind, expected: KindKind) -> KindMismatch {
-        KindMismatch { found, expected }
-    }
-}
-
-impl fmt::Display for TypeMismatch {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(
-            f,
-            "Type Mismatch:\n\texpected: {}, found: {}",
-            self.expected, self.found
-        )
-    }
-}
-
-impl fmt::Display for KindMismatch {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(
-            f,
-            "Kind Mismatch:\n\texpected: {}\n\tfound {}",
-            self.expected, self.found
-        )
-    }
-}
+pub use not_implemented::NotImplemented;
+pub use type_mismatch::TypeMismatch;
+pub use undefined_label::UndefinedLabel;

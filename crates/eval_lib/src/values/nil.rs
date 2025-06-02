@@ -1,4 +1,5 @@
 use super::Value;
+use crate::errors::ValueKind;
 use std::{fmt, marker::PhantomData};
 use syntax::{
     terms::{Nil as NilT, Term},
@@ -37,6 +38,10 @@ where
     Ty: Type,
 {
     type Term = NilT<T, Ty>;
+
+    fn knd(&self) -> ValueKind {
+        ValueKind::Nil
+    }
 }
 
 impl<T, Ty> From<Nil<T, Ty>> for NilT<T, Ty>

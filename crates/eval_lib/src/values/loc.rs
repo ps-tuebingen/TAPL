@@ -1,4 +1,5 @@
 use super::Value;
+use crate::errors::ValueKind;
 use std::{fmt, marker::PhantomData};
 use syntax::terms::{Loc as LocT, Term};
 
@@ -28,6 +29,10 @@ where
     T: Term,
 {
     type Term = LocT<T>;
+
+    fn knd(&self) -> ValueKind {
+        ValueKind::Location
+    }
 }
 
 impl<T> From<Loc<T>> for LocT<T>

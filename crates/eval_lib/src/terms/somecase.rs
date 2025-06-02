@@ -1,5 +1,8 @@
-use crate::{to_eval_err, values::ValueGroup, Eval};
-use common::errors::{Error, ErrorKind};
+use crate::{
+    errors::{ValueKind, ValueMismatch},
+    values::ValueGroup,
+    Eval,
+};
 use syntax::{
     subst::SubstTerm,
     terms::{SomeCase, Term},
@@ -8,11 +11,13 @@ use syntax::{
 impl<T> Eval for SomeCase<T>
 where
     T: Term + Eval + SubstTerm<T, Target = T> + From<<T as Eval>::Value>,
+    <T as Eval>::EvalError: From<ValueMismatch>,
 {
     type Env = <T as Eval>::Env;
     type Value = <T as Eval>::Value;
+    type EvalError = <T as Eval>::EvalError;
 
-    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
+    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Self::EvalError> {
         let bound_val = self.bound_term.eval(env)?;
 
         if let Ok(some_val) = bound_val.clone().into_something() {
@@ -22,10 +27,7 @@ where
         } else if bound_val.clone().into_nothing().is_ok() {
             self.none_term.eval(env)
         } else {
-            Err(to_eval_err(ErrorKind::ValueMismatch {
-                found: bound_val.to_string(),
-                expected: "Option Value".to_owned(),
-            }))
+            Err(ValueMismatch::new(&bound_val, ValueKind::Option).into())
         }
     }
 }

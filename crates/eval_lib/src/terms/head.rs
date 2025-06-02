@@ -1,5 +1,4 @@
-use crate::{to_eval_err, values::ValueGroup, Eval};
-use common::errors::Error;
+use crate::{errors::ValueMismatch, values::ValueGroup, Eval};
 use syntax::{
     terms::{Head, Term},
     types::Type,
@@ -9,13 +8,15 @@ impl<T, Ty> Eval for Head<T, Ty>
 where
     T: Term + Eval,
     Ty: Type,
+    <T as Eval>::EvalError: From<ValueMismatch>,
 {
     type Env = <T as Eval>::Env;
     type Value = <T as Eval>::Value;
+    type EvalError = <T as Eval>::EvalError;
 
-    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
+    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Self::EvalError> {
         let term_val = self.term.eval(env)?;
-        let cons_val = term_val.into_cons().map_err(to_eval_err)?;
+        let cons_val = term_val.into_cons()?;
         Ok(*cons_val.head)
     }
 }

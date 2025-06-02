@@ -1,4 +1,5 @@
 use super::Value;
+use crate::errors::ValueKind;
 use std::{fmt, marker::PhantomData};
 use syntax::{
     terms::{Nothing as NothingT, Term},
@@ -37,6 +38,10 @@ where
     Ty: Type,
 {
     type Term = NothingT<T, Ty>;
+
+    fn knd(&self) -> ValueKind {
+        ValueKind::Nothing
+    }
 }
 
 impl<T, Ty> From<Nothing<T, Ty>> for NothingT<T, Ty>

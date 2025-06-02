@@ -1,5 +1,4 @@
 use crate::{values::Right as RightVal, Eval};
-use common::errors::Error;
 use syntax::{
     terms::{Right, Term},
     types::Type,
@@ -12,9 +11,10 @@ where
     RightVal<<T as Eval>::Value, Ty>: Into<<T as Eval>::Value>,
 {
     type Value = <T as Eval>::Value;
+    type EvalError = <T as Eval>::EvalError;
     type Env = <T as Eval>::Env;
 
-    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
+    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Self::EvalError> {
         let right_val = self.right_term.eval(env)?;
         Ok(RightVal::<<T as Eval>::Value, Ty>::new(right_val, self.ty.clone()).into())
     }

@@ -1,6 +1,5 @@
-use super::EnvError;
+use crate::Var;
 use std::fmt;
-use syntax::Var;
 
 #[derive(Debug)]
 pub struct FreeVariable {
@@ -16,12 +15,6 @@ impl FreeVariable {
 impl fmt::Display for FreeVariable {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "Free Variable {}", self.var)
-    }
-}
-
-impl From<FreeVariable> for EnvError {
-    fn from(fv: FreeVariable) -> EnvError {
-        EnvError::FreeVariable(fv)
     }
 }
 

@@ -1,4 +1,5 @@
 use crate::values::Value;
+use common::errors::NotImplemented;
 use syntax::Location;
 
 pub trait EvalEnvironment<V>
@@ -25,7 +26,8 @@ where
     }
 
     fn save_location(&mut self, _: Location, _: V) {}
-    fn get_location(&self, loc: Location) -> Result<V, ErrorKind> {
-        Err(ErrorKind::UndefinedLocation(loc))
+
+    fn get_location(&self, _: Location) -> Result<V, Self::EvalError> {
+        Err(NotImplemented)
     }
 }

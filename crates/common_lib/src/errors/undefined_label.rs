@@ -1,5 +1,5 @@
+use crate::Label;
 use std::fmt;
-use syntax::Label;
 
 #[derive(Debug)]
 pub struct UndefinedLabel {

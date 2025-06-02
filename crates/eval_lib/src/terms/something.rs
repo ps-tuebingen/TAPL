@@ -1,5 +1,4 @@
 use crate::{values::Something as SomethingVal, Eval};
-use common::errors::Error;
 use syntax::terms::{Something, Term};
 
 impl<T> Eval for Something<T>
@@ -9,8 +8,9 @@ where
 {
     type Env = <T as Eval>::Env;
     type Value = <T as Eval>::Value;
+    type EvalError = <T as Eval>::EvalError;
 
-    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
+    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Self::EvalError> {
         let term_val = self.term.eval(env)?;
         Ok(SomethingVal::<<T as Eval>::Value>::new(term_val).into())
     }

@@ -1,3 +1,4 @@
+use crate::errors::ValueKind;
 use std::fmt;
 use syntax::terms::Term;
 
@@ -10,6 +11,8 @@ where
     fn into_term(self) -> Self::Term {
         self.into()
     }
+
+    fn knd(&self) -> ValueKind;
 }
 
 pub mod group;

@@ -1,23 +1,24 @@
 use crate::{
     env::EvalEnvironment,
-    to_eval_err,
+    errors::ValueMismatch,
     values::{Unit as UnitVal, ValueGroup},
     Eval,
 };
-use common::errors::Error;
 use syntax::terms::{Assign, Term};
 
 impl<T> Eval for Assign<T>
 where
     T: Term + Eval,
     UnitVal<T>: Into<<T as Eval>::Value>,
+    <T as Eval>::EvalError: From<ValueMismatch>,
 {
     type Env = <T as Eval>::Env;
     type Value = <T as Eval>::Value;
+    type EvalError = <T as Eval>::EvalError;
 
-    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
+    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Self::EvalError> {
         let lhs_val = self.lhs.eval(env)?;
-        let lhs_loc = lhs_val.into_loc().map_err(to_eval_err)?;
+        let lhs_loc = lhs_val.into_loc()?;
         let rhs_val = self.rhs.eval(env)?;
         env.save_location(lhs_loc.loc, rhs_val);
         Ok(UnitVal::new().into())

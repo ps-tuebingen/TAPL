@@ -4,7 +4,8 @@ pub mod terms;
 pub mod types;
 pub mod untyped;
 
-pub type Var = String;
+pub use common::Label;
+pub use common::Var;
+
 pub type TypeVar = String;
-pub type Label = String;
 pub type Location = usize;

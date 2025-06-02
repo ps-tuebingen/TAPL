@@ -1,4 +1,5 @@
 use super::Value;
+use crate::errors::ValueKind;
 use std::{fmt, marker::PhantomData};
 use syntax::terms::{False as FalseT, Term};
 
@@ -35,6 +36,10 @@ where
     T: Term,
 {
     type Term = FalseT<T>;
+
+    fn knd(&self) -> ValueKind {
+        ValueKind::False
+    }
 }
 
 impl<T> From<False<T>> for FalseT<T>

@@ -1,4 +1,5 @@
 use super::Value;
+use crate::errors::ValueKind;
 use std::fmt;
 use syntax::{
     terms::{Lambda as LambdaT, Term},
@@ -41,6 +42,10 @@ where
     Ty: Type,
 {
     type Term = LambdaT<T, Ty>;
+
+    fn knd(&self) -> ValueKind {
+        ValueKind::Lambda
+    }
 }
 
 impl<T, Ty> From<Lambda<T, Ty>> for LambdaT<T, Ty>

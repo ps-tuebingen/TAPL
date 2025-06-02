@@ -1,5 +1,5 @@
-use crate::{to_eval_err, values::ValueGroup, Eval};
-use common::errors::{Error, ErrorKind};
+use crate::{errors::ValueMismatch, values::ValueGroup, Eval};
+use common::errors::UndefinedLabel;
 use syntax::{
     subst::SubstTerm,
     terms::{Term, VariantCase},
@@ -8,18 +8,20 @@ use syntax::{
 impl<T> Eval for VariantCase<T>
 where
     T: Term + Eval + SubstTerm<T, Target = T> + From<<T as Eval>::Value>,
+    <T as Eval>::EvalError: From<UndefinedLabel> + From<ValueMismatch>,
 {
     type Env = <T as Eval>::Env;
     type Value = <T as Eval>::Value;
+    type EvalError = <T as Eval>::EvalError;
 
-    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
+    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Self::EvalError> {
         let bound_val = self.bound_term.eval(env)?;
-        let var_val = bound_val.into_variant().map_err(to_eval_err)?;
+        let var_val = bound_val.into_variant()?;
         let matching = self
             .patterns
             .into_iter()
             .find(|pt| *pt.label == var_val.label)
-            .ok_or(to_eval_err(ErrorKind::UndefinedLabel(var_val.label)))?;
+            .ok_or(UndefinedLabel::new(&var_val.label))?;
         matching
             .rhs
             .subst(&matching.bound_var, &((*var_val.val).into()))

@@ -1,5 +1,4 @@
 use crate::Eval;
-use common::errors::Error;
 use syntax::{
     subst::SubstTerm,
     terms::{Let, Term},
@@ -11,8 +10,9 @@ where
 {
     type Env = <T as Eval>::Env;
     type Value = <T as Eval>::Value;
+    type EvalError = <T as Eval>::EvalError;
 
-    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
+    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Self::EvalError> {
         let bound_val = self.bound_term.eval(env)?;
         self.in_term.subst(&self.var, &bound_val.into()).eval(env)
     }

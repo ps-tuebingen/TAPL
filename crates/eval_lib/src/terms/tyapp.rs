@@ -1,5 +1,8 @@
-use crate::{to_eval_err, values::ValueGroup, Eval};
-use common::errors::{Error, ErrorKind};
+use crate::{
+    errors::{ValueKind, ValueMismatch},
+    values::ValueGroup,
+    Eval,
+};
 use syntax::{
     subst::SubstType,
     terms::{Term, TyApp},
@@ -11,21 +14,20 @@ where
     T: Term + Eval + SubstType<Ty, Target = T>,
     <T as Eval>::Value: ValueGroup<Term = T>,
     Ty: Type,
+    <T as Eval>::EvalError: From<ValueMismatch>,
 {
     type Value = <T as Eval>::Value;
+    type EvalError = <T as Eval>::EvalError;
     type Env = <T as Eval>::Env;
 
-    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
+    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Self::EvalError> {
         let fun_val = self.fun.eval(env)?;
         if let Ok(tylam) = fun_val.clone().into_tylambda() {
             tylam.term.subst_type(&tylam.var, &self.arg).eval(env)
         } else if let Ok(lamsub) = fun_val.clone().into_lambdasub() {
             lamsub.term.subst_type(&lamsub.var, &self.arg).eval(env)
         } else {
-            Err(to_eval_err(ErrorKind::ValueMismatch {
-                found: fun_val.to_string(),
-                expected: "Type Abstraction".to_owned(),
-            }))
+            Err(ValueMismatch::new(&fun_val, ValueKind::LambdaSub).into())
         }
     }
 }

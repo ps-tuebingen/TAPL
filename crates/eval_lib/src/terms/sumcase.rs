@@ -1,5 +1,8 @@
-use crate::{to_eval_err, values::ValueGroup, Eval};
-use common::errors::{Error, ErrorKind};
+use crate::{
+    errors::{ValueKind, ValueMismatch},
+    values::ValueGroup,
+    Eval,
+};
 use syntax::{
     subst::SubstTerm,
     terms::{SumCase, Term},
@@ -8,10 +11,12 @@ use syntax::{
 impl<T> Eval for SumCase<T>
 where
     T: Term + Eval + SubstTerm<T, Target = T> + From<<T as Eval>::Value>,
+    <T as Eval>::EvalError: From<ValueMismatch>,
 {
     type Value = <T as Eval>::Value;
+    type EvalError = <T as Eval>::EvalError;
     type Env = <T as Eval>::Env;
-    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
+    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Self::EvalError> {
         let bound_val = self.bound_term.eval(env)?;
         if let Ok(left_val) = bound_val.clone().into_left() {
             self.left_term
@@ -22,10 +27,7 @@ where
                 .subst(&self.right_var, &((*right_val.right_val).into()))
                 .eval(env)
         } else {
-            Err(to_eval_err(ErrorKind::ValueMismatch {
-                found: bound_val.to_string(),
-                expected: "Sum Value".to_owned(),
-            }))
+            Err(ValueMismatch::new(&bound_val, ValueKind::Sum).into())
         }
     }
 }

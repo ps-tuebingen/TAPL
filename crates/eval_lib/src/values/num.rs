@@ -1,4 +1,5 @@
 use super::Value;
+use crate::errors::ValueKind;
 use std::{fmt, marker::PhantomData};
 use syntax::terms::{Num as NumT, Term};
 
@@ -28,6 +29,10 @@ where
     T: Term,
 {
     type Term = NumT<T>;
+
+    fn knd(&self) -> ValueKind {
+        ValueKind::Number
+    }
 }
 
 impl<T> From<Num<T>> for NumT<T>

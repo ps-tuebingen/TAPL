@@ -1,4 +1,5 @@
 use super::Value;
+use crate::errors::ValueKind;
 use std::{fmt, marker::PhantomData};
 use syntax::terms::{Term, True as TrueT};
 
@@ -35,6 +36,10 @@ where
     T: Term,
 {
     type Term = TrueT<T>;
+
+    fn knd(&self) -> ValueKind {
+        ValueKind::True
+    }
 }
 
 impl<T> From<True<T>> for TrueT<T>

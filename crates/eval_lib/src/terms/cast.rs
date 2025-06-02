@@ -1,5 +1,4 @@
 use crate::Eval;
-use common::errors::Error;
 use syntax::{
     terms::{Cast, Term},
     types::Type,
@@ -12,8 +11,9 @@ where
 {
     type Env = <T as Eval>::Env;
     type Value = <T as Eval>::Value;
+    type EvalError = <T as Eval>::EvalError;
 
-    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
+    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Self::EvalError> {
         self.term.eval(env)
     }
 }

@@ -1,5 +1,4 @@
 use crate::{values::Exception as ExceptionVal, Eval};
-use common::errors::Error;
 use syntax::{
     terms::{Exception, Term},
     types::Type,
@@ -12,9 +11,10 @@ where
     ExceptionVal<T, Ty>: Into<<T as Eval>::Value>,
 {
     type Value = <T as Eval>::Value;
+    type EvalError = <T as Eval>::EvalError;
     type Env = <T as Eval>::Env;
 
-    fn eval(self, _: &mut Self::Env) -> Result<Self::Value, Error> {
+    fn eval(self, _: &mut Self::Env) -> Result<Self::Value, Self::EvalError> {
         Ok(ExceptionVal::new(self.ty).into())
     }
 }

@@ -1,4 +1,5 @@
 use super::Value;
+use crate::errors::ValueKind;
 use std::{fmt, marker::PhantomData};
 use syntax::{
     terms::{Exception as ExceptionT, Term},
@@ -37,6 +38,10 @@ where
     Ty: Type,
 {
     type Term = ExceptionT<T, Ty>;
+
+    fn knd(&self) -> ValueKind {
+        ValueKind::Exception
+    }
 }
 
 impl<T, Ty> From<Exception<T, Ty>> for ExceptionT<T, Ty>

@@ -1,4 +1,5 @@
 use super::Value;
+use crate::errors::ValueKind;
 use std::fmt;
 use syntax::{terms::Cons as ConsT, types::Type};
 
@@ -38,6 +39,9 @@ where
     V: Value,
 {
     type Term = ConsT<<V as Value>::Term, Ty>;
+    fn knd(&self) -> ValueKind {
+        ValueKind::Cons
+    }
 }
 
 impl<V, Ty> From<Cons<V, Ty>> for ConsT<<V as Value>::Term, Ty>

@@ -1,4 +1,5 @@
 use super::Value;
+use crate::errors::ValueKind;
 use std::fmt;
 use syntax::terms::Something as SomethingT;
 
@@ -29,6 +30,10 @@ where
     V: Value,
 {
     type Term = SomethingT<<V as Value>::Term>;
+
+    fn knd(&self) -> ValueKind {
+        ValueKind::Something
+    }
 }
 
 impl<V> From<Something<V>> for SomethingT<<V as Value>::Term>

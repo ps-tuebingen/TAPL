@@ -1,5 +1,4 @@
 use crate::{values::Record as RecordVal, Eval};
-use common::errors::Error;
 use std::collections::HashMap;
 use syntax::{
     terms::{Record, Term},
@@ -13,8 +12,9 @@ where
 {
     type Env = <T as Eval>::Env;
     type Value = <T as Eval>::Value;
+    type EvalError = <T as Eval>::EvalError;
 
-    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
+    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Self::EvalError> {
         let mut recs: HashMap<Label, Self::Value> = HashMap::new();
         for (lb, t) in self.records.into_iter() {
             let val = t.eval(env)?;

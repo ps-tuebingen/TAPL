@@ -1,5 +1,4 @@
 use crate::{values::Raise as RaiseVal, Eval};
-use common::errors::Error;
 use syntax::{
     terms::{Raise, Term},
     types::Type,
@@ -12,9 +11,10 @@ where
     RaiseVal<<T as Eval>::Value, Ty>: Into<<T as Eval>::Value>,
 {
     type Value = <T as Eval>::Value;
+    type EvalError = <T as Eval>::EvalError;
     type Env = <T as Eval>::Env;
 
-    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
+    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Self::EvalError> {
         let exc_val = self.exception.eval(env)?;
         let raise_val =
             RaiseVal::<<T as Eval>::Value, Ty>::new(exc_val, self.cont_ty, self.exception_ty);

@@ -1,5 +1,4 @@
 use crate::{values::Nothing as NothingVal, Eval};
-use common::errors::Error;
 use syntax::{
     terms::{Nothing, Term},
     types::Type,
@@ -13,8 +12,9 @@ where
 {
     type Env = <T as Eval>::Env;
     type Value = <T as Eval>::Value;
+    type EvalError = <T as Eval>::EvalError;
 
-    fn eval(self, _: &mut Self::Env) -> Result<Self::Value, Error> {
+    fn eval(self, _: &mut Self::Env) -> Result<Self::Value, Self::EvalError> {
         Ok(NothingVal::<T, Ty>::new(self.ty).into())
     }
 }

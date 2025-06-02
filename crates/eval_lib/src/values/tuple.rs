@@ -1,4 +1,5 @@
 use super::Value;
+use crate::errors::ValueKind;
 use std::fmt;
 use syntax::terms::Tuple as TupleT;
 
@@ -29,6 +30,10 @@ where
     V: Value,
 {
     type Term = TupleT<<V as Value>::Term>;
+
+    fn knd(&self) -> ValueKind {
+        ValueKind::Tuple
+    }
 }
 
 impl<V> From<Tuple<V>> for TupleT<<V as Value>::Term>

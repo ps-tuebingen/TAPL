@@ -1,4 +1,5 @@
 use super::Value;
+use crate::errors::ValueKind;
 use std::fmt;
 use syntax::{terms::Fold as FoldT, types::Type};
 
@@ -36,6 +37,10 @@ where
     Self: Into<FoldT<<V as Value>::Term, Ty>>,
 {
     type Term = FoldT<<V as Value>::Term, Ty>;
+
+    fn knd(&self) -> ValueKind {
+        ValueKind::Fold
+    }
 }
 
 impl<V, Ty> From<Fold<V, Ty>> for FoldT<<V as Value>::Term, Ty>

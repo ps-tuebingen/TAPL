@@ -1,4 +1,5 @@
-use crate::errors::{EnvError, FreeVariable, NotImplemented};
+use crate::errors::{EnvError, FreeVariable};
+use common::errors::NotImplemented;
 use std::collections::HashMap;
 use syntax::{kinds::Kind, types::Type, untyped::Untyped, Location, TypeVar, Var};
 

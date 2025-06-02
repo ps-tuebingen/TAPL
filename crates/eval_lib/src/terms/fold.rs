@@ -1,5 +1,4 @@
 use crate::{values::Fold as FoldVal, Eval};
-use common::errors::Error;
 use syntax::{
     terms::{Fold, Term},
     types::Type,
@@ -13,8 +12,9 @@ where
 {
     type Env = <T as Eval>::Env;
     type Value = <T as Eval>::Value;
+    type EvalError = <T as Eval>::EvalError;
 
-    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
+    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Self::EvalError> {
         let term_val = self.term.eval(env)?;
         Ok(FoldVal::<<T as Eval>::Value, Ty>::new(self.ty, term_val).into())
     }

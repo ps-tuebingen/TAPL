@@ -1,4 +1,5 @@
 use super::Value;
+use crate::errors::ValueKind;
 use std::fmt;
 use syntax::terms::Pair as PairT;
 
@@ -32,6 +33,10 @@ where
     V: Value,
 {
     type Term = PairT<<V as Value>::Term>;
+
+    fn knd(&self) -> ValueKind {
+        ValueKind::Pair
+    }
 }
 
 impl<V> From<Pair<V>> for PairT<<V as Value>::Term>

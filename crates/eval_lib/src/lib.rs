@@ -1,4 +1,5 @@
 pub mod env;
+pub mod errors;
 pub mod terms;
 pub mod values;
 
@@ -7,7 +8,7 @@ use values::ValueGroup;
 
 pub trait Eval: Sized {
     type EvalError: std::error::Error;
-    type Env: EvalEnvironment<Self::Value>;
+    type Env: EvalEnvironment<Self::Value, EvalError = <Self as Eval>::EvalError>;
     type Value: ValueGroup;
 
     fn eval_start(self) -> Result<Self::Value, Self::EvalError> {

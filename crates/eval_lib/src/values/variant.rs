@@ -1,4 +1,5 @@
 use super::Value;
+use crate::errors::ValueKind;
 use std::fmt;
 use syntax::{terms::Variant as VariantT, types::Type, Label};
 
@@ -37,6 +38,10 @@ where
     Ty: Type,
 {
     type Term = VariantT<<V as Value>::Term, Ty>;
+
+    fn knd(&self) -> ValueKind {
+        ValueKind::Variant
+    }
 }
 
 impl<V, Ty> From<Variant<V, Ty>> for VariantT<<V as Value>::Term, Ty>

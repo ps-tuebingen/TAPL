@@ -1,5 +1,8 @@
-use crate::{to_eval_err, values::ValueGroup, Eval};
-use common::errors::{Error, ErrorKind};
+use crate::{
+    errors::{ValueKind, ValueMismatch},
+    values::ValueGroup,
+    Eval,
+};
 use syntax::{
     subst::SubstTerm,
     terms::{ListCase, Term},
@@ -8,11 +11,13 @@ use syntax::{
 impl<T> Eval for ListCase<T>
 where
     T: Term + Eval + SubstTerm<T, Target = T> + From<<T as Eval>::Value>,
+    <T as Eval>::EvalError: From<ValueMismatch>,
 {
     type Env = <T as Eval>::Env;
     type Value = <T as Eval>::Value;
+    type EvalError = <T as Eval>::EvalError;
 
-    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
+    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Self::EvalError> {
         let bound_val = self.bound_term.eval(env)?;
         if bound_val.clone().into_nil().is_ok() {
             self.nil_rhs.eval(env)
@@ -22,10 +27,7 @@ where
                 .subst(&self.cons_rst, &((*cons.tail).into()))
                 .eval(env)
         } else {
-            Err(to_eval_err(ErrorKind::ValueMismatch {
-                found: bound_val.to_string(),
-                expected: "List".to_owned(),
-            }))
+            Err(ValueMismatch::new(&bound_val, ValueKind::List).into())
         }
     }
 }

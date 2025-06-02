@@ -1,4 +1,5 @@
 use super::Value;
+use crate::errors::ValueKind;
 use std::fmt;
 use syntax::{terms::Raise as RaiseT, types::Type};
 
@@ -38,6 +39,10 @@ where
     Ty: Type,
 {
     type Term = RaiseT<<V as Value>::Term, Ty>;
+
+    fn knd(&self) -> ValueKind {
+        ValueKind::Raise
+    }
 }
 
 impl<V, Ty> From<Raise<V, Ty>> for RaiseT<<V as Value>::Term, Ty>

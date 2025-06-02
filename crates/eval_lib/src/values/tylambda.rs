@@ -1,4 +1,5 @@
 use super::Value;
+use crate::errors::ValueKind;
 use std::fmt;
 use syntax::{
     kinds::Kind,
@@ -37,6 +38,10 @@ where
     T: Term,
 {
     type Term = TyLambdaT<T>;
+
+    fn knd(&self) -> ValueKind {
+        ValueKind::TyLambda
+    }
 }
 
 impl<T> From<TyLambda<T>> for TyLambdaT<T>

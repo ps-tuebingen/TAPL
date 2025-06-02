@@ -1,5 +1,4 @@
 use crate::{values::Pack as PackVal, Eval};
-use common::errors::Error;
 use syntax::{
     terms::{Pack, Term},
     types::Type,
@@ -12,9 +11,10 @@ where
     PackVal<<T as Eval>::Value, Ty>: Into<<T as Eval>::Value>,
 {
     type Value = <T as Eval>::Value;
+    type EvalError = <T as Eval>::EvalError;
     type Env = <T as Eval>::Env;
 
-    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
+    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Self::EvalError> {
         let term_val = self.term.eval(env)?;
         Ok(PackVal::<<T as Eval>::Value, Ty>::new(
             self.inner_ty.clone(),
