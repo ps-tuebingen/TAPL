@@ -1,5 +1,5 @@
-use super::{pair_to_n_inner, to_parse_err, Error, Rule, Type};
-use common::errors::ErrorKind;
+use super::{pair_to_n_inner, Error, MissingInput, RemainingInput, Rule, Type};
+use common::parse::{UnexpectedRule, UnknownKeyword};
 use pest::iterators::Pair;
 use std::collections::HashMap;
 use syntax::types::{ExistsBounded, ForallBounded, Fun, Nat, Record, Top, TypeVariable};
@@ -8,10 +8,7 @@ pub fn pair_to_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
     let mut inner = p.into_inner();
     let prim_rule = inner
         .next()
-        .ok_or(ErrorKind::MissingInput(
-            "Non Left-Recursive Type".to_owned(),
-        ))
-        .map_err(to_parse_err)?;
+        .ok_or(MissingInput::new("Non Left-Recursive Type"))?;
     let prim_inner = pair_to_n_inner(prim_rule, vec!["Non Left-Recursive Type"])?.remove(0);
     let prim_type = pair_to_prim_ty(prim_inner)?;
 
@@ -24,7 +21,7 @@ pub fn pair_to_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
     };
 
     if let Some(n) = inner.next() {
-        return Err(to_parse_err(ErrorKind::RemainingInput(format!("{n:?}"))));
+        return Err(RemainingInput::new(&format!("{n:?}")).into());
     }
     Ok(ty)
 }
@@ -42,20 +39,14 @@ fn pair_to_prim_ty(p: Pair<'_, Rule>) -> Result<Type, Error> {
             pair_to_type(inner_rule)
         }
         Rule::variable => Ok(TypeVariable::new(p.as_str().trim()).into()),
-        r => Err(to_parse_err(ErrorKind::UnexpectedRule {
-            found: format!("{r:?}"),
-            expected: "Non Left-Recursive Type".to_owned(),
-        })),
+        r => Err(UnexpectedRule::new(r, "Non Left-Recursive Type").into()),
     }
 }
 
 fn pair_to_leftrec_ty(p: Pair<'_, Rule>, ty: Type) -> Result<Type, Error> {
     match p.as_rule() {
         Rule::fun_ty => pair_to_fun_ty(p, ty),
-        r => Err(to_parse_err(ErrorKind::UnexpectedRule {
-            found: format!("{r:?}"),
-            expected: "Function Type".to_owned(),
-        })),
+        r => Err(UnexpectedRule::new(r, "Function Type").into()),
     }
 }
 
@@ -63,7 +54,7 @@ fn str_to_type(s: &str) -> Result<Type, Error> {
     match s.to_lowercase().trim() {
         "nat" => Ok(Nat::new().into()),
         "top" | "top[*]" => Ok(Top::new_star().into()),
-        s => Err(to_parse_err(ErrorKind::UnknownKeyword(s.to_owned()))),
+        s => Err(UnknownKeyword::new(s).into()),
     }
 }
 
@@ -138,10 +129,7 @@ fn pair_to_rec_ty(p: Pair<'_, Rule>) -> Result<Type, Error> {
     let mut inner = p.into_inner();
     while let Some(label_rule) = inner.next() {
         let label = label_rule.as_str().trim().to_owned();
-        let ty_rule = inner
-            .next()
-            .ok_or(ErrorKind::MissingInput("Record Type".to_owned()))
-            .map_err(to_parse_err)?;
+        let ty_rule = inner.next().ok_or(MissingInput::new("Record Type"))?;
         let ty = pair_to_type(ty_rule)?;
         recs.insert(label, ty);
     }

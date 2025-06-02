@@ -1,9 +1,11 @@
+pub mod errors;
 pub mod eval;
 pub mod parse;
 pub mod terms;
 pub mod values;
 
 use crate::Language;
+use errors::Error;
 use syntax::untyped::Untyped;
 use terms::Term;
 use values::Value;
@@ -17,4 +19,5 @@ impl Language for UntypedLambda {
     type Value = Value;
     type CheckEnv = ();
     type EvalEnv = ();
+    type LanguageError = Error;
 }

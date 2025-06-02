@@ -1,5 +1,4 @@
-use super::{pair_to_n_inner, pair_to_type, to_parse_err, Rule, Term, Type};
-use common::errors::{Error, ErrorKind};
+use super::{pair_to_n_inner, pair_to_type, Error, MissingInput, Rule, Term, Type};
 use pest::iterators::Pair;
 use syntax::terms::{App, Num, Variable};
 
@@ -18,10 +17,7 @@ pub fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
     let mut inner = p.into_inner();
     let prim_rule = inner
         .next()
-        .ok_or(ErrorKind::MissingInput(
-            "Non Left-Recursive Term".to_owned(),
-        ))
-        .map_err(to_parse_err)?;
+        .ok_or(MissingInput::new("Non Left-Recursive Term"))?;
     let prim_inner = pair_to_n_inner(prim_rule, vec!["Non Left-Recursive Term"])?.remove(0);
     let prim_term = pair_to_prim_term(prim_inner)?;
 

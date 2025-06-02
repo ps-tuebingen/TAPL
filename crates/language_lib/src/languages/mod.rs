@@ -1,9 +1,6 @@
-use super::Language;
+use super::{errors::UndefinedLanguage, Language};
 use check::Typecheck;
-use common::{
-    errors::{Error, ErrorKind, ErrorLocation},
-    parse::Parse,
-};
+use common::parse::Parse;
 use eval::Eval;
 use std::{fmt, str::FromStr};
 
@@ -41,15 +38,15 @@ pub enum RunResult<T>
 where
     T: Language,
 {
-    ParseFail(Error),
+    ParseFail(T::LanguageError),
     CheckFail {
         parsed: <T as Language>::Term,
-        check_err: Error,
+        check_err: T::LanguageError,
     },
     EvalFail {
         parsed: <T as Language>::Term,
         checked: <T as Language>::Type,
-        eval_err: Error,
+        eval_err: T::LanguageError,
     },
     Success {
         parsed: <T as Language>::Term,
@@ -62,11 +59,11 @@ impl<T> RunResult<T>
 where
     T: Language,
 {
-    pub fn parse_fail(e: Error) -> RunResult<T> {
+    pub fn parse_fail(e: T::LanguageError) -> RunResult<T> {
         RunResult::ParseFail(e)
     }
 
-    pub fn check_fail(t: <T as Language>::Term, err: Error) -> RunResult<T> {
+    pub fn check_fail(t: <T as Language>::Term, err: T::LanguageError) -> RunResult<T> {
         RunResult::CheckFail {
             parsed: t,
             check_err: err,
@@ -76,7 +73,7 @@ where
     pub fn eval_fail(
         t: <T as Language>::Term,
         ty: <T as Language>::Type,
-        err: Error,
+        err: T::LanguageError,
     ) -> RunResult<T> {
         RunResult::EvalFail {
             parsed: t,
@@ -368,7 +365,7 @@ impl AllLanguages {
 }
 
 impl FromStr for AllLanguages {
-    type Err = Error;
+    type Err = UndefinedLanguage;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_lowercase().trim() {
             "untyped-arithmetic" => Ok(untyped_arithmetic::UntypedArithmetic.into()),
@@ -385,10 +382,7 @@ impl FromStr for AllLanguages {
             "lambda-omega" => Ok(lambda_omega::LambdaOmega.into()),
             "f-omega" => Ok(f_omega::FOmega.into()),
             "f-omega-sub" => Ok(f_omega_sub::FOmegaSub.into()),
-            _ => Err(Error {
-                kind: ErrorKind::UndefinedLanguage(s.to_owned()),
-                loc: ErrorLocation::LanguageSelect,
-            }),
+            _ => Err(UndefinedLanguage::new(s)),
         }
     }
 }

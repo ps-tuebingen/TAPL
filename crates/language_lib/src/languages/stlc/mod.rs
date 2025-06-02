@@ -1,4 +1,5 @@
 pub mod check;
+pub mod errors;
 pub mod eval;
 pub mod parser;
 pub mod terms;
@@ -6,6 +7,7 @@ pub mod types;
 pub mod values;
 
 use crate::Language;
+use errors::Error;
 use std::collections::HashMap;
 use syntax::Var;
 use terms::Term;
@@ -21,4 +23,5 @@ impl Language for Stlc {
     type Value = Value;
     type CheckEnv = HashMap<Var, Type>;
     type EvalEnv = ();
+    type LanguageError = Error;
 }

@@ -1,4 +1,5 @@
 pub mod check;
+pub mod errors;
 pub mod eval;
 pub mod parser;
 pub mod terms;
@@ -7,6 +8,7 @@ pub mod values;
 
 use crate::Language;
 use check::ExceptionEnv;
+use errors::Error;
 use terms::Term;
 use types::Type;
 use values::Value;
@@ -20,4 +22,5 @@ impl Language for Exceptions {
     type Value = Value;
     type CheckEnv = ExceptionEnv;
     type EvalEnv = ();
+    type LanguageError = Error;
 }

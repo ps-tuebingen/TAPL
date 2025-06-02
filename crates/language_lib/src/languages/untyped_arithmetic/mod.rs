@@ -1,9 +1,11 @@
+pub mod errors;
 pub mod eval;
 pub mod parse;
 pub mod terms;
 pub mod values;
 
 use crate::Language;
+use errors::Error;
 use syntax::untyped::Untyped;
 use terms::Term;
 use values::Value;
@@ -46,4 +48,5 @@ mod term_tests {
         let expected = NumVal::new(0).into();
         assert_eq!(result, expected)
     }
+    type LanguageError = Error;
 }

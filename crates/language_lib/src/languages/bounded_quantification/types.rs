@@ -1,6 +1,6 @@
 use super::check::Env;
 use check::Normalize;
-use common::errors::ErrorKind;
+use common::errors::{TypeKind, TypeMismatch};
 use std::fmt;
 use syntax::{
     subst::SubstType,
@@ -19,82 +19,65 @@ pub enum Type {
     Record(Record<Type>),
 }
 
-impl syntax::types::Type for Type {}
+impl syntax::types::Type for Type {
+    fn knd(&self) -> TypeKind {
+        TypeKind::Group
+    }
+}
 
 impl TypeGroup for Type {
-    fn into_variable(self) -> Result<TypeVariable<Type>, ErrorKind> {
+    fn into_variable(self) -> Result<TypeVariable<Type>, TypeMismatch> {
         if let Type::Var(var) = self {
             Ok(var)
         } else {
-            Err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
-                expected: "Type Variable".to_owned(),
-            })
+            Err(TypeMismatch::new(&self, TypeKind::Variable))
         }
     }
-    fn into_top(self) -> Result<Top<Type>, ErrorKind> {
+    fn into_top(self) -> Result<Top<Type>, TypeMismatch> {
         if let Type::Top(top) = self {
             Ok(top)
         } else {
-            Err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
-                expected: "Top".to_owned(),
-            })
+            Err(TypeMismatch::new(&self, TypeKind::Top))
         }
     }
 
-    fn into_nat(self) -> Result<Nat<Type>, ErrorKind> {
+    fn into_nat(self) -> Result<Nat<Type>, TypeMismatch> {
         if let Type::Nat(n) = self {
             Ok(n)
         } else {
-            Err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
-                expected: "Nat".to_owned(),
-            })
+            Err(TypeMismatch::new(&self, TypeKind::Nat))
         }
     }
 
-    fn into_fun(self) -> Result<Fun<Type>, ErrorKind> {
+    fn into_fun(self) -> Result<Fun<Type>, TypeMismatch> {
         if let Type::Fun(fun) = self {
             Ok(fun)
         } else {
-            Err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
-                expected: "Function Type".to_owned(),
-            })
+            Err(TypeMismatch::new(&self, TypeKind::Function))
         }
     }
 
-    fn into_forall_bounded(self) -> Result<ForallBounded<Type>, ErrorKind> {
+    fn into_forall_bounded(self) -> Result<ForallBounded<Type>, TypeMismatch> {
         if let Type::Forall(forall) = self {
             Ok(forall)
         } else {
-            Err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
-                expected: "Universal Type".to_owned(),
-            })
+            Err(TypeMismatch::new(&self, TypeKind::Universal))
         }
     }
 
-    fn into_exists_bounded(self) -> Result<ExistsBounded<Type>, ErrorKind> {
+    fn into_exists_bounded(self) -> Result<ExistsBounded<Type>, TypeMismatch> {
         if let Type::Exists(ex) = self {
             Ok(ex)
         } else {
-            Err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
-                expected: "Existential Type".to_owned(),
-            })
+            Err(TypeMismatch::new(&self, TypeKind::Existential))
         }
     }
 
-    fn into_record(self) -> Result<Record<Type>, ErrorKind> {
+    fn into_record(self) -> Result<Record<Type>, TypeMismatch> {
         if let Type::Record(rec) = self {
             Ok(rec)
         } else {
-            Err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
-                expected: "Record Type".to_owned(),
-            })
+            Err(TypeMismatch::new(&self, TypeKind::Record))
         }
     }
 }

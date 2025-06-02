@@ -13,6 +13,6 @@ where
     fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Self::EvalError> {
         let term_val = self.term.clone().eval(env)?;
         let loc_val = term_val.into_loc()?;
-        env.get_location(loc_val.loc)
+        env.get_location(loc_val.loc).map_err(|err| err.into())
     }
 }

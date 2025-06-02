@@ -1,4 +1,5 @@
 pub mod check;
+pub mod errors;
 pub mod eval;
 pub mod parser;
 pub mod terms;
@@ -7,6 +8,7 @@ pub mod values;
 
 use crate::Language;
 use check::Env;
+use errors::Error;
 use terms::Term;
 use types::Type;
 use values::Value;
@@ -20,4 +22,5 @@ impl Language for TypedArithmetic {
     type Value = Value;
     type CheckEnv = Env;
     type EvalEnv = ();
+    type LanguageError = Error;
 }
