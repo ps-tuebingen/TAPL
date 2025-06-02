@@ -1,5 +1,5 @@
-use super::{pair_to_n_inner, pair_to_type, to_parse_err, Rule, Term, Type};
-use common::errors::{Error, ErrorKind};
+use super::{pair_to_n_inner, pair_to_type, Error, MissingInput, Rule, Term, Type};
+use common::parse::{UnexpectedRule, UnknownKeyword};
 use pest::iterators::Pair;
 use syntax::terms::{App, False, Num, RecordProj, True, Unit, Variable};
 
@@ -20,10 +20,7 @@ pub fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
     let mut inner = p.into_inner();
     let prim_rule = inner
         .next()
-        .ok_or(ErrorKind::MissingInput(
-            "Non Left-Recursive Term".to_owned(),
-        ))
-        .map_err(to_parse_err)?;
+        .ok_or(MissingInput::new("Non Left-Recursive Term"))?;
     let prim_inner = pair_to_n_inner(prim_rule, vec!["Non Left-Recursive Term"])?.remove(0);
     let prim_term = pair_to_primterm(prim_inner)?;
 
@@ -58,15 +55,11 @@ fn pair_to_primterm(p: Pair<'_, Rule>) -> Result<Term, Error> {
                 .as_str()
                 .trim()
                 .parse::<i64>()
-                .map_err(|_| ErrorKind::UnknownKeyword(p.as_str().to_owned()))
-                .map_err(to_parse_err)?;
+                .map_err(|_| UnknownKeyword::new(p.as_str()))?;
             Ok(Num::new(num).into())
         }
         Rule::variable => Ok(Variable::new(p.as_str().trim()).into()),
-        _ => Err(to_parse_err(ErrorKind::UnexpectedRule {
-            found: format!("{p:}"),
-            expected: "Non Left-Recursive Term".to_owned(),
-        })),
+        _ => Err(UnexpectedRule::new(p, "Non Left-Recursive Term").into()),
     }
 }
 
@@ -87,10 +80,7 @@ fn pair_to_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
             }
             .into())
         }
-        _ => Err(to_parse_err(ErrorKind::UnexpectedRule {
-            found: format!("{p:?}"),
-            expected: "Left Recursive Term".to_owned(),
-        })),
+        _ => Err(UnexpectedRule::new(p, "Left Recursive Term").into()),
     }
 }
 
@@ -100,6 +90,6 @@ fn str_to_term(s: &str) -> Result<Term, Error> {
         "zero" => Ok(Num::new(0).into()),
         "true" => Ok(True::new().into()),
         "false" => Ok(False::new().into()),
-        s => Err(to_parse_err(ErrorKind::UnknownKeyword(s.to_owned()))),
+        s => Err(UnknownKeyword::new(s).into()),
     }
 }

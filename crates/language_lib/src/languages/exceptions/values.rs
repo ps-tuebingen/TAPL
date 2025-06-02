@@ -1,7 +1,7 @@
 use super::{terms::Term, types::Type};
-use common::errors::ErrorKind;
-use eval::values::{
-    Exception, False, Lambda, Num, Raise, True, Unit, Value as ValueTrait, ValueGroup,
+use eval::{
+    errors::{ValueKind, ValueMismatch},
+    values::{Exception, False, Lambda, Num, Raise, True, Unit, Value as ValueTrait, ValueGroup},
 };
 use std::fmt;
 
@@ -16,77 +16,70 @@ pub enum Value {
     Raise(Raise<Value, Type>),
 }
 
-impl eval::values::Value for Value {
+impl ValueTrait for Value {
     type Term = Term;
+    fn knd(&self) -> ValueKind {
+        match self {
+            Value::Lambda(v) => v.knd(),
+            Value::Num(v) => v.knd(),
+            Value::Unit(v) => v.knd(),
+            Value::True(v) => v.knd(),
+            Value::False(v) => v.knd(),
+            Value::Exception(v) => v.knd(),
+            Value::Raise(v) => v.knd(),
+        }
+    }
 }
 
 impl ValueGroup for Value {
     type Term = Term;
     type Type = Type;
 
-    fn into_true(self) -> Result<True<Term>, ErrorKind> {
+    fn into_true(self) -> Result<True<Term>, ValueMismatch> {
         if let Value::True(tru) = self {
             Ok(tru)
         } else {
-            Err(ErrorKind::ValueMismatch {
-                found: self.to_string(),
-                expected: "True".to_owned(),
-            })
+            Err(ValueMismatch::new(&self, ValueKind::True))
         }
     }
 
-    fn into_false(self) -> Result<False<Term>, ErrorKind> {
+    fn into_false(self) -> Result<False<Term>, ValueMismatch> {
         if let Value::False(fls) = self {
             Ok(fls)
         } else {
-            Err(ErrorKind::ValueMismatch {
-                found: self.to_string(),
-                expected: "False".to_owned(),
-            })
+            Err(ValueMismatch::new(&self, ValueKind::False))
         }
     }
 
-    fn into_exception(self) -> Result<Exception<Term, Type>, ErrorKind> {
+    fn into_exception(self) -> Result<Exception<Term, Type>, ValueMismatch> {
         if let Value::Exception(ex) = self {
             Ok(ex)
         } else {
-            Err(ErrorKind::ValueMismatch {
-                found: self.to_string(),
-                expected: "Exception".to_owned(),
-            })
+            Err(ValueMismatch::new(&self, ValueKind::Exception))
         }
     }
 
-    fn into_lambda(self) -> Result<Lambda<Term, Type>, ErrorKind> {
+    fn into_lambda(self) -> Result<Lambda<Term, Type>, ValueMismatch> {
         if let Value::Lambda(lam) = self {
             Ok(lam)
         } else {
-            Err(ErrorKind::ValueMismatch {
-                found: self.to_string(),
-                expected: "Lambda Abstraction".to_owned(),
-            })
+            Err(ValueMismatch::new(&self, ValueKind::Lambda))
         }
     }
 
-    fn into_raise(self) -> Result<Raise<Value, Type>, ErrorKind> {
+    fn into_raise(self) -> Result<Raise<Value, Type>, ValueMismatch> {
         if let Value::Raise(raise) = self {
             Ok(raise)
         } else {
-            Err(ErrorKind::ValueMismatch {
-                found: self.to_string(),
-                expected: "Raise".to_owned(),
-            })
+            Err(ValueMismatch::new(&self, ValueKind::Raise))
         }
     }
 
-    fn into_num(self) -> Result<Num<Term>, ErrorKind> {
+    fn into_num(self) -> Result<Num<Term>, ValueMismatch> {
         if let Value::Num(num) = self {
             Ok(num)
         } else {
-            Err(ErrorKind::ValueMismatch {
-                found: self.to_string(),
-                expected: "Number".to_owned(),
-            })
+            Err(ValueMismatch::new(&self, ValueKind::Number))
         }
     }
 }

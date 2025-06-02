@@ -1,8 +1,8 @@
-use common::errors::ErrorKind;
+use common::errors::{TypeKind, TypeMismatch};
 use std::fmt;
 use syntax::{
     subst::SubstType,
-    types::{Bool, Fun, Nat, TypeGroup, Unit},
+    types::{Bool, Fun, Nat, Type as TypeTrait, TypeGroup, Unit},
     TypeVar,
 };
 
@@ -14,49 +14,46 @@ pub enum Type {
     Fun(Fun<Type>),
 }
 
-impl syntax::types::Type for Type {}
+impl TypeTrait for Type {
+    fn knd(&self) -> TypeKind {
+        match self {
+            Type::Unit(u) => u.knd(),
+            Type::Nat(n) => n.knd(),
+            Type::Bool(b) => b.knd(),
+            Type::Fun(f) => f.knd(),
+        }
+    }
+}
 
 impl TypeGroup for Type {
-    fn into_unit(self) -> Result<Unit<Type>, ErrorKind> {
+    fn into_unit(self) -> Result<Unit<Type>, TypeMismatch> {
         if let Type::Unit(u) = self {
             Ok(u)
         } else {
-            Err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
-                expected: "Unit".to_owned(),
-            })
+            Err(TypeMismatch::new(self.knd(), TypeKind::Unit))
         }
     }
-    fn into_nat(self) -> Result<Nat<Type>, ErrorKind> {
+    fn into_nat(self) -> Result<Nat<Type>, TypeMismatch> {
         if let Type::Nat(n) = self {
             Ok(n)
         } else {
-            Err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
-                expected: "Nat".to_owned(),
-            })
+            Err(TypeMismatch::new(self.knd(), TypeKind::Nat))
         }
     }
 
-    fn into_bool(self) -> Result<Bool<Type>, ErrorKind> {
+    fn into_bool(self) -> Result<Bool<Type>, TypeMismatch> {
         if let Type::Bool(b) = self {
             Ok(b)
         } else {
-            Err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
-                expected: "Bool".to_owned(),
-            })
+            Err(TypeMismatch::new(self.knd(), TypeKind::Bool))
         }
     }
 
-    fn into_fun(self) -> Result<Fun<Type>, ErrorKind> {
+    fn into_fun(self) -> Result<Fun<Type>, TypeMismatch> {
         if let Type::Fun(fun) = self {
             Ok(fun)
         } else {
-            Err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
-                expected: "Function Type".to_owned(),
-            })
+            Err(TypeMismatch::new(self.knd(), TypeKind::Function))
         }
     }
 }

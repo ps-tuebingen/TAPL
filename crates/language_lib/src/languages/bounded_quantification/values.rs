@@ -14,10 +14,16 @@ pub enum Value {
     Record(Record<Value>),
 }
 
-impl eval::values::Value for Value {
+impl ValueTrait for Value {
     type Term = Term;
     fn knd(&self) -> ValueKind {
-        ValueKind::Group
+        match self {
+            Value::Lambda(v) => v.knd(),
+            Value::LambdaSub(v) => v.knd(),
+            Value::Pack(v) => v.knd(),
+            Value::Num(v) => v.knd(),
+            Value::Record(v) => v.knd(),
+        }
     }
 }
 

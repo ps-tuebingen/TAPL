@@ -1,12 +1,12 @@
-use super::{check::ExceptionEnv, terms::Term, types::Type, values::Value};
+use super::{check::ExceptionEnv, errors::Error, terms::Term, types::Type, values::Value};
 use check::Normalize;
-use common::errors::Error;
 use eval::Eval;
 use syntax::terms::{False, Num, True, Unit, Variable};
 
 impl Eval for Term {
     type Value = Value;
     type Env = ();
+    type EvalError = Error;
 
     fn eval(self, env: &mut ()) -> Result<Value, Error> {
         match self {

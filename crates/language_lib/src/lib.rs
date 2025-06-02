@@ -14,7 +14,7 @@ pub use languages::AllLanguages;
 
 pub trait Language {
     type Term: Term
-        + Parse
+        + Parse<ParseError = Self::LanguageError>
         + SubstTerm<Self::Term, Target = Self::Term>
         + SubstType<Self::Type, Target = Self::Term>
         + Eval<

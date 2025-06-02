@@ -31,7 +31,6 @@ pub enum TypeKind {
     Top,
     Bot,
     OpApp,
-    Group,
 }
 
 impl fmt::Display for KindKind {
@@ -69,7 +68,6 @@ impl fmt::Display for TypeKind {
             TypeKind::Top => f.write_str("Top"),
             TypeKind::Bot => f.write_str("Bot"),
             TypeKind::OpApp => f.write_str("Operator Application"),
-            TypeKind::Group => f.write_str("Type Group"),
         }
     }
 }

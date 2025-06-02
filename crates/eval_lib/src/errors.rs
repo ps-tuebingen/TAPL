@@ -29,7 +29,6 @@ pub enum ValueKind {
     Option,
     Sum,
     Unit,
-    Group,
 }
 
 #[derive(Debug)]
@@ -89,7 +88,6 @@ impl fmt::Display for ValueKind {
             ValueKind::Option => f.write_str("Option"),
             ValueKind::Sum => f.write_str("Sum"),
             ValueKind::Unit => f.write_str("Unit"),
-            ValueKind::Group => f.write_str("Group"),
         }
     }
 }

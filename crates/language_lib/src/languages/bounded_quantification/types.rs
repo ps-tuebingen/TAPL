@@ -4,7 +4,10 @@ use common::errors::{TypeKind, TypeMismatch};
 use std::fmt;
 use syntax::{
     subst::SubstType,
-    types::{ExistsBounded, ForallBounded, Fun, Nat, Record, Top, TypeGroup, TypeVariable},
+    types::{
+        ExistsBounded, ForallBounded, Fun, Nat, Record, Top, Type as TypeTrait, TypeGroup,
+        TypeVariable,
+    },
     TypeVar,
 };
 
@@ -21,7 +24,15 @@ pub enum Type {
 
 impl syntax::types::Type for Type {
     fn knd(&self) -> TypeKind {
-        TypeKind::Group
+        match self {
+            Type::Var(t) => t.knd(),
+            Type::Top(t) => t.knd(),
+            Type::Nat(t) => t.knd(),
+            Type::Fun(t) => t.knd(),
+            Type::Forall(t) => t.knd(),
+            Type::Exists(t) => t.knd(),
+            Type::Record(t) => t.knd(),
+        }
     }
 }
 
@@ -30,14 +41,14 @@ impl TypeGroup for Type {
         if let Type::Var(var) = self {
             Ok(var)
         } else {
-            Err(TypeMismatch::new(&self, TypeKind::Variable))
+            Err(TypeMismatch::new(self.knd(), TypeKind::Variable))
         }
     }
     fn into_top(self) -> Result<Top<Type>, TypeMismatch> {
         if let Type::Top(top) = self {
             Ok(top)
         } else {
-            Err(TypeMismatch::new(&self, TypeKind::Top))
+            Err(TypeMismatch::new(self.knd(), TypeKind::Top))
         }
     }
 
@@ -45,7 +56,7 @@ impl TypeGroup for Type {
         if let Type::Nat(n) = self {
             Ok(n)
         } else {
-            Err(TypeMismatch::new(&self, TypeKind::Nat))
+            Err(TypeMismatch::new(self.knd(), TypeKind::Nat))
         }
     }
 
@@ -53,7 +64,7 @@ impl TypeGroup for Type {
         if let Type::Fun(fun) = self {
             Ok(fun)
         } else {
-            Err(TypeMismatch::new(&self, TypeKind::Function))
+            Err(TypeMismatch::new(self.knd(), TypeKind::Function))
         }
     }
 
@@ -61,7 +72,7 @@ impl TypeGroup for Type {
         if let Type::Forall(forall) = self {
             Ok(forall)
         } else {
-            Err(TypeMismatch::new(&self, TypeKind::Universal))
+            Err(TypeMismatch::new(self.knd(), TypeKind::Universal))
         }
     }
 
@@ -69,7 +80,7 @@ impl TypeGroup for Type {
         if let Type::Exists(ex) = self {
             Ok(ex)
         } else {
-            Err(TypeMismatch::new(&self, TypeKind::Existential))
+            Err(TypeMismatch::new(self.knd(), TypeKind::Existential))
         }
     }
 
@@ -77,7 +88,7 @@ impl TypeGroup for Type {
         if let Type::Record(rec) = self {
             Ok(rec)
         } else {
-            Err(TypeMismatch::new(&self, TypeKind::Record))
+            Err(TypeMismatch::new(self.knd(), TypeKind::Record))
         }
     }
 }
