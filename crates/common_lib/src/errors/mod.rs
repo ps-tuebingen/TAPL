@@ -1,20 +1,48 @@
 use std::fmt;
 
-pub mod kind;
-pub mod loc;
-pub use kind::ErrorKind;
-pub use loc::ErrorLocation;
+pub mod kinds;
+pub use kinds::{KindKind, TypeKind};
 
 #[derive(Debug)]
-pub struct Error {
-    pub kind: ErrorKind,
-    pub loc: ErrorLocation,
+pub struct TypeMismatch {
+    found: TypeKind,
+    expected: TypeKind,
 }
 
-impl fmt::Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Error during {} :\n{}", self.loc, self.kind)
+impl TypeMismatch {
+    pub fn new(found: TypeKind, expected: TypeKind) -> TypeMismatch {
+        TypeMismatch { found, expected }
     }
 }
 
-impl std::error::Error for Error {}
+#[derive(Debug)]
+pub struct KindMismatch {
+    found: KindKind,
+    expected: KindKind,
+}
+
+impl KindMismatch {
+    pub fn new(found: KindKind, expected: KindKind) -> KindMismatch {
+        KindMismatch { found, expected }
+    }
+}
+
+impl fmt::Display for TypeMismatch {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(
+            f,
+            "Type Mismatch:\n\texpected: {}, found: {}",
+            self.expected, self.found
+        )
+    }
+}
+
+impl fmt::Display for KindMismatch {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(
+            f,
+            "Kind Mismatch:\n\texpected: {}\n\tfound {}",
+            self.expected, self.found
+        )
+    }
+}

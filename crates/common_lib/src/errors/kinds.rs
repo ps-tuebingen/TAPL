@@ -1,4 +1,3 @@
-use crate::kinds::Kind;
 use std::fmt;
 
 #[derive(Debug)]
@@ -32,15 +31,6 @@ pub enum TypeKind {
     Top,
     Bot,
     OpApp,
-}
-
-impl From<Kind> for KindKind {
-    fn from(knd: Kind) -> KindKind {
-        match knd {
-            Kind::Star => KindKind::Star,
-            Kind::Arrow(_, _) => KindKind::Arrow,
-        }
-    }
 }
 
 impl fmt::Display for KindKind {

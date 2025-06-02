@@ -1,4 +1,3 @@
-pub mod errors;
 pub mod kinds;
 pub mod subst;
 pub mod terms;

@@ -1,9 +1,9 @@
 use crate::{
-    errors::TypeKind,
     subst::SubstType,
     types::{Type, TypeGroup},
     TypeVar,
 };
+use common::errors::TypeKind;
 use std::fmt;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
