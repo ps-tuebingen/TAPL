@@ -1,8 +1,5 @@
-use crate::{
-    errors::{EmptyCase, UndefinedLabel},
-    CheckEnvironment, Kindcheck, Normalize, Typecheck,
-};
-use common::errors::{KindMismatch, TypeMismatch};
+use crate::{errors::EmptyCase, CheckEnvironment, Kindcheck, Normalize, Typecheck};
+use common::errors::{KindMismatch, TypeMismatch, UndefinedLabel};
 use syntax::{
     terms::{Term, VariantCase},
     types::{Type, TypeGroup},

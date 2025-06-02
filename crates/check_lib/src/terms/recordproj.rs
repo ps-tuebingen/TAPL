@@ -1,5 +1,5 @@
-use crate::{errors::UndefinedLabel, CheckEnvironment, Kindcheck, Normalize, Typecheck};
-use common::errors::TypeMismatch;
+use crate::{CheckEnvironment, Kindcheck, Normalize, Typecheck};
+use common::errors::{TypeMismatch, UndefinedLabel};
 use syntax::{
     terms::{RecordProj, Term},
     types::TypeGroup,

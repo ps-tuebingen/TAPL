@@ -1,5 +1,5 @@
-use crate::{errors::UndefinedLabel, Kindcheck, Normalize, Typecheck};
-use common::errors::{KindMismatch, TypeMismatch};
+use crate::{Kindcheck, Normalize, Typecheck};
+use common::errors::{KindMismatch, TypeMismatch, UndefinedLabel};
 use syntax::{
     terms::{Term, Variant},
     types::{TypeGroup, Variant as VariantTy},

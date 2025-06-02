@@ -1,5 +1,5 @@
-use crate::{errors::UndefinedLabel, Kindcheck, Normalize, Subtypecheck};
-use common::errors::{KindMismatch, TypeMismatch};
+use crate::{Kindcheck, Normalize, Subtypecheck};
+use common::errors::{KindMismatch, TypeMismatch, UndefinedLabel};
 use std::collections::HashMap;
 use syntax::{
     kinds::Kind,

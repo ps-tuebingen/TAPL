@@ -1,5 +1,5 @@
-use crate::{errors::UndefinedLabel, Subtypecheck};
-use common::errors::TypeMismatch;
+use crate::Subtypecheck;
+use common::errors::{TypeMismatch, UndefinedLabel};
 use syntax::types::{TypeGroup, Variant};
 
 impl<Ty> Subtypecheck<Ty> for Variant<Ty>

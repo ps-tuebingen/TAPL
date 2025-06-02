@@ -1,4 +1,5 @@
-use crate::{errors::NotImplemented, Kindcheck, Normalize, Subtypecheck};
+use crate::{Kindcheck, Normalize, Subtypecheck};
+use common::errors::NotImplemented;
 use syntax::{kinds::Kind, untyped::Untyped};
 
 impl Subtypecheck<Untyped> for Untyped {

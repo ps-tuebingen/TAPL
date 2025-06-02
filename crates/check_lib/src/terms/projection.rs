@@ -1,5 +1,5 @@
-use crate::{errors::IndexOutOfBounds, Kindcheck, Normalize, Typecheck};
-use common::errors::{KindMismatch, TypeMismatch};
+use crate::{Kindcheck, Normalize, Typecheck};
+use common::errors::{IndexOutOfBounds, KindMismatch, TypeMismatch};
 use syntax::{
     terms::{Projection, Term},
     types::TypeGroup,
