@@ -1,9 +1,10 @@
-use common::errors::ErrorKind;
+use common::errors::{TypeKind, TypeMismatch};
 use std::fmt;
 use syntax::{
     subst::SubstType,
     types::{
-        Bool, Exists, Forall, Fun, Nat, OpApp, OpLambda, Record, TypeGroup, TypeVariable, Unit,
+        Bool, Exists, Forall, Fun, Nat, OpApp, OpLambda, Record, Type as TypeTrait, TypeGroup,
+        TypeVariable, Unit,
     },
     TypeVar,
 };
@@ -22,105 +23,93 @@ pub enum Type {
     Nat(Nat<Type>),
 }
 
-impl syntax::types::Type for Type {}
+impl TypeTrait for Type {
+    fn knd(&self) -> TypeKind {
+        match self {
+            Type::Var(t) => t.knd(),
+            Type::Fun(t) => t.knd(),
+            Type::Forall(t) => t.knd(),
+            Type::OpLambda(t) => t.knd(),
+            Type::OpApp(t) => t.knd(),
+            Type::Exists(t) => t.knd(),
+            Type::Record(t) => t.knd(),
+            Type::Bool(t) => t.knd(),
+            Type::Unit(t) => t.knd(),
+            Type::Nat(t) => t.knd(),
+        }
+    }
+}
 
 impl TypeGroup for Type {
-    fn into_fun(self) -> Result<Fun<Type>, ErrorKind> {
+    fn into_fun(self) -> Result<Fun<Type>, TypeMismatch> {
         if let Type::Fun(fun) = self {
             Ok(fun)
         } else {
-            Err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
-                expected: "Function Type".to_owned(),
-            })
+            Err(TypeMismatch::new(self.knd(), TypeKind::Function))
         }
     }
 
-    fn into_forall(self) -> Result<Forall<Type>, ErrorKind> {
+    fn into_forall(self) -> Result<Forall<Type>, TypeMismatch> {
         if let Type::Forall(forall) = self {
             Ok(forall)
         } else {
-            Err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
-                expected: "Universal Type".to_owned(),
-            })
+            Err(TypeMismatch::new(self.knd(), TypeKind::Universal))
         }
     }
 
-    fn into_oplambda(self) -> Result<OpLambda<Type>, ErrorKind> {
+    fn into_oplambda(self) -> Result<OpLambda<Type>, TypeMismatch> {
         if let Type::OpLambda(lam) = self {
             Ok(lam)
         } else {
-            Err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
-                expected: "Operator Abstraction".to_owned(),
-            })
+            Err(TypeMismatch::new(self.knd(), TypeKind::OpLambda))
         }
     }
 
-    fn into_opapp(self) -> Result<OpApp<Type>, ErrorKind> {
+    fn into_opapp(self) -> Result<OpApp<Type>, TypeMismatch> {
         if let Type::OpApp(app) = self {
             Ok(app)
         } else {
-            Err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
-                expected: "Operator Application".to_owned(),
-            })
+            Err(TypeMismatch::new(self.knd(), TypeKind::OpApp))
         }
     }
 
-    fn into_exists(self) -> Result<Exists<Type>, ErrorKind> {
+    fn into_exists(self) -> Result<Exists<Type>, TypeMismatch> {
         if let Type::Exists(ex) = self {
             Ok(ex)
         } else {
-            Err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
-                expected: "Existential Type".to_owned(),
-            })
+            Err(TypeMismatch::new(self.knd(), TypeKind::Existential))
         }
     }
 
-    fn into_record(self) -> Result<Record<Type>, ErrorKind> {
+    fn into_record(self) -> Result<Record<Type>, TypeMismatch> {
         if let Type::Record(rec) = self {
             Ok(rec)
         } else {
-            Err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
-                expected: "Record Type".to_owned(),
-            })
+            Err(TypeMismatch::new(self.knd(), TypeKind::Record))
         }
     }
 
-    fn into_bool(self) -> Result<Bool<Type>, ErrorKind> {
+    fn into_bool(self) -> Result<Bool<Type>, TypeMismatch> {
         if let Type::Bool(b) = self {
             Ok(b)
         } else {
-            Err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
-                expected: "Bool".to_owned(),
-            })
+            Err(TypeMismatch::new(self.knd(), TypeKind::Bool))
         }
     }
 
-    fn into_unit(self) -> Result<Unit<Type>, ErrorKind> {
+    fn into_unit(self) -> Result<Unit<Type>, TypeMismatch> {
         if let Type::Unit(u) = self {
             Ok(u)
         } else {
-            Err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
-                expected: "Unit".to_owned(),
-            })
+            Err(TypeMismatch::new(self.knd(), TypeKind::Unit))
         }
     }
 
-    fn into_nat(self) -> Result<Nat<Type>, ErrorKind> {
+    fn into_nat(self) -> Result<Nat<Type>, TypeMismatch> {
         if let Type::Nat(nat) = self {
             Ok(nat)
         } else {
-            Err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
-                expected: "Nat".to_owned(),
-            })
+            Err(TypeMismatch::new(self.knd(), TypeKind::Nat))
         }
     }
 }

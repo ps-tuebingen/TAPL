@@ -1,8 +1,11 @@
-use common::errors::ErrorKind;
+use common::errors::{TypeKind, TypeMismatch};
 use std::fmt;
 use syntax::{
     subst::SubstType,
-    types::{Bool, Fun, Mu, Nat, Product, Record, TypeGroup, TypeVariable, Unit, Variant},
+    types::{
+        Bool, Fun, Mu, Nat, Product, Record, Type as TypeTrait, TypeGroup, TypeVariable, Unit,
+        Variant,
+    },
 };
 
 pub type TypeVar = String;
@@ -20,93 +23,83 @@ pub enum Type {
     Record(Record<Type>),
 }
 
-impl syntax::types::Type for Type {}
+impl TypeTrait for Type {
+    fn knd(&self) -> TypeKind {
+        match self {
+            Type::TypeVar(t) => t.knd(),
+            Type::Unit(t) => t.knd(),
+            Type::Fun(t) => t.knd(),
+            Type::Mu(t) => t.knd(),
+            Type::Variant(t) => t.knd(),
+            Type::Product(t) => t.knd(),
+            Type::Nat(t) => t.knd(),
+            Type::Bool(t) => t.knd(),
+            Type::Record(t) => t.knd(),
+        }
+    }
+}
 
 impl TypeGroup for Type {
-    fn into_unit(self) -> Result<Unit<Self>, ErrorKind> {
+    fn into_unit(self) -> Result<Unit<Self>, TypeMismatch> {
         if let Type::Unit(u) = self {
             Ok(u)
         } else {
-            Err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
-                expected: "Unit".to_owned(),
-            })
+            Err(TypeMismatch::new(&self.knd(), TypeKind::Unit))
         }
     }
-    fn into_fun(self) -> Result<Fun<Self>, ErrorKind> {
+    fn into_fun(self) -> Result<Fun<Self>, TypeMismatch> {
         if let Type::Fun(fun) = self {
             Ok(fun)
         } else {
-            Err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
-                expected: "Function Type".to_owned(),
-            })
+            Err(TypeMismatch::new(&self.knd(), TypeKind::Function))
         }
     }
 
-    fn into_mu(self) -> Result<Mu<Self>, ErrorKind> {
+    fn into_mu(self) -> Result<Mu<Self>, TypeMismatch> {
         if let Type::Mu(mu) = self {
             Ok(mu)
         } else {
-            Err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
-                expected: "Recursive Type".to_owned(),
-            })
+            Err(TypeMismatch::new(&self.knd(), TypeKind::Mu))
         }
     }
 
-    fn into_variant(self) -> Result<Variant<Self>, ErrorKind> {
+    fn into_variant(self) -> Result<Variant<Self>, TypeMismatch> {
         if let Type::Variant(var) = self {
             Ok(var)
         } else {
-            Err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
-                expected: "Variant Type".to_owned(),
-            })
+            Err(TypeMismatch::new(&self.knd(), TypeKind::Variant))
         }
     }
 
-    fn into_product(self) -> Result<Product<Self>, ErrorKind> {
+    fn into_product(self) -> Result<Product<Self>, TypeMismatch> {
         if let Type::Product(prod) = self {
             Ok(prod)
         } else {
-            Err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
-                expected: "Product Type".to_owned(),
-            })
+            Err(TypeMismatch::new(&self.knd(), TypeKind::Product))
         }
     }
 
-    fn into_nat(self) -> Result<Nat<Self>, ErrorKind> {
+    fn into_nat(self) -> Result<Nat<Self>, TypeMismatch> {
         if let Type::Nat(nat) = self {
             Ok(nat)
         } else {
-            Err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
-                expected: "Nat".to_owned(),
-            })
+            Err(TypeMismatch::new(&self.knd(), TypeKind::Nat))
         }
     }
 
-    fn into_bool(self) -> Result<Bool<Self>, ErrorKind> {
+    fn into_bool(self) -> Result<Bool<Self>, TypeMismatch> {
         if let Type::Bool(b) = self {
             Ok(b)
         } else {
-            Err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
-                expected: "Bool".to_owned(),
-            })
+            Err(TypeMismatch::new(&self.knd(), TypeKind::Bool))
         }
     }
 
-    fn into_record(self) -> Result<Record<Self>, ErrorKind> {
+    fn into_record(self) -> Result<Record<Self>, TypeMismatch> {
         if let Type::Record(rec) = self {
             Ok(rec)
         } else {
-            Err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
-                expected: "Record".to_owned(),
-            })
+            Err(TypeMismatch::new(&self.knd(), TypeKind::Record))
         }
     }
 }

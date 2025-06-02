@@ -40,7 +40,7 @@ where
     type CheckError = <Ty as Kindcheck<Ty>>::CheckError;
 
     fn check_kind(&self, env: &mut Self::Env) -> Result<Kind, Self::CheckError> {
-        env.get_tyvar_kind(&self.v)
+        env.get_tyvar_kind(&self.v).map_err(|err| err.into())
     }
 }
 

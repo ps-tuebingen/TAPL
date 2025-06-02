@@ -1,13 +1,13 @@
-use super::{pair_to_n_inner, to_parse_err, Error, Rule};
-use common::errors::ErrorKind;
+use super::{pair_to_n_inner, Error, MissingInput, RemainingInput, Rule};
+use common::parse::UnexpectedRule;
 use pest::iterators::Pair;
 use syntax::kinds::Kind;
 
 pub fn pair_to_kind(p: Pair<'_, Rule>) -> Result<Kind, Error> {
     let mut inner = p.into_inner();
-    let prim_rule = inner.next().ok_or(to_parse_err(ErrorKind::MissingInput(
-        "Non Left-Recursive Kind".to_owned(),
-    )))?;
+    let prim_rule = inner
+        .next()
+        .ok_or(MissingInput::new("Non Left-Recursive Kind"))?;
     let prim_inner = pair_to_n_inner(prim_rule, vec!["Non Left-Recursive Kind"])?.remove(0);
     let prim_kind = pair_to_prim_kind(prim_inner)?;
 
@@ -17,10 +17,7 @@ pub fn pair_to_kind(p: Pair<'_, Rule>) -> Result<Kind, Error> {
     };
 
     if let Some(n) = inner.next() {
-        return Err(to_parse_err(ErrorKind::RemainingInput(format!(
-            "{:?}",
-            n.as_rule()
-        ))));
+        return Err(RemainingInput::new(&format!("{:?}", n.as_rule())));
     }
 
     Ok(kind)
@@ -33,10 +30,7 @@ fn pair_to_prim_kind(p: Pair<'_, Rule>) -> Result<Kind, Error> {
             let inner_rule = pair_to_n_inner(p, vec!["Kind"])?.remove(0);
             pair_to_kind(inner_rule)
         }
-        _ => Err(to_parse_err(ErrorKind::UnexpectedRule {
-            found: format!("{p:?}"),
-            expected: "Non Left-Recursive Kind".to_string(),
-        })),
+        _ => Err(UnexpectedRule::new(p, "Non Left-Recursive Kind").into()),
     }
 }
 

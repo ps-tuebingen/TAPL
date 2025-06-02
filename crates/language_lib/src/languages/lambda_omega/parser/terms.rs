@@ -1,13 +1,15 @@
-use super::{pair_to_kind, pair_to_n_inner, pair_to_type, to_parse_err, Rule, Term};
-use common::errors::{Error, ErrorKind};
+use super::{
+    pair_to_kind, pair_to_n_inner, pair_to_type, Error, MissingInput, RemainingInput, Rule, Term,
+};
+use common::parse::{UnexpectedRule, UnknownKeyword};
 use pest::iterators::Pair;
 use syntax::terms::{App, False, Lambda, Num, True, TyApp, TyLambda, Unit, Variable};
 
 pub fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
     let mut inner = p.into_inner();
-    let prim_rule = inner.next().ok_or(to_parse_err(ErrorKind::MissingInput(
-        "Non Left-Recursive Term".to_owned(),
-    )))?;
+    let prim_rule = inner
+        .next()
+        .ok_or(MissingInput::new("Non Left-Recursive Term"))?;
     let prim_inner = pair_to_n_inner(prim_rule, vec!["Non Left-Recursive Term"])?.remove(0);
     let prim_term = pair_to_prim_term(prim_inner)?;
 
@@ -20,10 +22,7 @@ pub fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
     };
 
     if let Some(n) = inner.next() {
-        return Err(to_parse_err(ErrorKind::RemainingInput(format!(
-            "{:?}",
-            n.as_rule()
-        ))));
+        return Err(RemainingInput::new(&format!("{:?}", n.as_rule())).into());
     }
 
     Ok(term)
@@ -43,14 +42,11 @@ fn pair_to_prim_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
                 .as_str()
                 .trim()
                 .parse::<i64>()
-                .map_err(|_| to_parse_err(ErrorKind::UnknownKeyword(p.as_str().to_owned())))?;
+                .map_err(|_| UnknownKeyword::new(p.as_str()))?;
             Ok(Num::new(num).into())
         }
         Rule::variable => Ok(Variable::new(p.as_str().trim()).into()),
-        r => Err(to_parse_err(ErrorKind::UnexpectedRule {
-            found: format!("{r:?}"),
-            expected: "Non Left-Recusrive Term".to_owned(),
-        })),
+        r => Err(UnexpectedRule::new(p.as_rule(), "Non Left-Recusrive Term").into()),
     }
 }
 
@@ -61,10 +57,7 @@ fn pair_to_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
             let arg = pair_to_term(p)?;
             Ok(App::new(t, arg).into())
         }
-        r => Err(to_parse_err(ErrorKind::UnexpectedRule {
-            found: format!("{r:?}"),
-            expected: "Application".to_owned(),
-        })),
+        r => Err(UnexpectedRule::new(r, "Application").into()),
     }
 }
 
@@ -73,7 +66,7 @@ fn str_to_term(s: &str) -> Result<Term, Error> {
         "unit" => Ok(Unit::new().into()),
         "true" => Ok(True::new().into()),
         "false" => Ok(False::new().into()),
-        s => Err(to_parse_err(ErrorKind::UnknownKeyword(s.to_owned()))),
+        s => Err(UnknownKeyword::new(s).into()),
     }
 }
 

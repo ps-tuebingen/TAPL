@@ -1,6 +1,8 @@
 use super::{terms::Term, types::Type};
-use common::errors::ErrorKind;
-use eval::values::{Lambda, LambdaSub, Num, Pack, Record, Value as ValueTrait, ValueGroup};
+use eval::{
+    errors::{ValueKind, ValueMismatch},
+    values::{Lambda, LambdaSub, Num, Pack, Record, Value as ValueTrait, ValueGroup},
+};
 use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -12,66 +14,60 @@ pub enum Value {
     Num(Num<Term>),
 }
 
-impl eval::values::Value for Value {
+impl ValueTrait for Value {
     type Term = Term;
+    fn knd(&self) -> ValueKind {
+        match self {
+            Value::Lambda(v) => v.knd(),
+            Value::LambdaSub(v) => v.knd(),
+            Value::Pack(v) => v.knd(),
+            Value::Record(v) => v.knd(),
+            Value::Num(v) => v.knd(),
+        }
+    }
 }
 
 impl ValueGroup for Value {
     type Term = Term;
     type Type = Type;
 
-    fn into_lambda(self) -> Result<Lambda<Term, Type>, ErrorKind> {
+    fn into_lambda(self) -> Result<Lambda<Term, Type>, ValueMismatch> {
         if let Value::Lambda(lam) = self {
             Ok(lam)
         } else {
-            Err(ErrorKind::ValueMismatch {
-                found: self.to_string(),
-                expected: "Lambda Abstraction".to_owned(),
-            })
+            Err(ValueMismatch::new(&self, ValueKind::Lambda))
         }
     }
 
-    fn into_lambdasub(self) -> Result<LambdaSub<Term, Type>, ErrorKind> {
+    fn into_lambdasub(self) -> Result<LambdaSub<Term, Type>, ValueMismatch> {
         if let Value::LambdaSub(lam) = self {
             Ok(lam)
         } else {
-            Err(ErrorKind::ValueMismatch {
-                found: self.to_string(),
-                expected: "Type Abstraction".to_owned(),
-            })
+            Err(ValueMismatch::new(&self, ValueKind::LambdaSub))
         }
     }
 
-    fn into_pack(self) -> Result<Pack<Value, Type>, ErrorKind> {
+    fn into_pack(self) -> Result<Pack<Value, Type>, ValueMismatch> {
         if let Value::Pack(pack) = self {
             Ok(pack)
         } else {
-            Err(ErrorKind::ValueMismatch {
-                found: self.to_string(),
-                expected: "Package".to_owned(),
-            })
+            Err(ValueMismatch::new(&self, ValueKind::Package))
         }
     }
 
-    fn into_record(self) -> Result<Record<Value>, ErrorKind> {
+    fn into_record(self) -> Result<Record<Value>, ValueMismatch> {
         if let Value::Record(rec) = self {
             Ok(rec)
         } else {
-            Err(ErrorKind::ValueMismatch {
-                found: self.to_string(),
-                expected: "Record".to_owned(),
-            })
+            Err(ValueMismatch::new(&self, ValueKind::Record))
         }
     }
 
-    fn into_num(self) -> Result<Num<Term>, ErrorKind> {
+    fn into_num(self) -> Result<Num<Term>, ValueMismatch> {
         if let Value::Num(num) = self {
             Ok(num)
         } else {
-            Err(ErrorKind::ValueMismatch {
-                found: self.to_string(),
-                expected: "Number".to_owned(),
-            })
+            Err(ValueMismatch::new(&self, ValueKind::Number))
         }
     }
 }

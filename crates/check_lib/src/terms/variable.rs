@@ -10,6 +10,6 @@ where
     type Env = <T as Typecheck>::Env;
 
     fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Self::CheckError> {
-        env.get_var(&self.var)
+        env.get_var(&self.var).map_err(|err| err.into())
     }
 }

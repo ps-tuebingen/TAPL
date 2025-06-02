@@ -1,5 +1,5 @@
-use super::{pair_to_kind, pair_to_n_inner, to_parse_err, Rule, Type};
-use common::errors::{Error, ErrorKind};
+use super::{pair_to_kind, pair_to_n_inner, Error, MissingInput, RemainingInput, Rule, Type};
+use common::parse::{UnexpectedRule, UnknownKeyword};
 use pest::iterators::Pair;
 use syntax::{
     kinds::Kind,
@@ -8,9 +8,9 @@ use syntax::{
 
 pub fn pair_to_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
     let mut inner = p.into_inner();
-    let prim_rule = inner.next().ok_or(to_parse_err(ErrorKind::MissingInput(
-        "Non Left-Recursive Type".to_owned(),
-    )))?;
+    let prim_rule = inner
+        .next()
+        .ok_or(MissingInput::new("Non Left-Recursive Type"))?;
     let prim_inner = pair_to_n_inner(prim_rule, vec!["Non Left-Recursive Type"])?.remove(0);
     let prim_ty = pair_to_prim_type(prim_inner)?;
 
@@ -23,10 +23,7 @@ pub fn pair_to_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
     };
 
     if let Some(n) = inner.next() {
-        return Err(to_parse_err(ErrorKind::RemainingInput(format!(
-            "{:?}",
-            n.as_rule()
-        ))));
+        return Err(RemainingInput::new(&format!("{:?}", n.as_rule())).into());
     }
     Ok(ty)
 }
@@ -41,10 +38,7 @@ fn pair_to_prim_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
             pair_to_type(inner)
         }
         Rule::variable => Ok(TypeVariable::new(p.as_str().trim()).into()),
-        r => Err(to_parse_err(ErrorKind::UnexpectedRule {
-            found: format!("{r:?}"),
-            expected: "Non Left-Recursive Type".to_owned(),
-        })),
+        r => Err(UnexpectedRule::new(r, "Non Left-Recursive Type").into()),
     }
 }
 
@@ -55,10 +49,7 @@ fn pair_to_leftrec_ty(p: Pair<'_, Rule>, ty: Type) -> Result<Type, Error> {
             let arg_ty = pair_to_type(p)?;
             Ok(OpApp::new(ty, arg_ty).into())
         }
-        r => Err(to_parse_err(ErrorKind::UnexpectedRule {
-            found: format!("{r:?}"),
-            expected: "Left Recursive Type".to_owned(),
-        })),
+        r => Err(UnexpectedRule::new(r, "Left Recursive Type").into()),
     }
 }
 
@@ -67,7 +58,7 @@ fn str_to_ty(s: &str) -> Result<Type, Error> {
         "unit" => Ok(Unit::new().into()),
         "nat" => Ok(Nat::new().into()),
         "bool" => Ok(Bool::new().into()),
-        s => Err(to_parse_err(ErrorKind::UnknownKeyword(s.to_owned()))),
+        s => Err(UnknownKeyword::new(s).into()),
     }
 }
 

@@ -9,9 +9,10 @@ pub mod untyped;
 pub use env::CheckEnvironment;
 
 pub trait Typecheck {
-    type CheckError: std::error::Error;
+    type CheckError: std::error::Error
+        + From<<<Self as Typecheck>::Env as CheckEnvironment>::CheckError>;
     type Type: Type;
-    type Env: CheckEnvironment<Type = Self::Type, CheckError = <Self as Typecheck>::CheckError>;
+    type Env: CheckEnvironment<Type = Self::Type>;
 
     fn check_start(&self) -> Result<Self::Type, Self::CheckError> {
         self.check(&mut Self::Env::default())
@@ -25,8 +26,9 @@ where
     Self: Type,
     Ty: Type,
 {
-    type Env: CheckEnvironment<Type = Ty, CheckError = <Self as Subtypecheck<Ty>>::CheckError>;
-    type CheckError: std::error::Error;
+    type Env: CheckEnvironment<Type = Ty>;
+    type CheckError: std::error::Error
+        + From<<<Self as Subtypecheck<Ty>>::Env as CheckEnvironment>::CheckError>;
 
     fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Self::CheckError>;
 }
@@ -35,8 +37,9 @@ pub trait Kindcheck<Ty>
 where
     Ty: Type,
 {
-    type Env: CheckEnvironment<Type = Ty, CheckError = <Self as Kindcheck<Ty>>::CheckError>;
-    type CheckError: std::error::Error;
+    type Env: CheckEnvironment<Type = Ty>;
+    type CheckError: std::error::Error
+        + From<<<Self as Kindcheck<Ty>>::Env as CheckEnvironment>::CheckError>;
 
     fn check_kind(&self, env: &mut Self::Env) -> Result<Kind, Self::CheckError>;
 }
