@@ -1,8 +1,5 @@
-use super::terms::Term;
-use common::{
-    errors::{Error, ErrorKind, ErrorLocation},
-    parse::Parse,
-};
+use super::{errors::Error, terms::Term};
+use common::parse::{MissingInput, Parse, RemainingInput, UnexpectedRule, UnknownKeyword};
 use pest::{iterators::Pair, Parser};
 use pest_derive::Parser;
 use syntax::terms::{False, If, IsZero, Num, Pred, Succ, True};
@@ -11,33 +8,21 @@ use syntax::terms::{False, If, IsZero, Num, Pred, Succ, True};
 #[grammar = "languages/typed_arithmetic/typed_arith.pest"]
 struct TypedArithParser;
 
-pub fn to_parse_err<T>(knd: T) -> Error
-where
-    T: Into<ErrorKind>,
-{
-    Error {
-        kind: knd.into(),
-        loc: ErrorLocation::Parse,
-    }
-}
-
 impl Parse for Term {
+    type Rule = Rule;
+    type ParseError = Error;
+
     fn parse(input: String) -> Result<Self, Error> {
         parse(input)
     }
 }
 
 pub fn parse(input: String) -> Result<Term, Error> {
-    let mut parsed = TypedArithParser::parse(Rule::term, &input).map_err(to_parse_err)?;
-    let term_rule = parsed
-        .next()
-        .ok_or(to_parse_err(ErrorKind::MissingInput("Program".to_owned())))?;
+    let mut parsed = TypedArithParser::parse(Rule::term, &input)?;
+    let term_rule = parsed.next().ok_or(MissingInput::new("Program"))?;
     let term_inner = pair_to_n_inner(term_rule, vec!["Term"])?.remove(0);
     if let Some(n) = parsed.next() {
-        return Err(to_parse_err(ErrorKind::RemainingInput(format!(
-            "{:?}",
-            n.as_rule()
-        ))));
+        return Err(RemainingInput::new(&format!("{:?}", n.as_rule())).into());
     }
     pair_to_term(term_inner)
 }
@@ -46,16 +31,11 @@ fn pair_to_n_inner<'a>(p: Pair<'a, Rule>, names: Vec<&str>) -> Result<Vec<Pair<'
     let mut inner = p.into_inner();
     let mut pairs = vec![];
     for name in names {
-        let next = inner
-            .next()
-            .ok_or(to_parse_err(ErrorKind::MissingInput(name.to_owned())))?;
+        let next = inner.next().ok_or(MissingInput::new(name))?;
         pairs.push(next);
     }
     if let Some(n) = inner.next() {
-        return Err(to_parse_err(ErrorKind::RemainingInput(format!(
-            "{:?}",
-            n.as_rule()
-        ))));
+        return Err(RemainingInput::new(&format!("{:?}", n.as_rule())).into());
     }
     Ok(pairs)
 }
@@ -100,12 +80,9 @@ fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
                 .as_str()
                 .trim()
                 .parse::<i64>()
-                .map_err(|_| to_parse_err(ErrorKind::UnknownKeyword(p.as_str().to_owned())))?;
+                .map_err(|_| UnknownKeyword::new(p.as_str()))?;
             Ok(Num::new(num).into())
         }
-        r => Err(to_parse_err(ErrorKind::UnexpectedRule {
-            found: format!("{r:?}"),
-            expected: "Term".to_owned(),
-        })),
+        r => Err(UnexpectedRule::new(r, "Term").into()),
     }
 }

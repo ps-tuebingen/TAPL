@@ -49,7 +49,7 @@ fn pair_to_primtype(p: Pair<'_, Rule>) -> Result<Type, Error> {
         Rule::exists_ty => pair_to_exists(p).map(|ex| ex.into()),
         Rule::record_ty => pair_to_rec_ty(p).map(|rec| rec.into()),
         Rule::variable => Ok(TypeVariable::new(p.as_str().trim()).into()),
-        _ => Err(UnexpectedRule::new(p, "Non Left-Recursive Type").into()),
+        _ => Err(UnexpectedRule::new(p.as_rule(), "Non Left-Recursive Type").into()),
     }
 }
 
@@ -69,7 +69,7 @@ fn pair_to_leftrec_ty(p: Pair<'_, Rule>, ty: Type) -> Result<Type, Error> {
             let arg = pair_to_type(arg_rule)?;
             Ok(OpApp::new(ty, arg).into())
         }
-        _ => Err(UnexpectedRule::new(p, "Left Recursive Type").into()),
+        _ => Err(UnexpectedRule::new(p.as_rule(), "Left Recursive Type").into()),
     }
 }
 

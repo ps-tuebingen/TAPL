@@ -1,5 +1,5 @@
+use super::errors::Error;
 use check::Typecheck;
-use common::errors::Error;
 use std::fmt;
 use syntax::{
     subst::{SubstTerm, SubstType},
@@ -38,6 +38,7 @@ impl SubstType<Untyped> for Term {
 impl Typecheck for Term {
     type Type = Untyped;
     type Env = ();
+    type CheckError = Error;
 
     fn check(&self, _: &mut Self::Env) -> Result<Self::Type, Error> {
         Ok(Untyped)

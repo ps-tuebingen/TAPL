@@ -4,7 +4,7 @@ use common::{
     errors::{
         FreeVariable, KindMismatch, NameMismatch, NotImplemented, TypeMismatch, UndefinedLabel,
     },
-    parse::{MissingInput, RemainingInput, UnexpectedRule},
+    parse::{MissingInput, RemainingInput, UnexpectedRule, UnknownKeyword},
 };
 use eval::errors::ValueMismatch;
 use pest::error::Error as PestErr;
@@ -26,6 +26,7 @@ pub enum Error {
     MissingInput(MissingInput),
     RemainingInput(RemainingInput),
     UnexpectedRule(UnexpectedRule<Rule>),
+    UnknownKeyword(UnknownKeyword),
 }
 
 impl fmt::Display for Error {
@@ -45,6 +46,7 @@ impl fmt::Display for Error {
             Error::MissingInput(mi) => mi.fmt(f),
             Error::RemainingInput(ri) => ri.fmt(f),
             Error::UnexpectedRule(ur) => ur.fmt(f),
+            Error::UnknownKeyword(uk) => uk.fmt(f),
         }
     }
 }
@@ -132,5 +134,11 @@ impl From<RemainingInput> for Error {
 impl From<UnexpectedRule<Rule>> for Error {
     fn from(err: UnexpectedRule<Rule>) -> Error {
         Error::UnexpectedRule(err)
+    }
+}
+
+impl From<UnknownKeyword> for Error {
+    fn from(err: UnknownKeyword) -> Error {
+        Error::UnknownKeyword(err)
     }
 }

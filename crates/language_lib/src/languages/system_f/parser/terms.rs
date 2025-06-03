@@ -1,5 +1,5 @@
-use super::{pair_to_n_inner, pair_to_type, to_parse_err, Rule, Term, Type};
-use common::errors::{Error, ErrorKind};
+use super::{pair_to_n_inner, pair_to_type, Error, MissingInput, RemainingInput, Rule, Term, Type};
+use common::parse::UnexpectedRule;
 use pest::iterators::Pair;
 use syntax::{
     kinds::Kind,
@@ -9,9 +9,9 @@ use syntax::{
 pub fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
     let mut inner = p.into_inner();
 
-    let prim_rule = inner.next().ok_or(to_parse_err(ErrorKind::MissingInput(
-        "Non Left-Recursive Term".to_owned(),
-    )))?;
+    let prim_rule = inner
+        .next()
+        .ok_or(MissingInput::new("Non Left-Recursive Term"))?;
     let prim_inner = pair_to_n_inner(prim_rule, vec!["Non Left-Recursive Term"])?.remove(0);
     let prim_term = pair_to_prim_term(prim_inner)?;
 
@@ -24,10 +24,7 @@ pub fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
     };
 
     if let Some(n) = inner.next() {
-        return Err(to_parse_err(ErrorKind::RemainingInput(format!(
-            "{:?}",
-            n.as_rule()
-        ))));
+        return Err(RemainingInput::new(&format!("{:?}", n.as_rule())).into());
     }
     Ok(term)
 }
@@ -41,10 +38,7 @@ fn pair_to_prim_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
             pair_to_term(term_rule)
         }
         Rule::variable => Ok(Variable::new(p.as_str().trim()).into()),
-        r => Err(to_parse_err(ErrorKind::UnexpectedRule {
-            found: format!("{r:?}"),
-            expected: "Non Left-Recursive Term".to_owned(),
-        })),
+        r => Err(UnexpectedRule::new(r, "Non Left-Recursive Term").into()),
     }
 }
 
@@ -67,10 +61,7 @@ fn pair_to_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
             }
             .into())
         }
-        r => Err(to_parse_err(ErrorKind::UnexpectedRule {
-            found: format!("{r:?}"),
-            expected: "Left Recursive Term".to_owned(),
-        })),
+        r => Err(UnexpectedRule::new(r, "Left Recursive Term").into()),
     }
 }
 

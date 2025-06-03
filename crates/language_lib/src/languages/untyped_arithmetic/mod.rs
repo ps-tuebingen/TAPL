@@ -19,6 +19,7 @@ impl Language for UntypedArithmetic {
     type Value = Value;
     type CheckEnv = ();
     type EvalEnv = ();
+    type LanguageError = Error;
 }
 
 #[cfg(test)]

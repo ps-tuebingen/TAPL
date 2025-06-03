@@ -1,10 +1,10 @@
-use super::{terms::Term, values::Value};
-use common::errors::Error;
+use super::{errors::Error, terms::Term, values::Value};
 use eval::Eval;
 
 impl Eval for Term {
     type Value = Value;
     type Env = ();
+    type EvalError = Error;
 
     fn eval_start(self) -> Result<Self::Value, Error> {
         self.eval(&mut ())

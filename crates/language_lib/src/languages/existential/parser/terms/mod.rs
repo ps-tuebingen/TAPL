@@ -59,7 +59,7 @@ fn pair_to_primterm(p: Pair<'_, Rule>) -> Result<Term, Error> {
             Ok(Num::new(num).into())
         }
         Rule::variable => Ok(Variable::new(p.as_str().trim()).into()),
-        _ => Err(UnexpectedRule::new(p, "Non Left-Recursive Term").into()),
+        _ => Err(UnexpectedRule::new(p.as_rule(), "Non Left-Recursive Term").into()),
     }
 }
 
@@ -80,7 +80,7 @@ fn pair_to_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
             }
             .into())
         }
-        _ => Err(UnexpectedRule::new(p, "Left Recursive Term").into()),
+        _ => Err(UnexpectedRule::new(p.as_rule(), "Left Recursive Term").into()),
     }
 }
 

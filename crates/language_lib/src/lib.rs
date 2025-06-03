@@ -20,11 +20,11 @@ pub trait Language {
         + Eval<
             Env = Self::EvalEnv,
             Value = Self::Value,
-            EvalError = <Self as Language>::LanguageError,
+            EvalError: Into<<Self as Language>::LanguageError>,
         > + Typecheck<
             Type = Self::Type,
             Env = Self::CheckEnv,
-            CheckError = <Self as Language>::LanguageError,
+            CheckError: Into<<Self as Language>::LanguageError>,
         >;
 
     type Type: TypeGroup
@@ -32,9 +32,13 @@ pub trait Language {
         + Subtypecheck<
             Self::Type,
             Env = Self::CheckEnv,
-            CheckError = <Self as Language>::LanguageError,
+            CheckError: Into<<Self as Language>::LanguageError>,
         > + Normalize<Self::Type, Env = Self::CheckEnv>
-        + Kindcheck<Self::Type, Env = Self::CheckEnv, CheckError = <Self as Language>::LanguageError>;
+        + Kindcheck<
+            Self::Type,
+            Env = Self::CheckEnv,
+            CheckError: Into<<Self as Language>::LanguageError>,
+        >;
 
     type Value: ValueGroup<Term = Self::Term, Type = Self::Type>;
 

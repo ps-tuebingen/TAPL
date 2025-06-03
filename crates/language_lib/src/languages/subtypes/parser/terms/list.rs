@@ -1,5 +1,7 @@
-use super::{pair_to_n_inner, pair_to_term, pair_to_type, to_parse_err, Rule, Term, Type};
-use common::errors::{Error, ErrorKind};
+use super::{
+    pair_to_n_inner, pair_to_term, pair_to_type, Error, MissingInput, Rule, Term, Type,
+    UnexpectedRule,
+};
 use pest::iterators::Pair;
 use syntax::{
     terms::{Cons, ListCase, Nil},
@@ -88,12 +90,12 @@ pub fn pair_to_listcase(p: Pair<'_, Rule>) -> Result<ListCase<Term>, Error> {
         ) => Ok(ListCase::new(
             bound_term, nil_rhs, &fst_var, &rst_var, cons_rhs,
         )),
-        (ListPattern::NilPattern { .. }, ListPattern::NilPattern { .. }) => Err(to_parse_err(
-            ErrorKind::MissingInput("Cons Pattern".to_owned()),
-        )),
-        (ListPattern::ConsPattern { .. }, ListPattern::ConsPattern { .. }) => Err(to_parse_err(
-            ErrorKind::MissingInput("Nil Pattern".to_owned()),
-        )),
+        (ListPattern::NilPattern { .. }, ListPattern::NilPattern { .. }) => {
+            Err(MissingInput::new("Cons Pattern").into())
+        }
+        (ListPattern::ConsPattern { .. }, ListPattern::ConsPattern { .. }) => {
+            Err(MissingInput::new("Nil Pattern").into())
+        }
     }
 }
 
@@ -101,10 +103,7 @@ fn pair_to_list_pattern(p: Pair<'_, Rule>) -> Result<ListPattern, Error> {
     match p.as_rule() {
         Rule::nil_pt => pair_to_nil_pattern(p),
         Rule::cons_pt => pair_to_cons_pattern(p),
-        r => Err(to_parse_err(ErrorKind::UnexpectedRule {
-            found: format!("{r:?}"),
-            expected: "Nil or Cons Pattern".to_owned(),
-        })),
+        r => Err(UnexpectedRule::new(r, "Nil or Cons Pattern").into()),
     }
 }
 

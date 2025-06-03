@@ -1,6 +1,8 @@
 use super::{terms::Term, types::Type};
-use common::errors::ErrorKind;
-use eval::values::{Lambda, TyLambda, Value as ValueTrait, ValueGroup};
+use eval::{
+    errors::{ValueKind, ValueMismatch},
+    values::{Lambda, TyLambda, Value as ValueTrait, ValueGroup},
+};
 use std::fmt;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -9,33 +11,33 @@ pub enum Value {
     TyLambda(TyLambda<Term>),
 }
 
-impl eval::values::Value for Value {
+impl ValueTrait for Value {
     type Term = Term;
+    fn knd(&self) -> ValueKind {
+        match self {
+            Value::Lambda(l) => l.knd(),
+            Value::TyLambda(t) => t.knd(),
+        }
+    }
 }
 
 impl ValueGroup for Value {
     type Term = Term;
     type Type = Type;
 
-    fn into_lambda(self) -> Result<Lambda<Term, Type>, ErrorKind> {
+    fn into_lambda(self) -> Result<Lambda<Term, Type>, ValueMismatch> {
         if let Value::Lambda(lam) = self {
             Ok(lam)
         } else {
-            Err(ErrorKind::ValueMismatch {
-                found: self.to_string(),
-                expected: "Lambda Abstraction".to_owned(),
-            })
+            Err(ValueMismatch::new(&self, ValueKind::Lambda))
         }
     }
 
-    fn into_tylambda(self) -> Result<TyLambda<Term>, ErrorKind> {
+    fn into_tylambda(self) -> Result<TyLambda<Term>, ValueMismatch> {
         if let Value::TyLambda(lam) = self {
             Ok(lam)
         } else {
-            Err(ErrorKind::ValueMismatch {
-                found: self.to_string(),
-                expected: "Operator Abstraction".to_owned(),
-            })
+            Err(ValueMismatch::new(&self, ValueKind::TyLambda))
         }
     }
 }

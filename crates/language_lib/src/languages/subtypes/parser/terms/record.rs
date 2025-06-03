@@ -1,8 +1,4 @@
-use super::{pair_to_n_inner, pair_to_term, Rule, Term};
-use common::{
-    errors::{Error, ErrorKind},
-    parse::to_parse_err,
-};
+use super::{pair_to_n_inner, pair_to_term, Error, MissingInput, Rule, Term};
 use pest::iterators::Pair;
 use std::collections::HashMap;
 use syntax::terms::{Record, RecordProj};
@@ -12,9 +8,7 @@ pub fn pair_to_record(p: Pair<'_, Rule>) -> Result<Record<Term>, Error> {
     let mut records = HashMap::new();
     while let Some(next) = inner.next() {
         let var = next.as_str().trim().to_owned();
-        let term_rule = inner.next().ok_or(to_parse_err(ErrorKind::MissingInput(
-            "Record Term".to_owned(),
-        )))?;
+        let term_rule = inner.next().ok_or(MissingInput::new("Record Term"))?;
         let term = pair_to_term(term_rule)?;
         records.insert(var, term);
     }

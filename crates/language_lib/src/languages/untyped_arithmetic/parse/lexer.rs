@@ -1,5 +1,4 @@
-use super::to_parse_err;
-use common::errors::{Error, ErrorKind};
+use super::{Error, MissingInput, RemainingInput};
 use std::fmt;
 
 #[derive(Debug, PartialEq, Eq)]
@@ -41,7 +40,7 @@ impl fmt::Display for Token {
 
 fn remove_n(source: &mut String, n: usize) -> Result<(), Error> {
     if source.len() < n {
-        Err(to_parse_err(ErrorKind::MissingInput(format!("{n} Tokens"))))
+        Err(MissingInput::new(&format!("{n} Tokens")).into())
     } else {
         for _ in 0..n {
             source.remove(0);
@@ -59,7 +58,7 @@ fn remove_whitespace(source: &mut String) {
 
 pub fn lex(source: &mut String) -> Result<Vec<Token>, Error> {
     if source.is_empty() {
-        return Err(to_parse_err(ErrorKind::MissingInput("Program".to_owned())));
+        return Err(MissingInput::new("Program").into());
     }
     *source = source.to_lowercase();
     let mut tokens = vec![];
@@ -71,10 +70,7 @@ pub fn lex(source: &mut String) -> Result<Vec<Token>, Error> {
                     remove_n(source, 3)?;
                     tokens.push(Token::True);
                 } else {
-                    return Err(to_parse_err(ErrorKind::UnexpectedRule {
-                        found: "Token T".to_owned(),
-                        expected: "True".to_owned(),
-                    }));
+                    return Err(MissingInput::new("rue").into());
                 }
             }
             'F' => {
@@ -82,10 +78,7 @@ pub fn lex(source: &mut String) -> Result<Vec<Token>, Error> {
                     remove_n(source, 4)?;
                     tokens.push(Token::False);
                 } else {
-                    return Err(to_parse_err(ErrorKind::UnexpectedRule {
-                        found: "Token F".to_owned(),
-                        expected: "False".to_owned(),
-                    }));
+                    return Err(MissingInput::new("alse").into());
                 }
             }
             'Z' => {
@@ -93,10 +86,7 @@ pub fn lex(source: &mut String) -> Result<Vec<Token>, Error> {
                     remove_n(source, 3)?;
                     tokens.push(Token::Zero);
                 } else {
-                    return Err(to_parse_err(ErrorKind::UnexpectedRule {
-                        found: "Token Z".to_owned(),
-                        expected: "Zero".to_owned(),
-                    }));
+                    return Err(MissingInput::new("ero").into());
                 }
             }
             'S' => {
@@ -104,10 +94,7 @@ pub fn lex(source: &mut String) -> Result<Vec<Token>, Error> {
                     remove_n(source, 3)?;
                     tokens.push(Token::Succ);
                 } else {
-                    return Err(to_parse_err(ErrorKind::UnexpectedRule {
-                        found: "Token S".to_owned(),
-                        expected: "Succ".to_owned(),
-                    }));
+                    return Err(MissingInput::new("ucc").into());
                 }
             }
             'P' => {
@@ -115,10 +102,7 @@ pub fn lex(source: &mut String) -> Result<Vec<Token>, Error> {
                     remove_n(source, 3)?;
                     tokens.push(Token::Pred);
                 } else {
-                    return Err(to_parse_err(ErrorKind::UnexpectedRule {
-                        found: "Token P".to_owned(),
-                        expected: "Pred".to_owned(),
-                    }));
+                    return Err(MissingInput::new("red").into());
                 }
             }
             'I' => {
@@ -129,10 +113,7 @@ pub fn lex(source: &mut String) -> Result<Vec<Token>, Error> {
                     remove_n(source, 5)?;
                     tokens.push(Token::IsZero);
                 } else {
-                    return Err(to_parse_err(ErrorKind::UnexpectedRule {
-                        found: "Token I".to_owned(),
-                        expected: "If or IsZero".to_owned(),
-                    }));
+                    return Err(MissingInput::new("f or szero").into());
                 }
             }
             'E' => {
@@ -140,10 +121,7 @@ pub fn lex(source: &mut String) -> Result<Vec<Token>, Error> {
                     remove_n(source, 3)?;
                     tokens.push(Token::Else);
                 } else {
-                    return Err(to_parse_err(ErrorKind::UnexpectedRule {
-                        found: "Token E".to_owned(),
-                        expected: "Else".to_owned(),
-                    }));
+                    return Err(MissingInput::new("lse").into());
                 }
             }
             '(' => tokens.push(Token::ParenO),
@@ -154,17 +132,12 @@ pub fn lex(source: &mut String) -> Result<Vec<Token>, Error> {
                 let dig = c.to_string().parse::<u8>().unwrap();
                 tokens.push(Token::Digit(dig));
             }
-            _ => {
-                return Err(to_parse_err(ErrorKind::UnexpectedRule {
-                    found: format!("Token {c1}"),
-                    expected: "Term".to_owned(),
-                }))
-            }
+            _ => return Err(RemainingInput::new(&c1.to_string()).into()),
         }
         remove_whitespace(source)
     }
     if tokens.is_empty() {
-        Err(to_parse_err(ErrorKind::MissingInput("Term".to_owned())))
+        Err(MissingInput::new("Term").into())
     } else {
         Ok(tokens)
     }

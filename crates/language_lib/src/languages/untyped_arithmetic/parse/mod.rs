@@ -1,6 +1,7 @@
+use super::errors::Error;
 use common::{
-    errors::{Error, ErrorKind, ErrorLocation},
-    parse::Parse,
+    errors::NotImplemented,
+    parse::{MissingInput, Parse, RemainingInput, UnexpectedRule},
 };
 pub mod lexer;
 
@@ -9,14 +10,10 @@ use lexer::{lex, Token};
 use std::collections::VecDeque;
 use syntax::terms::{False, If, IsZero, Num, Pred, Succ, True};
 
-pub fn to_parse_err(knd: ErrorKind) -> Error {
-    Error {
-        kind: knd,
-        loc: ErrorLocation::Parse,
-    }
-}
-
 impl Parse for Term {
+    type Rule = NotImplemented;
+    type ParseError = Error;
+
     fn parse(input: String) -> Result<Self, Error> {
         parse(input)
     }
@@ -29,13 +26,14 @@ pub fn parse(source: String) -> Result<Term, Error> {
     if tokens.is_empty() {
         Ok(t)
     } else {
-        Err(to_parse_err(ErrorKind::RemainingInput(
-            tokens
+        Err(RemainingInput::new(
+            &tokens
                 .iter()
                 .map(|tok| tok.to_string())
                 .collect::<Vec<String>>()
                 .join(","),
-        )))
+        )
+        .into())
     }
 }
 
@@ -44,13 +42,10 @@ fn consume_token(tokens: &mut VecDeque<Token>, token: Token) -> Result<(), Error
         if tok == token {
             Ok(())
         } else {
-            Err(to_parse_err(ErrorKind::UnexpectedRule {
-                found: format!("Token {tok}"),
-                expected: format!("{token}"),
-            }))
+            Err(UnexpectedRule::new(tok, &format!("{token}")).into())
         }
     } else {
-        Err(to_parse_err(ErrorKind::MissingInput(token.to_string())))
+        Err(MissingInput::new(token).into())
     }
 }
 
@@ -58,7 +53,7 @@ fn parse_term(tokens: &mut VecDeque<Token>) -> Result<Term, Error> {
     let fst = if let Some(tok) = tokens.pop_front() {
         tok
     } else {
-        return Err(to_parse_err(ErrorKind::MissingInput("Term".to_owned())));
+        return Err(MissingInput::new("Term").into());
     };
 
     match fst {
@@ -111,10 +106,7 @@ fn parse_term(tokens: &mut VecDeque<Token>) -> Result<Term, Error> {
             }
             Ok(digits_to_term(digits))
         }
-        _ => Err(to_parse_err(ErrorKind::UnexpectedRule {
-            found: format!("Token {fst}"),
-            expected: "Term".to_owned(),
-        })),
+        _ => Err(UnexpectedRule::new(fst, "Term").into()),
     }
 }
 

@@ -76,7 +76,7 @@ impl TypeGroup for Type {
         if let Type::Record(rec) = self {
             Ok(rec)
         } else {
-            Err(TypeMismatch::new(self.knd(), "Record".to_owned()))
+            Err(TypeMismatch::new(self.knd(), TypeKind::Record))
         }
     }
 }

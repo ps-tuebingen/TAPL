@@ -1,8 +1,8 @@
-use common::errors::ErrorKind;
+use common::errors::{TypeKind, TypeMismatch};
 use std::fmt;
 use syntax::{
     subst::SubstType,
-    types::{Forall, Fun, TypeGroup, TypeVariable},
+    types::{Forall, Fun, Type as TypeTrait, TypeGroup, TypeVariable},
     TypeVar,
 };
 
@@ -13,28 +13,30 @@ pub enum Type {
     Forall(Forall<Type>),
 }
 
-impl syntax::types::Type for Type {}
+impl TypeTrait for Type {
+    fn knd(&self) -> TypeKind {
+        match self {
+            Type::Var(v) => v.knd(),
+            Type::Fun(f) => f.knd(),
+            Type::Forall(f) => f.knd(),
+        }
+    }
+}
 
 impl TypeGroup for Type {
-    fn into_fun(self) -> Result<Fun<Self>, ErrorKind> {
+    fn into_fun(self) -> Result<Fun<Self>, TypeMismatch> {
         if let Type::Fun(fun) = self {
             Ok(fun)
         } else {
-            Err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
-                expected: "Function Type".to_owned(),
-            })
+            Err(TypeMismatch::new(self.knd(), TypeKind::Function))
         }
     }
 
-    fn into_forall(self) -> Result<Forall<Self>, ErrorKind> {
+    fn into_forall(self) -> Result<Forall<Self>, TypeMismatch> {
         if let Type::Forall(forall) = self {
             Ok(forall)
         } else {
-            Err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
-                expected: "Universal Type".to_owned(),
-            })
+            Err(TypeMismatch::new(self.knd(), TypeKind::Universal))
         }
     }
 }

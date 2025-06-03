@@ -46,7 +46,7 @@ impl CheckEnvironment for Env {
         self.ty_vars.insert(v, Top::new(kind).into());
     }
 
-    fn get_loc(&self, loc: &Location) -> Result<Type, Self::CheckError> {
+    fn get_loc(&self, _: &Location) -> Result<Type, Self::CheckError> {
         Err(NotImplemented.into())
     }
 }

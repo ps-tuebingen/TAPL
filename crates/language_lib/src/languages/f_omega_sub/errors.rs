@@ -1,9 +1,12 @@
 use super::{parser::Rule, types::Type};
 use check::errors::{EnvError, FreeTypeVariable, NotASubtype};
 use common::{
-    errors::{KindMismatch, NameMismatch, NotImplemented, TypeMismatch},
+    errors::{
+        FreeVariable, KindMismatch, NameMismatch, NotImplemented, TypeMismatch, UndefinedLabel,
+    },
     parse::{MissingInput, RemainingInput, UnexpectedRule, UnknownKeyword},
 };
+use eval::errors::ValueMismatch;
 use pest::error::Error as PestErr;
 use std::fmt;
 
@@ -21,6 +24,9 @@ pub enum Error {
     RemainingInput(RemainingInput),
     UnexpectedRule(UnexpectedRule<Rule>),
     UnknownKeyword(UnknownKeyword),
+    UndefinedLabel(UndefinedLabel),
+    FreeVariable(FreeVariable),
+    ValueMismatch(ValueMismatch),
 }
 
 impl fmt::Display for Error {
@@ -38,6 +44,9 @@ impl fmt::Display for Error {
             Error::RemainingInput(ri) => ri.fmt(f),
             Error::UnexpectedRule(ur) => ur.fmt(f),
             Error::UnknownKeyword(uk) => uk.fmt(f),
+            Error::UndefinedLabel(ul) => ul.fmt(f),
+            Error::FreeVariable(fv) => fv.fmt(f),
+            Error::ValueMismatch(vm) => vm.fmt(f),
         }
     }
 }
@@ -111,7 +120,25 @@ impl From<UnexpectedRule<Rule>> for Error {
 }
 
 impl From<UnknownKeyword> for Error {
-    fn from(err: UnknownKeyword) {
+    fn from(err: UnknownKeyword) -> Error {
         Error::UnknownKeyword(err)
+    }
+}
+
+impl From<UndefinedLabel> for Error {
+    fn from(err: UndefinedLabel) -> Error {
+        Error::UndefinedLabel(err)
+    }
+}
+
+impl From<FreeVariable> for Error {
+    fn from(err: FreeVariable) -> Error {
+        Error::FreeVariable(err)
+    }
+}
+
+impl From<ValueMismatch> for Error {
+    fn from(err: ValueMismatch) -> Error {
+        Error::ValueMismatch(err)
     }
 }

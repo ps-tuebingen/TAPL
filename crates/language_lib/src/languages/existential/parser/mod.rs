@@ -24,12 +24,12 @@ struct ExistentialParser;
 pub fn parse(input: String) -> Result<Term, Error> {
     let mut parsed = ExistentialParser::parse(Rule::program, &input)?
         .next()
-        .ok_or(MissingInput::new("Program").into())?
+        .ok_or(MissingInput::new("Program"))?
         .into_inner();
-    let term_rule = parsed.next().ok_or(MissingInput::new("Term").into())?;
+    let term_rule = parsed.next().ok_or(MissingInput::new("Term"))?;
     let term = pair_to_term(term_rule)?;
 
-    parsed.next().ok_or(MissingInput::new("EOI").into())?;
+    parsed.next().ok_or(MissingInput::new("EOI"))?;
     if let Some(n) = parsed.next() {
         return Err(RemainingInput::new(&format!("{:?}", n)).into());
     }
@@ -43,7 +43,7 @@ pub fn pair_to_n_inner<'a>(
     let mut inner = p.into_inner();
     let mut pairs = vec![];
     for name in names {
-        let pair = inner.next().ok_or(MissingInput::new(name).into())?;
+        let pair = inner.next().ok_or(MissingInput::new(name))?;
         pairs.push(pair);
     }
     if let Some(n) = inner.next() {

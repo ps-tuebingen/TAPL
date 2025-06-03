@@ -1,8 +1,4 @@
-use super::{pair_to_n_inner, pair_to_term, pair_to_type, Rule, Term, Type};
-use common::{
-    errors::{Error, ErrorKind},
-    parse::to_parse_err,
-};
+use super::{pair_to_n_inner, pair_to_term, pair_to_type, Error, MissingInput, Rule, Term, Type};
 use pest::iterators::Pair;
 use syntax::terms::{variantcase::VariantPattern, Variant, VariantCase};
 
@@ -27,16 +23,12 @@ pub fn pair_to_variant(p: Pair<'_, Rule>) -> Result<Variant<Term, Type>, Error> 
 
 pub fn pair_to_variantcase(p: Pair<'_, Rule>) -> Result<VariantCase<Term>, Error> {
     let mut inner = p.into_inner();
-    inner.next().ok_or(to_parse_err(ErrorKind::MissingInput(
-        "Case Keyword".to_owned(),
-    )))?;
-    let term_rule = inner.next().ok_or(to_parse_err(ErrorKind::MissingInput(
-        "Variant Case Bound Term".to_owned(),
-    )))?;
+    inner.next().ok_or(MissingInput::new("Case Keyword"))?;
+    let term_rule = inner
+        .next()
+        .ok_or(MissingInput::new("Variant Case Bound Term"))?;
     let term = pair_to_term(term_rule)?;
-    inner.next().ok_or(to_parse_err(ErrorKind::MissingInput(
-        "Of Keyword".to_owned(),
-    )))?;
+    inner.next().ok_or(MissingInput::new("Of Keyword"))?;
     let mut patterns = vec![];
     for next in inner {
         let pt = pair_to_variant_pattern(next)?;

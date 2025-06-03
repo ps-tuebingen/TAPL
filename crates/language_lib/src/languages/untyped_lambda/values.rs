@@ -1,6 +1,8 @@
 use super::terms::Term;
-use common::errors::ErrorKind;
-use eval::values::{Lambda, Value as ValueTrait, ValueGroup};
+use eval::{
+    errors::{ValueKind, ValueMismatch},
+    values::{Lambda, Value as ValueTrait, ValueGroup},
+};
 use syntax::untyped::Untyped;
 
 use std::fmt;
@@ -9,15 +11,20 @@ pub enum Value {
     Lambda(Lambda<Term, Untyped>),
 }
 
-impl eval::values::Value for Value {
+impl ValueTrait for Value {
     type Term = Term;
+    fn knd(&self) -> ValueKind {
+        match self {
+            Value::Lambda(l) => l.knd(),
+        }
+    }
 }
 
 impl ValueGroup for Value {
     type Term = Term;
     type Type = Untyped;
 
-    fn into_lambda(self) -> Result<Lambda<Term, Untyped>, ErrorKind> {
+    fn into_lambda(self) -> Result<Lambda<Term, Untyped>, ValueMismatch> {
         match self {
             Value::Lambda(lam) => Ok(lam),
         }

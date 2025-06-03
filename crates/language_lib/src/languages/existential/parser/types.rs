@@ -39,14 +39,14 @@ fn pair_to_prim_ty(p: Pair<'_, Rule>) -> Result<Type, Error> {
         Rule::pack_ty => pair_to_pack_ty(p),
         Rule::record_ty => pair_to_record_ty(p),
         Rule::variable => Ok(TypeVariable::new(p.as_str().trim()).into()),
-        _ => Err(UnexpectedRule::new(p, "Non Left-Recursive Type").into()),
+        _ => Err(UnexpectedRule::new(p.as_rule(), "Non Left-Recursive Type").into()),
     }
 }
 
 fn pair_to_leftrec_ty(p: Pair<'_, Rule>, ty: Type) -> Result<Type, Error> {
     match p.as_rule() {
         Rule::fun_ty => pair_to_fun_ty(p, ty),
-        _ => Err(UnexpectedRule::new(p, "Left Recursive Term").into()),
+        _ => Err(UnexpectedRule::new(p.as_rule(), "Left Recursive Term").into()),
     }
 }
 

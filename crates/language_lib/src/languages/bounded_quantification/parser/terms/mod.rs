@@ -1,4 +1,5 @@
-use super::{pair_to_n_inner, pair_to_type, Error, MissingInput, Rule, Term, Type};
+use super::{pair_to_n_inner, pair_to_type, Error, MissingInput, RemainingInput, Rule, Term, Type};
+use common::parse::{UnexpectedRule, UnknownKeyword};
 use pest::iterators::Pair;
 use syntax::terms::{App, Num, Variable};
 
@@ -30,7 +31,7 @@ pub fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
     };
 
     if let Some(n) = inner.next() {
-        return Err(to_parse_err(ErrorKind::RemainingInput(format!("{n:?}"))));
+        return Err(RemainingInput::new(&format!("{n:?}")).into());
     }
     Ok(term)
 }
@@ -54,15 +55,11 @@ fn pair_to_prim_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
                 .as_str()
                 .trim()
                 .parse::<i64>()
-                .map_err(|_| ErrorKind::UnknownKeyword(p.as_str().to_owned()))
-                .map_err(to_parse_err)?;
+                .map_err(|_| UnknownKeyword::new(p.as_str()))?;
             Ok(Num::new(num).into())
         }
         Rule::variable => Ok(Variable::new(p.as_str().trim()).into()),
-        r => Err(to_parse_err(ErrorKind::UnexpectedRule {
-            found: format!("{r:?}"),
-            expected: "Non Left-Recursive Term".to_owned(),
-        })),
+        r => Err(UnexpectedRule::new(r, "Non Left-Recursive Term").into()),
     }
 }
 
@@ -82,9 +79,6 @@ fn pair_to_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
             }
             .into())
         }
-        r => Err(to_parse_err(ErrorKind::UnexpectedRule {
-            found: format!("{r:?}"),
-            expected: "Type or Term Application".to_owned(),
-        })),
+        r => Err(UnexpectedRule::new(r, "Type or Term Application").into()),
     }
 }

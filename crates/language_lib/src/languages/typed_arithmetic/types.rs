@@ -1,8 +1,8 @@
-use common::errors::ErrorKind;
+use common::errors::{TypeKind, TypeMismatch};
 use std::fmt;
 use syntax::{
     subst::SubstType,
-    types::{Bool, Nat, TypeGroup},
+    types::{Bool, Nat, Type as TypeTrait, TypeGroup},
     TypeVar,
 };
 
@@ -12,28 +12,29 @@ pub enum Type {
     Bool(Bool<Type>),
 }
 
-impl syntax::types::Type for Type {}
+impl TypeTrait for Type {
+    fn knd(&self) -> TypeKind {
+        match self {
+            Type::Nat(n) => n.knd(),
+            Type::Bool(b) => b.knd(),
+        }
+    }
+}
 
 impl TypeGroup for Type {
-    fn into_nat(self) -> Result<Nat<Type>, ErrorKind> {
+    fn into_nat(self) -> Result<Nat<Type>, TypeMismatch> {
         if let Type::Nat(nat) = self {
             Ok(nat)
         } else {
-            Err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
-                expected: "Nat".to_owned(),
-            })
+            Err(TypeMismatch::new(self.knd(), TypeKind::Nat))
         }
     }
 
-    fn into_bool(self) -> Result<Bool<Type>, ErrorKind> {
+    fn into_bool(self) -> Result<Bool<Type>, TypeMismatch> {
         if let Type::Bool(b) = self {
             Ok(b)
         } else {
-            Err(ErrorKind::TypeMismatch {
-                found: self.to_string(),
-                expected: "Bool".to_owned(),
-            })
+            Err(TypeMismatch::new(self.knd(), TypeKind::Bool))
         }
     }
 }

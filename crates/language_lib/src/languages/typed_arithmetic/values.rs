@@ -1,6 +1,8 @@
 use super::{terms::Term, types::Type};
-use common::errors::ErrorKind;
-use eval::values::{False, Num, True, Value as ValueTrait, ValueGroup};
+use eval::{
+    errors::{ValueKind, ValueMismatch},
+    values::{False, Num, True, Value as ValueTrait, ValueGroup},
+};
 use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -10,42 +12,41 @@ pub enum Value {
     Num(Num<Term>),
 }
 
-impl eval::values::Value for Value {
+impl ValueTrait for Value {
     type Term = Term;
+
+    fn knd(&self) -> ValueKind {
+        match self {
+            Value::True(t) => t.knd(),
+            Value::False(f) => f.knd(),
+            Value::Num(n) => n.knd(),
+        }
+    }
 }
 
 impl ValueGroup for Value {
     type Term = Term;
     type Type = Type;
 
-    fn into_true(self) -> Result<True<Term>, ErrorKind> {
+    fn into_true(self) -> Result<True<Term>, ValueMismatch> {
         if let Value::True(tru) = self {
             Ok(tru)
         } else {
-            Err(ErrorKind::ValueMismatch {
-                found: self.to_string(),
-                expected: "True".to_owned(),
-            })
+            Err(ValueMismatch::new(&self, ValueKind::True))
         }
     }
-    fn into_false(self) -> Result<False<Term>, ErrorKind> {
+    fn into_false(self) -> Result<False<Term>, ValueMismatch> {
         if let Value::False(fls) = self {
             Ok(fls)
         } else {
-            Err(ErrorKind::ValueMismatch {
-                found: self.to_string(),
-                expected: "False".to_owned(),
-            })
+            Err(ValueMismatch::new(&self, ValueKind::False))
         }
     }
-    fn into_num(self) -> Result<Num<Term>, ErrorKind> {
+    fn into_num(self) -> Result<Num<Term>, ValueMismatch> {
         if let Value::Num(num) = self {
             Ok(num)
         } else {
-            Err(ErrorKind::ValueMismatch {
-                found: self.to_string(),
-                expected: "Number".to_owned(),
-            })
+            Err(ValueMismatch::new(&self, ValueKind::Number))
         }
     }
 }
