@@ -2,6 +2,7 @@ use super::{kinds::Kind, types::Type, Location, TypeVar, Var};
 use common::errors::{FreeTypeVariable, FreeVariable, UndefinedLocation};
 use std::collections::HashMap;
 
+#[derive(Clone)]
 pub struct Environment<Ty>
 where
     Ty: Type,

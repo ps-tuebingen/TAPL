@@ -1,6 +1,7 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use common::errors::{KindMismatch, TypeMismatch, UndefinedLabel};
 use syntax::{
+    env::Environment,
     terms::{Term, Variant},
     types::{TypeGroup, Variant as VariantTy},
 };
@@ -8,17 +9,20 @@ use syntax::{
 impl<T, Ty> Typecheck for Variant<T, Ty>
 where
     T: Term + Typecheck<Type = Ty>,
-    Ty: TypeGroup
-        + Normalize<Ty, Env = <T as Typecheck>::Env>
-        + Kindcheck<Ty, Env = <T as Typecheck>::Env, CheckError = <T as Typecheck>::CheckError>,
+    Ty: TypeGroup + Normalize<Ty> + Kindcheck<Ty>,
     VariantTy<Ty>: Into<Ty>,
-    <T as Typecheck>::CheckError: From<UndefinedLabel> + From<TypeMismatch> + From<KindMismatch>,
+    <T as Typecheck>::CheckError: From<UndefinedLabel>
+        + From<TypeMismatch>
+        + From<KindMismatch>
+        + From<<Ty as Kindcheck<Ty>>::CheckError>,
 {
-    type Env = <T as Typecheck>::Env;
     type Type = <T as Typecheck>::Type;
     type CheckError = <T as Typecheck>::CheckError;
 
-    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Self::CheckError> {
+    fn check(
+        &self,
+        env: &mut Environment<<T as Typecheck>::Type>,
+    ) -> Result<Self::Type, Self::CheckError> {
         let ty_norm = self.ty.clone().normalize(&mut env.clone());
         let term_ty = self
             .term

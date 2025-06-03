@@ -2,18 +2,18 @@ use crate::{Kindcheck, Normalize, Subtypecheck};
 use common::errors::{KindMismatch, TypeMismatch, UndefinedLabel};
 use std::collections::HashMap;
 use syntax::{
+    env::Environment,
     kinds::Kind,
     types::{Record, Type, TypeGroup},
 };
 impl<Ty> Subtypecheck<Ty> for Record<Ty>
 where
-    Ty: TypeGroup + Subtypecheck<Ty> + Normalize<Ty, Env = <Ty as Subtypecheck<Ty>>::Env>,
+    Ty: TypeGroup + Subtypecheck<Ty> + Normalize<Ty>,
     <Ty as Subtypecheck<Ty>>::CheckError: From<TypeMismatch> + From<UndefinedLabel>,
 {
-    type Env = <Ty as Subtypecheck<Ty>>::Env;
     type CheckError = <Ty as Subtypecheck<Ty>>::CheckError;
 
-    fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Self::CheckError> {
+    fn check_subtype(&self, sup: &Ty, env: &mut Environment<Ty>) -> Result<(), Self::CheckError> {
         if sup.clone().into_top().is_ok() {
             return Ok(());
         }
@@ -33,10 +33,9 @@ where
     Ty: Type + Kindcheck<Ty>,
     <Ty as Kindcheck<Ty>>::CheckError: From<KindMismatch>,
 {
-    type Env = <Ty as Kindcheck<Ty>>::Env;
     type CheckError = <Ty as Kindcheck<Ty>>::CheckError;
 
-    fn check_kind(&self, env: &mut Self::Env) -> Result<Kind, Self::CheckError> {
+    fn check_kind(&self, env: &mut Environment<Ty>) -> Result<Kind, Self::CheckError> {
         for (_, t) in self.records.iter() {
             t.check_kind(&mut env.clone())?.into_star()?;
         }
@@ -49,8 +48,7 @@ where
     Ty: Type + Normalize<Ty>,
     Self: Into<Ty>,
 {
-    type Env = <Ty as Normalize<Ty>>::Env;
-    fn normalize(self, env: &mut Self::Env) -> Ty {
+    fn normalize(self, env: &mut Environment<Ty>) -> Ty {
         let mut recs_norm = HashMap::new();
         for (lb, ty) in self.records {
             let ty_norm = ty.normalize(env);

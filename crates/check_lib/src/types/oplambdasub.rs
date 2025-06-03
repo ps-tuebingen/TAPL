@@ -1,23 +1,20 @@
-use crate::{env::CheckEnvironment, Kindcheck, Normalize, Subtypecheck};
+use crate::{Kindcheck, Normalize, Subtypecheck};
 use common::errors::{KindMismatch, TypeMismatch};
 use syntax::{
+    env::Environment,
     kinds::Kind,
     subst::SubstType,
     types::{OpLambdaSub, Type, TypeGroup, TypeVariable},
 };
 impl<Ty> Subtypecheck<Ty> for OpLambdaSub<Ty>
 where
-    Ty: TypeGroup
-        + Subtypecheck<Ty>
-        + Normalize<Ty, Env = <Ty as Subtypecheck<Ty>>::Env>
-        + SubstType<Ty, Target = Ty>,
+    Ty: TypeGroup + Subtypecheck<Ty> + Normalize<Ty> + SubstType<Ty, Target = Ty>,
     <Ty as Subtypecheck<Ty>>::CheckError: From<KindMismatch> + From<TypeMismatch>,
     TypeVariable<Ty>: Into<Ty>,
 {
-    type Env = <Ty as Subtypecheck<Ty>>::Env;
     type CheckError = <Ty as Subtypecheck<Ty>>::CheckError;
 
-    fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Self::CheckError> {
+    fn check_subtype(&self, sup: &Ty, env: &mut Environment<Ty>) -> Result<(), Self::CheckError> {
         let sup_norm = sup.clone().normalize(env);
         let self_sup_norm = self.sup.clone().normalize(env);
         let sup_op = sup_norm.into_oplambdasub()?;
@@ -37,10 +34,9 @@ impl<Ty> Kindcheck<Ty> for OpLambdaSub<Ty>
 where
     Ty: Type + Kindcheck<Ty>,
 {
-    type Env = <Ty as Kindcheck<Ty>>::Env;
     type CheckError = <Ty as Kindcheck<Ty>>::CheckError;
 
-    fn check_kind(&self, env: &mut Self::Env) -> Result<Kind, Self::CheckError> {
+    fn check_kind(&self, env: &mut Environment<Ty>) -> Result<Kind, Self::CheckError> {
         let sup_kind = self.sup.check_kind(env)?;
         env.add_tyvar_kind(self.var.clone(), sup_kind.clone());
         let body_kind = self.body.check_kind(env)?;
@@ -53,8 +49,7 @@ where
     Ty: Type + Normalize<Ty>,
     Self: Into<Ty>,
 {
-    type Env = <Ty as Normalize<Ty>>::Env;
-    fn normalize(self, env: &mut Self::Env) -> Ty {
+    fn normalize(self, env: &mut Environment<Ty>) -> Ty {
         let body_norm = self.body.normalize(env);
         OpLambdaSub {
             var: self.var,

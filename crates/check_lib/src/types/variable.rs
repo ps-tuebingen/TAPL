@@ -1,20 +1,18 @@
-use crate::{env::CheckEnvironment, Kindcheck, Normalize, Subtypecheck};
-use common::errors::TypeMismatch;
+use crate::{Kindcheck, Normalize, Subtypecheck};
+use common::errors::{FreeTypeVariable, TypeMismatch};
 use syntax::{
+    env::Environment,
     kinds::Kind,
     types::{TypeGroup, TypeVariable},
 };
 impl<Ty> Subtypecheck<Ty> for TypeVariable<Ty>
 where
-    Ty: TypeGroup + Subtypecheck<Ty> + Normalize<Ty, Env = <Ty as Subtypecheck<Ty>>::Env>,
-    <Ty as Subtypecheck<Ty>>::CheckError: From<TypeMismatch>,
-    <Ty as Subtypecheck<Ty>>::Env:
-        CheckEnvironment<CheckError = <Ty as Subtypecheck<Ty>>::CheckError>,
+    Ty: TypeGroup + Subtypecheck<Ty> + Normalize<Ty>,
+    <Ty as Subtypecheck<Ty>>::CheckError: From<TypeMismatch> + From<FreeTypeVariable>,
 {
-    type Env = <Ty as Subtypecheck<Ty>>::Env;
     type CheckError = <Ty as Subtypecheck<Ty>>::CheckError;
 
-    fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Self::CheckError> {
+    fn check_subtype(&self, sup: &Ty, env: &mut Environment<Ty>) -> Result<(), Self::CheckError> {
         let ty_super = env.get_tyvar_super(&self.v)?;
         let sup_norm = sup.clone().normalize(env);
 
@@ -35,11 +33,11 @@ where
 impl<Ty> Kindcheck<Ty> for TypeVariable<Ty>
 where
     Ty: TypeGroup + Kindcheck<Ty>,
+    <Ty as Kindcheck<Ty>>::CheckError: From<FreeTypeVariable>,
 {
-    type Env = <Ty as Kindcheck<Ty>>::Env;
     type CheckError = <Ty as Kindcheck<Ty>>::CheckError;
 
-    fn check_kind(&self, env: &mut Self::Env) -> Result<Kind, Self::CheckError> {
+    fn check_kind(&self, env: &mut Environment<Ty>) -> Result<Kind, Self::CheckError> {
         env.get_tyvar_kind(&self.v).map_err(|err| err.into())
     }
 }
@@ -49,8 +47,7 @@ where
     Ty: TypeGroup + Normalize<Ty>,
     Self: Into<Ty>,
 {
-    type Env = <Ty as Normalize<Ty>>::Env;
-    fn normalize(self, env: &mut Self::Env) -> Ty {
+    fn normalize(self, env: &mut Environment<Ty>) -> Ty {
         env.get_tyvar_super(&self.v).unwrap_or(self.into())
     }
 }

@@ -1,6 +1,7 @@
-use crate::{CheckEnvironment, Kindcheck, Normalize, Typecheck};
+use crate::{Kindcheck, Normalize, Typecheck};
 use common::errors::{KindMismatch, TypeMismatch};
 use syntax::{
+    env::Environment,
     kinds::Kind,
     subst::SubstType,
     terms::{Fold, Term},
@@ -10,18 +11,18 @@ use syntax::{
 impl<T, Ty> Typecheck for Fold<T, Ty>
 where
     T: Term + Typecheck<Type = Ty>,
-    Ty: TypeGroup
-        + Normalize<Ty, Env = <T as Typecheck>::Env>
-        + Kindcheck<Ty, Env = <T as Typecheck>::Env, CheckError = <T as Typecheck>::CheckError>
-        + SubstType<Ty, Target = Ty>,
+    Ty: TypeGroup + Normalize<Ty> + Kindcheck<Ty> + SubstType<Ty, Target = Ty>,
     Mu<Ty>: Into<Ty>,
-    <T as Typecheck>::CheckError: From<TypeMismatch> + From<KindMismatch>,
+    <T as Typecheck>::CheckError:
+        From<TypeMismatch> + From<KindMismatch> + From<<Ty as Kindcheck<Ty>>::CheckError>,
 {
-    type Env = <T as Typecheck>::Env;
     type Type = <T as Typecheck>::Type;
     type CheckError = <T as Typecheck>::CheckError;
 
-    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Self::CheckError> {
+    fn check(
+        &self,
+        env: &mut Environment<<T as Typecheck>::Type>,
+    ) -> Result<Self::Type, Self::CheckError> {
         let mu_ty = self.ty.clone().normalize(&mut env.clone()).into_mu()?;
         env.add_tyvar_kind(mu_ty.var.clone(), Kind::Star);
         mu_ty.ty.check_kind(&mut env.clone())?.into_star()?;

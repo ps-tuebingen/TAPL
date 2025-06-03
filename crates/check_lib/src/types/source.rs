@@ -1,15 +1,17 @@
 use crate::Subtypecheck;
 use common::errors::TypeMismatch;
-use syntax::types::{Source, TypeGroup};
+use syntax::{
+    env::Environment,
+    types::{Source, TypeGroup},
+};
 impl<Ty> Subtypecheck<Ty> for Source<Ty>
 where
     Ty: TypeGroup + Subtypecheck<Ty>,
     <Ty as Subtypecheck<Ty>>::CheckError: From<TypeMismatch>,
 {
-    type Env = <Ty as Subtypecheck<Ty>>::Env;
     type CheckError = <Ty as Subtypecheck<Ty>>::CheckError;
 
-    fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Self::CheckError> {
+    fn check_subtype(&self, sup: &Ty, env: &mut Environment<Ty>) -> Result<(), Self::CheckError> {
         if sup.clone().into_top().is_ok() {
             return Ok(());
         }

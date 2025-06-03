@@ -1,6 +1,7 @@
-use crate::{CheckEnvironment, Kindcheck, Normalize, Typecheck};
+use crate::{Kindcheck, Normalize, Typecheck};
 use common::errors::{NameMismatch, TypeKind, TypeMismatch};
 use syntax::{
+    env::Environment,
     terms::{Term, Unpack},
     types::TypeGroup,
 };
@@ -8,16 +9,17 @@ use syntax::{
 impl<T, Ty> Typecheck for Unpack<T, Ty>
 where
     T: Term + Typecheck<Type = Ty>,
-    Ty: TypeGroup
-        + Normalize<<T as Typecheck>::Type, Env = <T as Typecheck>::Env>
-        + Kindcheck<Ty, Env = <T as Typecheck>::Env, CheckError = <T as Typecheck>::CheckError>,
-    <T as Typecheck>::CheckError: From<TypeMismatch> + From<NameMismatch>,
+    Ty: TypeGroup + Normalize<<T as Typecheck>::Type> + Kindcheck<Ty>,
+    <T as Typecheck>::CheckError:
+        From<TypeMismatch> + From<NameMismatch> + From<<Ty as Kindcheck<Ty>>::CheckError>,
 {
     type Type = <T as Typecheck>::Type;
     type CheckError = <T as Typecheck>::CheckError;
-    type Env = <T as Typecheck>::Env;
 
-    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Self::CheckError> {
+    fn check(
+        &self,
+        env: &mut Environment<<T as Typecheck>::Type>,
+    ) -> Result<Self::Type, Self::CheckError> {
         let bound_ty = self
             .bound_term
             .check(&mut env.clone())?

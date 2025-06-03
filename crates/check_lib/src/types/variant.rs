@@ -1,6 +1,9 @@
 use crate::Subtypecheck;
 use common::errors::{TypeMismatch, UndefinedLabel};
-use syntax::types::{TypeGroup, Variant};
+use syntax::{
+    env::Environment,
+    types::{TypeGroup, Variant},
+};
 
 impl<Ty> Subtypecheck<Ty> for Variant<Ty>
 where
@@ -8,10 +11,9 @@ where
     <Ty as Subtypecheck<Ty>>::CheckError: From<TypeMismatch>,
     <Ty as Subtypecheck<Ty>>::CheckError: From<UndefinedLabel>,
 {
-    type Env = <Ty as Subtypecheck<Ty>>::Env;
     type CheckError = <Ty as Subtypecheck<Ty>>::CheckError;
 
-    fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Self::CheckError> {
+    fn check_subtype(&self, sup: &Ty, env: &mut Environment<Ty>) -> Result<(), Self::CheckError> {
         if sup.clone().into_top().is_ok() {
             return Ok(());
         }

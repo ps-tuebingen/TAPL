@@ -1,6 +1,7 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use common::errors::{KindMismatch, TypeMismatch};
 use syntax::{
+    env::Environment,
     terms::{Ascribe, Term},
     types::TypeGroup,
 };
@@ -8,15 +9,17 @@ use syntax::{
 impl<T, Ty> Typecheck for Ascribe<T, Ty>
 where
     T: Term + Typecheck<Type = Ty>,
-    Ty: TypeGroup
-        + Normalize<Ty, Env = <T as Typecheck>::Env>
-        + Kindcheck<Ty, Env = <T as Typecheck>::Env, CheckError = <T as Typecheck>::CheckError>,
-    <T as Typecheck>::CheckError: From<TypeMismatch> + From<KindMismatch>,
+    Ty: TypeGroup + Normalize<Ty> + Kindcheck<Ty>,
+    <T as Typecheck>::CheckError:
+        From<TypeMismatch> + From<KindMismatch> + From<<Ty as Kindcheck<Ty>>::CheckError>,
 {
     type Type = <T as Typecheck>::Type;
     type CheckError = <T as Typecheck>::CheckError;
-    type Env = <T as Typecheck>::Env;
-    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Self::CheckError> {
+
+    fn check(
+        &self,
+        env: &mut Environment<<T as Typecheck>::Type>,
+    ) -> Result<Self::Type, Self::CheckError> {
         let t_ty = self
             .term
             .check(&mut env.clone())?

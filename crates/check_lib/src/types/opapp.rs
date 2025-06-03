@@ -1,6 +1,7 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
 use common::errors::{KindMismatch, TypeMismatch};
 use syntax::{
+    env::Environment,
     kinds::Kind,
     subst::SubstType,
     types::{OpApp, TypeGroup},
@@ -12,9 +13,8 @@ where
     <Ty as Subtypecheck<Ty>>::CheckError: From<TypeMismatch>,
     Self: Into<Ty>,
 {
-    type Env = <Ty as Subtypecheck<Ty>>::Env;
     type CheckError = <Ty as Subtypecheck<Ty>>::CheckError;
-    fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Self::CheckError> {
+    fn check_subtype(&self, sup: &Ty, env: &mut Environment<Ty>) -> Result<(), Self::CheckError> {
         if sup.clone().into_top().is_ok() {
             return Ok(());
         }
@@ -29,10 +29,9 @@ where
     Ty: TypeGroup + Kindcheck<Ty>,
     <Ty as Kindcheck<Ty>>::CheckError: From<KindMismatch>,
 {
-    type Env = <Ty as Kindcheck<Ty>>::Env;
     type CheckError = <Ty as Kindcheck<Ty>>::CheckError;
 
-    fn check_kind(&self, env: &mut Self::Env) -> Result<Kind, Self::CheckError> {
+    fn check_kind(&self, env: &mut Environment<Ty>) -> Result<Kind, Self::CheckError> {
         let fun_kind = self.fun.check_kind(&mut env.clone())?;
         let (fun_from, fun_to) = fun_kind.into_arrow()?;
         let arg_kind = self.arg.check_kind(env)?;
@@ -49,8 +48,7 @@ where
     Ty: TypeGroup + Normalize<Ty> + SubstType<Ty, Target = Ty>,
     Self: Into<Ty>,
 {
-    type Env = <Ty as Normalize<Ty>>::Env;
-    fn normalize(self, env: &mut Self::Env) -> Ty {
+    fn normalize(self, env: &mut Environment<Ty>) -> Ty {
         let fun_norm = self.fun.normalize(env);
         if let Ok(oplam) = fun_norm.clone().into_oplambda() {
             oplam.body.subst_type(&oplam.var, &self.arg).normalize(env)

@@ -1,5 +1,6 @@
 use crate::{Normalize, Typecheck};
 use syntax::{
+    env::Environment,
     terms::{False, Term},
     types::{Bool, Type},
 };
@@ -12,9 +13,11 @@ where
 {
     type Type = <T as Typecheck>::Type;
     type CheckError = <T as Typecheck>::CheckError;
-    type Env = <T as Typecheck>::Env;
 
-    fn check(&self, _: &mut Self::Env) -> Result<Self::Type, Self::CheckError> {
+    fn check(
+        &self,
+        _: &mut Environment<<T as Typecheck>::Type>,
+    ) -> Result<Self::Type, Self::CheckError> {
         Ok(Bool::new().into())
     }
 }

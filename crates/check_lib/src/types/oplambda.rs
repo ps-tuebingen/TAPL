@@ -1,6 +1,7 @@
-use crate::{env::CheckEnvironment, Kindcheck, Normalize, Subtypecheck};
+use crate::{Kindcheck, Normalize, Subtypecheck};
 use common::errors::{KindMismatch, TypeMismatch};
 use syntax::{
+    env::Environment,
     kinds::Kind,
     subst::SubstType,
     types::{OpLambda, Type, TypeGroup, TypeVariable},
@@ -11,10 +12,9 @@ where
     TypeVariable<Ty>: Into<Ty>,
     <Ty as Subtypecheck<Ty>>::CheckError: From<TypeMismatch> + From<KindMismatch>,
 {
-    type Env = <Ty as Subtypecheck<Ty>>::Env;
     type CheckError = <Ty as Subtypecheck<Ty>>::CheckError;
 
-    fn check_subtype(&self, sup: &Ty, env: &mut Self::Env) -> Result<(), Self::CheckError> {
+    fn check_subtype(&self, sup: &Ty, env: &mut Environment<Ty>) -> Result<(), Self::CheckError> {
         if sup.clone().into_top().is_ok() {
             return Ok(());
         }
@@ -36,10 +36,9 @@ impl<Ty> Kindcheck<Ty> for OpLambda<Ty>
 where
     Ty: Type + Kindcheck<Ty>,
 {
-    type Env = <Ty as Kindcheck<Ty>>::Env;
     type CheckError = <Ty as Kindcheck<Ty>>::CheckError;
 
-    fn check_kind(&self, env: &mut Self::Env) -> Result<Kind, Self::CheckError> {
+    fn check_kind(&self, env: &mut Environment<Ty>) -> Result<Kind, Self::CheckError> {
         env.add_tyvar_kind(self.var.clone(), self.annot.clone());
         let body_kind = self.body.check_kind(env)?;
         Ok(Kind::Arrow(
@@ -54,8 +53,7 @@ where
     Ty: Type + Normalize<Ty>,
     Self: Into<Ty>,
 {
-    type Env = <Ty as Normalize<Ty>>::Env;
-    fn normalize(self, env: &mut Self::Env) -> Ty {
+    fn normalize(self, env: &mut Environment<Ty>) -> Ty {
         let body_norm = self.body.normalize(env);
         OpLambda {
             var: self.var,

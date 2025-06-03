@@ -1,6 +1,7 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use common::errors::{KindMismatch, TypeMismatch};
 use syntax::{
+    env::Environment,
     terms::{Nil, Term},
     types::{List, Type},
 };
@@ -8,17 +9,18 @@ use syntax::{
 impl<T, Ty> Typecheck for Nil<T, Ty>
 where
     T: Term + Typecheck<Type = Ty>,
-    Ty: Type
-        + Normalize<Ty, Env = <T as Typecheck>::Env>
-        + Kindcheck<Ty, Env = <T as Typecheck>::Env, CheckError = <T as Typecheck>::CheckError>,
+    Ty: Type + Normalize<Ty> + Kindcheck<Ty>,
     List<<T as Typecheck>::Type>: Into<<T as Typecheck>::Type>,
-    <T as Typecheck>::CheckError: From<TypeMismatch> + From<KindMismatch>,
+    <T as Typecheck>::CheckError:
+        From<TypeMismatch> + From<KindMismatch> + From<<Ty as Kindcheck<Ty>>::CheckError>,
 {
-    type Env = <T as Typecheck>::Env;
     type Type = <T as Typecheck>::Type;
     type CheckError = <T as Typecheck>::CheckError;
 
-    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Self::CheckError> {
+    fn check(
+        &self,
+        env: &mut Environment<<T as Typecheck>::Type>,
+    ) -> Result<Self::Type, Self::CheckError> {
         let ty_norm = self.ty.clone().normalize(&mut env.clone());
         ty_norm.check_kind(env)?.into_star()?;
         Ok(List::new(ty_norm.clone()).into())

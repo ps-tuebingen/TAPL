@@ -1,6 +1,7 @@
-use crate::{CheckEnvironment, Kindcheck, Normalize, Typecheck};
+use crate::{Kindcheck, Normalize, Typecheck};
 use common::errors::{KindMismatch, TypeMismatch};
 use syntax::{
+    env::Environment,
     terms::{ListCase, Term},
     types::TypeGroup,
 };
@@ -9,19 +10,17 @@ impl<T> Typecheck for ListCase<T>
 where
     T: Term + Typecheck,
     <T as Typecheck>::Type: TypeGroup
-        + Normalize<<T as Typecheck>::Type, Env = <T as Typecheck>::Env>
-        + Kindcheck<
-            <T as Typecheck>::Type,
-            Env = <T as Typecheck>::Env,
-            CheckError = <T as Typecheck>::CheckError,
-        >,
+        + Normalize<<T as Typecheck>::Type>
+        + Kindcheck<<T as Typecheck>::Type, CheckError = <T as Typecheck>::CheckError>,
     <T as Typecheck>::CheckError: From<TypeMismatch> + From<KindMismatch>,
 {
-    type Env = <T as Typecheck>::Env;
     type Type = <T as Typecheck>::Type;
     type CheckError = <T as Typecheck>::CheckError;
 
-    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Self::CheckError> {
+    fn check(
+        &self,
+        env: &mut Environment<<T as Typecheck>::Type>,
+    ) -> Result<Self::Type, Self::CheckError> {
         let bound_ty = self
             .bound_term
             .check(&mut env.clone())?
