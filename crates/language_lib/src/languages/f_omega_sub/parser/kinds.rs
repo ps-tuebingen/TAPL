@@ -17,7 +17,7 @@ pub fn pair_to_kind(p: Pair<'_, Rule>) -> Result<Kind, Error> {
     };
 
     if let Some(n) = inner.next() {
-        return Err(RemainingInput::new(&format!("{:?}", n.as_rule())));
+        return Err(RemainingInput::new(&format!("{:?}", n.as_rule())).into());
     }
 
     Ok(kind)
@@ -30,7 +30,7 @@ fn pair_to_prim_kind(p: Pair<'_, Rule>) -> Result<Kind, Error> {
             let inner_rule = pair_to_n_inner(p, vec!["Kind"])?.remove(0);
             pair_to_kind(inner_rule)
         }
-        _ => Err(UnexpectedRule::new(p, "Non Left-Recursive Kind").into()),
+        _ => Err(UnexpectedRule::new(p.as_rule(), "Non Left-Recursive Kind").into()),
     }
 }
 

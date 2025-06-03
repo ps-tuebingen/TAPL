@@ -49,5 +49,4 @@ mod term_tests {
         let expected = NumVal::new(0).into();
         assert_eq!(result, expected)
     }
-    type LanguageError = Error;
 }

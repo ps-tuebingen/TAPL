@@ -32,7 +32,7 @@ pub fn parse(input: String) -> Result<Term, Error> {
     let term = pair_to_term(term_rule)?;
     parsed.next().ok_or(MissingInput::new("EOI"))?;
     if let Some(n) = parsed.next() {
-        return Err(RemainingInput::new(&format!("{:?}", n.as_rule())));
+        return Err(RemainingInput::new(&format!("{:?}", n.as_rule())).into());
     }
 
     Ok(term)
@@ -49,7 +49,7 @@ pub fn pair_to_n_inner<'a>(
         pairs.push(next);
     }
     if let Some(n) = inner.next() {
-        return Err(RemainingInput::new(&format!("{:?}", n.as_rule())));
+        return Err(RemainingInput::new(&format!("{:?}", n.as_rule())).into());
     }
 
     Ok(pairs)

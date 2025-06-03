@@ -44,14 +44,14 @@ impl TypeGroup for Type {
         if let Type::Unit(u) = self {
             Ok(u)
         } else {
-            Err(TypeMismatch::new(&self.knd(), TypeKind::Unit))
+            Err(TypeMismatch::new(self.knd(), TypeKind::Unit))
         }
     }
     fn into_fun(self) -> Result<Fun<Self>, TypeMismatch> {
         if let Type::Fun(fun) = self {
             Ok(fun)
         } else {
-            Err(TypeMismatch::new(&self.knd(), TypeKind::Function))
+            Err(TypeMismatch::new(self.knd(), TypeKind::Function))
         }
     }
 
@@ -59,7 +59,7 @@ impl TypeGroup for Type {
         if let Type::Mu(mu) = self {
             Ok(mu)
         } else {
-            Err(TypeMismatch::new(&self.knd(), TypeKind::Mu))
+            Err(TypeMismatch::new(self.knd(), TypeKind::Mu))
         }
     }
 
@@ -67,7 +67,7 @@ impl TypeGroup for Type {
         if let Type::Variant(var) = self {
             Ok(var)
         } else {
-            Err(TypeMismatch::new(&self.knd(), TypeKind::Variant))
+            Err(TypeMismatch::new(self.knd(), TypeKind::Variant))
         }
     }
 
@@ -75,7 +75,7 @@ impl TypeGroup for Type {
         if let Type::Product(prod) = self {
             Ok(prod)
         } else {
-            Err(TypeMismatch::new(&self.knd(), TypeKind::Product))
+            Err(TypeMismatch::new(self.knd(), TypeKind::Product))
         }
     }
 
@@ -83,7 +83,7 @@ impl TypeGroup for Type {
         if let Type::Nat(nat) = self {
             Ok(nat)
         } else {
-            Err(TypeMismatch::new(&self.knd(), TypeKind::Nat))
+            Err(TypeMismatch::new(self.knd(), TypeKind::Nat))
         }
     }
 
@@ -91,7 +91,7 @@ impl TypeGroup for Type {
         if let Type::Bool(b) = self {
             Ok(b)
         } else {
-            Err(TypeMismatch::new(&self.knd(), TypeKind::Bool))
+            Err(TypeMismatch::new(self.knd(), TypeKind::Bool))
         }
     }
 
@@ -99,7 +99,7 @@ impl TypeGroup for Type {
         if let Type::Record(rec) = self {
             Ok(rec)
         } else {
-            Err(TypeMismatch::new(&self.knd(), TypeKind::Record))
+            Err(TypeMismatch::new(self.knd(), TypeKind::Record))
         }
     }
 }

@@ -46,7 +46,7 @@ fn pair_to_prim_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
             Ok(Num::new(num).into())
         }
         Rule::variable => Ok(Variable::new(p.as_str().trim()).into()),
-        r => Err(UnexpectedRule::new(p.as_rule(), "Non Left-Recusrive Term").into()),
+        r => Err(UnexpectedRule::new(r, "Non Left-Recusrive Term").into()),
     }
 }
 

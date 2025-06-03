@@ -33,13 +33,13 @@ impl CheckEnvironment for Env {
         self.vars.get_var(var).map_err(|err| err.into())
     }
 
-    fn get_tyvar_super(&self, v: &TypeVar) -> Result<Self::Type, Self::CheckError> {
+    fn get_tyvar_super(&self, _: &TypeVar) -> Result<Self::Type, Self::CheckError> {
         Err(NotImplemented.into())
     }
 
     fn add_tyvar_super(&mut self, _: TypeVar, _: Self::Type) {}
 
-    fn get_loc(&self, loc: &Location) -> Result<Self::Type, Self::CheckError> {
+    fn get_loc(&self, _: &Location) -> Result<Self::Type, Self::CheckError> {
         Err(NotImplemented.into())
     }
 }

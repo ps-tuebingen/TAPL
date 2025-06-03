@@ -45,7 +45,7 @@ fn consume_token(tokens: &mut VecDeque<Token>, token: Token) -> Result<(), Error
             Err(UnexpectedRule::new(tok, &format!("{token}")).into())
         }
     } else {
-        Err(MissingInput::new(token).into())
+        Err(MissingInput::new(&token.to_string()).into())
     }
 }
 

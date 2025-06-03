@@ -31,12 +31,12 @@ impl CheckEnvironment for Environment {
     fn add_var(&mut self, v: Var, ty: Type) {
         self.env.add_var(v, ty)
     }
-    fn get_tyvar_kind(&self, v: &TypeVar) -> Result<Kind, Self::CheckError> {
+    fn get_tyvar_kind(&self, _: &TypeVar) -> Result<Kind, Self::CheckError> {
         Err(NotImplemented.into())
     }
     fn add_tyvar_kind(&mut self, _: TypeVar, _: Kind) {}
 
-    fn get_tyvar_super(&self, v: &TypeVar) -> Result<Self::Type, Self::CheckError> {
+    fn get_tyvar_super(&self, _: &TypeVar) -> Result<Self::Type, Self::CheckError> {
         Err(NotImplemented.into())
     }
 

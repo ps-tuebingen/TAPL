@@ -81,6 +81,7 @@ impl Subtypecheck<Type> for Type {
 
     fn check_subtype(&self, sup: &Self, env: &mut Self::Env) -> Result<(), Error> {
         match self {
+            Type::Top(top) => top.check_subtype(sup, env),
             Type::Bot(bot) => bot.check_subtype(sup, env),
             Type::Fun(fun) => fun.check_subtype(sup, env),
             Type::Record(rec) => rec.check_subtype(sup, env),

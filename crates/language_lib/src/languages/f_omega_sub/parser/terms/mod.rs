@@ -36,7 +36,7 @@ pub fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
     };
 
     if let Some(n) = inner.next() {
-        return Err(RemainingInput::new(&format!("{n:?}")));
+        return Err(RemainingInput::new(&format!("{n:?}")).into());
     }
 
     Ok(term)
@@ -67,7 +67,7 @@ fn pair_to_primterm(p: Pair<'_, Rule>) -> Result<Term, Error> {
                 .map_err(|_| UnknownKeyword::new(p.as_str()))?;
             Ok(Num::new(num).into())
         }
-        _ => Err(UnexpectedRule::new(p, "Non Left-Recursive Term").into()),
+        _ => Err(UnexpectedRule::new(p.as_rule(), "Non Left-Recursive Term").into()),
     }
 }
 
@@ -87,7 +87,7 @@ fn pair_to_leftrec_term(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
             }
             .into())
         }
-        _ => Err(UnexpectedRule::new(p, "Left Recursive Term").into()),
+        _ => Err(UnexpectedRule::new(p.as_rule(), "Left Recursive Term").into()),
     }
 }
 

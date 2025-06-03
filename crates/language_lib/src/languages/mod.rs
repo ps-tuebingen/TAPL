@@ -101,11 +101,11 @@ where
         };
         let checked = match <<T as Language>::Term as Typecheck>::check_start(&parsed) {
             Ok(ty) => ty,
-            Err(err) => return RunResult::check_fail(parsed, err),
+            Err(err) => return RunResult::check_fail(parsed, err.into()),
         };
         let evaled = match <<T as Language>::Term as Eval>::eval_start(parsed.clone()) {
             Ok(v) => v,
-            Err(err) => return RunResult::eval_fail(parsed, checked, err),
+            Err(err) => return RunResult::eval_fail(parsed, checked, err.into()),
         };
         RunResult::success(parsed, checked, evaled)
     }

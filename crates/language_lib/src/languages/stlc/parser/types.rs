@@ -99,6 +99,6 @@ fn str_to_ty(s: &str) -> Result<Type, Error> {
         "bool" => Ok(Bool::new().into()),
         "nat" => Ok(Nat::new().into()),
         "unit" => Ok(Unit::new().into()),
-        _ => Err(UnknownKeyword::new(s)),
+        _ => Err(UnknownKeyword::new(s).into()),
     }
 }

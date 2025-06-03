@@ -32,7 +32,7 @@ fn str_to_type(s: &str) -> Result<Type, Error> {
         "nat" => Ok(Nat::new().into()),
         "unit" => Ok(Unit::new().into()),
         "bool" => Ok(Bool::new().into()),
-        s => Err(UnknownKeyword::new(s)).into(),
+        s => Err(UnknownKeyword::new(s).into()),
     }
 }
 
