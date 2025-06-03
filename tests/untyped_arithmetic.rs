@@ -1,6 +1,6 @@
-use common::errors::Error;
 use language::languages::untyped_arithmetic::terms::Term;
 use std::path::PathBuf;
+use test_utils::errors::Error;
 use test_utils::{
     eval_test::EvalTest,
     load_tests::{load_dir, TestContents},

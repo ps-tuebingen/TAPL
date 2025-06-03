@@ -1,6 +1,6 @@
-use common::errors::Error;
 use language::languages::subtypes::terms::Term;
 use std::path::PathBuf;
+use test_utils::errors::Error;
 use test_utils::{
     check_test::CheckTest,
     load_tests::{load_dir, TestContents},

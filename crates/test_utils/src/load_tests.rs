@@ -1,5 +1,4 @@
-use super::to_test_err;
-use common::errors::{Error, ErrorKind};
+use super::errors::Error;
 use std::{
     fs::{read_dir, read_to_string},
     path::PathBuf,
@@ -16,30 +15,20 @@ where
     Conf: for<'a> serde::Deserialize<'a>,
 {
     let mut tests = vec![];
-    for entry in read_dir(dir).map_err(|err| {
-        to_test_err(ErrorKind::DirAccess {
-            tried: format!("Read {dir:?}"),
-            msg: err.to_string(),
-        })
-    })? {
-        let entry = entry.map_err(|err| {
-            to_test_err(ErrorKind::DirAccess {
-                tried: format!("Read {dir:?}"),
-                msg: err.to_string(),
-            })
-        })?;
+    for entry in read_dir(dir).map_err(|err| Error::dir_access(&format!("read {dir:?}"), err))? {
+        let entry = entry.map_err(|err| Error::dir_access(&format!("read {dir:?}"), err))?;
         let path = entry.path();
         let stem = path
             .file_stem()
-            .ok_or(to_test_err(ErrorKind::DirAccess {
-                tried: format!("Get file stem of {path:?}"),
-                msg: "Got None".to_owned(),
-            }))?
+            .ok_or(Error::file_access(
+                &format!("get file stem of {path:?}"),
+                "Got None",
+            ))?
             .to_str()
-            .ok_or(to_test_err(ErrorKind::DirAccess {
-                tried: format!("Get file stem as str of {path:?}"),
-                msg: "Got None".to_owned(),
-            }))?
+            .ok_or(Error::file_access(
+                &format!("get file stem of {path:?} as string"),
+                "Got None",
+            ))?
             .to_owned();
 
         let mut source_file = path.join(stem.clone());
@@ -47,25 +36,13 @@ where
 
         let mut config_file = source_file.clone();
         config_file.set_extension("toml");
-        let config_contents = read_to_string(&config_file).map_err(|err| {
-            to_test_err(ErrorKind::DirAccess {
-                tried: format!("Read file {config_file:?}"),
-                msg: err.to_string(),
-            })
-        })?;
-        let config = basic_toml::from_str(&config_contents).map_err(|err| {
-            to_test_err(ErrorKind::Toml {
-                source: config_contents,
-                msg: err.to_string(),
-            })
-        })?;
+        let config_contents = read_to_string(&config_file)
+            .map_err(|err| Error::file_access(&format!("Read File {config_file:?}"), err))?;
+        let config = basic_toml::from_str(&config_contents)
+            .map_err(|err| Error::toml(&config_contents, err))?;
 
-        let contents = read_to_string(&source_file).map_err(|err| {
-            to_test_err(ErrorKind::DirAccess {
-                tried: format!("Read file {source_file:?}"),
-                msg: err.to_string(),
-            })
-        })?;
+        let contents = read_to_string(&source_file)
+            .map_err(|err| Error::file_access(&format!("read file {source_file:?}"), err))?;
 
         tests.push(TestContents {
             source_name: stem,

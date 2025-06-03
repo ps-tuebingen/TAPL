@@ -1,4 +1,4 @@
-use common::errors::Error;
+use super::errors::Error;
 use std::fmt;
 
 pub enum TestResult {

@@ -1,3 +1,4 @@
+pub mod errors;
 pub mod load_tests;
 pub mod paths;
 pub mod testsuite;
@@ -7,31 +8,15 @@ pub mod eval_test;
 pub mod parse_test;
 pub mod reparse_test;
 
-use common::errors::{Error, ErrorKind, ErrorLocation};
-use std::env::{current_dir, set_current_dir};
+use errors::Error;
 
-pub fn to_test_err(knd: ErrorKind) -> Error {
-    Error {
-        kind: knd,
-        loc: ErrorLocation::Testing,
-    }
-}
+use std::env::{current_dir, set_current_dir};
 
 pub fn setup() -> Result<(), Error> {
     println!("{:?}", current_dir().unwrap());
     let dir = current_dir()
-        .map_err(|err| {
-            to_test_err(ErrorKind::DirAccess {
-                tried: "Get Current Dir".to_owned(),
-                msg: err.to_string(),
-            })
-        })?
+        .map_err(|err| Error::dir_access("get current dir", err))?
         .join("..");
-    set_current_dir(dir).map_err(|err| {
-        to_test_err(ErrorKind::DirAccess {
-            tried: "Set Current Dir".to_owned(),
-            msg: err.to_string(),
-        })
-    })?;
+    set_current_dir(dir).map_err(|err| Error::dir_access("set current dir", err))?;
     Ok(())
 }
