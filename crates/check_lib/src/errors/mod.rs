@@ -1,12 +1,10 @@
-use common::errors::{FreeVariable, NotImplemented, UndefinedLocation};
+use common::errors::{FreeTypeVariable, FreeVariable, NotImplemented, UndefinedLocation};
 use std::fmt;
 
 pub mod empty_case;
-pub mod free_type_variable;
 pub mod not_a_subtype;
 
 pub use empty_case::EmptyCase;
-pub use free_type_variable::FreeTypeVariable;
 pub use not_a_subtype::NotASubtype;
 
 #[derive(Debug)]
@@ -45,5 +43,11 @@ impl From<FreeVariable> for EnvError {
 impl From<UndefinedLocation> for EnvError {
     fn from(ul: UndefinedLocation) -> EnvError {
         EnvError::UndefinedLocation(ul)
+    }
+}
+
+impl From<FreeTypeVariable> for EnvError {
+    fn from(ftv: FreeTypeVariable) -> EnvError {
+        EnvError::FreeTypeVariable(ftv)
     }
 }

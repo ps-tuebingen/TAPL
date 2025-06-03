@@ -1,0 +1,8 @@
+[package]
+name = "derivation"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+pest={version="2.7.15"}
+syntax={path="../syntax_lib"}

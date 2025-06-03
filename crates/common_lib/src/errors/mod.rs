@@ -1,3 +1,4 @@
+pub mod free_type_variable;
 pub mod free_variable;
 pub mod index_out_of_bounds;
 pub mod kind_mismatch;
@@ -8,6 +9,7 @@ pub mod type_mismatch;
 pub mod undefined_label;
 pub mod undefined_location;
 
+pub use free_type_variable::FreeTypeVariable;
 pub use free_variable::FreeVariable;
 pub use index_out_of_bounds::IndexOutOfBounds;
 pub use kind_mismatch::KindMismatch;

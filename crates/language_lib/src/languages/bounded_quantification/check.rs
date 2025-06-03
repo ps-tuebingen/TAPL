@@ -1,6 +1,6 @@
 use super::{errors::Error, terms::Term, types::Type};
-use check::{env::CheckEnvironment, errors::FreeTypeVariable, Kindcheck, Subtypecheck, Typecheck};
-use common::errors::NotImplemented;
+use check::{env::CheckEnvironment, Kindcheck, Subtypecheck, Typecheck};
+use common::errors::{FreeTypeVariable, NotImplemented};
 use std::collections::HashMap;
 use syntax::{kinds::Kind, Location, TypeVar, Var};
 
