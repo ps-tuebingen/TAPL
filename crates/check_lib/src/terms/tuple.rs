@@ -1,4 +1,4 @@
-use crate::{Kindcheck, Normalize, Typecheck};
+use crate::{CheckResult, Kindcheck, Normalize, Typecheck};
 use common::errors::{KindMismatch, TypeMismatch};
 use syntax::{
     env::Environment,
@@ -15,12 +15,13 @@ where
     TupleTy<<T as Typecheck>::Type>: Into<<T as Typecheck>::Type>,
 {
     type Type = <T as Typecheck>::Type;
+    type Term = T;
     type CheckError = <T as Typecheck>::CheckError;
 
     fn check(
         &self,
         env: &mut Environment<<T as Typecheck>::Type>,
-    ) -> Result<Self::Type, Self::CheckError> {
+    ) -> Result<CheckResult<Self::Term, Self::Type>, Self::CheckError> {
         let mut tys: Vec<Self::Type> = vec![];
         let mut knd = None;
         for t in self.terms.iter() {

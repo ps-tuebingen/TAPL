@@ -1,4 +1,4 @@
-use crate::Typecheck;
+use crate::{CheckResult, Typecheck};
 use syntax::{
     env::Environment,
     terms::{Term, Unit},
@@ -11,12 +11,13 @@ where
     UnitTy<<T as Typecheck>::Type>: Into<<T as Typecheck>::Type>,
 {
     type Type = <T as Typecheck>::Type;
+    type Term = T;
     type CheckError = <T as Typecheck>::CheckError;
 
     fn check(
         &self,
         _: &mut Environment<<T as Typecheck>::Type>,
-    ) -> Result<Self::Type, Self::CheckError> {
+    ) -> Result<CheckResult<Self::Term, Self::Type>, Self::CheckError> {
         Ok(UnitTy::new().into())
     }
 }

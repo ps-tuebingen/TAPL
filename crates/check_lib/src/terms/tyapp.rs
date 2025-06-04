@@ -1,4 +1,4 @@
-use crate::{Kindcheck, Normalize, Subtypecheck, Typecheck};
+use crate::{CheckResult, Kindcheck, Normalize, Subtypecheck, Typecheck};
 use common::errors::{KindMismatch, TypeKind, TypeMismatch};
 use syntax::{
     env::Environment,
@@ -17,12 +17,13 @@ where
         + From<<Ty as Subtypecheck<Ty>>::CheckError>,
 {
     type Type = <T as Typecheck>::Type;
+    type Term = T;
     type CheckError = <T as Typecheck>::CheckError;
 
     fn check(
         &self,
         env: &mut Environment<<T as Typecheck>::Type>,
-    ) -> Result<Self::Type, Self::CheckError> {
+    ) -> Result<CheckResult<Self::Term, Self::Type>, Self::CheckError> {
         let fun_ty = self
             .fun
             .check(&mut env.clone())?

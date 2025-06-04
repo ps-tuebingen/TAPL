@@ -1,4 +1,4 @@
-use crate::Typecheck;
+use crate::{CheckResult, Typecheck};
 use common::errors::FreeVariable;
 use syntax::{
     env::Environment,
@@ -11,12 +11,13 @@ where
     <T as Typecheck>::CheckError: From<FreeVariable>,
 {
     type Type = <T as Typecheck>::Type;
+    type Term = T;
     type CheckError = <T as Typecheck>::CheckError;
 
     fn check(
         &self,
         env: &mut Environment<<T as Typecheck>::Type>,
-    ) -> Result<Self::Type, Self::CheckError> {
+    ) -> Result<CheckResult<Self::Term, Self::Type>, Self::CheckError> {
         env.get_var(&self.var).map_err(|err| err.into())
     }
 }

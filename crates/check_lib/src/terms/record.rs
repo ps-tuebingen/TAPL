@@ -1,4 +1,4 @@
-use crate::{Kindcheck, Normalize, Typecheck};
+use crate::{CheckResult, Kindcheck, Normalize, Typecheck};
 use common::errors::{KindMismatch, TypeMismatch};
 use std::collections::HashMap;
 use syntax::{
@@ -16,12 +16,13 @@ where
     RecordTy<<T as Typecheck>::Type>: Into<<T as Typecheck>::Type>,
 {
     type Type = <T as Typecheck>::Type;
+    type Term = T;
     type CheckError = <T as Typecheck>::CheckError;
 
     fn check(
         &self,
         env: &mut Environment<<T as Typecheck>::Type>,
-    ) -> Result<Self::Type, Self::CheckError> {
+    ) -> Result<CheckResult<Self::Term, Self::Type>, Self::CheckError> {
         let mut recs = HashMap::new();
         let mut rec_knd = None;
         for (lb, t) in self.records.iter() {

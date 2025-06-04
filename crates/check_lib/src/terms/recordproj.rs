@@ -1,4 +1,4 @@
-use crate::{Kindcheck, Normalize, Typecheck};
+use crate::{CheckResult, Kindcheck, Normalize, Typecheck};
 use common::errors::{FreeTypeVariable, TypeMismatch, UndefinedLabel};
 use syntax::{
     env::Environment,
@@ -16,12 +16,13 @@ where
         From<UndefinedLabel> + From<TypeMismatch> + From<FreeTypeVariable>,
 {
     type Type = <T as Typecheck>::Type;
+    type Term = T;
     type CheckError = <T as Typecheck>::CheckError;
 
     fn check(
         &self,
         env: &mut Environment<<T as Typecheck>::Type>,
-    ) -> Result<Self::Type, Self::CheckError> {
+    ) -> Result<CheckResult<Self::Term, Self::Type>, Self::CheckError> {
         let term_ty = self
             .record
             .check(&mut env.clone())?
