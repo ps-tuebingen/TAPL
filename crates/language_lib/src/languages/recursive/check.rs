@@ -1,14 +1,12 @@
 use super::{errors::Error, terms::Term, types::Type};
 use check::{Kindcheck, Subtypecheck, Typecheck};
-use std::collections::HashMap;
-use syntax::{kinds::Kind, Var};
+use syntax::{env::Environment, kinds::Kind};
 
 impl Typecheck for Term {
     type Type = Type;
-    type Env = HashMap<Var, Type>;
     type CheckError = Error;
 
-    fn check(&self, env: &mut Self::Env) -> Result<Self::Type, Error> {
+    fn check(&self, env: &mut Environment<Type>) -> Result<Self::Type, Error> {
         match self {
             Term::Var(v) => v.check(env),
             Term::Lambda(lam) => lam.check(env),
@@ -37,19 +35,17 @@ impl Typecheck for Term {
 }
 
 impl Subtypecheck<Type> for Type {
-    type Env = HashMap<Var, Type>;
     type CheckError = Error;
 
-    fn check_subtype(&self, _: &Self, _: &mut Self::Env) -> Result<(), Error> {
+    fn check_subtype(&self, _: &Self, _: &mut Environment<Type>) -> Result<(), Error> {
         Ok(())
     }
 }
 
 impl Kindcheck<Type> for Type {
-    type Env = HashMap<Var, Type>;
     type CheckError = Error;
 
-    fn check_kind(&self, _: &mut Self::Env) -> Result<Kind, Error> {
+    fn check_kind(&self, _: &mut Environment<Type>) -> Result<Kind, Error> {
         Ok(Kind::Star)
     }
 }

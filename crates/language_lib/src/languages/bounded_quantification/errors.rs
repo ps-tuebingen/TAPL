@@ -1,5 +1,5 @@
 use super::{parser::Rule, types::Type};
-use check::errors::{EnvError, NotASubtype};
+use check::errors::NotASubtype;
 use common::{
     errors::{
         FreeTypeVariable, FreeVariable, KindMismatch, NameMismatch, NotImplemented, TypeMismatch,
@@ -13,7 +13,6 @@ use std::fmt;
 
 #[derive(Debug)]
 pub enum Error {
-    Environment(EnvError),
     FreeTypeVariable(FreeTypeVariable),
     NotImplemented(NotImplemented),
     TypeMismatch(TypeMismatch),
@@ -33,7 +32,6 @@ pub enum Error {
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Error::Environment(e) => e.fmt(f),
             Error::FreeTypeVariable(fv) => fv.fmt(f),
             Error::NotImplemented(ni) => ni.fmt(f),
             Error::TypeMismatch(tm) => tm.fmt(f),
@@ -53,12 +51,6 @@ impl fmt::Display for Error {
 }
 
 impl std::error::Error for Error {}
-
-impl From<EnvError> for Error {
-    fn from(err: EnvError) -> Error {
-        Error::Environment(err)
-    }
-}
 
 impl From<FreeTypeVariable> for Error {
     fn from(err: FreeTypeVariable) -> Error {

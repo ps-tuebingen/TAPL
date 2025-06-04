@@ -1,4 +1,4 @@
-use check::{env::CheckEnvironment, Kindcheck, Normalize, Subtypecheck, Typecheck};
+use check::{Kindcheck, Normalize, Subtypecheck, Typecheck};
 use common::parse::Parse;
 use eval::{env::EvalEnvironment, values::ValueGroup, Eval};
 use syntax::{
@@ -21,30 +21,17 @@ pub trait Language {
             Env = Self::EvalEnv,
             Value = Self::Value,
             EvalError: Into<<Self as Language>::LanguageError>,
-        > + Typecheck<
-            Type = Self::Type,
-            Env = Self::CheckEnv,
-            CheckError: Into<<Self as Language>::LanguageError>,
-        >;
+        > + Typecheck<Type = Self::Type, CheckError: Into<<Self as Language>::LanguageError>>;
 
     type Type: TypeGroup
         + SubstType<Self::Type, Target = Self::Type>
-        + Subtypecheck<
-            Self::Type,
-            Env = Self::CheckEnv,
-            CheckError: Into<<Self as Language>::LanguageError>,
-        > + Normalize<Self::Type, Env = Self::CheckEnv>
-        + Kindcheck<
-            Self::Type,
-            Env = Self::CheckEnv,
-            CheckError: Into<<Self as Language>::LanguageError>,
-        >;
+        + Subtypecheck<Self::Type, CheckError: Into<<Self as Language>::LanguageError>>
+        + Normalize<Self::Type>
+        + Kindcheck<Self::Type, CheckError: Into<<Self as Language>::LanguageError>>;
 
     type Value: ValueGroup<Term = Self::Term, Type = Self::Type>;
 
     type LanguageError: std::error::Error;
-
-    type CheckEnv: CheckEnvironment<Type = Self::Type>;
 
     type EvalEnv: EvalEnvironment<Self::Value>;
 }

@@ -1,9 +1,9 @@
 use super::parser::Rule;
-use check::errors::{EmptyCase, EnvError};
+use check::errors::EmptyCase;
 use common::{
     errors::{
-        FreeVariable, IndexOutOfBounds, KindMismatch, NameMismatch, NotImplemented, TypeMismatch,
-        UndefinedLabel,
+        FreeTypeVariable, FreeVariable, IndexOutOfBounds, KindMismatch, NameMismatch,
+        NotImplemented, TypeMismatch, UndefinedLabel,
     },
     parse::{MissingInput, RemainingInput, UnexpectedRule, UnknownKeyword},
 };
@@ -13,7 +13,6 @@ use std::fmt;
 
 #[derive(Debug)]
 pub enum Error {
-    Environment(EnvError),
     TypeMismatch(TypeMismatch),
     KindMismatch(KindMismatch),
     IndexOutOfBounds(IndexOutOfBounds),
@@ -28,6 +27,7 @@ pub enum Error {
     UnexpectedRule(UnexpectedRule<Rule>),
     UnknownKeyword(UnknownKeyword),
     NameMismatch(NameMismatch),
+    FreeTypeVariable(FreeTypeVariable),
 }
 
 impl fmt::Display for Error {
@@ -35,7 +35,6 @@ impl fmt::Display for Error {
         match self {
             Error::TypeMismatch(tm) => tm.fmt(f),
             Error::KindMismatch(km) => km.fmt(f),
-            Error::Environment(env) => env.fmt(f),
             Error::IndexOutOfBounds(ib) => ib.fmt(f),
             Error::UndefinedLabel(ul) => ul.fmt(f),
             Error::EmptyCase(ec) => ec.fmt(f),
@@ -48,6 +47,7 @@ impl fmt::Display for Error {
             Error::UnexpectedRule(ur) => ur.fmt(f),
             Error::UnknownKeyword(uk) => uk.fmt(f),
             Error::NameMismatch(nm) => nm.fmt(f),
+            Error::FreeTypeVariable(fv) => fv.fmt(f),
         }
     }
 }
@@ -63,12 +63,6 @@ impl From<TypeMismatch> for Error {
 impl From<KindMismatch> for Error {
     fn from(err: KindMismatch) -> Error {
         Error::KindMismatch(err)
-    }
-}
-
-impl From<EnvError> for Error {
-    fn from(err: EnvError) -> Error {
-        Error::Environment(err)
     }
 }
 
@@ -141,5 +135,11 @@ impl From<UnknownKeyword> for Error {
 impl From<NameMismatch> for Error {
     fn from(err: NameMismatch) -> Error {
         Error::NameMismatch(err)
+    }
+}
+
+impl From<FreeTypeVariable> for Error {
+    fn from(err: FreeTypeVariable) -> Error {
+        Error::FreeTypeVariable(err)
     }
 }

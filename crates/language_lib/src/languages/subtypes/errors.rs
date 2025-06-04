@@ -1,9 +1,10 @@
 use super::parser::Rule;
 use super::types::Type;
-use check::errors::{EmptyCase, EnvError, NotASubtype};
+use check::errors::{EmptyCase, NotASubtype};
 use common::{
     errors::{
-        FreeVariable, KindMismatch, NotImplemented, TypeMismatch, UndefinedLabel, UndefinedLocation,
+        FreeTypeVariable, FreeVariable, KindMismatch, NotImplemented, TypeMismatch, UndefinedLabel,
+        UndefinedLocation,
     },
     parse::{MissingInput, RemainingInput, UnexpectedRule, UnknownKeyword},
 };
@@ -13,7 +14,6 @@ use std::fmt;
 
 #[derive(Debug)]
 pub enum Error {
-    Environment(EnvError),
     UndefinedLocation(UndefinedLocation),
     NotImplemented(NotImplemented),
     TypeMismatch(TypeMismatch),
@@ -28,12 +28,12 @@ pub enum Error {
     RemainingInput(RemainingInput),
     UnknownKeyword(UnknownKeyword),
     UnexpectedRule(UnexpectedRule<Rule>),
+    FreeTypeVariable(FreeTypeVariable),
 }
 
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Error::Environment(env) => env.fmt(f),
             Error::UndefinedLocation(loc) => loc.fmt(f),
             Error::NotImplemented(ni) => ni.fmt(f),
             Error::TypeMismatch(tm) => tm.fmt(f),
@@ -48,17 +48,12 @@ impl fmt::Display for Error {
             Error::RemainingInput(ri) => ri.fmt(f),
             Error::UnknownKeyword(uk) => uk.fmt(f),
             Error::UnexpectedRule(ur) => ur.fmt(f),
+            Error::FreeTypeVariable(fv) => fv.fmt(f),
         }
     }
 }
 
 impl std::error::Error for Error {}
-
-impl From<EnvError> for Error {
-    fn from(err: EnvError) -> Error {
-        Error::Environment(err)
-    }
-}
 
 impl From<UndefinedLocation> for Error {
     fn from(err: UndefinedLocation) -> Error {
@@ -140,5 +135,11 @@ impl From<UnknownKeyword> for Error {
 impl From<UnexpectedRule<Rule>> for Error {
     fn from(err: UnexpectedRule<Rule>) -> Error {
         Error::UnexpectedRule(err)
+    }
+}
+
+impl From<FreeTypeVariable> for Error {
+    fn from(err: FreeTypeVariable) -> Error {
+        Error::FreeTypeVariable(err)
     }
 }

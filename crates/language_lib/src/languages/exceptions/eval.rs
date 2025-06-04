@@ -1,7 +1,10 @@
-use super::{check::ExceptionEnv, errors::Error, terms::Term, types::Type, values::Value};
+use super::{errors::Error, terms::Term, types::Type, values::Value};
 use check::Normalize;
 use eval::Eval;
-use syntax::terms::{False, Num, True, Unit, Variable};
+use syntax::{
+    env::Environment,
+    terms::{False, Num, True, Unit, Variable},
+};
 
 impl Eval for Term {
     type Value = Value;
@@ -30,8 +33,7 @@ impl Eval for Term {
 }
 
 impl Normalize<Type> for Type {
-    type Env = ExceptionEnv;
-    fn normalize(self, _: &mut Self::Env) -> Type {
+    fn normalize(self, _: &mut Environment<Type>) -> Type {
         self
     }
 }

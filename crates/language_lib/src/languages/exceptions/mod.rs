@@ -7,7 +7,6 @@ pub mod types;
 pub mod values;
 
 use crate::Language;
-use check::ExceptionEnv;
 use errors::Error;
 use terms::Term;
 use types::Type;
@@ -20,7 +19,6 @@ impl Language for Exceptions {
     type Term = Term;
     type Type = Type;
     type Value = Value;
-    type CheckEnv = ExceptionEnv;
     type EvalEnv = ();
     type LanguageError = Error;
 }

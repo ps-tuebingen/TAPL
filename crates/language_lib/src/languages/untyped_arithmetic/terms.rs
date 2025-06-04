@@ -2,6 +2,7 @@ use super::errors::Error;
 use check::Typecheck;
 use std::fmt;
 use syntax::{
+    env::Environment,
     subst::{SubstTerm, SubstType},
     terms::{False, If, IsZero, Num, Pred, Succ, True},
     untyped::Untyped,
@@ -37,10 +38,9 @@ impl SubstType<Untyped> for Term {
 
 impl Typecheck for Term {
     type Type = Untyped;
-    type Env = ();
     type CheckError = Error;
 
-    fn check(&self, _: &mut Self::Env) -> Result<Self::Type, Error> {
+    fn check(&self, _: &mut Environment<Untyped>) -> Result<Self::Type, Error> {
         Ok(Untyped)
     }
 }

@@ -17,7 +17,6 @@ impl Language for UntypedArithmetic {
     type Term = Term;
     type Type = Untyped;
     type Value = Value;
-    type CheckEnv = ();
     type EvalEnv = ();
     type LanguageError = Error;
 }

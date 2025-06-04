@@ -17,7 +17,6 @@ impl Language for UntypedLambda {
     type Term = Term;
     type Type = Untyped;
     type Value = Value;
-    type CheckEnv = ();
     type EvalEnv = ();
     type LanguageError = Error;
 }

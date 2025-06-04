@@ -1,54 +1,12 @@
 use super::{errors::Error, terms::Term, types::Type};
-use check::{CheckEnvironment, Kindcheck, Subtypecheck, Typecheck};
-use common::errors::{FreeTypeVariable, NotImplemented};
-use std::collections::HashMap;
-use syntax::{kinds::Kind, Location, TypeVar, Var};
-
-#[derive(Clone, Default)]
-pub struct Env {
-    vars: HashMap<Var, Type>,
-    ty_vars: HashMap<TypeVar, Kind>,
-}
-
-impl CheckEnvironment for Env {
-    type Type = Type;
-    type CheckError = Error;
-
-    fn get_var(&self, v: &Var) -> Result<Type, Self::CheckError> {
-        self.vars.get_var(v).map_err(|err| err.into())
-    }
-
-    fn add_var(&mut self, v: Var, ty: Type) {
-        self.vars.add_var(v, ty);
-    }
-
-    fn get_tyvar_kind(&self, v: &TypeVar) -> Result<Kind, Self::CheckError> {
-        self.ty_vars
-            .get(v)
-            .ok_or(FreeTypeVariable::new(v).into())
-            .cloned()
-    }
-
-    fn add_tyvar_kind(&mut self, v: TypeVar, knd: Kind) {
-        self.ty_vars.insert(v, knd);
-    }
-
-    fn get_tyvar_super(&self, _: &TypeVar) -> Result<Self::Type, Self::CheckError> {
-        Err(NotImplemented.into())
-    }
-    fn add_tyvar_super(&mut self, _: TypeVar, _: Self::Type) {}
-
-    fn get_loc(&self, _: &Location) -> Result<Self::Type, Self::CheckError> {
-        Err(NotImplemented.into())
-    }
-}
+use check::{Kindcheck, Subtypecheck, Typecheck};
+use syntax::{env::Environment, kinds::Kind};
 
 impl Typecheck for Term {
-    type Env = Env;
     type Type = Type;
     type CheckError = Error;
 
-    fn check(&self, env: &mut Env) -> Result<Self::Type, Error> {
+    fn check(&self, env: &mut Environment<Type>) -> Result<Self::Type, Error> {
         match self {
             Term::Var(v) => v.check(env),
             Term::Unit(u) => u.check(env),
@@ -71,19 +29,17 @@ impl Typecheck for Term {
 }
 
 impl Subtypecheck<Type> for Type {
-    type Env = Env;
     type CheckError = Error;
 
-    fn check_subtype(&self, _: &Self, _: &mut Self::Env) -> Result<(), Error> {
+    fn check_subtype(&self, _: &Self, _: &mut Environment<Type>) -> Result<(), Error> {
         Ok(())
     }
 }
 
 impl Kindcheck<Type> for Type {
-    type Env = Env;
     type CheckError = Error;
 
-    fn check_kind(&self, _: &mut Self::Env) -> Result<Kind, Error> {
+    fn check_kind(&self, _: &mut Environment<Type>) -> Result<Kind, Error> {
         Ok(Kind::Star)
     }
 }

@@ -7,7 +7,6 @@ pub mod types;
 pub mod values;
 
 use crate::Language;
-use check::TypingContext;
 use errors::Error;
 use terms::Term;
 use types::Type;
@@ -20,7 +19,6 @@ impl Language for Subtypes {
     type Term = Term;
     type Type = Type;
     type Value = Value;
-    type CheckEnv = TypingContext;
     type EvalEnv = ();
     type LanguageError = Error;
 }

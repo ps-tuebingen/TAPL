@@ -7,7 +7,6 @@ pub mod types;
 pub mod values;
 
 use crate::Language;
-use check::Env;
 use errors::Error;
 use terms::Term;
 use types::Type;
@@ -20,7 +19,6 @@ impl Language for BoundedQuantification {
     type Term = Term;
     type Type = Type;
     type Value = Value;
-    type CheckEnv = Env;
     type EvalEnv = ();
     type LanguageError = Error;
 }

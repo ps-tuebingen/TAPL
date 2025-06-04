@@ -3,6 +3,7 @@ use check::Typecheck;
 use std::fmt;
 use syntax::untyped::Untyped;
 use syntax::{
+    env::Environment,
     subst::{SubstTerm, SubstType},
     terms::{App, Lambda, Variable},
     TypeVar,
@@ -21,10 +22,9 @@ impl syntax::terms::Term for Term {}
 
 impl Typecheck for Term {
     type Type = Untyped;
-    type Env = ();
     type CheckError = Error;
 
-    fn check(&self, _: &mut Self::Env) -> Result<Self::Type, Error> {
+    fn check(&self, _: &mut Environment<Untyped>) -> Result<Self::Type, Error> {
         Ok(Untyped)
     }
 }

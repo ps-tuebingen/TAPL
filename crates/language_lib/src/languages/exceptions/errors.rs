@@ -1,5 +1,4 @@
 use super::parser::Rule;
-use check::errors::EnvError;
 use common::{
     errors::{FreeVariable, KindMismatch, NotImplemented, TypeMismatch},
     parse::{MissingInput, RemainingInput, UnexpectedRule, UnknownKeyword},
@@ -10,7 +9,6 @@ use std::fmt;
 
 #[derive(Debug)]
 pub enum Error {
-    Environment(EnvError),
     NotImplemented(NotImplemented),
     KindMismatch(KindMismatch),
     TypeMismatch(TypeMismatch),
@@ -26,7 +24,6 @@ pub enum Error {
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Error::Environment(env) => env.fmt(f),
             Error::NotImplemented(fv) => fv.fmt(f),
             Error::KindMismatch(km) => km.fmt(f),
             Error::TypeMismatch(tm) => tm.fmt(f),
@@ -42,12 +39,6 @@ impl fmt::Display for Error {
 }
 
 impl std::error::Error for Error {}
-
-impl From<EnvError> for Error {
-    fn from(err: EnvError) -> Error {
-        Error::Environment(err)
-    }
-}
 
 impl From<NotImplemented> for Error {
     fn from(err: NotImplemented) -> Error {

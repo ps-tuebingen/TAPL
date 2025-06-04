@@ -1,9 +1,9 @@
-use super::{check::Environment, errors::Error, terms::Term, types::Type, values::Value};
+use super::{errors::Error, terms::Term, types::Type, values::Value};
 use check::Normalize;
 use common::errors::UndefinedLocation;
 use eval::{env::EvalEnvironment, Eval};
 use std::collections::HashMap;
-use syntax::Location;
+use syntax::{env::Environment, Location};
 
 #[derive(Default)]
 pub struct Store(HashMap<Location, Value>);
@@ -59,8 +59,7 @@ impl Eval for Term {
 }
 
 impl Normalize<Type> for Type {
-    type Env = Environment;
-    fn normalize(self, _: &mut Self::Env) -> Type {
+    fn normalize(self, _: &mut Environment<Type>) -> Type {
         self
     }
 }

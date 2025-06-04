@@ -59,6 +59,10 @@ where
             .ok_or(FreeTypeVariable::new(v))
     }
 
+    pub fn add_loc(&mut self, l: Location, ty: Ty) {
+        self.location_bindings.insert(l, ty);
+    }
+
     pub fn get_loc(&self, l: &Location) -> Result<Ty, UndefinedLocation> {
         self.location_bindings
             .get(l)

@@ -1,7 +1,9 @@
 use super::parser::Rule;
-use check::errors::{EmptyCase, EnvError};
+use check::errors::EmptyCase;
 use common::{
-    errors::{FreeVariable, KindMismatch, NotImplemented, TypeMismatch, UndefinedLabel},
+    errors::{
+        FreeTypeVariable, FreeVariable, KindMismatch, NotImplemented, TypeMismatch, UndefinedLabel,
+    },
     parse::{MissingInput, RemainingInput, UnexpectedRule, UnknownKeyword},
 };
 use eval::errors::ValueMismatch;
@@ -10,7 +12,6 @@ use std::fmt;
 
 #[derive(Debug)]
 pub enum Error {
-    Environment(EnvError),
     TypeMismatch(TypeMismatch),
     KindMismatch(KindMismatch),
     UndefinedLabel(UndefinedLabel),
@@ -23,12 +24,12 @@ pub enum Error {
     RemainingInput(RemainingInput),
     UnknownKeyword(UnknownKeyword),
     UnexpectedRule(UnexpectedRule<Rule>),
+    FreeTypeVariable(FreeTypeVariable),
 }
 
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Error::Environment(env) => env.fmt(f),
             Error::TypeMismatch(tm) => tm.fmt(f),
             Error::KindMismatch(km) => km.fmt(f),
             Error::UndefinedLabel(ul) => ul.fmt(f),
@@ -41,17 +42,12 @@ impl fmt::Display for Error {
             Error::RemainingInput(ri) => ri.fmt(f),
             Error::UnknownKeyword(uk) => uk.fmt(f),
             Error::UnexpectedRule(ur) => ur.fmt(f),
+            Error::FreeTypeVariable(fv) => fv.fmt(f),
         }
     }
 }
 
 impl std::error::Error for Error {}
-
-impl From<EnvError> for Error {
-    fn from(err: EnvError) -> Error {
-        Error::Environment(err)
-    }
-}
 
 impl From<TypeMismatch> for Error {
     fn from(err: TypeMismatch) -> Error {
@@ -122,5 +118,11 @@ impl From<UnknownKeyword> for Error {
 impl From<UnexpectedRule<Rule>> for Error {
     fn from(err: UnexpectedRule<Rule>) -> Error {
         Error::UnexpectedRule(err)
+    }
+}
+
+impl From<FreeTypeVariable> for Error {
+    fn from(err: FreeTypeVariable) -> Error {
+        Error::FreeTypeVariable(err)
     }
 }

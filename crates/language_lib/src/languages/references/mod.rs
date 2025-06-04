@@ -7,7 +7,6 @@ pub mod types;
 pub mod values;
 
 use crate::Language;
-use check::Environment;
 use errors::Error;
 use eval::Store;
 use terms::Term;
@@ -21,7 +20,6 @@ impl Language for References {
     type Term = Term;
     type Type = Type;
     type Value = Value;
-    type CheckEnv = Environment;
     type EvalEnv = Store;
     type LanguageError = Error;
 }

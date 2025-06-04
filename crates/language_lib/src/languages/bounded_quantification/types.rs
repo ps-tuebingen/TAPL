@@ -1,8 +1,8 @@
-use super::check::Env;
 use check::Normalize;
 use common::errors::{TypeKind, TypeMismatch};
 use std::fmt;
 use syntax::{
+    env::Environment,
     subst::SubstType,
     types::{
         ExistsBounded, ForallBounded, Fun, Nat, Record, Top, Type as TypeTrait, TypeGroup,
@@ -149,8 +149,7 @@ impl SubstType<Self> for Type {
     }
 }
 impl Normalize<Type> for Type {
-    type Env = Env;
-    fn normalize(self, _: &mut Self::Env) -> Type {
+    fn normalize(self, _: &mut Environment<Type>) -> Type {
         self
     }
 }

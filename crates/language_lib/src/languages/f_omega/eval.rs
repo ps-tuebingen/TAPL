@@ -1,6 +1,7 @@
-use super::{check::Env, errors::Error, terms::Term, types::Type, values::Value};
+use super::{errors::Error, terms::Term, types::Type, values::Value};
 use check::Normalize;
 use eval::Eval;
+use syntax::env::Environment;
 
 impl Eval for Term {
     type Env = ();
@@ -32,8 +33,7 @@ impl Eval for Term {
 }
 
 impl Normalize<Type> for Type {
-    type Env = Env;
-    fn normalize(self, env: &mut Self::Env) -> Type {
+    fn normalize(self, env: &mut Environment<Type>) -> Type {
         match self {
             Type::Var(var) => var.normalize(env),
             Type::Fun(fun) => fun.normalize(env),
