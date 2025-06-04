@@ -6,41 +6,19 @@ pub mod terms;
 pub mod types;
 pub mod untyped;
 
-pub struct CheckResult<T, Ty>
-where
-    T: Term,
-    Ty: Type,
-{
-    ty: Ty,
-    derivation: Derivation<T, Ty>,
-}
-
-impl<T, Ty> CheckResult<T, Ty>
-where
-    T: Term,
-    Ty: Type,
-{
-    pub fn new<Ty1>(ty: Ty1, derivation: Derivation<T, Ty>) -> CheckResult<T, Ty>
-    where
-        Ty1: Into<Ty>,
-    {
-        CheckResult { ty, derivation }
-    }
-}
-
 pub trait Typecheck {
     type CheckError: std::error::Error;
     type Type: Type;
     type Term: Term;
 
-    fn check_start(&self) -> Result<CheckResult<Self::Term, Self::Type>, Self::CheckError> {
+    fn check_start(&self) -> Result<Derivation<Self::Term, Self::Type>, Self::CheckError> {
         self.check(&mut Environment::default())
     }
 
     fn check(
         &self,
         env: &mut Environment<Self::Type>,
-    ) -> Result<CheckResult<Self::Term, Self::Type>, Self::CheckError>;
+    ) -> Result<Derivation<Self::Term, Self::Type>, Self::CheckError>;
 }
 
 pub trait Subtypecheck<Ty>

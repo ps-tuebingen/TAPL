@@ -1,5 +1,6 @@
-use crate::{CheckResult, Kindcheck, Normalize, Typecheck};
+use crate::{Kindcheck, Normalize, Typecheck};
 use common::errors::{KindMismatch, TypeMismatch};
+use derivation::{Conclusion, Derivation};
 use std::collections::HashMap;
 use syntax::{
     env::Environment,
@@ -9,11 +10,12 @@ use syntax::{
 
 impl<T> Typecheck for Record<T>
 where
-    T: Term + Typecheck,
+    T: Term + Typecheck<Term = T>,
     <T as Typecheck>::Type: Normalize<<T as Typecheck>::Type>
         + Kindcheck<<T as Typecheck>::Type, CheckError = <T as Typecheck>::CheckError>,
     <T as Typecheck>::CheckError: From<TypeMismatch> + From<KindMismatch>,
     RecordTy<<T as Typecheck>::Type>: Into<<T as Typecheck>::Type>,
+    Self: Into<T>,
 {
     type Type = <T as Typecheck>::Type;
     type Term = T;
@@ -22,11 +24,15 @@ where
     fn check(
         &self,
         env: &mut Environment<<T as Typecheck>::Type>,
-    ) -> Result<CheckResult<Self::Term, Self::Type>, Self::CheckError> {
+    ) -> Result<Derivation<Self::Term, Self::Type>, Self::CheckError> {
         let mut recs = HashMap::new();
+        let mut ress = Vec::new();
         let mut rec_knd = None;
         for (lb, t) in self.records.iter() {
-            let ty = t.check(&mut env.clone())?.normalize(&mut env.clone());
+            let term_res = t.check(&mut env.clone())?;
+            let ty = term_res.ty().normalize(&mut env.clone());
+            ress.push(term_res);
+
             let ty_knd = ty.check_kind(env)?;
             recs.insert(lb.clone(), ty);
             match rec_knd {
@@ -38,6 +44,9 @@ where
                 }
             }
         }
-        Ok(RecordTy::new(recs).into())
+
+        let conc = Conclusion::new(env.clone(), self.clone(), RecordTy::new(recs));
+        let deriv = Derivation::record(conc, ress);
+        Ok(deriv)
     }
 }

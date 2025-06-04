@@ -1,4 +1,4 @@
-use crate::{CheckResult, Kindcheck, Normalize, Subtypecheck, Typecheck};
+use crate::{Kindcheck, Normalize, Subtypecheck, Typecheck};
 use common::errors::{KindMismatch, TypeMismatch};
 use derivation::{Conclusion, Derivation};
 use syntax::{
@@ -25,19 +25,19 @@ where
     fn check(
         &self,
         env: &mut Environment<<T as Typecheck>::Type>,
-    ) -> Result<CheckResult<Self::Term, Self::Type>, Self::CheckError> {
+    ) -> Result<Derivation<Self::Term, Self::Type>, Self::CheckError> {
         let fun_res = self.fun.check(&mut env.clone())?;
-        let fun_ty = fun_res.ty.normalize(&mut env.clone());
+        let fun_ty = fun_res.ty().normalize(&mut env.clone());
         fun_ty.check_kind(&mut env.clone())?.into_star()?;
         let fun: Fun<<T as Typecheck>::Type> = fun_ty.into_fun()?;
 
         let arg_res = self.arg.check(&mut env.clone())?;
-        let arg_ty = arg_res.ty.normalize(&mut env.clone());
+        let arg_ty = arg_res.ty().normalize(&mut env.clone());
         arg_ty.check_kind(&mut env.clone())?.into_star()?;
         arg_ty.check_subtype(&(*fun.from), &mut env.clone())?;
 
         let deriv_conc = Conclusion::new(env.clone(), self.clone(), fun.clone());
-        let deriv = Derivation::app(deriv_conc, fun_res.derivation, arg_res.derivation);
-        Ok(CheckResult::new(*fun.to, deriv))
+        let deriv = Derivation::app(deriv_conc, fun_res, arg_res);
+        Ok(deriv)
     }
 }

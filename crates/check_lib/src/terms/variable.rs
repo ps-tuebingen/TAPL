@@ -1,4 +1,5 @@
-use crate::{CheckResult, Typecheck};
+use crate::{ Typecheck};
+use derivation::{Derivation,Conclusion};
 use common::errors::FreeVariable;
 use syntax::{
     env::Environment,
@@ -17,7 +18,7 @@ where
     fn check(
         &self,
         env: &mut Environment<<T as Typecheck>::Type>,
-    ) -> Result<CheckResult<Self::Term, Self::Type>, Self::CheckError> {
+    ) -> Result<<Self::Term, Self::Type>, Self::CheckError> {
         env.get_var(&self.var).map_err(|err| err.into())
     }
 }

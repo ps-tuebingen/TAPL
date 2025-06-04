@@ -1,5 +1,6 @@
-use crate::{CheckResult, Kindcheck, Normalize, Typecheck};
+use crate::{Kindcheck, Normalize, Typecheck};
 use common::errors::{KindMismatch, TypeMismatch};
+use derivation::{Conclusion, Derivation};
 use syntax::{
     env::Environment,
     terms::{IsZero, Term},
@@ -22,13 +23,14 @@ where
     fn check(
         &self,
         env: &mut Environment<<T as Typecheck>::Type>,
-    ) -> Result<CheckResult<Self::Term, Self::Type>, Self::CheckError> {
-        let inner_ty = self
-            .term
-            .check(&mut env.clone())?
-            .normalize(&mut env.clone());
+    ) -> Result<Derivation<Self::Term, Self::Type>, Self::CheckError> {
+        let inner_res = self.term.check(&mut env.clone())?;
+        let inner_ty = inner_res.ty().normalize(&mut env.clone());
         inner_ty.check_kind(env)?.into_star()?;
         inner_ty.into_nat()?;
-        Ok(Bool::new().into())
+
+        let conc = Conclusion::new(env.clone(), self.clone(), Bool::new());
+        let deriv = Derivation::iszero(conc, inner_res);
+        Ok(deriv)
     }
 }

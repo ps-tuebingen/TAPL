@@ -1,4 +1,5 @@
-use crate::{CheckResult, Normalize, Typecheck};
+use crate::{Normalize, Typecheck};
+use derivation::{Conclusion, Derivation};
 use syntax::{
     env::Environment,
     terms::{False, Term},
@@ -7,9 +8,10 @@ use syntax::{
 
 impl<T> Typecheck for False<T>
 where
-    T: Term + Typecheck,
+    T: Term + Typecheck<Term = T>,
     <T as Typecheck>::Type: Type + Normalize<<T as Typecheck>::Type>,
     Bool<<T as Typecheck>::Type>: Into<<T as Typecheck>::Type>,
+    Self: Into<T>,
 {
     type Type = <T as Typecheck>::Type;
     type Term = T;
@@ -17,8 +19,9 @@ where
 
     fn check(
         &self,
-        _: &mut Environment<<T as Typecheck>::Type>,
-    ) -> Result<CheckResult<Self::Term, Self::Type>, Self::CheckError> {
-        Ok(Bool::new().into())
+        env: &mut Environment<<T as Typecheck>::Type>,
+    ) -> Result<Derivation<Self::Term, Self::Type>, Self::CheckError> {
+        let conc = Conclusion::new(env.clone(), self.clone(), Bool::new());
+        Ok(Derivation::fls(conc))
     }
 }

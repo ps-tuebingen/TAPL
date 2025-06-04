@@ -1,4 +1,5 @@
-use crate::{CheckResult, Typecheck};
+use crate::{ Typecheck};
+use derivation::{Derivation,Conclusion};
 use syntax::{
     env::Environment,
     terms::{Term, True},
@@ -17,7 +18,7 @@ where
     fn check(
         &self,
         _: &mut Environment<<T as Typecheck>::Type>,
-    ) -> Result<CheckResult<Self::Term, Self::Type>, Self::CheckError> {
+    ) -> Result<<Self::Term, Self::Type>, Self::CheckError> {
         Ok(Bool::new().into())
     }
 }

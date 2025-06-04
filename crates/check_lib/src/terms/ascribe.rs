@@ -1,4 +1,4 @@
-use crate::{CheckResult, Kindcheck, Normalize, Typecheck};
+use crate::{Kindcheck, Normalize, Typecheck};
 use common::errors::{KindMismatch, TypeMismatch};
 use derivation::{Conclusion, Derivation};
 use syntax::{
@@ -22,9 +22,9 @@ where
     fn check(
         &self,
         env: &mut Environment<<T as Typecheck>::Type>,
-    ) -> Result<CheckResult<Self::Term, Self::Type>, Self::CheckError> {
+    ) -> Result<Derivation<Self::Term, Self::Type>, Self::CheckError> {
         let t_res = self.term.check(&mut env.clone())?;
-        let t_ty = t_res.ty.normalize(&mut env.clone());
+        let t_ty = t_res.ty().normalize(&mut env.clone());
         let asc_norm = self.ty.clone().normalize(&mut env.clone());
         let t_kind = t_ty.check_kind(&mut env.clone())?;
         let ty_kind = self.ty.check_kind(env)?;
@@ -32,7 +32,7 @@ where
         asc_norm.check_equal(&t_ty)?;
 
         let conc = Conclusion::new(env.clone(), self.clone(), self.ty.clone());
-        let deriv = Derivation::ascribe(conc, t_res.derivation);
-        Ok(CheckResult::new(self.ty.clone(), deriv))
+        let deriv = Derivation::ascribe(conc, t_res);
+        Ok(deriv)
     }
 }

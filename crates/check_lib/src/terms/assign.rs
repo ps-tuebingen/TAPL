@@ -1,4 +1,4 @@
-use crate::{CheckResult, Kindcheck, Normalize, Typecheck};
+use crate::{Kindcheck, Normalize, Typecheck};
 use common::errors::{KindMismatch, TypeMismatch};
 use derivation::{Conclusion, Derivation};
 use syntax::{
@@ -24,20 +24,20 @@ where
     fn check(
         &self,
         env: &mut Environment<<T as Typecheck>::Type>,
-    ) -> Result<CheckResult<Self::Term, Self::Type>, Self::CheckError> {
+    ) -> Result<Derivation<Self::Term, Self::Type>, Self::CheckError> {
         let lhs_res = self.lhs.check(&mut env.clone())?;
-        let lhs_ty = lhs_res.ty.normalize(&mut env.clone());
+        let lhs_ty = lhs_res.ty().normalize(&mut env.clone());
         lhs_ty.check_kind(&mut env.clone())?.into_star()?;
         let lhs_ref = lhs_ty.into_ref()?;
 
         let rhs_res = self.rhs.check(&mut env.clone())?;
-        let rhs_ty = rhs_res.ty.normalize(&mut env.clone());
+        let rhs_ty = rhs_res.ty().normalize(&mut env.clone());
         rhs_ty.check_kind(&mut env.clone())?.into_star()?;
         lhs_ref.ty.check_equal(&rhs_ty)?;
 
         let conc = Conclusion::new(env.clone(), self.clone(), UnitTy::new());
-        let deriv = Derivation::assign(conc, lhs_res.derivation, rhs_res.derivation);
+        let deriv = Derivation::assign(conc, lhs_res, rhs_res);
 
-        Ok(CheckResult::new(UnitTy::new(), deriv))
+        Ok(deriv)
     }
 }

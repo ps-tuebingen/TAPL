@@ -1,5 +1,6 @@
-use crate::{CheckResult, Kindcheck, Normalize, Typecheck};
+use crate::{Kindcheck, Normalize, Typecheck};
 use common::errors::{KindMismatch, TypeMismatch};
+use derivation::{Conclusion, Derivation};
 use syntax::{
     env::Environment,
     terms::{SomeCase, Term},
@@ -8,11 +9,12 @@ use syntax::{
 
 impl<T> Typecheck for SomeCase<T>
 where
-    T: Term + Typecheck,
+    T: Term + Typecheck<Term = T>,
     <T as Typecheck>::Type: TypeGroup
         + Normalize<<T as Typecheck>::Type>
         + Kindcheck<<T as Typecheck>::Type, CheckError = <T as Typecheck>::CheckError>,
     <T as Typecheck>::CheckError: From<TypeMismatch> + From<KindMismatch>,
+    Self: Into<T>,
 {
     type Type = <T as Typecheck>::Type;
     type Term = T;
@@ -21,30 +23,27 @@ where
     fn check(
         &self,
         env: &mut Environment<<T as Typecheck>::Type>,
-    ) -> Result<CheckResult<Self::Term, Self::Type>, Self::CheckError> {
-        let bound_ty = self
-            .bound_term
-            .check(&mut env.clone())?
-            .normalize(&mut env.clone());
+    ) -> Result<Derivation<Self::Term, Self::Type>, Self::CheckError> {
+        let bound_res = self.bound_term.check(&mut env.clone())?;
+        let bound_ty = bound_res.ty().normalize(&mut env.clone());
         bound_ty.check_kind(&mut env.clone())?.into_star()?;
 
         let option = bound_ty.into_optional()?;
         let mut some_env = env.clone();
         some_env.add_var(self.some_var.clone(), *option.ty);
-        let some_ty = self
-            .some_term
-            .check(&mut some_env.clone())?
-            .normalize(&mut some_env.clone());
+        let some_res = self.some_term.check(&mut some_env.clone())?;
+        let some_ty = some_res.ty().normalize(&mut some_env.clone());
         let some_knd = some_ty.check_kind(&mut some_env)?;
 
-        let none_ty = self
-            .none_term
-            .check(&mut env.clone())?
-            .normalize(&mut env.clone());
+        let none_res = self.none_term.check(&mut env.clone())?;
+        let none_ty = none_res.ty().normalize(&mut env.clone());
         let none_knd = none_ty.check_kind(env)?;
 
         some_knd.check_equal(&none_knd)?;
         some_ty.check_equal(&none_ty)?;
-        Ok(some_ty)
+
+        let conc = Conclusion::new(env.clone(), self.clone(), some_ty);
+        let deriv = Derivation::somecase(conc, bound_res, some_res, none_res);
+        Ok(deriv)
     }
 }

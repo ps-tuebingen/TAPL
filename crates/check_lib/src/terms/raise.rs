@@ -1,5 +1,6 @@
-use crate::{CheckResult, Kindcheck, Normalize, Typecheck};
+use crate::{Kindcheck, Normalize, Typecheck};
 use common::errors::{KindMismatch, TypeMismatch};
+use derivation::{Conclusion, Derivation};
 use syntax::{
     env::Environment,
     terms::{Raise, Term},
@@ -8,10 +9,11 @@ use syntax::{
 
 impl<T, Ty> Typecheck for Raise<T, Ty>
 where
-    T: Term + Typecheck<Type = Ty>,
+    T: Term + Typecheck<Type = Ty, Term = T>,
     Ty: TypeGroup + Normalize<Ty> + Kindcheck<Ty>,
     <T as Typecheck>::CheckError:
         From<TypeMismatch> + From<KindMismatch> + From<<Ty as Kindcheck<Ty>>::CheckError>,
+    Self: Into<T>,
 {
     type Type = <T as Typecheck>::Type;
     type Term = T;
@@ -20,22 +22,23 @@ where
     fn check(
         &self,
         env: &mut Environment<<T as Typecheck>::Type>,
-    ) -> Result<CheckResult<Self::Term, Self::Type>, Self::CheckError> {
+    ) -> Result<Derivation<Self::Term, Self::Type>, Self::CheckError> {
         let ex_norm = self.exception_ty.clone().normalize(&mut env.clone());
         let cont_norm = self.cont_ty.clone().normalize(&mut env.clone());
 
         let ex_knd = ex_norm.check_kind(&mut env.clone())?;
         self.cont_ty.check_kind(&mut env.clone())?;
 
-        let err_ty = self
-            .exception
-            .check(&mut env.clone())?
-            .normalize(&mut env.clone());
+        let err_res = self.exception.check(&mut env.clone())?;
+        let err_ty = err_res.ty().normalize(&mut env.clone());
         let err_knd = err_ty.check_kind(env)?;
 
         ex_knd.check_equal(&err_knd)?;
         ex_norm.check_equal(&err_ty)?;
 
-        Ok(cont_norm.clone())
+        let conc = Conclusion::new(env.clone(), self.clone(), cont_norm.clone());
+        let deriv = Derivation::raise(conc, err_res);
+
+        Ok(deriv)
     }
 }

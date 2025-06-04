@@ -7,7 +7,7 @@ where
 {
     env: Environment<Ty>,
     term: T,
-    ty: Ty,
+    pub(crate) ty: Ty,
 }
 
 impl<T, Ty> Conclusion<T, Ty>
