@@ -1,12 +1,16 @@
 use super::{errors::Error, terms::Term, types::Type};
 use check::{Kindcheck, Subtypecheck, Typecheck};
+use derivation::Derivation;
 use syntax::{env::Environment, kinds::Kind};
-
 impl Typecheck for Term {
+    type Term = Term;
     type Type = Type;
     type CheckError = Error;
 
-    fn check(&self, env: &mut Environment<Type>) -> Result<Self::Type, Error> {
+    fn check(
+        &self,
+        env: &mut Environment<Type>,
+    ) -> Result<Derivation<Self::Term, Self::Type>, Error> {
         match self {
             Term::Var(var) => var.check(env),
             Term::Num(num) => num.check(env),

@@ -21,7 +21,11 @@ pub trait Language {
             Env = Self::EvalEnv,
             Value = Self::Value,
             EvalError: Into<<Self as Language>::LanguageError>,
-        > + Typecheck<Type = Self::Type, CheckError: Into<<Self as Language>::LanguageError>>;
+        > + Typecheck<
+            Term = Self::Term,
+            Type = Self::Type,
+            CheckError: Into<<Self as Language>::LanguageError>,
+        >;
 
     type Type: TypeGroup
         + SubstType<Self::Type, Target = Self::Type>

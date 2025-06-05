@@ -1,5 +1,6 @@
 use super::{errors::Error, terms::Term, types::Type};
 use check::{Kindcheck, Subtypecheck, Typecheck};
+use derivation::Derivation;
 use std::collections::HashMap;
 use syntax::{env::Environment, kinds::Kind, Location, Var};
 
@@ -7,10 +8,14 @@ pub type Env = HashMap<Var, Type>;
 pub type StoreTy = HashMap<Location, Type>;
 
 impl Typecheck for Term {
+    type Term = Term;
     type Type = Type;
     type CheckError = Error;
 
-    fn check(&self, env: &mut Environment<Type>) -> Result<Self::Type, Error> {
+    fn check(
+        &self,
+        env: &mut Environment<Type>,
+    ) -> Result<Derivation<Self::Term, Self::Type>, Error> {
         match self {
             Term::Var(var) => var.check(env),
             Term::Num(c) => c.check(env),
@@ -74,7 +79,7 @@ mod check_tests {
         .into();
         let result = term.check(&mut Default::default()).unwrap();
         let expected = UnitTy::new().into();
-        assert_eq!(result, expected)
+        assert_eq!(result.ty(), expected)
     }
 
     #[test]
@@ -90,7 +95,7 @@ mod check_tests {
         .into();
         let result = term.check(&mut Default::default()).unwrap();
         let expected = UnitTy::new().into();
-        assert_eq!(result, expected)
+        assert_eq!(result.ty(), expected)
     }
 
     #[test]
@@ -127,6 +132,6 @@ mod check_tests {
         env.add_loc(0, UnitTy::new().into());
         let result = term.check(&mut env).unwrap();
         let expected = UnitTy::new().into();
-        assert_eq!(result, expected)
+        assert_eq!(result.ty(), expected)
     }
 }

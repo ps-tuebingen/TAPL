@@ -47,6 +47,6 @@ where
             Ok(c) => c,
             Err(err) => return TestResult::from_err(err),
         };
-        TestResult::from_eq(&checked, &self.expected)
+        TestResult::from_eq(&checked.ty(), &self.expected)
     }
 }

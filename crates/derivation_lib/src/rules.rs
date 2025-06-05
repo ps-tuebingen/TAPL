@@ -53,4 +53,5 @@ pub enum TypingRule {
     Variable,
     Variant,
     VariantCase,
+    Empty,
 }

@@ -105,9 +105,9 @@ where
         };
         let evaled = match <<T as Language>::Term as Eval>::eval_start(parsed.clone()) {
             Ok(v) => v,
-            Err(err) => return RunResult::eval_fail(parsed, checked, err.into()),
+            Err(err) => return RunResult::eval_fail(parsed, checked.ty(), err.into()),
         };
-        RunResult::success(parsed, checked, evaled)
+        RunResult::success(parsed, checked.ty(), evaled)
     }
 
     pub fn report(

@@ -1,4 +1,4 @@
-use syntax::{terms::Term, types::Type};
+use syntax::{env::Environment, terms::Term, types::Type, untyped::Untyped};
 
 pub mod conclusion;
 pub mod rules;
@@ -515,6 +515,22 @@ where
             conc,
             label: TypingRule::VariantCase,
             premises: rhs_derivs,
+        }
+    }
+}
+
+impl<T> Derivation<T, Untyped>
+where
+    T: Term,
+{
+    pub fn empty<T1>(t: T1) -> Derivation<T, Untyped>
+    where
+        T1: Into<T>,
+    {
+        Derivation {
+            conc: Conclusion::new(Environment::default(), t, Untyped),
+            label: TypingRule::Empty,
+            premises: vec![],
         }
     }
 }

@@ -1,5 +1,6 @@
 use super::errors::Error;
 use check::Typecheck;
+use derivation::Derivation;
 use std::fmt;
 use syntax::{
     env::Environment,
@@ -37,11 +38,15 @@ impl SubstType<Untyped> for Term {
 }
 
 impl Typecheck for Term {
+    type Term = Term;
     type Type = Untyped;
     type CheckError = Error;
 
-    fn check(&self, _: &mut Environment<Untyped>) -> Result<Self::Type, Error> {
-        Ok(Untyped)
+    fn check(
+        &self,
+        _: &mut Environment<Untyped>,
+    ) -> Result<Derivation<Self::Term, Self::Type>, Error> {
+        Ok(Derivation::empty(self.clone()))
     }
 }
 
