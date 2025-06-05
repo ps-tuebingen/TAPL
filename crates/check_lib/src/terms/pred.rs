@@ -9,10 +9,11 @@ use syntax::{
 
 impl<T> Typecheck for Pred<T>
 where
-    T: Term + Typecheck,
+    T: Term + Typecheck<Term = T>,
     <T as Typecheck>::Type: TypeGroup + Normalize<<T as Typecheck>::Type>,
     Nat<<T as Typecheck>::Type>: Into<<T as Typecheck>::Type>,
     <T as Typecheck>::CheckError: From<TypeMismatch>,
+    Self: Into<T>,
 {
     type Type = <T as Typecheck>::Type;
     type Term = T;

@@ -13,8 +13,7 @@ where
     <T as Typecheck>::Type: TypeGroup
         + Normalize<<T as Typecheck>::Type>
         + Kindcheck<<T as Typecheck>::Type, CheckError = <T as Typecheck>::CheckError>,
-    <T as Typecheck>::CheckError: From<IndexOutOfBounds>,
-    <T as Typecheck>::CheckError: From<TypeMismatch> + From<KindMismatch>,
+    <T as Typecheck>::CheckError: From<TypeMismatch> + From<KindMismatch> + From<IndexOutOfBounds>,
     Self: Into<T>,
 {
     type Type = <T as Typecheck>::Type;
@@ -32,7 +31,7 @@ where
         let tup = tup_ty
             .tys
             .get(self.index)
-            .ok_or(IndexOutOfBounds::new(self.index, tup_ty.tys.len()).into())
+            .ok_or(IndexOutOfBounds::new(self.index, tup_ty.tys.len()))
             .cloned()?;
         let conc = Conclusion::new(env.clone(), self.clone(), tup);
         let deriv = Derivation::projection(conc, term_res);

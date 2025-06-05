@@ -37,8 +37,8 @@ where
         let ty = rec_ty
             .records
             .get(&self.label)
-            .ok_or(UndefinedLabel::new(&self.label).into())
-            .cloned();
+            .ok_or(UndefinedLabel::new(&self.label))
+            .cloned()?;
 
         let conc = Conclusion::new(env.clone(), self.clone(), ty);
         let deriv = Derivation::recordproj(conc, term_res);

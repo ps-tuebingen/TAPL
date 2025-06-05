@@ -48,7 +48,7 @@ where
             let inner_ty = inner_res.ty().normalize(&mut env.clone());
             let conc = Conclusion::new(env.clone(), self.clone(), inner_ty);
             let deriv = Derivation::unpack_bounded(conc, bound_res, inner_res);
-            Ok(deriv);
+            Ok(deriv)
         } else {
             Err(TypeMismatch::new(bound_ty.knd(), TypeKind::Existential).into())
         }

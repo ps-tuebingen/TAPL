@@ -9,12 +9,13 @@ use syntax::{
 
 impl<T> Typecheck for IsZero<T>
 where
-    T: Term + Typecheck,
+    T: Term + Typecheck<Term = T>,
     <T as Typecheck>::Type: TypeGroup
         + Normalize<<T as Typecheck>::Type>
         + Kindcheck<<T as Typecheck>::Type, CheckError = <T as Typecheck>::CheckError>,
     Bool<<T as Typecheck>::Type>: Into<<T as Typecheck>::Type>,
     <T as Typecheck>::CheckError: From<TypeMismatch> + From<KindMismatch>,
+    Self: Into<T>,
 {
     type Type = <T as Typecheck>::Type;
     type Term = T;
