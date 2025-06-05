@@ -360,4 +360,161 @@ where
             premises: vec![prem],
         }
     }
+
+    pub fn sumcase(
+        conc: Conclusion<T, Ty>,
+        bound_deriv: Derivation<T, Ty>,
+        left_deriv: Derivation<T, Ty>,
+        right_deriv: Derivation<T, Ty>,
+    ) -> Derivation<T, Ty> {
+        Derivation {
+            conc,
+            label: TypingRule::SumCase,
+            premises: vec![bound_deriv, left_deriv, right_deriv],
+        }
+    }
+
+    pub fn tail(conc: Conclusion<T, Ty>, prem: Derivation<T, Ty>) -> Derivation<T, Ty> {
+        Derivation {
+            conc,
+            label: TypingRule::Tail,
+            premises: vec![prem],
+        }
+    }
+
+    pub fn tru(conc: Conclusion<T, Ty>) -> Derivation<T, Ty> {
+        Derivation {
+            conc,
+            label: TypingRule::True,
+            premises: vec![],
+        }
+    }
+
+    pub fn tryt(
+        conc: Conclusion<T, Ty>,
+        term_deriv: Derivation<T, Ty>,
+        handler_deriv: Derivation<T, Ty>,
+    ) -> Derivation<T, Ty> {
+        Derivation {
+            conc,
+            label: TypingRule::Try,
+            premises: vec![term_deriv, handler_deriv],
+        }
+    }
+
+    pub fn try_val(
+        conc: Conclusion<T, Ty>,
+        term_deriv: Derivation<T, Ty>,
+        handler_deriv: Derivation<T, Ty>,
+    ) -> Derivation<T, Ty> {
+        Derivation {
+            conc,
+            label: TypingRule::TryVal,
+            premises: vec![term_deriv, handler_deriv],
+        }
+    }
+
+    pub fn tuple(
+        conc: Conclusion<T, Ty>,
+        term_derivs: Vec<Derivation<T, Ty>>,
+    ) -> Derivation<T, Ty> {
+        Derivation {
+            conc,
+            label: TypingRule::Tuple,
+            premises: term_derivs,
+        }
+    }
+
+    pub fn tyapp(conc: Conclusion<T, Ty>, prem: Derivation<T, Ty>) -> Derivation<T, Ty> {
+        Derivation {
+            conc,
+            label: TypingRule::TyApp,
+            premises: vec![prem],
+        }
+    }
+
+    pub fn tyapp_bounded(conc: Conclusion<T, Ty>, prem: Derivation<T, Ty>) -> Derivation<T, Ty> {
+        Derivation {
+            conc,
+            label: TypingRule::TyAppBounded,
+            premises: vec![prem],
+        }
+    }
+
+    pub fn tylambda(conc: Conclusion<T, Ty>, prem: Derivation<T, Ty>) -> Derivation<T, Ty> {
+        Derivation {
+            conc,
+            label: TypingRule::TyLambda,
+            premises: vec![prem],
+        }
+    }
+
+    pub fn unfold(conc: Conclusion<T, Ty>, prem: Derivation<T, Ty>) -> Derivation<T, Ty> {
+        Derivation {
+            conc,
+            label: TypingRule::Unfold,
+            premises: vec![prem],
+        }
+    }
+
+    pub fn unit(conc: Conclusion<T, Ty>) -> Derivation<T, Ty> {
+        Derivation {
+            conc,
+            label: TypingRule::Unit,
+            premises: vec![],
+        }
+    }
+
+    pub fn unpack(
+        conc: Conclusion<T, Ty>,
+        bound_deriv: Derivation<T, Ty>,
+        in_deriv: Derivation<T, Ty>,
+    ) -> Derivation<T, Ty> {
+        Derivation {
+            conc,
+            label: TypingRule::Unpack,
+            premises: vec![bound_deriv, in_deriv],
+        }
+    }
+
+    pub fn unpack_bounded(
+        conc: Conclusion<T, Ty>,
+        bound_deriv: Derivation<T, Ty>,
+        in_deriv: Derivation<T, Ty>,
+    ) -> Derivation<T, Ty> {
+        Derivation {
+            conc,
+            label: TypingRule::UnpackBounded,
+            premises: vec![bound_deriv, in_deriv],
+        }
+    }
+
+    pub fn var(conc: Conclusion<T, Ty>) -> Derivation<T, Ty> {
+        Derivation {
+            conc,
+            label: TypingRule::Variable,
+            premises: vec![],
+        }
+    }
+
+    pub fn variant(conc: Conclusion<T, Ty>, prem: Derivation<T, Ty>) -> Derivation<T, Ty> {
+        Derivation {
+            conc,
+            label: TypingRule::Variant,
+            premises: vec![prem],
+        }
+    }
+
+    pub fn variantcase(
+        conc: Conclusion<T, Ty>,
+        bound_deriv: Derivation<T, Ty>,
+        mut rhs_derivs: Vec<Derivation<T, Ty>>,
+    ) -> Derivation<T, Ty> {
+        rhs_derivs.insert(0, bound_deriv);
+        Derivation {
+            conc,
+            label: TypingRule::VariantCase,
+            premises: rhs_derivs,
+        }
+    }
 }
