@@ -36,7 +36,7 @@ where
         arg_ty.check_kind(&mut env.clone())?.into_star()?;
         arg_ty.check_subtype(&(*fun.from), &mut env.clone())?;
 
-        let deriv_conc = Conclusion::new(env.clone(), self.clone(), fun.clone());
+        let deriv_conc = Conclusion::new(env.clone(), self.clone(), *fun.to);
         let deriv = Derivation::app(deriv_conc, fun_res, arg_res);
         Ok(deriv)
     }

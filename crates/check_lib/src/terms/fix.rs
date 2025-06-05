@@ -31,7 +31,7 @@ where
         let fun_ty = term_ty.into_fun()?;
         fun_ty.from.check_equal(&fun_ty.to)?;
 
-        let conc = Conclusion::new(env.clone(), self.clone(), fun_ty);
+        let conc = Conclusion::new(env.clone(), self.clone(), *fun_ty.to);
         let deriv = Derivation::fix(conc, term_res);
         Ok(deriv)
     }
