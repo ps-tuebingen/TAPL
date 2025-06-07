@@ -1,4 +1,5 @@
 use super::types::Type;
+use derivation::latex::LatexFmt;
 use std::fmt;
 use syntax::{
     subst::{SubstTerm, SubstType},
@@ -136,6 +137,47 @@ impl fmt::Display for Term {
             Term::IsNil(isnil) => isnil.fmt(f),
             Term::Head(hd) => hd.fmt(f),
             Term::Tail(tl) => tl.fmt(f),
+        }
+    }
+}
+
+impl LatexFmt for Term {
+    fn to_latex(&self) -> String {
+        match self {
+            Term::Var(v) => v.to_latex(),
+            Term::Lambda(lam) => lam.to_latex(),
+            Term::App(app) => app.to_latex(),
+            Term::Unit(unit) => unit.to_latex(),
+            Term::True(tru) => tru.to_latex(),
+            Term::False(fls) => fls.to_latex(),
+            Term::If(ift) => ift.to_latex(),
+            Term::Num(num) => num.to_latex(),
+            Term::Pred(p) => p.to_latex(),
+            Term::Succ(s) => s.to_latex(),
+            Term::IsZero(isz) => isz.to_latex(),
+            Term::Ascribe(asc) => asc.to_latex(),
+            Term::Let(lt) => lt.to_latex(),
+            Term::Pair(pr) => pr.to_latex(),
+            Term::Tuple(tup) => tup.to_latex(),
+            Term::Projection(proj) => proj.to_latex(),
+            Term::Fst(proj) => proj.to_latex(),
+            Term::Snd(proj) => proj.to_latex(),
+            Term::Record(rec) => rec.to_latex(),
+            Term::RecordProj(proj) => proj.to_latex(),
+            Term::Left(lf) => lf.to_latex(),
+            Term::Right(rt) => rt.to_latex(),
+            Term::SumCase(case) => case.to_latex(),
+            Term::Variant(var) => var.to_latex(),
+            Term::VariantCase(case) => case.to_latex(),
+            Term::Nothing(not) => not.to_latex(),
+            Term::Something(some) => some.to_latex(),
+            Term::SomeCase(case) => case.to_latex(),
+            Term::Fix(fix) => fix.to_latex(),
+            Term::Nil(nil) => nil.to_latex(),
+            Term::Cons(cons) => cons.to_latex(),
+            Term::IsNil(isnil) => isnil.to_latex(),
+            Term::Head(hd) => hd.to_latex(),
+            Term::Tail(tl) => tl.to_latex(),
         }
     }
 }

@@ -1,4 +1,5 @@
 use super::types::Type;
+use derivation::latex::LatexFmt;
 use std::fmt;
 use syntax::{
     subst::{SubstTerm, SubstType},
@@ -51,6 +52,18 @@ impl fmt::Display for Term {
             Term::App(app) => app.fmt(f),
             Term::TyLambda(lam) => lam.fmt(f),
             Term::TyApp(app) => app.fmt(f),
+        }
+    }
+}
+
+impl LatexFmt for Term {
+    fn to_latex(&self) -> String {
+        match self {
+            Term::Var(var) => var.to_latex(),
+            Term::Lambda(lam) => lam.to_latex(),
+            Term::App(app) => app.to_latex(),
+            Term::TyLambda(lam) => lam.to_latex(),
+            Term::TyApp(app) => app.to_latex(),
         }
     }
 }

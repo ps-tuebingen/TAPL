@@ -1,4 +1,5 @@
 use super::{terms::Term, types::Type};
+use derivation::latex::LatexFmt;
 use eval::{
     errors::{ValueKind, ValueMismatch},
     values::{Lambda, TyLambda, Value as ValueTrait, ValueGroup},
@@ -56,6 +57,15 @@ impl fmt::Display for Value {
         match self {
             Value::Lambda(lam) => lam.fmt(f),
             Value::TyLambda(tylam) => tylam.fmt(f),
+        }
+    }
+}
+
+impl LatexFmt for Value {
+    fn to_latex(&self) -> String {
+        match self {
+            Value::Lambda(lam) => lam.to_latex(),
+            Value::TyLambda(tylam) => tylam.to_latex(),
         }
     }
 }

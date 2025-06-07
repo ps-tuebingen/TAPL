@@ -1,5 +1,6 @@
 use check::{Kindcheck, Normalize, Subtypecheck, Typecheck};
 use common::parse::Parse;
+use derivation::latex::LatexFmt;
 use eval::{env::EvalEnvironment, values::ValueGroup, Eval};
 use syntax::{
     subst::{SubstTerm, SubstType},
@@ -25,15 +26,16 @@ pub trait Language {
             Term = Self::Term,
             Type = Self::Type,
             CheckError: Into<<Self as Language>::LanguageError>,
-        >;
+        > + LatexFmt;
 
     type Type: TypeGroup
         + SubstType<Self::Type, Target = Self::Type>
         + Subtypecheck<Self::Type, CheckError: Into<<Self as Language>::LanguageError>>
         + Normalize<Self::Type>
-        + Kindcheck<Self::Type, CheckError: Into<<Self as Language>::LanguageError>>;
+        + Kindcheck<Self::Type, CheckError: Into<<Self as Language>::LanguageError>>
+        + LatexFmt;
 
-    type Value: ValueGroup<Term = Self::Term, Type = Self::Type>;
+    type Value: ValueGroup<Term = Self::Term, Type = Self::Type> + LatexFmt;
 
     type LanguageError: std::error::Error;
 

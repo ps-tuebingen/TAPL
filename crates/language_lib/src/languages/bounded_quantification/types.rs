@@ -1,5 +1,6 @@
 use check::Normalize;
 use common::errors::{TypeKind, TypeMismatch};
+use derivation::latex::LatexFmt;
 use std::fmt;
 use syntax::{
     env::Environment,
@@ -164,6 +165,20 @@ impl fmt::Display for Type {
             Type::Forall(forall) => forall.fmt(f),
             Type::Exists(e) => e.fmt(f),
             Type::Record(rec) => rec.fmt(f),
+        }
+    }
+}
+
+impl LatexFmt for Type {
+    fn to_latex(&self) -> String {
+        match self {
+            Type::Var(v) => v.to_latex(),
+            Type::Top(t) => t.to_latex(),
+            Type::Nat(n) => n.to_latex(),
+            Type::Fun(fun) => fun.to_latex(),
+            Type::Forall(forall) => forall.to_latex(),
+            Type::Exists(e) => e.to_latex(),
+            Type::Record(rec) => rec.to_latex(),
         }
     }
 }

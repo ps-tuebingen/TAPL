@@ -1,4 +1,5 @@
 use super::{terms::Term, types::Type};
+use derivation::latex::LatexFmt;
 use eval::{
     errors::{ValueKind, ValueMismatch},
     values::{
@@ -207,6 +208,28 @@ impl fmt::Display for Value {
             Value::Something(some) => some.fmt(f),
             Value::Nil(nil) => nil.fmt(f),
             Value::Cons(cons) => cons.fmt(f),
+        }
+    }
+}
+
+impl LatexFmt for Value {
+    fn to_latex(&self) -> String {
+        match self {
+            Value::Lambda(lam) => lam.to_latex(),
+            Value::Unit(u) => u.to_latex(),
+            Value::True(tru) => tru.to_latex(),
+            Value::False(fls) => fls.to_latex(),
+            Value::Num(num) => num.to_latex(),
+            Value::Pair(pair) => pair.to_latex(),
+            Value::Tuple(tup) => tup.to_latex(),
+            Value::Record(rec) => rec.to_latex(),
+            Value::Left(lft) => lft.to_latex(),
+            Value::Right(right) => right.to_latex(),
+            Value::Variant(var) => var.to_latex(),
+            Value::Nothing(not) => not.to_latex(),
+            Value::Something(some) => some.to_latex(),
+            Value::Nil(nil) => nil.to_latex(),
+            Value::Cons(cons) => cons.to_latex(),
         }
     }
 }

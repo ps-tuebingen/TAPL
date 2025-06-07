@@ -1,4 +1,5 @@
 use super::types::Type;
+use derivation::latex::LatexFmt;
 use std::fmt;
 use syntax::{
     subst::{SubstTerm, SubstType},
@@ -102,6 +103,28 @@ impl fmt::Display for Term {
     }
 }
 
+impl LatexFmt for Term {
+    fn to_latex(&self) -> String {
+        match self {
+            Term::Var(v) => v.to_latex(),
+            Term::Unit(u) => u.to_latex(),
+            Term::Lambda(lam) => lam.to_latex(),
+            Term::App(app) => app.to_latex(),
+            Term::Pack(pack) => pack.to_latex(),
+            Term::Unpack(unpack) => unpack.to_latex(),
+            Term::Num(num) => num.to_latex(),
+            Term::Succ(succ) => succ.to_latex(),
+            Term::Pred(pred) => pred.to_latex(),
+            Term::IsZero(isz) => isz.to_latex(),
+            Term::Record(rec) => rec.to_latex(),
+            Term::RecordProj(proj) => proj.to_latex(),
+            Term::True(tru) => tru.to_latex(),
+            Term::False(fls) => fls.to_latex(),
+            Term::If(ift) => ift.to_latex(),
+            Term::Fix(fix) => fix.to_latex(),
+        }
+    }
+}
 impl From<Pack<Term, Type>> for Term {
     fn from(pack: Pack<Term, Type>) -> Term {
         Term::Pack(pack)

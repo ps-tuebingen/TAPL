@@ -1,5 +1,6 @@
 use super::errors::Error;
 use check::Typecheck;
+use derivation::latex::LatexFmt;
 use derivation::Derivation;
 use std::fmt;
 use syntax::{
@@ -60,6 +61,20 @@ impl fmt::Display for Term {
             Term::Succ(succ) => succ.fmt(f),
             Term::Pred(pred) => pred.fmt(f),
             Term::IsZero(isz) => isz.fmt(f),
+        }
+    }
+}
+
+impl LatexFmt for Term {
+    fn to_latex(&self) -> String {
+        match self {
+            Term::True(tru) => tru.to_latex(),
+            Term::False(fls) => fls.to_latex(),
+            Term::If(ift) => ift.to_latex(),
+            Term::Num(num) => num.to_latex(),
+            Term::Succ(succ) => succ.to_latex(),
+            Term::Pred(pred) => pred.to_latex(),
+            Term::IsZero(isz) => isz.to_latex(),
         }
     }
 }

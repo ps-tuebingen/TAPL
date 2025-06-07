@@ -1,4 +1,5 @@
 use common::errors::{TypeKind, TypeMismatch};
+use derivation::latex::LatexFmt;
 use std::fmt;
 use syntax::{
     subst::SubstType,
@@ -116,6 +117,22 @@ impl fmt::Display for Type {
             Type::Nat(n) => n.fmt(f),
             Type::Bool(b) => b.fmt(f),
             Type::Record(rec) => rec.fmt(f),
+        }
+    }
+}
+
+impl LatexFmt for Type {
+    fn to_latex(&self) -> String {
+        match self {
+            Type::TypeVar(v) => v.to_latex(),
+            Type::Unit(u) => u.to_latex(),
+            Type::Fun(fun) => fun.to_latex(),
+            Type::Mu(mu) => mu.to_latex(),
+            Type::Variant(var) => var.to_latex(),
+            Type::Product(prod) => prod.to_latex(),
+            Type::Nat(n) => n.to_latex(),
+            Type::Bool(b) => b.to_latex(),
+            Type::Record(rec) => rec.to_latex(),
         }
     }
 }

@@ -1,4 +1,5 @@
 use common::errors::{TypeKind, TypeMismatch};
+use derivation::latex::LatexFmt;
 use std::fmt;
 use syntax::{
     subst::SubstType,
@@ -47,6 +48,16 @@ impl fmt::Display for Type {
             Type::Var(var) => var.fmt(f),
             Type::Fun(fun) => fun.fmt(f),
             Type::Forall(forall) => forall.fmt(f),
+        }
+    }
+}
+
+impl LatexFmt for Type {
+    fn to_latex(&self) -> String {
+        match self {
+            Type::Var(var) => var.to_latex(),
+            Type::Fun(fun) => fun.to_latex(),
+            Type::Forall(forall) => forall.to_latex(),
         }
     }
 }

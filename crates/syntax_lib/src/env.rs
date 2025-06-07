@@ -7,10 +7,10 @@ pub struct Environment<Ty>
 where
     Ty: Type,
 {
-    var_bindings: HashMap<Var, Ty>,
-    tyvar_bindings: HashMap<TypeVar, Kind>,
-    tyvar_super: HashMap<TypeVar, Ty>,
-    location_bindings: HashMap<Location, Ty>,
+    pub var_bindings: HashMap<Var, Ty>,
+    pub tyvar_bindings: HashMap<TypeVar, Kind>,
+    pub tyvar_super: HashMap<TypeVar, Ty>,
+    pub location_bindings: HashMap<Location, Ty>,
 }
 
 impl<Ty> Environment<Ty>

@@ -5,8 +5,8 @@ where
     T: Term,
     Ty: Type,
 {
-    env: Environment<Ty>,
-    term: T,
+    pub(crate) env: Environment<Ty>,
+    pub(crate) term: T,
     pub(crate) ty: Ty,
 }
 

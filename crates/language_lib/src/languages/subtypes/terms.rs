@@ -1,4 +1,5 @@
 use super::types::Type;
+use derivation::latex::LatexFmt;
 use std::fmt;
 use syntax::{
     subst::{SubstTerm, SubstType},
@@ -74,6 +75,37 @@ impl SubstTerm<Term> for Term {
             Term::If(ift) => ift.subst(v, t),
             Term::Let(lt) => lt.subst(v, t),
             Term::Fix(fix) => fix.subst(v, t),
+        }
+    }
+}
+
+impl LatexFmt for Term {
+    fn to_latex(&self) -> String {
+        match self {
+            Term::Var(var) => var.to_latex(),
+            Term::Lambda(lam) => lam.to_latex(),
+            Term::App(app) => app.to_latex(),
+            Term::Unit(unit) => unit.to_latex(),
+            Term::Record(rec) => rec.to_latex(),
+            Term::RecordProj(proj) => proj.to_latex(),
+            Term::Variant(var) => var.to_latex(),
+            Term::VariantCase(case) => case.to_latex(),
+            Term::Cast(cast) => cast.to_latex(),
+            Term::Nil(nil) => nil.to_latex(),
+            Term::Cons(cons) => cons.to_latex(),
+            Term::ListCase(case) => case.to_latex(),
+            Term::Ref(rf) => rf.to_latex(),
+            Term::Deref(deref) => deref.to_latex(),
+            Term::Assign(assign) => assign.to_latex(),
+            Term::Loc(loc) => loc.to_latex(),
+            Term::Num(num) => num.to_latex(),
+            Term::Succ(succ) => succ.to_latex(),
+            Term::Pred(pred) => pred.to_latex(),
+            Term::True(tru) => tru.to_latex(),
+            Term::False(fls) => fls.to_latex(),
+            Term::If(ift) => ift.to_latex(),
+            Term::Let(lt) => lt.to_latex(),
+            Term::Fix(fix) => fix.to_latex(),
         }
     }
 }

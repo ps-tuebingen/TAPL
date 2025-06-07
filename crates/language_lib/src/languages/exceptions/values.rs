@@ -1,4 +1,5 @@
 use super::{terms::Term, types::Type};
+use derivation::latex::LatexFmt;
 use eval::{
     errors::{ValueKind, ValueMismatch},
     values::{Exception, False, Lambda, Num, Raise, True, Unit, Value as ValueTrait, ValueGroup},
@@ -108,6 +109,20 @@ impl fmt::Display for Value {
             Value::Num(num) => num.fmt(f),
             Value::Exception(exc) => exc.fmt(f),
             Value::Raise(raise) => raise.fmt(f),
+        }
+    }
+}
+
+impl LatexFmt for Value {
+    fn to_latex(&self) -> String {
+        match self {
+            Value::Lambda(lam) => lam.to_latex(),
+            Value::Unit(u) => u.to_latex(),
+            Value::True(tru) => tru.to_latex(),
+            Value::False(fls) => fls.to_latex(),
+            Value::Num(num) => num.to_latex(),
+            Value::Exception(exc) => exc.to_latex(),
+            Value::Raise(raise) => raise.to_latex(),
         }
     }
 }

@@ -1,4 +1,5 @@
 use super::types::Type;
+use derivation::latex::LatexFmt;
 use std::fmt;
 use syntax::{
     subst::{SubstTerm, SubstType},
@@ -84,6 +85,30 @@ impl fmt::Display for Term {
             Term::False(fls) => fls.fmt(f),
             Term::Fix(fix) => fix.fmt(f),
             Term::IsZero(isz) => isz.fmt(f),
+        }
+    }
+}
+
+impl LatexFmt for Term {
+    fn to_latex(&self) -> String {
+        match self {
+            Term::Var(v) => v.to_latex(),
+            Term::Num(c) => c.to_latex(),
+            Term::Succ(s) => s.to_latex(),
+            Term::Pred(p) => p.to_latex(),
+            Term::Lambda(lam) => lam.to_latex(),
+            Term::App(app) => app.to_latex(),
+            Term::Unit(u) => u.to_latex(),
+            Term::Ref(reft) => reft.to_latex(),
+            Term::Deref(dereft) => dereft.to_latex(),
+            Term::Assign(ass) => ass.to_latex(),
+            Term::Loc(loc) => loc.to_latex(),
+            Term::Let(lett) => lett.to_latex(),
+            Term::If(ift) => ift.to_latex(),
+            Term::True(tru) => tru.to_latex(),
+            Term::False(fls) => fls.to_latex(),
+            Term::Fix(fix) => fix.to_latex(),
+            Term::IsZero(isz) => isz.to_latex(),
         }
     }
 }
