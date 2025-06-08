@@ -3,6 +3,9 @@ use syntax::{terms::Term, types::Type};
 
 mod env;
 mod kind;
+mod terms;
+mod types;
+mod values;
 
 pub trait LatexFmt {
     fn to_latex(&self) -> String;
