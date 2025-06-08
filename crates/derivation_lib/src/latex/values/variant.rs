@@ -1,0 +1,13 @@
+use super::super::LatexFmt;
+use eval::values::{Value, Variant};
+use syntax::types::Type;
+
+impl<V, Ty> LatexFmt for Variant<V, Ty>
+where
+    V: Value + LatexFmt,
+    Ty: Type + LatexFmt,
+{
+    fn to_latex(&self) -> String {
+        format!("\\langle {} = {} \\rangle", self.label, self.val.to_latex())
+    }
+}

@@ -6,3 +6,4 @@ edition = "2021"
 [dependencies]
 pest={version="2.7.15"}
 syntax={path="../syntax_lib"}
+eval={path="../eval_lib"}

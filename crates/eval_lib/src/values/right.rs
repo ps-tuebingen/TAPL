@@ -10,7 +10,7 @@ where
     Ty: Type,
 {
     pub right_val: Box<V>,
-    ty: Ty,
+    pub ty: Ty,
 }
 
 impl<V, Ty> Right<V, Ty>

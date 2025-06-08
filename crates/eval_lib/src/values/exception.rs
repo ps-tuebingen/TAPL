@@ -12,7 +12,7 @@ where
     Ty: Type,
     T: Term,
 {
-    ty: Ty,
+    pub ty: Ty,
     phantom: PhantomData<T>,
 }
 

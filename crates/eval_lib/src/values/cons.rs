@@ -11,7 +11,7 @@ where
 {
     pub head: Box<V>,
     pub tail: Box<V>,
-    ty: Ty,
+    pub ty: Ty,
 }
 
 impl<V, Ty> Cons<V, Ty>

@@ -10,8 +10,8 @@ where
     Ty: Type,
 {
     pub val: Box<V>,
-    cont_ty: Ty,
-    exception_ty: Ty,
+    pub cont_ty: Ty,
+    pub exception_ty: Ty,
 }
 
 impl<V, Ty> Raise<V, Ty>
