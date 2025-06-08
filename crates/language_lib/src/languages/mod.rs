@@ -1,6 +1,7 @@
 use super::{errors::UndefinedLanguage, Language};
 use check::Typecheck;
 use common::parse::Parse;
+use derivation::latex::LatexFmt;
 use eval::Eval;
 use std::{fmt, str::FromStr};
 
@@ -113,6 +114,7 @@ where
     pub fn report(
         self,
         debug: bool,
+        latex: bool,
         callback_parse: impl Fn(&str),
         callback_check: impl Fn(&str),
         callback_eval: impl Fn(&str),
@@ -124,6 +126,8 @@ where
                 callback_parse(
                     &(if debug {
                         format!("{parsed:?}")
+                    } else if latex {
+                        parsed.to_latex()
                     } else {
                         parsed.to_string()
                     }),
@@ -138,6 +142,8 @@ where
                 callback_parse(
                     &(if debug {
                         format!("{parsed:?}")
+                    } else if latex {
+                        parsed.to_latex()
                     } else {
                         parsed.to_string()
                     }),
@@ -145,6 +151,8 @@ where
                 callback_check(
                     &(if debug {
                         format!("{checked:?}")
+                    } else if latex {
+                        checked.to_latex()
                     } else {
                         checked.to_string()
                     }),
@@ -159,6 +167,8 @@ where
                 callback_parse(
                     &(if debug {
                         format!("{parsed:?}")
+                    } else if latex {
+                        parsed.to_latex()
                     } else {
                         parsed.to_string()
                     }),
@@ -166,6 +176,8 @@ where
                 callback_check(
                     &(if debug {
                         format!("{checked:?}")
+                    } else if latex {
+                        checked.to_latex()
                     } else {
                         checked.to_string()
                     }),
@@ -173,6 +185,8 @@ where
                 callback_eval(
                     &(if debug {
                         format!("{evaled:?}")
+                    } else if latex {
+                        evaled.to_latex()
                     } else {
                         evaled.to_string()
                     }),
@@ -243,6 +257,7 @@ impl AllLanguages {
         &self,
         input: String,
         debug: bool,
+        latex: bool,
         callback_parse: impl Fn(&str),
         callback_check: impl Fn(&str),
         callback_eval: impl Fn(&str),
@@ -252,6 +267,7 @@ impl AllLanguages {
             Self::UntypedArithmetic(_) => {
                 RunResult::<untyped_arithmetic::UntypedArithmetic>::run_language(input).report(
                     debug,
+                    latex,
                     callback_parse,
                     callback_check,
                     callback_eval,
@@ -261,6 +277,7 @@ impl AllLanguages {
             Self::UntypedLambda(_) => {
                 RunResult::<untyped_lambda::UntypedLambda>::run_language(input).report(
                     debug,
+                    latex,
                     callback_parse,
                     callback_check,
                     callback_eval,
@@ -270,6 +287,7 @@ impl AllLanguages {
             Self::TypedArithmetic(_) => {
                 RunResult::<typed_arithmetic::TypedArithmetic>::run_language(input).report(
                     debug,
+                    latex,
                     callback_parse,
                     callback_check,
                     callback_eval,
@@ -278,6 +296,7 @@ impl AllLanguages {
             }
             Self::Stlc(_) => RunResult::<stlc::Stlc>::run_language(input).report(
                 debug,
+                latex,
                 callback_parse,
                 callback_check,
                 callback_eval,
@@ -285,6 +304,7 @@ impl AllLanguages {
             ),
             Self::References(_) => RunResult::<references::References>::run_language(input).report(
                 debug,
+                latex,
                 callback_parse,
                 callback_check,
                 callback_eval,
@@ -292,6 +312,7 @@ impl AllLanguages {
             ),
             Self::Exceptions(_) => RunResult::<exceptions::Exceptions>::run_language(input).report(
                 debug,
+                latex,
                 callback_parse,
                 callback_check,
                 callback_eval,
@@ -299,6 +320,7 @@ impl AllLanguages {
             ),
             Self::Subtypes(_) => RunResult::<subtypes::Subtypes>::run_language(input).report(
                 debug,
+                latex,
                 callback_parse,
                 callback_check,
                 callback_eval,
@@ -306,6 +328,7 @@ impl AllLanguages {
             ),
             Self::Recursive(_) => RunResult::<recursive::Recursive>::run_language(input).report(
                 debug,
+                latex,
                 callback_parse,
                 callback_check,
                 callback_eval,
@@ -314,6 +337,7 @@ impl AllLanguages {
             Self::Existential(_) => RunResult::<existential::Existential>::run_language(input)
                 .report(
                     debug,
+                    latex,
                     callback_parse,
                     callback_check,
                     callback_eval,
@@ -321,6 +345,7 @@ impl AllLanguages {
                 ),
             Self::SystemF(_) => RunResult::<system_f::SystemF>::run_language(input).report(
                 debug,
+                latex,
                 callback_parse,
                 callback_check,
                 callback_eval,
@@ -330,6 +355,7 @@ impl AllLanguages {
                 RunResult::<bounded_quantification::BoundedQuantification>::run_language(input)
                     .report(
                         debug,
+                        latex,
                         callback_parse,
                         callback_check,
                         callback_eval,
@@ -339,6 +365,7 @@ impl AllLanguages {
             Self::LambdaOmega(_) => RunResult::<lambda_omega::LambdaOmega>::run_language(input)
                 .report(
                     debug,
+                    latex,
                     callback_parse,
                     callback_check,
                     callback_eval,
@@ -347,6 +374,7 @@ impl AllLanguages {
             Self::FOmega(_) => {
                 RunResult::<untyped_arithmetic::UntypedArithmetic>::run_language(input).report(
                     debug,
+                    latex,
                     callback_parse,
                     callback_check,
                     callback_eval,
@@ -355,6 +383,7 @@ impl AllLanguages {
             }
             Self::FOmegaSub(_) => RunResult::<f_omega_sub::FOmegaSub>::run_language(input).report(
                 debug,
+                latex,
                 callback_parse,
                 callback_check,
                 callback_eval,

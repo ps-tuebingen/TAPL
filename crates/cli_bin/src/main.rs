@@ -11,6 +11,8 @@ pub struct Args {
     verbose: bool,
     #[clap(short, long)]
     debug: bool,
+    #[clap(short, long)]
+    latex: bool,
 }
 
 #[derive(Debug, Clone, clap::Args)]
@@ -53,6 +55,7 @@ fn main() {
     args.lang.run(
         src,
         args.debug,
+        args.latex,
         |p| println!("parsed: {p}"),
         |ty| println!("checked: {ty}"),
         |v| println!("evaluated: {v}"),

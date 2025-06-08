@@ -6,6 +6,10 @@ where
     Ty: Type + LatexFmt,
 {
     fn to_latex(&self) -> String {
-        format!("{}\\rightarrow{}", self.from.to_latex(), self.to.to_latex())
+        format!(
+            "{}\\rightarrow {}",
+            self.from.to_latex(),
+            self.to.to_latex()
+        )
     }
 }
