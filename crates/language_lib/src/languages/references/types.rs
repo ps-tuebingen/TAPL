@@ -89,7 +89,7 @@ impl fmt::Display for Type {
 }
 
 impl LatexFmt for Type {
-    fn fmt(&self) -> String {
+    fn to_latex(&self) -> String {
         match self {
             Type::Unit(u) => u.to_latex(),
             Type::Nat(n) => n.to_latex(),

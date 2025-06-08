@@ -98,7 +98,7 @@ impl fmt::Display for Value {
 }
 
 impl LatexFmt for Value {
-    fn fmt(&self) -> String {
+    fn to_latex(&self) -> String {
         match self {
             Value::Lambda(lam) => lam.to_latex(),
             Value::LambdaSub(lam) => lam.to_latex(),

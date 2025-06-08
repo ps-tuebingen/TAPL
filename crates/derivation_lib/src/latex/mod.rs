@@ -5,6 +5,7 @@ mod env;
 mod kind;
 mod terms;
 mod types;
+mod untyped;
 mod values;
 
 pub trait LatexFmt {

@@ -119,7 +119,7 @@ impl fmt::Display for Type {
 }
 
 impl LatexFmt for Type {
-    fn to_latex(&self) -> fmt::Result {
+    fn to_latex(&self) -> String {
         match self {
             Type::Var(var) => var.to_latex(),
             Type::Unit(u) => u.to_latex(),
