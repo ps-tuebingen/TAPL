@@ -94,14 +94,21 @@ impl HtmlContext {
         let lang = self.get_lang();
         let source = self.source_area.value();
         self.out_divs.clear();
-        lang.run(
-            source,
-            false,
-            false,
-            |p| self.out_divs.parsed.set_inner_html(p),
-            |ty| self.out_divs.checked.set_inner_html(ty),
-            |v| self.out_divs.evaled.set_inner_html(v),
-            |err| self.out_divs.error.set_inner_html(err),
-        );
+        let (parse_res, check_res, eval_res, err_res) = lang.run_all(source, &Default::default());
+        if let Some(p) = parse_res {
+            self.out_divs.parsed.set_inner_html(&p);
+        }
+
+        if let Some(c) = check_res {
+            self.out_divs.checked.set_inner_html(&c);
+        }
+
+        if let Some(e) = eval_res {
+            self.out_divs.evaled.set_inner_html(&e);
+        }
+
+        if let Some(e) = err_res {
+            self.out_divs.error.set_inner_html(&e);
+        }
     }
 }

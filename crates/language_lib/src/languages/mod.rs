@@ -1,8 +1,4 @@
-use super::{errors::UndefinedLanguage, Language};
-use check::Typecheck;
-use common::parse::Parse;
-use derivation::latex::LatexFmt;
-use eval::Eval;
+use super::{errors::UndefinedLanguage, FormatMethod, Language};
 use std::{fmt, str::FromStr};
 
 pub mod bounded_quantification;
@@ -34,167 +30,6 @@ pub use system_f::SystemF;
 pub use typed_arithmetic::TypedArithmetic;
 pub use untyped_arithmetic::UntypedArithmetic;
 pub use untyped_lambda::UntypedLambda;
-
-pub enum RunResult<T>
-where
-    T: Language,
-{
-    ParseFail(T::LanguageError),
-    CheckFail {
-        parsed: <T as Language>::Term,
-        check_err: T::LanguageError,
-    },
-    EvalFail {
-        parsed: <T as Language>::Term,
-        checked: <T as Language>::Type,
-        eval_err: T::LanguageError,
-    },
-    Success {
-        parsed: <T as Language>::Term,
-        checked: <T as Language>::Type,
-        evaled: <T as Language>::Value,
-    },
-}
-
-impl<T> RunResult<T>
-where
-    T: Language,
-{
-    pub fn parse_fail(e: T::LanguageError) -> RunResult<T> {
-        RunResult::ParseFail(e)
-    }
-
-    pub fn check_fail(t: <T as Language>::Term, err: T::LanguageError) -> RunResult<T> {
-        RunResult::CheckFail {
-            parsed: t,
-            check_err: err,
-        }
-    }
-
-    pub fn eval_fail(
-        t: <T as Language>::Term,
-        ty: <T as Language>::Type,
-        err: T::LanguageError,
-    ) -> RunResult<T> {
-        RunResult::EvalFail {
-            parsed: t,
-            checked: ty,
-            eval_err: err,
-        }
-    }
-
-    pub fn success(
-        t: <T as Language>::Term,
-        ty: <T as Language>::Type,
-        v: <T as Language>::Value,
-    ) -> RunResult<T> {
-        RunResult::Success {
-            parsed: t,
-            checked: ty,
-            evaled: v,
-        }
-    }
-
-    pub fn run_language(input: String) -> RunResult<T> {
-        let parsed = match <<T as Language>::Term as Parse>::parse(input) {
-            Ok(p) => p,
-            Err(err) => return RunResult::parse_fail(err),
-        };
-        let checked = match <<T as Language>::Term as Typecheck>::check_start(&parsed) {
-            Ok(ty) => ty,
-            Err(err) => return RunResult::check_fail(parsed, err.into()),
-        };
-        let evaled = match <<T as Language>::Term as Eval>::eval_start(parsed.clone()) {
-            Ok(v) => v,
-            Err(err) => return RunResult::eval_fail(parsed, checked.ty(), err.into()),
-        };
-        RunResult::success(parsed, checked.ty(), evaled)
-    }
-
-    pub fn report(
-        self,
-        debug: bool,
-        latex: bool,
-        callback_parse: impl Fn(&str),
-        callback_check: impl Fn(&str),
-        callback_eval: impl Fn(&str),
-        callback_err: impl Fn(&str),
-    ) {
-        match self {
-            RunResult::ParseFail(err) => callback_err(&err.to_string()),
-            RunResult::CheckFail { parsed, check_err } => {
-                callback_parse(
-                    &(if debug {
-                        format!("{parsed:?}")
-                    } else if latex {
-                        parsed.to_latex(&mut Default::default())
-                    } else {
-                        parsed.to_string()
-                    }),
-                );
-                callback_err(&check_err.to_string());
-            }
-            RunResult::EvalFail {
-                parsed,
-                checked,
-                eval_err,
-            } => {
-                callback_parse(
-                    &(if debug {
-                        format!("{parsed:?}")
-                    } else if latex {
-                        parsed.to_latex(&mut Default::default())
-                    } else {
-                        parsed.to_string()
-                    }),
-                );
-                callback_check(
-                    &(if debug {
-                        format!("{checked:?}")
-                    } else if latex {
-                        checked.to_latex(&mut Default::default())
-                    } else {
-                        checked.to_string()
-                    }),
-                );
-                callback_err(&eval_err.to_string());
-            }
-            RunResult::Success {
-                parsed,
-                checked,
-                evaled,
-            } => {
-                callback_parse(
-                    &(if debug {
-                        format!("{parsed:?}")
-                    } else if latex {
-                        parsed.to_latex(&mut Default::default())
-                    } else {
-                        parsed.to_string()
-                    }),
-                );
-                callback_check(
-                    &(if debug {
-                        format!("{checked:?}")
-                    } else if latex {
-                        checked.to_latex(&mut Default::default())
-                    } else {
-                        checked.to_string()
-                    }),
-                );
-                callback_eval(
-                    &(if debug {
-                        format!("{evaled:?}")
-                    } else if latex {
-                        evaled.to_latex(&mut Default::default())
-                    } else {
-                        evaled.to_string()
-                    }),
-                )
-            }
-        }
-    }
-}
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum AllLanguages {
@@ -253,142 +88,338 @@ impl AllLanguages {
         }
     }
 
-    pub fn run(
+    pub fn parse(
         &self,
         input: String,
-        debug: bool,
-        latex: bool,
-        callback_parse: impl Fn(&str),
-        callback_check: impl Fn(&str),
-        callback_eval: impl Fn(&str),
-        callback_err: impl Fn(&str),
+        method: &FormatMethod,
+    ) -> Result<String, Box<dyn std::error::Error>> {
+        match self {
+            Self::UntypedArithmetic(ua) => {
+                let res = ua.parse(input)?;
+                Ok(ua.format_term(&res, method))
+            }
+            Self::UntypedLambda(ul) => {
+                let res = ul.parse(input)?;
+                Ok(ul.format_term(&res, method))
+            }
+            Self::TypedArithmetic(ta) => {
+                let res = ta.parse(input)?;
+                Ok(ta.format_term(&res, method))
+            }
+            Self::Stlc(stlc) => {
+                let res = stlc.parse(input)?;
+                Ok(stlc.format_term(&res, method))
+            }
+            Self::References(rf) => {
+                let res = rf.parse(input)?;
+                Ok(rf.format_term(&res, method))
+            }
+            Self::Exceptions(ex) => {
+                let res = ex.parse(input)?;
+                Ok(ex.format_term(&res, method))
+            }
+            Self::Subtypes(s) => {
+                let res = s.parse(input)?;
+                Ok(s.format_term(&res, method))
+            }
+            Self::Recursive(rec) => {
+                let res = rec.parse(input)?;
+                Ok(rec.format_term(&res, method))
+            }
+            Self::Existential(ex) => {
+                let res = ex.parse(input)?;
+                Ok(ex.format_term(&res, method))
+            }
+            Self::SystemF(sys) => {
+                let res = sys.parse(input)?;
+                Ok(sys.format_term(&res, method))
+            }
+            Self::BoundedQuantification(bd) => {
+                let res = bd.parse(input)?;
+                Ok(bd.format_term(&res, method))
+            }
+            Self::LambdaOmega(lo) => {
+                let res = lo.parse(input)?;
+                Ok(lo.format_term(&res, method))
+            }
+            Self::FOmega(fo) => {
+                let res = fo.parse(input)?;
+                Ok(fo.format_term(&res, method))
+            }
+            Self::FOmegaSub(fos) => {
+                let res = fos.parse(input)?;
+                Ok(fos.format_term(&res, method))
+            }
+        }
+    }
+
+    pub fn check(
+        &self,
+        input: String,
+        method: &FormatMethod,
+    ) -> Result<String, Box<dyn std::error::Error>> {
+        match self {
+            Self::UntypedArithmetic(ua) => {
+                let res = ua.check(input)?;
+                Ok(ua.format_derivation(&res, method))
+            }
+            Self::UntypedLambda(ul) => {
+                let res = ul.check(input)?;
+                Ok(ul.format_derivation(&res, method))
+            }
+            Self::TypedArithmetic(ta) => {
+                let res = ta.check(input)?;
+                Ok(ta.format_derivation(&res, method))
+            }
+            Self::Stlc(stlc) => {
+                let res = stlc.check(input)?;
+                Ok(stlc.format_derivation(&res, method))
+            }
+            Self::References(rf) => {
+                let res = rf.check(input)?;
+                Ok(rf.format_derivation(&res, method))
+            }
+            Self::Exceptions(ex) => {
+                let res = ex.check(input)?;
+                Ok(ex.format_derivation(&res, method))
+            }
+            Self::Subtypes(s) => {
+                let res = s.check(input)?;
+                Ok(s.format_derivation(&res, method))
+            }
+            Self::Recursive(rec) => {
+                let res = rec.check(input)?;
+                Ok(rec.format_derivation(&res, method))
+            }
+            Self::Existential(ex) => {
+                let res = ex.check(input)?;
+                Ok(ex.format_derivation(&res, method))
+            }
+            Self::SystemF(sys) => {
+                let res = sys.check(input)?;
+                Ok(sys.format_derivation(&res, method))
+            }
+            Self::BoundedQuantification(bd) => {
+                let res = bd.check(input)?;
+                Ok(bd.format_derivation(&res, method))
+            }
+            Self::LambdaOmega(lo) => {
+                let res = lo.check(input)?;
+                Ok(lo.format_derivation(&res, method))
+            }
+            Self::FOmega(fo) => {
+                let res = fo.check(input)?;
+                Ok(fo.format_derivation(&res, method))
+            }
+            Self::FOmegaSub(fos) => {
+                let res = fos.check(input)?;
+                Ok(fos.format_derivation(&res, method))
+            }
+        }
+    }
+
+    pub fn eval(
+        &self,
+        input: String,
+        method: &FormatMethod,
+    ) -> Result<String, Box<dyn std::error::Error>> {
+        match self {
+            Self::UntypedArithmetic(ua) => {
+                let res = ua.eval(input)?;
+                Ok(ua.format_value(&res, method))
+            }
+            Self::UntypedLambda(ul) => {
+                let res = ul.eval(input)?;
+                Ok(ul.format_value(&res, method))
+            }
+            Self::TypedArithmetic(ta) => {
+                let res = ta.eval(input)?;
+                Ok(ta.format_value(&res, method))
+            }
+            Self::Stlc(stlc) => {
+                let res = stlc.eval(input)?;
+                Ok(stlc.format_value(&res, method))
+            }
+            Self::References(rf) => {
+                let res = rf.eval(input)?;
+                Ok(rf.format_value(&res, method))
+            }
+            Self::Exceptions(ex) => {
+                let res = ex.eval(input)?;
+                Ok(ex.format_value(&res, method))
+            }
+            Self::Subtypes(s) => {
+                let res = s.eval(input)?;
+                Ok(s.format_value(&res, method))
+            }
+            Self::Recursive(rec) => {
+                let res = rec.eval(input)?;
+                Ok(rec.format_value(&res, method))
+            }
+            Self::Existential(ex) => {
+                let res = ex.eval(input)?;
+                Ok(ex.format_value(&res, method))
+            }
+            Self::SystemF(sys) => {
+                let res = sys.eval(input)?;
+                Ok(sys.format_value(&res, method))
+            }
+            Self::BoundedQuantification(bd) => {
+                let res = bd.eval(input)?;
+                Ok(bd.format_value(&res, method))
+            }
+            Self::LambdaOmega(lo) => {
+                let res = lo.eval(input)?;
+                Ok(lo.format_value(&res, method))
+            }
+            Self::FOmega(fo) => {
+                let res = fo.eval(input)?;
+                Ok(fo.format_value(&res, method))
+            }
+            Self::FOmegaSub(fos) => {
+                let res = fos.eval(input)?;
+                Ok(fos.format_value(&res, method))
+            }
+        }
+    }
+
+    pub fn run_all(
+        &self,
+        input: String,
+        method: &FormatMethod,
+    ) -> (
+        Option<String>,
+        Option<String>,
+        Option<String>,
+        Option<String>,
     ) {
         match self {
-            Self::UntypedArithmetic(_) => {
-                RunResult::<untyped_arithmetic::UntypedArithmetic>::run_language(input).report(
-                    debug,
-                    latex,
-                    callback_parse,
-                    callback_check,
-                    callback_eval,
-                    callback_err,
+            Self::UntypedArithmetic(ua) => {
+                let (parse_res, check_res, eval_res, err) = ua.run_all(input);
+                (
+                    parse_res.map(|p| ua.format_term(&p, method)),
+                    check_res.map(|c| ua.format_derivation(&c, method)),
+                    eval_res.map(|e| ua.format_value(&e, method)),
+                    err.map(|e| e.to_string()),
                 )
             }
-            Self::UntypedLambda(_) => {
-                RunResult::<untyped_lambda::UntypedLambda>::run_language(input).report(
-                    debug,
-                    latex,
-                    callback_parse,
-                    callback_check,
-                    callback_eval,
-                    callback_err,
+            Self::UntypedLambda(ul) => {
+                let (parse_res, check_res, eval_res, err) = ul.run_all(input);
+                (
+                    parse_res.map(|p| ul.format_term(&p, method)),
+                    check_res.map(|c| ul.format_derivation(&c, method)),
+                    eval_res.map(|e| ul.format_value(&e, method)),
+                    err.map(|e| e.to_string()),
                 )
             }
-            Self::TypedArithmetic(_) => {
-                RunResult::<typed_arithmetic::TypedArithmetic>::run_language(input).report(
-                    debug,
-                    latex,
-                    callback_parse,
-                    callback_check,
-                    callback_eval,
-                    callback_err,
+            Self::TypedArithmetic(ta) => {
+                let (parse_res, check_res, eval_res, err) = ta.run_all(input);
+                (
+                    parse_res.map(|p| ta.format_term(&p, method)),
+                    check_res.map(|c| ta.format_derivation(&c, method)),
+                    eval_res.map(|e| ta.format_value(&e, method)),
+                    err.map(|e| e.to_string()),
                 )
             }
-            Self::Stlc(_) => RunResult::<stlc::Stlc>::run_language(input).report(
-                debug,
-                latex,
-                callback_parse,
-                callback_check,
-                callback_eval,
-                callback_err,
-            ),
-            Self::References(_) => RunResult::<references::References>::run_language(input).report(
-                debug,
-                latex,
-                callback_parse,
-                callback_check,
-                callback_eval,
-                callback_err,
-            ),
-            Self::Exceptions(_) => RunResult::<exceptions::Exceptions>::run_language(input).report(
-                debug,
-                latex,
-                callback_parse,
-                callback_check,
-                callback_eval,
-                callback_err,
-            ),
-            Self::Subtypes(_) => RunResult::<subtypes::Subtypes>::run_language(input).report(
-                debug,
-                latex,
-                callback_parse,
-                callback_check,
-                callback_eval,
-                callback_err,
-            ),
-            Self::Recursive(_) => RunResult::<recursive::Recursive>::run_language(input).report(
-                debug,
-                latex,
-                callback_parse,
-                callback_check,
-                callback_eval,
-                callback_err,
-            ),
-            Self::Existential(_) => RunResult::<existential::Existential>::run_language(input)
-                .report(
-                    debug,
-                    latex,
-                    callback_parse,
-                    callback_check,
-                    callback_eval,
-                    callback_err,
-                ),
-            Self::SystemF(_) => RunResult::<system_f::SystemF>::run_language(input).report(
-                debug,
-                latex,
-                callback_parse,
-                callback_check,
-                callback_eval,
-                callback_err,
-            ),
-            Self::BoundedQuantification(_) => {
-                RunResult::<bounded_quantification::BoundedQuantification>::run_language(input)
-                    .report(
-                        debug,
-                        latex,
-                        callback_parse,
-                        callback_check,
-                        callback_eval,
-                        callback_err,
-                    )
-            }
-            Self::LambdaOmega(_) => RunResult::<lambda_omega::LambdaOmega>::run_language(input)
-                .report(
-                    debug,
-                    latex,
-                    callback_parse,
-                    callback_check,
-                    callback_eval,
-                    callback_err,
-                ),
-            Self::FOmega(_) => {
-                RunResult::<untyped_arithmetic::UntypedArithmetic>::run_language(input).report(
-                    debug,
-                    latex,
-                    callback_parse,
-                    callback_check,
-                    callback_eval,
-                    callback_err,
+            Self::Stlc(stlc) => {
+                let (parse_res, check_res, eval_res, err) = stlc.run_all(input);
+                (
+                    parse_res.map(|p| stlc.format_term(&p, method)),
+                    check_res.map(|c| stlc.format_derivation(&c, method)),
+                    eval_res.map(|e| stlc.format_value(&e, method)),
+                    err.map(|e| e.to_string()),
                 )
             }
-            Self::FOmegaSub(_) => RunResult::<f_omega_sub::FOmegaSub>::run_language(input).report(
-                debug,
-                latex,
-                callback_parse,
-                callback_check,
-                callback_eval,
-                callback_err,
-            ),
+            Self::References(rf) => {
+                let (parse_res, check_res, eval_res, err) = rf.run_all(input);
+                (
+                    parse_res.map(|p| rf.format_term(&p, method)),
+                    check_res.map(|c| rf.format_derivation(&c, method)),
+                    eval_res.map(|e| rf.format_value(&e, method)),
+                    err.map(|e| e.to_string()),
+                )
+            }
+            Self::Exceptions(ex) => {
+                let (parse_res, check_res, eval_res, err) = ex.run_all(input);
+                (
+                    parse_res.map(|p| ex.format_term(&p, method)),
+                    check_res.map(|c| ex.format_derivation(&c, method)),
+                    eval_res.map(|e| ex.format_value(&e, method)),
+                    err.map(|e| e.to_string()),
+                )
+            }
+            Self::Subtypes(s) => {
+                let (parse_res, check_res, eval_res, err) = s.run_all(input);
+                (
+                    parse_res.map(|p| s.format_term(&p, method)),
+                    check_res.map(|c| s.format_derivation(&c, method)),
+                    eval_res.map(|e| s.format_value(&e, method)),
+                    err.map(|e| e.to_string()),
+                )
+            }
+            Self::Recursive(rec) => {
+                let (parse_res, check_res, eval_res, err) = rec.run_all(input);
+                (
+                    parse_res.map(|p| rec.format_term(&p, method)),
+                    check_res.map(|c| rec.format_derivation(&c, method)),
+                    eval_res.map(|e| rec.format_value(&e, method)),
+                    err.map(|e| e.to_string()),
+                )
+            }
+            Self::Existential(ex) => {
+                let (parse_res, check_res, eval_res, err) = ex.run_all(input);
+                (
+                    parse_res.map(|p| ex.format_term(&p, method)),
+                    check_res.map(|c| ex.format_derivation(&c, method)),
+                    eval_res.map(|e| ex.format_value(&e, method)),
+                    err.map(|e| e.to_string()),
+                )
+            }
+            Self::SystemF(sys) => {
+                let (parse_res, check_res, eval_res, err) = sys.run_all(input);
+                (
+                    parse_res.map(|p| sys.format_term(&p, method)),
+                    check_res.map(|c| sys.format_derivation(&c, method)),
+                    eval_res.map(|e| sys.format_value(&e, method)),
+                    err.map(|e| e.to_string()),
+                )
+            }
+            Self::BoundedQuantification(bd) => {
+                let (parse_res, check_res, eval_res, err) = bd.run_all(input);
+                (
+                    parse_res.map(|p| bd.format_term(&p, method)),
+                    check_res.map(|c| bd.format_derivation(&c, method)),
+                    eval_res.map(|e| bd.format_value(&e, method)),
+                    err.map(|e| e.to_string()),
+                )
+            }
+            Self::LambdaOmega(lo) => {
+                let (parse_res, check_res, eval_res, err) = lo.run_all(input);
+                (
+                    parse_res.map(|p| lo.format_term(&p, method)),
+                    check_res.map(|c| lo.format_derivation(&c, method)),
+                    eval_res.map(|e| lo.format_value(&e, method)),
+                    err.map(|e| e.to_string()),
+                )
+            }
+            Self::FOmega(fo) => {
+                let (parse_res, check_res, eval_res, err) = fo.run_all(input);
+                (
+                    parse_res.map(|p| fo.format_term(&p, method)),
+                    check_res.map(|c| fo.format_derivation(&c, method)),
+                    eval_res.map(|e| fo.format_value(&e, method)),
+                    err.map(|e| e.to_string()),
+                )
+            }
+            Self::FOmegaSub(fos) => {
+                let (parse_res, check_res, eval_res, err) = fos.run_all(input);
+                (
+                    parse_res.map(|p| fos.format_term(&p, method)),
+                    check_res.map(|c| fos.format_derivation(&c, method)),
+                    eval_res.map(|e| fos.format_value(&e, method)),
+                    err.map(|e| e.to_string()),
+                )
+            }
         }
     }
 }

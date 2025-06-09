@@ -4,6 +4,7 @@ use web_sys::Document;
 
 mod context;
 mod example_select;
+#[rustfmt::skip]
 mod examples;
 mod out_divs;
 

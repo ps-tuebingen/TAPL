@@ -1,6 +1,6 @@
 use check::{Kindcheck, Normalize, Subtypecheck, Typecheck};
 use common::parse::Parse;
-use derivation::latex::LatexFmt;
+use derivation::{latex::LatexFmt, Derivation};
 use eval::{env::EvalEnvironment, values::ValueGroup, Eval};
 use syntax::{
     subst::{SubstTerm, SubstType},
@@ -12,6 +12,14 @@ pub mod errors;
 pub mod languages;
 
 pub use languages::AllLanguages;
+
+#[derive(Default)]
+pub enum FormatMethod {
+    #[default]
+    Simple,
+    Latex,
+    Debug,
+}
 
 pub trait Language {
     type Term: Term
@@ -40,4 +48,88 @@ pub trait Language {
     type LanguageError: std::error::Error;
 
     type EvalEnv: EvalEnvironment<Self::Value>;
+
+    fn parse(&self, input: String) -> Result<Self::Term, Self::LanguageError> {
+        Self::Term::parse(input)
+    }
+
+    fn check(
+        &self,
+        input: String,
+    ) -> Result<Derivation<Self::Term, Self::Type>, Self::LanguageError> {
+        let parsed = Self::Term::parse(input)?;
+        Self::Term::check_start(&parsed).map_err(|err| err.into())
+    }
+
+    fn eval(&self, input: String) -> Result<Self::Value, Self::LanguageError> {
+        let parsed = Self::Term::parse(input)?;
+        Self::Term::eval_start(parsed).map_err(|err| err.into())
+    }
+
+    fn run_all(
+        &self,
+        input: String,
+    ) -> (
+        Option<Self::Term>,
+        Option<Derivation<Self::Term, Self::Type>>,
+        Option<Self::Value>,
+        Option<Self::LanguageError>,
+    ) {
+        let mut res = (None, None, None, None);
+        let parsed = match Self::Term::parse(input) {
+            Ok(p) => p,
+            Err(err) => {
+                res.3 = Some(err);
+                return res;
+            }
+        };
+        res.0 = Some(parsed.clone());
+
+        let checked = match parsed.check_start() {
+            Ok(ty) => ty,
+            Err(err) => {
+                res.3 = Some(err.into());
+                return res;
+            }
+        };
+        res.1 = Some(checked);
+
+        let evaled = match parsed.eval_start() {
+            Ok(v) => v,
+            Err(err) => {
+                res.3 = Some(err.into());
+                return res;
+            }
+        };
+        res.2 = Some(evaled);
+        res
+    }
+
+    fn format_derivation(
+        &self,
+        deriv: &Derivation<Self::Term, Self::Type>,
+        method: &FormatMethod,
+    ) -> String {
+        match method {
+            FormatMethod::Simple => deriv.ty().to_string(),
+            FormatMethod::Latex => deriv.to_latex(&mut Default::default()),
+            FormatMethod::Debug => format!("{:?}", deriv.ty()),
+        }
+    }
+
+    fn format_term(&self, term: &Self::Term, method: &FormatMethod) -> String {
+        match method {
+            FormatMethod::Simple => term.to_string(),
+            FormatMethod::Latex => term.to_latex(&mut Default::default()),
+            FormatMethod::Debug => format!("{:?}", term),
+        }
+    }
+
+    fn format_value(&self, val: &Self::Value, method: &FormatMethod) -> String {
+        match method {
+            FormatMethod::Simple => val.to_string(),
+            FormatMethod::Latex => val.to_latex(&mut Default::default()),
+            FormatMethod::Debug => format!("{val:?}"),
+        }
+    }
 }
