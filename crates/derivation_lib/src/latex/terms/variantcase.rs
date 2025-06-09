@@ -7,7 +7,7 @@ where
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!(
-            "case {} of \\{{ {} \\}}",
+            "\\text{{case}} {} \\text{{of}} \\{{ {} \\}}",
             self.bound_term.to_latex(conf),
             self.patterns
                 .iter()

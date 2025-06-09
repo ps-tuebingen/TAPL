@@ -7,7 +7,7 @@ where
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!(
-            "try \\{{ {} \\}} catch \\{{ {} \\}}",
+            "\\text{{try}} \\{{ {} \\}} \\text{{catch}} \\{{ {} \\}}",
             self.term.to_latex(conf),
             self.handler.to_latex(conf)
         )

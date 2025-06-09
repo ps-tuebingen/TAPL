@@ -11,7 +11,7 @@ where
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!(
-            "\\{{*({}),{}\\}} as {}",
+            "\\{{*({}),{}\\}} \\text{{as}} {}",
             self.inner_ty.to_latex(conf),
             self.term.to_latex(conf),
             self.outer_ty.to_latex(conf)

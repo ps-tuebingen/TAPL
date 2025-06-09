@@ -6,6 +6,6 @@ where
     Ty: Type + LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
-        format!("Sink[{}]", self.ty.to_latex(conf))
+        format!("\\text{{Sink}}[{}]", self.ty.to_latex(conf))
     }
 }

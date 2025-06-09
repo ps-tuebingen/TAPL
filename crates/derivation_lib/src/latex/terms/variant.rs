@@ -11,7 +11,7 @@ where
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!(
-            "\\langle {} = {} \\rangle as {}",
+            "\\langle {} = {} \\rangle \\text{{as}} {}",
             self.label,
             self.term.to_latex(conf),
             self.ty.to_latex(conf)

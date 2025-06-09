@@ -6,6 +6,6 @@ where
     T: Term + LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
-        format!("ref({})", self.term.to_latex(conf))
+        format!("\\text{{ref}}({})", self.term.to_latex(conf))
     }
 }

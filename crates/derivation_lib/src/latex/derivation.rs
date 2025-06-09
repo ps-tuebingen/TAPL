@@ -66,7 +66,7 @@ where
     Ty: Type + LatexFmt,
 {
     let mut premise_str = "".to_owned();
-    if deriv.premises.len() == 0 {
+    if deriv.premises.is_empty() {
         premise_str = "\\quad".to_owned();
     } else {
         let cs = (0..deriv.premises.len())
@@ -81,7 +81,7 @@ where
     }
 
     format!(
-        "\\[\n\\frac{{ {} }}{{ {} }} \\quad \\textsc{{ {} }}\n\\]",
+        "\\[\n\\frac{{ {} }}{{ {} }} \\quad \\text{{ {} }}\n\\]",
         premise_str,
         deriv.conc.to_latex(conf),
         deriv.label

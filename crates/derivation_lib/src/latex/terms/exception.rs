@@ -10,6 +10,6 @@ where
     Ty: Type + LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
-        format!("error[{}]", self.ty.to_latex(conf))
+        format!("\\text{{error}}[{}]", self.ty.to_latex(conf))
     }
 }

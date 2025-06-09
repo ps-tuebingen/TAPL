@@ -6,6 +6,6 @@ where
     Ty: Type + LatexFmt,
 {
     fn to_latex(&self, _: &mut LatexConfig) -> String {
-        "Bool".to_owned()
+        "\\text{Bool}".to_owned()
     }
 }

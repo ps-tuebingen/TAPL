@@ -3,6 +3,6 @@ use syntax::types::Bot;
 
 impl LatexFmt for Bot {
     fn to_latex(&self, _: &mut LatexConfig) -> String {
-        "Bot".to_owned()
+        "\\text{Bot}".to_owned()
     }
 }

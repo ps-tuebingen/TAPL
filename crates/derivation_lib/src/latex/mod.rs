@@ -14,13 +14,26 @@ pub struct LatexConfig {
     pub use_frac_array: bool,
 }
 
+impl LatexConfig {
+    pub fn new() -> LatexConfig {
+        LatexConfig::default()
+    }
+
+    pub fn new_frac() -> LatexConfig {
+        LatexConfig {
+            include_tree_env: true,
+            use_frac_array: true,
+        }
+    }
+}
+
 pub trait LatexFmt {
     fn to_latex(&self, conf: &mut LatexConfig) -> String;
     fn to_document(&self, conf: &mut LatexConfig) -> String {
         let mut out = "".to_owned();
         out += "\\documentclass{article}\n";
-        out += "\\usepackage[paperheight=226in,paperwidth=226in,margin=0in,landscape]{geometry}";
         out += "\\usepackage{bussproofs}\n";
+        out += "\\usepackage{amsmath}\n";
         out += "\\begin{document}\n";
         out += &self.to_latex(conf);
         out += "\\end{document}\n";

@@ -6,6 +6,6 @@ where
     Ty: Type + LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
-        format!("List[{}]", self.ty.to_latex(conf))
+        format!("\\text{{List}}[{}]", self.ty.to_latex(conf))
     }
 }

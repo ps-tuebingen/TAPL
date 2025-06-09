@@ -7,7 +7,7 @@ where
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!(
-            "case {} of \\{{ Nil \\Rightarrow {} \\mid Cons({},{}) \\Rightarrow {} \\}}",
+            "\\text{{case}} {} \\text{{of}} \\{{ \\text{{Nil}} \\Rightarrow {} \\mid \\text{{Cons}}({},{}) \\Rightarrow {} \\}}",
             self.bound_term.to_latex(conf),
             self.nil_rhs.to_latex(conf),
             self.cons_fst,

@@ -7,7 +7,7 @@ where
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!(
-            "case {} of \\{{ Nothing \\Rightarrow {} \\mid Something({}) \\Rightarrow {} \\}}",
+            "\\text{{case}} {} \\text{{of}} \\{{ \\text{{Nothing}} \\Rightarrow {} \\mid \\text{{Something}}({}) \\Rightarrow {} \\}}",
             self.bound_term.to_latex(conf),
             self.none_term.to_latex(conf),
             self.some_var,

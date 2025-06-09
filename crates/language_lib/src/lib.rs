@@ -1,6 +1,9 @@
 use check::{Kindcheck, Normalize, Subtypecheck, Typecheck};
 use common::parse::Parse;
-use derivation::{latex::LatexFmt, Derivation};
+use derivation::{
+    latex::{LatexConfig, LatexFmt},
+    Derivation,
+};
 use eval::{env::EvalEnvironment, values::ValueGroup, Eval};
 use syntax::{
     subst::{SubstTerm, SubstType},
@@ -17,7 +20,8 @@ pub use languages::AllLanguages;
 pub enum FormatMethod {
     #[default]
     Simple,
-    Latex,
+    LatexBus,
+    LatexFrac,
     Debug,
 }
 
@@ -131,7 +135,8 @@ pub trait Language {
     ) -> String {
         match method {
             FormatMethod::Simple => deriv.ty().to_string(),
-            FormatMethod::Latex => deriv.to_latex(&mut Default::default()),
+            FormatMethod::LatexBus => deriv.to_latex(&mut Default::default()),
+            FormatMethod::LatexFrac => deriv.to_latex(&mut LatexConfig::new_frac()),
             FormatMethod::Debug => format!("{:?}", deriv.ty()),
         }
     }
@@ -139,7 +144,8 @@ pub trait Language {
     fn format_term(&self, term: &Self::Term, method: &FormatMethod) -> String {
         match method {
             FormatMethod::Simple => term.to_string(),
-            FormatMethod::Latex => term.to_latex(&mut Default::default()),
+            FormatMethod::LatexBus => term.to_latex(&mut Default::default()),
+            FormatMethod::LatexFrac => term.to_latex(&mut LatexConfig::new_frac()),
             FormatMethod::Debug => format!("{:?}", term),
         }
     }
@@ -147,7 +153,8 @@ pub trait Language {
     fn format_value(&self, val: &Self::Value, method: &FormatMethod) -> String {
         match method {
             FormatMethod::Simple => val.to_string(),
-            FormatMethod::Latex => val.to_latex(&mut Default::default()),
+            FormatMethod::LatexBus => val.to_latex(&mut Default::default()),
+            FormatMethod::LatexFrac => val.to_latex(&mut LatexConfig::new_frac()),
             FormatMethod::Debug => format!("{val:?}"),
         }
     }

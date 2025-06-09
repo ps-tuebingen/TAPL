@@ -11,7 +11,7 @@ where
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!(
-            "tail[{}]({})",
+            "\\text{{tail}}[{}]({})",
             self.ty.to_latex(conf),
             self.term.to_latex(conf)
         )

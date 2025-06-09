@@ -11,7 +11,7 @@ where
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!(
-            "fold[{}]{}",
+            "\\text{{fold}}[{}]{}",
             self.ty.to_latex(conf),
             self.term.to_latex(conf)
         )

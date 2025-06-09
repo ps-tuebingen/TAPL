@@ -10,6 +10,6 @@ where
     Ty: Type + LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
-        format!("nil[{}]", self.ty.to_latex(conf))
+        format!("\\text{{nil}}[{}]", self.ty.to_latex(conf))
     }
 }

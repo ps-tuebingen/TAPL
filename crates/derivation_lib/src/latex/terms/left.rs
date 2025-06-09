@@ -11,7 +11,7 @@ where
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!(
-            "inl({}) as {}",
+            "\\text{{inl}}({}) \\text{{as}} {}",
             self.left_term.to_latex(conf),
             self.ty.to_latex(conf)
         )

@@ -11,7 +11,7 @@ where
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!(
-            "Cons[{}]({},{})",
+            "\\text{{Cons}}[{}]({},{})",
             self.ty.to_latex(conf),
             self.head.to_latex(conf),
             self.tail.to_latex(conf)
