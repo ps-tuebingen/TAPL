@@ -10,8 +10,6 @@ pub const INSTRCOUNTERCLASS: &str = include_str!("../../../../examples/subtypes/
 
 pub const DOWNCAST: &str = include_str!("../../../../examples/subtypes/downcast/downcast.sub");
 
-pub const NEWINSTRCOUNTER: &str = include_str!("../../../../examples/subtypes/newinstrcounter/newinstrcounter.sub");
-
 pub const REFNAT: &str = include_str!("../../../../examples/subtypes/refnat/refnat.sub");
 
 pub const SETCOUNTERCLASS: &str = include_str!("../../../../examples/subtypes/setcounterclass/setcounterclass.sub");
@@ -42,7 +40,6 @@ pub fn subtypes_all() -> Vec<(&'static str,&'static str)> {
 ("lambdarec",LAMBDAREC), 
 ("instrcounterclass",INSTRCOUNTERCLASS), 
 ("downcast",DOWNCAST), 
-("newinstrcounter",NEWINSTRCOUNTER), 
 ("refnat",REFNAT), 
 ("setcounterclass",SETCOUNTERCLASS), 
 ("list",LIST), 
