@@ -9,7 +9,7 @@ where
     T: Term + LatexFmt,
     Ty: Type + LatexFmt,
 {
-    fn to_latex(&self, _: &mut LatexConfig) -> String {
-        format!("{} as {}", self.term, self.ty)
+    fn to_latex(&self, conf: &mut LatexConfig) -> String {
+        format!("{} as {}", self.term.to_latex(conf), self.ty.to_latex(conf))
     }
 }
