@@ -1,9 +1,10 @@
 use language::languages::recursive::terms::Term;
 use std::path::PathBuf;
-use test_utils::errors::Error;
 use test_utils::{
     check_test::CheckTest,
+    errors::Error,
     eval_test::EvalTest,
+    latex_test::LatexTest,
     load_tests::{load_dir, TestContents},
     parse_test::ParseTest,
     paths::{EXAMPLES_PATH, RECURSIVE_PATH},
@@ -62,6 +63,8 @@ impl TestSuite for RecursiveTests {
             let eval_test =
                 EvalTest::<Term>::new(&tst.source_name, &tst.source_contents, &tst.conf.evaluated);
             tests.push(Box::new(eval_test) as Box<dyn Test>);
+            let latex_test = LatexTest::<Term>::new(&tst.source_name, &tst.source_contents);
+            tests.push(Box::new(latex_test) as Box<dyn Test>);
         }
         Ok(tests)
     }

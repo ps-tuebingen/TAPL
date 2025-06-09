@@ -1,8 +1,9 @@
 use language::languages::subtypes::terms::Term;
 use std::path::PathBuf;
-use test_utils::errors::Error;
 use test_utils::{
     check_test::CheckTest,
+    errors::Error,
+    latex_test::LatexTest,
     load_tests::{load_dir, TestContents},
     parse_test::ParseTest,
     paths::{EXAMPLES_PATH, SUBTYPES_PATH},
@@ -58,6 +59,8 @@ impl TestSuite for SubtypesTests {
             let check_test =
                 CheckTest::<Term>::new(&tst.source_name, &tst.source_contents, &tst.conf.ty);
             tests.push(Box::new(check_test) as Box<dyn Test>);
+            let latex_test = LatexTest::<Term>::new(&tst.source_name, &tst.source_contents);
+            tests.push(Box::new(latex_test) as Box<dyn Test>);
         }
         Ok(tests)
     }

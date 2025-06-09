@@ -1,8 +1,9 @@
 use language::languages::untyped_arithmetic::terms::Term;
 use std::path::PathBuf;
-use test_utils::errors::Error;
 use test_utils::{
+    errors::Error,
     eval_test::EvalTest,
+    latex_test::LatexTest,
     load_tests::{load_dir, TestContents},
     parse_test::ParseTest,
     paths::{EXAMPLES_PATH, UNTYPED_ARITH_PATH},
@@ -61,6 +62,8 @@ impl TestSuite for UntypedArithTests {
                 &content.conf.expected,
             );
             tests.push(Box::new(eval_test) as Box<dyn Test>);
+            let latex_test = LatexTest::<Term>::new(&content.source_name, &content.source_contents);
+            tests.push(Box::new(latex_test) as Box<dyn Test>);
         }
         Ok(tests)
     }

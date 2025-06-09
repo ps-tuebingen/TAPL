@@ -10,6 +10,15 @@ mod values;
 
 pub trait LatexFmt {
     fn to_latex(&self) -> String;
+    fn to_document(&self) -> String {
+        let mut out = "".to_owned();
+        out += "\\documentclass{article}\n";
+        out += "\\usepackage{bussproofs}\n";
+        out += "\\begin{document}\n";
+        out += &self.to_latex();
+        out += "\\end{document}\n";
+        out
+    }
 }
 
 impl<T, Ty> LatexFmt for Derivation<T, Ty>

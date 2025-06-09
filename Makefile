@@ -14,3 +14,9 @@ test: examples
 check: examples
 	cargo fmt --all -- --check
 	cargo clippy --all -- -D warnings
+
+.PHONY: clean
+clean:
+	find -name "*.aux" -delete
+	find -name "*.log" -delete
+

@@ -1,9 +1,10 @@
 use language::languages::typed_arithmetic::terms::Term;
 use std::path::PathBuf;
-use test_utils::errors::Error;
 use test_utils::{
     check_test::CheckTest,
+    errors::Error,
     eval_test::EvalTest,
+    latex_test::LatexTest,
     load_tests::{load_dir, TestContents},
     parse_test::ParseTest,
     paths::{EXAMPLES_PATH, TYPED_ARITH_PATH},
@@ -70,6 +71,8 @@ impl TestSuite for TypedArithTests {
                 &content.conf.ty,
             );
             tests.push(Box::new(check_test) as Box<dyn Test>);
+            let latex_test = LatexTest::<Term>::new(&content.source_name, &content.source_contents);
+            tests.push(Box::new(latex_test) as Box<dyn Test>);
         }
         Ok(tests)
     }
