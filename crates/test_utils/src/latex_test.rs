@@ -4,7 +4,7 @@ use super::{
 };
 use check::Typecheck;
 use common::parse::Parse;
-use derivation::latex::LatexFmt;
+use derivation::latex::{LatexConfig, LatexFmt};
 use std::{
     fmt,
     fs::File,
@@ -57,34 +57,59 @@ where
             Ok(c) => c,
             Err(err) => return TestResult::from_err(err),
         };
-        let latex_src = checked.to_document(&mut Default::default());
-        let mut out_path = PathBuf::from(LATEX_OUT).join(&self.name);
-        out_path.set_extension("tex");
-        let mut out_file = match File::create(&out_path) {
+        let latex_src_bus = checked.to_document(&mut Default::default());
+        let mut frac_env = LatexConfig::default();
+        frac_env.use_frac_array = true;
+        let latex_src_frac = checked.to_document(&mut frac_env);
+
+        let mut out_path_bus = PathBuf::from(LATEX_OUT).join(format!("{}_bus", self.name));
+        out_path_bus.set_extension("tex");
+
+        let mut out_path_frac = PathBuf::from(LATEX_OUT).join(format!("{}_frac", &self.name));
+        out_path_frac.set_extension("tex");
+
+        let mut out_file_bus = match File::create(&out_path_bus) {
             Ok(f) => f,
             Err(err) => return TestResult::from_err(err),
         };
-        if let Err(err) = out_file.write_all(latex_src.as_bytes()) {
+        let mut out_file_frac = match File::create(&out_path_frac) {
+            Ok(f) => f,
+            Err(err) => return TestResult::from_err(err),
+        };
+
+        if let Err(err) = out_file_bus.write_all(latex_src_bus.as_bytes()) {
+            return TestResult::from_err(err);
+        };
+        if let Err(err) = out_file_frac.write_all(latex_src_frac.as_bytes()) {
             return TestResult::from_err(err);
         };
 
-        let mut latex_cmd = Command::new("xelatex");
-        latex_cmd.arg("-halt-on-error");
-        latex_cmd.arg(format!("-output-directory={LATEX_OUT}"));
-        latex_cmd.arg("-inteteraction=nonstopmode");
-        latex_cmd.arg(out_path);
-        latex_cmd.stdout(Stdio::null());
-        latex_cmd.stderr(Stdio::null());
+        let mut latex_cmd_bus = Command::new("xelatex");
+        latex_cmd_bus.arg("-halt-on-error");
+        latex_cmd_bus.arg(format!("-output-directory={LATEX_OUT}"));
+        latex_cmd_bus.arg("-inteteraction=nonstopmode");
+        latex_cmd_bus.arg(out_path_bus);
+        latex_cmd_bus.stdout(Stdio::null());
+        latex_cmd_bus.stderr(Stdio::null());
 
-        match latex_cmd.status() {
-            Ok(exit) => {
-                if exit.success() {
+        let mut latex_cmd_frac = Command::new("xelatex");
+        latex_cmd_frac.arg("-halt-on-error");
+        latex_cmd_frac.arg(format!("-output-directory={LATEX_OUT}"));
+        latex_cmd_frac.arg("-inteteraction=nonstopmode");
+        latex_cmd_frac.arg(out_path_frac);
+        latex_cmd_frac.stdout(Stdio::null());
+        latex_cmd_frac.stderr(Stdio::null());
+
+        match (latex_cmd_bus.status(), latex_cmd_frac.status()) {
+            (Err(err), _) => TestResult::from_err(err),
+            (_, Err(err)) => TestResult::from_err(err),
+            (Ok(exit1), Ok(exit2)) => {
+                if exit1.success() && exit2.success() {
                     TestResult::Success
                 } else {
                     TestResult::Fail("xelatex exited with non-zero exit status".to_owned())
                 }
             }
-            Err(err) => TestResult::from_err(err),
         }
     }
 }

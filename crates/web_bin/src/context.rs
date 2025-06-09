@@ -1,5 +1,5 @@
 use super::{example_select::ExampleSelect, get_by_id, out_divs::OutDivs};
-use language::AllLanguages;
+use language::{AllLanguages, FormatMethod};
 use std::rc::Rc;
 use wasm_bindgen::{closure::Closure, JsCast};
 use web_sys::{
@@ -94,7 +94,7 @@ impl HtmlContext {
         let lang = self.get_lang();
         let source = self.source_area.value();
         self.out_divs.clear();
-        let (parse_res, check_res, eval_res, err_res) = lang.run_all(source, &Default::default());
+        let (parse_res, check_res, eval_res, err_res) = lang.run_all(source, &FormatMethod::Latex);
         if let Some(p) = parse_res {
             self.out_divs.parsed.set_inner_html(&p);
         }

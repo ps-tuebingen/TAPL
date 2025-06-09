@@ -81,7 +81,7 @@ where
     }
 
     format!(
-        "\\frac{{ {} }}{{ {} }} \\quad \\text{{ {} }}",
+        "\\[\n\\frac{{ {} }}{{ {} }} \\quad \\textsc{{ {} }}\n\\]",
         premise_str,
         deriv.conc.to_latex(conf),
         deriv.label

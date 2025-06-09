@@ -10,8 +10,8 @@ mod untyped;
 mod values;
 
 pub struct LatexConfig {
-    include_tree_env: bool,
-    use_frac_array: bool,
+    pub include_tree_env: bool,
+    pub use_frac_array: bool,
 }
 
 pub trait LatexFmt {
