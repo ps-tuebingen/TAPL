@@ -21,6 +21,30 @@ pub enum FormatMethod {
     Debug,
 }
 
+pub struct AllResults<Lang>
+where
+    Lang: Language,
+{
+    pub parse_res: Option<Lang::Term>,
+    pub check_res: Option<Derivation<Lang::Term, Lang::Type>>,
+    pub eval_res: Option<Lang::Value>,
+    pub err: Option<Lang::LanguageError>,
+}
+
+impl<Lang> Default for AllResults<Lang>
+where
+    Lang: Language,
+{
+    fn default() -> AllResults<Lang> {
+        AllResults {
+            parse_res: None,
+            check_res: None,
+            eval_res: None,
+            err: None,
+        }
+    }
+}
+
 pub trait Language {
     type Term: Term
         + Parse<ParseError = Self::LanguageError>
@@ -66,42 +90,37 @@ pub trait Language {
         Self::Term::eval_start(parsed).map_err(|err| err.into())
     }
 
-    fn run_all(
-        &self,
-        input: String,
-    ) -> (
-        Option<Self::Term>,
-        Option<Derivation<Self::Term, Self::Type>>,
-        Option<Self::Value>,
-        Option<Self::LanguageError>,
-    ) {
-        let mut res = (None, None, None, None);
+    fn run_all(&self, input: String) -> AllResults<Self>
+    where
+        Self: Sized,
+    {
+        let mut res = AllResults::<Self>::default();
         let parsed = match Self::Term::parse(input) {
             Ok(p) => p,
             Err(err) => {
-                res.3 = Some(err);
+                res.err = Some(err);
                 return res;
             }
         };
-        res.0 = Some(parsed.clone());
+        res.parse_res = Some(parsed.clone());
 
         let checked = match parsed.check_start() {
             Ok(ty) => ty,
             Err(err) => {
-                res.3 = Some(err.into());
+                res.err = Some(err.into());
                 return res;
             }
         };
-        res.1 = Some(checked);
+        res.check_res = Some(checked);
 
         let evaled = match parsed.eval_start() {
             Ok(v) => v,
             Err(err) => {
-                res.3 = Some(err.into());
+                res.err = Some(err.into());
                 return res;
             }
         };
-        res.2 = Some(evaled);
+        res.eval_res = Some(evaled);
         res
     }
 

@@ -70,7 +70,7 @@ where
 
         let mut latex_cmd = Command::new("xelatex");
         latex_cmd.arg("-halt-on-error");
-        latex_cmd.arg(&format!("-output-directory={LATEX_OUT}"));
+        latex_cmd.arg(format!("-output-directory={LATEX_OUT}"));
         latex_cmd.arg("-inteteraction=nonstopmode");
         latex_cmd.arg(out_path);
         latex_cmd.stdout(Stdio::null());

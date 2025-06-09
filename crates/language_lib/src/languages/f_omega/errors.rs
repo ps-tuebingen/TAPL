@@ -20,7 +20,7 @@ pub enum Error {
     UndefinedLabel(UndefinedLabel),
     ValueMismatch(ValueMismatch),
     FreeVariable(FreeVariable),
-    Pest(PestErr<Rule>),
+    Pest(Box<PestErr<Rule>>),
     MissingInput(MissingInput),
     RemainingInput(RemainingInput),
     UnexpectedRule(UnexpectedRule<Rule>),
@@ -99,7 +99,7 @@ impl From<FreeVariable> for Error {
 
 impl From<PestErr<Rule>> for Error {
     fn from(err: PestErr<Rule>) -> Error {
-        Error::Pest(err)
+        Error::Pest(Box::new(err))
     }
 }
 

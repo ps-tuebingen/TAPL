@@ -19,7 +19,7 @@ pub enum Error {
     TypeMismatch(TypeMismatch),
     NameMismatch(NameMismatch),
     NotASubtype(NotASubtype<Type, Type>),
-    Pest(PestErr<Rule>),
+    Pest(Box<PestErr<Rule>>),
     MissingInput(MissingInput),
     RemainingInput(RemainingInput),
     UnexpectedRule(UnexpectedRule<Rule>),
@@ -90,7 +90,7 @@ impl From<NotASubtype<Type, Type>> for Error {
 
 impl From<PestErr<Rule>> for Error {
     fn from(err: PestErr<Rule>) -> Error {
-        Error::Pest(err)
+        Error::Pest(Box::new(err))
     }
 }
 

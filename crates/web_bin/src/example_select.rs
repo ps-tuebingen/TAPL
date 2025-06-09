@@ -38,7 +38,7 @@ impl ExampleSelect {
             example_option.set_inner_html(example_name);
             self.element.append_child(&example_option).unwrap();
         }
-        self.change_contents(&language);
+        self.change_contents(language);
     }
 
     pub fn change_contents(&self, language: &AllLanguages) {

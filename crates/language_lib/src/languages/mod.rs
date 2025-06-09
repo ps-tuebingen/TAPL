@@ -295,129 +295,129 @@ impl AllLanguages {
     ) {
         match self {
             Self::UntypedArithmetic(ua) => {
-                let (parse_res, check_res, eval_res, err) = ua.run_all(input);
+                let res = ua.run_all(input);
                 (
-                    parse_res.map(|p| ua.format_term(&p, method)),
-                    check_res.map(|c| ua.format_derivation(&c, method)),
-                    eval_res.map(|e| ua.format_value(&e, method)),
-                    err.map(|e| e.to_string()),
+                    res.parse_res.map(|p| ua.format_term(&p, method)),
+                    res.check_res.map(|c| ua.format_derivation(&c, method)),
+                    res.eval_res.map(|e| ua.format_value(&e, method)),
+                    res.err.map(|e| e.to_string()),
                 )
             }
             Self::UntypedLambda(ul) => {
-                let (parse_res, check_res, eval_res, err) = ul.run_all(input);
+                let res = ul.run_all(input);
                 (
-                    parse_res.map(|p| ul.format_term(&p, method)),
-                    check_res.map(|c| ul.format_derivation(&c, method)),
-                    eval_res.map(|e| ul.format_value(&e, method)),
-                    err.map(|e| e.to_string()),
+                    res.parse_res.map(|p| ul.format_term(&p, method)),
+                    res.check_res.map(|c| ul.format_derivation(&c, method)),
+                    res.eval_res.map(|e| ul.format_value(&e, method)),
+                    res.err.map(|e| e.to_string()),
                 )
             }
             Self::TypedArithmetic(ta) => {
-                let (parse_res, check_res, eval_res, err) = ta.run_all(input);
+                let res = ta.run_all(input);
                 (
-                    parse_res.map(|p| ta.format_term(&p, method)),
-                    check_res.map(|c| ta.format_derivation(&c, method)),
-                    eval_res.map(|e| ta.format_value(&e, method)),
-                    err.map(|e| e.to_string()),
+                    res.parse_res.map(|p| ta.format_term(&p, method)),
+                    res.check_res.map(|c| ta.format_derivation(&c, method)),
+                    res.eval_res.map(|e| ta.format_value(&e, method)),
+                    res.err.map(|e| e.to_string()),
                 )
             }
             Self::Stlc(stlc) => {
-                let (parse_res, check_res, eval_res, err) = stlc.run_all(input);
+                let res = stlc.run_all(input);
                 (
-                    parse_res.map(|p| stlc.format_term(&p, method)),
-                    check_res.map(|c| stlc.format_derivation(&c, method)),
-                    eval_res.map(|e| stlc.format_value(&e, method)),
-                    err.map(|e| e.to_string()),
+                    res.parse_res.map(|p| stlc.format_term(&p, method)),
+                    res.check_res.map(|c| stlc.format_derivation(&c, method)),
+                    res.eval_res.map(|e| stlc.format_value(&e, method)),
+                    res.err.map(|e| e.to_string()),
                 )
             }
             Self::References(rf) => {
-                let (parse_res, check_res, eval_res, err) = rf.run_all(input);
+                let res = rf.run_all(input);
                 (
-                    parse_res.map(|p| rf.format_term(&p, method)),
-                    check_res.map(|c| rf.format_derivation(&c, method)),
-                    eval_res.map(|e| rf.format_value(&e, method)),
-                    err.map(|e| e.to_string()),
+                    res.parse_res.map(|p| rf.format_term(&p, method)),
+                    res.check_res.map(|c| rf.format_derivation(&c, method)),
+                    res.eval_res.map(|e| rf.format_value(&e, method)),
+                    res.err.map(|e| e.to_string()),
                 )
             }
             Self::Exceptions(ex) => {
-                let (parse_res, check_res, eval_res, err) = ex.run_all(input);
+                let res = ex.run_all(input);
                 (
-                    parse_res.map(|p| ex.format_term(&p, method)),
-                    check_res.map(|c| ex.format_derivation(&c, method)),
-                    eval_res.map(|e| ex.format_value(&e, method)),
-                    err.map(|e| e.to_string()),
+                    res.parse_res.map(|p| ex.format_term(&p, method)),
+                    res.check_res.map(|c| ex.format_derivation(&c, method)),
+                    res.eval_res.map(|e| ex.format_value(&e, method)),
+                    res.err.map(|e| e.to_string()),
                 )
             }
             Self::Subtypes(s) => {
-                let (parse_res, check_res, eval_res, err) = s.run_all(input);
+                let res = s.run_all(input);
                 (
-                    parse_res.map(|p| s.format_term(&p, method)),
-                    check_res.map(|c| s.format_derivation(&c, method)),
-                    eval_res.map(|e| s.format_value(&e, method)),
-                    err.map(|e| e.to_string()),
+                    res.parse_res.map(|p| s.format_term(&p, method)),
+                    res.check_res.map(|c| s.format_derivation(&c, method)),
+                    res.eval_res.map(|e| s.format_value(&e, method)),
+                    res.err.map(|e| e.to_string()),
                 )
             }
             Self::Recursive(rec) => {
-                let (parse_res, check_res, eval_res, err) = rec.run_all(input);
+                let res = rec.run_all(input);
                 (
-                    parse_res.map(|p| rec.format_term(&p, method)),
-                    check_res.map(|c| rec.format_derivation(&c, method)),
-                    eval_res.map(|e| rec.format_value(&e, method)),
-                    err.map(|e| e.to_string()),
+                    res.parse_res.map(|p| rec.format_term(&p, method)),
+                    res.check_res.map(|c| rec.format_derivation(&c, method)),
+                    res.eval_res.map(|e| rec.format_value(&e, method)),
+                    res.err.map(|e| e.to_string()),
                 )
             }
             Self::Existential(ex) => {
-                let (parse_res, check_res, eval_res, err) = ex.run_all(input);
+                let res = ex.run_all(input);
                 (
-                    parse_res.map(|p| ex.format_term(&p, method)),
-                    check_res.map(|c| ex.format_derivation(&c, method)),
-                    eval_res.map(|e| ex.format_value(&e, method)),
-                    err.map(|e| e.to_string()),
+                    res.parse_res.map(|p| ex.format_term(&p, method)),
+                    res.check_res.map(|c| ex.format_derivation(&c, method)),
+                    res.eval_res.map(|e| ex.format_value(&e, method)),
+                    res.err.map(|e| e.to_string()),
                 )
             }
             Self::SystemF(sys) => {
-                let (parse_res, check_res, eval_res, err) = sys.run_all(input);
+                let res = sys.run_all(input);
                 (
-                    parse_res.map(|p| sys.format_term(&p, method)),
-                    check_res.map(|c| sys.format_derivation(&c, method)),
-                    eval_res.map(|e| sys.format_value(&e, method)),
-                    err.map(|e| e.to_string()),
+                    res.parse_res.map(|p| sys.format_term(&p, method)),
+                    res.check_res.map(|c| sys.format_derivation(&c, method)),
+                    res.eval_res.map(|e| sys.format_value(&e, method)),
+                    res.err.map(|e| e.to_string()),
                 )
             }
             Self::BoundedQuantification(bd) => {
-                let (parse_res, check_res, eval_res, err) = bd.run_all(input);
+                let res = bd.run_all(input);
                 (
-                    parse_res.map(|p| bd.format_term(&p, method)),
-                    check_res.map(|c| bd.format_derivation(&c, method)),
-                    eval_res.map(|e| bd.format_value(&e, method)),
-                    err.map(|e| e.to_string()),
+                    res.parse_res.map(|p| bd.format_term(&p, method)),
+                    res.check_res.map(|c| bd.format_derivation(&c, method)),
+                    res.eval_res.map(|e| bd.format_value(&e, method)),
+                    res.err.map(|e| e.to_string()),
                 )
             }
             Self::LambdaOmega(lo) => {
-                let (parse_res, check_res, eval_res, err) = lo.run_all(input);
+                let res = lo.run_all(input);
                 (
-                    parse_res.map(|p| lo.format_term(&p, method)),
-                    check_res.map(|c| lo.format_derivation(&c, method)),
-                    eval_res.map(|e| lo.format_value(&e, method)),
-                    err.map(|e| e.to_string()),
+                    res.parse_res.map(|p| lo.format_term(&p, method)),
+                    res.check_res.map(|c| lo.format_derivation(&c, method)),
+                    res.eval_res.map(|e| lo.format_value(&e, method)),
+                    res.err.map(|e| e.to_string()),
                 )
             }
             Self::FOmega(fo) => {
-                let (parse_res, check_res, eval_res, err) = fo.run_all(input);
+                let res = fo.run_all(input);
                 (
-                    parse_res.map(|p| fo.format_term(&p, method)),
-                    check_res.map(|c| fo.format_derivation(&c, method)),
-                    eval_res.map(|e| fo.format_value(&e, method)),
-                    err.map(|e| e.to_string()),
+                    res.parse_res.map(|p| fo.format_term(&p, method)),
+                    res.check_res.map(|c| fo.format_derivation(&c, method)),
+                    res.eval_res.map(|e| fo.format_value(&e, method)),
+                    res.err.map(|e| e.to_string()),
                 )
             }
             Self::FOmegaSub(fos) => {
-                let (parse_res, check_res, eval_res, err) = fos.run_all(input);
+                let res = fos.run_all(input);
                 (
-                    parse_res.map(|p| fos.format_term(&p, method)),
-                    check_res.map(|c| fos.format_derivation(&c, method)),
-                    eval_res.map(|e| fos.format_value(&e, method)),
-                    err.map(|e| e.to_string()),
+                    res.parse_res.map(|p| fos.format_term(&p, method)),
+                    res.check_res.map(|c| fos.format_derivation(&c, method)),
+                    res.eval_res.map(|e| fos.format_value(&e, method)),
+                    res.err.map(|e| e.to_string()),
                 )
             }
         }

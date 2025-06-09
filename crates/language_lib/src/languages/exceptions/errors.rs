@@ -14,7 +14,7 @@ pub enum Error {
     TypeMismatch(TypeMismatch),
     FreeVariable(FreeVariable),
     ValueMismatch(ValueMismatch),
-    Pest(PestErr<Rule>),
+    Pest(Box<PestErr<Rule>>),
     MissingInput(MissingInput),
     RemainingInput(RemainingInput),
     UnknownKeyword(UnknownKeyword),
@@ -72,7 +72,7 @@ impl From<ValueMismatch> for Error {
 
 impl From<PestErr<Rule>> for Error {
     fn from(err: PestErr<Rule>) -> Error {
-        Error::Pest(err)
+        Error::Pest(Box::new(err))
     }
 }
 

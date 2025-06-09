@@ -11,7 +11,7 @@ use std::fmt;
 pub enum Error {
     NotImplemented(NotImplemented),
     ValueMismatch(ValueMismatch),
-    Pest(PestErr<NotImplemented>),
+    Pest(Box<PestErr<NotImplemented>>),
     RemainingInput(RemainingInput),
     UnexpectedRule(UnexpectedRule<Token>),
     MissingInput(MissingInput),
@@ -46,7 +46,7 @@ impl From<ValueMismatch> for Error {
 
 impl From<PestErr<NotImplemented>> for Error {
     fn from(err: PestErr<NotImplemented>) -> Error {
-        Error::Pest(err)
+        Error::Pest(Box::new(err))
     }
 }
 

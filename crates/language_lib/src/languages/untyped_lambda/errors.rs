@@ -12,7 +12,7 @@ pub enum Error {
     NotImplemented(NotImplemented),
     ValueMismatch(ValueMismatch),
     FreeVariable(FreeVariable),
-    Pest(PestErr<NotImplemented>),
+    Pest(Box<PestErr<NotImplemented>>),
     MissingInput(MissingInput),
     UnexpectedRule(UnexpectedRule<Token>),
 }
@@ -52,7 +52,7 @@ impl From<FreeVariable> for Error {
 
 impl From<PestErr<NotImplemented>> for Error {
     fn from(err: PestErr<NotImplemented>) -> Error {
-        Error::Pest(err)
+        Error::Pest(Box::new(err))
     }
 }
 
