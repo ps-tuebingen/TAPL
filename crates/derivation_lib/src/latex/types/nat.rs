@@ -6,6 +6,6 @@ where
     Ty: Type + LatexFmt,
 {
     fn to_latex(&self, _: &mut LatexConfig) -> String {
-        format!("Nat")
+        "Nat".to_owned()
     }
 }

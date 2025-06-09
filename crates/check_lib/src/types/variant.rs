@@ -20,7 +20,7 @@ where
 
         let sup_var = sup.clone().into_variant()?;
         for (lb, ty) in sup_var.variants.iter() {
-            let self_ty = self.variants.get(lb).ok_or(UndefinedLabel::new(&lb))?;
+            let self_ty = self.variants.get(lb).ok_or(UndefinedLabel::new(lb))?;
             self_ty.check_subtype(ty, &mut env.clone())?;
         }
         Ok(())

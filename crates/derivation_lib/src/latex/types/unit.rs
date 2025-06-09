@@ -6,6 +6,6 @@ where
     Ty: Type + LatexFmt,
 {
     fn to_latex(&self, _: &mut LatexConfig) -> String {
-        format!("Unit")
+        "Unit".to_owned()
     }
 }

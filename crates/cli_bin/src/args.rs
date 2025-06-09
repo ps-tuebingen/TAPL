@@ -66,7 +66,6 @@ impl Source {
         panic!("Either --file or --input must be provided")
     }
 }
-
 #[derive(Debug, Clone, clap::Args)]
 #[group(required = false, multiple = false)]
 pub struct OutMethod {

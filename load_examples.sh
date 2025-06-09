@@ -33,7 +33,6 @@ do
   echo "Loading examples for $EXAMPLE_DIR_BASE";
 
   #declar examples mod and use array of all examples
-  echo "#[rustfmt::skip]" >> $OUT_MOD;
   echo "pub mod $EXAMPLE_DIR_BASE;" >> $OUT_MOD;
   echo "pub use $EXAMPLE_DIR_BASE::$ALL_EXAMPLES_NAME;" >> $OUT_MOD;
   echo "" >> $OUT_MOD;

@@ -21,7 +21,7 @@ where
         let sup_norm = sup.clone().normalize(env);
         let sup_rec = sup_norm.into_record()?;
         for (lb, ty) in sup_rec.records.iter() {
-            let sub_ty = self.records.get(lb).ok_or(UndefinedLabel::new(&lb))?;
+            let sub_ty = self.records.get(lb).ok_or(UndefinedLabel::new(lb))?;
             sub_ty.check_subtype(ty, &mut env.clone())?;
         }
         Ok(())

@@ -1,66 +1,50 @@
 use std::collections::HashMap;
 
-#[rustfmt::skip]
 pub mod typed_arithmetic;
 pub use typed_arithmetic::typed_arithmetic_all;
 
-#[rustfmt::skip]
 pub mod subtypes;
 pub use subtypes::subtypes_all;
 
-#[rustfmt::skip]
 pub mod bounded_quantification;
 pub use bounded_quantification::bounded_quantification_all;
 
-#[rustfmt::skip]
 pub mod exceptions;
 pub use exceptions::exceptions_all;
 
-#[rustfmt::skip]
 pub mod featherweight;
 pub use featherweight::featherweight_all;
 
-#[rustfmt::skip]
 pub mod references;
 pub use references::references_all;
 
-#[rustfmt::skip]
 pub mod lambda_omega;
 pub use lambda_omega::lambda_omega_all;
 
-#[rustfmt::skip]
 pub mod inference;
 pub use inference::inference_all;
 
-#[rustfmt::skip]
 pub mod untyped_arithmetic;
 pub use untyped_arithmetic::untyped_arithmetic_all;
 
-#[rustfmt::skip]
 pub mod untyped_lambda;
 pub use untyped_lambda::untyped_lambda_all;
 
-#[rustfmt::skip]
 pub mod stlc;
 pub use stlc::stlc_all;
 
-#[rustfmt::skip]
 pub mod system_f;
 pub use system_f::system_f_all;
 
-#[rustfmt::skip]
 pub mod f_omega_sub;
 pub use f_omega_sub::f_omega_sub_all;
 
-#[rustfmt::skip]
 pub mod f_omega;
 pub use f_omega::f_omega_all;
 
-#[rustfmt::skip]
 pub mod existential;
 pub use existential::existential_all;
 
-#[rustfmt::skip]
 pub mod recursive;
 pub use recursive::recursive_all;
 
