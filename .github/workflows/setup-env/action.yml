@@ -8,4 +8,6 @@ runs:
     - name: Setup Rust Cache
       uses: Swatinem/rust-cache@v2
     - name: Install Latex
-      run: sudo apt install -y texlive-xetex
+      run: 
+        shell: bash
+        sudo apt install -y texlive-xetex
