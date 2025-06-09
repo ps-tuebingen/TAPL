@@ -19,6 +19,9 @@ pub fn setup() {
 extern "C" {
     #[wasm_bindgen(js_namespace=console)]
     pub fn log(msg: &str);
+
+    #[wasm_bindgen(js_namespace=MathJax)]
+    pub fn typeset();
 }
 
 pub fn get_by_id<T>(id: &str, doc: &Document) -> T

@@ -1,4 +1,4 @@
-use super::{example_select::ExampleSelect, get_by_id, out_divs::OutDivs};
+use super::{example_select::ExampleSelect, get_by_id, out_divs::OutDivs, typeset};
 use language::{AllLanguages, FormatMethod};
 use std::rc::Rc;
 use wasm_bindgen::{closure::Closure, JsCast};
@@ -94,9 +94,11 @@ impl HtmlContext {
         let lang = self.get_lang();
         let source = self.source_area.value();
         self.out_divs.clear();
-        let (parse_res, check_res, eval_res, err_res) = lang.run_all(source, &FormatMethod::Latex);
+        let (parse_res, check_res, eval_res, err_res) =
+            lang.run_all(source, &FormatMethod::LatexFrac);
+
         if let Some(p) = parse_res {
-            self.out_divs.parsed.set_inner_html(&p);
+            self.out_divs.parsed.set_inner_html(&format!("${p}$"));
         }
 
         if let Some(c) = check_res {
@@ -104,11 +106,13 @@ impl HtmlContext {
         }
 
         if let Some(e) = eval_res {
-            self.out_divs.evaled.set_inner_html(&e);
+            self.out_divs.evaled.set_inner_html(&format!("${e}$"));
         }
 
         if let Some(e) = err_res {
             self.out_divs.error.set_inner_html(&e);
         }
+
+        typeset();
     }
 }
