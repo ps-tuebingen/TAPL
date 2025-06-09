@@ -13,5 +13,7 @@ runs:
       shell: bash
     - name: Install Latex (Mac)
       if: runner.os == 'macOS'
-      run: brew install --cask mactex
+      run: |
+        brew install --cask mactex
+        echo "/Library/TeX/texbin" >> $GITHUB_PATH
       shell: bash
