@@ -77,7 +77,8 @@ do
   printf "        " >> $OUT_PATH;
   for example_name in ${EXAMPLE_NAMES[@]};
   do
-    echo "(\"${example_name,,}\",$example_name), " >> $OUT_PATH
+    EXAMPLE_LOWER=$(echo $example_name | tr '[:upper:]' '[:lower'])
+    echo "(\"$EXAMPLE_LOWER\",$example_name), " >> $OUT_PATH
   done 
   printf "\n" >> $OUT_PATH;
   printf "    ]\n" >> $OUT_PATH;

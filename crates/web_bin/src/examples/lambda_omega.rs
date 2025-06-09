@@ -8,10 +8,10 @@ pub const IDNAT: &str = include_str!("../../../../examples/lambda_omega/idnat/id
 
 pub fn lambda_omega_all() -> Vec<(&'static str,&'static str)> { 
     vec![
-        ("id",ID), 
-("pairnatbool",PAIRNATBOOL), 
-("pair",PAIR), 
-("idnat",IDNAT), 
+        ("]o",ID), 
+("][]]][]:]]]",PAIRNATBOOL), 
+("][]]",PAIR), 
+("]o][]",IDNAT), 
 
     ]
 }

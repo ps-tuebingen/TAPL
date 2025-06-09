@@ -4,8 +4,8 @@ pub const LIST: &str = include_str!("../../../../examples/featherweight/list/lis
 
 pub fn featherweight_all() -> Vec<(&'static str,&'static str)> { 
     vec![
-        ("pair",PAIR), 
-("list",LIST), 
+        ("][]]",PAIR), 
+("]]]]",LIST), 
 
     ]
 }

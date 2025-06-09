@@ -30,21 +30,21 @@ pub const PRD: &str = include_str!("../../../../examples/untyped_lambda/prd/prd.
 
 pub fn untyped_lambda_all() -> Vec<(&'static str,&'static str)> { 
     vec![
-        ("times",TIMES), 
-("false",FALSE), 
-("one",ONE), 
-("id",ID), 
-("snd",SND), 
-("tru",TRU), 
-("pair",PAIR), 
-("fst",FST), 
-("ifthenelse",IFTHENELSE), 
-("zero",ZERO), 
-("iszero",ISZERO), 
-("succ",SUCC), 
-("and",AND), 
-("plus",PLUS), 
-("prd",PRD), 
+        ("]]]w]",TIMES), 
+("e[]]w",FALSE), 
+("]]w",ONE), 
+("]o",ID), 
+("]]o",SND), 
+("]]]",TRU), 
+("][]]",PAIR), 
+("e]]",FST), 
+("]e]]w]w]]w",IFTHENELSE), 
+("]w]]",ZERO), 
+("]]]w]]",ISZERO), 
+("]]ll",SUCC), 
+("[]o",AND), 
+("]]]]",PLUS), 
+("]]o",PRD), 
 
     ]
 }

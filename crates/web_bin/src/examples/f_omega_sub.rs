@@ -12,12 +12,12 @@ pub const RESETCOUNTERCLASS: &str = include_str!("../../../../examples/f_omega_s
 
 pub fn f_omega_sub_all() -> Vec<(&'static str,&'static str)> { 
     vec![
-        ("sendget",SENDGET), 
-("counterclass",COUNTERCLASS), 
-("sendreset",SENDRESET), 
-("sendinc",SENDINC), 
-("newcounter",NEWCOUNTER), 
-("resetcounterclass",RESETCOUNTERCLASS), 
+        ("]w]orw]",SENDGET), 
+("l]]]]w]l][]]",COUNTERCLASS), 
+("]w]o]w]w]",SENDRESET), 
+("]w]o]]l",SENDINC), 
+("]w]l]]]]w]",NEWCOUNTER), 
+("]w]w]l]]]]w]l][]]",RESETCOUNTERCLASS), 
 
     ]
 }
