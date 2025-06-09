@@ -13,12 +13,12 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
+  defaults:
+    run:
+      shell: bash
   check:
     name: Check
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/workflows/setup-env
@@ -27,10 +27,7 @@ jobs:
   ubuntu-tests:
     name: Tests (Ubuntu)
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
-   steps:
+    steps:
       - uses: actions/checkout@v4
       - uses: ./.github/workflows/setup-env
       - uses: ilammy/setup-nasm@v1
@@ -39,9 +36,6 @@ jobs:
   macos-tests:
     name: Tests (Mac)
     runs-on: macos-latest
-    defaults:
-      run:
-        shell: bash
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/workflows/setup-env
@@ -62,9 +56,6 @@ jobs:
   clippy:
     name: Clippy
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/workflows/setup-env
