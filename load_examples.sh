@@ -57,7 +57,7 @@ do
 
     EXAMPLE_BASE="${example##*/}";
     EXAMPLE_NAME="${EXAMPLE_BASE%.*}";
-    EXAMPLE_UPPER="${EXAMPLE_NAME^^}";
+    EXAMPLE_UPPER=$(echo $EXAMPLE_NAME | tr '[:lower:]' '[:upper:]')
 
     CURRENT_NUM=$(($CURRENT_NUM+1));
     EXAMPLE_NAMES+=("$EXAMPLE_UPPER");
