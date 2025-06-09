@@ -39,10 +39,10 @@ where
             term_kind.check_equal(&outer_knd)?;
             inner_kind.check_equal(&outer_exists.kind)?;
 
-            let outer_subst = dbg!(outer_exists
+            let outer_subst = outer_exists
                 .ty
-                .subst_type(&outer_exists.var, &self.inner_ty))
-            .normalize(&mut env.clone());
+                .subst_type(&outer_exists.var, &self.inner_ty)
+                .normalize(&mut env.clone());
             outer_subst.check_equal(&term_ty)?;
 
             let conc = Conclusion::new(env.clone(), self.clone(), self.outer_ty.clone());

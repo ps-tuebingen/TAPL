@@ -33,7 +33,7 @@ where
         out += &self
             .tyvar_super
             .iter()
-            .map(|(tyvar, sup)| format!("{tyvar} <: {sup}"))
+            .map(|(tyvar, sup)| format!("{tyvar} <: {}", sup.to_latex(conf)))
             .collect::<Vec<String>>()
             .join(", ");
 

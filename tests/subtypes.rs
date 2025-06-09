@@ -32,11 +32,12 @@ fn main() -> Result<(), Error> {
 
     let examples_dir = PathBuf::from(EXAMPLES_PATH);
     let fails = SubtypesTests::new(examples_dir.join(SUBTYPES_PATH)).run_all()?;
-
-    println!(
-        "Finished running tests with \x1b[31m{} fails\x1b[39m",
-        fails
-    );
+    let fail_str = if fails > 0 {
+        format!("\x1b[31m{fails} fails\x1b[39m")
+    } else {
+        "0 fails".to_owned()
+    };
+    println!("Finished running tests with {fail_str}");
     if fails > 0 {
         panic!("Not all tests finished successfully");
     }

@@ -5,7 +5,14 @@ use super::{
 use check::Typecheck;
 use common::parse::Parse;
 use derivation::latex::LatexFmt;
-use std::{fmt, fs::File, io::Write, marker::PhantomData, path::PathBuf, process::Command};
+use std::{
+    fmt,
+    fs::File,
+    io::Write,
+    marker::PhantomData,
+    path::PathBuf,
+    process::{Command, Stdio},
+};
 use syntax::terms::Term;
 
 pub struct LatexTest<T>
@@ -61,13 +68,22 @@ where
             return TestResult::from_err(err);
         };
 
-        let mut latex_cmd = Command::new("pdflatex");
+        let mut latex_cmd = Command::new("xelatex");
+        latex_cmd.arg("-halt-on-error");
+        latex_cmd.arg(&format!("-output-directory={LATEX_OUT}"));
+        latex_cmd.arg("-inteteraction=nonstopmode");
         latex_cmd.arg(out_path);
-        latex_cmd.arg("-output-directory");
-        latex_cmd.arg(LATEX_OUT);
+        latex_cmd.stdout(Stdio::null());
+        latex_cmd.stderr(Stdio::null());
 
         match latex_cmd.status() {
-            Ok(_) => TestResult::Success,
+            Ok(exit) => {
+                if exit.success() {
+                    TestResult::Success
+                } else {
+                    TestResult::Fail("xelatex exited with non-zero exit status".to_owned())
+                }
+            }
             Err(err) => TestResult::from_err(err),
         }
     }
