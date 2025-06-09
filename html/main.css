@@ -113,5 +113,6 @@ h2 {
   height:3em;
   border-radius:1em;
   padding:0.5em;
+  overflow:auto;
 }
 

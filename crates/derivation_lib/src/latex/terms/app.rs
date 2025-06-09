@@ -6,6 +6,10 @@ where
     T: Term + LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
-        format!("{} {}", self.fun.to_latex(conf), self.arg.to_latex(conf))
+        format!(
+            "{}\\quad {}",
+            self.fun.to_latex(conf),
+            self.arg.to_latex(conf)
+        )
     }
 }

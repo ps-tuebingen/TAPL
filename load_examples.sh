@@ -74,11 +74,10 @@ do
   #write all examples into an array
   echo "pub fn $ALL_EXAMPLES_NAME() -> Vec<(&'static str,&'static str)> { " >> $OUT_PATH;
   printf "    vec![\n" >> $OUT_PATH;
-  printf "        " >> $OUT_PATH;
   for example_name in ${EXAMPLE_NAMES[@]};
   do
-    EXAMPLE_LOWER=$(echo $example_name | tr '[:upper:]' '[:lower'])
-    echo "(\"$EXAMPLE_LOWER\",$example_name), " >> $OUT_PATH
+    EXAMPLE_LOWER=$(echo $example_name | tr '[:upper:]' '[:lower:'])
+    echo "         (\"$EXAMPLE_LOWER\",$example_name), " >> $OUT_PATH
   done 
   printf "\n" >> $OUT_PATH;
   printf "    ]\n" >> $OUT_PATH;

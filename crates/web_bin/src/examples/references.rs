@@ -10,11 +10,11 @@ pub const INCC: &str = include_str!("../../../../examples/references/incc/incc.r
 
 pub fn references_all() -> Vec<(&'static str,&'static str)> { 
     vec![
-        ("][][]][]",NATARRAY), 
-("o]]:]w]we",DOUBLEREF), 
-("]we][]",REFNAT), 
-("]we[]]]r]",REFASSIGN), 
-("]]ll",INCC), 
+         ("natarray",NATARRAY), 
+         ("doubleref",DOUBLEREF), 
+         ("refnat",REFNAT), 
+         ("refassign",REFASSIGN), 
+         ("incc",INCC), 
 
     ]
 }

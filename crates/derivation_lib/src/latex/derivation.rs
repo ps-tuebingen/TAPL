@@ -32,28 +32,28 @@ where
 
     let mut out = "".to_owned();
 
-    if conf.include_tree_env {
+    if conf.include_envs {
         out += "\\begin{prooftree}\n";
     }
 
     if deriv.premises.is_empty() {
         out += "\\AxiomC{\\quad}\n";
     } else {
-        let old_inc = conf.include_tree_env;
-        conf.include_tree_env = false;
+        let old_inc = conf.include_envs;
+        conf.include_envs = false;
         for prem in deriv.premises.iter() {
             out += "\t";
             out += &derivation_to_bussproofs(prem, conf);
             out += "\n";
         }
-        conf.include_tree_env = old_inc;
+        conf.include_envs = old_inc;
     }
 
     out += "\\RightLabel{";
     out += &deriv.label.to_string();
     out += "}\n";
     out += &conc_str;
-    if conf.include_tree_env {
+    if conf.include_envs {
         out += "\n\\end{prooftree}";
     }
 
@@ -65,25 +65,37 @@ where
     T: Term + LatexFmt,
     Ty: Type + LatexFmt,
 {
-    let mut premise_str = "".to_owned();
+    let mut premise_str;
     if deriv.premises.is_empty() {
         premise_str = "\\quad".to_owned();
     } else {
         let cs = (0..deriv.premises.len())
             .map(|_| "c")
             .collect::<Vec<&str>>();
-        let mut premise_str = format!("\\begin{{array}}{{ {} }}", cs.join(" "));
+        premise_str = format!("\\begin{{array}}{{ {} }}", cs.join(" "));
+        let inc_old = conf.include_envs;
+        conf.include_envs = false;
+
+        let mut premise_strs = vec![];
         for premise in deriv.premises.iter() {
-            premise_str += &derivation_to_frac_array(premise, conf);
-            premise_str += "&";
+            premise_strs.push(format!(
+                "\\displaystyle {}",
+                derivation_to_frac_array(premise, conf)
+            ));
         }
+        premise_str += &premise_strs.join("&");
+        conf.include_envs = inc_old;
         premise_str += "\\end{array}";
     }
 
-    format!(
-        "\\[\n\\frac{{ {} }}{{ {} }} \\quad \\text{{ {} }}\n\\]",
+    let mut out = format!(
+        "\n\\frac{{ \\displaystyle {} }}{{ {} }} \\quad \\text{{ {} }}\n",
         premise_str,
         deriv.conc.to_latex(conf),
         deriv.label
-    )
+    );
+    if conf.include_envs {
+        out = format!("\\[{out}\\]");
+    }
+    out
 }

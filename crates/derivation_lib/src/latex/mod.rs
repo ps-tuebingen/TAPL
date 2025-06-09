@@ -10,7 +10,7 @@ mod untyped;
 mod values;
 
 pub struct LatexConfig {
-    pub include_tree_env: bool,
+    pub include_envs: bool,
     pub use_frac_array: bool,
 }
 
@@ -21,7 +21,7 @@ impl LatexConfig {
 
     pub fn new_frac() -> LatexConfig {
         LatexConfig {
-            include_tree_env: true,
+            include_envs: true,
             use_frac_array: true,
         }
     }
@@ -44,7 +44,7 @@ pub trait LatexFmt {
 impl Default for LatexConfig {
     fn default() -> LatexConfig {
         LatexConfig {
-            include_tree_env: true,
+            include_envs: true,
             use_frac_array: false,
         }
     }

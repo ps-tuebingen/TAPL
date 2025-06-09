@@ -20,16 +20,16 @@ pub const FIX: &str = include_str!("../../../../examples/inference/fix/fix.inf")
 
 pub fn inference_all() -> Vec<(&'static str,&'static str)> { 
     vec![
-        ("]]]l[]w",SUMCASE), 
-("o]]:]w][]",DOUBLENAT), 
-("]]]",SUM), 
-("]]]]",LIST), 
-("][]][]][]",NATNATNAT), 
-("]]]w]]]]r",SOMETHING), 
-("o]]:]w:]]]",DOUBLEBOOL), 
-("]]]wl[]w",SOMECASE), 
-("]][]",SWAP), 
-("e]]",FIX), 
+         ("sumcase",SUMCASE), 
+         ("doublenat",DOUBLENAT), 
+         ("sum",SUM), 
+         ("list",LIST), 
+         ("natnatnat",NATNATNAT), 
+         ("something",SOMETHING), 
+         ("doublebool",DOUBLEBOOL), 
+         ("somecase",SOMECASE), 
+         ("swap",SWAP), 
+         ("fix",FIX), 
 
     ]
 }
