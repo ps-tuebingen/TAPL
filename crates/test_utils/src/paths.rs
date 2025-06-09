@@ -15,3 +15,5 @@ pub const BOUNDED_PATH: &str = "bounded_quantification";
 pub const LAMBDA_OMEGA_PATH: &str = "lambda_omega";
 pub const F_OMEGA_PATH: &str = "f_omega";
 pub const F_OMEGA_SUB_PATH: &str = "f_omega_sub";
+
+pub const LATEX_OUT: &str = "target/tmp";

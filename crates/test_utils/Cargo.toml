@@ -7,7 +7,9 @@ edition = "2021"
 [dependencies]
 basic-toml = {version="0.1.10"}
 serde = {version="1.0.219", features=["derive"]}
-common = { path="../../crates/common_lib" }
-check = { path="../../crates/check_lib" }
-eval = { path="../../crates/eval_lib" }
-language = { path="../../crates/language_lib" }
+common = { path="../common_lib" }
+check = { path="../check_lib" }
+eval = { path="../eval_lib" }
+language = { path="../language_lib" }
+derivation = { path="../derivation_lib" }
+syntax = {path="../syntax_lib"}

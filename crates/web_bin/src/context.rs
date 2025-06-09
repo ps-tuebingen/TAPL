@@ -97,6 +97,7 @@ impl HtmlContext {
         lang.run(
             source,
             false,
+            false,
             |p| self.out_divs.parsed.set_inner_html(p),
             |ty| self.out_divs.checked.set_inner_html(ty),
             |v| self.out_divs.evaled.set_inner_html(v),
