@@ -9,3 +9,4 @@ runs:
       uses: Swatinem/rust-cache@v2
     - name: Install Latex
       run: sudo apt install -y texlive-xetex
+      shell: bash
