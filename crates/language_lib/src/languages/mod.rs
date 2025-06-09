@@ -127,7 +127,7 @@ where
                     &(if debug {
                         format!("{parsed:?}")
                     } else if latex {
-                        parsed.to_latex()
+                        parsed.to_latex(&mut Default::default())
                     } else {
                         parsed.to_string()
                     }),
@@ -143,7 +143,7 @@ where
                     &(if debug {
                         format!("{parsed:?}")
                     } else if latex {
-                        parsed.to_latex()
+                        parsed.to_latex(&mut Default::default())
                     } else {
                         parsed.to_string()
                     }),
@@ -152,7 +152,7 @@ where
                     &(if debug {
                         format!("{checked:?}")
                     } else if latex {
-                        checked.to_latex()
+                        checked.to_latex(&mut Default::default())
                     } else {
                         checked.to_string()
                     }),
@@ -168,7 +168,7 @@ where
                     &(if debug {
                         format!("{parsed:?}")
                     } else if latex {
-                        parsed.to_latex()
+                        parsed.to_latex(&mut Default::default())
                     } else {
                         parsed.to_string()
                     }),
@@ -177,7 +177,7 @@ where
                     &(if debug {
                         format!("{checked:?}")
                     } else if latex {
-                        checked.to_latex()
+                        checked.to_latex(&mut Default::default())
                     } else {
                         checked.to_string()
                     }),
@@ -186,7 +186,7 @@ where
                     &(if debug {
                         format!("{evaled:?}")
                     } else if latex {
-                        evaled.to_latex()
+                        evaled.to_latex(&mut Default::default())
                     } else {
                         evaled.to_string()
                     }),

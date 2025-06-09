@@ -1,11 +1,11 @@
-use super::super::LatexFmt;
+use super::super::{LatexConfig, LatexFmt};
 use syntax::types::{Source, Type};
 
 impl<Ty> LatexFmt for Source<Ty>
 where
     Ty: Type + LatexFmt,
 {
-    fn to_latex(&self) -> String {
-        format!("Source[{}]", self.ty.to_latex())
+    fn to_latex(&self, conf: &mut LatexConfig) -> String {
+        format!("Source[{}]", self.ty.to_latex(conf))
     }
 }

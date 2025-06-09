@@ -50,7 +50,7 @@ where
             Ok(c) => c,
             Err(err) => return TestResult::from_err(err),
         };
-        let latex_src = checked.to_document();
+        let latex_src = checked.to_document(&mut Default::default());
         let mut out_path = PathBuf::from(LATEX_OUT).join(&self.name);
         out_path.set_extension("tex");
         let mut out_file = match File::create(&out_path) {

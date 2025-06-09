@@ -1,11 +1,11 @@
-use super::super::LatexFmt;
+use super::super::{LatexConfig, LatexFmt};
 use syntax::types::{Top, Type};
 
 impl<Ty> LatexFmt for Top<Ty>
 where
     Ty: Type + LatexFmt,
 {
-    fn to_latex(&self) -> String {
-        format!("Top[{}]", self.kind.to_latex())
+    fn to_latex(&self, conf: &mut LatexConfig) -> String {
+        format!("Top[{}]", self.kind.to_latex(conf))
     }
 }

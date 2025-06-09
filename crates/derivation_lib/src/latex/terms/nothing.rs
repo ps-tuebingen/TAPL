@@ -1,8 +1,15 @@
-use syntax::{types::Type,terms::{Term,Nothing}};
-use super::super::LatexFmt;
+use super::super::{LatexConfig, LatexFmt};
+use syntax::{
+    terms::{Nothing, Term},
+    types::Type,
+};
 
-impl<T,Ty> LatexFmt for Nothing<T,Ty> where T:Term+LatexFmt,Ty:Type+LatexFmt{
-    fn to_latex(&self) -> String{
-        format!("Nothing[{}]",self.ty.to_latex())
+impl<T, Ty> LatexFmt for Nothing<T, Ty>
+where
+    T: Term + LatexFmt,
+    Ty: Type + LatexFmt,
+{
+    fn to_latex(&self, conf: &mut LatexConfig) -> String {
+        format!("Nothing[{}]", self.ty.to_latex(conf))
     }
 }

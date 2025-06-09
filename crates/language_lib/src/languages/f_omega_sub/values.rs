@@ -1,5 +1,5 @@
 use super::{terms::Term, types::Type};
-use derivation::latex::LatexFmt;
+use derivation::latex::{LatexConfig, LatexFmt};
 use eval::{
     errors::{ValueKind, ValueMismatch},
     values::{Lambda, LambdaSub, Num, Pack, Record, Value as ValueTrait, ValueGroup},
@@ -98,13 +98,13 @@ impl fmt::Display for Value {
 }
 
 impl LatexFmt for Value {
-    fn to_latex(&self) -> String {
+    fn to_latex(&self, conf: &mut LatexConfig) -> String {
         match self {
-            Value::Lambda(lam) => lam.to_latex(),
-            Value::LambdaSub(lam) => lam.to_latex(),
-            Value::Pack(pack) => pack.to_latex(),
-            Value::Record(rec) => rec.to_latex(),
-            Value::Num(num) => num.to_latex(),
+            Value::Lambda(lam) => lam.to_latex(conf),
+            Value::LambdaSub(lam) => lam.to_latex(conf),
+            Value::Pack(pack) => pack.to_latex(conf),
+            Value::Record(rec) => rec.to_latex(conf),
+            Value::Num(num) => num.to_latex(conf),
         }
     }
 }

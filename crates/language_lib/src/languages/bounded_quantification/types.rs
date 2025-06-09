@@ -1,6 +1,6 @@
 use check::Normalize;
 use common::errors::{TypeKind, TypeMismatch};
-use derivation::latex::LatexFmt;
+use derivation::latex::{LatexConfig, LatexFmt};
 use std::fmt;
 use syntax::{
     env::Environment,
@@ -170,15 +170,15 @@ impl fmt::Display for Type {
 }
 
 impl LatexFmt for Type {
-    fn to_latex(&self) -> String {
+    fn to_latex(&self, conf: &mut LatexConfig) -> String {
         match self {
-            Type::Var(v) => v.to_latex(),
-            Type::Top(t) => t.to_latex(),
-            Type::Nat(n) => n.to_latex(),
-            Type::Fun(fun) => fun.to_latex(),
-            Type::Forall(forall) => forall.to_latex(),
-            Type::Exists(e) => e.to_latex(),
-            Type::Record(rec) => rec.to_latex(),
+            Type::Var(v) => v.to_latex(conf),
+            Type::Top(t) => t.to_latex(conf),
+            Type::Nat(n) => n.to_latex(conf),
+            Type::Fun(fun) => fun.to_latex(conf),
+            Type::Forall(forall) => forall.to_latex(conf),
+            Type::Exists(e) => e.to_latex(conf),
+            Type::Record(rec) => rec.to_latex(conf),
         }
     }
 }

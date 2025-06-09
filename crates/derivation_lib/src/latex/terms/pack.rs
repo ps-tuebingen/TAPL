@@ -1,4 +1,4 @@
-use super::super::LatexFmt;
+use super::super::{LatexConfig, LatexFmt};
 use syntax::{
     terms::{Pack, Term},
     types::Type,
@@ -9,12 +9,12 @@ where
     T: Term + LatexFmt,
     Ty: Type + LatexFmt,
 {
-    fn to_latex(&self) -> String {
+    fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!(
             "\\{{*({}),{}\\}} as {}",
-            self.inner_ty.to_latex(),
-            self.term.to_latex(),
-            self.outer_ty.to_latex()
+            self.inner_ty.to_latex(conf),
+            self.term.to_latex(conf),
+            self.outer_ty.to_latex(conf)
         )
     }
 }

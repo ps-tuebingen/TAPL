@@ -1,4 +1,4 @@
-use super::super::LatexFmt;
+use super::super::{LatexConfig, LatexFmt};
 use syntax::{
     terms::{Term, Variant},
     types::Type,
@@ -9,12 +9,12 @@ where
     T: Term + LatexFmt,
     Ty: Type + LatexFmt,
 {
-    fn to_latex(&self) -> String {
+    fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!(
             "\\langle {} = {} \\rangle as {}",
             self.label,
-            self.term.to_latex(),
-            self.ty.to_latex()
+            self.term.to_latex(conf),
+            self.ty.to_latex(conf)
         )
     }
 }

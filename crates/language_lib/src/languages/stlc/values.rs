@@ -1,5 +1,5 @@
 use super::{terms::Term, types::Type};
-use derivation::latex::LatexFmt;
+use derivation::latex::{LatexConfig, LatexFmt};
 use eval::{
     errors::{ValueKind, ValueMismatch},
     values::{
@@ -213,23 +213,23 @@ impl fmt::Display for Value {
 }
 
 impl LatexFmt for Value {
-    fn to_latex(&self) -> String {
+    fn to_latex(&self, conf: &mut LatexConfig) -> String {
         match self {
-            Value::Lambda(lam) => lam.to_latex(),
-            Value::Unit(u) => u.to_latex(),
-            Value::True(tru) => tru.to_latex(),
-            Value::False(fls) => fls.to_latex(),
-            Value::Num(num) => num.to_latex(),
-            Value::Pair(pair) => pair.to_latex(),
-            Value::Tuple(tup) => tup.to_latex(),
-            Value::Record(rec) => rec.to_latex(),
-            Value::Left(lft) => lft.to_latex(),
-            Value::Right(right) => right.to_latex(),
-            Value::Variant(var) => var.to_latex(),
-            Value::Nothing(not) => not.to_latex(),
-            Value::Something(some) => some.to_latex(),
-            Value::Nil(nil) => nil.to_latex(),
-            Value::Cons(cons) => cons.to_latex(),
+            Value::Lambda(lam) => lam.to_latex(conf),
+            Value::Unit(u) => u.to_latex(conf),
+            Value::True(tru) => tru.to_latex(conf),
+            Value::False(fls) => fls.to_latex(conf),
+            Value::Num(num) => num.to_latex(conf),
+            Value::Pair(pair) => pair.to_latex(conf),
+            Value::Tuple(tup) => tup.to_latex(conf),
+            Value::Record(rec) => rec.to_latex(conf),
+            Value::Left(lft) => lft.to_latex(conf),
+            Value::Right(right) => right.to_latex(conf),
+            Value::Variant(var) => var.to_latex(conf),
+            Value::Nothing(not) => not.to_latex(conf),
+            Value::Something(some) => some.to_latex(conf),
+            Value::Nil(nil) => nil.to_latex(conf),
+            Value::Cons(cons) => cons.to_latex(conf),
         }
     }
 }

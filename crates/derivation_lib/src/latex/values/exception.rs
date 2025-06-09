@@ -1,4 +1,4 @@
-use super::super::LatexFmt;
+use super::super::{LatexConfig, LatexFmt};
 use eval::values::Exception;
 use syntax::{terms::Term, types::Type};
 
@@ -7,7 +7,7 @@ where
     T: Term + LatexFmt,
     Ty: Type + LatexFmt,
 {
-    fn to_latex(&self) -> String {
-        format!("error[{}]", self.ty.to_latex())
+    fn to_latex(&self, conf: &mut LatexConfig) -> String {
+        format!("error[{}]", self.ty.to_latex(conf))
     }
 }

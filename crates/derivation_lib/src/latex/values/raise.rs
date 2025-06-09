@@ -1,4 +1,4 @@
-use super::super::LatexFmt;
+use super::super::{LatexConfig, LatexFmt};
 use eval::values::{Raise, Value};
 use syntax::types::Type;
 
@@ -7,12 +7,12 @@ where
     V: Value + LatexFmt,
     Ty: Type + LatexFmt,
 {
-    fn to_latex(&self) -> String {
+    fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!(
             "raise[{}]({} : {})",
-            self.cont_ty.to_latex(),
-            self.val.to_latex(),
-            self.cont_ty.to_latex()
+            self.cont_ty.to_latex(conf),
+            self.val.to_latex(conf),
+            self.cont_ty.to_latex(conf)
         )
     }
 }

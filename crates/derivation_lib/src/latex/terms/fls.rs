@@ -1,8 +1,11 @@
-use syntax::terms::{Term,False};
-use super::super::LatexFmt;
+use super::super::{LatexConfig, LatexFmt};
+use syntax::terms::{False, Term};
 
-impl<T> LatexFmt for False<T> where T:Term+LatexFmt{
-    fn to_latex(&self) -> String{
+impl<T> LatexFmt for False<T>
+where
+    T: Term + LatexFmt,
+{
+    fn to_latex(&self, _: &mut LatexConfig) -> String {
         format!("false")
     }
 }

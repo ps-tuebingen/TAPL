@@ -1,5 +1,5 @@
 use super::types::Type;
-use derivation::latex::LatexFmt;
+use derivation::latex::{LatexConfig, LatexFmt};
 use std::fmt;
 use syntax::{
     subst::{SubstTerm, SubstType},
@@ -47,20 +47,20 @@ impl fmt::Display for Term {
 }
 
 impl LatexFmt for Term {
-    fn to_latex(&self) -> String {
+    fn to_latex(&self, conf: &mut LatexConfig) -> String {
         match self {
-            Term::Var(v) => v.to_latex(),
-            Term::Num(num) => num.to_latex(),
-            Term::Succ(s) => s.to_latex(),
-            Term::Pred(p) => p.to_latex(),
-            Term::Lambda(lam) => lam.to_latex(),
-            Term::App(app) => app.to_latex(),
-            Term::LambdaSub(lam) => lam.to_latex(),
-            Term::TyApp(app) => app.to_latex(),
-            Term::Pack(pack) => pack.to_latex(),
-            Term::Unpack(unpack) => unpack.to_latex(),
-            Term::Record(rec) => rec.to_latex(),
-            Term::Projection(proj) => proj.to_latex(),
+            Term::Var(v) => v.to_latex(conf),
+            Term::Num(num) => num.to_latex(conf),
+            Term::Succ(s) => s.to_latex(conf),
+            Term::Pred(p) => p.to_latex(conf),
+            Term::Lambda(lam) => lam.to_latex(conf),
+            Term::App(app) => app.to_latex(conf),
+            Term::LambdaSub(lam) => lam.to_latex(conf),
+            Term::TyApp(app) => app.to_latex(conf),
+            Term::Pack(pack) => pack.to_latex(conf),
+            Term::Unpack(unpack) => unpack.to_latex(conf),
+            Term::Record(rec) => rec.to_latex(conf),
+            Term::Projection(proj) => proj.to_latex(conf),
         }
     }
 }

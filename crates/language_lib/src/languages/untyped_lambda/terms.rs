@@ -1,6 +1,6 @@
 use super::errors::Error;
 use check::Typecheck;
-use derivation::latex::LatexFmt;
+use derivation::latex::{LatexConfig, LatexFmt};
 use derivation::Derivation;
 use std::fmt;
 use syntax::untyped::Untyped;
@@ -53,11 +53,11 @@ impl fmt::Display for Term {
 }
 
 impl LatexFmt for Term {
-    fn to_latex(&self) -> String {
+    fn to_latex(&self, conf: &mut LatexConfig) -> String {
         match self {
-            Term::Var(var) => var.to_latex(),
-            Term::Lambda(lam) => lam.to_latex(),
-            Term::App(app) => app.to_latex(),
+            Term::Var(var) => var.to_latex(conf),
+            Term::Lambda(lam) => lam.to_latex(conf),
+            Term::App(app) => app.to_latex(conf),
         }
     }
 }

@@ -1,5 +1,5 @@
 use common::errors::{TypeKind, TypeMismatch};
-use derivation::latex::LatexFmt;
+use derivation::latex::{LatexConfig, LatexFmt};
 use std::fmt;
 use syntax::{
     subst::SubstType,
@@ -152,19 +152,19 @@ impl fmt::Display for Type {
 }
 
 impl LatexFmt for Type {
-    fn to_latex(&self) -> String {
+    fn to_latex(&self, conf: &mut LatexConfig) -> String {
         match self {
-            Type::Unit(u) => u.to_latex(),
-            Type::Fun(fun) => fun.to_latex(),
-            Type::Bool(b) => b.to_latex(),
-            Type::Nat(n) => n.to_latex(),
-            Type::Prod(prod) => prod.to_latex(),
-            Type::Tup(tup) => tup.to_latex(),
-            Type::Record(recs) => recs.to_latex(),
-            Type::Sum(sum) => sum.to_latex(),
-            Type::Variant(vars) => vars.to_latex(),
-            Type::Optional(option) => option.to_latex(),
-            Type::List(list) => list.to_latex(),
+            Type::Unit(u) => u.to_latex(conf),
+            Type::Fun(fun) => fun.to_latex(conf),
+            Type::Bool(b) => b.to_latex(conf),
+            Type::Nat(n) => n.to_latex(conf),
+            Type::Prod(prod) => prod.to_latex(conf),
+            Type::Tup(tup) => tup.to_latex(conf),
+            Type::Record(recs) => recs.to_latex(conf),
+            Type::Sum(sum) => sum.to_latex(conf),
+            Type::Variant(vars) => vars.to_latex(conf),
+            Type::Optional(option) => option.to_latex(conf),
+            Type::List(list) => list.to_latex(conf),
         }
     }
 }

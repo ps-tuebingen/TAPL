@@ -1,5 +1,5 @@
 use common::errors::{TypeKind, TypeMismatch};
-use derivation::latex::LatexFmt;
+use derivation::latex::{LatexConfig, LatexFmt};
 use std::fmt;
 use syntax::{
     subst::SubstType,
@@ -146,17 +146,17 @@ impl fmt::Display for Type {
 }
 
 impl LatexFmt for Type {
-    fn to_latex(&self) -> String {
+    fn to_latex(&self, conf: &mut LatexConfig) -> String {
         match self {
-            Type::Var(var) => var.to_latex(),
-            Type::Top(top) => top.to_latex(),
-            Type::Fun(fun) => fun.to_latex(),
-            Type::Forall(forall) => forall.to_latex(),
-            Type::OpLambdaSub(lam) => lam.to_latex(),
-            Type::OpApp(app) => app.to_latex(),
-            Type::Exists(ex) => ex.to_latex(),
-            Type::Record(rec) => rec.to_latex(),
-            Type::Nat(nat) => nat.to_latex(),
+            Type::Var(var) => var.to_latex(conf),
+            Type::Top(top) => top.to_latex(conf),
+            Type::Fun(fun) => fun.to_latex(conf),
+            Type::Forall(forall) => forall.to_latex(conf),
+            Type::OpLambdaSub(lam) => lam.to_latex(conf),
+            Type::OpApp(app) => app.to_latex(conf),
+            Type::Exists(ex) => ex.to_latex(conf),
+            Type::Record(rec) => rec.to_latex(conf),
+            Type::Nat(nat) => nat.to_latex(conf),
         }
     }
 }

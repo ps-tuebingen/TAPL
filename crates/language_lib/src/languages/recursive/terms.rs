@@ -1,5 +1,5 @@
 use super::types::Type;
-use derivation::latex::LatexFmt;
+use derivation::latex::{LatexConfig, LatexFmt};
 use std::fmt;
 use syntax::{
     subst::{SubstTerm, SubstType},
@@ -128,30 +128,30 @@ impl fmt::Display for Term {
 }
 
 impl LatexFmt for Term {
-    fn to_latex(&self) -> String {
+    fn to_latex(&self, conf: &mut LatexConfig) -> String {
         match self {
-            Term::Var(v) => v.to_latex(),
-            Term::Lambda(lam) => lam.to_latex(),
-            Term::App(app) => app.to_latex(),
-            Term::Unit(u) => u.to_latex(),
-            Term::Fold(fold) => fold.to_latex(),
-            Term::Unfold(unfold) => unfold.to_latex(),
-            Term::Variant(var) => var.to_latex(),
-            Term::VariantCase(case) => case.to_latex(),
-            Term::Pair(p) => p.to_latex(),
-            Term::Fst(fst) => fst.to_latex(),
-            Term::Snd(snd) => snd.to_latex(),
-            Term::Num(num) => num.to_latex(),
-            Term::Succ(succ) => succ.to_latex(),
-            Term::Pred(pred) => pred.to_latex(),
-            Term::IsZero(isz) => isz.to_latex(),
-            Term::True(tru) => tru.to_latex(),
-            Term::False(fls) => fls.to_latex(),
-            Term::If(ift) => ift.to_latex(),
-            Term::Fix(fix) => fix.to_latex(),
-            Term::Let(lt) => lt.to_latex(),
-            Term::Record(rec) => rec.to_latex(),
-            Term::RecordProj(proj) => proj.to_latex(),
+            Term::Var(v) => v.to_latex(conf),
+            Term::Lambda(lam) => lam.to_latex(conf),
+            Term::App(app) => app.to_latex(conf),
+            Term::Unit(u) => u.to_latex(conf),
+            Term::Fold(fold) => fold.to_latex(conf),
+            Term::Unfold(unfold) => unfold.to_latex(conf),
+            Term::Variant(var) => var.to_latex(conf),
+            Term::VariantCase(case) => case.to_latex(conf),
+            Term::Pair(p) => p.to_latex(conf),
+            Term::Fst(fst) => fst.to_latex(conf),
+            Term::Snd(snd) => snd.to_latex(conf),
+            Term::Num(num) => num.to_latex(conf),
+            Term::Succ(succ) => succ.to_latex(conf),
+            Term::Pred(pred) => pred.to_latex(conf),
+            Term::IsZero(isz) => isz.to_latex(conf),
+            Term::True(tru) => tru.to_latex(conf),
+            Term::False(fls) => fls.to_latex(conf),
+            Term::If(ift) => ift.to_latex(conf),
+            Term::Fix(fix) => fix.to_latex(conf),
+            Term::Let(lt) => lt.to_latex(conf),
+            Term::Record(rec) => rec.to_latex(conf),
+            Term::RecordProj(proj) => proj.to_latex(conf),
         }
     }
 }

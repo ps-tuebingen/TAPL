@@ -1,4 +1,4 @@
-use super::super::LatexFmt;
+use super::super::{LatexConfig, LatexFmt};
 use eval::values::{Left, Value};
 use syntax::types::Type;
 
@@ -7,11 +7,11 @@ where
     V: Value + LatexFmt,
     Ty: Type + LatexFmt,
 {
-    fn to_latex(&self) -> String {
+    fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!(
             "inl({}) as {}",
-            self.left_val.to_latex(),
-            self.ty.to_latex()
+            self.left_val.to_latex(conf),
+            self.ty.to_latex(conf)
         )
     }
 }

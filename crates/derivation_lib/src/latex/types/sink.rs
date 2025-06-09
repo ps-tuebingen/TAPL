@@ -1,11 +1,11 @@
-use super::super::LatexFmt;
+use super::super::{LatexConfig, LatexFmt};
 use syntax::types::{Sink, Type};
 
 impl<Ty> LatexFmt for Sink<Ty>
 where
     Ty: Type + LatexFmt,
 {
-    fn to_latex(&self) -> String {
-        format!("Sink[{}]", self.ty.to_latex())
+    fn to_latex(&self, conf: &mut LatexConfig) -> String {
+        format!("Sink[{}]", self.ty.to_latex(conf))
     }
 }

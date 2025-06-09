@@ -1,4 +1,4 @@
-use super::super::LatexFmt;
+use super::super::{LatexConfig, LatexFmt};
 use syntax::{
     terms::{Raise, Term},
     types::Type,
@@ -9,12 +9,12 @@ where
     T: Term + LatexFmt,
     Ty: Type + LatexFmt,
 {
-    fn to_latex(&self) -> String {
+    fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!(
             "raise[{}]({} : {})",
-            self.cont_ty.to_latex(),
-            self.exception.to_latex(),
-            self.exception_ty.to_latex()
+            self.cont_ty.to_latex(conf),
+            self.exception.to_latex(conf),
+            self.exception_ty.to_latex(conf)
         )
     }
 }

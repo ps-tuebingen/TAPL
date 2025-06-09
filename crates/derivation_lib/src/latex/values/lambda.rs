@@ -1,4 +1,4 @@
-use super::super::LatexFmt;
+use super::super::{LatexConfig, LatexFmt};
 use eval::values::Lambda;
 use syntax::{terms::Term, types::Type};
 
@@ -7,12 +7,12 @@ where
     T: Term + LatexFmt,
     Ty: Type + LatexFmt,
 {
-    fn to_latex(&self) -> String {
+    fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!(
             "\\lambda {}:{}.{}",
             self.var,
-            self.annot.to_latex(),
-            self.body.to_latex()
+            self.annot.to_latex(conf),
+            self.body.to_latex(conf)
         )
     }
 }

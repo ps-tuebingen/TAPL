@@ -1,11 +1,11 @@
-use super::super::LatexFmt;
+use super::super::{LatexConfig, LatexFmt};
 use syntax::types::{Mu, Type};
 
 impl<Ty> LatexFmt for Mu<Ty>
 where
     Ty: Type + LatexFmt,
 {
-    fn to_latex(&self) -> String {
-        format!("\\mu {}. {}", self.var, self.ty.to_latex())
+    fn to_latex(&self, conf: &mut LatexConfig) -> String {
+        format!("\\mu {}. {}", self.var, self.ty.to_latex(conf))
     }
 }

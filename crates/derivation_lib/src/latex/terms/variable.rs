@@ -1,11 +1,11 @@
-use super::super::LatexFmt;
+use super::super::{LatexConfig, LatexFmt};
 use syntax::terms::{Term, Variable};
 
 impl<T> LatexFmt for Variable<T>
 where
     T: Term,
 {
-    fn to_latex(&self) -> String {
+    fn to_latex(&self, _: &mut LatexConfig) -> String {
         format!("{}", self.var)
     }
 }

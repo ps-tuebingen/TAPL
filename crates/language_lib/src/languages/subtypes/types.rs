@@ -1,5 +1,5 @@
 use common::errors::{TypeKind, TypeMismatch};
-use derivation::latex::LatexFmt;
+use derivation::latex::{LatexConfig, LatexFmt};
 use std::fmt;
 use syntax::{
     subst::SubstType,
@@ -169,20 +169,20 @@ impl fmt::Display for Type {
 }
 
 impl LatexFmt for Type {
-    fn to_latex(&self) -> String {
+    fn to_latex(&self, conf: &mut LatexConfig) -> String {
         match self {
-            Type::Top(top) => top.to_latex(),
-            Type::Bot(bot) => bot.to_latex(),
-            Type::Fun(fun) => fun.to_latex(),
-            Type::Record(rec) => rec.to_latex(),
-            Type::Variant(variant) => variant.to_latex(),
-            Type::List(list) => list.to_latex(),
-            Type::Ref(refty) => refty.to_latex(),
-            Type::Source(src) => src.to_latex(),
-            Type::Sink(snk) => snk.to_latex(),
-            Type::Nat(nat) => nat.to_latex(),
-            Type::Unit(unit) => unit.to_latex(),
-            Type::Bool(b) => b.to_latex(),
+            Type::Top(top) => top.to_latex(conf),
+            Type::Bot(bot) => bot.to_latex(conf),
+            Type::Fun(fun) => fun.to_latex(conf),
+            Type::Record(rec) => rec.to_latex(conf),
+            Type::Variant(variant) => variant.to_latex(conf),
+            Type::List(list) => list.to_latex(conf),
+            Type::Ref(refty) => refty.to_latex(conf),
+            Type::Source(src) => src.to_latex(conf),
+            Type::Sink(snk) => snk.to_latex(conf),
+            Type::Nat(nat) => nat.to_latex(conf),
+            Type::Unit(unit) => unit.to_latex(conf),
+            Type::Bool(b) => b.to_latex(conf),
         }
     }
 }

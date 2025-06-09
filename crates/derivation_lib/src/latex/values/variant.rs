@@ -1,4 +1,4 @@
-use super::super::LatexFmt;
+use super::super::{LatexConfig, LatexFmt};
 use eval::values::{Value, Variant};
 use syntax::types::Type;
 
@@ -7,7 +7,11 @@ where
     V: Value + LatexFmt,
     Ty: Type + LatexFmt,
 {
-    fn to_latex(&self) -> String {
-        format!("\\langle {} = {} \\rangle", self.label, self.val.to_latex())
+    fn to_latex(&self, conf: &mut LatexConfig) -> String {
+        format!(
+            "\\langle {} = {} \\rangle",
+            self.label,
+            self.val.to_latex(conf)
+        )
     }
 }

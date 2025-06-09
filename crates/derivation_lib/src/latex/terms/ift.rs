@@ -1,14 +1,16 @@
-use super::super::LatexFmt;
+use super::super::{LatexConfig, LatexFmt};
 use syntax::terms::{If, Term};
 
 impl<T> LatexFmt for If<T>
 where
     T: Term + LatexFmt,
 {
-    fn to_latex(&self) -> String {
+    fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!(
             "if ({}) \\{{ {} \\}} else \\{{ {} \\}}",
-            self.if_cond, self.then_term, self.else_term
+            self.if_cond.to_latex(conf),
+            self.then_term.to_latex(conf),
+            self.else_term.to_latex(conf)
         )
     }
 }
