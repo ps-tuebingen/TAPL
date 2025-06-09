@@ -1,5 +1,13 @@
 #!/bin/bash 
 
+VERBOSE=$1
+debug() {
+  if [[ $VERBOSE == "-v" ]] || [[ $VERBOSE == "--verbose" ]];
+  then 
+    echo $1
+  fi
+}
+
 OUT_DIR="crates/web_bin/src/examples";
 OUT_MOD="$OUT_DIR/mod.rs";
 EXAMPLES_DIR="examples";
@@ -30,7 +38,7 @@ do
   CURRENT_NUM=0;
   EXAMPLE_NAMES=();
 
-  echo "Loading examples for $EXAMPLE_DIR_BASE";
+  debug "Loading examples for $EXAMPLE_DIR_BASE";
 
   #declar examples mod and use array of all examples
   echo "pub mod $EXAMPLE_DIR_BASE;" >> $OUT_MOD;
@@ -55,7 +63,7 @@ do
     EXAMPLE_NAMES+=("$EXAMPLE_UPPER");
     NUM_STR=$(printf "%02d" $CURRENT_NUM);
 
-    echo "($NUM_STR/$NUM_EXAMPLES_STR) $EXAMPLE_NAME";
+    debug "($NUM_STR/$NUM_EXAMPLES_STR) $EXAMPLE_NAME";
 
     #write the file as include_str into the file
     echo "pub const $EXAMPLE_UPPER: &str = include_str!(\"../../../../$example\");" >> $OUT_PATH;
