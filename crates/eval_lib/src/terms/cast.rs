@@ -3,6 +3,7 @@ use syntax::{
     terms::{Cast, Term},
     types::Type,
 };
+use trace::EvalTrace;
 
 impl<T, Ty> Eval for Cast<T, Ty>
 where
@@ -13,7 +14,11 @@ where
     type Value = <T as Eval>::Value;
     type EvalError = <T as Eval>::EvalError;
 
-    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Self::EvalError> {
+    type Term = T;
+    fn eval(
+        self,
+        env: &mut Self::Env,
+    ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
         self.term.eval(env)
     }
 }

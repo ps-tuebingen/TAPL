@@ -3,6 +3,7 @@ use syntax::{
     terms::{Pair, Term},
     values::Pair as PairVal,
 };
+use trace::EvalTrace;
 
 impl<T> Eval for Pair<T>
 where
@@ -13,7 +14,11 @@ where
     type Value = <T as Eval>::Value;
     type EvalError = <T as Eval>::EvalError;
 
-    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Self::EvalError> {
+    type Term = T;
+    fn eval(
+        self,
+        env: &mut Self::Env,
+    ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
         let fst_val = self.fst.eval(env)?;
         let snd_val = self.snd.eval(env)?;
         Ok(PairVal::<<T as Eval>::Value>::new(fst_val, snd_val).into())

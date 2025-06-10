@@ -3,6 +3,7 @@ use syntax::{
     terms::{Term, TyLambda},
     values::TyLambda as TyLambdaVal,
 };
+use trace::EvalTrace;
 
 impl<T> Eval for TyLambda<T>
 where
@@ -13,7 +14,11 @@ where
     type EvalError = <T as Eval>::EvalError;
     type Env = <T as Eval>::Env;
 
-    fn eval(self, _: &mut Self::Env) -> Result<Self::Value, Self::EvalError> {
+    type Term = T;
+    fn eval(
+        self,
+        _: &mut Self::Env,
+    ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
         Ok(TyLambdaVal::new(&self.var, self.annot, *self.term).into())
     }
 }

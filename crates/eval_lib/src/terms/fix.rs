@@ -5,6 +5,7 @@ use syntax::{
     terms::{Fix, Term},
     values::ValueGroup,
 };
+use trace::EvalTrace;
 
 impl<T> Eval for Fix<T>
 where
@@ -17,7 +18,11 @@ where
     type Value = <T as Eval>::Value;
     type EvalError = <T as Eval>::EvalError;
 
-    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Self::EvalError> {
+    type Term = T;
+    fn eval(
+        self,
+        env: &mut Self::Env,
+    ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
         let term_val = self.term.clone().eval(env)?;
         let lam_val = term_val.into_lambda()?;
         lam_val.body.subst(&lam_val.var, &self.into()).eval(env)

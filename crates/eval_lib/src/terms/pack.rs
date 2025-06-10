@@ -4,6 +4,7 @@ use syntax::{
     types::Type,
     values::Pack as PackVal,
 };
+use trace::EvalTrace;
 
 impl<T, Ty> Eval for Pack<T, Ty>
 where
@@ -15,7 +16,11 @@ where
     type EvalError = <T as Eval>::EvalError;
     type Env = <T as Eval>::Env;
 
-    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Self::EvalError> {
+    type Term = T;
+    fn eval(
+        self,
+        env: &mut Self::Env,
+    ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
         let term_val = self.term.eval(env)?;
         Ok(PackVal::<<T as Eval>::Value, Ty>::new(
             self.inner_ty.clone(),

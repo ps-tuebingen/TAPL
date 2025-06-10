@@ -3,6 +3,7 @@ use syntax::{
     terms::{Term, Tuple},
     values::Tuple as TupleVal,
 };
+use trace::EvalTrace;
 
 impl<T> Eval for Tuple<T>
 where
@@ -12,7 +13,11 @@ where
     type Env = <T as Eval>::Env;
     type Value = <T as Eval>::Value;
     type EvalError = <T as Eval>::EvalError;
-    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Self::EvalError> {
+    type Term = T;
+    fn eval(
+        self,
+        env: &mut Self::Env,
+    ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
         let mut vals = vec![];
         for t in self.terms.into_iter() {
             let val = t.eval(env)?;

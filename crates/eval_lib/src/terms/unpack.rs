@@ -6,6 +6,7 @@ use syntax::{
     types::Type,
     values::ValueGroup,
 };
+use trace::EvalTrace;
 
 impl<T, Ty> Eval for Unpack<T, Ty>
 where
@@ -22,7 +23,11 @@ where
     type EvalError = <T as Eval>::EvalError;
     type Env = <T as Eval>::Env;
 
-    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Self::EvalError> {
+    type Term = T;
+    fn eval(
+        self,
+        env: &mut Self::Env,
+    ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
         let term_val = self.bound_term.eval(env)?;
         let pack_val = term_val.into_pack()?;
         self.in_term

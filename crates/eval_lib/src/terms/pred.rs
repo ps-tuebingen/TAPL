@@ -4,6 +4,7 @@ use syntax::{
     terms::{Pred, Term},
     values::{Num, ValueGroup},
 };
+use trace::EvalTrace;
 
 impl<T> Eval for Pred<T>
 where
@@ -15,6 +16,7 @@ where
     type EvalError = <T as Eval>::EvalError;
     type Env = <T as Eval>::Env;
 
+    type Term = T;
     fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Self::EvalError> {
         let val = self.term.eval(env)?;
         let num = val.into_num()?;

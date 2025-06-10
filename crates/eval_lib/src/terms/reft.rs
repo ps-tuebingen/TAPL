@@ -3,6 +3,7 @@ use syntax::{
     terms::{Ref, Term},
     values::Loc,
 };
+use trace::EvalTrace;
 
 impl<T> Eval for Ref<T>
 where
@@ -13,7 +14,11 @@ where
     type Value = <T as Eval>::Value;
     type EvalError = <T as Eval>::EvalError;
 
-    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Self::EvalError> {
+    type Term = T;
+    fn eval(
+        self,
+        env: &mut Self::Env,
+    ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
         let term_val = self.term.clone().eval(env)?;
         let fresh_loc = env.fresh_location();
         env.save_location(fresh_loc, term_val);

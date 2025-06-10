@@ -4,6 +4,7 @@ use syntax::{
     types::Type,
     values::Raise as RaiseVal,
 };
+use trace::EvalTrace;
 
 impl<T, Ty> Eval for Raise<T, Ty>
 where
@@ -15,6 +16,7 @@ where
     type EvalError = <T as Eval>::EvalError;
     type Env = <T as Eval>::Env;
 
+    type Term = T;
     fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Self::EvalError> {
         let exc_val = self.exception.eval(env)?;
         let raise_val =

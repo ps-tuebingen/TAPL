@@ -4,6 +4,7 @@ use syntax::{
     terms::{Snd, Term},
     values::ValueGroup,
 };
+use trace::EvalTrace;
 
 impl<T> Eval for Snd<T>
 where
@@ -14,7 +15,11 @@ where
     type Value = <T as Eval>::Value;
     type EvalError = <T as Eval>::EvalError;
 
-    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Self::EvalError> {
+    type Term = T;
+    fn eval(
+        self,
+        env: &mut Self::Env,
+    ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
         let term_val = self.term.eval(env)?;
         let pair_val = term_val.into_pair()?;
         Ok(*pair_val.snd)

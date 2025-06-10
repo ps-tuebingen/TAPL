@@ -4,6 +4,7 @@ use syntax::{
     types::Type,
     values::Right as RightVal,
 };
+use trace::EvalTrace;
 
 impl<T, Ty> Eval for Right<T, Ty>
 where
@@ -15,7 +16,11 @@ where
     type EvalError = <T as Eval>::EvalError;
     type Env = <T as Eval>::Env;
 
-    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Self::EvalError> {
+    type Term = T;
+    fn eval(
+        self,
+        env: &mut Self::Env,
+    ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
         let right_val = self.right_term.eval(env)?;
         Ok(RightVal::<<T as Eval>::Value, Ty>::new(right_val, self.ty.clone()).into())
     }

@@ -4,6 +4,7 @@ use syntax::{
     terms::{Projection, Term},
     values::ValueGroup,
 };
+use trace::EvalTrace;
 
 impl<T> Eval for Projection<T>
 where
@@ -14,6 +15,7 @@ where
     type Value = <T as Eval>::Value;
     type EvalError = <T as Eval>::EvalError;
 
+    type Term = T;
     fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Self::EvalError> {
         let term_val = self.term.eval(env)?;
         let tup_val = term_val.into_tuple()?;

@@ -1,6 +1,7 @@
 use crate::Eval;
 use common::errors::FreeVariable;
 use syntax::terms::{Term, Variable};
+use trace::EvalTrace;
 
 impl<T> Eval for Variable<T>
 where
@@ -11,7 +12,11 @@ where
     type EvalError = <T as Eval>::EvalError;
     type Env = <T as Eval>::Env;
 
-    fn eval(self, _: &mut Self::Env) -> Result<Self::Value, Self::EvalError> {
+    type Term = T;
+    fn eval(
+        self,
+        _: &mut Self::Env,
+    ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
         Err(FreeVariable::new(&self.var).into())
     }
 }

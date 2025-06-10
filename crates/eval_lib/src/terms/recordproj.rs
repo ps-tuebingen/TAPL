@@ -4,6 +4,7 @@ use syntax::{
     terms::{RecordProj, Term},
     values::ValueGroup,
 };
+use trace::EvalTrace;
 
 impl<T> Eval for RecordProj<T>
 where
@@ -14,6 +15,7 @@ where
     type Value = <T as Eval>::Value;
     type EvalError = <T as Eval>::EvalError;
 
+    type Term = T;
     fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Self::EvalError> {
         let term_val = self.record.eval(env)?;
         let rec_val = term_val.into_record()?;

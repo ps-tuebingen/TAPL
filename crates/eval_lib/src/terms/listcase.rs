@@ -5,6 +5,7 @@ use syntax::{
     terms::{ListCase, Term},
     values::{Value, ValueGroup},
 };
+use trace::EvalTrace;
 
 impl<T> Eval for ListCase<T>
 where
@@ -15,7 +16,11 @@ where
     type Value = <T as Eval>::Value;
     type EvalError = <T as Eval>::EvalError;
 
-    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Self::EvalError> {
+    type Term = T;
+    fn eval(
+        self,
+        env: &mut Self::Env,
+    ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
         let bound_val = self.bound_term.eval(env)?;
         if bound_val.clone().into_nil().is_ok() {
             self.nil_rhs.eval(env)

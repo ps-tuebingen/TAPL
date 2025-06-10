@@ -4,6 +4,7 @@ use syntax::{
     terms::{If, Term},
     values::{Value, ValueGroup},
 };
+use trace::EvalTrace;
 
 impl<T> Eval for If<T>
 where
@@ -14,6 +15,7 @@ where
     type EvalError = <T as Eval>::EvalError;
     type Env = <T as Eval>::Env;
 
+    type Term = T;
     fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Self::EvalError> {
         let cond_val = self.if_cond.eval(env)?;
         if cond_val.clone().into_true().is_ok() {

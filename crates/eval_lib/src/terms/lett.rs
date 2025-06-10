@@ -3,6 +3,7 @@ use syntax::{
     subst::SubstTerm,
     terms::{Let, Term},
 };
+use trace::EvalTrace;
 
 impl<T> Eval for Let<T>
 where
@@ -12,7 +13,11 @@ where
     type Value = <T as Eval>::Value;
     type EvalError = <T as Eval>::EvalError;
 
-    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Self::EvalError> {
+    type Term = T;
+    fn eval(
+        self,
+        env: &mut Self::Env,
+    ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
         let bound_val = self.bound_term.eval(env)?;
         self.in_term.subst(&self.var, &bound_val.into()).eval(env)
     }

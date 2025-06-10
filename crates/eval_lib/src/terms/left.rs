@@ -4,6 +4,7 @@ use syntax::{
     types::Type,
     values::Left as LeftVal,
 };
+use trace::EvalTrace;
 
 impl<T, Ty> Eval for Left<T, Ty>
 where
@@ -15,7 +16,11 @@ where
     type Value = <T as Eval>::Value;
     type EvalError = <T as Eval>::EvalError;
 
-    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Self::EvalError> {
+    type Term = T;
+    fn eval(
+        self,
+        env: &mut Self::Env,
+    ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
         let left_val = self.left_term.eval(env)?;
         Ok(LeftVal::<<T as Eval>::Value, Ty>::new(left_val, self.ty).into())
     }

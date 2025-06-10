@@ -4,6 +4,7 @@ use syntax::{
     types::Type,
     values::LambdaSub as LambdaSubVal,
 };
+use trace::EvalTrace;
 
 impl<T, Ty> Eval for LambdaSub<T, Ty>
 where
@@ -15,7 +16,11 @@ where
     type EvalError = <T as Eval>::EvalError;
     type Env = <T as Eval>::Env;
 
-    fn eval(self, _: &mut Self::Env) -> Result<Self::Value, Self::EvalError> {
+    type Term = T;
+    fn eval(
+        self,
+        _: &mut Self::Env,
+    ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
         Ok(LambdaSubVal::<T, Ty>::new(&self.var, self.sup_ty, *self.body).into())
     }
 }

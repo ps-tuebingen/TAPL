@@ -3,6 +3,7 @@ use syntax::{
     terms::{App, Term, TryWithVal},
     values::{Raise, ValueGroup},
 };
+use trace::EvalTrace;
 
 impl<T> Eval for TryWithVal<T>
 where
@@ -14,7 +15,11 @@ where
     type EvalError = <T as Eval>::EvalError;
     type Env = <T as Eval>::Env;
 
-    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Self::EvalError> {
+    type Term = T;
+    fn eval(
+        self,
+        env: &mut Self::Env,
+    ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
         let term_evaled = self.term.eval(env)?;
         if let Ok(raise) = term_evaled.clone().into_raise() {
             let raise_term: T = (*raise.val).into();

@@ -4,6 +4,7 @@ use syntax::{
     terms::{Assign, Term},
     values::{Unit as UnitVal, ValueGroup},
 };
+use trace::EvalTrace;
 
 impl<T> Eval for Assign<T>
 where
@@ -15,7 +16,11 @@ where
     type Value = <T as Eval>::Value;
     type EvalError = <T as Eval>::EvalError;
 
-    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Self::EvalError> {
+    type Term = T;
+    fn eval(
+        self,
+        env: &mut Self::Env,
+    ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
         let lhs_val = self.lhs.eval(env)?;
         let lhs_loc = lhs_val.into_loc()?;
         let rhs_val = self.rhs.eval(env)?;

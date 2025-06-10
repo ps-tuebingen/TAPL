@@ -5,6 +5,7 @@ use syntax::{
     terms::{SomeCase, Term},
     values::{Value, ValueGroup},
 };
+use trace::EvalTrace;
 
 impl<T> Eval for SomeCase<T>
 where
@@ -15,7 +16,11 @@ where
     type Value = <T as Eval>::Value;
     type EvalError = <T as Eval>::EvalError;
 
-    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Self::EvalError> {
+    type Term = T;
+    fn eval(
+        self,
+        env: &mut Self::Env,
+    ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
         let bound_val = self.bound_term.eval(env)?;
 
         if let Ok(some_val) = bound_val.clone().into_something() {

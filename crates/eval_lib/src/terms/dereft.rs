@@ -4,6 +4,7 @@ use syntax::{
     terms::{Deref, Term},
     values::ValueGroup,
 };
+use trace::EvalTrace;
 
 impl<T> Eval for Deref<T>
 where
@@ -14,7 +15,11 @@ where
     type Value = <T as Eval>::Value;
     type EvalError = <T as Eval>::EvalError;
 
-    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Self::EvalError> {
+    type Term = T;
+    fn eval(
+        self,
+        env: &mut Self::Env,
+    ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
         let term_val = self.term.clone().eval(env)?;
         let loc_val = term_val.into_loc()?;
         env.get_location(loc_val.loc).map_err(|err| err.into())

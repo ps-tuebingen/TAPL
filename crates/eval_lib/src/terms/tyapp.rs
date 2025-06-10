@@ -6,6 +6,7 @@ use syntax::{
     types::Type,
     values::{Value, ValueGroup},
 };
+use trace::EvalTrace;
 
 impl<T, Ty> Eval for TyApp<T, Ty>
 where
@@ -18,6 +19,7 @@ where
     type EvalError = <T as Eval>::EvalError;
     type Env = <T as Eval>::Env;
 
+    type Term = T;
     fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Self::EvalError> {
         let fun_val = self.fun.eval(env)?;
         if let Ok(tylam) = fun_val.clone().into_tylambda() {

@@ -4,6 +4,7 @@ use syntax::{
     types::Type,
     values::Fold as FoldVal,
 };
+use trace::EvalTrace;
 
 impl<T, Ty> Eval for Fold<T, Ty>
 where
@@ -15,7 +16,11 @@ where
     type Value = <T as Eval>::Value;
     type EvalError = <T as Eval>::EvalError;
 
-    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Self::EvalError> {
+    type Term = T;
+    fn eval(
+        self,
+        env: &mut Self::Env,
+    ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
         let term_val = self.term.eval(env)?;
         Ok(FoldVal::<<T as Eval>::Value, Ty>::new(self.ty, term_val).into())
     }
