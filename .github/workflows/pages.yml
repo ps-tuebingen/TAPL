@@ -1,0 +1,22 @@
+name: Deploy GH Pages
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  statuses: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/workflows/setup-env
+      - run: make web
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: html/
+
