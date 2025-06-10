@@ -15,7 +15,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/workflows/setup-env
-      - run: make web VERBOSE=1
+      - run: |
+          cargo install wasm-pack
+          make web VERBOSE=1
       - uses: actions/upload-pages-artifact@v3
         with:
           path: html/
