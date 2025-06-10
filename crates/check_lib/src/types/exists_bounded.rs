@@ -13,13 +13,13 @@ where
 {
     type CheckError = <Ty as Subtypecheck<Ty>>::CheckError;
 
-    fn check_subtype(&self, sup: &Ty, env: &mut Environment<Ty>) -> Result<(), Self::CheckError> {
+    fn check_subtype(&self, sup: &Ty, mut env: Environment<Ty>) -> Result<(), Self::CheckError> {
         if sup.clone().into_top().is_ok() {
             return Ok(());
         }
 
-        let sup_norm = sup.clone().normalize(env);
-        let self_norm = self.sup_ty.clone().normalize(env);
+        let sup_norm = sup.clone().normalize(env.clone());
+        let self_norm = self.sup_ty.clone().normalize(env.clone());
         let other_exists = sup_norm.into_exists_bounded()?;
         other_exists.sup_ty.check_equal(&self_norm)?;
         if self.var != other_exists.var {
@@ -28,7 +28,7 @@ where
         env.add_tyvar_super(other_exists.var, *self.sup_ty.clone());
         self.ty
             .clone()
-            .normalize(env)
+            .normalize(env.clone())
             .check_subtype(&(*other_exists.ty), env)
     }
 }
@@ -39,8 +39,8 @@ where
 {
     type CheckError = <Ty as Kindcheck<Ty>>::CheckError;
 
-    fn check_kind(&self, env: &mut Environment<Ty>) -> Result<Kind, Self::CheckError> {
-        let sup_kind = self.sup_ty.check_kind(env)?;
+    fn check_kind(&self, mut env: Environment<Ty>) -> Result<Kind, Self::CheckError> {
+        let sup_kind = self.sup_ty.check_kind(env.clone())?;
         env.add_tyvar_kind(self.var.clone(), sup_kind);
         self.ty.check_kind(env)
     }
@@ -51,7 +51,7 @@ where
     Ty: Type + Normalize<Ty>,
     Self: Into<Ty>,
 {
-    fn normalize(self, env: &mut Environment<Ty>) -> Ty {
+    fn normalize(self, mut env: Environment<Ty>) -> Ty {
         env.add_tyvar_super(self.var.clone(), *self.sup_ty.clone());
         self.into()
     }

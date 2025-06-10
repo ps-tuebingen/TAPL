@@ -8,10 +8,7 @@ impl Typecheck for Term {
     type Term = Term;
     type CheckError = Error;
 
-    fn check(
-        &self,
-        env: &mut Environment<Type>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, Error> {
+    fn check(&self, env: Environment<Type>) -> Result<Derivation<Self::Term, Self::Type>, Error> {
         match self {
             Term::Var(v) => v.check(env),
             Term::Num(num) => num.check(env),
@@ -35,7 +32,7 @@ impl Typecheck for Term {
 impl Subtypecheck<Type> for Type {
     type CheckError = Error;
 
-    fn check_subtype(&self, _: &Self, _: &mut Environment<Type>) -> Result<(), Error> {
+    fn check_subtype(&self, _: &Self, _: Environment<Type>) -> Result<(), Error> {
         Ok(())
     }
 }
@@ -43,7 +40,7 @@ impl Subtypecheck<Type> for Type {
 impl Kindcheck<Type> for Type {
     type CheckError = Error;
 
-    fn check_kind(&self, _: &mut Environment<Type>) -> Result<Kind, Error> {
+    fn check_kind(&self, _: Environment<Type>) -> Result<Kind, Error> {
         Ok(Kind::Star)
     }
 }
@@ -56,14 +53,14 @@ mod check_tests {
 
     #[test]
     fn check1() {
-        let result = example_term1().check(&mut Default::default()).unwrap();
+        let result = example_term1().check(Default::default()).unwrap();
         let expected = Unit::new().into();
         assert_eq!(result.ty(), expected)
     }
 
     #[test]
     fn check2() {
-        let result = example_term2().check(&mut Default::default()).unwrap();
+        let result = example_term2().check(Default::default()).unwrap();
         let expected = Unit::new().into();
         assert_eq!(result.ty(), expected)
     }

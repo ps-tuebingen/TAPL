@@ -24,12 +24,12 @@ where
 
     fn check(
         &self,
-        env: &mut Environment<<T as Typecheck>::Type>,
+        env: Environment<<T as Typecheck>::Type>,
     ) -> Result<Derivation<Self::Term, Self::Type>, Self::CheckError> {
-        let fun_res = self.fun.check(&mut env.clone())?;
-        let fun_ty = fun_res.ty().normalize(&mut env.clone());
-        let arg_norm = self.arg.clone().normalize(&mut env.clone());
-        let arg_kind = arg_norm.check_kind(&mut env.clone())?;
+        let fun_res = self.fun.check(env.clone())?;
+        let fun_ty = fun_res.ty().normalize(env.clone());
+        let arg_norm = self.arg.clone().normalize(env.clone());
+        let arg_kind = arg_norm.check_kind(env.clone())?;
         if let Ok(forall) = fun_ty.clone().into_forall() {
             forall.kind.check_equal(&arg_kind)?;
             let ty = forall.ty.subst_type(&forall.var, &arg_norm);
@@ -37,11 +37,11 @@ where
             let deriv = Derivation::tyapp(conc, fun_res);
             Ok(deriv)
         } else if let Ok(forall) = fun_ty.clone().into_forall_bounded() {
-            let sup_knd = forall.sup_ty.check_kind(&mut env.clone())?;
+            let sup_knd = forall.sup_ty.check_kind(env.clone())?;
             sup_knd.check_equal(&arg_kind)?;
-            arg_norm.check_subtype(&forall.sup_ty, env)?;
+            arg_norm.check_subtype(&forall.sup_ty, env.clone())?;
             let ty = forall.ty.subst_type(&forall.var, &arg_norm);
-            let conc = Conclusion::new(env.clone(), self.clone(), ty);
+            let conc = Conclusion::new(env, self.clone(), ty);
             let deriv = Derivation::tyapp_bounded(conc, fun_res);
             Ok(deriv)
         } else {

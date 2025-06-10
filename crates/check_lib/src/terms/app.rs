@@ -24,17 +24,17 @@ where
 
     fn check(
         &self,
-        env: &mut Environment<<T as Typecheck>::Type>,
+        env: Environment<<T as Typecheck>::Type>,
     ) -> Result<Derivation<Self::Term, Self::Type>, Self::CheckError> {
-        let fun_res = self.fun.check(&mut env.clone())?;
-        let fun_ty = fun_res.ty().normalize(&mut env.clone());
-        fun_ty.check_kind(&mut env.clone())?.into_star()?;
+        let fun_res = self.fun.check(env.clone())?;
+        let fun_ty = fun_res.ty().normalize(env.clone());
+        fun_ty.check_kind(env.clone())?.into_star()?;
         let fun: Fun<<T as Typecheck>::Type> = fun_ty.into_fun()?;
 
-        let arg_res = self.arg.check(&mut env.clone())?;
-        let arg_ty = arg_res.ty().normalize(&mut env.clone());
-        arg_ty.check_kind(&mut env.clone())?.into_star()?;
-        arg_ty.check_subtype(&(*fun.from), &mut env.clone())?;
+        let arg_res = self.arg.check(env.clone())?;
+        let arg_ty = arg_res.ty().normalize(env.clone());
+        arg_ty.check_kind(env.clone())?.into_star()?;
+        arg_ty.check_subtype(&(*fun.from), env.clone())?;
 
         let deriv_conc = Conclusion::new(env.clone(), self.clone(), *fun.to);
         let deriv = Derivation::app(deriv_conc, fun_res, arg_res);

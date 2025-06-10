@@ -22,12 +22,12 @@ where
 
     fn check(
         &self,
-        env: &mut Environment<<T as Typecheck>::Type>,
+        env: Environment<<T as Typecheck>::Type>,
     ) -> Result<Derivation<Self::Term, Self::Type>, Self::CheckError> {
-        let loc_ty = env.get_loc(&self.loc)?.normalize(&mut env.clone());
-        loc_ty.check_kind(env)?.into_star()?;
+        let loc_ty = env.get_loc(&self.loc)?.normalize(env.clone());
+        loc_ty.check_kind(env.clone())?.into_star()?;
 
-        let conc = Conclusion::new(env.clone(), self.clone(), Reference::new(loc_ty));
+        let conc = Conclusion::new(env, self.clone(), Reference::new(loc_ty));
         let deriv = Derivation::loc(conc);
         Ok(deriv)
     }

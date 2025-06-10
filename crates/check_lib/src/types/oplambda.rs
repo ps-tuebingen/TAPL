@@ -14,7 +14,7 @@ where
 {
     type CheckError = <Ty as Subtypecheck<Ty>>::CheckError;
 
-    fn check_subtype(&self, sup: &Ty, env: &mut Environment<Ty>) -> Result<(), Self::CheckError> {
+    fn check_subtype(&self, sup: &Ty, mut env: Environment<Ty>) -> Result<(), Self::CheckError> {
         if sup.clone().into_top().is_ok() {
             return Ok(());
         }
@@ -38,7 +38,7 @@ where
 {
     type CheckError = <Ty as Kindcheck<Ty>>::CheckError;
 
-    fn check_kind(&self, env: &mut Environment<Ty>) -> Result<Kind, Self::CheckError> {
+    fn check_kind(&self, mut env: Environment<Ty>) -> Result<Kind, Self::CheckError> {
         env.add_tyvar_kind(self.var.clone(), self.annot.clone());
         let body_kind = self.body.check_kind(env)?;
         Ok(Kind::Arrow(
@@ -53,7 +53,7 @@ where
     Ty: Type + Normalize<Ty>,
     Self: Into<Ty>,
 {
-    fn normalize(self, env: &mut Environment<Ty>) -> Ty {
+    fn normalize(self, env: Environment<Ty>) -> Ty {
         let body_norm = self.body.normalize(env);
         OpLambda {
             var: self.var,

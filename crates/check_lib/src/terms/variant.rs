@@ -24,12 +24,12 @@ where
 
     fn check(
         &self,
-        env: &mut Environment<<T as Typecheck>::Type>,
+        env: Environment<<T as Typecheck>::Type>,
     ) -> Result<Derivation<Self::Term, Self::Type>, Self::CheckError> {
-        let ty_norm = self.ty.clone().normalize(&mut env.clone());
-        let term_res = self.term.check(&mut env.clone())?;
-        let term_ty = term_res.ty().normalize(&mut env.clone());
-        let term_knd = term_ty.check_kind(&mut env.clone())?;
+        let ty_norm = self.ty.clone().normalize(env.clone());
+        let term_res = self.term.check(env.clone())?;
+        let term_ty = term_res.ty().normalize(env.clone());
+        let term_knd = term_ty.check_kind(env.clone())?;
 
         let var_ty = ty_norm.clone().into_variant()?;
         let lb_ty = var_ty
@@ -37,12 +37,12 @@ where
             .get(&self.label)
             .cloned()
             .ok_or(UndefinedLabel::new(&self.label))?;
-        let lb_knd = lb_ty.check_kind(env)?;
+        let lb_knd = lb_ty.check_kind(env.clone())?;
 
         lb_knd.check_equal(&term_knd)?;
         lb_ty.check_equal(&term_ty)?;
 
-        let conc = Conclusion::new(env.clone(), self.clone(), ty_norm);
+        let conc = Conclusion::new(env, self.clone(), ty_norm);
         let deriv = Derivation::variant(conc, term_res);
         Ok(deriv)
     }

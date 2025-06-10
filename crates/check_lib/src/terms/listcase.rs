@@ -22,22 +22,22 @@ where
 
     fn check(
         &self,
-        env: &mut Environment<<T as Typecheck>::Type>,
+        mut env: Environment<<T as Typecheck>::Type>,
     ) -> Result<Derivation<Self::Term, Self::Type>, Self::CheckError> {
-        let bound_res = self.bound_term.check(&mut env.clone())?;
-        let bound_ty = bound_res.ty().normalize(&mut env.clone());
-        bound_ty.check_kind(&mut env.clone())?.into_star()?;
+        let bound_res = self.bound_term.check(env.clone())?;
+        let bound_ty = bound_res.ty().normalize(env.clone());
+        bound_ty.check_kind(env.clone())?.into_star()?;
         let bound_list = bound_ty.clone().into_list()?;
 
-        let nil_res = self.nil_rhs.check(&mut env.clone())?;
-        let nil_ty = nil_res.ty().normalize(&mut env.clone());
-        let nil_kind = nil_ty.check_kind(&mut env.clone())?;
+        let nil_res = self.nil_rhs.check(env.clone())?;
+        let nil_ty = nil_res.ty().normalize(env.clone());
+        let nil_kind = nil_ty.check_kind(env.clone())?;
 
         env.add_var(self.cons_fst.clone(), *bound_list.ty);
         env.add_var(self.cons_rst.clone(), bound_ty);
-        let cons_res = self.cons_rhs.check(&mut env.clone())?;
-        let cons_ty = nil_res.ty().normalize(&mut env.clone());
-        let cons_kind = cons_ty.check_kind(&mut env.clone())?;
+        let cons_res = self.cons_rhs.check(env.clone())?;
+        let cons_ty = nil_res.ty().normalize(env.clone());
+        let cons_kind = cons_ty.check_kind(env.clone())?;
 
         nil_kind.check_equal(&cons_kind)?;
         nil_ty.check_equal(&cons_ty)?;

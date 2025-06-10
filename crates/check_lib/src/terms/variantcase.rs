@@ -23,11 +23,11 @@ where
 
     fn check(
         &self,
-        env: &mut Environment<<T as Typecheck>::Type>,
+        env: Environment<<T as Typecheck>::Type>,
     ) -> Result<Derivation<Self::Term, Self::Type>, Self::CheckError> {
-        let bound_res = self.bound_term.check(&mut env.clone())?;
-        let bound_ty = bound_res.ty().normalize(&mut env.clone());
-        bound_ty.check_kind(&mut env.clone())?.into_star()?;
+        let bound_res = self.bound_term.check(env.clone())?;
+        let bound_ty = bound_res.ty().normalize(env.clone());
+        bound_ty.check_kind(env.clone())?.into_star()?;
         let bound_var = bound_ty.into_variant()?;
 
         let mut rhs_tys = vec![];
@@ -40,15 +40,15 @@ where
                 .get(&pt.label)
                 .cloned()
                 .ok_or(UndefinedLabel::new(&pt.label))?
-                .normalize(&mut env.clone());
-            var_ty.check_kind(&mut env.clone())?;
+                .normalize(env.clone());
+            var_ty.check_kind(env.clone())?;
 
             let mut rhs_env = env.clone();
             rhs_env.add_var(pt.bound_var.clone(), var_ty);
-            let rhs_res = pt.rhs.check(&mut rhs_env)?;
-            let rhs_ty = rhs_res.ty().normalize(&mut rhs_env.clone());
+            let rhs_res = pt.rhs.check(rhs_env.clone())?;
+            let rhs_ty = rhs_res.ty().normalize(rhs_env);
             rhs_ress.push(rhs_res);
-            let knd = rhs_ty.check_kind(env)?;
+            let knd = rhs_ty.check_kind(env.clone())?;
 
             match rhs_knd {
                 None => {
@@ -70,7 +70,7 @@ where
             return Err(TypeMismatch::new(ty.knd(), rhs_fst.knd()).into());
         }
 
-        let conc = Conclusion::new(env.clone(), self.clone(), rhs_fst);
+        let conc = Conclusion::new(env, self.clone(), rhs_fst);
         let deriv = Derivation::variantcase(conc, bound_res, rhs_ress);
 
         Ok(deriv)

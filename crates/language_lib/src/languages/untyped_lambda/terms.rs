@@ -27,10 +27,7 @@ impl Typecheck for Term {
     type Type = Untyped;
     type CheckError = Error;
 
-    fn check(
-        &self,
-        _: &mut Environment<Untyped>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, Error> {
+    fn check(&self, _: Environment<Untyped>) -> Result<Derivation<Self::Term, Self::Type>, Error> {
         Ok(Derivation::empty(self.clone()))
     }
 }

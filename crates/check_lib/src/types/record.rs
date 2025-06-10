@@ -13,16 +13,16 @@ where
 {
     type CheckError = <Ty as Subtypecheck<Ty>>::CheckError;
 
-    fn check_subtype(&self, sup: &Ty, env: &mut Environment<Ty>) -> Result<(), Self::CheckError> {
+    fn check_subtype(&self, sup: &Ty, env: Environment<Ty>) -> Result<(), Self::CheckError> {
         if sup.clone().into_top().is_ok() {
             return Ok(());
         }
 
-        let sup_norm = sup.clone().normalize(env);
+        let sup_norm = sup.clone().normalize(env.clone());
         let sup_rec = sup_norm.into_record()?;
         for (lb, ty) in sup_rec.records.iter() {
             let sub_ty = self.records.get(lb).ok_or(UndefinedLabel::new(lb))?;
-            sub_ty.check_subtype(ty, &mut env.clone())?;
+            sub_ty.check_subtype(ty, env.clone())?;
         }
         Ok(())
     }
@@ -35,9 +35,9 @@ where
 {
     type CheckError = <Ty as Kindcheck<Ty>>::CheckError;
 
-    fn check_kind(&self, env: &mut Environment<Ty>) -> Result<Kind, Self::CheckError> {
+    fn check_kind(&self, env: Environment<Ty>) -> Result<Kind, Self::CheckError> {
         for (_, t) in self.records.iter() {
-            t.check_kind(&mut env.clone())?.into_star()?;
+            t.check_kind(env.clone())?.into_star()?;
         }
         Ok(Kind::Star)
     }
@@ -48,10 +48,10 @@ where
     Ty: Type + Normalize<Ty>,
     Self: Into<Ty>,
 {
-    fn normalize(self, env: &mut Environment<Ty>) -> Ty {
+    fn normalize(self, env: Environment<Ty>) -> Ty {
         let mut recs_norm = HashMap::new();
         for (lb, ty) in self.records {
-            let ty_norm = ty.normalize(env);
+            let ty_norm = ty.normalize(env.clone());
             recs_norm.insert(lb, ty_norm);
         }
         Record { records: recs_norm }.into()

@@ -20,10 +20,10 @@ where
 
     fn check(
         &self,
-        env: &mut Environment<<T as Typecheck>::Type>,
+        env: Environment<<T as Typecheck>::Type>,
     ) -> Result<Derivation<Self::Term, Self::Type>, Self::CheckError> {
-        let ty_norm = self.ty.clone().normalize(&mut env.clone());
-        ty_norm.check_kind(&mut env.clone())?;
+        let ty_norm = self.ty.clone().normalize(env.clone());
+        ty_norm.check_kind(env.clone())?;
 
         let conc = Conclusion::new(env.clone(), self.clone(), ty_norm);
         let deriv = Derivation::exception(conc);

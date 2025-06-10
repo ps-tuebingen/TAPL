@@ -11,7 +11,7 @@ where
 {
     type CheckError = <Ty as Subtypecheck<Ty>>::CheckError;
 
-    fn check_subtype(&self, sup: &Ty, env: &mut Environment<Ty>) -> Result<(), Self::CheckError> {
+    fn check_subtype(&self, sup: &Ty, env: Environment<Ty>) -> Result<(), Self::CheckError> {
         if sup.clone().into_top().is_ok() {
             return Ok(());
         }
@@ -22,7 +22,7 @@ where
             sink.ty.check_subtype(&(*sink.ty), env)
         } else {
             let sup_ref = sup.clone().into_ref()?;
-            sup_ref.ty.check_subtype(&(*self.ty), &mut env.clone())?;
+            sup_ref.ty.check_subtype(&(*self.ty), env.clone())?;
             self.ty.check_subtype(&(*sup_ref.ty), env)
         }
     }

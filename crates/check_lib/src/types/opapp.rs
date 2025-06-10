@@ -14,12 +14,12 @@ where
     Self: Into<Ty>,
 {
     type CheckError = <Ty as Subtypecheck<Ty>>::CheckError;
-    fn check_subtype(&self, sup: &Ty, env: &mut Environment<Ty>) -> Result<(), Self::CheckError> {
+    fn check_subtype(&self, sup: &Ty, env: Environment<Ty>) -> Result<(), Self::CheckError> {
         if sup.clone().into_top().is_ok() {
             return Ok(());
         }
         let sup_op = sup.clone().into_opapp()?;
-        self.fun.check_subtype(&sup_op.fun, &mut env.clone())?;
+        self.fun.check_subtype(&sup_op.fun, env.clone())?;
         self.arg.check_subtype(&sup_op.arg, env)
     }
 }
@@ -31,8 +31,8 @@ where
 {
     type CheckError = <Ty as Kindcheck<Ty>>::CheckError;
 
-    fn check_kind(&self, env: &mut Environment<Ty>) -> Result<Kind, Self::CheckError> {
-        let fun_kind = self.fun.check_kind(&mut env.clone())?;
+    fn check_kind(&self, env: Environment<Ty>) -> Result<Kind, Self::CheckError> {
+        let fun_kind = self.fun.check_kind(env.clone())?;
         let (fun_from, fun_to) = fun_kind.into_arrow()?;
         let arg_kind = self.arg.check_kind(env)?;
         if fun_from == arg_kind {
@@ -48,10 +48,13 @@ where
     Ty: TypeGroup + Normalize<Ty> + SubstType<Ty, Target = Ty>,
     Self: Into<Ty>,
 {
-    fn normalize(self, env: &mut Environment<Ty>) -> Ty {
-        let fun_norm = self.fun.normalize(env);
+    fn normalize(self, env: Environment<Ty>) -> Ty {
+        let fun_norm = self.fun.normalize(env.clone());
         if let Ok(oplam) = fun_norm.clone().into_oplambda() {
-            oplam.body.subst_type(&oplam.var, &self.arg).normalize(env)
+            oplam
+                .body
+                .subst_type(&oplam.var, &self.arg)
+                .normalize(env.clone())
         } else if let Ok(oplam) = fun_norm.clone().into_oplambdasub() {
             oplam.body.subst_type(&oplam.var, &self.arg).normalize(env)
         } else {

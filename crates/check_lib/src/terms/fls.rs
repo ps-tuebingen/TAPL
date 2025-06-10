@@ -19,7 +19,7 @@ where
 
     fn check(
         &self,
-        env: &mut Environment<<T as Typecheck>::Type>,
+        env: Environment<<T as Typecheck>::Type>,
     ) -> Result<Derivation<Self::Term, Self::Type>, Self::CheckError> {
         let conc = Conclusion::new(env.clone(), self.clone(), Bool::new());
         Ok(Derivation::fls(conc))

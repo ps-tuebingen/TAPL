@@ -13,15 +13,13 @@ where
 {
     type CheckError = <Ty as Subtypecheck<Ty>>::CheckError;
 
-    fn check_subtype(&self, sup: &Ty, env: &mut Environment<Ty>) -> Result<(), Self::CheckError> {
+    fn check_subtype(&self, sup: &Ty, env: Environment<Ty>) -> Result<(), Self::CheckError> {
         if sup.clone().into_top().is_ok() {
             return Ok(());
         }
 
         let sup_fun = sup.clone().into_fun()?;
-        sup_fun
-            .from
-            .check_subtype(&(*self.from), &mut env.clone())?;
+        sup_fun.from.check_subtype(&(*self.from), env.clone())?;
         self.to.check_subtype(&(*sup_fun.to), env)?;
         Ok(())
     }
@@ -34,8 +32,8 @@ where
 {
     type CheckError = <Ty as Kindcheck<Ty>>::CheckError;
 
-    fn check_kind(&self, env: &mut Environment<Ty>) -> Result<Kind, Self::CheckError> {
-        let from_kind = self.from.check_kind(&mut env.clone())?;
+    fn check_kind(&self, env: Environment<Ty>) -> Result<Kind, Self::CheckError> {
+        let from_kind = self.from.check_kind(env.clone())?;
         if from_kind != Kind::Star {
             return Err(KindMismatch::new(from_kind.into(), KindKind::Star).into());
         };
@@ -53,8 +51,8 @@ where
     Ty: Type + Normalize<Ty>,
     Self: Into<Ty>,
 {
-    fn normalize(self, env: &mut Environment<Ty>) -> Ty {
-        let from_norm = self.from.normalize(env);
+    fn normalize(self, env: Environment<Ty>) -> Ty {
+        let from_norm = self.from.normalize(env.clone());
         let to_norm = self.to.normalize(env);
         Fun {
             from: Box::new(from_norm),

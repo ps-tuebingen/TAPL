@@ -11,7 +11,7 @@ where
 {
     type CheckError = <Ty as Subtypecheck<Ty>>::CheckError;
 
-    fn check_subtype(&self, _: &Ty, _: &mut Environment<Ty>) -> Result<(), Self::CheckError> {
+    fn check_subtype(&self, _: &Ty, _: Environment<Ty>) -> Result<(), Self::CheckError> {
         Ok(())
     }
 }
@@ -22,7 +22,7 @@ where
 {
     type CheckError = <Ty as Kindcheck<Ty>>::CheckError;
 
-    fn check_kind(&self, _: &mut Environment<Ty>) -> Result<Kind, Self::CheckError> {
+    fn check_kind(&self, _: Environment<Ty>) -> Result<Kind, Self::CheckError> {
         Ok(self.kind.clone())
     }
 }

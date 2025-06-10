@@ -22,21 +22,21 @@ where
 
     fn check(
         &self,
-        env: &mut Environment<<T as Typecheck>::Type>,
+        env: Environment<<T as Typecheck>::Type>,
     ) -> Result<Derivation<Self::Term, Self::Type>, Self::CheckError> {
-        let ty_norm = self.ty.clone().normalize(&mut env.clone());
-        let hd_res = self.head.check(&mut env.clone())?;
-        let hd_ty = hd_res.ty().normalize(&mut env.clone());
+        let ty_norm = self.ty.clone().normalize(env.clone());
+        let hd_res = self.head.check(env.clone())?;
+        let hd_ty = hd_res.ty().normalize(env.clone());
         hd_ty.check_equal(&ty_norm)?;
-        hd_ty.check_kind(&mut env.clone())?.into_star()?;
+        hd_ty.check_kind(env.clone())?.into_star()?;
 
-        let tl_res = self.tail.check(&mut env.clone())?;
-        let tl_ty = tl_res.ty().normalize(&mut env.clone());
-        tl_ty.check_kind(env)?.into_star()?;
+        let tl_res = self.tail.check(env.clone())?;
+        let tl_ty = tl_res.ty().normalize(env.clone());
+        tl_ty.check_kind(env.clone())?.into_star()?;
         let list_ty: Self::Type = List::new(ty_norm).into();
         tl_ty.check_equal(&list_ty)?;
 
-        let conc = Conclusion::new(env.clone(), self.clone(), list_ty.clone());
+        let conc = Conclusion::new(env, self.clone(), list_ty.clone());
         let deriv = Derivation::cons(conc, hd_res, tl_res);
         Ok(deriv)
     }

@@ -11,7 +11,7 @@ where
 {
     type CheckError = <Ty as Kindcheck<Ty>>::CheckError;
 
-    fn check_kind(&self, env: &mut Environment<Ty>) -> Result<Kind, Self::CheckError> {
+    fn check_kind(&self, mut env: Environment<Ty>) -> Result<Kind, Self::CheckError> {
         env.add_tyvar_kind(self.var.clone(), self.kind.clone());
         self.ty.check_kind(env)
     }
@@ -22,7 +22,7 @@ where
     Ty: Type + Normalize<Ty>,
     Self: Into<Ty>,
 {
-    fn normalize(self, env: &mut Environment<Ty>) -> Ty {
+    fn normalize(self, mut env: Environment<Ty>) -> Ty {
         env.add_tyvar_kind(self.var.clone(), self.kind.clone());
         self.into()
     }

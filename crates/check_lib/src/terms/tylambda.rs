@@ -22,15 +22,15 @@ where
 
     fn check(
         &self,
-        env: &mut Environment<<T as Typecheck>::Type>,
+        mut env: Environment<<T as Typecheck>::Type>,
     ) -> Result<Derivation<Self::Term, Self::Type>, Self::CheckError> {
         env.add_tyvar_kind(self.var.clone(), self.annot.clone());
-        let term_res = self.term.check(&mut env.clone())?;
-        let term_ty = term_res.ty().normalize(&mut env.clone());
-        let term_knd = term_ty.check_kind(env)?;
+        let term_res = self.term.check(env.clone())?;
+        let term_ty = term_res.ty().normalize(env.clone());
+        let term_knd = term_ty.check_kind(env.clone())?;
         self.annot.check_equal(&term_knd)?;
         let ty = Forall::new(&self.var, self.annot.clone(), term_ty);
-        let conc = Conclusion::new(env.clone(), self.clone(), ty);
+        let conc = Conclusion::new(env, self.clone(), ty);
         let deriv = Derivation::tylambda(conc, term_res);
         Ok(deriv)
     }

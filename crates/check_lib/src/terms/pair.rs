@@ -22,19 +22,19 @@ where
 
     fn check(
         &self,
-        env: &mut Environment<<T as Typecheck>::Type>,
+        env: Environment<<T as Typecheck>::Type>,
     ) -> Result<Derivation<Self::Term, Self::Type>, Self::CheckError> {
-        let fst_res = self.fst.check(&mut env.clone())?;
-        let fst_ty = fst_res.ty().normalize(&mut env.clone());
+        let fst_res = self.fst.check(env.clone())?;
+        let fst_ty = fst_res.ty().normalize(env.clone());
 
-        let snd_res = self.snd.check(&mut env.clone())?;
-        let snd_ty = snd_res.ty().normalize(&mut env.clone());
+        let snd_res = self.snd.check(env.clone())?;
+        let snd_ty = snd_res.ty().normalize(env.clone());
 
-        let fst_knd = fst_ty.check_kind(&mut env.clone())?;
-        let snd_knd = snd_ty.check_kind(env)?;
+        let fst_knd = fst_ty.check_kind(env.clone())?;
+        let snd_knd = snd_ty.check_kind(env.clone())?;
         fst_knd.check_equal(&snd_knd)?;
 
-        let conc = Conclusion::new(env.clone(), self.clone(), Product::new(fst_ty, snd_ty));
+        let conc = Conclusion::new(env, self.clone(), Product::new(fst_ty, snd_ty));
         let deriv = Derivation::pair(conc, fst_res, snd_res);
         Ok(deriv)
     }

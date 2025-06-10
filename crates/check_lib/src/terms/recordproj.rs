@@ -23,14 +23,14 @@ where
 
     fn check(
         &self,
-        env: &mut Environment<<T as Typecheck>::Type>,
+        env: Environment<<T as Typecheck>::Type>,
     ) -> Result<Derivation<Self::Term, Self::Type>, Self::CheckError> {
-        let term_res = self.record.check(&mut env.clone())?;
-        let term_ty = term_res.ty().normalize(&mut env.clone());
-        term_ty.check_kind(&mut env.clone())?;
+        let term_res = self.record.check(env.clone())?;
+        let term_ty = term_res.ty().normalize(env.clone());
+        term_ty.check_kind(env.clone())?;
 
         let term_rec = match term_ty.clone().into_variable() {
-            Ok(v) => env.get_tyvar_super(&v.v)?.normalize(env),
+            Ok(v) => env.get_tyvar_super(&v.v)?.normalize(env.clone()),
             Err(_) => term_ty,
         };
         let rec_ty = term_rec.into_record()?;
@@ -40,7 +40,7 @@ where
             .ok_or(UndefinedLabel::new(&self.label))
             .cloned()?;
 
-        let conc = Conclusion::new(env.clone(), self.clone(), ty);
+        let conc = Conclusion::new(env, self.clone(), ty);
         let deriv = Derivation::recordproj(conc, term_res);
         Ok(deriv)
     }

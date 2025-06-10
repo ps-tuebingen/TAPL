@@ -12,10 +12,7 @@ impl Typecheck for Term {
     type Type = Type;
     type CheckError = Error;
 
-    fn check(
-        &self,
-        env: &mut Environment<Type>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, Error> {
+    fn check(&self, env: Environment<Type>) -> Result<Derivation<Self::Term, Self::Type>, Error> {
         match self {
             Term::Var(var) => var.check(env),
             Term::Num(c) => c.check(env),
@@ -41,7 +38,7 @@ impl Typecheck for Term {
 impl Subtypecheck<Type> for Type {
     type CheckError = Error;
 
-    fn check_subtype(&self, _: &Self, _: &mut Environment<Type>) -> Result<(), Error> {
+    fn check_subtype(&self, _: &Self, _: Environment<Type>) -> Result<(), Error> {
         Ok(())
     }
 }
@@ -49,7 +46,7 @@ impl Subtypecheck<Type> for Type {
 impl Kindcheck<Type> for Type {
     type CheckError = Error;
 
-    fn check_kind(&self, _: &mut Environment<Type>) -> Result<Kind, Error> {
+    fn check_kind(&self, _: Environment<Type>) -> Result<Kind, Error> {
         Ok(Kind::Star)
     }
 }
@@ -77,7 +74,7 @@ mod check_tests {
             ),
         )
         .into();
-        let result = term.check(&mut Default::default()).unwrap();
+        let result = term.check(Default::default()).unwrap();
         let expected = UnitTy::new().into();
         assert_eq!(result.ty(), expected)
     }
@@ -93,7 +90,7 @@ mod check_tests {
             Ref::new(Unit::new()),
         )
         .into();
-        let result = term.check(&mut Default::default()).unwrap();
+        let result = term.check(Default::default()).unwrap();
         let expected = UnitTy::new().into();
         assert_eq!(result.ty(), expected)
     }
@@ -111,7 +108,7 @@ mod check_tests {
             Deref::new(Num::new(0)),
         )
         .into();
-        let result = term.check(&mut Default::default());
+        let result = term.check(Default::default());
         assert!(result.is_err())
     }
 
@@ -130,7 +127,7 @@ mod check_tests {
         .into();
         let mut env = Environment::default();
         env.add_loc(0, UnitTy::new().into());
-        let result = term.check(&mut env).unwrap();
+        let result = term.check(env).unwrap();
         let expected = UnitTy::new().into();
         assert_eq!(result.ty(), expected)
     }

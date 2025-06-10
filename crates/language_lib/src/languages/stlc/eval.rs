@@ -49,7 +49,7 @@ impl Eval for Term {
 }
 
 impl Normalize<Type> for Type {
-    fn normalize(self, _: &mut Environment<Type>) -> Type {
+    fn normalize(self, _: Environment<Type>) -> Type {
         self
     }
 }

@@ -22,16 +22,16 @@ where
 
     fn check(
         &self,
-        env: &mut Environment<<T as Typecheck>::Type>,
+        env: Environment<<T as Typecheck>::Type>,
     ) -> Result<Derivation<Self::Term, Self::Type>, Self::CheckError> {
         let mut tys: Vec<Self::Type> = vec![];
         let mut ress = vec![];
         let mut knd = None;
         for t in self.terms.iter() {
-            let t_res = t.check(&mut env.clone())?;
-            let t_ty = t_res.ty().normalize(&mut env.clone());
+            let t_res = t.check(env.clone())?;
+            let t_ty = t_res.ty().normalize(env.clone());
             ress.push(t_res);
-            let ty_knd = t_ty.check_kind(env)?;
+            let ty_knd = t_ty.check_kind(env.clone())?;
             tys.push(t_ty);
 
             match knd {
@@ -44,7 +44,7 @@ where
             }
         }
 
-        let conc = Conclusion::new(env.clone(), self.clone(), TupleTy::new::<Self::Type>(tys));
+        let conc = Conclusion::new(env, self.clone(), TupleTy::new::<Self::Type>(tys));
         let deriv = Derivation::tuple(conc, ress);
         Ok(deriv)
     }

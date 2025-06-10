@@ -12,7 +12,7 @@ where
 {
     type CheckError = <Ty as Subtypecheck<Ty>>::CheckError;
 
-    fn check_subtype(&self, sup: &Ty, env: &mut Environment<Ty>) -> Result<(), Self::CheckError> {
+    fn check_subtype(&self, sup: &Ty, env: Environment<Ty>) -> Result<(), Self::CheckError> {
         let ty_super = env.get_tyvar_super(&self.v)?;
         let sup_norm = sup.clone().normalize(env);
 
@@ -37,7 +37,7 @@ where
 {
     type CheckError = <Ty as Kindcheck<Ty>>::CheckError;
 
-    fn check_kind(&self, env: &mut Environment<Ty>) -> Result<Kind, Self::CheckError> {
+    fn check_kind(&self, env: Environment<Ty>) -> Result<Kind, Self::CheckError> {
         env.get_tyvar_kind(&self.v).map_err(|err| err.into())
     }
 }
@@ -47,7 +47,7 @@ where
     Ty: TypeGroup + Normalize<Ty>,
     Self: Into<Ty>,
 {
-    fn normalize(self, env: &mut Environment<Ty>) -> Ty {
+    fn normalize(self, env: Environment<Ty>) -> Ty {
         env.get_tyvar_super(&self.v).unwrap_or(self.into())
     }
 }

@@ -22,20 +22,20 @@ where
 
     fn check(
         &self,
-        env: &mut Environment<<T as Typecheck>::Type>,
+        env: Environment<<T as Typecheck>::Type>,
     ) -> Result<Derivation<Self::Term, Self::Type>, Self::CheckError> {
-        let if_res = self.if_cond.check(&mut env.clone())?;
-        let if_ty = if_res.ty().normalize(&mut env.clone());
-        if_ty.check_kind(&mut env.clone())?.into_star()?;
+        let if_res = self.if_cond.check(env.clone())?;
+        let if_ty = if_res.ty().normalize(env.clone());
+        if_ty.check_kind(env.clone())?.into_star()?;
         if_ty.into_bool()?;
 
-        let then_res = self.then_term.check(&mut env.clone())?;
-        let then_ty = then_res.ty().normalize(&mut env.clone());
-        let then_kind = then_ty.check_kind(&mut env.clone())?;
+        let then_res = self.then_term.check(env.clone())?;
+        let then_ty = then_res.ty().normalize(env.clone());
+        let then_kind = then_ty.check_kind(env.clone())?;
 
-        let else_res = self.else_term.check(&mut env.clone())?;
-        let else_ty = else_res.ty().normalize(&mut env.clone());
-        let else_kind = else_ty.check_kind(&mut env.clone())?;
+        let else_res = self.else_term.check(env.clone())?;
+        let else_ty = else_res.ty().normalize(env.clone());
+        let else_kind = else_ty.check_kind(env.clone())?;
 
         then_kind.check_equal(&else_kind)?;
         then_ty.check_equal(&else_ty)?;

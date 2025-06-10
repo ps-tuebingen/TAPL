@@ -20,17 +20,17 @@ where
 
     fn check(
         &self,
-        env: &mut Environment<<T as Typecheck>::Type>,
+        mut env: Environment<<T as Typecheck>::Type>,
     ) -> Result<Derivation<Self::Term, Self::Type>, Self::CheckError> {
-        let sup_norm = self.sup_ty.clone().normalize(&mut env.clone());
-        let sup_kind = sup_norm.check_kind(&mut env.clone())?;
+        let sup_norm = self.sup_ty.clone().normalize(env.clone());
+        let sup_kind = sup_norm.check_kind(env.clone())?;
         env.add_tyvar_super(self.var.clone(), sup_norm.clone());
         env.add_tyvar_kind(self.var.clone(), sup_kind.clone());
-        let term_res = self.body.check(&mut env.clone())?;
-        let term_ty = term_res.ty().normalize(env);
+        let term_res = self.body.check(env.clone())?;
+        let term_ty = term_res.ty().normalize(env.clone());
 
         let conc = Conclusion::new(
-            env.clone(),
+            env,
             self.clone(),
             ForallBounded::new(&self.var, self.sup_ty.clone(), term_ty).into(),
         );

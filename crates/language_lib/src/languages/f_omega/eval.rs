@@ -33,7 +33,7 @@ impl Eval for Term {
 }
 
 impl Normalize<Type> for Type {
-    fn normalize(self, env: &mut Environment<Type>) -> Type {
+    fn normalize(self, env: Environment<Type>) -> Type {
         match self {
             Type::Var(var) => var.normalize(env),
             Type::Fun(fun) => fun.normalize(env),

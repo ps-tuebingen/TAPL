@@ -24,22 +24,22 @@ where
 
     fn check(
         &self,
-        env: &mut Environment<<T as Typecheck>::Type>,
+        mut env: Environment<<T as Typecheck>::Type>,
     ) -> Result<Derivation<Self::Term, Self::Type>, Self::CheckError> {
-        let mu_ty = self.ty.clone().normalize(&mut env.clone()).into_mu()?;
+        let mu_ty = self.ty.clone().normalize(env.clone()).into_mu()?;
         env.add_tyvar_kind(mu_ty.var.clone(), Kind::Star);
-        mu_ty.ty.check_kind(&mut env.clone())?.into_star()?;
+        mu_ty.ty.check_kind(env.clone())?.into_star()?;
 
         let mu_subst = mu_ty
             .ty
             .clone()
             .subst_type(&mu_ty.var.clone(), &(mu_ty.into()));
-        let term_res = self.term.check(&mut env.clone())?;
-        let term_ty = term_res.ty().normalize(&mut env.clone());
-        term_ty.check_kind(&mut env.clone())?.into_star()?;
+        let term_res = self.term.check(env.clone())?;
+        let term_ty = term_res.ty().normalize(env.clone());
+        term_ty.check_kind(env.clone())?.into_star()?;
         term_ty.check_equal(&mu_subst)?;
 
-        let conc = Conclusion::new(env.clone(), self.clone(), self.ty.clone());
+        let conc = Conclusion::new(env, self.clone(), self.ty.clone());
         let deriv = Derivation::fold(conc, term_res);
         Ok(deriv)
     }

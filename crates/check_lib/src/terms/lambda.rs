@@ -20,13 +20,13 @@ where
 
     fn check(
         &self,
-        env: &mut Environment<<T as Typecheck>::Type>,
+        mut env: Environment<<T as Typecheck>::Type>,
     ) -> Result<Derivation<Self::Term, Self::Type>, Self::CheckError> {
-        self.annot.check_kind(&mut env.clone())?;
+        self.annot.check_kind(env.clone())?;
         env.add_var(self.var.clone(), self.annot.clone());
-        let body_res = self.body.check(&mut env.clone())?;
-        let body_ty = body_res.ty().normalize(&mut env.clone());
-        body_ty.check_kind(&mut env.clone())?;
+        let body_res = self.body.check(env.clone())?;
+        let body_ty = body_res.ty().normalize(env.clone());
+        body_ty.check_kind(env.clone())?;
 
         let conc = Conclusion::new(
             env.clone(),

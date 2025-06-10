@@ -23,15 +23,15 @@ where
 
     fn check(
         &self,
-        env: &mut Environment<<T as Typecheck>::Type>,
+        env: Environment<<T as Typecheck>::Type>,
     ) -> Result<Derivation<Self::Term, Self::Type>, Self::CheckError> {
-        let term_res = self.term.check(&mut env.clone())?;
-        let term_ty = term_res.ty().normalize(&mut env.clone());
-        term_ty.check_kind(env)?.into_star()?;
+        let term_res = self.term.check(env.clone())?;
+        let term_ty = term_res.ty().normalize(env.clone());
+        term_ty.check_kind(env.clone())?.into_star()?;
         let fun_ty = term_ty.into_fun()?;
         fun_ty.from.check_equal(&fun_ty.to)?;
 
-        let conc = Conclusion::new(env.clone(), self.clone(), *fun_ty.to);
+        let conc = Conclusion::new(env, self.clone(), *fun_ty.to);
         let deriv = Derivation::fix(conc, term_res);
         Ok(deriv)
     }

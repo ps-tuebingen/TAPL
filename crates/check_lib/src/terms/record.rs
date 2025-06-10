@@ -23,17 +23,17 @@ where
 
     fn check(
         &self,
-        env: &mut Environment<<T as Typecheck>::Type>,
+        env: Environment<<T as Typecheck>::Type>,
     ) -> Result<Derivation<Self::Term, Self::Type>, Self::CheckError> {
         let mut recs = HashMap::new();
         let mut ress = Vec::new();
         let mut rec_knd = None;
         for (lb, t) in self.records.iter() {
-            let term_res = t.check(&mut env.clone())?;
-            let ty = term_res.ty().normalize(&mut env.clone());
+            let term_res = t.check(env.clone())?;
+            let ty = term_res.ty().normalize(env.clone());
             ress.push(term_res);
 
-            let ty_knd = ty.check_kind(env)?;
+            let ty_knd = ty.check_kind(env.clone())?;
             recs.insert(lb.clone(), ty);
             match rec_knd {
                 None => {
@@ -45,7 +45,7 @@ where
             }
         }
 
-        let conc = Conclusion::new(env.clone(), self.clone(), RecordTy::new(recs));
+        let conc = Conclusion::new(env, self.clone(), RecordTy::new(recs));
         let deriv = Derivation::record(conc, ress);
         Ok(deriv)
     }
