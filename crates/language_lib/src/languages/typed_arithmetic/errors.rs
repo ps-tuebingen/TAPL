@@ -1,9 +1,8 @@
 use super::parser::Rule;
 use common::{
-    errors::{KindMismatch, NotImplemented, TypeMismatch},
+    errors::{KindMismatch, NotImplemented, TypeMismatch, ValueMismatch},
     parse::{MissingInput, RemainingInput, UnexpectedRule, UnknownKeyword},
 };
-use eval::errors::ValueMismatch;
 use pest::error::Error as PestErr;
 use std::fmt;
 

@@ -1,7 +1,9 @@
-use crate::{errors::ValueMismatch, values::ValueGroup, Eval};
+use crate::Eval;
+use common::errors::ValueMismatch;
 use syntax::{
     terms::{Tail, Term},
     types::Type,
+    values::ValueGroup,
 };
 
 impl<T, Ty> Eval for Tail<T, Ty>

@@ -1,6 +1,8 @@
 use super::super::{LatexConfig, LatexFmt};
-use eval::values::{Fold, Value};
-use syntax::types::Type;
+use syntax::{
+    types::Type,
+    values::{Fold, Value},
+};
 
 impl<V, Ty> LatexFmt for Fold<V, Ty>
 where

@@ -1,7 +1,8 @@
-use crate::{values::LambdaSub as LambdaSubVal, Eval};
+use crate::Eval;
 use syntax::{
     terms::{LambdaSub, Term},
     types::Type,
+    values::LambdaSub as LambdaSubVal,
 };
 
 impl<T, Ty> Eval for LambdaSub<T, Ty>

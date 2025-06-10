@@ -1,7 +1,7 @@
 use super::Value;
-use crate::errors::ValueKind;
+use crate::{terms::Fold as FoldT, types::Type};
+use common::errors::ValueKind;
 use std::fmt;
-use syntax::{terms::Fold as FoldT, types::Type};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Fold<V, Ty>

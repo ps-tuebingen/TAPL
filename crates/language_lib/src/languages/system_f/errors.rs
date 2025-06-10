@@ -1,9 +1,10 @@
 use super::parser::Rule;
 use common::{
-    errors::{FreeTypeVariable, FreeVariable, KindMismatch, NotImplemented, TypeMismatch},
+    errors::{
+        FreeTypeVariable, FreeVariable, KindMismatch, NotImplemented, TypeMismatch, ValueMismatch,
+    },
     parse::{MissingInput, RemainingInput, UnexpectedRule},
 };
-use eval::errors::ValueMismatch;
 use pest::error::Error as PestErr;
 use std::fmt;
 

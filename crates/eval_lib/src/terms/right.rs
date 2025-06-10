@@ -1,7 +1,8 @@
-use crate::{values::Right as RightVal, Eval};
+use crate::Eval;
 use syntax::{
     terms::{Right, Term},
     types::Type,
+    values::Right as RightVal,
 };
 
 impl<T, Ty> Eval for Right<T, Ty>

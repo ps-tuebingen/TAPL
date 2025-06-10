@@ -1,6 +1,8 @@
 use super::super::{LatexConfig, LatexFmt};
-use eval::values::{Value, Variant};
-use syntax::types::Type;
+use syntax::{
+    types::Type,
+    values::{Value, Variant},
+};
 
 impl<V, Ty> LatexFmt for Variant<V, Ty>
 where

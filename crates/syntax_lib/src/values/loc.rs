@@ -1,7 +1,7 @@
 use super::Value;
-use crate::errors::ValueKind;
+use crate::terms::{Loc as LocT, Term};
+use common::errors::ValueKind;
 use std::{fmt, marker::PhantomData};
-use syntax::terms::{Loc as LocT, Term};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Loc<T>

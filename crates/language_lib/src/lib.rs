@@ -4,11 +4,12 @@ use derivation::{
     latex::{LatexConfig, LatexFmt},
     Derivation,
 };
-use eval::{env::EvalEnvironment, values::ValueGroup, Eval};
+use eval::{env::EvalEnvironment, Eval};
 use syntax::{
     subst::{SubstTerm, SubstType},
     terms::Term,
     types::TypeGroup,
+    values::ValueGroup,
 };
 
 pub mod errors;

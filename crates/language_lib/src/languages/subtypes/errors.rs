@@ -4,11 +4,10 @@ use check::errors::{EmptyCase, NotASubtype};
 use common::{
     errors::{
         FreeTypeVariable, FreeVariable, KindMismatch, NotImplemented, TypeMismatch, UndefinedLabel,
-        UndefinedLocation,
+        UndefinedLocation, ValueMismatch,
     },
     parse::{MissingInput, RemainingInput, UnexpectedRule, UnknownKeyword},
 };
-use eval::errors::ValueMismatch;
 use pest::error::Error as PestErr;
 use std::fmt;
 

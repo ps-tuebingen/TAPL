@@ -1,7 +1,7 @@
 use super::Value;
-use crate::errors::ValueKind;
+use crate::terms::Tuple as TupleT;
+use common::errors::ValueKind;
 use std::fmt;
-use syntax::terms::Tuple as TupleT;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Tuple<V>

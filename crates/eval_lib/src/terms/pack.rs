@@ -1,7 +1,8 @@
-use crate::{values::Pack as PackVal, Eval};
+use crate::Eval;
 use syntax::{
     terms::{Pack, Term},
     types::Type,
+    values::Pack as PackVal,
 };
 
 impl<T, Ty> Eval for Pack<T, Ty>

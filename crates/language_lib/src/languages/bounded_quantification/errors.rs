@@ -3,11 +3,10 @@ use check::errors::NotASubtype;
 use common::{
     errors::{
         FreeTypeVariable, FreeVariable, KindMismatch, NameMismatch, NotImplemented, TypeMismatch,
-        UndefinedLabel,
+        UndefinedLabel, ValueMismatch,
     },
     parse::{MissingInput, RemainingInput, UnexpectedRule, UnknownKeyword},
 };
-use eval::errors::ValueMismatch;
 use pest::error::Error as PestErr;
 use std::fmt;
 

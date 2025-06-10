@@ -1,12 +1,10 @@
-use crate::{
-    errors::{ValueKind, ValueMismatch},
-    values::ValueGroup,
-    Eval,
-};
+use crate::Eval;
+use common::errors::{ValueKind, ValueMismatch};
 use syntax::{
     subst::SubstType,
     terms::{Term, TyApp},
     types::Type,
+    values::{Value, ValueGroup},
 };
 
 impl<T, Ty> Eval for TyApp<T, Ty>
@@ -27,7 +25,7 @@ where
         } else if let Ok(lamsub) = fun_val.clone().into_lambdasub() {
             lamsub.term.subst_type(&lamsub.var, &self.arg).eval(env)
         } else {
-            Err(ValueMismatch::new(&fun_val, ValueKind::LambdaSub).into())
+            Err(ValueMismatch::new(fun_val.knd(), ValueKind::LambdaSub).into())
         }
     }
 }

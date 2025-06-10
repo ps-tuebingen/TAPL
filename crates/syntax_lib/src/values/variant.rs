@@ -1,7 +1,7 @@
 use super::Value;
-use crate::errors::ValueKind;
+use crate::{terms::Variant as VariantT, types::Type, Label};
+use common::errors::ValueKind;
 use std::fmt;
-use syntax::{terms::Variant as VariantT, types::Type, Label};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Variant<V, Ty>

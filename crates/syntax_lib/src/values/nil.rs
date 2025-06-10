@@ -1,10 +1,10 @@
 use super::Value;
-use crate::errors::ValueKind;
-use std::{fmt, marker::PhantomData};
-use syntax::{
+use crate::{
     terms::{Nil as NilT, Term},
     types::Type,
 };
+use common::errors::ValueKind;
+use std::{fmt, marker::PhantomData};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Nil<T, Ty>

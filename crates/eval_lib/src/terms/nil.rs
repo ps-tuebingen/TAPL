@@ -1,7 +1,8 @@
-use crate::{values::Nil as NilVal, Eval};
+use crate::Eval;
 use syntax::{
     terms::{Nil, Term},
     types::Type,
+    values::Nil as NilVal,
 };
 
 impl<T, Ty> Eval for Nil<T, Ty>

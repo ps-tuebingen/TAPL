@@ -1,6 +1,8 @@
 use super::super::{LatexConfig, LatexFmt};
-use eval::values::{Right, Value};
-use syntax::types::Type;
+use syntax::{
+    types::Type,
+    values::{Right, Value},
+};
 
 impl<V, Ty> LatexFmt for Right<V, Ty>
 where

@@ -1,5 +1,5 @@
-use crate::values::Value;
 use common::errors::NotImplemented;
+use syntax::values::Value;
 use syntax::Location;
 
 pub trait EvalEnvironment<V>

@@ -1,5 +1,8 @@
-use crate::{values::ValueGroup, Eval};
-use syntax::terms::{Term, Try};
+use crate::Eval;
+use syntax::{
+    terms::{Term, Try},
+    values::ValueGroup,
+};
 
 impl<T> Eval for Try<T>
 where

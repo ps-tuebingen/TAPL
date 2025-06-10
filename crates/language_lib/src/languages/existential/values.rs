@@ -1,10 +1,10 @@
 use super::{terms::Term, types::Type};
+use common::errors::{ValueKind, ValueMismatch};
 use derivation::latex::{LatexConfig, LatexFmt};
-use eval::{
-    errors::{ValueKind, ValueMismatch},
-    values::{False, Lambda, Num, Pack, Record, True, Unit, Value as ValueTrait, ValueGroup},
-};
 use std::fmt;
+use syntax::values::{
+    False, Lambda, Num, Pack, Record, True, Unit, Value as ValueTrait, ValueGroup,
+};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Value {
@@ -40,7 +40,7 @@ impl ValueGroup for Value {
         if let Value::Lambda(lam) = self {
             Ok(lam)
         } else {
-            Err(ValueMismatch::new(&self, ValueKind::Lambda))
+            Err(ValueMismatch::new(self.knd(), ValueKind::Lambda))
         }
     }
 
@@ -48,7 +48,7 @@ impl ValueGroup for Value {
         if let Value::Pack(pack) = self {
             Ok(pack)
         } else {
-            Err(ValueMismatch::new(&self, ValueKind::Package))
+            Err(ValueMismatch::new(self.knd(), ValueKind::Package))
         }
     }
 
@@ -56,7 +56,7 @@ impl ValueGroup for Value {
         if let Value::Num(num) = self {
             Ok(num)
         } else {
-            Err(ValueMismatch::new(&self, ValueKind::Number))
+            Err(ValueMismatch::new(self.knd(), ValueKind::Number))
         }
     }
 
@@ -64,7 +64,7 @@ impl ValueGroup for Value {
         if let Value::Record(rec) = self {
             Ok(rec)
         } else {
-            Err(ValueMismatch::new(&self, ValueKind::Record))
+            Err(ValueMismatch::new(self.knd(), ValueKind::Record))
         }
     }
 
@@ -72,7 +72,7 @@ impl ValueGroup for Value {
         if let Value::True(tru) = self {
             Ok(tru)
         } else {
-            Err(ValueMismatch::new(&self, ValueKind::True))
+            Err(ValueMismatch::new(self.knd(), ValueKind::True))
         }
     }
 
@@ -80,7 +80,7 @@ impl ValueGroup for Value {
         if let Value::False(fls) = self {
             Ok(fls)
         } else {
-            Err(ValueMismatch::new(&self, ValueKind::False))
+            Err(ValueMismatch::new(self.knd(), ValueKind::False))
         }
     }
 }

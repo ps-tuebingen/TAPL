@@ -1,11 +1,9 @@
 use super::terms::Term;
+use common::errors::{ValueKind, ValueMismatch};
 use derivation::latex::{LatexConfig, LatexFmt};
-use eval::{
-    errors::{ValueKind, ValueMismatch},
-    values::{False, Num, True, Value as ValueTrait, ValueGroup},
-};
 use std::fmt;
 use syntax::untyped::Untyped;
+use syntax::values::{False, Num, True, Value as ValueTrait, ValueGroup};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Value {
@@ -33,7 +31,7 @@ impl ValueGroup for Value {
         if let Value::True(tru) = self {
             Ok(tru)
         } else {
-            Err(ValueMismatch::new(&self, ValueKind::True))
+            Err(ValueMismatch::new(self.knd(), ValueKind::True))
         }
     }
 
@@ -41,7 +39,7 @@ impl ValueGroup for Value {
         if let Value::False(fls) = self {
             Ok(fls)
         } else {
-            Err(ValueMismatch::new(&self, ValueKind::False))
+            Err(ValueMismatch::new(self.knd(), ValueKind::False))
         }
     }
 
@@ -49,7 +47,7 @@ impl ValueGroup for Value {
         if let Value::Num(num) = self {
             Ok(num)
         } else {
-            Err(ValueMismatch::new(&self, ValueKind::Number))
+            Err(ValueMismatch::new(self.knd(), ValueKind::Number))
         }
     }
 }

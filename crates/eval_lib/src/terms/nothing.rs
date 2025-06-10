@@ -1,7 +1,8 @@
-use crate::{values::Nothing as NothingVal, Eval};
+use crate::Eval;
 use syntax::{
     terms::{Nothing, Term},
     types::Type,
+    values::Nothing as NothingVal,
 };
 
 impl<T, Ty> Eval for Nothing<T, Ty>

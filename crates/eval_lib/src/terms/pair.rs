@@ -1,5 +1,8 @@
-use crate::{values::Pair as PairVal, Eval};
-use syntax::terms::{Pair, Term};
+use crate::Eval;
+use syntax::{
+    terms::{Pair, Term},
+    values::Pair as PairVal,
+};
 
 impl<T> Eval for Pair<T>
 where

@@ -1,5 +1,9 @@
-use crate::{errors::ValueMismatch, values::ValueGroup, Eval};
-use syntax::terms::{Snd, Term};
+use crate::Eval;
+use common::errors::ValueMismatch;
+use syntax::{
+    terms::{Snd, Term},
+    values::ValueGroup,
+};
 
 impl<T> Eval for Snd<T>
 where

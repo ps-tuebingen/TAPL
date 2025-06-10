@@ -1,7 +1,8 @@
-use crate::{values::Raise as RaiseVal, Eval};
+use crate::Eval;
 use syntax::{
     terms::{Raise, Term},
     types::Type,
+    values::Raise as RaiseVal,
 };
 
 impl<T, Ty> Eval for Raise<T, Ty>

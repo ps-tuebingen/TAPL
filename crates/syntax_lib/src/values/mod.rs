@@ -1,6 +1,6 @@
-use crate::errors::ValueKind;
+use crate::terms::Term;
+use common::errors::ValueKind;
 use std::fmt;
-use syntax::terms::Term;
 
 pub trait Value
 where

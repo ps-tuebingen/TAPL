@@ -1,11 +1,9 @@
-use crate::{
-    errors::{ValueKind, ValueMismatch},
-    values::ValueGroup,
-    Eval,
-};
+use crate::Eval;
+use common::errors::{ValueKind, ValueMismatch};
 use syntax::{
     subst::SubstTerm,
     terms::{SumCase, Term},
+    values::{Value, ValueGroup},
 };
 
 impl<T> Eval for SumCase<T>
@@ -27,7 +25,7 @@ where
                 .subst(&self.right_var, &((*right_val.right_val).into()))
                 .eval(env)
         } else {
-            Err(ValueMismatch::new(&bound_val, ValueKind::Sum).into())
+            Err(ValueMismatch::new(bound_val.knd(), ValueKind::Sum).into())
         }
     }
 }

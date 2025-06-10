@@ -1,5 +1,8 @@
-use crate::{values::True as TrueVal, Eval};
-use syntax::terms::{Term, True};
+use crate::Eval;
+use syntax::{
+    terms::{Term, True},
+    values::True as TrueVal,
+};
 
 impl<T> Eval for True<T>
 where

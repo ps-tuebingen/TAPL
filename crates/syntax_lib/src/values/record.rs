@@ -1,7 +1,7 @@
 use super::Value;
-use crate::errors::ValueKind;
+use crate::{terms::Record as RecordT, Label};
+use common::errors::ValueKind;
 use std::{collections::HashMap, fmt};
-use syntax::{terms::Record as RecordT, Label};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Record<V>

@@ -1,11 +1,9 @@
-use crate::{
-    errors::{ValueKind, ValueMismatch},
-    values::{False, True, ValueGroup},
-    Eval,
-};
+use crate::Eval;
+use common::errors::{ValueKind, ValueMismatch};
 use syntax::{
     terms::{IsNil, Term},
     types::Type,
+    values::{False, True, Value, ValueGroup},
 };
 
 impl<T, Ty> Eval for IsNil<T, Ty>
@@ -27,7 +25,7 @@ where
         } else if term_val.clone().into_cons().is_ok() {
             Ok(False::new().into())
         } else {
-            Err(ValueMismatch::new(&term_val, ValueKind::List).into())
+            Err(ValueMismatch::new(term_val.knd(), ValueKind::List).into())
         }
     }
 }

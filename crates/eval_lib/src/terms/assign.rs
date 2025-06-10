@@ -1,10 +1,9 @@
-use crate::{
-    env::EvalEnvironment,
-    errors::ValueMismatch,
+use crate::{env::EvalEnvironment, Eval};
+use common::errors::ValueMismatch;
+use syntax::{
+    terms::{Assign, Term},
     values::{Unit as UnitVal, ValueGroup},
-    Eval,
 };
-use syntax::terms::{Assign, Term};
 
 impl<T> Eval for Assign<T>
 where

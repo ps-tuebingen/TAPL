@@ -1,5 +1,4 @@
-use syntax::terms::Term;
-use eval::values::Value;
+use syntax::{terms::Term, values::Value};
 
 pub struct EvalStep<T>
 where
@@ -9,4 +8,12 @@ where
     target: T,
 }
 
-pub struct EvalTrace<T,V> where T:Term,V:Value
+pub struct EvalTrace<T, V>
+where
+    T: Term,
+    V: Value,
+{
+    start: T,
+    steps: Vec<EvalStep<T>>,
+    end: V,
+}

@@ -1,7 +1,9 @@
-use crate::{errors::ValueMismatch, values::ValueGroup, Eval};
+use crate::Eval;
+use common::errors::ValueMismatch;
 use syntax::{
     terms::{Head, Term},
     types::Type,
+    values::ValueGroup,
 };
 
 impl<T, Ty> Eval for Head<T, Ty>

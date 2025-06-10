@@ -1,7 +1,8 @@
-use crate::{values::Left as LeftVal, Eval};
+use crate::Eval;
 use syntax::{
     terms::{Left, Term},
     types::Type,
+    values::Left as LeftVal,
 };
 
 impl<T, Ty> Eval for Left<T, Ty>

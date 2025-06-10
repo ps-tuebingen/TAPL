@@ -1,6 +1,8 @@
 use super::super::{LatexConfig, LatexFmt};
-use eval::values::{Pack, Value};
-use syntax::types::Type;
+use syntax::{
+    types::Type,
+    values::{Pack, Value},
+};
 
 impl<V, Ty> LatexFmt for Pack<V, Ty>
 where

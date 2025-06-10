@@ -1,10 +1,10 @@
 use super::Value;
-use crate::errors::ValueKind;
-use std::{fmt, marker::PhantomData};
-use syntax::{
+use crate::{
     terms::{Exception as ExceptionT, Term},
     types::Type,
 };
+use common::errors::ValueKind;
+use std::{fmt, marker::PhantomData};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Exception<T, Ty>

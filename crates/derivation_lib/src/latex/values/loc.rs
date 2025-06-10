@@ -1,6 +1,5 @@
 use super::super::{LatexConfig, LatexFmt};
-use eval::values::Loc;
-use syntax::terms::Term;
+use syntax::{terms::Term, values::Loc};
 
 impl<T> LatexFmt for Loc<T>
 where

@@ -1,10 +1,8 @@
 use super::{terms::Term, types::Type};
+use common::errors::{ValueKind, ValueMismatch};
 use derivation::latex::{LatexConfig, LatexFmt};
-use eval::{
-    errors::{ValueKind, ValueMismatch},
-    values::{Lambda, TyLambda, Value as ValueTrait, ValueGroup},
-};
 use std::fmt;
+use syntax::values::{Lambda, TyLambda, Value as ValueTrait, ValueGroup};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum Value {
@@ -30,7 +28,7 @@ impl ValueGroup for Value {
         if let Value::Lambda(lam) = self {
             Ok(lam)
         } else {
-            Err(ValueMismatch::new(&self, ValueKind::Lambda))
+            Err(ValueMismatch::new(self.knd(), ValueKind::Lambda))
         }
     }
 
@@ -38,7 +36,7 @@ impl ValueGroup for Value {
         if let Value::TyLambda(lam) = self {
             Ok(lam)
         } else {
-            Err(ValueMismatch::new(&self, ValueKind::TyLambda))
+            Err(ValueMismatch::new(self.knd(), ValueKind::TyLambda))
         }
     }
 }

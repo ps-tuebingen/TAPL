@@ -1,6 +1,8 @@
 use super::super::{LatexConfig, LatexFmt};
-use eval::values::{Cons, Value};
-use syntax::types::Type;
+use syntax::{
+    types::Type,
+    values::{Cons, Value},
+};
 
 impl<V, Ty> LatexFmt for Cons<V, Ty>
 where

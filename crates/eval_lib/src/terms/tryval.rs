@@ -1,8 +1,8 @@
-use crate::{
+use crate::Eval;
+use syntax::{
+    terms::{App, Term, TryWithVal},
     values::{Raise, ValueGroup},
-    Eval,
 };
-use syntax::terms::{App, Term, TryWithVal};
 
 impl<T> Eval for TryWithVal<T>
 where

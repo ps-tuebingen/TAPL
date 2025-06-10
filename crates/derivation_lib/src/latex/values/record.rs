@@ -1,5 +1,5 @@
 use super::super::{LatexConfig, LatexFmt};
-use eval::values::{Record, Value};
+use syntax::values::{Record, Value};
 
 impl<V> LatexFmt for Record<V>
 where

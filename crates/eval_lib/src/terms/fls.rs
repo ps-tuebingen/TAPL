@@ -1,5 +1,8 @@
-use crate::{values::False as FalseVal, Eval};
-use syntax::terms::{False, Term};
+use crate::Eval;
+use syntax::{
+    terms::{False, Term},
+    values::False as FalseVal,
+};
 
 impl<T> Eval for False<T>
 where

@@ -1,6 +1,5 @@
 use super::super::{LatexConfig, LatexFmt};
-use eval::values::LambdaSub;
-use syntax::{terms::Term, types::Type};
+use syntax::{terms::Term, types::Type, values::LambdaSub};
 
 impl<T, Ty> LatexFmt for LambdaSub<T, Ty>
 where

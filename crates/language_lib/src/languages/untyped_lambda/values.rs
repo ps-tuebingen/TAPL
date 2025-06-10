@@ -1,10 +1,8 @@
 use super::terms::Term;
+use common::errors::{ValueKind, ValueMismatch};
 use derivation::latex::{LatexConfig, LatexFmt};
-use eval::{
-    errors::{ValueKind, ValueMismatch},
-    values::{Lambda, Value as ValueTrait, ValueGroup},
-};
 use syntax::untyped::Untyped;
+use syntax::values::{Lambda, Value as ValueTrait, ValueGroup};
 
 use std::fmt;
 #[derive(Debug, Clone, PartialEq, Eq)]

@@ -1,5 +1,8 @@
-use crate::{values::Num as NumVal, Eval};
-use syntax::terms::{Num, Term};
+use crate::Eval;
+use syntax::{
+    terms::{Num, Term},
+    values::Num as NumVal,
+};
 
 impl<T> Eval for Num<T>
 where

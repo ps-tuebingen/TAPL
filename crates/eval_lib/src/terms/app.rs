@@ -1,4 +1,6 @@
-use crate::{errors::ValueMismatch, values::ValueGroup, Eval};
+use crate::Eval;
+use common::errors::ValueMismatch;
+use syntax::values::ValueGroup;
 use syntax::{
     subst::SubstTerm,
     terms::{App, Term},

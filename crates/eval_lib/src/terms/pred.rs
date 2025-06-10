@@ -1,9 +1,9 @@
-use crate::{
-    errors::ValueMismatch,
+use crate::Eval;
+use common::errors::ValueMismatch;
+use syntax::{
+    terms::{Pred, Term},
     values::{Num, ValueGroup},
-    Eval,
 };
-use syntax::terms::{Pred, Term};
 
 impl<T> Eval for Pred<T>
 where

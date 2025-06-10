@@ -67,10 +67,10 @@ impl Normalize<Type> for Type {
 #[cfg(test)]
 mod check_tests {
     use super::{Eval, Term};
-    use eval::values::Unit as UnitVal;
     use syntax::{
         terms::{App, Assign, Deref, Lambda, Loc, Ref, Unit, Variable},
         types::{Reference, Unit as UnitTy},
+        values::Unit as UnitVal,
     };
 
     #[test]

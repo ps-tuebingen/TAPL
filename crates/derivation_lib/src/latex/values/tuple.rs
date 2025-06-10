@@ -1,5 +1,5 @@
 use super::super::{LatexConfig, LatexFmt};
-use eval::values::{Tuple, Value};
+use syntax::values::{Tuple, Value};
 
 impl<V> LatexFmt for Tuple<V>
 where

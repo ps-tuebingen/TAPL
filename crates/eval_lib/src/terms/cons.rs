@@ -1,10 +1,8 @@
-use crate::{
-    values::{Cons as ConsVal, ValueGroup},
-    Eval,
-};
+use crate::Eval;
 use syntax::{
     terms::{Cons, Term},
     types::Type,
+    values::{Cons as ConsVal, ValueGroup},
 };
 
 impl<T, V, Ty> Eval for Cons<T, Ty>

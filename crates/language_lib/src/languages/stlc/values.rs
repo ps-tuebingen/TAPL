@@ -1,13 +1,11 @@
 use super::{terms::Term, types::Type};
+use common::errors::{ValueKind, ValueMismatch};
 use derivation::latex::{LatexConfig, LatexFmt};
-use eval::{
-    errors::{ValueKind, ValueMismatch},
-    values::{
-        Cons, False, Lambda, Left, Nil, Nothing, Num, Pair, Record, Right, Something, True, Tuple,
-        Unit, Value as ValueTrait, ValueGroup, Variant,
-    },
-};
 use std::fmt;
+use syntax::values::{
+    Cons, False, Lambda, Left, Nil, Nothing, Num, Pair, Record, Right, Something, True, Tuple,
+    Unit, Value as ValueTrait, ValueGroup, Variant,
+};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Value {
@@ -59,7 +57,7 @@ impl ValueGroup for Value {
         if let Value::Lambda(lam) = self {
             Ok(lam)
         } else {
-            Err(ValueMismatch::new(&self, ValueKind::Lambda))
+            Err(ValueMismatch::new(self.knd(), ValueKind::Lambda))
         }
     }
 
@@ -67,7 +65,7 @@ impl ValueGroup for Value {
         if let Value::True(tru) = self {
             Ok(tru)
         } else {
-            Err(ValueMismatch::new(&self, ValueKind::True))
+            Err(ValueMismatch::new(self.knd(), ValueKind::True))
         }
     }
 
@@ -75,7 +73,7 @@ impl ValueGroup for Value {
         if let Value::False(fls) = self {
             Ok(fls)
         } else {
-            Err(ValueMismatch::new(&self, ValueKind::False))
+            Err(ValueMismatch::new(self.knd(), ValueKind::False))
         }
     }
 
@@ -83,7 +81,7 @@ impl ValueGroup for Value {
         if let Value::Num(num) = self {
             Ok(num)
         } else {
-            Err(ValueMismatch::new(&self, ValueKind::Number))
+            Err(ValueMismatch::new(self.knd(), ValueKind::Number))
         }
     }
 
@@ -91,7 +89,7 @@ impl ValueGroup for Value {
         if let Value::Pair(pair) = self {
             Ok(pair)
         } else {
-            Err(ValueMismatch::new(&self, ValueKind::Pair))
+            Err(ValueMismatch::new(self.knd(), ValueKind::Pair))
         }
     }
 
@@ -99,7 +97,7 @@ impl ValueGroup for Value {
         if let Value::Tuple(tup) = self {
             Ok(tup)
         } else {
-            Err(ValueMismatch::new(&self, ValueKind::Tuple))
+            Err(ValueMismatch::new(self.knd(), ValueKind::Tuple))
         }
     }
 
@@ -107,7 +105,7 @@ impl ValueGroup for Value {
         if let Value::Record(rec) = self {
             Ok(rec)
         } else {
-            Err(ValueMismatch::new(&self, ValueKind::Record))
+            Err(ValueMismatch::new(self.knd(), ValueKind::Record))
         }
     }
 
@@ -115,7 +113,7 @@ impl ValueGroup for Value {
         if let Value::Left(lft) = self {
             Ok(lft)
         } else {
-            Err(ValueMismatch::new(&self, ValueKind::Left))
+            Err(ValueMismatch::new(self.knd(), ValueKind::Left))
         }
     }
 
@@ -123,7 +121,7 @@ impl ValueGroup for Value {
         if let Value::Right(right) = self {
             Ok(right)
         } else {
-            Err(ValueMismatch::new(&self, ValueKind::Right))
+            Err(ValueMismatch::new(self.knd(), ValueKind::Right))
         }
     }
 
@@ -131,7 +129,7 @@ impl ValueGroup for Value {
         if let Value::Variant(var) = self {
             Ok(var)
         } else {
-            Err(ValueMismatch::new(&self, ValueKind::Variant))
+            Err(ValueMismatch::new(self.knd(), ValueKind::Variant))
         }
     }
 
@@ -139,7 +137,7 @@ impl ValueGroup for Value {
         if let Value::Nothing(not) = self {
             Ok(not)
         } else {
-            Err(ValueMismatch::new(&self, ValueKind::Nothing))
+            Err(ValueMismatch::new(self.knd(), ValueKind::Nothing))
         }
     }
 
@@ -147,7 +145,7 @@ impl ValueGroup for Value {
         if let Value::Something(somet) = self {
             Ok(somet)
         } else {
-            Err(ValueMismatch::new(&self, ValueKind::Something))
+            Err(ValueMismatch::new(self.knd(), ValueKind::Something))
         }
     }
 
@@ -155,7 +153,7 @@ impl ValueGroup for Value {
         if let Value::Nil(nil) = self {
             Ok(nil)
         } else {
-            Err(ValueMismatch::new(&self, ValueKind::Nil))
+            Err(ValueMismatch::new(self.knd(), ValueKind::Nil))
         }
     }
 
@@ -163,7 +161,7 @@ impl ValueGroup for Value {
         if let Value::Cons(cons) = self {
             Ok(cons)
         } else {
-            Err(ValueMismatch::new(&self, ValueKind::Cons))
+            Err(ValueMismatch::new(self.knd(), ValueKind::Cons))
         }
     }
 }

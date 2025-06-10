@@ -1,7 +1,7 @@
 use super::Value;
-use crate::errors::ValueKind;
+use crate::{terms::Raise as RaiseT, types::Type};
+use common::errors::ValueKind;
 use std::fmt;
-use syntax::{terms::Raise as RaiseT, types::Type};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Raise<V, Ty>

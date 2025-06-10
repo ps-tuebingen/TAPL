@@ -1,7 +1,8 @@
-use crate::{values::Record as RecordVal, Eval};
+use crate::Eval;
 use std::collections::HashMap;
 use syntax::{
     terms::{Record, Term},
+    values::Record as RecordVal,
     Label,
 };
 

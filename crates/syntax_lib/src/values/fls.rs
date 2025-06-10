@@ -1,7 +1,7 @@
 use super::Value;
-use crate::errors::ValueKind;
+use crate::terms::{False as FalseT, Term};
+use common::errors::ValueKind;
 use std::{fmt, marker::PhantomData};
-use syntax::terms::{False as FalseT, Term};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct False<T>

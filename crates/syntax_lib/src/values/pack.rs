@@ -1,7 +1,7 @@
 use super::Value;
-use crate::errors::ValueKind;
+use crate::{terms::Pack as PackT, types::Type};
+use common::errors::ValueKind;
 use std::fmt;
-use syntax::{terms::Pack as PackT, types::Type};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Pack<V, Ty>

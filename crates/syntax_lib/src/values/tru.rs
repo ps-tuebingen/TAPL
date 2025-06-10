@@ -1,7 +1,7 @@
 use super::Value;
-use crate::errors::ValueKind;
+use crate::terms::{Term, True as TrueT};
+use common::errors::ValueKind;
 use std::{fmt, marker::PhantomData};
-use syntax::terms::{Term, True as TrueT};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct True<T>

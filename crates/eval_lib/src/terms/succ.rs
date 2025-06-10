@@ -1,9 +1,9 @@
-use crate::{
-    errors::ValueMismatch,
+use crate::Eval;
+use common::errors::ValueMismatch;
+use syntax::{
+    terms::{Succ, Term},
     values::{Num, ValueGroup},
-    Eval,
 };
-use syntax::terms::{Succ, Term};
 
 impl<T> Eval for Succ<T>
 where

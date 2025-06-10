@@ -1,6 +1,5 @@
 use super::super::{LatexConfig, LatexFmt};
-use eval::values::Exception;
-use syntax::{terms::Term, types::Type};
+use syntax::{terms::Term, types::Type, values::Exception};
 
 impl<T, Ty> LatexFmt for Exception<T, Ty>
 where

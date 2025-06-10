@@ -1,9 +1,9 @@
-use crate::{
-    errors::{ValueKind, ValueMismatch},
-    values::ValueGroup,
-    Eval,
+use crate::Eval;
+use common::errors::{ValueKind, ValueMismatch};
+use syntax::{
+    terms::{If, Term},
+    values::{Value, ValueGroup},
 };
-use syntax::terms::{If, Term};
 
 impl<T> Eval for If<T>
 where
@@ -21,7 +21,7 @@ where
         } else if cond_val.clone().into_false().is_ok() {
             self.else_term.eval(env)
         } else {
-            Err(ValueMismatch::new(&cond_val, ValueKind::Bool).into())
+            Err(ValueMismatch::new(cond_val.knd(), ValueKind::Bool).into())
         }
     }
 }

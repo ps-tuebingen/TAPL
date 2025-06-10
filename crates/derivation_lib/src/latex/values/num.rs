@@ -1,6 +1,5 @@
 use super::super::{LatexConfig, LatexFmt};
-use eval::values::Num;
-use syntax::terms::Term;
+use syntax::{terms::Term, values::Num};
 
 impl<T> LatexFmt for Num<T>
 where

@@ -1,5 +1,8 @@
-use crate::{values::Loc as LocVal, Eval};
-use syntax::terms::{Loc, Term};
+use crate::Eval;
+use syntax::{
+    terms::{Loc, Term},
+    values::Loc as LocVal,
+};
 
 impl<T> Eval for Loc<T>
 where

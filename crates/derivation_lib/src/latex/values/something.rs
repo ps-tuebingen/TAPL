@@ -1,5 +1,5 @@
 use super::super::{LatexConfig, LatexFmt};
-use eval::values::{Something, Value};
+use syntax::values::{Something, Value};
 
 impl<V> LatexFmt for Something<V>
 where

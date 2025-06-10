@@ -1,10 +1,8 @@
 use super::{terms::Term, types::Type};
+use common::errors::{ValueKind, ValueMismatch};
 use derivation::latex::{LatexConfig, LatexFmt};
-use eval::{
-    errors::{ValueKind, ValueMismatch},
-    values::{Lambda, LambdaSub, Num, Pack, Record, Value as ValueTrait, ValueGroup},
-};
 use std::fmt;
+use syntax::values::{Lambda, LambdaSub, Num, Pack, Record, Value as ValueTrait, ValueGroup};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Value {
@@ -36,7 +34,7 @@ impl ValueGroup for Value {
         if let Value::Lambda(lam) = self {
             Ok(lam)
         } else {
-            Err(ValueMismatch::new(&self, ValueKind::Lambda))
+            Err(ValueMismatch::new(self.knd(), ValueKind::Lambda))
         }
     }
 
@@ -44,7 +42,7 @@ impl ValueGroup for Value {
         if let Value::LambdaSub(lam) = self {
             Ok(lam)
         } else {
-            Err(ValueMismatch::new(&self, ValueKind::LambdaSub))
+            Err(ValueMismatch::new(self.knd(), ValueKind::LambdaSub))
         }
     }
 
@@ -52,7 +50,7 @@ impl ValueGroup for Value {
         if let Value::Pack(pack) = self {
             Ok(pack)
         } else {
-            Err(ValueMismatch::new(&self, ValueKind::Package))
+            Err(ValueMismatch::new(self.knd(), ValueKind::Package))
         }
     }
 
@@ -60,7 +58,7 @@ impl ValueGroup for Value {
         if let Value::Num(num) = self {
             Ok(num)
         } else {
-            Err(ValueMismatch::new(&self, ValueKind::Number))
+            Err(ValueMismatch::new(self.knd(), ValueKind::Number))
         }
     }
 
@@ -68,7 +66,7 @@ impl ValueGroup for Value {
         if let Value::Record(rec) = self {
             Ok(rec)
         } else {
-            Err(ValueMismatch::new(&self, ValueKind::Record))
+            Err(ValueMismatch::new(self.knd(), ValueKind::Record))
         }
     }
 }

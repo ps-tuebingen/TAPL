@@ -1,10 +1,8 @@
 pub mod env;
-pub mod errors;
 pub mod terms;
-pub mod values;
 
 use env::EvalEnvironment;
-use values::ValueGroup;
+use syntax::values::ValueGroup;
 
 pub trait Eval: Sized {
     type EvalError: std::error::Error;

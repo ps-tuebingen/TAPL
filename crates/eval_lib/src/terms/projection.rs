@@ -1,6 +1,9 @@
-use crate::{errors::ValueMismatch, values::ValueGroup, Eval};
-use common::errors::IndexOutOfBounds;
-use syntax::terms::{Projection, Term};
+use crate::Eval;
+use common::errors::{IndexOutOfBounds, ValueMismatch};
+use syntax::{
+    terms::{Projection, Term},
+    values::ValueGroup,
+};
 
 impl<T> Eval for Projection<T>
 where

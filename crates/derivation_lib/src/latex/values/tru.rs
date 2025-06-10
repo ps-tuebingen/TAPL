@@ -1,6 +1,5 @@
 use super::super::{LatexConfig, LatexFmt};
-use eval::values::True;
-use syntax::terms::Term;
+use syntax::{terms::Term, values::True};
 
 impl<T> LatexFmt for True<T>
 where

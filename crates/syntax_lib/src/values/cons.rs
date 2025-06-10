@@ -1,7 +1,6 @@
-use super::Value;
-use crate::errors::ValueKind;
+use crate::{terms::Cons as ConsT, types::Type, values::Value};
+use common::errors::ValueKind;
 use std::fmt;
-use syntax::{terms::Cons as ConsT, types::Type};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Cons<V, Ty>

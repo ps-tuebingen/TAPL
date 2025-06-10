@@ -1,6 +1,8 @@
 use super::super::{LatexConfig, LatexFmt};
-use eval::values::{Raise, Value};
-use syntax::types::Type;
+use syntax::{
+    types::Type,
+    values::{Raise, Value},
+};
 
 impl<V, Ty> LatexFmt for Raise<V, Ty>
 where

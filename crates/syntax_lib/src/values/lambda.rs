@@ -1,11 +1,11 @@
 use super::Value;
-use crate::errors::ValueKind;
-use std::fmt;
-use syntax::{
+use crate::{
     terms::{Lambda as LambdaT, Term},
     types::Type,
     Var,
 };
+use common::errors::ValueKind;
+use std::fmt;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Lambda<T, Ty>

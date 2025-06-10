@@ -1,5 +1,9 @@
-use crate::{env::EvalEnvironment, errors::ValueMismatch, values::ValueGroup, Eval};
-use syntax::terms::{Deref, Term};
+use crate::{env::EvalEnvironment, Eval};
+use common::errors::ValueMismatch;
+use syntax::{
+    terms::{Deref, Term},
+    values::ValueGroup,
+};
 
 impl<T> Eval for Deref<T>
 where

@@ -24,9 +24,11 @@ impl Language for UntypedArithmetic {
 #[cfg(test)]
 mod term_tests {
     use super::terms::Term;
-    use eval::values::Num as NumVal;
     use eval::Eval;
-    use syntax::terms::{If, IsZero, Num, Pred, Succ};
+    use syntax::{
+        terms::{If, IsZero, Num, Pred, Succ},
+        values::Num as NumVal,
+    };
 
     #[test]
     fn eval_simple() {

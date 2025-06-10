@@ -1,5 +1,8 @@
-use crate::{values::Tuple as TupleVal, Eval};
-use syntax::terms::{Term, Tuple};
+use crate::Eval;
+use syntax::{
+    terms::{Term, Tuple},
+    values::Tuple as TupleVal,
+};
 
 impl<T> Eval for Tuple<T>
 where

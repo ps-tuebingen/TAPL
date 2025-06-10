@@ -1,6 +1,9 @@
-use crate::{errors::ValueMismatch, values::ValueGroup, Eval};
-use common::errors::UndefinedLabel;
-use syntax::terms::{RecordProj, Term};
+use crate::Eval;
+use common::errors::{UndefinedLabel, ValueMismatch};
+use syntax::{
+    terms::{RecordProj, Term},
+    values::ValueGroup,
+};
 
 impl<T> Eval for RecordProj<T>
 where

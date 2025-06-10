@@ -1,11 +1,9 @@
-use crate::{
-    errors::{ValueKind, ValueMismatch},
-    values::ValueGroup,
-    Eval,
-};
+use crate::Eval;
+use common::errors::{ValueKind, ValueMismatch};
 use syntax::{
     subst::SubstTerm,
     terms::{SomeCase, Term},
+    values::{Value, ValueGroup},
 };
 
 impl<T> Eval for SomeCase<T>
@@ -27,7 +25,7 @@ where
         } else if bound_val.clone().into_nothing().is_ok() {
             self.none_term.eval(env)
         } else {
-            Err(ValueMismatch::new(&bound_val, ValueKind::Option).into())
+            Err(ValueMismatch::new(bound_val.knd(), ValueKind::Option).into())
         }
     }
 }

@@ -1,9 +1,9 @@
-use crate::{
-    errors::ValueMismatch,
+use crate::Eval;
+use common::errors::ValueMismatch;
+use syntax::{
+    terms::{IsZero, Term},
     values::{False, True, ValueGroup},
-    Eval,
 };
-use syntax::terms::{IsZero, Term};
 
 impl<T> Eval for IsZero<T>
 where

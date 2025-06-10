@@ -1,5 +1,8 @@
-use crate::{values::Unit as UnitVal, Eval};
-use syntax::terms::{Term, Unit};
+use crate::Eval;
+use syntax::{
+    terms::{Term, Unit},
+    values::Unit as UnitVal,
+};
 
 impl<T> Eval for Unit<T>
 where

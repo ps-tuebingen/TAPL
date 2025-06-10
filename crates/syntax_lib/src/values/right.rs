@@ -1,7 +1,7 @@
 use super::Value;
-use crate::errors::ValueKind;
+use crate::{terms::Right as RightT, types::Type};
+use common::errors::ValueKind;
 use std::fmt;
-use syntax::{terms::Right as RightT, types::Type};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Right<V, Ty>

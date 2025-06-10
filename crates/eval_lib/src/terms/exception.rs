@@ -1,7 +1,8 @@
-use crate::{values::Exception as ExceptionVal, Eval};
+use crate::Eval;
 use syntax::{
     terms::{Exception, Term},
     types::Type,
+    values::Exception as ExceptionVal,
 };
 
 impl<T, Ty> Eval for Exception<T, Ty>

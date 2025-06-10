@@ -1,7 +1,8 @@
-use crate::{values::Variant as VariantVal, Eval};
+use crate::Eval;
 use syntax::{
     terms::{Term, Variant},
     types::Type,
+    values::Variant as VariantVal,
 };
 
 impl<T, Ty> Eval for Variant<T, Ty>

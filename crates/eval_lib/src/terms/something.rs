@@ -1,5 +1,8 @@
-use crate::{values::Something as SomethingVal, Eval};
-use syntax::terms::{Something, Term};
+use crate::Eval;
+use syntax::{
+    terms::{Something, Term},
+    values::Something as SomethingVal,
+};
 
 impl<T> Eval for Something<T>
 where

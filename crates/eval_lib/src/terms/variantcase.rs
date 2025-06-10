@@ -1,8 +1,9 @@
-use crate::{errors::ValueMismatch, values::ValueGroup, Eval};
-use common::errors::UndefinedLabel;
+use crate::Eval;
+use common::errors::{UndefinedLabel, ValueMismatch};
 use syntax::{
     subst::SubstTerm,
     terms::{Term, VariantCase},
+    values::ValueGroup,
 };
 
 impl<T> Eval for VariantCase<T>

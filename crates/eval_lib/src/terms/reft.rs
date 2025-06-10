@@ -1,5 +1,8 @@
-use crate::{env::EvalEnvironment, values::Loc, Eval};
-use syntax::terms::{Ref, Term};
+use crate::{env::EvalEnvironment, Eval};
+use syntax::{
+    terms::{Ref, Term},
+    values::Loc,
+};
 
 impl<T> Eval for Ref<T>
 where

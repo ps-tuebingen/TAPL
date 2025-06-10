@@ -1,7 +1,7 @@
 use super::Value;
-use crate::errors::ValueKind;
+use crate::terms::Something as SomethingT;
+use common::errors::ValueKind;
 use std::fmt;
-use syntax::terms::Something as SomethingT;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Something<V>

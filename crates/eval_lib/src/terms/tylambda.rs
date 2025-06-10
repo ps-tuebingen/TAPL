@@ -1,5 +1,8 @@
-use crate::{values::TyLambda as TyLambdaVal, Eval};
-use syntax::terms::{Term, TyLambda};
+use crate::Eval;
+use syntax::{
+    terms::{Term, TyLambda},
+    values::TyLambda as TyLambdaVal,
+};
 
 impl<T> Eval for TyLambda<T>
 where

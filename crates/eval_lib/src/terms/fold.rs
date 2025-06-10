@@ -1,7 +1,8 @@
-use crate::{values::Fold as FoldVal, Eval};
+use crate::Eval;
 use syntax::{
     terms::{Fold, Term},
     types::Type,
+    values::Fold as FoldVal,
 };
 
 impl<T, Ty> Eval for Fold<T, Ty>

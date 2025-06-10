@@ -1,7 +1,7 @@
 use super::Value;
-use crate::errors::ValueKind;
+use crate::terms::{Term, Unit as UnitT};
+use common::errors::ValueKind;
 use std::{fmt, marker::PhantomData};
-use syntax::terms::{Term, Unit as UnitT};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Unit<T>

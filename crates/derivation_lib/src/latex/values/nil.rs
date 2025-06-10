@@ -1,6 +1,5 @@
 use super::super::{LatexConfig, LatexFmt};
-use eval::values::Nil;
-use syntax::{terms::Term, types::Type};
+use syntax::{terms::Term, types::Type, values::Nil};
 
 impl<T, Ty> LatexFmt for Nil<T, Ty>
 where

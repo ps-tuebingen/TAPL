@@ -1,11 +1,9 @@
-use crate::{
-    errors::{ValueKind, ValueMismatch},
-    values::ValueGroup,
-    Eval,
-};
+use crate::Eval;
+use common::errors::{ValueKind, ValueMismatch};
 use syntax::{
     subst::SubstTerm,
     terms::{ListCase, Term},
+    values::{Value, ValueGroup},
 };
 
 impl<T> Eval for ListCase<T>
@@ -27,7 +25,7 @@ where
                 .subst(&self.cons_rst, &((*cons.tail).into()))
                 .eval(env)
         } else {
-            Err(ValueMismatch::new(&bound_val, ValueKind::List).into())
+            Err(ValueMismatch::new(bound_val.knd(), ValueKind::List).into())
         }
     }
 }

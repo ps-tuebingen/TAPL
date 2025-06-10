@@ -1,7 +1,9 @@
-use crate::{errors::ValueMismatch, values::ValueGroup, Eval};
+use crate::Eval;
+use common::errors::ValueMismatch;
 use syntax::{
     subst::SubstTerm,
     terms::{Fix, Term},
+    values::ValueGroup,
 };
 
 impl<T> Eval for Fix<T>
