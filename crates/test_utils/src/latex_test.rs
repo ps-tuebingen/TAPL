@@ -58,9 +58,7 @@ where
             Err(err) => return TestResult::from_err(err),
         };
         let latex_src_bus = checked.to_document(&mut Default::default());
-        let mut frac_env = LatexConfig::default();
-        frac_env.use_frac_array = true;
-        let latex_src_frac = checked.to_document(&mut frac_env);
+        let latex_src_frac = checked.to_document(&mut LatexConfig::new_frac());
 
         let mut out_path_bus = PathBuf::from(LATEX_OUT).join(format!("{}_bus", self.name));
         out_path_bus.set_extension("tex");
