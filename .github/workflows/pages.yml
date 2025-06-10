@@ -30,6 +30,6 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      name: Deploy Pages
-      id: deployment
-      uses: actions/deploy-pages@v4
+      - name: Deploy Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
