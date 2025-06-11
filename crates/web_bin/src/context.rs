@@ -1,4 +1,4 @@
-use super::{example_select::ExampleSelect, get_by_id, out_divs::OutDivs, typeset};
+use super::{example_select::ExampleSelect, get_by_id, log, out_divs::OutDivs, typeset};
 use language::{AllLanguages, FormatMethod};
 use std::rc::Rc;
 use wasm_bindgen::{closure::Closure, JsCast};
@@ -98,15 +98,18 @@ impl HtmlContext {
             lang.run_all(source, &FormatMethod::LatexFrac);
 
         if let Some(p) = parse_res {
-            self.out_divs.parsed.set_inner_html(&format!("${p}$"));
+            log(&format!("parsed: {p}"));
+            self.out_divs.parsed.set_inner_html(&format!("\\[{p}\\]"));
         }
 
         if let Some(c) = check_res {
+            log(&format!("checked: {c}"));
             self.out_divs.checked.set_inner_html(&c);
         }
 
         if let Some(e) = eval_res {
-            self.out_divs.evaled.set_inner_html(&format!("${e}$"));
+            log(&format!("evaluated: {e}"));
+            self.out_divs.evaled.set_inner_html(&e);
         }
 
         if let Some(e) = err_res {
