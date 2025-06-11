@@ -11,6 +11,7 @@ use syntax::{
     types::TypeGroup,
     values::ValueGroup,
 };
+use trace::EvalTrace;
 
 pub mod errors;
 pub mod languages;
@@ -32,7 +33,7 @@ where
 {
     pub parse_res: Option<Lang::Term>,
     pub check_res: Option<Derivation<Lang::Term, Lang::Type>>,
-    pub eval_res: Option<Lang::Value>,
+    pub eval_res: Option<EvalTrace<Lang::Term, Lang::Value>>,
     pub err: Option<Lang::LanguageError>,
 }
 
@@ -56,6 +57,7 @@ pub trait Language {
         + SubstTerm<Self::Term, Target = Self::Term>
         + SubstType<Self::Type, Target = Self::Term>
         + Eval<
+            Term = Self::Term,
             Env = Self::EvalEnv,
             Value = Self::Value,
             EvalError: Into<<Self as Language>::LanguageError>,
@@ -90,7 +92,10 @@ pub trait Language {
         Self::Term::check_start(&parsed).map_err(|err| err.into())
     }
 
-    fn eval(&self, input: String) -> Result<Self::Value, Self::LanguageError> {
+    fn eval(
+        &self,
+        input: String,
+    ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::LanguageError> {
         let parsed = Self::Term::parse(input)?;
         Self::Term::eval_start(parsed).map_err(|err| err.into())
     }
@@ -151,12 +156,16 @@ pub trait Language {
         }
     }
 
-    fn format_value(&self, val: &Self::Value, method: &FormatMethod) -> String {
+    fn format_trace(
+        &self,
+        tr: &EvalTrace<Self::Term, Self::Value>,
+        method: &FormatMethod,
+    ) -> String {
         match method {
-            FormatMethod::Simple => val.to_string(),
-            FormatMethod::LatexBus => val.to_latex(&mut Default::default()),
-            FormatMethod::LatexFrac => val.to_latex(&mut LatexConfig::new_frac()),
-            FormatMethod::Debug => format!("{val:?}"),
+            FormatMethod::Simple => tr.val().to_string(),
+            FormatMethod::LatexBus => todo!(), //tr.to_latex(&mut Default::default()),
+            FormatMethod::LatexFrac => todo!(), //val.to_latex(&mut LatexConfig::new_frac()),
+            FormatMethod::Debug => format!("{:?}", tr.val()),
         }
     }
 }

@@ -226,59 +226,59 @@ impl AllLanguages {
         match self {
             Self::UntypedArithmetic(ua) => {
                 let res = ua.eval(input)?;
-                Ok(ua.format_value(&res, method))
+                Ok(ua.format_trace(&res, method))
             }
             Self::UntypedLambda(ul) => {
                 let res = ul.eval(input)?;
-                Ok(ul.format_value(&res, method))
+                Ok(ul.format_trace(&res, method))
             }
             Self::TypedArithmetic(ta) => {
                 let res = ta.eval(input)?;
-                Ok(ta.format_value(&res, method))
+                Ok(ta.format_trace(&res, method))
             }
             Self::Stlc(stlc) => {
                 let res = stlc.eval(input)?;
-                Ok(stlc.format_value(&res, method))
+                Ok(stlc.format_trace(&res, method))
             }
             Self::References(rf) => {
                 let res = rf.eval(input)?;
-                Ok(rf.format_value(&res, method))
+                Ok(rf.format_trace(&res, method))
             }
             Self::Exceptions(ex) => {
                 let res = ex.eval(input)?;
-                Ok(ex.format_value(&res, method))
+                Ok(ex.format_trace(&res, method))
             }
             Self::Subtypes(s) => {
                 let res = s.eval(input)?;
-                Ok(s.format_value(&res, method))
+                Ok(s.format_trace(&res, method))
             }
             Self::Recursive(rec) => {
                 let res = rec.eval(input)?;
-                Ok(rec.format_value(&res, method))
+                Ok(rec.format_trace(&res, method))
             }
             Self::Existential(ex) => {
                 let res = ex.eval(input)?;
-                Ok(ex.format_value(&res, method))
+                Ok(ex.format_trace(&res, method))
             }
             Self::SystemF(sys) => {
                 let res = sys.eval(input)?;
-                Ok(sys.format_value(&res, method))
+                Ok(sys.format_trace(&res, method))
             }
             Self::BoundedQuantification(bd) => {
                 let res = bd.eval(input)?;
-                Ok(bd.format_value(&res, method))
+                Ok(bd.format_trace(&res, method))
             }
             Self::LambdaOmega(lo) => {
                 let res = lo.eval(input)?;
-                Ok(lo.format_value(&res, method))
+                Ok(lo.format_trace(&res, method))
             }
             Self::FOmega(fo) => {
                 let res = fo.eval(input)?;
-                Ok(fo.format_value(&res, method))
+                Ok(fo.format_trace(&res, method))
             }
             Self::FOmegaSub(fos) => {
                 let res = fos.eval(input)?;
-                Ok(fos.format_value(&res, method))
+                Ok(fos.format_trace(&res, method))
             }
         }
     }
@@ -299,7 +299,7 @@ impl AllLanguages {
                 (
                     res.parse_res.map(|p| ua.format_term(&p, method)),
                     res.check_res.map(|c| ua.format_derivation(&c, method)),
-                    res.eval_res.map(|e| ua.format_value(&e, method)),
+                    res.eval_res.map(|e| ua.format_trace(&e, method)),
                     res.err.map(|e| e.to_string()),
                 )
             }
@@ -308,7 +308,7 @@ impl AllLanguages {
                 (
                     res.parse_res.map(|p| ul.format_term(&p, method)),
                     res.check_res.map(|c| ul.format_derivation(&c, method)),
-                    res.eval_res.map(|e| ul.format_value(&e, method)),
+                    res.eval_res.map(|e| ul.format_trace(&e, method)),
                     res.err.map(|e| e.to_string()),
                 )
             }
@@ -317,7 +317,7 @@ impl AllLanguages {
                 (
                     res.parse_res.map(|p| ta.format_term(&p, method)),
                     res.check_res.map(|c| ta.format_derivation(&c, method)),
-                    res.eval_res.map(|e| ta.format_value(&e, method)),
+                    res.eval_res.map(|e| ta.format_trace(&e, method)),
                     res.err.map(|e| e.to_string()),
                 )
             }
@@ -326,7 +326,7 @@ impl AllLanguages {
                 (
                     res.parse_res.map(|p| stlc.format_term(&p, method)),
                     res.check_res.map(|c| stlc.format_derivation(&c, method)),
-                    res.eval_res.map(|e| stlc.format_value(&e, method)),
+                    res.eval_res.map(|e| stlc.format_trace(&e, method)),
                     res.err.map(|e| e.to_string()),
                 )
             }
@@ -335,7 +335,7 @@ impl AllLanguages {
                 (
                     res.parse_res.map(|p| rf.format_term(&p, method)),
                     res.check_res.map(|c| rf.format_derivation(&c, method)),
-                    res.eval_res.map(|e| rf.format_value(&e, method)),
+                    res.eval_res.map(|e| rf.format_trace(&e, method)),
                     res.err.map(|e| e.to_string()),
                 )
             }
@@ -344,7 +344,7 @@ impl AllLanguages {
                 (
                     res.parse_res.map(|p| ex.format_term(&p, method)),
                     res.check_res.map(|c| ex.format_derivation(&c, method)),
-                    res.eval_res.map(|e| ex.format_value(&e, method)),
+                    res.eval_res.map(|e| ex.format_trace(&e, method)),
                     res.err.map(|e| e.to_string()),
                 )
             }
@@ -353,7 +353,7 @@ impl AllLanguages {
                 (
                     res.parse_res.map(|p| s.format_term(&p, method)),
                     res.check_res.map(|c| s.format_derivation(&c, method)),
-                    res.eval_res.map(|e| s.format_value(&e, method)),
+                    res.eval_res.map(|e| s.format_trace(&e, method)),
                     res.err.map(|e| e.to_string()),
                 )
             }
@@ -362,7 +362,7 @@ impl AllLanguages {
                 (
                     res.parse_res.map(|p| rec.format_term(&p, method)),
                     res.check_res.map(|c| rec.format_derivation(&c, method)),
-                    res.eval_res.map(|e| rec.format_value(&e, method)),
+                    res.eval_res.map(|e| rec.format_trace(&e, method)),
                     res.err.map(|e| e.to_string()),
                 )
             }
@@ -371,7 +371,7 @@ impl AllLanguages {
                 (
                     res.parse_res.map(|p| ex.format_term(&p, method)),
                     res.check_res.map(|c| ex.format_derivation(&c, method)),
-                    res.eval_res.map(|e| ex.format_value(&e, method)),
+                    res.eval_res.map(|e| ex.format_trace(&e, method)),
                     res.err.map(|e| e.to_string()),
                 )
             }
@@ -380,7 +380,7 @@ impl AllLanguages {
                 (
                     res.parse_res.map(|p| sys.format_term(&p, method)),
                     res.check_res.map(|c| sys.format_derivation(&c, method)),
-                    res.eval_res.map(|e| sys.format_value(&e, method)),
+                    res.eval_res.map(|e| sys.format_trace(&e, method)),
                     res.err.map(|e| e.to_string()),
                 )
             }
@@ -389,7 +389,7 @@ impl AllLanguages {
                 (
                     res.parse_res.map(|p| bd.format_term(&p, method)),
                     res.check_res.map(|c| bd.format_derivation(&c, method)),
-                    res.eval_res.map(|e| bd.format_value(&e, method)),
+                    res.eval_res.map(|e| bd.format_trace(&e, method)),
                     res.err.map(|e| e.to_string()),
                 )
             }
@@ -398,7 +398,7 @@ impl AllLanguages {
                 (
                     res.parse_res.map(|p| lo.format_term(&p, method)),
                     res.check_res.map(|c| lo.format_derivation(&c, method)),
-                    res.eval_res.map(|e| lo.format_value(&e, method)),
+                    res.eval_res.map(|e| lo.format_trace(&e, method)),
                     res.err.map(|e| e.to_string()),
                 )
             }
@@ -407,7 +407,7 @@ impl AllLanguages {
                 (
                     res.parse_res.map(|p| fo.format_term(&p, method)),
                     res.check_res.map(|c| fo.format_derivation(&c, method)),
-                    res.eval_res.map(|e| fo.format_value(&e, method)),
+                    res.eval_res.map(|e| fo.format_trace(&e, method)),
                     res.err.map(|e| e.to_string()),
                 )
             }
@@ -416,7 +416,7 @@ impl AllLanguages {
                 (
                     res.parse_res.map(|p| fos.format_term(&p, method)),
                     res.check_res.map(|c| fos.format_derivation(&c, method)),
-                    res.eval_res.map(|e| fos.format_value(&e, method)),
+                    res.eval_res.map(|e| fos.format_trace(&e, method)),
                     res.err.map(|e| e.to_string()),
                 )
             }

@@ -4,6 +4,7 @@ use common::errors::UndefinedLocation;
 use eval::{env::EvalEnvironment, Eval};
 use std::collections::HashMap;
 use syntax::{env::Environment, Location};
+use trace::EvalTrace;
 
 #[derive(Default)]
 pub struct Store(HashMap<Location, Value>);
@@ -32,10 +33,14 @@ impl EvalEnvironment<Value> for Store {
 
 impl Eval for Term {
     type Value = Value;
+    type Term = Term;
     type Env = Store;
     type EvalError = Error;
 
-    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Error> {
+    fn eval(
+        self,
+        env: &mut Self::Env,
+    ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
         match self {
             Term::Var(var) => var.eval(env),
             Term::Num(c) => c.eval(env),

@@ -1,7 +1,7 @@
 use crate::{env::EvalEnvironment, Eval};
 use common::errors::ValueMismatch;
 use syntax::{
-    terms::{Assign, Term},
+    terms::{Assign, Term, Unit},
     values::{Unit as UnitVal, ValueGroup},
 };
 use trace::{EvalStep, EvalTrace};
@@ -9,9 +9,10 @@ use trace::{EvalStep, EvalTrace};
 impl<T> Eval for Assign<T>
 where
     T: Term + Eval<Term = T>,
-    UnitVal<T>: Into<T> + Into<<T as Eval>::Value>,
+    UnitVal<T>: Into<<T as Eval>::Value>,
     <T as Eval>::Value: Into<T>,
     Assign<T>: Into<T>,
+    Unit<T>: Into<T>,
     <T as Eval>::EvalError: From<ValueMismatch>,
 {
     type Env = <T as Eval>::Env;

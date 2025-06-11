@@ -1,8 +1,8 @@
 use super::rules::EvaluationRule;
 use syntax::{
-    terms::{Assign, Cast, Deref, False, IsNil, Loc, Num, Pair, Pred, Succ, Term, True},
+    terms::{Assign, Cast, Deref, False, IsNil, Loc, Num, Pair, Pred, Succ, Term, True, Unit},
     types::Type,
-    values::{Unit, Value},
+    values::Value,
     Location,
 };
 
