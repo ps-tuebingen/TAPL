@@ -4,7 +4,8 @@ use test_utils::{
     check_test::CheckTest,
     errors::Error,
     eval_test::EvalTest,
-    latex_test::LatexTest,
+    latex_buss_test::LatexTestBuss,
+    latex_frac_test::LatexTestFrac,
     load_tests::{load_dir, TestContents},
     parse_test::ParseTest,
     paths::{EXAMPLES_PATH, F_OMEGA_SUB_PATH},
@@ -65,7 +66,9 @@ impl TestSuite for FOmegaSubTests {
             let eval_test =
                 EvalTest::<Term>::new(&tst.source_name, &tst.source_contents, &tst.conf.evaluated);
             tests.push(Box::new(eval_test) as Box<dyn Test>);
-            let latex_test = LatexTest::<Term>::new(&tst.source_name, &tst.source_contents);
+            let latex_test = LatexTestBuss::<Term>::new(&tst.source_name, &tst.source_contents);
+            tests.push(Box::new(latex_test) as Box<dyn Test>);
+            let latex_test = LatexTestFrac::<Term>::new(&tst.source_name, &tst.source_contents);
             tests.push(Box::new(latex_test) as Box<dyn Test>);
         }
         Ok(tests)

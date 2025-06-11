@@ -5,7 +5,8 @@ pub mod testsuite;
 
 pub mod check_test;
 pub mod eval_test;
-pub mod latex_test;
+pub mod latex_buss_test;
+pub mod latex_frac_test;
 pub mod parse_test;
 pub mod reparse_test;
 
