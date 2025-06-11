@@ -1,6 +1,8 @@
 pub mod errors;
 pub mod load_tests;
 pub mod paths;
+pub mod test;
+pub mod test_result;
 pub mod testsuite;
 
 pub mod check_test;

@@ -1,16 +1,7 @@
 use clap::Parser;
-use std::fmt;
 
 pub mod args;
 use args::{Args, Command};
-
-pub fn display_or_debug<T: fmt::Debug + fmt::Display>(t: &T, debug: bool) -> String {
-    if debug {
-        format!("{t:?}")
-    } else {
-        format!("{t}")
-    }
-}
 
 fn main() {
     let args = Args::parse();
