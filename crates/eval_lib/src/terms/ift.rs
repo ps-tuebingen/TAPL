@@ -49,7 +49,7 @@ where
             If::new(t, *self.then_term.clone(), *self.else_term.clone()).into()
         });
         steps.push(next_step);
-        steps.extend(branch_res.steps.into_iter());
+        steps.extend(branch_res.steps);
 
         Ok(EvalTrace::<T, <T as Eval>::Value>::new(steps, branch_val))
     }

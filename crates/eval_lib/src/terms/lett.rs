@@ -36,7 +36,7 @@ where
         steps.push(subst_step);
         let term_res = term_subst.eval(env)?;
         let val = term_res.val();
-        steps.extend(term_res.steps.into_iter());
+        steps.extend(term_res.steps);
         Ok(EvalTrace::<T, <T as Eval>::Value>::new(steps, val))
     }
 }

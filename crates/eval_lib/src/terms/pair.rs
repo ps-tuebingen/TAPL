@@ -29,7 +29,7 @@ where
         let fst_steps = fst_res.congruence(&move |t| Pair::new(t, *self.snd.clone()).into());
         let snd_steps = snd_res.congruence(&move |t| Pair::new(*self.fst.clone(), t).into());
         let mut steps = fst_steps;
-        steps.extend(snd_steps.into_iter());
+        steps.extend(snd_steps);
         let val = PairVal::<<T as Eval>::Value>::new(fst_val, snd_val);
         Ok(EvalTrace::new(steps, val))
     }

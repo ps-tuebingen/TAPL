@@ -39,7 +39,7 @@ where
 
         let body_res = body_subst.eval(env)?;
         let body_val = body_res.val();
-        steps.extend(body_res.steps.into_iter());
+        steps.extend(body_res.steps);
 
         Ok(EvalTrace::<T, <T as Eval>::Value>::new(steps, body_val))
     }

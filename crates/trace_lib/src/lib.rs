@@ -1,6 +1,5 @@
 use syntax::{terms::Term, values::Value};
 
-pub mod errors;
 pub mod rules;
 pub mod step;
 

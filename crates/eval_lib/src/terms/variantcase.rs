@@ -45,7 +45,7 @@ where
         let mut steps =
             bound_res.congruence(&move |t| VariantCase::new(t, self.patterns.clone()).into());
         steps.push(next_step);
-        steps.extend(rhs_res.steps.into_iter());
+        steps.extend(rhs_res.steps);
         Ok(EvalTrace::<T, <T as Eval>::Value>::new(steps, val))
     }
 }

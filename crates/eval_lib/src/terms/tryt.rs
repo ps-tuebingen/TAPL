@@ -41,7 +41,7 @@ where
         };
 
         let mut steps = term_res.congruence(&move |t| Try::new(t, *self.handler.clone()).into());
-        steps.extend(res_steps.into_iter());
+        steps.extend(res_steps);
         Ok(EvalTrace::<T, <T as Eval>::Value>::new(steps, res_val))
     }
 }
