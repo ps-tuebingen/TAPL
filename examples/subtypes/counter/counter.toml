@@ -1,2 +1,2 @@
 ty="{get:(Unit -> Nat), inc:(Unit -> Unit)}"
-evaluated="" 
+evaluated="{get=\\_:Unit.(!({x=0}).x), inc=\\_:Unit.((({x=0}).x) := succ(!({x=0}).x))}" 

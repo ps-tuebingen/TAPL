@@ -1,2 +1,2 @@
-ty="(Unit -> {get:(Unit -> Nat), inc:(Unit -> Unit), set:(Nat -> Unit)})" 
-evaluated=""
+ty="(Unit -> {get:(Unit -> Nat), inc:(Unit -> Unit), set:(Nat -> Unit)})"
+evaluated="\\_:Unit.(let (r = {x=ref(1)}) in (fix((\\r:{x:Ref(Nat)}.(\\self:(Unit -> {get:(Unit -> Nat), inc:(Unit -> Unit), set:(Nat -> Unit)}).(\\_:Unit.({get=\\_:Unit.(!(r).x), inc=\\_:Unit.((((self) (unit)).set) (succ((((self) (unit)).get) (unit)))), set=\\i:Nat.(((r).x) := i)})))) (r))) (unit))"
