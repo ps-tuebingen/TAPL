@@ -3,7 +3,7 @@ use super::types::Type;
 use check::errors::{EmptyCase, NotASubtype};
 use common::{
     errors::{
-        FreeTypeVariable, FreeVariable, KindMismatch, NotImplemented, TypeMismatch, UndefinedLabel,
+        FreeTypeVariable, FreeVariable, KindMismatch, TypeMismatch, UndefinedLabel,
         UndefinedLocation, ValueMismatch,
     },
     parse::{MissingInput, RemainingInput, UnexpectedRule, UnknownKeyword},
@@ -14,7 +14,6 @@ use std::fmt;
 #[derive(Debug)]
 pub enum Error {
     UndefinedLocation(UndefinedLocation),
-    NotImplemented(NotImplemented),
     TypeMismatch(TypeMismatch),
     KindMismatch(KindMismatch),
     UndefinedLabel(UndefinedLabel),
@@ -34,7 +33,6 @@ impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             Error::UndefinedLocation(loc) => loc.fmt(f),
-            Error::NotImplemented(ni) => ni.fmt(f),
             Error::TypeMismatch(tm) => tm.fmt(f),
             Error::KindMismatch(km) => km.fmt(f),
             Error::UndefinedLabel(ul) => ul.fmt(f),
@@ -57,12 +55,6 @@ impl std::error::Error for Error {}
 impl From<UndefinedLocation> for Error {
     fn from(err: UndefinedLocation) -> Error {
         Error::UndefinedLocation(err)
-    }
-}
-
-impl From<NotImplemented> for Error {
-    fn from(err: NotImplemented) -> Error {
-        Error::NotImplemented(err)
     }
 }
 
