@@ -3,6 +3,7 @@ mod derivations;
 mod env;
 mod kind;
 mod terms;
+mod traces;
 mod types;
 mod untyped;
 mod values;

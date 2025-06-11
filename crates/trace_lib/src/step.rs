@@ -10,9 +10,9 @@ pub struct EvalStep<T>
 where
     T: Term,
 {
-    source: T,
-    rule: EvaluationRule,
-    pub(crate) target: T,
+    pub source: T,
+    pub rule: EvaluationRule,
+    pub target: T,
 }
 
 impl<T> EvalStep<T>

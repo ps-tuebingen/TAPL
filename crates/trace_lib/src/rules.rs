@@ -1,3 +1,5 @@
+use std::fmt;
+
 #[derive(Debug)]
 pub enum EvaluationRule {
     AppAbs,
@@ -37,4 +39,48 @@ pub enum EvaluationRule {
     UnfoldFold,
     UnpackPack,
     VariantCase,
+}
+
+impl fmt::Display for EvaluationRule {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            EvaluationRule::AppAbs => f.write_str("E-AppAbs"),
+            EvaluationRule::Ascribe => f.write_str("E-Ascribe"),
+            EvaluationRule::Assign => f.write_str("E-Assign"),
+            EvaluationRule::Cast => f.write_str("E-Cast"),
+            EvaluationRule::Deref => f.write_str("E-Deref"),
+            EvaluationRule::Fold => f.write_str("E-Fold"),
+            EvaluationRule::Fst => f.write_str("E-Fst"),
+            EvaluationRule::Head => f.write_str("E-Head"),
+            EvaluationRule::IfTrue => f.write_str("E-If-True"),
+            EvaluationRule::IfFalse => f.write_str("E-If-False"),
+            EvaluationRule::IsNilTrue => f.write_str("E-IsNil-Nil"),
+            EvaluationRule::IsNilFalse => f.write_str("E-IsNil-Cons"),
+            EvaluationRule::IsZeroTrue => f.write_str("E-IsZero-Zero"),
+            EvaluationRule::IsZeroFalse => f.write_str("E-IsZero-Succ"),
+            EvaluationRule::LetSubst => f.write_str("E-Let"),
+            EvaluationRule::ListCaseNil => f.write_str("E-ListCase-Nil"),
+            EvaluationRule::ListCaseCons => f.write_str("E-ListCase-Cons"),
+            EvaluationRule::Pred => f.write_str("E-Pred"),
+            EvaluationRule::Projection => f.write_str("E-Projection"),
+            EvaluationRule::RecordProj => f.write_str("E-RecordProj"),
+            EvaluationRule::Ref => f.write_str("E-Ref"),
+            EvaluationRule::Snd => f.write_str("E-Snd"),
+            EvaluationRule::SomecaseSome => f.write_str("E-Somecase-Some"),
+            EvaluationRule::SomecaseNone => f.write_str("E-Somecase-None"),
+            EvaluationRule::Succ => f.write_str("E-Succ"),
+            EvaluationRule::SumcaseLeft => f.write_str("E-Sumcase-Left"),
+            EvaluationRule::SumcaseRight => f.write_str("E-Sumcase-Right"),
+            EvaluationRule::Tail => f.write_str("E-Tail"),
+            EvaluationRule::TryCatch => f.write_str("E-Try-Catch"),
+            EvaluationRule::TrySucc => f.write_str("E-Try"),
+            EvaluationRule::TryValCatch => f.write_str("E-TryVal-Catch"),
+            EvaluationRule::TryValSucc => f.write_str("E-TryVal"),
+            EvaluationRule::TyAppAbs => f.write_str("E-TyAppAbs"),
+            EvaluationRule::TyAppAbsSub => f.write_str("E-TyAppAbs-Sub"),
+            EvaluationRule::UnfoldFold => f.write_str("E-UnfoldFold"),
+            EvaluationRule::UnpackPack => f.write_str("E-UnpackPack"),
+            EvaluationRule::VariantCase => f.write_str("E-VariantCase"),
+        }
+    }
 }
