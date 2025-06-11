@@ -163,8 +163,8 @@ pub trait Language {
     ) -> String {
         match method {
             FormatMethod::Simple => tr.val().to_string(),
-            FormatMethod::LatexBus => todo!(), //tr.to_latex(&mut Default::default()),
-            FormatMethod::LatexFrac => todo!(), //val.to_latex(&mut LatexConfig::new_frac()),
+            FormatMethod::LatexBus => tr.to_latex(&mut Default::default()),
+            FormatMethod::LatexFrac => tr.to_latex(&mut LatexConfig::new_frac()),
             FormatMethod::Debug => format!("{:?}", tr.val()),
         }
     }

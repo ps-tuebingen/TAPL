@@ -10,6 +10,7 @@ members = [
     "crates/derivation_lib",
     "crates/trace_lib",
     "crates/test_utils",
+    "crates/lagex_lib",
     "tests",
 ]
 
