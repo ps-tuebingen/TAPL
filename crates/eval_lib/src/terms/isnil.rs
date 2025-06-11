@@ -30,17 +30,17 @@ where
     ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
         let term_res = self.term.eval(env)?;
         let term_val = term_res.val();
-        let mut steps = term_res.congruence(&move |t| IsNil::new(t, self.ty.clone()).into());
-        if term_val.clone().into_nil().is_ok() {
-            let last_step = EvalStep::isnil_true(*self.ty.clone());
-            steps.push(last_step);
-            Ok(EvalTrace::<T, <T as Eval>::Value>::new(steps, True::new()));
+        let (step, val) = if term_val.clone().into_nil().is_ok() {
+            let last_step = EvalStep::isnil_true(self.ty.clone());
+            (last_step, True::new().into())
         } else if term_val.clone().into_cons().is_ok() {
             let last_step = EvalStep::isnil_false(self.ty.clone());
-            steps.push(last_step);
-            Ok(EvalTrace::<T, <T as Eval>::Value>::new(steps, False::new()))
+            (last_step, False::new().into())
         } else {
-            Err(ValueMismatch::new(term_val.knd(), ValueKind::List).into())
-        }
+            return Err(ValueMismatch::new(term_val.knd(), ValueKind::List).into());
+        };
+        let mut steps = term_res.congruence(&move |t| IsNil::new(t, self.ty.clone()).into());
+        steps.push(step);
+        Ok(EvalTrace::<T, <T as Eval>::Value>::new(steps, val))
     }
 }

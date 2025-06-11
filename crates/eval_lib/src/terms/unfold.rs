@@ -25,7 +25,7 @@ where
     ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
         let term_res = self.term.eval(env)?;
         let term_val = term_res.val();
-        let term_fold = term_val.into_fold()?;
+        let term_fold = term_val.clone().into_fold()?;
 
         let last_step = EvalStep::unfoldfold(
             Unfold::new(self.ty.clone(), term_val),
@@ -33,6 +33,9 @@ where
         );
         let mut steps = term_res.congruence(&move |t| Unfold::new(self.ty.clone(), t).into());
         steps.push(last_step);
-        Ok(EvalTrace::new(steps, *term_fold.val))
+        Ok(EvalTrace::<T, <T as Eval>::Value>::new(
+            steps,
+            *term_fold.val,
+        ))
     }
 }

@@ -28,12 +28,13 @@ where
         let val = rec_val
             .records
             .get(&self.label)
-            .ok_or(UndefinedLabel::new(&self.label).into())
-            .cloned()?;
+            .cloned()
+            .ok_or(UndefinedLabel::new(&self.label))?;
 
-        let mut steps = term_res.congruence(&move |t| RecordProj::new(t, &self.label).into());
         let last_step =
             EvalStep::recordproj(RecordProj::new(val.clone(), &self.label), val.clone());
+
+        let mut steps = term_res.congruence(&move |t| RecordProj::new(t, &self.label).into());
         steps.push(last_step);
         Ok(EvalTrace::<T, <T as Eval>::Value>::new(steps, val))
     }

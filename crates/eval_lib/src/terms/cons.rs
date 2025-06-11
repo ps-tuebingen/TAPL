@@ -38,6 +38,6 @@ where
         steps.extend(
             tail_res.congruence(&move |t| Cons::new(*self.head.clone(), t, self.ty.clone()).into()),
         );
-        Ok(EvalTrace::new(steps, val))
+        Ok(EvalTrace::<T, <T as Eval>::Value>::new(steps, val))
     }
 }

@@ -1,7 +1,7 @@
 use crate::Eval;
 use common::errors::ValueMismatch;
 use syntax::{
-    terms::{Succ, Term},
+    terms::{Num as NumT, Succ, Term},
     values::{Num, ValueGroup},
 };
 use trace::{EvalStep, EvalTrace};
@@ -11,6 +11,7 @@ where
     T: Term + Eval<Term = T>,
     Num<T>: Into<<T as Eval>::Value>,
     Succ<T>: Into<T>,
+    NumT<T>: Into<T>,
     <T as Eval>::EvalError: From<ValueMismatch>,
 {
     type Value = <T as Eval>::Value;

@@ -7,7 +7,7 @@ use trace::EvalTrace;
 
 impl<T> Eval for TyLambda<T>
 where
-    T: Term + Eval,
+    T: Term + Eval<Term = T>,
     TyLambdaVal<T>: Into<<T as Eval>::Value>,
 {
     type Value = <T as Eval>::Value;

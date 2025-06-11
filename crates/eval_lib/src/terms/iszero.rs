@@ -1,7 +1,7 @@
 use crate::Eval;
 use common::errors::ValueMismatch;
 use syntax::{
-    terms::{IsZero, Term},
+    terms::{False as FalseT, IsZero, Term, True as TrueT},
     values::{False, True, ValueGroup},
 };
 use trace::{EvalStep, EvalTrace};
@@ -11,7 +11,9 @@ where
     T: Term + Eval<Term = T>,
     IsZero<T>: Into<T>,
     True<T>: Into<<T as Eval>::Value>,
+    TrueT<T>: Into<T>,
     False<T>: Into<<T as Eval>::Value>,
+    FalseT<T>: Into<T>,
     <T as Eval>::EvalError: From<ValueMismatch>,
 {
     type Value = <T as Eval>::Value;
@@ -25,7 +27,7 @@ where
     ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
         let inner_res = self.term.eval(env)?;
         let val = inner_res.val();
-        let num = val.into_num()?;
+        let num = val.clone().into_num()?;
         let mut steps = inner_res.congruence(&move |t| IsZero::new(t).into());
         if num.num == 0 {
             steps.push(EvalStep::iszero_true(IsZero::new(val)));

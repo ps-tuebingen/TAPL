@@ -24,6 +24,6 @@ where
         let last_step = EvalStep::ascribe(Ascribe::new(val.clone(), self.ty.clone()), val.clone());
         let mut steps = inner_res.congruence(&move |t| Ascribe::new(t, self.ty.clone()).into());
         steps.push(last_step);
-        Ok(EvalTrace::new(steps, val))
+        Ok(EvalTrace::<T, <T as Eval>::Value>::new(steps, val))
     }
 }

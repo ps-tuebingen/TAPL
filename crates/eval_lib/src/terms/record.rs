@@ -29,13 +29,15 @@ where
         for (lb, t) in self.records.into_iter() {
             let res = t.eval(env)?;
             let val = res.val();
-            recs.insert(lb.clone(), val);
+            recs.insert(lb.clone(), val.clone());
 
             let rule_recs = old_recs.clone();
+            let lb_clone = lb.clone();
             steps.extend(
                 res.congruence(&move |t| {
-                    rule_recs.insert(lb, val.into());
-                    Record::new(rule_recs).into()
+                    let mut recs_mut = rule_recs.clone();
+                    recs_mut.insert(lb_clone.clone(), t);
+                    Record::new(recs_mut).into()
                 })
                 .into_iter(),
             );

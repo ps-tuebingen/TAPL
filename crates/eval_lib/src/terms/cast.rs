@@ -8,6 +8,7 @@ use trace::{EvalStep, EvalTrace};
 impl<T, Ty> Eval for Cast<T, Ty>
 where
     T: Term + Eval<Term = T>,
+    Cast<T, Ty>: Into<T>,
     Ty: Type,
 {
     type Env = <T as Eval>::Env;
@@ -21,9 +22,9 @@ where
     ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
         let inner_res = self.term.eval(env)?;
         let inner_val = inner_res.val();
-        let mut steps = inner_res.congruence(&move |t| Cast::new(t, self.ty.clone()));
-        let last_step = EvalStep::cast(self.ty, inner_val);
+        let last_step = EvalStep::cast(self.ty.clone(), inner_val.clone());
+        let mut steps = inner_res.congruence(&move |t| Cast::new(t, self.ty.clone()).into());
         steps.push(last_step);
-        Ok(EvalTrace::new(steps, inner_val))
+        Ok(EvalTrace::<T, <T as Eval>::Value>::new(steps, inner_val))
     }
 }

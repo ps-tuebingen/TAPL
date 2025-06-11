@@ -31,15 +31,15 @@ where
                 TryWithVal::new(term_val, *self.handler.clone()),
                 next_term.clone(),
             );
-            let term_res = next_term.eval(env)?;
-            let term_val = term_res.val();
-            let mut steps = term_res.steps;
+            let next_res = next_term.eval(env)?;
+            let next_val = next_res.val();
+            let mut steps = next_res.steps;
             steps.insert(0, next_step);
-            (steps, term_val)
+            (steps, next_val)
         } else {
             let next_step = EvalStep::tryval_succ(
                 TryWithVal::new(term_val.clone(), *self.handler.clone()),
-                term_val,
+                term_val.clone(),
             );
             (vec![next_step], term_val)
         };
