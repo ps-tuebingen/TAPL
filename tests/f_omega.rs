@@ -6,6 +6,7 @@ use test_utils::{
     eval_test::EvalTest,
     latex_buss_test::LatexTestBuss,
     latex_frac_test::LatexTestFrac,
+    latex_trace_test::LatexTestTrace,
     load_tests::{load_dir, TestContents},
     parse_test::ParseTest,
     paths::{EXAMPLES_PATH, F_OMEGA_PATH},
@@ -69,6 +70,8 @@ impl TestSuite for FOmegaTests {
             let latex_test = LatexTestBuss::<Term>::new(&tst.source_name, &tst.source_contents);
             tests.push(Box::new(latex_test) as Box<dyn Test>);
             let latex_test = LatexTestFrac::<Term>::new(&tst.source_name, &tst.source_contents);
+            tests.push(Box::new(latex_test) as Box<dyn Test>);
+            let latex_test = LatexTestTrace::<Term>::new(&tst.source_name, &tst.source_contents);
             tests.push(Box::new(latex_test) as Box<dyn Test>);
         }
         Ok(tests)
