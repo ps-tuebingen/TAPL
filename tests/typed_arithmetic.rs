@@ -1,18 +1,14 @@
-use language::languages::typed_arithmetic::terms::Term;
+use language::languages::typed_arithmetic::TypedArithmetic;
 use std::path::PathBuf;
 use test_utils::{
-    check_test::CheckTest,
+    check_test::CheckConfig,
     errors::Error,
-    eval_test::EvalTest,
-    latex_buss_test::LatexTestBuss,
-    latex_frac_test::LatexTestFrac,
-    latex_trace_test::LatexTestTrace,
-    load_tests::{load_dir, TestContents},
-    parse_test::ParseTest,
+    eval_test::EvalConfig,
+    latex::LatexTestConf,
     paths::{EXAMPLES_PATH, TYPED_ARITH_PATH},
-    reparse_test::ReparseTest,
     setup,
-    testsuite::{Test, TestSuite},
+    test::TestConfig,
+    testsuite::TestSuite,
 };
 
 pub struct TypedArithTests {
@@ -23,11 +19,60 @@ pub struct TypedArithTests {
 pub struct TypedArithConf {
     ty: String,
     expected: String,
+    #[serde(default)]
+    name: String,
+    #[serde(default)]
+    contents: String,
+}
+
+impl TestConfig for TypedArithConf {
+    fn set_name(&mut self, name: String) {
+        self.name = name
+    }
+    fn set_contents(&mut self, contents: String) {
+        self.contents = contents
+    }
+
+    fn name(&self) -> &str {
+        &self.name
+    }
+    fn contents(&self) -> &str {
+        &self.contents
+    }
+}
+
+impl LatexTestConf for TypedArithConf {}
+impl CheckConfig for TypedArithConf {
+    fn expected(&self) -> &str {
+        &self.ty
+    }
+}
+
+impl EvalConfig for TypedArithConf {
+    fn expected(&self) -> &str {
+        &self.expected
+    }
 }
 
 impl TypedArithTests {
     pub fn new(source_dir: PathBuf) -> TypedArithTests {
         TypedArithTests { source_dir }
+    }
+}
+impl TestSuite for TypedArithTests {
+    type Config = TypedArithConf;
+    type Lang = TypedArithmetic;
+
+    fn name(&self) -> &str {
+        "Typed Arithmetic"
+    }
+
+    fn ext(&self) -> &str {
+        "arith"
+    }
+
+    fn source_dir(&self) -> PathBuf {
+        self.source_dir.clone()
     }
 }
 
@@ -46,44 +91,4 @@ fn main() -> Result<(), Error> {
         panic!("Not all tests finished successfully");
     }
     Ok(())
-}
-
-impl TestSuite for TypedArithTests {
-    fn name(&self) -> String {
-        "Untyped Arithmetic".to_owned()
-    }
-
-    fn load(&self) -> Result<Vec<Box<dyn Test>>, Error> {
-        let contents: Vec<TestContents<TypedArithConf>> = load_dir(&self.source_dir, "arith")?;
-        let mut tests = vec![];
-        for content in contents {
-            let parse_test = ParseTest::<Term>::new(&content.source_name, &content.source_contents);
-            tests.push(Box::new(parse_test) as Box<dyn Test>);
-            let reparse_test =
-                ReparseTest::<Term>::new(&content.source_name, &content.source_contents);
-            tests.push(Box::new(reparse_test) as Box<dyn Test>);
-            let eval_test = EvalTest::<Term>::new(
-                &content.source_name,
-                &content.source_contents,
-                &content.conf.expected,
-            );
-            tests.push(Box::new(eval_test) as Box<dyn Test>);
-            let check_test = CheckTest::<Term>::new(
-                &content.source_name,
-                &content.source_contents,
-                &content.conf.ty,
-            );
-            tests.push(Box::new(check_test) as Box<dyn Test>);
-            let latex_test =
-                LatexTestBuss::<Term>::new(&content.source_name, &content.source_contents);
-            tests.push(Box::new(latex_test) as Box<dyn Test>);
-            let latex_test =
-                LatexTestFrac::<Term>::new(&content.source_name, &content.source_contents);
-            tests.push(Box::new(latex_test) as Box<dyn Test>);
-            let latex_test =
-                LatexTestTrace::<Term>::new(&content.source_name, &content.source_contents);
-            tests.push(Box::new(latex_test) as Box<dyn Test>);
-        }
-        Ok(tests)
-    }
 }

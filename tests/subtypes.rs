@@ -1,17 +1,14 @@
-use language::languages::subtypes::terms::Term;
+use language::languages::subtypes::Subtypes;
 use std::path::PathBuf;
 use test_utils::{
-    check_test::CheckTest,
+    check_test::CheckConfig,
     errors::Error,
-    latex_buss_test::LatexTestBuss,
-    latex_frac_test::LatexTestFrac,
-    latex_trace_test::LatexTestTrace,
-    load_tests::{load_dir, TestContents},
-    parse_test::ParseTest,
+    eval_test::EvalConfig,
+    latex::LatexTestConf,
     paths::{EXAMPLES_PATH, SUBTYPES_PATH},
-    reparse_test::ReparseTest,
     setup,
-    testsuite::{Test, TestSuite},
+    test::TestConfig,
+    testsuite::TestSuite,
 };
 
 pub struct SubtypesTests {
@@ -21,11 +18,61 @@ pub struct SubtypesTests {
 #[derive(serde::Deserialize)]
 pub struct SubtypesConf {
     ty: String,
+    evaluated: String,
+    #[serde(default)]
+    name: String,
+    #[serde(default)]
+    contents: String,
 }
 
+impl TestConfig for SubtypesConf {
+    fn set_name(&mut self, name: String) {
+        self.name = name
+    }
+    fn set_contents(&mut self, contents: String) {
+        self.contents = contents
+    }
+
+    fn name(&self) -> &str {
+        &self.name
+    }
+    fn contents(&self) -> &str {
+        &self.contents
+    }
+}
+
+impl LatexTestConf for SubtypesConf {}
+impl CheckConfig for SubtypesConf {
+    fn expected(&self) -> &str {
+        &self.ty
+    }
+}
+
+impl EvalConfig for SubtypesConf {
+    fn expected(&self) -> &str {
+        &self.evaluated
+    }
+}
 impl SubtypesTests {
     pub fn new(path: PathBuf) -> SubtypesTests {
         SubtypesTests { source_path: path }
+    }
+}
+
+impl TestSuite for SubtypesTests {
+    type Config = SubtypesConf;
+    type Lang = Subtypes;
+
+    fn name(&self) -> &str {
+        "Subtypes"
+    }
+
+    fn ext(&self) -> &str {
+        "sub"
+    }
+
+    fn source_dir(&self) -> PathBuf {
+        self.source_path.clone()
     }
 }
 
@@ -44,31 +91,4 @@ fn main() -> Result<(), Error> {
         panic!("Not all tests finished successfully");
     }
     Ok(())
-}
-
-impl TestSuite for SubtypesTests {
-    fn name(&self) -> String {
-        "Subtypes".to_owned()
-    }
-
-    fn load(&self) -> Result<Vec<Box<dyn Test>>, Error> {
-        let contents: Vec<TestContents<SubtypesConf>> = load_dir(&self.source_path, "sub")?;
-        let mut tests = vec![];
-        for tst in contents {
-            let parse_test = ParseTest::<Term>::new(&tst.source_name, &tst.source_contents);
-            tests.push(Box::new(parse_test) as Box<dyn Test>);
-            let reparse_test = ReparseTest::<Term>::new(&tst.source_name, &tst.source_contents);
-            tests.push(Box::new(reparse_test) as Box<dyn Test>);
-            let check_test =
-                CheckTest::<Term>::new(&tst.source_name, &tst.source_contents, &tst.conf.ty);
-            tests.push(Box::new(check_test) as Box<dyn Test>);
-            let latex_test = LatexTestBuss::<Term>::new(&tst.source_name, &tst.source_contents);
-            tests.push(Box::new(latex_test) as Box<dyn Test>);
-            let latex_test = LatexTestFrac::<Term>::new(&tst.source_name, &tst.source_contents);
-            tests.push(Box::new(latex_test) as Box<dyn Test>);
-            let latex_test = LatexTestTrace::<Term>::new(&tst.source_name, &tst.source_contents);
-            tests.push(Box::new(latex_test) as Box<dyn Test>);
-        }
-        Ok(tests)
-    }
 }

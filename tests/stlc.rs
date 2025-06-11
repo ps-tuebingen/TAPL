@@ -1,18 +1,14 @@
-use language::languages::stlc::terms::Term;
+use language::languages::stlc::Stlc;
 use std::path::PathBuf;
 use test_utils::{
-    check_test::CheckTest,
+    check_test::CheckConfig,
     errors::Error,
-    eval_test::EvalTest,
-    latex_buss_test::LatexTestBuss,
-    latex_frac_test::LatexTestFrac,
-    latex_trace_test::LatexTestTrace,
-    load_tests::{load_dir, TestContents},
-    parse_test::ParseTest,
+    eval_test::EvalConfig,
+    latex::LatexTestConf,
     paths::{EXAMPLES_PATH, STLC_PATH},
-    reparse_test::ReparseTest,
     setup,
-    testsuite::{Test, TestSuite},
+    test::TestConfig,
+    testsuite::TestSuite,
 };
 
 pub struct StlcTests {
@@ -23,6 +19,10 @@ pub struct StlcTests {
 pub struct StlcConf {
     ty: String,
     evaled: String,
+    #[serde(default)]
+    name: String,
+    #[serde(default)]
+    contents: String,
 }
 
 impl StlcTests {
@@ -31,6 +31,51 @@ impl StlcTests {
     }
 }
 
+impl TestConfig for StlcConf {
+    fn set_name(&mut self, name: String) {
+        self.name = name
+    }
+    fn set_contents(&mut self, contents: String) {
+        self.contents = contents
+    }
+
+    fn name(&self) -> &str {
+        &self.name
+    }
+    fn contents(&self) -> &str {
+        &self.contents
+    }
+}
+
+impl LatexTestConf for StlcConf {}
+impl CheckConfig for StlcConf {
+    fn expected(&self) -> &str {
+        &self.ty
+    }
+}
+
+impl EvalConfig for StlcConf {
+    fn expected(&self) -> &str {
+        &self.evaled
+    }
+}
+
+impl TestSuite for StlcTests {
+    type Config = StlcConf;
+    type Lang = Stlc;
+
+    fn name(&self) -> &str {
+        "Stlc"
+    }
+
+    fn ext(&self) -> &str {
+        "stlc"
+    }
+
+    fn source_dir(&self) -> PathBuf {
+        self.source_dir.clone()
+    }
+}
 fn main() -> Result<(), Error> {
     setup()?;
 
@@ -46,44 +91,4 @@ fn main() -> Result<(), Error> {
         panic!("Not all tests finished successfully");
     }
     Ok(())
-}
-
-impl TestSuite for StlcTests {
-    fn name(&self) -> String {
-        "Stlc".to_owned()
-    }
-
-    fn load(&self) -> Result<Vec<Box<dyn Test>>, Error> {
-        let contents: Vec<TestContents<StlcConf>> = load_dir(&self.source_dir, "stlc")?;
-        let mut tests = vec![];
-        for content in contents {
-            let parse_test = ParseTest::<Term>::new(&content.source_name, &content.source_contents);
-            tests.push(Box::new(parse_test) as Box<dyn Test>);
-            let reparse_test =
-                ReparseTest::<Term>::new(&content.source_name, &content.source_contents);
-            tests.push(Box::new(reparse_test) as Box<dyn Test>);
-            let check_test = CheckTest::<Term>::new(
-                &content.source_name,
-                &content.source_contents,
-                &content.conf.ty,
-            );
-            tests.push(Box::new(check_test) as Box<dyn Test>);
-            let eval_test = EvalTest::<Term>::new(
-                &content.source_name,
-                &content.source_contents,
-                &content.conf.evaled,
-            );
-            tests.push(Box::new(eval_test) as Box<dyn Test>);
-            let latex_test =
-                LatexTestBuss::<Term>::new(&content.source_name, &content.source_contents);
-            tests.push(Box::new(latex_test) as Box<dyn Test>);
-            let latex_test =
-                LatexTestFrac::<Term>::new(&content.source_name, &content.source_contents);
-            tests.push(Box::new(latex_test) as Box<dyn Test>);
-            let latex_test =
-                LatexTestTrace::<Term>::new(&content.source_name, &content.source_contents);
-            tests.push(Box::new(latex_test) as Box<dyn Test>);
-        }
-        Ok(tests)
-    }
 }

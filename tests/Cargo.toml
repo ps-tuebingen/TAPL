@@ -4,72 +4,72 @@ version = "0.1.0"
 edition = "2021"
 
 [[test]]
-name = "e2e_untyped_arithmetic"
+name = "untyped_arithmetic"
 path = "untyped_arithmetic.rs"
 harness=false
 
 [[test]]
-name = "e2e_untyped_lambda"
+name = "untyped_lambda"
 path = "untyped_lambda.rs"
 harness=false
 
 [[test]]
-name = "e2e_typed_arithmetic"
+name = "typed_arithmetic"
 path = "typed_arithmetic.rs"
 harness=false
 
 [[test]]
-name = "e2e_stlc"
+name = "stlc"
 path = "stlc.rs"
 harness=false
 
 [[test]]
-name = "e2e_references"
+name = "references"
 path = "references.rs"
 harness=false
 
 [[test]]
-name = "e2e_exceptions"
+name = "exceptions"
 path = "exceptions.rs"
 harness=false
 
 [[test]]
-name = "e2e_recursive"
+name = "recursive"
 path = "recursive.rs"
 harness=false
 
 [[test]]
-name = "e2e_subtypes"
+name = "subtypes"
 path = "subtypes.rs"
 harness=false
 
 [[test]]
-name = "e2e_bounded_quantification"
+name = "bounded_quantification"
 path = "bounded_quantification.rs"
 harness=false
 
 [[test]]
-name = "e2e_existential"
+name = "existential"
 path = "existential.rs"
 harness=false
 
 [[test]]
-name = "e2e_system_f"
+name = "system_f"
 path = "system_f.rs"
 harness=false
 
 [[test]]
-name = "e2e_lambda_omega"
+name = "lambda_omega"
 path = "lambda_omega.rs"
 harness=false
 
 [[test]]
-name = "e2e_f_omega"
+name = "f_omega"
 path = "f_omega.rs"
 harness=false
 
 [[test]]
-name = "e2e_f_omega_sub"
+name = "f_omega_sub"
 path = "f_omega_sub.rs"
 harness=false
 

@@ -1,18 +1,14 @@
-use language::languages::system_f::terms::Term;
+use language::languages::system_f::SystemF;
 use std::path::PathBuf;
 use test_utils::{
-    check_test::CheckTest,
+    check_test::CheckConfig,
     errors::Error,
-    eval_test::EvalTest,
-    latex_buss_test::LatexTestBuss,
-    latex_frac_test::LatexTestFrac,
-    latex_trace_test::LatexTestTrace,
-    load_tests::{load_dir, TestContents},
-    parse_test::ParseTest,
+    eval_test::EvalConfig,
+    latex::LatexTestConf,
     paths::{EXAMPLES_PATH, SYSTEMF_PATH},
-    reparse_test::ReparseTest,
     setup,
-    testsuite::{Test, TestSuite},
+    test::TestConfig,
+    testsuite::TestSuite,
 };
 
 pub struct SystemFTests {
@@ -23,11 +19,61 @@ pub struct SystemFTests {
 pub struct SystemFConf {
     ty: String,
     evaluated: String,
+    #[serde(default)]
+    name: String,
+    #[serde(default)]
+    contents: String,
 }
 
 impl SystemFTests {
     pub fn new(path: PathBuf) -> SystemFTests {
         SystemFTests { source_path: path }
+    }
+}
+
+impl TestConfig for SystemFConf {
+    fn set_name(&mut self, name: String) {
+        self.name = name
+    }
+    fn set_contents(&mut self, contents: String) {
+        self.contents = contents
+    }
+
+    fn name(&self) -> &str {
+        &self.name
+    }
+    fn contents(&self) -> &str {
+        &self.contents
+    }
+}
+
+impl LatexTestConf for SystemFConf {}
+impl CheckConfig for SystemFConf {
+    fn expected(&self) -> &str {
+        &self.ty
+    }
+}
+
+impl EvalConfig for SystemFConf {
+    fn expected(&self) -> &str {
+        &self.evaluated
+    }
+}
+
+impl TestSuite for SystemFTests {
+    type Lang = SystemF;
+    type Config = SystemFConf;
+
+    fn name(&self) -> &str {
+        "System F"
+    }
+
+    fn ext(&self) -> &str {
+        "f"
+    }
+
+    fn source_dir(&self) -> PathBuf {
+        self.source_path.clone()
     }
 }
 
@@ -46,34 +92,4 @@ fn main() -> Result<(), Error> {
         panic!("Not all tests finished successfully");
     }
     Ok(())
-}
-
-impl TestSuite for SystemFTests {
-    fn name(&self) -> String {
-        "System F".to_owned()
-    }
-
-    fn load(&self) -> Result<Vec<Box<dyn Test>>, Error> {
-        let contents: Vec<TestContents<SystemFConf>> = load_dir(&self.source_path, "f")?;
-        let mut tests = vec![];
-        for tst in contents {
-            let parse_test = ParseTest::<Term>::new(&tst.source_name, &tst.source_contents);
-            tests.push(Box::new(parse_test) as Box<dyn Test>);
-            let reparse_test = ReparseTest::<Term>::new(&tst.source_name, &tst.source_contents);
-            tests.push(Box::new(reparse_test) as Box<dyn Test>);
-            let check_test =
-                CheckTest::<Term>::new(&tst.source_name, &tst.source_contents, &tst.conf.ty);
-            tests.push(Box::new(check_test) as Box<dyn Test>);
-            let eval_test =
-                EvalTest::<Term>::new(&tst.source_name, &tst.source_contents, &tst.conf.evaluated);
-            tests.push(Box::new(eval_test) as Box<dyn Test>);
-            let latex_test = LatexTestBuss::<Term>::new(&tst.source_name, &tst.source_contents);
-            tests.push(Box::new(latex_test) as Box<dyn Test>);
-            let latex_test = LatexTestFrac::<Term>::new(&tst.source_name, &tst.source_contents);
-            tests.push(Box::new(latex_test) as Box<dyn Test>);
-            let latex_test = LatexTestTrace::<Term>::new(&tst.source_name, &tst.source_contents);
-            tests.push(Box::new(latex_test) as Box<dyn Test>);
-        }
-        Ok(tests)
-    }
 }

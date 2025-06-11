@@ -1,1 +1,2 @@
 ty="({x:Ref(Nat)} -> {get:(Unit -> Nat), inc:(Unit -> Unit)})"
+evaluated="\\r:{x:Ref(Nat)}.({ get = \\_:Unit.!(r.x), inc = \\_:Unit.(r.x):=(succ(!(r.x))) })"

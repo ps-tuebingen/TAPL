@@ -1,1 +1,2 @@
-ty="(Unit -> {get:(Unit -> Nat), inc:(Unit -> Unit), reset:(Unit -> Unit)})"
+ty="(Unit -> {get:(Unit -> Nat), inc:(Unit -> Unit), reset:(Unit -> Unit)}"
+evaluated=""

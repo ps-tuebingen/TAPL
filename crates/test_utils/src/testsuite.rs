@@ -12,22 +12,12 @@ use super::{
     test::Test,
     test_result::TestResult,
 };
-use check::Typecheck;
-use common::parse::Parse;
-use eval::Eval;
-use latex::LatexFmt;
+use language::Language;
 use std::path::PathBuf;
-use syntax::{terms::Term, types::Type, values::Value};
 
 pub trait TestSuite {
     type Config: for<'b> serde::Deserialize<'b> + CheckConfig + EvalConfig + LatexTestConf;
-    type Term: Term
-        + Parse
-        + Typecheck<Type = Self::Type, Term = Self::Term>
-        + Eval<Term = Self::Term, Value = Self::Value>
-        + LatexFmt;
-    type Type: Type + LatexFmt;
-    type Value: Value + LatexFmt;
+    type Lang: Language;
 
     fn name(&self) -> &str;
     fn source_dir(&self) -> PathBuf;
@@ -43,25 +33,31 @@ pub trait TestSuite {
     ) -> Result<Vec<Box<dyn Test<'a> + 'a>>, Error> {
         let mut tests = vec![];
         for content in contents {
-            let parse_test = ParseTest::<Self::Term, Self::Config>::new(&content);
+            let parse_test =
+                ParseTest::<<Self::Lang as Language>::Term, Self::Config>::new(&content);
             tests.push(Box::new(parse_test) as Box<dyn Test>);
 
-            let reparse_test = ReparseTest::<Self::Term, Self::Config>::new(&content);
+            let reparse_test =
+                ReparseTest::<<Self::Lang as Language>::Term, Self::Config>::new(&content);
             tests.push(Box::new(reparse_test) as Box<dyn Test>);
 
-            let check_test = CheckTest::<Self::Term, Self::Config>::new(&content);
+            let check_test =
+                CheckTest::<<Self::Lang as Language>::Term, Self::Config>::new(&content);
             tests.push(Box::new(check_test) as Box<dyn Test>);
 
-            let eval_test = EvalTest::<Self::Term, Self::Config>::new(&content);
+            let eval_test = EvalTest::<<Self::Lang as Language>::Term, Self::Config>::new(&content);
             tests.push(Box::new(eval_test) as Box<dyn Test>);
 
-            let latex_test = LatexTestBuss::<Self::Term, Self::Config>::new(&content);
+            let latex_test =
+                LatexTestBuss::<<Self::Lang as Language>::Term, Self::Config>::new(&content);
             tests.push(Box::new(latex_test) as Box<dyn Test>);
 
-            let latex_test = LatexTestFrac::<Self::Term, Self::Config>::new(&content);
+            let latex_test =
+                LatexTestFrac::<<Self::Lang as Language>::Term, Self::Config>::new(&content);
             tests.push(Box::new(latex_test) as Box<dyn Test>);
 
-            let latex_test = LatexTestTrace::<Self::Term, Self::Config>::new(&content);
+            let latex_test =
+                LatexTestTrace::<<Self::Lang as Language>::Term, Self::Config>::new(&content);
             tests.push(Box::new(latex_test) as Box<dyn Test>);
         }
         Ok(tests)

@@ -1,18 +1,14 @@
-use language::languages::recursive::terms::Term;
+use language::languages::recursive::Recursive;
 use std::path::PathBuf;
 use test_utils::{
-    check_test::CheckTest,
+    check_test::CheckConfig,
     errors::Error,
-    eval_test::EvalTest,
-    latex_buss_test::LatexTestBuss,
-    latex_frac_test::LatexTestFrac,
-    latex_trace_test::LatexTestTrace,
-    load_tests::{load_dir, TestContents},
-    parse_test::ParseTest,
+    eval_test::EvalConfig,
+    latex::LatexTestConf,
     paths::{EXAMPLES_PATH, RECURSIVE_PATH},
-    reparse_test::ReparseTest,
     setup,
-    testsuite::{Test, TestSuite},
+    test::TestConfig,
+    testsuite::TestSuite,
 };
 
 pub struct RecursiveTests {
@@ -26,10 +22,61 @@ impl RecursiveTests {
 }
 
 #[derive(serde::Deserialize)]
-pub struct BoundedConf {
+pub struct RecursiveConf {
     ty: String,
     evaluated: String,
+    #[serde(default)]
+    name: String,
+    #[serde(default)]
+    contents: String,
 }
+
+impl TestConfig for RecursiveConf {
+    fn set_name(&mut self, name: String) {
+        self.name = name
+    }
+    fn set_contents(&mut self, contents: String) {
+        self.contents = contents
+    }
+
+    fn name(&self) -> &str {
+        &self.name
+    }
+    fn contents(&self) -> &str {
+        &self.contents
+    }
+}
+
+impl LatexTestConf for RecursiveConf {}
+impl CheckConfig for RecursiveConf {
+    fn expected(&self) -> &str {
+        &self.ty
+    }
+}
+
+impl EvalConfig for RecursiveConf {
+    fn expected(&self) -> &str {
+        &self.evaluated
+    }
+}
+
+impl TestSuite for RecursiveTests {
+    type Config = RecursiveConf;
+    type Lang = Recursive;
+
+    fn name(&self) -> &str {
+        "Recursive"
+    }
+
+    fn ext(&self) -> &str {
+        "rec"
+    }
+
+    fn source_dir(&self) -> PathBuf {
+        self.source_dir.clone()
+    }
+}
+
 fn main() -> Result<(), Error> {
     setup()?;
 
@@ -45,34 +92,4 @@ fn main() -> Result<(), Error> {
         panic!("Not all tests finished successfully");
     }
     Ok(())
-}
-
-impl TestSuite for RecursiveTests {
-    fn name(&self) -> String {
-        "Recursive".to_owned()
-    }
-
-    fn load(&self) -> Result<Vec<Box<dyn Test>>, Error> {
-        let contents: Vec<TestContents<BoundedConf>> = load_dir(&self.source_dir, "rec")?;
-        let mut tests = vec![];
-        for tst in contents {
-            let parse_test = ParseTest::<Term>::new(&tst.source_name, &tst.source_contents);
-            tests.push(Box::new(parse_test) as Box<dyn Test>);
-            let reparse_test = ReparseTest::<Term>::new(&tst.source_name, &tst.source_contents);
-            tests.push(Box::new(reparse_test) as Box<dyn Test>);
-            let check_test =
-                CheckTest::<Term>::new(&tst.source_name, &tst.source_contents, &tst.conf.ty);
-            tests.push(Box::new(check_test) as Box<dyn Test>);
-            let eval_test =
-                EvalTest::<Term>::new(&tst.source_name, &tst.source_contents, &tst.conf.evaluated);
-            tests.push(Box::new(eval_test) as Box<dyn Test>);
-            let latex_test = LatexTestBuss::<Term>::new(&tst.source_name, &tst.source_contents);
-            tests.push(Box::new(latex_test) as Box<dyn Test>);
-            let latex_test = LatexTestFrac::<Term>::new(&tst.source_name, &tst.source_contents);
-            tests.push(Box::new(latex_test) as Box<dyn Test>);
-            let latex_test = LatexTestTrace::<Term>::new(&tst.source_name, &tst.source_contents);
-            tests.push(Box::new(latex_test) as Box<dyn Test>);
-        }
-        Ok(tests)
-    }
 }
