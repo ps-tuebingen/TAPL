@@ -50,13 +50,13 @@ mod eval_tests {
     fn eval1() {
         let result = example_term1().eval_start().unwrap();
         let expected = Unit::new().into();
-        assert_eq!(result, expected)
+        assert_eq!(result.val(), expected)
     }
 
     #[test]
     fn eval2() {
         let result = example_term2().eval_start().unwrap();
         let expected = Unit::new().into();
-        assert_eq!(result, expected)
+        assert_eq!(result.val(), expected)
     }
 }

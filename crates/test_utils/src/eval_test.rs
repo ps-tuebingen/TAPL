@@ -48,6 +48,6 @@ where
             Ok(v) => v,
             Err(err) => return TestResult::from_err(err),
         };
-        TestResult::from_eq(&evaled, &self.expected)
+        TestResult::from_eq(&evaled.val(), &self.expected)
     }
 }

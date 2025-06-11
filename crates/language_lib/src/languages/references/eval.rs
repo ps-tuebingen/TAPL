@@ -94,7 +94,7 @@ mod check_tests {
         .into();
         let result = term.eval(&mut Default::default()).unwrap();
         let expected = UnitVal::new().into();
-        assert_eq!(result, expected)
+        assert_eq!(result.val(), expected)
     }
 
     #[test]
@@ -110,7 +110,7 @@ mod check_tests {
         .into();
         let result = term.eval(&mut Default::default()).unwrap();
         let expected = UnitVal::new().into();
-        assert_eq!(result, expected)
+        assert_eq!(result.val(), expected)
     }
 
     #[test]
@@ -128,6 +128,6 @@ mod check_tests {
         .into();
         let result = term.eval(&mut Default::default()).unwrap();
         let expected = UnitVal::new().into();
-        assert_eq!(result, expected)
+        assert_eq!(result.val(), expected)
     }
 }

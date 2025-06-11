@@ -35,7 +35,7 @@ mod term_tests {
         let term: Term = Succ::new(Succ::new(Pred::new(Num::new(0)))).into();
         let result = term.eval_start().unwrap();
         let expected = NumVal::new(1).into();
-        assert_eq!(result, expected)
+        assert_eq!(result.val(), expected)
     }
 
     #[test]
@@ -48,6 +48,6 @@ mod term_tests {
         .into();
         let result = term.eval_start().unwrap();
         let expected = NumVal::new(0).into();
-        assert_eq!(result, expected)
+        assert_eq!(result.val(), expected)
     }
 }
