@@ -5,9 +5,9 @@ where
     T: Term,
     Ty: Type,
 {
-    pub(crate) env: Environment<Ty>,
-    pub(crate) term: T,
-    pub(crate) ty: Ty,
+    pub env: Environment<Ty>,
+    pub term: T,
+    pub ty: Ty,
 }
 
 impl<T, Ty> Conclusion<T, Ty>

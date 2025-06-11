@@ -1,6 +1,5 @@
 pub mod conclusion;
 pub mod derivation;
-pub mod latex;
 pub mod rules;
 
 pub use conclusion::Conclusion;

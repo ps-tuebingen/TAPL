@@ -4,7 +4,7 @@ use super::{
 };
 use check::Typecheck;
 use common::parse::Parse;
-use derivation::latex::{LatexConfig, LatexFmt};
+use latex::{LatexConfig, LatexFmt};
 use std::{
     fmt,
     fs::File,

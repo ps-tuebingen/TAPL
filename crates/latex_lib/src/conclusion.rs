@@ -1,4 +1,5 @@
-use super::{Conclusion, LatexConfig, LatexFmt};
+use crate::{LatexConfig, LatexFmt};
+use derivation::Conclusion;
 use syntax::{terms::Term, types::Type};
 
 impl<T, Ty> LatexFmt for Conclusion<T, Ty>

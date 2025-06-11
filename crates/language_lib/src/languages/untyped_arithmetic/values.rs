@@ -1,6 +1,6 @@
 use super::terms::Term;
 use common::errors::{ValueKind, ValueMismatch};
-use derivation::latex::{LatexConfig, LatexFmt};
+use latex::{LatexConfig, LatexFmt};
 use std::fmt;
 use syntax::untyped::Untyped;
 use syntax::values::{False, Num, True, Value as ValueTrait, ValueGroup};

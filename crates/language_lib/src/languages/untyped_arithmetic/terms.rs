@@ -1,7 +1,7 @@
 use super::errors::Error;
 use check::Typecheck;
-use derivation::latex::{LatexConfig, LatexFmt};
 use derivation::Derivation;
+use latex::{LatexConfig, LatexFmt};
 use std::fmt;
 use syntax::{
     env::Environment,

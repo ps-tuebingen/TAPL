@@ -1,4 +1,5 @@
-use super::{Derivation, LatexConfig, LatexFmt};
+use super::{LatexConfig, LatexFmt};
+use derivation::Derivation;
 use syntax::{terms::Term, types::Type};
 
 impl<T, Ty> LatexFmt for Derivation<T, Ty>

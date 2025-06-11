@@ -1,10 +1,8 @@
 use check::{Kindcheck, Normalize, Subtypecheck, Typecheck};
 use common::parse::Parse;
-use derivation::{
-    latex::{LatexConfig, LatexFmt},
-    Derivation,
-};
+use derivation::Derivation;
 use eval::{env::EvalEnvironment, Eval};
+use latex::{LatexConfig, LatexFmt};
 use syntax::{
     subst::{SubstTerm, SubstType},
     terms::Term,
@@ -163,8 +161,8 @@ pub trait Language {
     ) -> String {
         match method {
             FormatMethod::Simple => tr.val().to_string(),
-            FormatMethod::LatexBus => tr.to_latex(&mut Default::default()),
-            FormatMethod::LatexFrac => tr.to_latex(&mut LatexConfig::new_frac()),
+            FormatMethod::LatexBus => todo!(), //tr.to_latex(&mut Default::default()),
+            FormatMethod::LatexFrac => todo!(), //tr.to_latex(&mut LatexConfig::new_frac()),
             FormatMethod::Debug => format!("{:?}", tr.val()),
         }
     }

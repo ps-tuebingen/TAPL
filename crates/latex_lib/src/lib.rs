@@ -1,7 +1,5 @@
-use crate::{Conclusion, Derivation};
-
 mod conclusion;
-mod derivation;
+mod derivations;
 mod env;
 mod kind;
 mod terms;

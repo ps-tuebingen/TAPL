@@ -1,6 +1,6 @@
 use super::terms::Term;
 use common::errors::{ValueKind, ValueMismatch};
-use derivation::latex::{LatexConfig, LatexFmt};
+use latex::{LatexConfig, LatexFmt};
 use syntax::untyped::Untyped;
 use syntax::values::{Lambda, Value as ValueTrait, ValueGroup};
 

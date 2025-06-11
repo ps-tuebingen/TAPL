@@ -6,9 +6,9 @@ where
     T: Term,
     Ty: Type,
 {
-    pub(crate) conc: Conclusion<T, Ty>,
-    pub(crate) label: TypingRule,
-    pub(crate) premises: Vec<Derivation<T, Ty>>,
+    pub conc: Conclusion<T, Ty>,
+    pub label: TypingRule,
+    pub premises: Vec<Derivation<T, Ty>>,
 }
 
 impl<T, Ty> Derivation<T, Ty>

@@ -1,5 +1,5 @@
 use common::errors::{TypeKind, TypeMismatch};
-use derivation::latex::{LatexConfig, LatexFmt};
+use latex::{LatexConfig, LatexFmt};
 use std::fmt;
 use syntax::{
     subst::SubstType,
