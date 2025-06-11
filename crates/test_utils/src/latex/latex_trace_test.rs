@@ -1,12 +1,8 @@
-use super::{
-    paths::LATEX_OUT,
-    testsuite::{Test, TestResult},
-};
-use check::Typecheck;
+use crate::{latex::LatexTestConf, paths::LATEX_OUT, test::Test, test_result::TestResult};
 use common::parse::Parse;
+use eval::Eval;
 use latex::LatexFmt;
 use std::{
-    fmt,
     fs::File,
     io::Write,
     marker::PhantomData,
@@ -15,54 +11,55 @@ use std::{
 };
 use syntax::terms::Term;
 
-pub struct LatexTestBuss<T>
+pub struct LatexTestTrace<'a, T, Conf>
 where
-    T: Term + Parse + Typecheck<Term = T> + LatexFmt,
-    T::Type: fmt::Display + LatexFmt,
+    T: Term + Parse + Eval<Term = T> + LatexFmt,
+    T::Value: LatexFmt,
+    Conf: LatexTestConf,
 {
-    name: String,
-    source: String,
+    conf: &'a Conf,
     phantom: PhantomData<T>,
 }
 
-impl<T> LatexTestBuss<T>
+impl<'a, T, Conf> LatexTestTrace<'a, T, Conf>
 where
-    T: Term + Parse + Typecheck<Term = T> + LatexFmt,
-    T::Type: fmt::Display + LatexFmt,
+    T: Term + Parse + Eval<Term = T> + LatexFmt,
+    T::Value: LatexFmt,
+    Conf: LatexTestConf,
 {
-    pub fn new(name: &str, source: &str) -> LatexTestBuss<T> {
-        LatexTestBuss {
-            name: name.to_owned(),
-            source: source.to_owned(),
+    pub fn new(conf: &'a Conf) -> LatexTestTrace<'a, T, Conf> {
+        LatexTestTrace {
+            conf,
             phantom: PhantomData,
         }
     }
 }
 
-impl<T> Test for LatexTestBuss<T>
+impl<'a, T, Conf> Test<'a> for LatexTestTrace<'a, T, Conf>
 where
-    T: Term + Parse + Typecheck<Term = T> + LatexFmt,
-    T::Type: fmt::Display + LatexFmt,
+    T: Term + Parse + Eval<Term = T> + LatexFmt,
+    T::Value: LatexFmt,
+    Conf: LatexTestConf,
 {
     fn name(&self) -> String {
         format!(
-            "Generating Latex for Derivation Trees of {} (Bussproofs)",
-            self.name
+            "Generating Latex for Evaluation Trace of {}",
+            self.conf.name()
         )
     }
 
     fn run(&self) -> TestResult {
-        let parsed = match T::parse(self.source.clone()) {
+        let parsed = match T::parse(self.conf.contents().to_owned()) {
             Ok(p) => p,
             Err(err) => return TestResult::from_err(err),
         };
-        let checked = match parsed.check_start() {
-            Ok(c) => c,
+        let evaled = match parsed.eval_start() {
+            Ok(v) => v,
             Err(err) => return TestResult::from_err(err),
         };
-        let latex_src = checked.to_document(&mut Default::default());
+        let latex_src = evaled.to_document(&mut Default::default());
 
-        let mut out_path = PathBuf::from(LATEX_OUT).join(format!("{}_buss", self.name));
+        let mut out_path = PathBuf::from(LATEX_OUT).join(format!("{}_trace", self.conf.name()));
         out_path.set_extension("tex");
 
         let mut out_file = match File::create(&out_path) {

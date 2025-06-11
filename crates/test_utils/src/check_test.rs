@@ -1,45 +1,51 @@
-use super::testsuite::{Test, TestResult};
+use super::{
+    test::{Test, TestConfig},
+    test_result::TestResult,
+};
 use check::Typecheck;
 use common::parse::Parse;
 use std::{fmt, marker::PhantomData};
 
-pub struct CheckTest<T>
+pub trait CheckConfig: TestConfig {
+    fn expected(&self) -> &str;
+}
+
+pub struct CheckTest<'a, T, Conf>
 where
     T: Parse + Typecheck,
     T::Type: fmt::Display,
+    Conf: CheckConfig,
 {
-    name: String,
-    source: String,
-    expected: String,
+    conf: &'a Conf,
     phantom: PhantomData<T>,
 }
 
-impl<T> CheckTest<T>
+impl<'a, T, Conf> CheckTest<'a, T, Conf>
 where
     T: Parse + Typecheck,
     T::Type: fmt::Display,
+    Conf: CheckConfig,
 {
-    pub fn new(name: &str, source: &str, exp: &str) -> CheckTest<T> {
+    pub fn new(conf: &'a Conf) -> CheckTest<'a, T, Conf> {
         CheckTest {
-            name: name.to_owned(),
-            source: source.to_owned(),
-            expected: exp.to_owned(),
+            conf,
             phantom: PhantomData,
         }
     }
 }
 
-impl<T> Test for CheckTest<T>
+impl<'a, T, Conf> Test<'a> for CheckTest<'a, T, Conf>
 where
     T: Parse + Typecheck,
     T::Type: fmt::Display,
+    Conf: CheckConfig,
 {
     fn name(&self) -> String {
-        format!("Checking {}", self.name)
+        format!("Checking {}", self.conf.name())
     }
 
     fn run(&self) -> TestResult {
-        let parsed = match T::parse(self.source.clone()) {
+        let parsed = match T::parse(self.conf.contents().to_owned()) {
             Ok(p) => p,
             Err(err) => return TestResult::from_err(err),
         };
@@ -47,6 +53,6 @@ where
             Ok(c) => c,
             Err(err) => return TestResult::from_err(err),
         };
-        TestResult::from_eq(&checked.ty(), &self.expected)
+        TestResult::from_eq(&checked.ty(), &self.conf.expected())
     }
 }

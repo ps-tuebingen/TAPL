@@ -1,39 +1,43 @@
-use super::testsuite::{Test, TestResult};
+use super::{
+    test::{Test, TestConfig},
+    test_result::TestResult,
+};
 use common::parse::Parse;
 use std::{fmt, marker::PhantomData};
 
-pub struct ReparseTest<T>
+pub struct ReparseTest<'a, T, Conf>
 where
     T: Parse + fmt::Display,
+    Conf: TestConfig,
 {
-    name: String,
-    source: String,
+    conf: &'a Conf,
     phantom: PhantomData<T>,
 }
 
-impl<T> ReparseTest<T>
+impl<'a, T, Conf> ReparseTest<'a, T, Conf>
 where
     T: Parse + fmt::Display,
+    Conf: TestConfig,
 {
-    pub fn new(name: &str, source: &str) -> ReparseTest<T> {
+    pub fn new(conf: &'a Conf) -> ReparseTest<'a, T, Conf> {
         ReparseTest {
-            name: name.to_owned(),
-            source: source.to_owned(),
+            conf,
             phantom: PhantomData,
         }
     }
 }
 
-impl<T> Test for ReparseTest<T>
+impl<'a, T, Conf> Test<'a> for ReparseTest<'a, T, Conf>
 where
     T: Parse + fmt::Display,
+    Conf: TestConfig,
 {
     fn name(&self) -> String {
-        format!("Reparsing {}", self.name)
+        format!("Reparsing {}", self.conf.name())
     }
 
     fn run(&self) -> TestResult {
-        let parsed = match T::parse(self.source.clone()) {
+        let parsed = match T::parse(self.conf.contents().to_owned()) {
             Ok(p) => p,
             Err(err) => return TestResult::from_err(err),
         };

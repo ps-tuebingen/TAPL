@@ -1,18 +1,12 @@
-use super::errors::Error;
+use super::{errors::Error, test::TestConfig};
 use std::{
     fs::{read_dir, read_to_string},
     path::PathBuf,
 };
 
-pub struct TestContents<Conf> {
-    pub conf: Conf,
-    pub source_name: String,
-    pub source_contents: String,
-}
-
-pub fn load_dir<Conf>(dir: &PathBuf, src_ext: &str) -> Result<Vec<TestContents<Conf>>, Error>
+pub fn load_dir<Conf>(dir: &PathBuf, src_ext: &str) -> Result<Vec<Conf>, Error>
 where
-    Conf: for<'a> serde::Deserialize<'a>,
+    Conf: TestConfig,
 {
     let mut tests = vec![];
     for entry in read_dir(dir).map_err(|err| Error::dir_access(&format!("read {dir:?}"), err))? {
@@ -34,22 +28,20 @@ where
         let mut source_file = path.join(stem.clone());
         source_file.set_extension(src_ext);
 
+        let contents = read_to_string(&source_file)
+            .map_err(|err| Error::file_access(&format!("read file {source_file:?}"), err))?;
+
         let mut config_file = source_file.clone();
         config_file.set_extension("toml");
         let config_contents = read_to_string(&config_file)
             .map_err(|err| Error::file_access(&format!("Read File {config_file:?}"), err))?;
-        let config = basic_toml::from_str(&config_contents)
+        let mut config: Conf = basic_toml::from_str(&config_contents)
             .map_err(|err| Error::toml(&config_contents, err))?;
+        config.set_name(stem);
+        config.set_contents(contents);
 
-        let contents = read_to_string(&source_file)
-            .map_err(|err| Error::file_access(&format!("read file {source_file:?}"), err))?;
-
-        tests.push(TestContents {
-            source_name: stem,
-            source_contents: contents,
-            conf: config,
-        });
+        tests.push(config);
     }
-    tests.sort_by(|tst1, tst2| tst1.source_name.cmp(&tst2.source_name));
+    tests.sort_by(|tst1, tst2| tst1.name().cmp(&tst2.name()));
     Ok(tests)
 }

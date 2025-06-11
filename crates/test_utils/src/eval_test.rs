@@ -1,46 +1,52 @@
-use super::testsuite::{Test, TestResult};
+use super::{
+    test::{Test, TestConfig},
+    test_result::TestResult,
+};
 use common::parse::Parse;
 use eval::Eval;
 use std::fmt;
 use std::marker::PhantomData;
 
-pub struct EvalTest<T>
+pub trait EvalConfig: TestConfig {
+    fn expected(&self) -> &str;
+}
+
+pub struct EvalTest<'a, T, Conf>
 where
     T: Eval + Parse,
     T::Value: fmt::Display,
+    Conf: EvalConfig,
 {
-    name: String,
-    source: String,
-    expected: String,
+    conf: &'a Conf,
     phantom: PhantomData<T>,
 }
 
-impl<T> EvalTest<T>
+impl<'a, T, Conf> EvalTest<'a, T, Conf>
 where
     T: Eval + Parse,
     T::Value: fmt::Display,
+    Conf: EvalConfig,
 {
-    pub fn new(name: &str, source: &str, exp: &str) -> EvalTest<T> {
+    pub fn new(conf: &'a Conf) -> EvalTest<'a, T, Conf> {
         EvalTest {
-            name: name.to_owned(),
-            source: source.to_owned(),
-            expected: exp.to_owned(),
+            conf,
             phantom: PhantomData,
         }
     }
 }
 
-impl<T> Test for EvalTest<T>
+impl<'a, T, Conf> Test<'a> for EvalTest<'a, T, Conf>
 where
     T: Eval + Parse,
     T::Value: fmt::Display,
+    Conf: EvalConfig,
 {
     fn name(&self) -> String {
-        format!("Evaluating {}", self.name)
+        format!("Evaluating {}", self.conf.name())
     }
 
     fn run(&self) -> TestResult {
-        let parsed = match T::parse(self.source.clone()) {
+        let parsed = match T::parse(self.conf.contents().to_owned()) {
             Ok(p) => p,
             Err(err) => return TestResult::from_err(err),
         };
@@ -48,6 +54,6 @@ where
             Ok(v) => v,
             Err(err) => return TestResult::from_err(err),
         };
-        TestResult::from_eq(&evaled.val(), &self.expected)
+        TestResult::from_eq(&evaled.val(), &self.conf.expected())
     }
 }
