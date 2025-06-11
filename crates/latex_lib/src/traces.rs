@@ -9,10 +9,7 @@ where
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         let source_str = self.source.to_latex(conf);
         let target_str = self.target.to_latex(conf);
-        format!(
-            "{source_str} \\mapsto_{{{}}} {target_str}",
-            self.rule.to_string()
-        )
+        format!("{source_str} \\mapsto_{{{}}} {target_str}", self.rule)
     }
 }
 
