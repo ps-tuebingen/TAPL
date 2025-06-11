@@ -5,12 +5,14 @@ use syntax::{
     types::Type,
     values::ValueGroup,
 };
-use trace::EvalTrace;
+use trace::{EvalStep, EvalTrace};
 
 impl<T, Ty> Eval for Head<T, Ty>
 where
-    T: Term + Eval,
+    T: Term + Eval<Term = T>,
     Ty: Type,
+    Head<T, Ty>: Into<T>,
+    <T as Eval>::Value: Into<T>,
     <T as Eval>::EvalError: From<ValueMismatch>,
 {
     type Env = <T as Eval>::Env;
@@ -18,9 +20,22 @@ where
     type EvalError = <T as Eval>::EvalError;
 
     type Term = T;
-    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Self::EvalError> {
-        let term_val = self.term.eval(env)?;
-        let cons_val = term_val.into_cons()?;
-        Ok(*cons_val.head)
+    fn eval(
+        self,
+        env: &mut Self::Env,
+    ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
+        let term_res = self.term.eval(env)?;
+        let term_val = term_res.val();
+        let cons_val = term_val.clone().into_cons()?;
+
+        let last_step =
+            EvalStep::head(Head::new(term_val, self.ty.clone()), *cons_val.head.clone());
+        let mut steps = term_res.congruence(&move |t| Head::new(t, self.ty.clone()).into());
+        steps.push(last_step);
+
+        Ok(EvalTrace::<T, <T as Eval>::Value>::new(
+            steps,
+            *cons_val.head,
+        ))
     }
 }

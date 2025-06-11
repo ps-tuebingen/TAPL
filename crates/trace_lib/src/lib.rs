@@ -11,7 +11,7 @@ where
     T: Term,
     V: Value,
 {
-    steps: Vec<EvalStep<T>>,
+    pub steps: Vec<EvalStep<T>>,
     val: V,
 }
 
@@ -20,6 +20,16 @@ where
     T: Term,
     V: Value,
 {
+    pub fn new<V1>(steps: Vec<EvalStep<T>>, val: V1) -> EvalTrace<T, V>
+    where
+        V1: Into<V>,
+    {
+        EvalTrace {
+            steps,
+            val: val.into(),
+        }
+    }
+
     pub fn val(&self) -> V {
         self.val.clone()
     }

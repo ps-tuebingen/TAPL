@@ -7,7 +7,8 @@ use trace::EvalTrace;
 
 impl<T> Eval for Loc<T>
 where
-    T: Term + Eval,
+    T: Term + Eval<Term = T>,
+    <T as Eval>::Value: Into<T>,
     LocVal<T>: Into<<T as Eval>::Value>,
 {
     type Env = <T as Eval>::Env;
@@ -19,6 +20,9 @@ where
         self,
         _: &mut Self::Env,
     ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
-        Ok(LocVal::new(self.loc).into())
+        Ok(EvalTrace::<T, <T as Eval>::Value>::new(
+            vec![],
+            LocVal::new(self.loc).into(),
+        ))
     }
 }

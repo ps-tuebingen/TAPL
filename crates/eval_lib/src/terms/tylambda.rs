@@ -19,6 +19,9 @@ where
         self,
         _: &mut Self::Env,
     ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
-        Ok(TyLambdaVal::new(&self.var, self.annot, *self.term).into())
+        Ok(EvalTrace::new(
+            vec![],
+            TyLambdaVal::new(&self.var, self.annot, *self.term),
+        ))
     }
 }

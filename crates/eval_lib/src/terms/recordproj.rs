@@ -4,11 +4,13 @@ use syntax::{
     terms::{RecordProj, Term},
     values::ValueGroup,
 };
-use trace::EvalTrace;
+use trace::{EvalStep, EvalTrace};
 
 impl<T> Eval for RecordProj<T>
 where
-    T: Term + Eval,
+    T: Term + Eval<Term = T>,
+    RecordProj<T>: Into<T>,
+    <T as Eval>::Value: Into<T>,
     <T as Eval>::EvalError: From<ValueMismatch> + From<UndefinedLabel>,
 {
     type Env = <T as Eval>::Env;
@@ -16,13 +18,23 @@ where
     type EvalError = <T as Eval>::EvalError;
 
     type Term = T;
-    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Self::EvalError> {
-        let term_val = self.record.eval(env)?;
+    fn eval(
+        self,
+        env: &mut Self::Env,
+    ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
+        let term_res = self.record.eval(env)?;
+        let term_val = term_res.val();
         let rec_val = term_val.into_record()?;
-        rec_val
+        let val = rec_val
             .records
             .get(&self.label)
             .ok_or(UndefinedLabel::new(&self.label).into())
-            .cloned()
+            .cloned()?;
+
+        let mut steps = term_res.congruence(&move |t| RecordProj::new(t, &self.label).into());
+        let last_step =
+            EvalStep::recordproj(RecordProj::new(val.clone(), &self.label), val.clone());
+        steps.push(last_step);
+        Ok(EvalTrace::<T, <T as Eval>::Value>::new(steps, val))
     }
 }

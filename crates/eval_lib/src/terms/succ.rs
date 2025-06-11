@@ -4,12 +4,13 @@ use syntax::{
     terms::{Succ, Term},
     values::{Num, ValueGroup},
 };
-use trace::EvalTrace;
+use trace::{EvalStep, EvalTrace};
 
 impl<T> Eval for Succ<T>
 where
-    T: Term + Eval,
+    T: Term + Eval<Term = T>,
     Num<T>: Into<<T as Eval>::Value>,
+    Succ<T>: Into<T>,
     <T as Eval>::EvalError: From<ValueMismatch>,
 {
     type Value = <T as Eval>::Value;
@@ -21,8 +22,13 @@ where
         self,
         env: &mut Self::Env,
     ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
-        let val = self.term.eval(env)?;
-        let num = val.into_num()?;
-        Ok(Num::new(num.num + 1).into())
+        let term_res = self.term.eval(env)?;
+        let term_val = term_res.val();
+        let num = term_val.into_num()?;
+        let last_step = EvalStep::succ(num.num);
+        let mut steps = term_res.congruence(&move |t| Succ::new(t).into());
+        steps.push(last_step);
+        let val = Num::<T>::new(num.num + 1);
+        Ok(EvalTrace::new(steps, val))
     }
 }

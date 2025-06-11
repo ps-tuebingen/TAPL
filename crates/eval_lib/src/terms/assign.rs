@@ -4,12 +4,14 @@ use syntax::{
     terms::{Assign, Term},
     values::{Unit as UnitVal, ValueGroup},
 };
-use trace::EvalTrace;
+use trace::{EvalStep, EvalTrace};
 
 impl<T> Eval for Assign<T>
 where
-    T: Term + Eval,
-    UnitVal<T>: Into<<T as Eval>::Value>,
+    T: Term + Eval<Term = T>,
+    UnitVal<T>: Into<T> + Into<<T as Eval>::Value>,
+    <T as Eval>::Value: Into<T>,
+    Assign<T>: Into<T>,
     <T as Eval>::EvalError: From<ValueMismatch>,
 {
     type Env = <T as Eval>::Env;
@@ -21,10 +23,20 @@ where
         self,
         env: &mut Self::Env,
     ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
-        let lhs_val = self.lhs.eval(env)?;
+        let lhs_res = self.lhs.clone().eval(env)?;
+        let lhs_val = lhs_res.val();
+        let lhs_t: T = lhs_val.clone().into();
         let lhs_loc = lhs_val.into_loc()?;
-        let rhs_val = self.rhs.eval(env)?;
-        env.save_location(lhs_loc.loc, rhs_val);
-        Ok(UnitVal::new().into())
+
+        let rhs_res = self.rhs.clone().eval(env)?;
+        let rhs_val = rhs_res.val();
+        let rhs_t: T = rhs_val.clone().into();
+
+        let mut steps = lhs_res.congruence(&move |t| Assign::new(t, *self.rhs.clone()).into());
+        steps.extend(rhs_res.congruence(&move |t| Assign::new(*self.lhs.clone(), t).into()));
+        env.save_location(lhs_loc.loc, rhs_val.clone());
+
+        steps.push(EvalStep::assign(lhs_t, rhs_t));
+        Ok(EvalTrace::new(steps, UnitVal::<T>::new()))
     }
 }

@@ -8,7 +8,8 @@ use trace::EvalTrace;
 
 impl<T, Ty> Eval for LambdaSub<T, Ty>
 where
-    T: Term + Eval,
+    T: Term + Eval<Term = T>,
+    <T as Eval>::Value: Into<T>,
     Ty: Type,
     LambdaSubVal<T, Ty>: Into<<T as Eval>::Value>,
 {
@@ -21,6 +22,9 @@ where
         self,
         _: &mut Self::Env,
     ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
-        Ok(LambdaSubVal::<T, Ty>::new(&self.var, self.sup_ty, *self.body).into())
+        Ok(EvalTrace::new(
+            vec![],
+            LambdaSubVal::<T, Ty>::new(&self.var, self.sup_ty, *self.body),
+        ))
     }
 }

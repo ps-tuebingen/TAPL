@@ -7,7 +7,8 @@ use trace::EvalTrace;
 
 impl<T> Eval for True<T>
 where
-    T: Term + Eval,
+    T: Term + Eval<Term = T>,
+    <T as Eval>::Value: Into<T>,
     TrueVal<T>: Into<<T as Eval>::Value>,
 {
     type Value = <T as Eval>::Value;
@@ -19,6 +20,6 @@ where
         self,
         _: &mut Self::Env,
     ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
-        Ok(TrueVal::new().into())
+        Ok(EvalTrace::new(vec![], TrueVal::new()))
     }
 }

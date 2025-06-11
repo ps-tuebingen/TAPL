@@ -8,7 +8,8 @@ use trace::EvalTrace;
 
 impl<T, Ty> Eval for Nil<T, Ty>
 where
-    T: Term + Eval,
+    T: Term + Eval<Term = T>,
+    <T as Eval>::Value: Into<T>,
     Ty: Type,
     NilVal<T, Ty>: Into<<T as Eval>::Value>,
 {
@@ -21,6 +22,9 @@ where
         self,
         _: &mut Self::Env,
     ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
-        Ok(NilVal::<T, Ty>::new(self.ty).into())
+        Ok(EvalTrace::<T, <T as Eval>::Value>::new(
+            vec![],
+            NilVal::<T, Ty>::new(self.ty),
+        ))
     }
 }

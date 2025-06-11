@@ -6,12 +6,14 @@ use syntax::{
     types::Type,
     values::{Value, ValueGroup},
 };
-use trace::EvalTrace;
+use trace::{EvalStep, EvalTrace};
 
 impl<T, Ty> Eval for TyApp<T, Ty>
 where
-    T: Term + Eval + SubstType<Ty, Target = T>,
+    T: Term + Eval<Term = T> + SubstType<Ty, Target = T>,
+    <T as Eval>::Value: Into<T>,
     <T as Eval>::Value: ValueGroup<Term = T>,
+    TyApp<T, Ty>: Into<T>,
     Ty: Type,
     <T as Eval>::EvalError: From<ValueMismatch>,
 {
@@ -20,14 +22,36 @@ where
     type Env = <T as Eval>::Env;
 
     type Term = T;
-    fn eval(self, env: &mut Self::Env) -> Result<Self::Value, Self::EvalError> {
-        let fun_val = self.fun.eval(env)?;
-        if let Ok(tylam) = fun_val.clone().into_tylambda() {
-            tylam.term.subst_type(&tylam.var, &self.arg).eval(env)
+    fn eval(
+        self,
+        env: &mut Self::Env,
+    ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
+        let fun_res = self.fun.eval(env)?;
+        let fun_val = fun_res.val();
+        let (res_steps, res_val) = if let Ok(tylam) = fun_val.clone().into_tylambda() {
+            let term_subst = tylam.term.subst_type(&tylam.var, &self.arg);
+            let next_step =
+                EvalStep::tyappabs(TyApp::new(fun_val, self.arg.clone()), term_subst.clone());
+            let term_res = term_subst.eval(env)?;
+            let term_val = term_res.val();
+            let mut steps = term_res.steps;
+            steps.push(next_step);
+            (steps, term_val)
         } else if let Ok(lamsub) = fun_val.clone().into_lambdasub() {
-            lamsub.term.subst_type(&lamsub.var, &self.arg).eval(env)
+            let term_subst = lamsub.term.subst_type(&lamsub.var, &self.arg);
+            let next_step =
+                EvalStep::tyappabs_sub(TyApp::new(fun_val, self.arg.clone()), term_subst.clone());
+            let term_res = term_subst.eval(env)?;
+            let term_val = term_res.val();
+            let mut steps = term_res.steps;
+            steps.push(next_step);
+            (steps, term_val)
         } else {
-            Err(ValueMismatch::new(fun_val.knd(), ValueKind::LambdaSub).into())
-        }
+            return Err(ValueMismatch::new(fun_val.knd(), ValueKind::LambdaSub).into());
+        };
+
+        let mut steps = fun_res.congruence(&move |t| TyApp::new(t, self.arg.clone()).into());
+        steps.extend(res_steps);
+        Ok(EvalTrace::<T, <T as Eval>::Value>::new(steps, res_val))
     }
 }

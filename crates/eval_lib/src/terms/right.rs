@@ -8,7 +8,9 @@ use trace::EvalTrace;
 
 impl<T, Ty> Eval for Right<T, Ty>
 where
-    T: Term + Eval,
+    T: Term + Eval<Term = T>,
+    <T as Eval>::Value: Into<T>,
+    Right<T, Ty>: Into<T>,
     Ty: Type,
     RightVal<<T as Eval>::Value, Ty>: Into<<T as Eval>::Value>,
 {
@@ -21,7 +23,10 @@ where
         self,
         env: &mut Self::Env,
     ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
-        let right_val = self.right_term.eval(env)?;
-        Ok(RightVal::<<T as Eval>::Value, Ty>::new(right_val, self.ty.clone()).into())
+        let right_res = self.right_term.eval(env)?;
+        let right_val = right_res.val();
+        let val = RightVal::<<T as Eval>::Value, Ty>::new(right_val, self.ty.clone());
+        let steps = right_res.congruence(&move |t| Right::new(t, self.ty.clone()).into());
+        Ok(EvalTrace::new(steps, val))
     }
 }

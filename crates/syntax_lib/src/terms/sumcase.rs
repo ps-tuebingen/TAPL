@@ -18,6 +18,32 @@ where
     pub right_term: Box<T>,
 }
 
+impl<T> SumCase<T>
+where
+    T: Term,
+{
+    pub fn new<T1, T2, T3>(
+        bound: T1,
+        left_v: &str,
+        left_t: T2,
+        right_v: &str,
+        right_t: T3,
+    ) -> SumCase<T>
+    where
+        T1: Into<T>,
+        T2: Into<T>,
+        T3: Into<T>,
+    {
+        SumCase {
+            bound_term: Box::new(bound.into()),
+            left_var: left_v.to_owned(),
+            left_term: Box::new(left_t.into()),
+            right_var: right_v.to_owned(),
+            right_term: Box::new(right_t.into()),
+        }
+    }
+}
+
 impl<T> Term for SumCase<T> where T: Term {}
 
 impl<T> SubstTerm<T> for SumCase<T>

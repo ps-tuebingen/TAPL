@@ -8,7 +8,8 @@ use trace::EvalTrace;
 
 impl<T, Ty> Eval for Nothing<T, Ty>
 where
-    T: Term + Eval,
+    T: Term + Eval<Term = T>,
+    <T as Eval>::Value: Into<T>,
     Ty: Type,
     NothingVal<T, Ty>: Into<<T as Eval>::Value>,
 {
@@ -21,6 +22,6 @@ where
         self,
         _: &mut Self::Env,
     ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
-        Ok(NothingVal::<T, Ty>::new(self.ty).into())
+        Ok(EvalTrace::new(vec![], NothingVal::<T, Ty>::new(self.ty)))
     }
 }

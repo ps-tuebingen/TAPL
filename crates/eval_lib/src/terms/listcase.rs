@@ -5,11 +5,12 @@ use syntax::{
     terms::{ListCase, Term},
     values::{Value, ValueGroup},
 };
-use trace::EvalTrace;
+use trace::{EvalStep, EvalTrace};
 
 impl<T> Eval for ListCase<T>
 where
-    T: Term + Eval + SubstTerm<T, Target = T> + From<<T as Eval>::Value>,
+    T: Term + Eval<Term = T> + SubstTerm<T, Target = T> + From<<T as Eval>::Value>,
+    ListCase<T>: Into<T>,
     <T as Eval>::EvalError: From<ValueMismatch>,
 {
     type Env = <T as Eval>::Env;
@@ -21,14 +22,46 @@ where
         self,
         env: &mut Self::Env,
     ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
-        let bound_val = self.bound_term.eval(env)?;
+        let bound_res = self.bound_term.eval(env)?;
+        let bound_val = bound_res.val();
+        let mut steps = bound_res.congruence(&move |t| {
+            ListCase::new(
+                bound_val,
+                *self.nil_rhs.clone(),
+                &self.cons_fst,
+                &self.cons_rst,
+                *self.cons_rhs.clone(),
+            )
+            .into()
+        });
+
         if bound_val.clone().into_nil().is_ok() {
-            self.nil_rhs.eval(env)
+            let next_step = EvalStep::listcase_nil(
+                ListCase::new(
+                    bound_val,
+                    *self.nil_rhs.clone(),
+                    &self.cons_fst,
+                    &self.cons_rhs,
+                    *self.cons_rhs.clone(),
+                ),
+                *self.nil_rhs.clone(),
+            );
+            steps.push(next_step);
+            let nil_res = self.nil_rhs.eval(env)?;
+            let nil_val = nil_res.val();
+            steps.extend(nil_res.steps.into_iter());
+            Ok(EvalTrace::new(steps, nil_val));
         } else if let Ok(cons) = bound_val.clone().into_cons() {
-            self.cons_rhs
+            let cons_subst = self
+                .cons_rhs
                 .subst(&self.cons_fst, &((*cons.head).into()))
-                .subst(&self.cons_rst, &((*cons.tail).into()))
-                .eval(env)
+                .subst(&self.cons_rst, &((*cons.tail).into()));
+            let next_step = EvalStep::listcase_cons();
+            steps.push(next_step);
+            let cons_res = cons_subst.eval(env)?;
+            let cons_val = cons_res.val();
+            steps.extend(cons_res.steps.into_iter());
+            Ok(EvalTrace::new(steps, cons_val))
         } else {
             Err(ValueMismatch::new(bound_val.knd(), ValueKind::List).into())
         }

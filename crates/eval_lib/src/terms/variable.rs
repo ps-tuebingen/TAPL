@@ -5,7 +5,7 @@ use trace::EvalTrace;
 
 impl<T> Eval for Variable<T>
 where
-    T: Term + Eval,
+    T: Term + Eval<Term = T>,
     <T as Eval>::EvalError: From<FreeVariable>,
 {
     type Value = <T as Eval>::Value;

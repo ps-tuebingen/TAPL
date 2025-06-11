@@ -5,11 +5,12 @@ use syntax::{
     types::Type,
     values::ValueGroup,
 };
-use trace::EvalTrace;
+use trace::{EvalStep, EvalTrace};
 
 impl<T, Ty> Eval for Unfold<T, Ty>
 where
-    T: Term + Eval,
+    T: Term + Eval<Term = T>,
+    Unfold<T, Ty>: Into<T>,
     Ty: Type,
     <T as Eval>::EvalError: From<ValueMismatch>,
 {
@@ -22,8 +23,16 @@ where
         self,
         env: &mut Self::Env,
     ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
-        let term_val = self.term.eval(env)?;
+        let term_res = self.term.eval(env)?;
+        let term_val = term_res.val();
         let term_fold = term_val.into_fold()?;
-        Ok(*term_fold.val)
+
+        let last_step = EvalStep::unfoldfold(
+            Unfold::new(self.ty.clone(), term_val),
+            *term_fold.val.clone(),
+        );
+        let mut steps = term_res.congruence(&move |t| Unfold::new(self.ty.clone(), t).into());
+        steps.push(last_step);
+        Ok(EvalTrace::new(steps, *term_fold.val))
     }
 }

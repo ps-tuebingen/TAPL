@@ -4,11 +4,12 @@ use syntax::{
     types::Type,
     values::Fold as FoldVal,
 };
-use trace::EvalTrace;
+use trace::{EvalStep, EvalTrace};
 
 impl<T, Ty> Eval for Fold<T, Ty>
 where
-    T: Term + Eval,
+    T: Term + Eval<Term = T>,
+    Fold<T, Ty>: Into<T>,
     Ty: Type,
     FoldVal<<T as Eval>::Value, Ty>: Into<<T as Eval>::Value>,
 {
@@ -21,7 +22,13 @@ where
         self,
         env: &mut Self::Env,
     ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
-        let term_val = self.term.eval(env)?;
-        Ok(FoldVal::<<T as Eval>::Value, Ty>::new(self.ty, term_val).into())
+        let term_res = self.term.eval(env)?;
+        let term_val = term_res.val();
+        let val: <T as Eval>::Value =
+            FoldVal::<<T as Eval>::Value, Ty>::new(self.ty.clone(), term_val.clone()).into();
+        let last_step = EvalStep::fold(Fold::new(term_val, self.ty.clone()), val.clone());
+        let mut steps = term_res.congruence(&move |t| Fold::new(t, self.ty.clone()).into());
+        steps.push(last_step);
+        Ok(EvalTrace::<T, <T as Eval>::Value>::new(steps, val))
     }
 }

@@ -7,7 +7,7 @@ use trace::EvalTrace;
 
 impl<T> Eval for Unit<T>
 where
-    T: Term + Eval,
+    T: Term + Eval<Term = T>,
     UnitVal<T>: Into<<T as Eval>::Value>,
 {
     type Value = <T as Eval>::Value;
@@ -19,6 +19,6 @@ where
         self,
         _: &mut Self::Env,
     ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
-        Ok(UnitVal::new().into())
+        Ok(EvalTrace::new(vec![], UnitVal::new()))
     }
 }

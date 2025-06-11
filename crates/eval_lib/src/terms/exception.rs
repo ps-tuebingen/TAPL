@@ -8,8 +8,9 @@ use trace::EvalTrace;
 
 impl<T, Ty> Eval for Exception<T, Ty>
 where
-    T: Term + Eval,
+    T: Term + Eval<Term = T>,
     Ty: Type,
+    <T as Eval>::Value: Into<T>,
     ExceptionVal<T, Ty>: Into<<T as Eval>::Value>,
 {
     type Value = <T as Eval>::Value;
@@ -21,6 +22,9 @@ where
         self,
         _: &mut Self::Env,
     ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
-        Ok(ExceptionVal::new(self.ty).into())
+        Ok(EvalTrace::<T, <T as Eval>::Value>::new(
+            vec![],
+            ExceptionVal::new(self.ty).into(),
+        ))
     }
 }

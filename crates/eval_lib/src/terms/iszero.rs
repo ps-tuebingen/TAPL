@@ -4,11 +4,12 @@ use syntax::{
     terms::{IsZero, Term},
     values::{False, True, ValueGroup},
 };
-use trace::EvalTrace;
+use trace::{EvalStep, EvalTrace};
 
 impl<T> Eval for IsZero<T>
 where
-    T: Term + Eval,
+    T: Term + Eval<Term = T>,
+    IsZero<T>: Into<T>,
     True<T>: Into<<T as Eval>::Value>,
     False<T>: Into<<T as Eval>::Value>,
     <T as Eval>::EvalError: From<ValueMismatch>,
@@ -22,12 +23,16 @@ where
         self,
         env: &mut Self::Env,
     ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
-        let val = self.term.eval(env)?;
+        let inner_res = self.term.eval(env)?;
+        let val = inner_res.val();
         let num = val.into_num()?;
+        let mut steps = inner_res.congruence(&move |t| IsZero::new(t).into());
         if num.num == 0 {
-            Ok(True::new().into())
+            steps.push(EvalStep::iszero_true(IsZero::new(val)));
+            Ok(EvalTrace::new(steps, True::new()))
         } else {
-            Ok(False::new().into())
+            steps.push(EvalStep::iszero_false(IsZero::new(val)));
+            Ok(EvalTrace::new(steps, False::new()))
         }
     }
 }

@@ -8,8 +8,10 @@ use trace::EvalTrace;
 
 impl<T, Ty> Eval for Pack<T, Ty>
 where
-    T: Term + Eval,
+    T: Term + Eval<Term = T>,
+    <T as Eval>::Value: Into<T>,
     Ty: Type,
+    Pack<T, Ty>: Into<T>,
     PackVal<<T as Eval>::Value, Ty>: Into<<T as Eval>::Value>,
 {
     type Value = <T as Eval>::Value;
@@ -21,12 +23,19 @@ where
         self,
         env: &mut Self::Env,
     ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
-        let term_val = self.term.eval(env)?;
-        Ok(PackVal::<<T as Eval>::Value, Ty>::new(
+        let term_res = self.term.eval(env)?;
+        let term_val = term_res.val();
+
+        let val = PackVal::<<T as Eval>::Value, Ty>::new(
             self.inner_ty.clone(),
             term_val,
             self.outer_ty.clone(),
-        )
-        .into())
+        );
+
+        let steps = term_res.congruence(&move |t| {
+            Pack::new(self.inner_ty.clone(), t, self.outer_ty.clone()).into()
+        });
+
+        Ok(EvalTrace::new(steps, val))
     }
 }

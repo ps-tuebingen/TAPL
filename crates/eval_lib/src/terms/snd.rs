@@ -4,11 +4,13 @@ use syntax::{
     terms::{Snd, Term},
     values::ValueGroup,
 };
-use trace::EvalTrace;
+use trace::{EvalStep, EvalTrace};
 
 impl<T> Eval for Snd<T>
 where
-    T: Term + Eval,
+    T: Term + Eval<Term = T>,
+    Snd<T>: Into<T>,
+    <T as Eval>::Value: Into<T>,
     <T as Eval>::EvalError: From<ValueMismatch>,
 {
     type Env = <T as Eval>::Env;
@@ -20,8 +22,14 @@ where
         self,
         env: &mut Self::Env,
     ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
-        let term_val = self.term.eval(env)?;
-        let pair_val = term_val.into_pair()?;
-        Ok(*pair_val.snd)
+        let term_res = self.term.eval(env)?;
+        let term_val = term_res.val();
+        let pair_val = term_val.clone().into_pair()?;
+        let val = *pair_val.snd;
+
+        let mut steps = term_res.congruence(&move |t| Snd::new(t).into());
+        let last_step = EvalStep::snd(Snd::new(term_val), val.clone());
+        steps.push(last_step);
+        Ok(EvalTrace::<T, <T as Eval>::Value>::new(steps, val))
     }
 }
