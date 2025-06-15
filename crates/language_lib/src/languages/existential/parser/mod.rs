@@ -21,7 +21,7 @@ impl Parse for Term {
 }
 
 #[derive(Parser)]
-#[grammar = "languages/existential/parser/existential.pest"]
+#[grammar = "../../parse_lib/src/grammar.pest"]
 struct ExistentialParser;
 
 pub fn parse(input: String) -> Result<Term, Error> {

@@ -3,6 +3,7 @@ program = { SOI ~ term ~ EOI }
 
 // Keyword 
 kw_unit = { "unit" }
+kw_fix = { "fix" }
 kw_let = { "let" }
 kw_as = { "as" }
 kw_in = { "in" }
@@ -13,6 +14,7 @@ kw_raise = { "raise" }
 kw_error = { "error" }
 kw_true = { "true" } 
 kw_false = { "false" }
+kw_zero = { "zero" }
 kw_succ = { "succ" }
 kw_pred = { "pred" }
 kw_iszero = { "iszero" }
@@ -27,6 +29,7 @@ kw_tybool = { "Bool" }
 
 keyword = {
   | kw_unit
+  | kw_fix
   | kw_try
   | kw_with 
   | kw_raise
@@ -53,7 +56,8 @@ term = { prim_term ~ left_rec? }
 paren_term = { "(" ~ term ~ ")" }
 
 prim_term = {
-  | const 
+  | const_term 
+  | fix_term
   | lambda_term
   | lambda_sub_term
   | ty_lambda_term
@@ -73,8 +77,8 @@ prim_term = {
   | variable 
 }
 
-record_ty = { "{" ~ variable ~ ":" ~ type ~ ("," ~ variable ~ ":" ~ type)* ~ "}" }
-const = { kw_unit | kw_true | kw_false } 
+const_term = { kw_unit | kw_zero | kw_true | kw_false } 
+fix_term = { kw_fix ~ term }
 lambda_term = { "\\" ~ variable ~ ":" ~ type ~ "." ~ term }
 lambda_sub_term = { "\\" ~ variable ~ "<:" ~ type ~ "." ~ term }
 ty_lambda_term = { "\\" ~ variable ~ "." ~ term }
@@ -90,8 +94,8 @@ try_catch = { kw_try ~ "{" ~ term ~ "}" ~ kw_catch ~ "{" ~ term ~ "}" }
 err_term = { kw_error ~ "[" ~ type ~ "]" }
 raise_term = { kw_raise ~ "[" ~ type ~ "]" ~ "(" ~ term ~ ":" ~ type ~ ")" } 
 
-left_rec = { proj | tyapp | term }
-proj = { "." ~ variable } 
+left_rec = { record_proj | tyapp | term }
+record_proj = { "." ~ variable } 
 tyapp = { "[" ~ type ~ "]" }
 
 variable = @{ !(keyword ~ !ASCII_ALPHANUMERIC) ~ ( !(WHITESPACE) ~ (ASCII_ALPHA|ASCII_DIGIT) )+ | "_" }
@@ -107,10 +111,11 @@ prim_type = {
   | top_type
   | top_type_star
   | prod_type
-  | forall_type
-  | forall_unbounded
-  | exists_type
-  | exists_unbounded
+  | forall_bounded_type
+  | forall_unbounded_type
+  | exists_bounded_type
+  | exists_unbounded_type
+  | exists_kinded_type
   | sum_type
   | record_type
   | variant_type
@@ -121,11 +126,12 @@ prim_type = {
 
 top_type  = { kw_tytop ~ "[" ~ kind ~ "]" }
 top_type_star = { kw_tytop }
-forall_type = { forall_start ~ "<:" ~ type ~ "." ~ type } 
-forall_unbounded = { forall_start  ~ "." ~ type }
+forall_bounded_type = { forall_start ~ "<:" ~ type ~ "." ~ type } 
+forall_unbounded_type = { forall_start  ~ "." ~ type }
 forall_start = ${ kw_forall ~ " " ~ variable }
-exists_type ={ "{" ~ exists_start ~ "<:" ~ type ~ "," ~ type ~ "}"  } 
-exists_unbounded = { "{" ~ exists_start ~ "," ~ type ~ "}" }
+exists_bounded_type ={ "{" ~ exists_start ~ "<:" ~ type ~ "," ~ type ~ "}"  } 
+exists_unbounded_type = { "{" ~ exists_start ~ "," ~ type ~ "}" }
+exists_kinded_type = { "{" ~ exists_start ~ "::*"? ~ "," ~ type ~ "}" }
 exists_start = ${ kw_exists ~ " " ~ variable }
 prod_type = { "(" ~ type ~ "x" ~ type ~ ")" }
 sum_type = { "(" ~ type ~ "+" ~ type ~ ")" }

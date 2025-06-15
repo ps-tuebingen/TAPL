@@ -67,7 +67,7 @@ fn pair_to_prim_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
 
 fn pair_to_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
     match p.as_rule() {
-        Rule::proj => pair_to_proj(p, t).map(|proj| proj.into()),
+        Rule::record_proj => pair_to_proj(p, t).map(|proj| proj.into()),
         Rule::tyapp => pair_to_tyapp(p, t).map(|app| app.into()),
         Rule::term => {
             let arg = pair_to_term(p)?;

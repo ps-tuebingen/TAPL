@@ -47,7 +47,7 @@ pub fn pair_to_prim_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
             Ok(Term::Num(Num::new(num)))
         }
         Rule::variable => Ok(Variable::new(p.as_str().trim()).into()),
-        Rule::r#const => str_to_term(p.as_str()),
+        Rule::const_term => str_to_term(p.as_str()),
         Rule::lambda_term => pair_to_lambda(p).map(|lam| lam.into()),
         Rule::succ_term => pair_to_succ(p).map(|succ| succ.into()),
         Rule::pred_term => pair_to_pred(p).map(|pred| pred.into()),

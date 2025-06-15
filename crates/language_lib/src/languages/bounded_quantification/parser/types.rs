@@ -32,10 +32,10 @@ fn pair_to_prim_ty(p: Pair<'_, Rule>) -> Result<Type, Error> {
     match p.as_rule() {
         Rule::const_type => str_to_type(p.as_str()),
         Rule::top_type_star | Rule::top_type => Ok(Top::new_star().into()),
-        Rule::forall_type => pair_to_forall(p),
-        Rule::forall_unbounded => pair_to_forall_unbounded(p),
-        Rule::exists_unbounded => pair_to_exists_unbounded(p),
-        Rule::exists_type => pair_to_exists(p),
+        Rule::forall_bounded_type => pair_to_forall(p),
+        Rule::forall_unbounded_type => pair_to_forall_unbounded(p),
+        Rule::exists_unbounded_type => pair_to_exists_unbounded(p),
+        Rule::exists_bounded_type => pair_to_exists(p),
         Rule::record_type => pair_to_rec_ty(p),
         Rule::paren_type => {
             let inner_rule = pair_to_n_inner(p, vec!["Type"])?.remove(0);

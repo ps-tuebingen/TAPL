@@ -37,9 +37,9 @@ fn pair_to_prim_ty(p: Pair<'_, Rule>) -> Result<Type, Error> {
             let ty_rule = pair_to_n_inner(p, vec!["Type"])?.remove(0);
             pair_to_type(ty_rule)
         }
-        Rule::const_ty => str_to_type(p.as_str()),
-        Rule::pack_ty => pair_to_pack_ty(p),
-        Rule::record_ty => pair_to_record_ty(p),
+        Rule::const_type => str_to_type(p.as_str()),
+        Rule::exists_unbounded_type | Rule::exists_kinded_type => pair_to_pack_ty(p),
+        Rule::record_type => pair_to_record_ty(p),
         Rule::variable => Ok(TypeVariable::new(p.as_str().trim()).into()),
         _ => Err(UnexpectedRule::new(p.as_rule(), "Non Left-Recursive Type").into()),
     }
@@ -47,7 +47,7 @@ fn pair_to_prim_ty(p: Pair<'_, Rule>) -> Result<Type, Error> {
 
 fn pair_to_leftrec_ty(p: Pair<'_, Rule>, ty: Type) -> Result<Type, Error> {
     match p.as_rule() {
-        Rule::fun_ty => pair_to_fun_ty(p, ty),
+        Rule::fun_type => pair_to_fun_ty(p, ty),
         _ => Err(UnexpectedRule::new(p.as_rule(), "Left Recursive Term").into()),
     }
 }
