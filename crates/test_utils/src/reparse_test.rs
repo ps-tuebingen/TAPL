@@ -2,7 +2,7 @@ use super::{
     test::{Test, TestConfig},
     test_result::TestResult,
 };
-use common::parse::Parse;
+use parse::Parse;
 use std::{fmt, marker::PhantomData};
 
 pub struct ReparseTest<'a, T, Conf>

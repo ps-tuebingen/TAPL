@@ -3,7 +3,7 @@ use super::{
     test_result::TestResult,
 };
 use check::Typecheck;
-use common::parse::Parse;
+use parse::Parse;
 use std::{fmt, marker::PhantomData};
 
 pub struct CheckTest<'a, T, Conf>

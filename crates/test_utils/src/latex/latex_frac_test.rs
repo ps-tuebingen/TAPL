@@ -4,8 +4,8 @@ use crate::{
     test_result::TestResult,
 };
 use check::Typecheck;
-use common::parse::Parse;
 use latex::{LatexConfig, LatexFmt};
+use parse::Parse;
 use std::{
     fmt,
     fs::File,

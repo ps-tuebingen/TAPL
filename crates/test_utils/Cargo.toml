@@ -14,3 +14,4 @@ language = { path="../language_lib" }
 derivation = { path="../derivation_lib" }
 syntax = {path="../syntax_lib"}
 latex = { path="../latex_lib"}
+parse = { path="../parse_lib"}

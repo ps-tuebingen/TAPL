@@ -2,8 +2,8 @@ use super::{
     test::{Test, TestConfig},
     test_result::TestResult,
 };
-use common::parse::Parse;
 use eval::Eval;
+use parse::Parse;
 use std::fmt;
 use std::marker::PhantomData;
 

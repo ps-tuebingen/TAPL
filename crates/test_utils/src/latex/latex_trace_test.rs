@@ -3,9 +3,9 @@ use crate::{
     test::{Test, TestConfig},
     test_result::TestResult,
 };
-use common::parse::Parse;
 use eval::Eval;
 use latex::LatexFmt;
+use parse::Parse;
 use std::{
     fs::File,
     io::Write,
