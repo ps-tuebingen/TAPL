@@ -1,77 +1,10 @@
 use language::languages::recursive::Recursive;
-use std::path::PathBuf;
-use test_utils::{
-    errors::Error,
-    paths::{EXAMPLES_PATH, RECURSIVE_PATH},
-    setup,
-    test::TestConfig,
-    testsuite::TestSuite,
-};
-
-pub struct RecursiveTests {
-    source_dir: PathBuf,
-}
-
-impl RecursiveTests {
-    pub fn new(source_dir: PathBuf) -> RecursiveTests {
-        RecursiveTests { source_dir }
-    }
-}
-
-#[derive(serde::Deserialize)]
-pub struct RecursiveConf {
-    ty: String,
-    evaluated: String,
-    #[serde(default)]
-    name: String,
-    #[serde(default)]
-    contents: String,
-}
-
-impl TestConfig for RecursiveConf {
-    fn set_name(&mut self, name: String) {
-        self.name = name
-    }
-    fn set_contents(&mut self, contents: String) {
-        self.contents = contents
-    }
-
-    fn name(&self) -> &str {
-        &self.name
-    }
-    fn contents(&self) -> &str {
-        &self.contents
-    }
-    fn ty(&self) -> &str {
-        &self.ty
-    }
-    fn evaluated(&self) -> &str {
-        &self.evaluated
-    }
-}
-
-impl TestSuite for RecursiveTests {
-    type Config = RecursiveConf;
-    type Lang = Recursive;
-
-    fn name(&self) -> &str {
-        "Recursive"
-    }
-
-    fn ext(&self) -> &str {
-        "rec"
-    }
-
-    fn source_dir(&self) -> PathBuf {
-        self.source_dir.clone()
-    }
-}
+use test_utils::{errors::Error, setup, testsuite::TestSuite};
 
 fn main() -> Result<(), Error> {
     setup()?;
 
-    let examples_dir = PathBuf::from(EXAMPLES_PATH);
-    let fails = RecursiveTests::new(examples_dir.join(RECURSIVE_PATH)).run_all()?;
+    let fails = Recursive.run_all()?;
     let fail_str = if fails > 0 {
         format!("\x1b[31m{fails} fails\x1b[39m")
     } else {

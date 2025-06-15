@@ -42,6 +42,6 @@ where
 
         tests.push(config);
     }
-    tests.sort_by(|tst1, tst2| tst1.name().cmp(&tst2.name()));
+    tests.sort_by(|tst1, tst2| tst1.name().cmp(tst2.name()));
     Ok(tests)
 }
