@@ -9,6 +9,7 @@ use super::{
     load_tests::load_dir,
     parse_test::ParseTest,
     reparse_test::ReparseTest,
+    setup,
     test::{Test, TestConfig},
     test_result::TestResult,
 };
@@ -99,5 +100,21 @@ pub trait TestSuite {
             num_fail
         );
         Ok(num_fail)
+    }
+
+    fn run_report(&self) -> Result<(), Error> {
+        setup()?;
+
+        let fails = self.run_all()?;
+        let fail_str = if fails > 0 {
+            format!("\x1b[31m{fails} fails\x1b[39m")
+        } else {
+            "0 fails".to_owned()
+        };
+        println!("Finished running tests with {fail_str}");
+        if fails > 0 {
+            panic!("Not all tests finished successfully");
+        }
+        Ok(())
     }
 }
