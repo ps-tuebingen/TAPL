@@ -1,8 +1,8 @@
 use check::{Kindcheck, Normalize, Subtypecheck, Typecheck};
-use common::parse::Parse;
 use derivation::Derivation;
 use eval::{env::EvalEnvironment, Eval};
 use latex::{LatexConfig, LatexFmt};
+use parse::Parse;
 use syntax::{
     subst::{SubstTerm, SubstType},
     terms::Term,

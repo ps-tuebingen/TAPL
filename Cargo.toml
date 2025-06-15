@@ -3,6 +3,7 @@ members = [
     "crates/cli_bin",
     "crates/web_bin",
     "crates/syntax_lib",
+    "crates/parse_lib",
     "crates/eval_lib",
     "crates/check_lib",
     "crates/common_lib",

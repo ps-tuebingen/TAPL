@@ -1,7 +1,8 @@
 use super::errors::Error;
-use common::{
-    errors::NotImplemented,
-    parse::{MissingInput, Parse, RemainingInput, UnexpectedRule},
+use common::errors::NotImplemented;
+use parse::{
+    errors::{MissingInput, RemainingInput, UnexpectedRule},
+    Parse,
 };
 pub mod lexer;
 

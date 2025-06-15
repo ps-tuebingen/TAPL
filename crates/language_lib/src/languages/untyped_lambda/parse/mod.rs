@@ -2,9 +2,10 @@ use super::{
     errors::Error,
     terms::{Term, Var},
 };
-use common::{
-    errors::NotImplemented,
-    parse::{MissingInput, Parse, UnexpectedRule},
+use common::errors::NotImplemented;
+use parse::{
+    errors::{MissingInput, UnexpectedRule},
+    Parse,
 };
 use std::collections::VecDeque;
 use syntax::{

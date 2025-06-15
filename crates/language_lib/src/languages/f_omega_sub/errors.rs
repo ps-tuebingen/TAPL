@@ -1,12 +1,11 @@
 use super::{parser::Rule, types::Type};
 use check::errors::NotASubtype;
-use common::{
-    errors::{
-        FreeTypeVariable, FreeVariable, KindMismatch, NameMismatch, NotImplemented, TypeMismatch,
-        UndefinedLabel, ValueMismatch,
-    },
-    parse::{MissingInput, RemainingInput, UnexpectedRule, UnknownKeyword},
+use common::errors::{
+    FreeTypeVariable, FreeVariable, KindMismatch, NameMismatch, NotImplemented, TypeMismatch,
+    UndefinedLabel, ValueMismatch,
 };
+
+use parse::errors::{MissingInput, RemainingInput, UnexpectedRule, UnknownKeyword};
 use pest::error::Error as PestErr;
 use std::fmt;
 

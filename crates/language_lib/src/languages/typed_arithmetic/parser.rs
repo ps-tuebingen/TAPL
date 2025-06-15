@@ -1,5 +1,8 @@
 use super::{errors::Error, terms::Term};
-use common::parse::{MissingInput, Parse, RemainingInput, UnexpectedRule, UnknownKeyword};
+use parse::{
+    errors::{MissingInput, RemainingInput, UnexpectedRule, UnknownKeyword},
+    Parse,
+};
 use pest::{iterators::Pair, Parser};
 use pest_derive::Parser;
 use syntax::terms::{False, If, IsZero, Num, Pred, Succ, True};

@@ -1,8 +1,6 @@
 use super::parse::lexer::Token;
-use common::{
-    errors::{FreeVariable, NotImplemented, ValueMismatch},
-    parse::{MissingInput, UnexpectedRule},
-};
+use common::errors::{FreeVariable, NotImplemented, ValueMismatch};
+use parse::errors::{MissingInput, UnexpectedRule};
 use pest::error::Error as PestErr;
 use std::fmt;
 

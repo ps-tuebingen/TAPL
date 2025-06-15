@@ -1,13 +1,11 @@
 use super::parser::Rule;
 use super::types::Type;
 use check::errors::{EmptyCase, NotASubtype};
-use common::{
-    errors::{
-        FreeTypeVariable, FreeVariable, KindMismatch, TypeMismatch, UndefinedLabel,
-        UndefinedLocation, ValueMismatch,
-    },
-    parse::{MissingInput, RemainingInput, UnexpectedRule, UnknownKeyword},
+use common::errors::{
+    FreeTypeVariable, FreeVariable, KindMismatch, TypeMismatch, UndefinedLabel, UndefinedLocation,
+    ValueMismatch,
 };
+use parse::errors::{MissingInput, RemainingInput, UnexpectedRule, UnknownKeyword};
 use pest::error::Error as PestErr;
 use std::fmt;
 

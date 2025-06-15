@@ -6,6 +6,7 @@ edition = "2021"
 [dependencies]
 common = { path="../common_lib" }
 syntax = { path="../syntax_lib" }
+parse = { path="../parse_lib" }
 eval = { path="../eval_lib" }
 check = { path="../check_lib" }
 derivation = { path="../derivation_lib" } 

@@ -1,11 +1,5 @@
 use std::fmt;
 
-pub trait Parse: Sized {
-    type Rule;
-    type ParseError: std::error::Error + From<pest::error::Error<Self::Rule>>;
-    fn parse(sourcte: String) -> Result<Self, Self::ParseError>;
-}
-
 #[derive(Debug)]
 pub struct MissingInput {
     input: String,
@@ -49,6 +43,25 @@ impl fmt::Display for RemainingInput {
 impl std::error::Error for RemainingInput {}
 
 #[derive(Debug)]
+pub struct UnknownKeyword {
+    kw: String,
+}
+
+impl UnknownKeyword {
+    pub fn new(kw: &str) -> UnknownKeyword {
+        UnknownKeyword { kw: kw.to_owned() }
+    }
+}
+
+impl fmt::Display for UnknownKeyword {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Unknown keyword {}", self.kw)
+    }
+}
+
+impl std::error::Error for UnknownKeyword {}
+
+#[derive(Debug)]
 pub struct UnexpectedRule<R>
 where
     R: fmt::Debug,
@@ -56,7 +69,6 @@ where
     found: R,
     expected: String,
 }
-
 impl<R> UnexpectedRule<R>
 where
     R: fmt::Debug,
@@ -83,22 +95,3 @@ where
 }
 
 impl<R> std::error::Error for UnexpectedRule<R> where R: fmt::Debug {}
-
-#[derive(Debug)]
-pub struct UnknownKeyword {
-    kw: String,
-}
-
-impl UnknownKeyword {
-    pub fn new(kw: &str) -> UnknownKeyword {
-        UnknownKeyword { kw: kw.to_owned() }
-    }
-}
-
-impl fmt::Display for UnknownKeyword {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Unknown keyword {}", self.kw)
-    }
-}
-
-impl std::error::Error for UnknownKeyword {}

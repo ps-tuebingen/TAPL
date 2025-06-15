@@ -1,8 +1,6 @@
 use super::parser::Rule;
-use common::{
-    errors::{KindMismatch, NotImplemented, TypeMismatch, ValueMismatch},
-    parse::{MissingInput, RemainingInput, UnexpectedRule, UnknownKeyword},
-};
+use common::errors::{KindMismatch, NotImplemented, TypeMismatch, ValueMismatch};
+use parse::errors::{MissingInput, RemainingInput, UnexpectedRule, UnknownKeyword};
 use pest::error::Error as PestErr;
 use std::fmt;
 

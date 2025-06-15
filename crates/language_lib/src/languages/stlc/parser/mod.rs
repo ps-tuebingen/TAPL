@@ -1,5 +1,8 @@
 use super::{errors::Error, terms::Term, types::Type};
-use common::parse::{MissingInput, Parse, RemainingInput, UnexpectedRule};
+use parse::{
+    errors::{MissingInput, RemainingInput, UnexpectedRule},
+    Parse,
+};
 use pest::{iterators::Pair, Parser};
 use pest_derive::Parser;
 
