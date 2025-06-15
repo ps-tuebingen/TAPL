@@ -1,5 +1,7 @@
-use super::{pair_to_n_inner, pair_to_type, Error, MissingInput, RemainingInput, Rule, Term, Type};
-use common::parse::UnexpectedRule;
+use super::{
+    pair_to_n_inner, pair_to_type, Error, MissingInput, RemainingInput, Rule, Term, Type,
+    UnexpectedRule,
+};
 use pest::iterators::Pair;
 use syntax::{
     kinds::Kind,

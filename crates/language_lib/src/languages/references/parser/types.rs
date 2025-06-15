@@ -1,5 +1,4 @@
-use super::{pair_to_n_inner, Error, Rule, Type};
-use common::parse::{UnexpectedRule, UnknownKeyword};
+use super::{pair_to_n_inner, Error, Rule, Type, UnexpectedRule, UnknownKeyword};
 use pest::iterators::Pair;
 use syntax::types::{Bool, Fun, Nat, Reference, Unit};
 

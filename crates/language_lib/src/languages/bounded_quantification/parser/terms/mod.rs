@@ -1,5 +1,7 @@
-use super::{pair_to_n_inner, pair_to_type, Error, MissingInput, RemainingInput, Rule, Term, Type};
-use common::parse::{UnexpectedRule, UnknownKeyword};
+use super::{
+    pair_to_n_inner, pair_to_type, Error, MissingInput, RemainingInput, Rule, Term, Type,
+    UnexpectedRule, UnknownKeyword,
+};
 use pest::iterators::Pair;
 use syntax::terms::{App, Num, Variable};
 

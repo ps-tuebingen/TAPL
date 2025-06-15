@@ -1,5 +1,6 @@
-use super::{get_n_inner, next_rule, Error, MissingInput, Rule, Type, UnexpectedRule};
-use common::parse::UnknownKeyword;
+use super::{
+    get_n_inner, next_rule, Error, MissingInput, Rule, Type, UnexpectedRule, UnknownKeyword,
+};
 use pest::iterators::Pair;
 use std::collections::HashMap;
 use syntax::types::{Bool, Fun, Nat, Product, Record, Sum, Tuple, Unit, Variant};

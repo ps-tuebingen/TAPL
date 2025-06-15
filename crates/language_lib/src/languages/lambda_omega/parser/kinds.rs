@@ -1,5 +1,4 @@
-use super::{pair_to_n_inner, Error, MissingInput, RemainingInput, Rule};
-use common::parse::UnexpectedRule;
+use super::{pair_to_n_inner, Error, MissingInput, RemainingInput, Rule, UnexpectedRule};
 use pest::iterators::Pair;
 use syntax::kinds::Kind;
 

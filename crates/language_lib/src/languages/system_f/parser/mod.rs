@@ -1,6 +1,6 @@
 use super::{errors::Error, terms::Term, types::Type};
 use parse::{
-    errors::{MissingInput, RemainingInput},
+    errors::{MissingInput, RemainingInput, UnexpectedRule},
     Parse,
 };
 use pest::{iterators::Pair, Parser};
