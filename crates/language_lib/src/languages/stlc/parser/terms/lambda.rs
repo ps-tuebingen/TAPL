@@ -1,4 +1,4 @@
-use super::{get_n_inner, next_rule, pair_to_term, pair_to_type, Error, Rule, Term, Type};
+use super::{get_n_inner, pair_to_term, pair_to_type, Error, Rule, Term, Type};
 use pest::iterators::Pair;
 use syntax::terms::Lambda;
 
@@ -8,11 +8,9 @@ pub fn pair_to_lambda(p: Pair<'_, Rule>) -> Result<Lambda<Term, Type>, Error> {
     let var = inner.remove(0).as_str().trim();
 
     let ty_pair = inner.remove(0);
-    let ty_rule = next_rule(ty_pair, Rule::r#type)?;
-    let ty = pair_to_type(ty_rule)?;
+    let ty = pair_to_type(ty_pair)?;
 
-    let paren_term_rule = inner.remove(0);
-    let term_rule = next_rule(paren_term_rule, Rule::paren_term)?;
+    let term_rule = inner.remove(0);
     let term = pair_to_term(term_rule)?;
 
     Ok(Lambda::new(var, ty, term))

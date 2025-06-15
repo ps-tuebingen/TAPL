@@ -1,21 +1,57 @@
-use super::{pair_to_n_inner, Error, Rule, Type, UnexpectedRule, UnknownKeyword};
+use super::{
+    pair_to_n_inner, Error, MissingInput, RemainingInput, Rule, Type, UnexpectedRule,
+    UnknownKeyword,
+};
 use pest::iterators::Pair;
 use syntax::types::{Bool, Fun, Nat, Reference, Unit};
 
 pub fn pair_to_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
-    if p.as_rule() != Rule::r#type {
-        return Err(UnexpectedRule::new(p.as_rule(), "Type").into());
+    let mut inner = p.into_inner();
+    let prim_rule = inner
+        .next()
+        .ok_or(MissingInput::new("Non Left-Recursive Type"))?;
+    let prim_inner = pair_to_n_inner(prim_rule, vec!["Non Left-Recursive Type"])?.remove(0);
+    let prim_ty = pair_to_primtype(prim_inner)?;
+
+    let ty = match inner.next() {
+        None => prim_ty,
+        Some(leftrec) => {
+            let leftrec_inner = pair_to_n_inner(leftrec, vec!["Left Recursive Type"])?.remove(0);
+            pair_to_leftrec_ty(leftrec_inner, prim_ty)?
+        }
+    };
+
+    if let Some(n) = inner.next() {
+        return Err(RemainingInput::new(&format!("{n:?}")).into());
     }
-    let inner = pair_to_n_inner(p, vec!["Type"])?.remove(0);
-    match inner.as_rule() {
-        Rule::prim_type => str_to_prim_type(inner.as_str()),
-        Rule::fun_type => pair_to_fun_type(inner),
-        Rule::ref_type => pair_to_ref_type(inner),
+
+    Ok(ty)
+}
+
+fn pair_to_primtype(p: Pair<'_, Rule>) -> Result<Type, Error> {
+    match p.as_rule() {
+        Rule::const_type => str_to_prim_type(p.as_str()),
+        Rule::ref_type => pair_to_ref_type(p),
         Rule::paren_type => {
-            let inner = pair_to_n_inner(inner, vec!["Type"])?.remove(0);
+            let inner = pair_to_n_inner(p, vec!["Type"])?.remove(0);
             pair_to_type(inner)
         }
-        r => Err(UnexpectedRule::new(r, "Type").into()),
+        _ => Err(UnexpectedRule::new(p.as_rule(), "Non Left-Recursive Type").into()),
+    }
+}
+
+fn pair_to_leftrec_ty(p: Pair<'_, Rule>, ty: Type) -> Result<Type, Error> {
+    match p.as_rule() {
+        Rule::fun_type => {
+            let to_rule = pair_to_n_inner(p, vec!["Function To Type"])?.remove(0);
+            let to_ty = pair_to_type(to_rule)?;
+            Ok(Fun {
+                from: Box::new(ty),
+                to: Box::new(to_ty),
+            }
+            .into())
+        }
+        _ => Err(UnexpectedRule::new(p.as_rule(), "Left Recursive Type").into()),
     }
 }
 
@@ -28,18 +64,8 @@ fn str_to_prim_type(s: &str) -> Result<Type, Error> {
     }
 }
 
-fn pair_to_fun_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
-    let mut inner = pair_to_n_inner(p, vec!["From Type", "To Type"])?;
-    let from_rule = inner.remove(0);
-    let from_ty = pair_to_type(from_rule)?;
-    let to_rule = inner.remove(0);
-    let to_ty = pair_to_type(to_rule)?;
-    Ok(Fun::new(from_ty, to_ty).into())
-}
-
 fn pair_to_ref_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
-    let mut inner = pair_to_n_inner(p, vec!["Ref Keyword", "Ref Type"])?;
-    let _ = inner.remove(0);
+    let mut inner = pair_to_n_inner(p, vec!["Ref Type"])?;
     let ty_rule = inner.remove(0);
     let ty = pair_to_type(ty_rule)?;
     Ok(Reference::new(ty).into())

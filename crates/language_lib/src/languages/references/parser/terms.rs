@@ -53,7 +53,7 @@ fn prim_rule_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
             let term_rule = pair_to_n_inner(p, vec!["Term"])?.remove(0);
             pair_to_term(term_rule)
         }
-        Rule::r#const => const_to_term(p.as_str()),
+        Rule::const_term => const_to_term(p.as_str()),
         Rule::lambda_term => pair_to_lambda(p),
         Rule::succ_term => pair_to_succ(p),
         Rule::pred_term => pair_to_pred(p),
@@ -63,8 +63,7 @@ fn prim_rule_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
         Rule::let_term => pair_to_let(p),
         Rule::if_term => pair_to_if(p),
         Rule::fix_term => {
-            let mut fix_inner = pair_to_n_inner(p, vec!["Fix Keyword", "Fix Term"])?;
-            fix_inner.remove(0);
+            let mut fix_inner = pair_to_n_inner(p, vec!["Fix Term"])?;
             let paren_rule = fix_inner.remove(0);
             let fix_term = prim_rule_to_term(paren_rule)?;
             Ok(Fix::new(fix_term).into())
@@ -76,7 +75,7 @@ fn prim_rule_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
 fn pair_to_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
     let inner_rule = pair_to_n_inner(p, vec!["Left Recursive Term"])?.remove(0);
     match inner_rule.as_rule() {
-        Rule::assign_term => {
+        Rule::assign => {
             let term_rule = pair_to_n_inner(inner_rule, vec!["Assign Right hand side"])?.remove(0);
             let rhs = pair_to_term(term_rule)?;
             Ok(Assign::new(t, rhs).into())
@@ -112,14 +111,13 @@ fn pair_to_lambda(p: Pair<'_, Rule>) -> Result<Term, Error> {
     let annot = pair_to_type(ty_rule)?;
 
     let term_rule = inner_rules.remove(0);
-    let term = prim_rule_to_term(term_rule)?;
+    let term = pair_to_term(term_rule)?;
 
     Ok(Lambda::new(var, annot, term).into())
 }
 
 fn pair_to_ref(p: Pair<'_, Rule>) -> Result<Term, Error> {
-    let mut inner_rules = pair_to_n_inner(p, vec!["Ref Keyword", "Ref Term"])?;
-    let _ = inner_rules.remove(0);
+    let mut inner_rules = pair_to_n_inner(p, vec!["Ref Term"])?;
     let term_rule = inner_rules.remove(0);
     let term = prim_rule_to_term(term_rule)?;
     Ok(Ref::new(term).into())
@@ -132,22 +130,11 @@ fn pair_to_deref(p: Pair<'_, Rule>) -> Result<Term, Error> {
 }
 
 fn pair_to_let(p: Pair<'_, Rule>) -> Result<Term, Error> {
-    let mut inner = pair_to_n_inner(
-        p,
-        vec![
-            "Keyword Let",
-            "Let Variable",
-            "Let Bound Term",
-            "Keyword in",
-            "Let In Term",
-        ],
-    )?;
-    inner.remove(0);
+    let mut inner = pair_to_n_inner(p, vec!["Let Variable", "Let Bound Term", "Let In Term"])?;
     let var = inner.remove(0).as_str().trim();
 
     let bound_rule = inner.remove(0);
     let bound_term = pair_to_term(bound_rule)?;
-    inner.remove(0);
     let in_rule = inner.remove(0);
     let in_term = pair_to_term(in_rule)?;
 
@@ -155,45 +142,31 @@ fn pair_to_let(p: Pair<'_, Rule>) -> Result<Term, Error> {
 }
 
 fn pair_to_if(p: Pair<'_, Rule>) -> Result<Term, Error> {
-    let mut inner = pair_to_n_inner(
-        p,
-        vec![
-            "If Keyword",
-            "If Condition",
-            "then Term",
-            "Else Keyword",
-            "else Term",
-        ],
-    )?;
-    inner.remove(0);
+    let mut inner = pair_to_n_inner(p, vec!["If Condition", "then Term", "else Term"])?;
     let cond_pair = inner.remove(0);
     let cond_term = pair_to_term(cond_pair)?;
     let then_pair = inner.remove(0);
     let then_term = pair_to_term(then_pair)?;
-    inner.remove(0);
     let else_pair = inner.remove(0);
     let else_term = pair_to_term(else_pair)?;
     Ok(If::new(cond_term, then_term, else_term).into())
 }
 
 fn pair_to_succ(p: Pair<'_, Rule>) -> Result<Term, Error> {
-    let mut inner = pair_to_n_inner(p, vec!["Keyword Succ", "Succ Argument"])?;
-    inner.remove(0);
+    let mut inner = pair_to_n_inner(p, vec!["Succ Argument"])?;
     let term_rule = inner.remove(0);
     let term = prim_rule_to_term(term_rule)?;
     Ok(Succ::new(term).into())
 }
 
 fn pair_to_pred(p: Pair<'_, Rule>) -> Result<Term, Error> {
-    let mut inner = pair_to_n_inner(p, vec!["Keyword Pred", "Pred Argument"])?;
-    inner.remove(0);
+    let mut inner = pair_to_n_inner(p, vec!["Pred Argument"])?;
     let term_rule = inner.remove(0);
     let term = prim_rule_to_term(term_rule)?;
     Ok(Pred::new(term).into())
 }
 fn pair_to_isz(p: Pair<'_, Rule>) -> Result<Term, Error> {
-    let mut inner = pair_to_n_inner(p, vec!["Keyword IsZero", "IsZero Argument"])?;
-    inner.remove(0);
+    let mut inner = pair_to_n_inner(p, vec!["IsZero Argument"])?;
     let term_rule = inner.remove(0);
     let term = prim_rule_to_term(term_rule)?;
     Ok(IsZero::new(term).into())

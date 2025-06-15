@@ -81,10 +81,10 @@ variant_term = { "<" ~ variable ~ "=" ~ term ~ ">" ~ kw_as ~ type}
 variantcase_term = { kw_case ~ term ~ kw_of ~ "{" ~ variant_pattern ~ ("|" ~ variant_pattern)* ~ "}" }
 variant_pattern = { "<" ~ variable ~ "=" ~ variable ~ ">" ~ "=>" ~ term }
 pair_term = { "{" ~ term ~ "," ~ term ~ "}" }
-succ_term = { kw_succ ~ paren_term } 
-pred_term = { kw_pred ~ paren_term } 
+succ_term = { kw_succ ~ paren_term }
+pred_term = { kw_pred ~ paren_term }
 iszero_term = { kw_iszero ~ paren_term } 
-if_term = { kw_if ~ paren_term ~ "{" ~ term ~ "}" ~ kw_else ~ "{" ~ term ~ "}" } 
+if_term = { kw_if ~ paren_term ~ "{" ~ term ~ "}" ~ kw_else ~ "{" ~ term ~ "}" }
 fix_term = { kw_fix ~ paren_term }
 let_term = { kw_let ~ "(" ~ variable ~ "=" ~ term ~ ")" ~ kw_in ~ term }
 record_term = { "{" ~ variable ~ "=" ~ term ~ ("," ~ variable ~ "=" ~ term)* ~ "}" }
@@ -111,7 +111,7 @@ paren_type = { "(" ~ type ~ ")" }
 const_type = { kw_tyunit | kw_tynat | kw_tybool } 
 mu_type = { kw_mu ~ variable ~ "." ~ type }
 pair_type = { "(" ~ type ~ "x" ~ type ~ ")" }
-variant_type = { "<" ~ variable ~ ":" ~ type ~ ("," ~ variable ~ ":" ~ type)* ~ ">" } 
+variant_type = { "<" ~ variable ~ ":" ~ type ~ ("," ~ variable ~ ":" ~ type)* ~ ">" }
 record_type = { "{" ~ variable ~ ":" ~ type ~ ("," ~ variable ~ ":" ~ type)* ~ "}" }
 
 left_rec_type = { fun_type  }

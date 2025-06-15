@@ -50,7 +50,7 @@ fn pair_to_primterm(p: Pair<'_, Rule>) -> Result<Term, Error> {
         Rule::lambda_term => pair_to_lambda(p).map(|lam| lam.into()),
         Rule::fix_term => {
             let inner = pair_to_n_inner(p, vec!["Fix Term"])?.remove(0);
-            let inner_term = pair_to_term(inner)?;
+            let inner_term = pair_to_primterm(inner)?;
             Ok(Fix::new(inner_term).into())
         }
         Rule::succ_term => pair_to_succ(p).map(|s| s.into()),

@@ -82,7 +82,7 @@ fn pair_to_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
     match p.as_rule() {
         Rule::fst_term => Ok(Fst::new(t).into()),
         Rule::snd_term => Ok(Snd::new(t).into()),
-        Rule::projection => pair_to_proj(p, t).map(|proj| proj.into()),
+        Rule::record_proj => pair_to_proj(p, t).map(|proj| proj.into()),
         Rule::term => {
             let arg = pair_to_term(p)?;
             Ok(App {

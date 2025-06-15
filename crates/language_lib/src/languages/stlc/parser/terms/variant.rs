@@ -1,4 +1,4 @@
-use super::{get_n_inner, next_rule, pair_to_term, pair_to_type, Error, Rule, Term, Type};
+use super::{get_n_inner, pair_to_term, pair_to_type, Error, Rule, Term, Type};
 use pest::iterators::Pair;
 use syntax::terms::Variant;
 
@@ -12,8 +12,7 @@ pub fn pair_to_variant(p: Pair<'_, Rule>) -> Result<Variant<Term, Type>, Error> 
     let variant_term = pair_to_term(term_pair)?;
 
     let ty_pair = inner.remove(0);
-    let ty_rule = next_rule(ty_pair, Rule::r#type)?;
-    let variant_ty = pair_to_type(ty_rule)?;
+    let variant_ty = pair_to_type(ty_pair)?;
 
     Ok(Variant::new(var, variant_term, variant_ty))
 }

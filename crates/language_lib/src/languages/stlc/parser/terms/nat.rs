@@ -1,4 +1,4 @@
-use super::{get_n_inner, next_rule, pair_to_term, Error, Rule, Term, UnknownKeyword};
+use super::{get_n_inner, pair_to_primterm, Error, Rule, Term, UnknownKeyword};
 use pest::iterators::Pair;
 use syntax::terms::{IsZero, Num, Pred, Succ};
 
@@ -12,21 +12,18 @@ pub fn pair_to_num(p: Pair<'_, Rule>) -> Result<Term, Error> {
 
 pub fn pair_to_pred(p: Pair<'_, Rule>) -> Result<Pred<Term>, Error> {
     let inner_pair = get_n_inner(p, vec!["Pred Argument"])?.remove(0);
-    let inner_rule = next_rule(inner_pair, Rule::paren_term)?;
-    let inner_term = pair_to_term(inner_rule)?;
+    let inner_term = pair_to_primterm(inner_pair)?;
     Ok(Pred::new(inner_term))
 }
 
 pub fn pair_to_succ(p: Pair<'_, Rule>) -> Result<Succ<Term>, Error> {
     let inner_pair = get_n_inner(p, vec!["Succ Argument"])?.remove(0);
-    let inner_rule = next_rule(inner_pair, Rule::paren_term)?;
-    let inner_term = pair_to_term(inner_rule)?;
+    let inner_term = pair_to_primterm(inner_pair)?;
     Ok(Succ::new(inner_term))
 }
 
 pub fn pair_to_isz(p: Pair<'_, Rule>) -> Result<IsZero<Term>, Error> {
     let term_pair = get_n_inner(p, vec!["IsZero Argument"])?.remove(0);
-    let term_rule = next_rule(term_pair, Rule::paren_term)?;
-    let term = pair_to_term(term_rule)?;
+    let term = pair_to_primterm(term_pair)?;
     Ok(IsZero::new(term))
 }

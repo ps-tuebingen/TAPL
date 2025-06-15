@@ -11,7 +11,7 @@ mod types;
 use terms::pair_to_term;
 
 #[derive(Parser)]
-#[grammar = "languages/references/parser/references.pest"]
+#[grammar = "../../parse_lib/src/grammar.pest"]
 struct ReferencesParser;
 
 impl Parse for Term {

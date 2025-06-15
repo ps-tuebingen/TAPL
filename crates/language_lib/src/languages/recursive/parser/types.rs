@@ -31,7 +31,7 @@ fn pair_to_prim_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
     match p.as_rule() {
         Rule::const_type => str_to_type(p.as_str()),
         Rule::mu_type => pair_to_mu_type(p),
-        Rule::pair_type => pair_to_pair_type(p),
+        Rule::prod_type => pair_to_pair_type(p),
         Rule::variant_type => pair_to_variant_type(p),
         Rule::record_type => pair_to_record_type(p),
         Rule::paren_type => {
@@ -60,8 +60,7 @@ fn str_to_type(s: &str) -> Result<Type, Error> {
 }
 
 fn pair_to_mu_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
-    let mut inner = pair_to_n_inner(p, vec!["Mu Keyword", "Mu Variable", "Mu Body"])?;
-    inner.remove(0);
+    let mut inner = pair_to_n_inner(p, vec!["Mu Variable", "Mu Body"])?;
     let var = inner.remove(0).as_str().trim();
     let ty_rule = inner.remove(0);
     let ty = pair_to_type(ty_rule)?;
