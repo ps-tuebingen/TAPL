@@ -30,12 +30,13 @@ pub fn pair_to_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
 
 fn pair_to_prim_ty(p: Pair<'_, Rule>) -> Result<Type, Error> {
     match p.as_rule() {
-        Rule::const_ty => str_to_type(p.as_str()),
-        Rule::forall_ty => pair_to_forall(p),
+        Rule::const_type => str_to_type(p.as_str()),
+        Rule::top_type_star | Rule::top_type => Ok(Top::new_star().into()),
+        Rule::forall_type => pair_to_forall(p),
         Rule::forall_unbounded => pair_to_forall_unbounded(p),
         Rule::exists_unbounded => pair_to_exists_unbounded(p),
-        Rule::exists_ty => pair_to_exists(p),
-        Rule::record_ty => pair_to_rec_ty(p),
+        Rule::exists_type => pair_to_exists(p),
+        Rule::record_type => pair_to_rec_ty(p),
         Rule::paren_type => {
             let inner_rule = pair_to_n_inner(p, vec!["Type"])?.remove(0);
             pair_to_type(inner_rule)
@@ -47,7 +48,7 @@ fn pair_to_prim_ty(p: Pair<'_, Rule>) -> Result<Type, Error> {
 
 fn pair_to_leftrec_ty(p: Pair<'_, Rule>, ty: Type) -> Result<Type, Error> {
     match p.as_rule() {
-        Rule::fun_ty => pair_to_fun_ty(p, ty),
+        Rule::fun_type => pair_to_fun_ty(p, ty),
         r => Err(UnexpectedRule::new(r, "Function Type").into()),
     }
 }

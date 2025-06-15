@@ -11,7 +11,7 @@ use terms::pair_to_term;
 use types::pair_to_type;
 
 #[derive(Parser)]
-#[grammar = "languages/bounded_quantification/parser/bounded.pest"]
+#[grammar = "../../parse_lib/src/grammar.pest"]
 struct BoundedParser;
 
 impl Parse for Term {

@@ -45,11 +45,11 @@ fn pair_to_prim_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
             pair_to_term(term_rule)
         }
         Rule::lambda_term => pair_to_lambda(p).map(|lam| lam.into()),
-        Rule::lambda_sub => pair_to_lambda_sub(p).map(|lam| lam.into()),
-        Rule::ty_lambda => pair_to_tylambda(p).map(|lam| lam.into()),
+        Rule::lambda_sub_term => pair_to_lambda_sub(p).map(|lam| lam.into()),
+        Rule::ty_lambda_term => pair_to_tylambda(p).map(|lam| lam.into()),
         Rule::pack_term => pair_to_pack(p).map(|pack| pack.into()),
         Rule::unpack_term => pair_to_unpack(p).map(|unp| unp.into()),
-        Rule::rec_term => pair_to_rec(p).map(|rec| rec.into()),
+        Rule::record_term => pair_to_rec(p).map(|rec| rec.into()),
         Rule::succ_term => pair_to_succ(p).map(|s| s.into()),
         Rule::pred_term => pair_to_pred(p).map(|p| p.into()),
         Rule::number => {
@@ -69,10 +69,6 @@ fn pair_to_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
     match p.as_rule() {
         Rule::proj => pair_to_proj(p, t).map(|proj| proj.into()),
         Rule::tyapp => pair_to_tyapp(p, t).map(|app| app.into()),
-        Rule::paren_tyapp => {
-            let inner = pair_to_n_inner(p, vec!["Type Application"])?.remove(0);
-            pair_to_leftrec(inner, t)
-        }
         Rule::term => {
             let arg = pair_to_term(p)?;
             Ok(App {
