@@ -4,9 +4,9 @@ use web_sys::Document;
 
 mod context;
 mod example_select;
+mod out_divs;
 #[rustfmt::skip]
 mod examples;
-mod out_divs;
 
 use context::HtmlContext;
 

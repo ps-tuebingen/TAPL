@@ -20,11 +20,14 @@ impl HtmlContext {
         let document = web_sys::window().unwrap().document().unwrap();
 
         let example_select = ExampleSelect::new(&document);
+        log("created example select");
         let out_divs = OutDivs::new(&document);
+        log("created out divs");
 
         let run_button = get_by_id("run_button", &document);
         let source_area = get_by_id("source_code", &document);
         let language_select: HtmlSelectElement = get_by_id("language_select", &document);
+        log("got inner elements");
 
         let ctx = Rc::new(Self {
             document,
@@ -35,7 +38,9 @@ impl HtmlContext {
             example_select,
         });
         ctx.setup_languages();
+        log("setup languages");
         ctx.setup_events();
+        log("setup events");
         ctx
     }
 
@@ -97,25 +102,10 @@ impl HtmlContext {
         let (parse_res, check_res, eval_res, err_res) =
             lang.run_all(source, &FormatMethod::LatexFrac);
 
-        if let Some(p) = parse_res {
-            log(&format!("parsed: {p}"));
-            self.out_divs.parsed.set_inner_html(&format!("\\[{p}\\]"));
-        }
-
-        if let Some(c) = check_res {
-            log(&format!("checked: {c}"));
-            self.out_divs.checked.set_inner_html(&c);
-        }
-
-        if let Some(e) = eval_res {
-            log(&format!("evaluated: {e}"));
-            self.out_divs.evaled.set_inner_html(&e);
-        }
-
-        if let Some(e) = err_res {
-            self.out_divs.error.set_inner_html(&e);
-        }
-
+        self.out_divs.parsed.set_contents(parse_res);
+        self.out_divs.checked.set_contents(check_res);
+        self.out_divs.evaled.set_contents(eval_res);
+        self.out_divs.error.set_contents(err_res);
         typeset();
     }
 }
