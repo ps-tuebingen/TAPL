@@ -6,6 +6,6 @@ where
     T: Term + LatexFmt,
 {
     fn to_latex(&self, _: &mut LatexConfig) -> String {
-        "false".to_string()
+        "\\text{ false }".to_string()
     }
 }

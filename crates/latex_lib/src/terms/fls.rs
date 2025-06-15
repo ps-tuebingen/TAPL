@@ -6,6 +6,6 @@ where
     T: Term + LatexFmt,
 {
     fn to_latex(&self, _: &mut LatexConfig) -> String {
-        "\\text{false}".to_owned()
+        "\\text{ false }".to_owned()
     }
 }

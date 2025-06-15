@@ -1,4 +1,4 @@
-use super::{example_select::ExampleSelect, get_by_id, log, out_divs::OutDivs, typeset};
+use super::{example_select::ExampleSelect, get_by_id, out_divs::OutDivs, typeset};
 use language::{AllLanguages, FormatMethod};
 use std::rc::Rc;
 use wasm_bindgen::{closure::Closure, JsCast};
@@ -20,14 +20,11 @@ impl HtmlContext {
         let document = web_sys::window().unwrap().document().unwrap();
 
         let example_select = ExampleSelect::new(&document);
-        log("created example select");
         let out_divs = OutDivs::new(&document);
-        log("created out divs");
 
         let run_button = get_by_id("run_button", &document);
         let source_area = get_by_id("source_code", &document);
         let language_select: HtmlSelectElement = get_by_id("language_select", &document);
-        log("got inner elements");
 
         let ctx = Rc::new(Self {
             document,
@@ -38,9 +35,7 @@ impl HtmlContext {
             example_select,
         });
         ctx.setup_languages();
-        log("setup languages");
         ctx.setup_events();
-        log("setup events");
         ctx
     }
 

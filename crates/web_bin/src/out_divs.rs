@@ -3,7 +3,7 @@ use std::rc::Rc;
 use wasm_bindgen::{closure::Closure, JsCast};
 use web_sys::{Document, HtmlButtonElement, HtmlDivElement};
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum OutDivName {
     Parsed,
     Checked,
@@ -35,24 +35,20 @@ impl OutDivName {
 pub struct OutDiv {
     out_div: HtmlDivElement,
     collapse_button: HtmlButtonElement,
+    which: OutDivName,
 }
 
 impl OutDiv {
     pub fn new(name: OutDivName, doc: &Document) -> Rc<OutDiv> {
-        log(&format!("creating {name:?}"));
         let out_div = get_by_id(name.div_id(), doc);
-        log("got div");
         let collapse_button = get_by_id(name.button_id(), doc);
-        log("got button");
         let slf = Rc::new(OutDiv {
             out_div,
             collapse_button,
+            which: name,
         });
-        log("got outdiv and collapse button");
         slf.hide();
-        log("hidden");
         slf.setup_events();
-        log("setup events");
         slf
     }
 
@@ -91,8 +87,15 @@ impl OutDiv {
     }
 
     pub fn set_contents(&self, new_content: Option<String>) {
-        if let Some(s) = new_content {
-            self.out_div.set_inner_html(&format!("\\[{s}\\]"));
+        if let Some(mut s) = new_content {
+            if self.which == OutDivName::Parsed {
+                s = format!("\\[{s}\\]");
+            }
+            log(&format!("setting content {:?}:\n{s}", self.which));
+            self.out_div.set_inner_html(&format!("{s}"));
+            self.show();
+        } else {
+            self.hide()
         }
     }
 
@@ -117,13 +120,9 @@ pub struct OutDivs {
 impl OutDivs {
     pub fn new(doc: &Document) -> OutDivs {
         let parsed = OutDiv::new(OutDivName::Parsed, doc);
-        log("created parsed");
         let checked = OutDiv::new(OutDivName::Checked, doc);
-        log("created checked");
         let evaled = OutDiv::new(OutDivName::Evaled, doc);
-        log("created evaled");
         let error = OutDiv::new(OutDivName::Error, doc);
-        log("created error");
 
         OutDivs {
             parsed,

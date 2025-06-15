@@ -9,7 +9,10 @@ where
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         let source_str = self.source.to_latex(conf);
         let target_str = self.target.to_latex(conf);
-        format!("{source_str} \\mapsto_{{{}}} {target_str}", self.rule)
+        format!(
+            "{source_str} \\\\ \\mapsto_{{{}}} \\\\ {target_str}",
+            self.rule
+        )
     }
 }
 
@@ -27,10 +30,16 @@ where
         let step_strs = self
             .steps
             .iter()
-            .map(|step| step.to_latex(conf))
+            .map(|step| {
+                format!(
+                    "{} \\\\ \\mapsto_{{{}}} \\\\ ",
+                    step.source.to_latex(conf),
+                    step.rule
+                )
+            })
             .collect::<Vec<String>>();
         format!(
-            "{}{}\\\\{}{}",
+            "{}\\begin{{array}}{{c c}}{} \\\\ {}\\end{{array}}{}",
             math_env.0,
             step_strs.join("\\\\"),
             self.val().to_latex(conf),
