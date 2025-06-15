@@ -43,13 +43,13 @@ fn pair_to_primtype(p: Pair<'_, Rule>) -> Result<Type, Error> {
             let ty_rule = pair_to_n_inner(p, vec!["Type"])?.remove(0);
             pair_to_type(ty_rule)
         }
-        Rule::const_ty => str_to_type(p.as_str()),
-        Rule::forall_ty => pair_to_universal(p).map(|uni| uni.into()),
-        Rule::forall_star_ty => pair_to_universal_star(p).map(|uni| uni.into()),
-        Rule::op_lambda_star => pair_to_op_lambda_star(p).map(|oplam| oplam.into()),
-        Rule::op_lambda => pair_to_op_lambda(p).map(|oplam| oplam.into()),
-        Rule::exists_ty => pair_to_exists(p).map(|ex| ex.into()),
-        Rule::record_ty => pair_to_rec_ty(p).map(|rec| rec.into()),
+        Rule::const_type => str_to_type(p.as_str()),
+        Rule::forall_kinded_type => pair_to_universal(p).map(|uni| uni.into()),
+        Rule::forall_unbounded_type => pair_to_universal_star(p).map(|uni| uni.into()),
+        Rule::op_lambda_star_type => pair_to_op_lambda_star(p).map(|oplam| oplam.into()),
+        Rule::op_lambda_type => pair_to_op_lambda(p).map(|oplam| oplam.into()),
+        Rule::exists_kinded_type => pair_to_exists(p).map(|ex| ex.into()),
+        Rule::record_type => pair_to_rec_ty(p).map(|rec| rec.into()),
         Rule::variable => Ok(TypeVariable::new(p.as_str().trim()).into()),
         _ => Err(UnexpectedRule::new(p.as_rule(), "Non Left-Recursive Type").into()),
     }
@@ -57,7 +57,7 @@ fn pair_to_primtype(p: Pair<'_, Rule>) -> Result<Type, Error> {
 
 fn pair_to_leftrec_ty(p: Pair<'_, Rule>, ty: Type) -> Result<Type, Error> {
     match p.as_rule() {
-        Rule::fun_ty => {
+        Rule::fun_type => {
             let to_rule = pair_to_n_inner(p, vec!["Function To Type"])?.remove(0);
             let to_ty = pair_to_type(to_rule)?;
             Ok(Fun {
@@ -66,7 +66,7 @@ fn pair_to_leftrec_ty(p: Pair<'_, Rule>, ty: Type) -> Result<Type, Error> {
             }
             .into())
         }
-        Rule::op_app => {
+        Rule::op_app_type => {
             let arg_rule = pair_to_n_inner(p, vec!["Type"])?.remove(0);
             let arg = pair_to_type(arg_rule)?;
             Ok(OpApp::new(ty, arg).into())

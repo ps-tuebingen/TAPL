@@ -50,15 +50,15 @@ fn pair_to_primterm(p: Pair<'_, Rule>) -> Result<Term, Error> {
         Rule::lambda_term => pair_to_lambda(p).map(|lam| lam.into()),
         Rule::fix_term => {
             let inner = pair_to_n_inner(p, vec!["Fix Term"])?.remove(0);
-            let inner_term = pair_to_primterm(inner)?;
+            let inner_term = pair_to_term(inner)?;
             Ok(Fix::new(inner_term).into())
         }
         Rule::succ_term => pair_to_succ(p).map(|s| s.into()),
         Rule::pred_term => pair_to_pred(p).map(|p| p.into()),
         Rule::iszero_term => pair_to_iszero(p).map(|isz| isz.into()),
         Rule::if_term => pair_to_if(p).map(|ift| ift.into()),
-        Rule::tylambda_term => pair_to_ty_lambda(p).map(|tylam| tylam.into()),
-        Rule::tylambda_star_term => pair_to_ty_lambda_star(p).map(|tylam| tylam.into()),
+        Rule::ty_lambda_kinded_term => pair_to_ty_lambda(p).map(|tylam| tylam.into()),
+        Rule::ty_lambda_term => pair_to_ty_lambda_star(p).map(|tylam| tylam.into()),
         Rule::pack_term => pair_to_pack(p).map(|pack| pack.into()),
         Rule::unpack_term => pair_to_unpack(p).map(|unpack| unpack.into()),
         Rule::record_term => pair_to_record(p).map(|rec| rec.into()),
@@ -78,8 +78,8 @@ fn pair_to_primterm(p: Pair<'_, Rule>) -> Result<Term, Error> {
 
 fn pair_to_leftrec_term(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
     match p.as_rule() {
-        Rule::ty_app => pair_to_tyapp(p, t).map(|tyapp| tyapp.into()),
-        Rule::record_projection => {
+        Rule::tyapp => pair_to_tyapp(p, t).map(|tyapp| tyapp.into()),
+        Rule::record_proj => {
             let label_rule = pair_to_n_inner(p, vec!["Projection Target"])?.remove(0);
             let label = label_rule.as_str().trim();
             Ok(RecordProj::new(t, label).into())

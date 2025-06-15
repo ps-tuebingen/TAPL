@@ -67,8 +67,7 @@ fn pair_to_forall(p: Pair<'_, Rule>) -> Result<Type, Error> {
         vec!["Forall Variable", "Forall Super Type", "Forall Body"],
     )?;
     let var_rule = inner.remove(0);
-    let mut var_inner = pair_to_n_inner(var_rule, vec!["Forall Keyword", "Forall Variable"])?;
-    var_inner.remove(0);
+    let mut var_inner = pair_to_n_inner(var_rule, vec!["Forall Variable"])?;
     let var = var_inner.remove(0).as_str().trim();
     let super_rule = inner.remove(0);
     let super_ty = pair_to_type(super_rule)?;
@@ -82,8 +81,7 @@ fn pair_to_forall(p: Pair<'_, Rule>) -> Result<Type, Error> {
 fn pair_to_forall_unbounded(p: Pair<'_, Rule>) -> Result<Type, Error> {
     let mut inner = pair_to_n_inner(p, vec!["Forall Variable", "Forall Body"])?;
     let var_rule = inner.remove(0);
-    let mut var_inner = pair_to_n_inner(var_rule, vec!["Forall Keyword", "Forall Variable"])?;
-    var_inner.remove(0);
+    let mut var_inner = pair_to_n_inner(var_rule, vec!["Forall Variable"])?;
     let var = var_inner.remove(0).as_str().trim();
     let body_rule = inner.remove(0);
     let body_ty = pair_to_type(body_rule)?;
@@ -96,8 +94,7 @@ fn pair_to_exists(p: Pair<'_, Rule>) -> Result<Type, Error> {
         vec!["Exists Variable", "Exists Super Type", "Exists Type"],
     )?;
     let var_rule = inner.remove(0);
-    let mut var_inner = pair_to_n_inner(var_rule, vec!["Exists Keyword", "Exists Variable"])?;
-    var_inner.remove(0);
+    let mut var_inner = pair_to_n_inner(var_rule, vec!["Exists Variable"])?;
     let var = var_inner.remove(0).as_str().trim();
 
     let super_rule = inner.remove(0);
@@ -112,8 +109,7 @@ fn pair_to_exists(p: Pair<'_, Rule>) -> Result<Type, Error> {
 fn pair_to_exists_unbounded(p: Pair<'_, Rule>) -> Result<Type, Error> {
     let mut inner = pair_to_n_inner(p, vec!["Exists Variable", "Exists Type"])?;
     let var_rule = inner.remove(0);
-    let mut var_inner = pair_to_n_inner(var_rule, vec!["Exists Keyword", "Exists Variable"])?;
-    var_inner.remove(0);
+    let mut var_inner = pair_to_n_inner(var_rule, vec!["Exists Variable"])?;
     let var = var_inner.remove(0).as_str().trim();
     let body_rule = inner.remove(0);
     let body_ty = pair_to_type(body_rule)?;

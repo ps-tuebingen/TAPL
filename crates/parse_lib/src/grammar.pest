@@ -2,32 +2,32 @@ WHITESPACE = _{ " " | "\n" | "\t" }
 program = { SOI ~ term ~ EOI }
 
 // Keyword 
-kw_unit = { "unit" }
-kw_fix = { "fix" }
-kw_let = { "let" }
-kw_as = { "as" }
-kw_in = { "in" }
-kw_try = { "try" }
-kw_with = { "with" }
-kw_catch = { "catch" }
-kw_raise = { "raise" }
-kw_error = { "error" }
-kw_true = { "true" } 
-kw_false = { "false" }
-kw_zero = { "zero" }
-kw_succ = { "succ" }
-kw_pred = { "pred" }
-kw_iszero = { "iszero" }
-kw_if = { "if" }
-kw_else = { "else" }
-kw_forall = { "forall" }
-kw_exists = { "exists" }
-kw_tytop = { "Top" }
-kw_tyunit = { "Unit" }
-kw_tynat = { "Nat" }
-kw_tybool = { "Bool" }
+kw_unit = _{ "unit" }
+kw_fix = _{ "fix" }
+kw_let = _{ "let" }
+kw_as = _{ "as" }
+kw_in = _{ "in" }
+kw_try = _{ "try" }
+kw_with = _{ "with" }
+kw_catch = _{ "catch" }
+kw_raise = _{ "raise" }
+kw_error = _{ "error" }
+kw_true = _{ "true" } 
+kw_false = _{ "false" }
+kw_zero = _{ "zero" }
+kw_succ = _{ "succ" }
+kw_pred = _{ "pred" }
+kw_iszero = _{ "iszero" }
+kw_if = _{ "if" }
+kw_else = _{ "else" }
+kw_forall = _{ "forall" }
+kw_exists = _{ "exists" }
+kw_tytop = _{ "Top" }
+kw_tyunit = _{ "Unit" }
+kw_tynat = _{ "Nat" }
+kw_tybool = _{ "Bool" }
 
-keyword = {
+keyword = _{
   | kw_unit
   | kw_fix
   | kw_try
@@ -61,6 +61,7 @@ prim_term = {
   | lambda_term
   | lambda_sub_term
   | ty_lambda_term
+  | ty_lambda_kinded_term
   | pack_term
   | unpack_term
   | record_term
@@ -82,6 +83,7 @@ fix_term = { kw_fix ~ term }
 lambda_term = { "\\" ~ variable ~ ":" ~ type ~ "." ~ term }
 lambda_sub_term = { "\\" ~ variable ~ "<:" ~ type ~ "." ~ term }
 ty_lambda_term = { "\\" ~ variable ~ "." ~ term }
+ty_lambda_kinded_term = { "\\" ~ variable ~ "::" ~ kind ~ "." ~ term }
 pack_term = { "{" ~ "*" ~ type ~ "," ~ term ~ "}" ~ kw_as ~ type }
 unpack_term = { kw_let ~ "{" ~ variable ~ "," ~ variable ~ "}" ~ "=" ~ term ~ kw_in ~ term }
 record_term = { "{" ~ variable ~ "=" ~ term ~ ("," ~ variable ~ "=" ~ term)* ~ "}" }
@@ -102,7 +104,6 @@ variable = @{ !(keyword ~ !ASCII_ALPHANUMERIC) ~ ( !(WHITESPACE) ~ (ASCII_ALPHA|
 number = { ASCII_DIGIT+ }
 
 // Types
-const_type = { kw_tybool | kw_tynat | kw_tyunit }
 paren_type = {"(" ~ type ~ ")"}
 type = { prim_type ~ left_rec_type? }
 
@@ -113,9 +114,12 @@ prim_type = {
   | prod_type
   | forall_bounded_type
   | forall_unbounded_type
+  | forall_kinded_type
   | exists_bounded_type
   | exists_unbounded_type
   | exists_kinded_type
+  | op_lambda_type
+  | op_lambda_star_type
   | sum_type
   | record_type
   | variant_type
@@ -124,23 +128,28 @@ prim_type = {
   | paren_type
 }
 
+const_type = { kw_tybool | kw_tynat | kw_tyunit }
 top_type  = { kw_tytop ~ "[" ~ kind ~ "]" }
 top_type_star = { kw_tytop }
 forall_bounded_type = { forall_start ~ "<:" ~ type ~ "." ~ type } 
-forall_unbounded_type = { forall_start  ~ "." ~ type }
+forall_unbounded_type = { forall_start ~ "." ~ type }
+forall_kinded_type = { forall_start ~ "::" ~ kind ~ "." ~ type } 
 forall_start = ${ kw_forall ~ " " ~ variable }
 exists_bounded_type ={ "{" ~ exists_start ~ "<:" ~ type ~ "," ~ type ~ "}"  } 
 exists_unbounded_type = { "{" ~ exists_start ~ "," ~ type ~ "}" }
-exists_kinded_type = { "{" ~ exists_start ~ "::*"? ~ "," ~ type ~ "}" }
+exists_kinded_type = { "{" ~ exists_start ~ "::" ~ kind ~ "," ~ type ~ "}" }
 exists_start = ${ kw_exists ~ " " ~ variable }
+op_lambda_star_type = { "\\" ~ variable ~ "." ~ type }
+op_lambda_type = { "\\" ~ variable ~ "::" ~ kind ~ "." ~ type }
 prod_type = { "(" ~ type ~ "x" ~ type ~ ")" }
 sum_type = { "(" ~ type ~ "+" ~ type ~ ")" }
 record_type =  { "{" ~ variable ~ ":" ~ type ~ ("," ~ variable ~ ":" ~ type)* ~ "}" }
 variant_type = { "<" ~ variable ~ ":" ~ type ~ ("," ~ variable ~ ":" ~ type)* ~ ">" }
 tuple_type = { "(" ~ type ~ ("," ~ type)+ ~ ")" }
 
-left_rec_type = { fun_type }
+left_rec_type = { fun_type | op_app_type }
 fun_type = { "->" ~ type }
+op_app_type = { "[" ~ type ~ "]" }
 
 //Kinds
 kind = { prim_kind ~ arrow_kind? } 
