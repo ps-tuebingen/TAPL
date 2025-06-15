@@ -102,7 +102,9 @@ h2 {
   margin-right:1em;
   margin-left:1em;
   display:grid;
-  grid-template-rows:auto auto 1fr auto 1fr auto 1fr auto 1fr;
+  grid-template-rows:auto auto auto auto auto auto auto auto auto;
+  grid-template-columns:2fr 1fr;
+  row-gap:1em;
   max-width:100%;
   min-width:0%;
 }
@@ -115,5 +117,16 @@ h2 {
   border-radius:1em;
   padding:0.5em;
   overflow:auto;
+  min-height:0%;
+  height:fit-content;
 }
 
+.collapse_button{
+  justify-self:end;
+  grid-column:2;
+  border:none;
+}
+
+.output_label{
+  grid-column:1;
+}
