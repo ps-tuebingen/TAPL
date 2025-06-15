@@ -103,6 +103,8 @@ h2 {
   margin-left:1em;
   display:grid;
   grid-template-rows:auto auto 1fr auto 1fr auto 1fr auto 1fr;
+  max-width:100%;
+  min-width:0%;
 }
 
 .output{
@@ -110,7 +112,6 @@ h2 {
   font-family: "Roboto Mono", monospace;
   background:var(--bg-color2);
   color:var(--fg-color3);
-  height:3em;
   border-radius:1em;
   padding:0.5em;
   overflow:auto;
