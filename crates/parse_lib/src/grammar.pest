@@ -18,8 +18,13 @@ kw_zero = _{ "zero" }
 kw_succ = _{ "succ" }
 kw_pred = _{ "pred" }
 kw_iszero = _{ "iszero" }
+kw_case = _{ "case" }
+kw_of = _{ "of" }
+kw_mu = _{ "mu" }
 kw_if = _{ "if" }
 kw_else = _{ "else" }
+kw_fold = _{ "fold" }
+kw_unfold = _{ "unfold" }
 kw_forall = _{ "forall" }
 kw_exists = _{ "exists" }
 kw_tytop = _{ "Top" }
@@ -42,8 +47,13 @@ keyword = _{
   | kw_succ 
   | kw_pred
   | kw_iszero
+  | kw_case
+  | kw_of
+  | kw_mu
   | kw_if
   | kw_else
+  | kw_fold
+  | kw_unfold
   | kw_forall
   | kw_exists
   | kw_tyunit
@@ -74,6 +84,11 @@ prim_term = {
   | try_catch
   | err_term
   | raise_term 
+  | fold_term
+  | unfold_term
+  | pair_term
+  | variant_term
+  | variantcase_term
   | paren_term
   | number
   | variable 
@@ -82,6 +97,8 @@ prim_term = {
 const_term = { kw_unit | kw_zero | kw_true | kw_false } 
 fix_term = { kw_fix ~ term }
 let_term = { kw_let ~ "(" ~ variable ~ "=" ~ term ~ ")" ~ kw_in ~ term }
+pair_term = { "{" ~ term ~ "," ~ term ~ "}" }
+variant_term = { "<" ~ variable ~ "=" ~ term ~ ">" ~ kw_as ~ type}
 lambda_term = { "\\" ~ variable ~ ":" ~ type ~ "." ~ term }
 lambda_sub_term = { "\\" ~ variable ~ "<:" ~ type ~ "." ~ term }
 ty_lambda_term = { "\\" ~ variable ~ "." ~ term }
@@ -97,10 +114,17 @@ try_term = { kw_try ~ "{" ~ term ~ "}" ~ kw_with ~ "{" ~ term ~ "}" }
 try_catch = { kw_try ~ "{" ~ term ~ "}" ~ kw_catch ~ "{" ~ term ~ "}" }
 err_term = { kw_error ~ "[" ~ type ~ "]" }
 raise_term = { kw_raise ~ "[" ~ type ~ "]" ~ "(" ~ term ~ ":" ~ type ~ ")" } 
+fold_term = { kw_fold ~ "[" ~ type ~ "]" ~ term }
+unfold_term = { kw_unfold ~ "[" ~ type ~ "]" ~ term }
+variantcase_term = { kw_case ~ term ~ kw_of ~ "{" ~ variant_pattern ~ ("|" ~ variant_pattern)* ~ "}" }
+variant_pattern = { "<" ~ variable ~ "=" ~ variable ~ ">" ~ "=>" ~ term }
 
-left_rec = { record_proj | tyapp | term }
+left_rec = { record_proj | tyapp | fst_term | snd_term | projection | term }
 record_proj = { "." ~ variable } 
 tyapp = { "[" ~ type ~ "]" }
+fst_term = { ".0" }
+snd_term = { ".1" } 
+projection = { "." ~ variable }
 
 variable = @{ !(keyword ~ !ASCII_ALPHANUMERIC) ~ ( !(WHITESPACE) ~ (ASCII_ALPHA|ASCII_DIGIT) )+ | "_" }
 number = { ASCII_DIGIT+ }
@@ -127,6 +151,9 @@ prim_type = {
   | record_type
   | variant_type
   | tuple_type
+  | pair_type
+  | variant_type
+  | mu_type
   | variable
   | paren_type
 }
@@ -150,6 +177,8 @@ sum_type = { "(" ~ type ~ "+" ~ type ~ ")" }
 record_type =  { "{" ~ variable ~ ":" ~ type ~ ("," ~ variable ~ ":" ~ type)* ~ "}" }
 variant_type = { "<" ~ variable ~ ":" ~ type ~ ("," ~ variable ~ ":" ~ type)* ~ ">" }
 tuple_type = { "(" ~ type ~ ("," ~ type)+ ~ ")" }
+pair_type = { "(" ~ type ~ "x" ~ type ~ ")" }
+mu_type = { kw_mu ~ variable ~ "." ~ type }
 
 left_rec_type = { fun_type | op_app_type }
 fun_type = { "->" ~ type }

@@ -12,7 +12,7 @@ use terms::pair_to_term;
 use types::pair_to_type;
 
 #[derive(Parser)]
-#[grammar = "languages/recursive/parser/recursive.pest"]
+#[grammar = "../../parse_lib/src/grammar.pest"]
 struct RecursiveParser;
 
 impl Parse for Term {
