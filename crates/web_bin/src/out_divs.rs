@@ -92,7 +92,7 @@ impl OutDiv {
                 s = format!("\\[{s}\\]");
             }
             log(&format!("setting content {:?}:\n{s}", self.which));
-            self.out_div.set_inner_html(&format!("{s}"));
+            self.out_div.set_inner_html(&s.to_string());
             self.show();
         } else {
             self.hide()
