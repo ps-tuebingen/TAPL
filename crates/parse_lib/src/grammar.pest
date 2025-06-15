@@ -58,6 +58,7 @@ paren_term = { "(" ~ term ~ ")" }
 prim_term = {
   | const_term 
   | fix_term
+  | let_term
   | lambda_term
   | lambda_sub_term
   | ty_lambda_term
@@ -80,6 +81,7 @@ prim_term = {
 
 const_term = { kw_unit | kw_zero | kw_true | kw_false } 
 fix_term = { kw_fix ~ term }
+let_term = { kw_let ~ "(" ~ variable ~ "=" ~ term ~ ")" ~ kw_in ~ term }
 lambda_term = { "\\" ~ variable ~ ":" ~ type ~ "." ~ term }
 lambda_sub_term = { "\\" ~ variable ~ "<:" ~ type ~ "." ~ term }
 ty_lambda_term = { "\\" ~ variable ~ "." ~ term }
@@ -119,6 +121,7 @@ prim_type = {
   | exists_unbounded_type
   | exists_kinded_type
   | op_lambda_type
+  | op_lambda_sub_type
   | op_lambda_star_type
   | sum_type
   | record_type
@@ -141,6 +144,7 @@ exists_kinded_type = { "{" ~ exists_start ~ "::" ~ kind ~ "," ~ type ~ "}" }
 exists_start = ${ kw_exists ~ " " ~ variable }
 op_lambda_star_type = { "\\" ~ variable ~ "." ~ type }
 op_lambda_type = { "\\" ~ variable ~ "::" ~ kind ~ "." ~ type }
+op_lambda_sub_type = { "\\" ~ variable ~ "<:" ~ type ~ "." ~ type }
 prod_type = { "(" ~ type ~ "x" ~ type ~ ")" }
 sum_type = { "(" ~ type ~ "+" ~ type ~ ")" }
 record_type =  { "{" ~ variable ~ ":" ~ type ~ ("," ~ variable ~ ":" ~ type)* ~ "}" }

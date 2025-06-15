@@ -51,8 +51,8 @@ fn pair_to_primterm(p: Pair<'_, Rule>) -> Result<Term, Error> {
         Rule::let_term => pair_to_let(p).map(|lett| lett.into()),
         Rule::succ_term => pair_to_succ(p).map(|s| s.into()),
         Rule::pred_term => pair_to_pred(p).map(|p| p.into()),
-        Rule::tylambda_term => pair_to_ty_lambda(p).map(|tylam| tylam.into()),
-        Rule::tylambda_unbounded => pair_to_ty_lambda_unbounded(p).map(|tylam| tylam.into()),
+        Rule::lambda_sub_term => pair_to_ty_lambda(p).map(|tylam| tylam.into()),
+        Rule::ty_lambda_term => pair_to_ty_lambda_unbounded(p).map(|tylam| tylam.into()),
         Rule::pack_term => pair_to_pack(p).map(|pack| pack.into()),
         Rule::unpack_term => pair_to_unpack(p).map(|unpack| unpack.into()),
         Rule::record_term => pair_to_record(p).map(|rec| rec.into()),
@@ -72,8 +72,8 @@ fn pair_to_primterm(p: Pair<'_, Rule>) -> Result<Term, Error> {
 
 fn pair_to_leftrec_term(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
     match p.as_rule() {
-        Rule::ty_app => pair_to_tyapp(p, t).map(|tyapp| tyapp.into()),
-        Rule::record_projection => {
+        Rule::tyapp => pair_to_tyapp(p, t).map(|tyapp| tyapp.into()),
+        Rule::record_proj => {
             let label_rule = pair_to_n_inner(p, vec!["Projection Target"])?.remove(0);
             let label = label_rule.as_str().trim();
             Ok(RecordProj::new(t, label).into())

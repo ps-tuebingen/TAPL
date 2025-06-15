@@ -14,7 +14,7 @@ use terms::pair_to_term;
 use types::pair_to_type;
 
 #[derive(Parser)]
-#[grammar = "languages/f_omega_sub/parser/fomegasub.pest"]
+#[grammar = "../../parse_lib/src/grammar.pest"]
 struct FOmegaSubParser;
 
 impl Parse for Term {
