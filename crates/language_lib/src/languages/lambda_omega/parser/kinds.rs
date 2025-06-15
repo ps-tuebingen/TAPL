@@ -24,7 +24,7 @@ pub fn pair_to_kind(p: Pair<'_, Rule>) -> Result<Kind, Error> {
 
 fn pair_to_prim_kind(p: Pair<'_, Rule>) -> Result<Kind, Error> {
     match p.as_rule() {
-        Rule::kind_star => Ok(Kind::Star),
+        Rule::star_kind => Ok(Kind::Star),
         Rule::paren_kind => {
             let inner = pair_to_n_inner(p, vec!["Kind"])?.remove(0);
             pair_to_kind(inner)

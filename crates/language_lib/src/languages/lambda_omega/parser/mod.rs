@@ -14,7 +14,7 @@ use terms::pair_to_term;
 use types::pair_to_type;
 
 #[derive(Parser)]
-#[grammar = "languages/lambda_omega/parser/lambda_omega.pest"]
+#[grammar = "../../parse_lib/src/grammar.pest"]
 struct LambdaOmegaParser;
 
 impl Parse for Term {

@@ -1,4 +1,4 @@
-WHITESPACE = _{ " " | "\n" | "\t" }
+star_kind = _{ " " | "\n" | "\t" }
 variable = @{ !(keyword ~ !ASCII_ALPHANUMERIC) ~ ( !(WHITESPACE) ~ (ASCII_ALPHA|ASCII_DIGIT) )+ | "_" }
 
 program = { SOI ~ term ~ EOI }

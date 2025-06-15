@@ -32,9 +32,9 @@ pub fn pair_to_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
 
 fn pair_to_prim_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
     match p.as_rule() {
-        Rule::const_ty => str_to_ty(p.as_str()),
-        Rule::forall_ty => pair_to_forall(p),
-        Rule::lambda_ty => pair_to_lambda_ty(p),
+        Rule::const_type => str_to_ty(p.as_str()),
+        Rule::forall_unbounded_type => pair_to_forall(p),
+        Rule::op_lambda_type => pair_to_lambda_ty(p),
         Rule::paren_type => {
             let inner = pair_to_n_inner(p, vec!["Type"])?.remove(0);
             pair_to_type(inner)
@@ -46,7 +46,7 @@ fn pair_to_prim_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
 
 fn pair_to_leftrec_ty(p: Pair<'_, Rule>, ty: Type) -> Result<Type, Error> {
     match p.as_rule() {
-        Rule::fun_ty => pair_to_fun_ty(p, ty),
+        Rule::fun_type => pair_to_fun_ty(p, ty),
         Rule::r#type => {
             let arg_ty = pair_to_type(p)?;
             Ok(OpApp::new(ty, arg_ty).into())

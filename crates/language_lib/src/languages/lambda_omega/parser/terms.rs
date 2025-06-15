@@ -32,7 +32,7 @@ fn pair_to_prim_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
     match p.as_rule() {
         Rule::const_term => str_to_term(p.as_str()),
         Rule::lambda_term => pair_to_lambda(p),
-        Rule::tylambda_term => pair_to_tylambda(p),
+        Rule::ty_lambda_kinded_term => pair_to_tylambda(p),
         Rule::paren_term => {
             let term_rule = pair_to_n_inner(p, vec!["Term"])?.remove(0);
             pair_to_term(term_rule)
