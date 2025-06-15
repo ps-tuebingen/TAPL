@@ -7,15 +7,11 @@ use eval::Eval;
 use std::fmt;
 use std::marker::PhantomData;
 
-pub trait EvalConfig: TestConfig {
-    fn expected(&self) -> &str;
-}
-
 pub struct EvalTest<'a, T, Conf>
 where
     T: Eval + Parse,
     T::Value: fmt::Display,
-    Conf: EvalConfig,
+    Conf: TestConfig,
 {
     conf: &'a Conf,
     phantom: PhantomData<T>,
@@ -25,7 +21,7 @@ impl<'a, T, Conf> EvalTest<'a, T, Conf>
 where
     T: Eval + Parse,
     T::Value: fmt::Display,
-    Conf: EvalConfig,
+    Conf: TestConfig,
 {
     pub fn new(conf: &'a Conf) -> EvalTest<'a, T, Conf> {
         EvalTest {
@@ -39,7 +35,7 @@ impl<'a, T, Conf> Test<'a> for EvalTest<'a, T, Conf>
 where
     T: Eval + Parse,
     T::Value: fmt::Display,
-    Conf: EvalConfig,
+    Conf: TestConfig,
 {
     fn name(&self) -> String {
         format!("Evaluating {}", self.conf.name())
@@ -54,6 +50,6 @@ where
             Ok(v) => v,
             Err(err) => return TestResult::from_err(err),
         };
-        TestResult::from_eq(&evaled.val(), &self.conf.expected())
+        TestResult::from_eq(&evaled.val(), &self.conf.evaluated())
     }
 }

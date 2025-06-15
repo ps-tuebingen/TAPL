@@ -1,4 +1,8 @@
-use crate::{latex::LatexTestConf, paths::LATEX_OUT, test::Test, test_result::TestResult};
+use crate::{
+    paths::LATEX_OUT,
+    test::{Test, TestConfig},
+    test_result::TestResult,
+};
 use check::Typecheck;
 use common::parse::Parse;
 use latex::{LatexConfig, LatexFmt};
@@ -16,7 +20,7 @@ pub struct LatexTestFrac<'a, T, Conf>
 where
     T: Term + Parse + Typecheck<Term = T> + LatexFmt,
     T::Type: fmt::Display + LatexFmt,
-    Conf: LatexTestConf,
+    Conf: TestConfig,
 {
     conf: &'a Conf,
     phantom: PhantomData<T>,
@@ -26,7 +30,7 @@ impl<'a, T, Conf> LatexTestFrac<'a, T, Conf>
 where
     T: Term + Parse + Typecheck<Term = T> + LatexFmt,
     T::Type: fmt::Display + LatexFmt,
-    Conf: LatexTestConf,
+    Conf: TestConfig,
 {
     pub fn new(conf: &'a Conf) -> LatexTestFrac<'a, T, Conf> {
         LatexTestFrac {
@@ -40,7 +44,7 @@ impl<'a, T, Conf> Test<'a> for LatexTestFrac<'a, T, Conf>
 where
     T: Term + Parse + Typecheck<Term = T> + LatexFmt,
     T::Type: fmt::Display + LatexFmt,
-    Conf: LatexTestConf,
+    Conf: TestConfig,
 {
     fn name(&self) -> String {
         format!(

@@ -1,10 +1,7 @@
 use language::languages::untyped_arithmetic::UntypedArithmetic;
 use std::path::PathBuf;
 use test_utils::{
-    check_test::CheckConfig,
     errors::Error,
-    eval_test::EvalConfig,
-    latex::LatexTestConf,
     paths::{EXAMPLES_PATH, UNTYPED_ARITH_PATH},
     setup,
     test::TestConfig,
@@ -43,20 +40,14 @@ impl TestConfig for UntypedArithConf {
     fn contents(&self) -> &str {
         &self.contents
     }
-}
-
-impl LatexTestConf for UntypedArithConf {}
-impl CheckConfig for UntypedArithConf {
-    fn expected(&self) -> &str {
+    fn ty(&self) -> &str {
         ""
     }
-}
-
-impl EvalConfig for UntypedArithConf {
-    fn expected(&self) -> &str {
+    fn evaluated(&self) -> &str {
         &self.expected
     }
 }
+
 impl TestSuite for UntypedArithTests {
     type Lang = UntypedArithmetic;
     type Config = UntypedArithConf;

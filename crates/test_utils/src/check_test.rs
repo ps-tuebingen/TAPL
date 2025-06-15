@@ -6,15 +6,11 @@ use check::Typecheck;
 use common::parse::Parse;
 use std::{fmt, marker::PhantomData};
 
-pub trait CheckConfig: TestConfig {
-    fn expected(&self) -> &str;
-}
-
 pub struct CheckTest<'a, T, Conf>
 where
     T: Parse + Typecheck,
     T::Type: fmt::Display,
-    Conf: CheckConfig,
+    Conf: TestConfig,
 {
     conf: &'a Conf,
     phantom: PhantomData<T>,
@@ -24,7 +20,7 @@ impl<'a, T, Conf> CheckTest<'a, T, Conf>
 where
     T: Parse + Typecheck,
     T::Type: fmt::Display,
-    Conf: CheckConfig,
+    Conf: TestConfig,
 {
     pub fn new(conf: &'a Conf) -> CheckTest<'a, T, Conf> {
         CheckTest {
@@ -38,7 +34,7 @@ impl<'a, T, Conf> Test<'a> for CheckTest<'a, T, Conf>
 where
     T: Parse + Typecheck,
     T::Type: fmt::Display,
-    Conf: CheckConfig,
+    Conf: TestConfig,
 {
     fn name(&self) -> String {
         format!("Checking {}", self.conf.name())
@@ -53,6 +49,6 @@ where
             Ok(c) => c,
             Err(err) => return TestResult::from_err(err),
         };
-        TestResult::from_eq(&checked.ty(), &self.conf.expected())
+        TestResult::from_eq(&checked.ty(), &self.conf.ty())
     }
 }

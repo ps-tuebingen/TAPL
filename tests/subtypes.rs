@@ -1,10 +1,7 @@
 use language::languages::subtypes::Subtypes;
 use std::path::PathBuf;
 use test_utils::{
-    check_test::CheckConfig,
     errors::Error,
-    eval_test::EvalConfig,
-    latex::LatexTestConf,
     paths::{EXAMPLES_PATH, SUBTYPES_PATH},
     setup,
     test::TestConfig,
@@ -39,20 +36,14 @@ impl TestConfig for SubtypesConf {
     fn contents(&self) -> &str {
         &self.contents
     }
-}
-
-impl LatexTestConf for SubtypesConf {}
-impl CheckConfig for SubtypesConf {
-    fn expected(&self) -> &str {
+    fn ty(&self) -> &str {
         &self.ty
     }
-}
-
-impl EvalConfig for SubtypesConf {
-    fn expected(&self) -> &str {
+    fn evaluated(&self) -> &str {
         &self.evaluated
     }
 }
+
 impl SubtypesTests {
     pub fn new(path: PathBuf) -> SubtypesTests {
         SubtypesTests { source_path: path }

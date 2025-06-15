@@ -1,10 +1,7 @@
 use language::languages::stlc::Stlc;
 use std::path::PathBuf;
 use test_utils::{
-    check_test::CheckConfig,
     errors::Error,
-    eval_test::EvalConfig,
-    latex::LatexTestConf,
     paths::{EXAMPLES_PATH, STLC_PATH},
     setup,
     test::TestConfig,
@@ -45,17 +42,10 @@ impl TestConfig for StlcConf {
     fn contents(&self) -> &str {
         &self.contents
     }
-}
-
-impl LatexTestConf for StlcConf {}
-impl CheckConfig for StlcConf {
-    fn expected(&self) -> &str {
+    fn ty(&self) -> &str {
         &self.ty
     }
-}
-
-impl EvalConfig for StlcConf {
-    fn expected(&self) -> &str {
+    fn evaluated(&self) -> &str {
         &self.evaled
     }
 }

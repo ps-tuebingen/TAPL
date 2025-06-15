@@ -1,10 +1,7 @@
 use language::languages::exceptions::Exceptions;
 use std::path::PathBuf;
 use test_utils::{
-    check_test::CheckConfig,
     errors::Error,
-    eval_test::EvalConfig,
-    latex::LatexTestConf,
     paths::{EXAMPLES_PATH, EXCEPTIONS_PATH},
     setup,
     test::TestConfig,
@@ -29,17 +26,10 @@ impl TestConfig for ExceptionsConf {
     fn contents(&self) -> &str {
         &self.contents
     }
-}
-
-impl LatexTestConf for ExceptionsConf {}
-impl CheckConfig for ExceptionsConf {
-    fn expected(&self) -> &str {
+    fn ty(&self) -> &str {
         &self.ty
     }
-}
-
-impl EvalConfig for ExceptionsConf {
-    fn expected(&self) -> &str {
+    fn evaluated(&self) -> &str {
         &self.evaluated
     }
 }

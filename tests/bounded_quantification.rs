@@ -1,10 +1,7 @@
 use language::languages::bounded_quantification::BoundedQuantification;
 use std::path::PathBuf;
 use test_utils::{
-    check_test::CheckConfig,
     errors::Error,
-    eval_test::EvalConfig,
-    latex::LatexTestConf,
     paths::{BOUNDED_PATH, EXAMPLES_PATH},
     setup,
     test::TestConfig,
@@ -39,24 +36,18 @@ impl TestConfig for BoundedConf {
         self.contents = contents
     }
 
+    fn ty(&self) -> &str {
+        &self.ty
+    }
+    fn evaluated(&self) -> &str {
+        &self.evaluated
+    }
+
     fn name(&self) -> &str {
         &self.name
     }
     fn contents(&self) -> &str {
         &self.contents
-    }
-}
-
-impl LatexTestConf for BoundedConf {}
-impl CheckConfig for BoundedConf {
-    fn expected(&self) -> &str {
-        &self.ty
-    }
-}
-
-impl EvalConfig for BoundedConf {
-    fn expected(&self) -> &str {
-        &self.evaluated
     }
 }
 

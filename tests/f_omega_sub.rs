@@ -1,10 +1,7 @@
 use language::languages::f_omega_sub::FOmegaSub;
 use std::path::PathBuf;
 use test_utils::{
-    check_test::CheckConfig,
     errors::Error,
-    eval_test::EvalConfig,
-    latex::LatexTestConf,
     paths::{EXAMPLES_PATH, F_OMEGA_SUB_PATH},
     setup,
     test::TestConfig,
@@ -45,18 +42,10 @@ impl TestConfig for FOmegaSubConf {
     fn contents(&self) -> &str {
         &self.contents
     }
-}
-
-impl LatexTestConf for FOmegaSubConf {}
-
-impl CheckConfig for FOmegaSubConf {
-    fn expected(&self) -> &str {
+    fn ty(&self) -> &str {
         &self.ty
     }
-}
-
-impl EvalConfig for FOmegaSubConf {
-    fn expected(&self) -> &str {
+    fn evaluated(&self) -> &str {
         &self.evaluated
     }
 }

@@ -1,10 +1,7 @@
 use language::languages::references::References;
 use std::path::PathBuf;
 use test_utils::{
-    check_test::CheckConfig,
     errors::Error,
-    eval_test::EvalConfig,
-    latex::LatexTestConf,
     paths::{EXAMPLES_PATH, REFERENCES_PATH},
     setup,
     test::TestConfig,
@@ -39,17 +36,10 @@ impl TestConfig for ReferencesConf {
     fn contents(&self) -> &str {
         &self.contents
     }
-}
-
-impl LatexTestConf for ReferencesConf {}
-impl CheckConfig for ReferencesConf {
-    fn expected(&self) -> &str {
+    fn ty(&self) -> &str {
         &self.ty
     }
-}
-
-impl EvalConfig for ReferencesConf {
-    fn expected(&self) -> &str {
+    fn evaluated(&self) -> &str {
         &self.evaluated
     }
 }

@@ -1,4 +1,8 @@
-use crate::{latex::LatexTestConf, paths::LATEX_OUT, test::Test, test_result::TestResult};
+use crate::{
+    paths::LATEX_OUT,
+    test::{Test, TestConfig},
+    test_result::TestResult,
+};
 use common::parse::Parse;
 use eval::Eval;
 use latex::LatexFmt;
@@ -15,7 +19,7 @@ pub struct LatexTestTrace<'a, T, Conf>
 where
     T: Term + Parse + Eval<Term = T> + LatexFmt,
     T::Value: LatexFmt,
-    Conf: LatexTestConf,
+    Conf: TestConfig,
 {
     conf: &'a Conf,
     phantom: PhantomData<T>,
@@ -25,7 +29,7 @@ impl<'a, T, Conf> LatexTestTrace<'a, T, Conf>
 where
     T: Term + Parse + Eval<Term = T> + LatexFmt,
     T::Value: LatexFmt,
-    Conf: LatexTestConf,
+    Conf: TestConfig,
 {
     pub fn new(conf: &'a Conf) -> LatexTestTrace<'a, T, Conf> {
         LatexTestTrace {
@@ -39,7 +43,7 @@ impl<'a, T, Conf> Test<'a> for LatexTestTrace<'a, T, Conf>
 where
     T: Term + Parse + Eval<Term = T> + LatexFmt,
     T::Value: LatexFmt,
-    Conf: LatexTestConf,
+    Conf: TestConfig,
 {
     fn name(&self) -> String {
         format!(

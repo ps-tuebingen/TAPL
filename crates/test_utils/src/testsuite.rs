@@ -1,22 +1,22 @@
 use super::{
-    check_test::{CheckConfig, CheckTest},
+    check_test::CheckTest,
     errors::Error,
-    eval_test::{EvalConfig, EvalTest},
+    eval_test::EvalTest,
     latex::{
         latex_buss_test::LatexTestBuss, latex_frac_test::LatexTestFrac,
-        latex_trace_test::LatexTestTrace, LatexTestConf,
+        latex_trace_test::LatexTestTrace,
     },
     load_tests::load_dir,
     parse_test::ParseTest,
     reparse_test::ReparseTest,
-    test::Test,
+    test::{Test, TestConfig},
     test_result::TestResult,
 };
 use language::Language;
 use std::path::PathBuf;
 
 pub trait TestSuite {
-    type Config: for<'b> serde::Deserialize<'b> + CheckConfig + EvalConfig + LatexTestConf;
+    type Config: for<'a> serde::Deserialize<'a> + TestConfig;
     type Lang: Language;
 
     fn name(&self) -> &str;

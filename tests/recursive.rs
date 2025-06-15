@@ -1,10 +1,7 @@
 use language::languages::recursive::Recursive;
 use std::path::PathBuf;
 use test_utils::{
-    check_test::CheckConfig,
     errors::Error,
-    eval_test::EvalConfig,
-    latex::LatexTestConf,
     paths::{EXAMPLES_PATH, RECURSIVE_PATH},
     setup,
     test::TestConfig,
@@ -45,17 +42,10 @@ impl TestConfig for RecursiveConf {
     fn contents(&self) -> &str {
         &self.contents
     }
-}
-
-impl LatexTestConf for RecursiveConf {}
-impl CheckConfig for RecursiveConf {
-    fn expected(&self) -> &str {
+    fn ty(&self) -> &str {
         &self.ty
     }
-}
-
-impl EvalConfig for RecursiveConf {
-    fn expected(&self) -> &str {
+    fn evaluated(&self) -> &str {
         &self.evaluated
     }
 }

@@ -1,10 +1,7 @@
 use language::languages::system_f::SystemF;
 use std::path::PathBuf;
 use test_utils::{
-    check_test::CheckConfig,
     errors::Error,
-    eval_test::EvalConfig,
-    latex::LatexTestConf,
     paths::{EXAMPLES_PATH, SYSTEMF_PATH},
     setup,
     test::TestConfig,
@@ -45,17 +42,11 @@ impl TestConfig for SystemFConf {
     fn contents(&self) -> &str {
         &self.contents
     }
-}
-
-impl LatexTestConf for SystemFConf {}
-impl CheckConfig for SystemFConf {
-    fn expected(&self) -> &str {
+    fn ty(&self) -> &str {
         &self.ty
     }
-}
 
-impl EvalConfig for SystemFConf {
-    fn expected(&self) -> &str {
+    fn evaluated(&self) -> &str {
         &self.evaluated
     }
 }

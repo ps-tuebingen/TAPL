@@ -1,10 +1,7 @@
 use language::languages::untyped_lambda::UntypedLambda;
 use std::path::PathBuf;
 use test_utils::{
-    check_test::CheckConfig,
     errors::Error,
-    eval_test::EvalConfig,
-    latex::LatexTestConf,
     paths::{EXAMPLES_PATH, UNTYPED_LAMBDA_PATH},
     setup,
     test::TestConfig,
@@ -37,17 +34,10 @@ impl TestConfig for UntypedLambdaConf {
     fn contents(&self) -> &str {
         &self.contents
     }
-}
-
-impl LatexTestConf for UntypedLambdaConf {}
-impl CheckConfig for UntypedLambdaConf {
-    fn expected(&self) -> &str {
+    fn ty(&self) -> &str {
         ""
     }
-}
-
-impl EvalConfig for UntypedLambdaConf {
-    fn expected(&self) -> &str {
+    fn evaluated(&self) -> &str {
         &self.evaluated
     }
 }

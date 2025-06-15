@@ -1,10 +1,7 @@
 use language::languages::typed_arithmetic::TypedArithmetic;
 use std::path::PathBuf;
 use test_utils::{
-    check_test::CheckConfig,
     errors::Error,
-    eval_test::EvalConfig,
-    latex::LatexTestConf,
     paths::{EXAMPLES_PATH, TYPED_ARITH_PATH},
     setup,
     test::TestConfig,
@@ -39,17 +36,11 @@ impl TestConfig for TypedArithConf {
     fn contents(&self) -> &str {
         &self.contents
     }
-}
-
-impl LatexTestConf for TypedArithConf {}
-impl CheckConfig for TypedArithConf {
-    fn expected(&self) -> &str {
+    fn ty(&self) -> &str {
         &self.ty
     }
-}
 
-impl EvalConfig for TypedArithConf {
-    fn expected(&self) -> &str {
+    fn evaluated(&self) -> &str {
         &self.expected
     }
 }

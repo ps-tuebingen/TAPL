@@ -1,10 +1,7 @@
 use language::languages::lambda_omega::LambdaOmega;
 use std::path::PathBuf;
 use test_utils::{
-    check_test::CheckConfig,
     errors::Error,
-    eval_test::EvalConfig,
-    latex::LatexTestConf,
     paths::{EXAMPLES_PATH, LAMBDA_OMEGA_PATH},
     setup,
     test::TestConfig,
@@ -44,17 +41,11 @@ impl TestConfig for LambdaOmegaConf {
     fn contents(&self) -> &str {
         &self.contents
     }
-}
 
-impl LatexTestConf for LambdaOmegaConf {}
-impl CheckConfig for LambdaOmegaConf {
-    fn expected(&self) -> &str {
+    fn ty(&self) -> &str {
         &self.ty
     }
-}
-
-impl EvalConfig for LambdaOmegaConf {
-    fn expected(&self) -> &str {
+    fn evaluated(&self) -> &str {
         &self.evaluated
     }
 }

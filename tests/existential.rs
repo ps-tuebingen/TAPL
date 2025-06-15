@@ -1,10 +1,7 @@
 use language::languages::existential::Existential;
 use std::path::PathBuf;
 use test_utils::{
-    check_test::CheckConfig,
     errors::Error,
-    eval_test::EvalConfig,
-    latex::LatexTestConf,
     paths::{EXAMPLES_PATH, EXISTENTIAL_PATH},
     setup,
     test::TestConfig,
@@ -38,22 +35,20 @@ impl TestConfig for ExistentialConf {
     fn set_contents(&mut self, contents: String) {
         self.contents = contents
     }
+
+    fn ty(&self) -> &str {
+        &self.ty
+    }
+
+    fn evaluated(&self) -> &str {
+        &self.evaluated
+    }
+
     fn name(&self) -> &str {
         &self.name
     }
     fn contents(&self) -> &str {
         &self.contents
-    }
-}
-impl LatexTestConf for ExistentialConf {}
-impl CheckConfig for ExistentialConf {
-    fn expected(&self) -> &str {
-        &self.ty
-    }
-}
-impl EvalConfig for ExistentialConf {
-    fn expected(&self) -> &str {
-        &self.evaluated
     }
 }
 
