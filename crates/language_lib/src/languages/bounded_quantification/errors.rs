@@ -1,9 +1,10 @@
-use super::{parser::Rule, types::Type};
+use super::types::Type;
 use check::errors::NotASubtype;
 use common::errors::{
     FreeTypeVariable, FreeVariable, KindMismatch, NameMismatch, NotImplemented, TypeMismatch,
     UndefinedLabel, ValueMismatch,
 };
+use parse::Rule;
 
 use parse::errors::{MissingInput, RemainingInput, UnexpectedRule, UnknownKeyword};
 use pest::error::Error as PestErr;
@@ -23,7 +24,7 @@ pub enum Error {
     Pest(Box<PestErr<Rule>>),
     MissingInput(MissingInput),
     RemainingInput(RemainingInput),
-    UnexpectedRule(UnexpectedRule<Rule>),
+    UnexpectedRule(UnexpectedRule),
     UnknownKeyword(UnknownKeyword),
 }
 
@@ -122,8 +123,8 @@ impl From<RemainingInput> for Error {
     }
 }
 
-impl From<UnexpectedRule<Rule>> for Error {
-    fn from(err: UnexpectedRule<Rule>) -> Error {
+impl From<UnexpectedRule> for Error {
+    fn from(err: UnexpectedRule) -> Error {
         Error::UnexpectedRule(err)
     }
 }

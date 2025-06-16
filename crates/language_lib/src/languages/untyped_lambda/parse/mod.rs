@@ -2,10 +2,9 @@ use super::{
     errors::Error,
     terms::{Term, Var},
 };
-use common::errors::NotImplemented;
 use parse::{
     errors::{MissingInput, UnexpectedRule},
-    Parse,
+    Parse, Rule,
 };
 use std::collections::VecDeque;
 use syntax::{
@@ -18,7 +17,6 @@ pub mod lexer;
 use lexer::{lex, Token};
 
 impl Parse for Term {
-    type Rule = NotImplemented;
     type ParseError = Error;
 
     fn parse(mut input: String) -> Result<Self, Error> {
@@ -63,7 +61,7 @@ fn check_next(tokens: &mut VecDeque<Token>, expected: &Token) -> Result<Token, E
             if tok == *expected {
                 Ok(tok)
             } else {
-                Err(UnexpectedRule::new(tok, &expected.to_string()).into())
+                Err(UnexpectedRule::new(Rule::WHITESPACE, &expected.to_string()).into())
             }
         }
     }
@@ -155,8 +153,8 @@ fn parse_tokens(tokens: &mut VecDeque<Token>) -> Result<Term, Error> {
             }
         }
         Token::ParensC => Err(MissingInput::new("(").into()),
-        Token::Dot => Err(UnexpectedRule::new(Token::Dot, "Term").into()),
-        Token::Space => Err(UnexpectedRule::new(Token::Space, "Term").into()),
+        Token::Dot => Err(UnexpectedRule::new(Rule::WHITESPACE, "Term").into()),
+        Token::Space => Err(UnexpectedRule::new(Rule::WHITESPACE, "Term").into()),
     }
 }
 

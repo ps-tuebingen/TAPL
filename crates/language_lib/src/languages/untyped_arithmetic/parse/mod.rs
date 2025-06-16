@@ -1,8 +1,7 @@
 use super::errors::Error;
-use common::errors::NotImplemented;
 use parse::{
     errors::{MissingInput, RemainingInput, UnexpectedRule},
-    Parse,
+    Parse, Rule,
 };
 pub mod lexer;
 
@@ -12,7 +11,6 @@ use std::collections::VecDeque;
 use syntax::terms::{False, If, IsZero, Num, Pred, Succ, True};
 
 impl Parse for Term {
-    type Rule = NotImplemented;
     type ParseError = Error;
 
     fn parse(input: String) -> Result<Self, Error> {
@@ -43,7 +41,7 @@ fn consume_token(tokens: &mut VecDeque<Token>, token: Token) -> Result<(), Error
         if tok == token {
             Ok(())
         } else {
-            Err(UnexpectedRule::new(tok, &format!("{token}")).into())
+            Err(UnexpectedRule::new(Rule::WHITESPACE, &format!("{token}")).into())
         }
     } else {
         Err(MissingInput::new(&token.to_string()).into())
@@ -107,7 +105,7 @@ fn parse_term(tokens: &mut VecDeque<Token>) -> Result<Term, Error> {
             }
             Ok(digits_to_term(digits))
         }
-        _ => Err(UnexpectedRule::new(fst, "Term").into()),
+        _ => Err(UnexpectedRule::new(Rule::WHITESPACE, "Term").into()),
     }
 }
 

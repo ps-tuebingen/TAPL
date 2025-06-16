@@ -1,11 +1,13 @@
-use super::parser::Rule;
 use super::types::Type;
 use check::errors::{EmptyCase, NotASubtype};
 use common::errors::{
     FreeTypeVariable, FreeVariable, KindMismatch, TypeMismatch, UndefinedLabel, UndefinedLocation,
     ValueMismatch,
 };
-use parse::errors::{MissingInput, RemainingInput, UnexpectedRule, UnknownKeyword};
+use parse::{
+    errors::{MissingInput, RemainingInput, UnexpectedRule, UnknownKeyword},
+    Rule,
+};
 use pest::error::Error as PestErr;
 use std::fmt;
 
@@ -23,7 +25,7 @@ pub enum Error {
     MissingInput(MissingInput),
     RemainingInput(RemainingInput),
     UnknownKeyword(UnknownKeyword),
-    UnexpectedRule(UnexpectedRule<Rule>),
+    UnexpectedRule(UnexpectedRule),
     FreeTypeVariable(FreeTypeVariable),
 }
 
@@ -121,8 +123,8 @@ impl From<UnknownKeyword> for Error {
     }
 }
 
-impl From<UnexpectedRule<Rule>> for Error {
-    fn from(err: UnexpectedRule<Rule>) -> Error {
+impl From<UnexpectedRule> for Error {
+    fn from(err: UnexpectedRule) -> Error {
         Error::UnexpectedRule(err)
     }
 }

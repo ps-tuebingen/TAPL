@@ -1,6 +1,8 @@
-use super::parser::Rule;
 use common::errors::{FreeVariable, KindMismatch, NotImplemented, TypeMismatch, ValueMismatch};
-use parse::errors::{MissingInput, RemainingInput, UnexpectedRule, UnknownKeyword};
+use parse::{
+    errors::{MissingInput, RemainingInput, UnexpectedRule, UnknownKeyword},
+    Rule,
+};
 use pest::error::Error as PestErr;
 use std::fmt;
 
@@ -15,7 +17,7 @@ pub enum Error {
     MissingInput(MissingInput),
     RemainingInput(RemainingInput),
     UnknownKeyword(UnknownKeyword),
-    UnexpectedRule(UnexpectedRule<Rule>),
+    UnexpectedRule(UnexpectedRule),
 }
 
 impl fmt::Display for Error {
@@ -91,8 +93,8 @@ impl From<UnknownKeyword> for Error {
     }
 }
 
-impl From<UnexpectedRule<Rule>> for Error {
-    fn from(err: UnexpectedRule<Rule>) -> Error {
+impl From<UnexpectedRule> for Error {
+    fn from(err: UnexpectedRule) -> Error {
         Error::UnexpectedRule(err)
     }
 }

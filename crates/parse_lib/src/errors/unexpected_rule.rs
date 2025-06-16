@@ -1,18 +1,13 @@
+use crate::Rule;
 use std::fmt;
 
 #[derive(Debug)]
-pub struct UnexpectedRule<R>
-where
-    R: fmt::Debug,
-{
-    found: R,
+pub struct UnexpectedRule {
+    found: Rule,
     expected: String,
 }
-impl<R> UnexpectedRule<R>
-where
-    R: fmt::Debug,
-{
-    pub fn new(found: R, expected: &str) -> UnexpectedRule<R> {
+impl UnexpectedRule {
+    pub fn new(found: Rule, expected: &str) -> UnexpectedRule {
         UnexpectedRule {
             found,
             expected: expected.to_owned(),
@@ -20,10 +15,7 @@ where
     }
 }
 
-impl<R> fmt::Display for UnexpectedRule<R>
-where
-    R: fmt::Debug,
-{
+impl fmt::Display for UnexpectedRule {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(
             f,
@@ -33,4 +25,4 @@ where
     }
 }
 
-impl<R> std::error::Error for UnexpectedRule<R> where R: fmt::Debug {}
+impl std::error::Error for UnexpectedRule {}

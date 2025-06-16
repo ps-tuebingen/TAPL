@@ -1,6 +1,8 @@
-use super::parse::lexer::Token;
 use common::errors::{NotImplemented, ValueMismatch};
-use parse::errors::{MissingInput, RemainingInput, UnexpectedRule};
+use parse::{
+    errors::{MissingInput, RemainingInput, UnexpectedRule},
+    Rule,
+};
 use pest::error::Error as PestErr;
 use std::fmt;
 
@@ -8,9 +10,9 @@ use std::fmt;
 pub enum Error {
     NotImplemented(NotImplemented),
     ValueMismatch(ValueMismatch),
-    Pest(Box<PestErr<NotImplemented>>),
+    Pest(Box<PestErr<Rule>>),
     RemainingInput(RemainingInput),
-    UnexpectedRule(UnexpectedRule<Token>),
+    UnexpectedRule(UnexpectedRule),
     MissingInput(MissingInput),
 }
 
@@ -41,8 +43,8 @@ impl From<ValueMismatch> for Error {
     }
 }
 
-impl From<PestErr<NotImplemented>> for Error {
-    fn from(err: PestErr<NotImplemented>) -> Error {
+impl From<PestErr<Rule>> for Error {
+    fn from(err: PestErr<Rule>) -> Error {
         Error::Pest(Box::new(err))
     }
 }
@@ -53,8 +55,8 @@ impl From<RemainingInput> for Error {
     }
 }
 
-impl From<UnexpectedRule<Token>> for Error {
-    fn from(err: UnexpectedRule<Token>) -> Error {
+impl From<UnexpectedRule> for Error {
+    fn from(err: UnexpectedRule) -> Error {
         Error::UnexpectedRule(err)
     }
 }

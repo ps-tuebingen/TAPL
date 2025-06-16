@@ -1,10 +1,9 @@
 use super::{errors::Error, terms::Term, types::Type};
 use parse::{
     errors::{MissingInput, RemainingInput, UnexpectedRule, UnknownKeyword},
-    Parse,
+    LangParser, Parse, Rule,
 };
 use pest::{iterators::Pair, Parser};
-use pest_derive::Parser;
 
 pub mod terms;
 pub mod types;
@@ -12,7 +11,6 @@ use terms::pair_to_term;
 use types::pair_to_type;
 
 impl Parse for Term {
-    type Rule = Rule;
     type ParseError = Error;
 
     fn parse(input: String) -> Result<Self, Error> {
@@ -20,12 +18,8 @@ impl Parse for Term {
     }
 }
 
-#[derive(Parser)]
-#[grammar = "../../parse_lib/src/grammar.pest"]
-struct ExistentialParser;
-
 pub fn parse(input: String) -> Result<Term, Error> {
-    let mut parsed = ExistentialParser::parse(Rule::program, &input)?
+    let mut parsed = LangParser::parse(Rule::program, &input)?
         .next()
         .ok_or(MissingInput::new("Program"))?
         .into_inner();

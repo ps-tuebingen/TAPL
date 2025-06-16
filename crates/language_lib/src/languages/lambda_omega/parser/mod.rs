@@ -1,10 +1,9 @@
 use super::{errors::Error, terms::Term, types::Type};
 use parse::{
     errors::{MissingInput, RemainingInput, UnexpectedRule, UnknownKeyword},
-    Parse,
+    LangParser, Parse, Rule,
 };
 use pest::{iterators::Pair, Parser};
-use pest_derive::Parser;
 
 mod kinds;
 mod terms;
@@ -13,12 +12,7 @@ use kinds::pair_to_kind;
 use terms::pair_to_term;
 use types::pair_to_type;
 
-#[derive(Parser)]
-#[grammar = "../../parse_lib/src/grammar.pest"]
-struct LambdaOmegaParser;
-
 impl Parse for Term {
-    type Rule = Rule;
     type ParseError = Error;
 
     fn parse(input: String) -> Result<Self, Error> {
@@ -27,7 +21,7 @@ impl Parse for Term {
 }
 
 pub fn parse(input: String) -> Result<Term, Error> {
-    let mut parsed = LambdaOmegaParser::parse(Rule::program, &input)?;
+    let mut parsed = LangParser::parse(Rule::program, &input)?;
     let prog_rule = parsed.next().ok_or(MissingInput::new("Program"))?;
     if let Some(n) = parsed.next() {
         return Err(RemainingInput::new(&format!("{:?}", n.as_rule())).into());

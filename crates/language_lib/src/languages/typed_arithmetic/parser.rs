@@ -1,18 +1,12 @@
 use super::{errors::Error, terms::Term};
 use parse::{
     errors::{MissingInput, RemainingInput, UnexpectedRule, UnknownKeyword},
-    Parse,
+    LangParser, Parse, Rule,
 };
 use pest::{iterators::Pair, Parser};
-use pest_derive::Parser;
 use syntax::terms::{False, If, IsZero, Num, Pred, Succ, True};
 
-#[derive(Parser)]
-#[grammar = "languages/typed_arithmetic/typed_arith.pest"]
-struct TypedArithParser;
-
 impl Parse for Term {
-    type Rule = Rule;
     type ParseError = Error;
 
     fn parse(input: String) -> Result<Self, Error> {
@@ -21,7 +15,7 @@ impl Parse for Term {
 }
 
 pub fn parse(input: String) -> Result<Term, Error> {
-    let mut parsed = TypedArithParser::parse(Rule::term, &input)?;
+    let mut parsed = LangParser::parse(Rule::term, &input)?;
     let term_rule = parsed.next().ok_or(MissingInput::new("Program"))?;
     let term_inner = pair_to_n_inner(term_rule, vec!["Term"])?.remove(0);
     if let Some(n) = parsed.next() {
