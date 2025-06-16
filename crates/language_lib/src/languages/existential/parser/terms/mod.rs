@@ -31,15 +31,15 @@ fn pair_to_primterm(p: Pair<'_, Rule>) -> Result<Term, Error> {
             pair_to_term(term_rule)
         }
         Rule::const_term => str_to_term(p.as_str()),
-        Rule::lambda_term => Ok(Lambda::from_pair(p)?.into()),
-        Rule::pack_term => Ok(Pack::from_pair(p)?.into()),
-        Rule::unpack_term => Ok(Unpack::from_pair(p)?.into()),
-        Rule::succ_term => Ok(Succ::from_pair(p)?.into()),
-        Rule::pred_term => Ok(Pred::from_pair(p)?.into()),
-        Rule::iszero_term => Ok(IsZero::from_pair(p)?.into()),
-        Rule::fix_term => Ok(Fix::from_pair(p)?.into()),
-        Rule::record_term => Ok(Record::from_pair(p)?.into()),
-        Rule::if_term => Ok(If::from_pair(p)?.into()),
+        Rule::lambda_term => Ok(Lambda::from_pair(p, ())?.into()),
+        Rule::pack_term => Ok(Pack::from_pair(p, ())?.into()),
+        Rule::unpack_term => Ok(Unpack::from_pair(p, ())?.into()),
+        Rule::succ_term => Ok(Succ::from_pair(p, ())?.into()),
+        Rule::pred_term => Ok(Pred::from_pair(p, ())?.into()),
+        Rule::iszero_term => Ok(IsZero::from_pair(p, ())?.into()),
+        Rule::fix_term => Ok(Fix::from_pair(p, ())?.into()),
+        Rule::record_term => Ok(Record::from_pair(p, ())?.into()),
+        Rule::if_term => Ok(If::from_pair(p, ())?.into()),
         Rule::number => {
             let num = p
                 .as_str()

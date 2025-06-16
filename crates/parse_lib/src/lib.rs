@@ -13,19 +13,23 @@ pub struct LangParser;
 
 pub trait Parse: Sized {
     type ParseError: std::error::Error + From<pest::error::Error<Rule>> + From<ParserError>;
+    type LeftRecArg;
 
     fn rule() -> Rule;
 
-    fn from_pair(p: Pair<'_, Rule>) -> Result<Self, Self::ParseError>;
+    fn from_pair(p: Pair<'_, Rule>, left_rec: Self::LeftRecArg) -> Result<Self, Self::ParseError>;
 
-    fn parse(source: String) -> Result<Self, Self::ParseError> {
+    fn parse(source: String) -> Result<Self, Self::ParseError>
+    where
+        Self::LeftRecArg: Default,
+    {
         let mut pairs = LangParser::parse(Self::rule(), &source)?;
         let rule = pairs
             .next()
             .ok_or(<MissingInput as Into<ParserError>>::into(
                 MissingInput::new(&format!("{:?}", Self::rule())),
             ))?;
-        let result = Self::from_pair(rule)?;
+        let result = Self::from_pair(rule, Default::default())?;
         if let Some(rule) = pairs.next() {
             Err(
                 <RemainingInput as Into<ParserError>>::into(RemainingInput::new(&format!(

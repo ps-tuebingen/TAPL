@@ -1,4 +1,4 @@
-use super::{errors::Error, terms::Term};
+use super::{errors::Error, terms::Term, types::Type};
 use parse::{
     errors::{MissingInput, RemainingInput, UnexpectedRule, UnknownKeyword},
     LangParser, Parse, Rule,
@@ -8,12 +8,24 @@ use syntax::terms::{False, If, IsZero, Num, Pred, Succ, True};
 
 impl Parse for Term {
     type ParseError = Error;
+    type LeftRecArg = ();
 
     fn rule() -> Rule {
         Rule::term
     }
-    fn from_pair(p: Pair<'_, Rule>) -> Result<Self, Self::ParseError> {
+    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Self, Self::ParseError> {
         pair_to_term(p)
+    }
+}
+impl Parse for Type {
+    type ParseError = Error;
+    type LeftRecArg = ();
+    fn rule() -> Rule {
+        Rule::r#type
+    }
+
+    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Self, Self::ParseError> {
+        todo!()
     }
 }
 

@@ -51,7 +51,7 @@ where
 
 pub trait Language {
     type Term: Term
-        + Parse<ParseError = Self::LanguageError>
+        + Parse<ParseError = Self::LanguageError, LeftRecArg = ()>
         + SubstTerm<Self::Term, Target = Self::Term>
         + SubstType<Self::Type, Target = Self::Term>
         + Eval<

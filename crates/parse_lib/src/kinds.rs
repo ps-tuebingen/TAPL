@@ -7,11 +7,17 @@ use syntax::kinds::Kind;
 
 impl Parse for Kind {
     type ParseError = ParserError;
+    type LeftRecArg = Option<Kind>;
+
     fn rule() -> Rule {
         Rule::kind
     }
 
-    fn from_pair(p: Pair<'_, Rule>) -> Result<Kind, Self::ParseError> {
+    fn from_pair(p: Pair<'_, Rule>, left_rec: Self::LeftRecArg) -> Result<Kind, Self::ParseError> {
+        if let Some(knd) = left_rec {
+            return pair_to_leftrec_kind(p, knd);
+        }
+
         let mut inner = p.into_inner();
         let prim_rule = inner.next().ok_or(MissingInput::new("Kind"))?;
         let prim_inner = pair_to_n_inner(prim_rule, vec!["Kind"])?.remove(0);
@@ -38,7 +44,7 @@ fn pair_to_prim_kind(p: Pair<'_, Rule>) -> Result<Kind, ParserError> {
         Rule::star_kind => Ok(Kind::Star),
         Rule::paren_kind => {
             let inner = pair_to_n_inner(p, vec!["Kind"])?.remove(0);
-            Kind::from_pair(inner)
+            Kind::from_pair(inner, None)
         }
         r => Err(UnexpectedRule::new(r, "Kind").into()),
     }
@@ -46,6 +52,6 @@ fn pair_to_prim_kind(p: Pair<'_, Rule>) -> Result<Kind, ParserError> {
 
 fn pair_to_leftrec_kind(p: Pair<'_, Rule>, knd: Kind) -> Result<Kind, ParserError> {
     let inner = pair_to_n_inner(p, vec!["Kind"])?.remove(0);
-    let to_kind = Kind::from_pair(inner)?;
+    let to_kind = Kind::from_pair(inner, None)?;
     Ok(Kind::Arrow(Box::new(knd), Box::new(to_kind)))
 }

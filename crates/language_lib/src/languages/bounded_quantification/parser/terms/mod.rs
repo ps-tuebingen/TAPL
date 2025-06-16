@@ -44,14 +44,14 @@ fn pair_to_prim_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
             let term_rule = pair_to_n_inner(p, vec!["Term"])?.remove(0);
             pair_to_term(term_rule)
         }
-        Rule::lambda_term => Ok(Lambda::from_pair(p)?.into()),
-        Rule::lambda_sub_term => Ok(LambdaSub::from_pair(p)?.into()),
+        Rule::lambda_term => Ok(Lambda::from_pair(p, ())?.into()),
+        Rule::lambda_sub_term => Ok(LambdaSub::from_pair(p, ())?.into()),
         Rule::ty_lambda_term => pair_to_tylambda(p).map(|lam| lam.into()),
-        Rule::pack_term => Ok(Pack::from_pair(p)?.into()),
-        Rule::unpack_term => Ok(Unpack::from_pair(p)?.into()),
-        Rule::record_term => Ok(Record::from_pair(p)?.into()),
-        Rule::succ_term => Ok(Succ::from_pair(p)?.into()),
-        Rule::pred_term => Ok(Pred::from_pair(p)?.into()),
+        Rule::pack_term => Ok(Pack::from_pair(p, ())?.into()),
+        Rule::unpack_term => Ok(Unpack::from_pair(p, ())?.into()),
+        Rule::record_term => Ok(Record::from_pair(p, ())?.into()),
+        Rule::succ_term => Ok(Succ::from_pair(p, ())?.into()),
+        Rule::pred_term => Ok(Pred::from_pair(p, ())?.into()),
         Rule::number => {
             let num = p
                 .as_str()

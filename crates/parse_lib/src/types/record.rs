@@ -8,14 +8,15 @@ use syntax::types::{Record, Type};
 
 impl<Ty> Parse for Record<Ty>
 where
-    Ty: Type + Parse,
+    Ty: Type + Parse<LeftRecArg = ()>,
 {
     type ParseError = <Ty as Parse>::ParseError;
+    type LeftRecArg = ();
 
     fn rule() -> Rule {
         Rule::record_type
     }
-    fn from_pair(p: Pair<'_, Rule>) -> Result<Record<Ty>, Self::ParseError> {
+    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Record<Ty>, Self::ParseError> {
         let mut recs = HashMap::new();
         let mut inner = p.into_inner();
         while let Some(label_rule) = inner.next() {
@@ -25,7 +26,7 @@ where
                 .ok_or(<MissingInput as Into<ParserError>>::into(
                     MissingInput::new("Record Type"),
                 ))?;
-            let ty = Ty::from_pair(ty_rule)?;
+            let ty = Ty::from_pair(ty_rule, ())?;
             recs.insert(label, ty);
         }
         Ok(Record::new(recs))

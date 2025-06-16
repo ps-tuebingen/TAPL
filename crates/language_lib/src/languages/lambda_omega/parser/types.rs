@@ -69,7 +69,7 @@ fn pair_to_lambda_ty(p: Pair<'_, Rule>) -> Result<Type, Error> {
     let mut inner = pair_to_n_inner(p, vec!["Lambda Variable", "Lambda Kind", "Lambda Body"])?;
     let var = inner.remove(0).as_str().trim();
     let knd_rule = inner.remove(0);
-    let knd = Kind::from_pair(knd_rule)?;
+    let knd = Kind::from_pair(knd_rule, None)?;
     let body_rule = inner.remove(0);
     let body = pair_to_type(body_rule)?;
     Ok(OpLambda::new(var, knd, body).into())

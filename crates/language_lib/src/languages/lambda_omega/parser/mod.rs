@@ -15,11 +15,23 @@ impl Parse for Term {
         Rule::term
     }
     type ParseError = Error;
-    fn from_pair(p: Pair<'_, Rule>) -> Result<Self, Self::ParseError> {
+    type LeftRecArg = ();
+    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Self, Self::ParseError> {
         pair_to_term(p)
     }
     fn parse(input: String) -> Result<Self, Error> {
         parse(input)
+    }
+}
+impl Parse for Type {
+    type ParseError = Error;
+    type LeftRecArg = ();
+    fn rule() -> Rule {
+        Rule::r#type
+    }
+
+    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Self, Self::ParseError> {
+        pair_to_type(p)
     }
 }
 

@@ -40,7 +40,7 @@ fn pair_to_prim_ty(p: Pair<'_, Rule>) -> Result<Type, Error> {
         }
         Rule::const_type => str_to_type(p.as_str()),
         Rule::exists_unbounded_type => pair_to_pack_ty(p),
-        Rule::exists_kinded_type => Ok(Exists::from_pair(p)?.into()),
+        Rule::exists_kinded_type => Ok(Exists::from_pair(p, ())?.into()),
         Rule::record_type => pair_to_record_ty(p),
         Rule::variable => Ok(TypeVariable::new(p.as_str().trim()).into()),
         _ => Err(UnexpectedRule::new(p.as_rule(), "Non Left-Recursive Type").into()),

@@ -13,12 +13,13 @@ use syntax::terms::{False, If, IsZero, Num, Pred, Succ, True};
 
 impl Parse for Term {
     type ParseError = Error;
+    type LeftRecArg = ();
 
     fn rule() -> Rule {
         Rule::term
     }
 
-    fn from_pair(p: Pair<'_, Rule>) -> Result<Self, Self::ParseError> {
+    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Self, Self::ParseError> {
         todo!()
     }
 }

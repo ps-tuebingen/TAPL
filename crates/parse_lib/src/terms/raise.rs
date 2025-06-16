@@ -7,17 +7,18 @@ use syntax::{
 
 impl<T, Ty> Parse for Raise<T, Ty>
 where
-    T: Term + Parse,
-    Ty: Type + Parse,
+    T: Term + Parse<LeftRecArg = ()>,
+    Ty: Type + Parse<LeftRecArg = ()>,
     <T as Parse>::ParseError: From<<Ty as Parse>::ParseError>,
 {
     type ParseError = <T as Parse>::ParseError;
+    type LeftRecArg = ();
 
     fn rule() -> Rule {
         Rule::raise_term
     }
 
-    fn from_pair(p: Pair<'_, Rule>) -> Result<Raise<T, Ty>, Self::ParseError> {
+    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Raise<T, Ty>, Self::ParseError> {
         let mut inner = pair_to_n_inner(
             p,
             vec![
@@ -27,11 +28,11 @@ where
             ],
         )?;
         let cont_ty_rule = inner.remove(0);
-        let cont_ty = Ty::from_pair(cont_ty_rule)?;
+        let cont_ty = Ty::from_pair(cont_ty_rule, ())?;
         let ex_ty_rule = inner.remove(0);
-        let ex_ty = Ty::from_pair(ex_ty_rule)?;
+        let ex_ty = Ty::from_pair(ex_ty_rule, ())?;
         let catch_rule = inner.remove(0);
-        let catch_term = T::from_pair(catch_rule)?;
+        let catch_term = T::from_pair(catch_rule, ())?;
         Ok(Raise::new(catch_term, cont_ty, ex_ty))
     }
 }

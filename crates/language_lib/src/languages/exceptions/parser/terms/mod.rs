@@ -43,15 +43,15 @@ pub fn pair_to_prim_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
         }
         Rule::variable => Ok(Variable::new(p.as_str().trim()).into()),
         Rule::const_term => str_to_term(p.as_str()),
-        Rule::lambda_term => Ok(Lambda::from_pair(p)?.into()),
-        Rule::succ_term => Ok(Succ::from_pair(p)?.into()),
-        Rule::pred_term => Ok(Pred::from_pair(p)?.into()),
-        Rule::iszero_term => Ok(IsZero::from_pair(p)?.into()),
-        Rule::if_term => Ok(If::from_pair(p)?.into()),
-        Rule::try_term => Ok(Try::from_pair(p)?.into()),
-        Rule::try_catch => Ok(TryWithVal::from_pair(p)?.into()),
-        Rule::raise_term => Ok(Raise::from_pair(p)?.into()),
-        Rule::err_term => Ok(Exception::from_pair(p)?.into()),
+        Rule::lambda_term => Ok(Lambda::from_pair(p, ())?.into()),
+        Rule::succ_term => Ok(Succ::from_pair(p, ())?.into()),
+        Rule::pred_term => Ok(Pred::from_pair(p, ())?.into()),
+        Rule::iszero_term => Ok(IsZero::from_pair(p, ())?.into()),
+        Rule::if_term => Ok(If::from_pair(p, ())?.into()),
+        Rule::try_term => Ok(Try::from_pair(p, ())?.into()),
+        Rule::try_catch => Ok(TryWithVal::from_pair(p, ())?.into()),
+        Rule::raise_term => Ok(Raise::from_pair(p, ())?.into()),
+        Rule::err_term => Ok(Exception::from_pair(p, ())?.into()),
         Rule::paren_term => {
             let inner = pair_to_n_inner(p, vec!["Term"])?.remove(0);
             pair_to_term(inner)
