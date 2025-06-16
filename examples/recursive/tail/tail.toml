@@ -1,2 +1,2 @@
-ty="(mu X.<cons:(Nat x X), nil:Unit> -> mu X.<cons:(Nat x X), nil:Unit>)"
-evaluated="\\l:mu X.<cons:(Nat x X), nil:Unit>.(case unfold[mu X.<cons:(Nat x X), nil:Unit>](l) of { <cons = p> => (p).1| <nil = u> => l })"
+ty="(mu X.<cons_:(Nat x X), nil_:Unit> -> mu X.<cons_:(Nat x X), nil_:Unit>)"
+evaluated="\\l:mu X.<cons_:(Nat x X), nil_:Unit>.(case unfold[mu X.<cons_:(Nat x X), nil_:Unit>](l) of { <cons_ = p> => (p).snd| <nil_ = u> => l })"

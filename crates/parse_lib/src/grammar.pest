@@ -37,6 +37,8 @@ kw_cons = _{ "Cons" }
 kw_head = _{ "head" }
 kw_tail = _{ "tail" }
 kw_isnil = _{ "isnil" }
+kw_fst = _{ "fst" }
+kw_snd = _{ "snd" }
 
 kw_tytop = _{ "Top" }
 kw_tyunit = _{ "Unit" }
@@ -78,6 +80,8 @@ keyword = _{
   | kw_head
   | kw_tail
   | kw_isnil
+  | kw_fst 
+  | kw_snd
 
   | kw_tyunit
   | kw_tynat
@@ -137,6 +141,8 @@ const_term = { kw_unit | kw_zero | kw_true | kw_false }
 fix_term = { kw_fix ~ paren_term }
 let_term = { kw_let ~ "(" ~ variable ~ "=" ~ term ~ ")" ~ kw_in ~ term }
 pair_term = { "{" ~ term ~ "," ~ term ~ "}" }
+record_term = { "{" ~ variable ~ "=" ~ term ~ ("," ~ variable ~ "=" ~ term)* ~ "}" }
+tuple_term = { "(" ~ term ~ "," ~ term? ~ ("," ~ term)* ~ ")" }
 variant_term = { "<" ~ variable ~ "=" ~ term ~ ">" ~ kw_as ~ type}
 lambda_term = { "\\" ~ variable ~ ":" ~ type ~ "." ~ term }
 lambda_sub_term = { "\\" ~ variable ~ "<:" ~ type ~ "." ~ term }
@@ -144,7 +150,6 @@ ty_lambda_term = { "\\" ~ variable ~ "." ~ term }
 ty_lambda_kinded_term = { "\\" ~ variable ~ "::" ~ kind ~ "." ~ term }
 pack_term = { "{" ~ "*" ~ type ~ "," ~ term ~ "}" ~ kw_as ~ type }
 unpack_term = { kw_let ~ "{" ~ variable ~ "," ~ variable ~ "}" ~ "=" ~ term ~ kw_in ~ term }
-record_term = { "{" ~ variable ~ "=" ~ term ~ ("," ~ variable ~ "=" ~ term)* ~ "}" }
 succ_term = { kw_succ ~ paren_term }
 pred_term = { kw_pred ~ paren_term }
 iszero_term = { kw_iszero ~ paren_term }
@@ -156,11 +161,11 @@ raise_term = { kw_raise ~ "[" ~ type ~ "]" ~ "(" ~ term ~ ":" ~ type ~ ")" }
 fold_term = { kw_fold ~ "[" ~ type ~ "]" ~ term }
 unfold_term = { kw_unfold ~ "[" ~ type ~ "]" ~ term }
 somecase_term = { kw_case ~ term ~ kw_of ~ "{" ~ somecase_patterns ~ "}" }
-somecase_patterns = { (some_pattern ~ "|" ~ none_pattern) | (none_pattern ~ "|" ~ some_pattern) }
+somecase_patterns = _{ (some_pattern ~ "|" ~ none_pattern) | (none_pattern ~ "|" ~ some_pattern) }
 none_pattern = { kw_nothing ~ "=>" ~ term }
 some_pattern = { kw_something ~ "(" ~ variable ~ ")" ~ "=>" ~ term }
 sumcase_term = { kw_case ~ term ~ kw_of ~ "{" ~ sumcase_patterns ~ "}" }
-sumcase_patterns = { (left_pattern ~ "|" ~ right_pattern) | (right_pattern ~ "|" ~ left_pattern) }
+sumcase_patterns = _{ (left_pattern ~ "|" ~ right_pattern) | (right_pattern ~ "|" ~ left_pattern) }
 left_pattern = { kw_inl ~ "(" ~ variable ~ ")" ~ "=>" ~ term } 
 right_pattern = { kw_inr ~ "(" ~ variable ~ ")" ~ "=>" ~ term }
 variantcase_term = { kw_case ~ term ~ kw_of ~ "{" ~ variant_pattern ~ ("|" ~ variant_pattern)* ~ "}" }
@@ -169,7 +174,6 @@ deref_term = { "!" ~ term }
 ref_term = { kw_ref ~ paren_term }
 some_term = { kw_something ~ paren_term } 
 none_term = { kw_nothing ~ "[" ~ type ~ "]" } 
-tuple_term = { "{" ~ term ~ ("," ~ term)* ~ "}" }
 left_term = { kw_inl ~ paren_term ~ kw_as ~ type } 
 right_term = { kw_inr ~ paren_term ~ kw_as ~ type }
 nil_term = { kw_nil ~ "[" ~ type ~ "]" }
@@ -181,14 +185,14 @@ isnil_term = { kw_isnil ~ "[" ~ type ~ "]" ~ "(" ~ term ~ ")" }
 left_rec = { tyapp | fst_term | snd_term | projection | record_proj |  sequence | assign | ascription | term }
 record_proj = { "." ~ variable } 
 tyapp = { "[" ~ type ~ "]" }
-fst_term = { ".0" }
-snd_term = { ".1" } 
+fst_term = @{ "." ~ kw_fst ~ !(ASCII_ALPHA | ASCII_DIGIT | "_") }
+snd_term = @{ "." ~ kw_snd ~ !(ASCII_ALPHA | ASCII_DIGIT | "_") } 
 projection = { "." ~ number }
 sequence = { ";" ~ term }
 assign = { ":=" ~ term }
 ascription = { kw_as ~ type }
 
-variable = @{ !(keyword ~ !ASCII_ALPHANUMERIC) ~ ( !(WHITESPACE) ~ (ASCII_ALPHA|ASCII_DIGIT) )+ | "_" }
+variable = @{ !(keyword ~ WHITESPACE) ~  (ASCII_ALPHA|ASCII_DIGIT|"_")+ }
 number = { ASCII_DIGIT+ }
 
 // Types

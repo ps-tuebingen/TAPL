@@ -1,2 +1,2 @@
 ty="(mu A.(Nat -> (Nat x A)) -> mu A.(Nat -> (Nat x A)))"
-evaluated="\\s:mu A.(Nat -> (Nat x A)).(((unfold[mu A.(Nat -> (Nat x A))](s)) (0)).1)"
+evaluated="\\s:mu A.(Nat -> (Nat x A)).(((unfold[mu A.(Nat -> (Nat x A))](s)) (0)).snd)"

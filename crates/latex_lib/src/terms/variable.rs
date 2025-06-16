@@ -6,6 +6,6 @@ where
     T: Term,
 {
     fn to_latex(&self, _: &mut LatexConfig) -> String {
-        self.var.clone()
+        format!("\\text{{ {} }}", self.var.replace("_", "\\_"))
     }
 }

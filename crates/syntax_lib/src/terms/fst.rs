@@ -64,6 +64,6 @@ where
     T: Term,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}.0", self.term)
+        write!(f, "{}.fst", self.term)
     }
 }

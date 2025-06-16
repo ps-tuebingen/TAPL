@@ -1,20 +1,20 @@
-let (isnil = 
-    \l:(mu X.<nil:Unit, cons:(Nat x X)>).
-    case (unfold [mu X.<nil:Unit,cons:(Nat x X)>] l) of {
-      <nil=u> => true
-      | <cons=p> => false
+let (isnil_ = 
+    \l:(mu X.<nil_:Unit, cons_:(Nat x X)>).
+    case (unfold [mu X.<nil_:Unit,cons_:(Nat x X)>] l) of {
+      <nil_=u> => true
+      | <cons_=p> => false
     }
 ) in 
-let (head = \l:(mu X.<nil:Unit, cons:(Nat x X)>). 
-    case (unfold [mu X.<nil:Unit,cons:(Nat x X)>] l) of {
-      <nil=u> => 0
-      | <cons=p> => p.0
+let (head_ = \l:(mu X.<nil_:Unit, cons_:(Nat x X)>). 
+    case (unfold [mu X.<nil_:Unit,cons_:(Nat x X)>] l) of {
+      <nil_=u> => 0
+      | <cons_=p> => p.fst
     }
 ) in
-let (tail = \l:(mu X.<nil:Unit, cons:(Nat x X)>).
-      case (unfold [mu X.<nil:Unit,cons:(Nat x X)>] l) of {
-      <nil=u> => l
-      | <cons=p> => p.1
+let (tail_ = \l:(mu X.<nil_:Unit, cons_:(Nat x X)>).
+      case (unfold [mu X.<nil_:Unit,cons_:(Nat x X)>] l) of {
+      <nil_=u> => l
+      | <cons_=p> => p.snd
       }
 ) in
 let (plus = fix(
@@ -26,11 +26,11 @@ let (plus = fix(
   }
 )) in 
 fix (
-  \s:(mu X.<nil:Unit, cons:(Nat x X)>)->Nat.
-  \l:(mu X.<nil:Unit, cons:(Nat x X)>). 
-  if (isnil(l)) {
+  \s:(mu X.<nil_:Unit, cons_:(Nat x X)>)->Nat.
+  \l:(mu X.<nil_:Unit, cons_:(Nat x X)>). 
+  if (isnil_(l)) {
     0 
   } else {
-    (plus (head l)) (s(tail(l)))
+    (plus (head_ l)) (s(tail_(l)))
   }
 )

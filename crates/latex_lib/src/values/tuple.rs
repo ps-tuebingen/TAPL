@@ -7,7 +7,7 @@ where
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!(
-            "\\{{ {} \\}}",
+            "( {} )",
             self.vals
                 .iter()
                 .map(|ty| ty.to_latex(conf))

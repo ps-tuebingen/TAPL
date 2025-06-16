@@ -4,8 +4,8 @@ use super::{
 };
 use pest::iterators::Pair;
 use syntax::terms::{
-    variantcase::VariantPattern, App, False, Num, Projection, RecordProj, SomeCase, SumCase, True,
-    Unit, Variable, VariantCase,
+    variantcase::VariantPattern, App, False, Fst, Num, Pair as PairT, Projection, RecordProj, Snd,
+    SomeCase, SumCase, True, Unit, Variable, VariantCase,
 };
 
 mod ascribe;
@@ -65,6 +65,7 @@ pub fn pair_to_primterm(p: Pair<'_, Rule>) -> Result<Term, Error> {
         Rule::fix_term => pair_to_fix(p).map(|fix| fix.into()),
         Rule::if_term => pair_to_if(p).map(|ift| ift.into()),
         Rule::let_term => pair_to_let(p).map(|lett| lett.into()),
+        Rule::pair_term => pair_to_pair(p).map(|p| p.into()),
         Rule::tuple_term => pair_to_tup(p).map(|tup| tup.into()),
         Rule::record_term => pair_to_rec(p).map(|rec| rec.into()),
         Rule::left_term => pair_to_left(p).map(|lft| lft.into()),
@@ -86,6 +87,16 @@ pub fn pair_to_primterm(p: Pair<'_, Rule>) -> Result<Term, Error> {
         r => Err(UnexpectedRule::new(r, "Non Left-Recursive Term").into()),
     }
 }
+
+fn pair_to_pair(p: Pair<'_, Rule>) -> Result<PairT<Term>, Error> {
+    let mut inner = get_n_inner(p, vec!["Pair First", "Pair Second"])?;
+    let fst_rule = inner.remove(0);
+    let fst = pair_to_term(fst_rule)?;
+    let snd_rule = inner.remove(0);
+    let snd = pair_to_term(snd_rule)?;
+    Ok(PairT::new(fst, snd))
+}
+
 pub fn pair_to_variantcase(p: Pair<'_, Rule>) -> Result<VariantCase<Term>, Error> {
     let mut inner = p.into_inner();
     let bound_rule = inner.next().ok_or(MissingInput::new("Case Bound Term"))?;
@@ -195,6 +206,8 @@ pub fn pair_to_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
                 Rule::ascription => pair_to_ascribe(next, t).map(|asc| asc.into()),
                 Rule::projection => pair_to_proj(next, t).map(|proj| proj.into()),
                 Rule::record_proj => pair_to_recordproj(next, t).map(|proj| proj.into()),
+                Rule::fst_term => Ok(Fst::new(t).into()),
+                Rule::snd_term => Ok(Snd::new(t).into()),
                 Rule::term => {
                     let arg = pair_to_term(next)?;
                     Ok(App {

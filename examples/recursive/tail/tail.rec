@@ -1,5 +1,5 @@
-\l:(mu X.<nil:Unit, cons:(Nat x X)>).
-  case (unfold [mu X.<nil:Unit,cons:(Nat x X)>] l) of {
-    <nil=u> => l
-    | <cons=p> => p.1
+\l:(mu X.<nil_:Unit, cons_:(Nat x X)>).
+  case (unfold [mu X.<nil_:Unit,cons_:(Nat x X)>] l) of {
+    <nil_=u> => l
+    | <cons_=p> => p.snd
   }

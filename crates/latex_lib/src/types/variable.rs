@@ -6,6 +6,6 @@ where
     Ty: Type + LatexFmt,
 {
     fn to_latex(&self, _: &mut LatexConfig) -> String {
-        self.v.clone()
+        format!("\\text{{{}}}", self.v.replace("_", "\\_"))
     }
 }
