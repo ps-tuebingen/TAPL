@@ -14,9 +14,7 @@ where
     type ParseError = <T as Parse>::ParseError;
     type LeftRecArg = ();
 
-    fn rule() -> Rule {
-        Rule::lambda_sub_term
-    }
+    const RULE: Rule = Rule::lambda_sub_term;
 
     fn from_pair(
         p: Pair<'_, Rule>,

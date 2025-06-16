@@ -9,9 +9,7 @@ where
     type ParseError = <T as Parse>::ParseError;
     type LeftRecArg = ();
 
-    fn rule() -> Rule {
-        Rule::fix_term
-    }
+    const RULE: Rule = Rule::fix_term;
 
     fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Fix<T>, Self::ParseError> {
         let mut inner = pair_to_n_inner(p, vec!["Fix Term"])?;

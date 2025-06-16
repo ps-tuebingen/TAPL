@@ -9,9 +9,7 @@ where
     type ParseError = <T as Parse>::ParseError;
     type LeftRecArg = ();
 
-    fn rule() -> Rule {
-        Rule::try_catch
-    }
+    const RULE: Rule = Rule::try_catch;
 
     fn from_pair(
         p: Pair<'_, Rule>,

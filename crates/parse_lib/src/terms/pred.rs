@@ -9,9 +9,7 @@ where
     type ParseError = <T as Parse>::ParseError;
     type LeftRecArg = ();
 
-    fn rule() -> Rule {
-        Rule::pred_term
-    }
+    const RULE: Rule = Rule::pred_term;
 
     fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Pred<T>, Self::ParseError> {
         let mut inner = pair_to_n_inner(p, vec!["Pred Argument"])?;

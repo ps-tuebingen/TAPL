@@ -9,9 +9,7 @@ where
     type ParseError = <T as Parse>::ParseError;
     type LeftRecArg = ();
 
-    fn rule() -> Rule {
-        Rule::if_term
-    }
+    const RULE: Rule = Rule::if_term;
 
     fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<If<T>, Self::ParseError> {
         let mut inner = pair_to_n_inner(p, vec!["If Condition", "Then Term", "Else Term"])?;

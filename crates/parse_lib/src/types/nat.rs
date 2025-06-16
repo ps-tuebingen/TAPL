@@ -12,9 +12,7 @@ where
     type ParseError = <Ty as Parse>::ParseError;
     type LeftRecArg = ();
 
-    fn rule() -> Rule {
-        Rule::const_type
-    }
+    const RULE: Rule = Rule::const_type;
 
     fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Nat<Ty>, Self::ParseError> {
         let nat = Nat::new();

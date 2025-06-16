@@ -9,9 +9,7 @@ impl Parse for Kind {
     type ParseError = ParserError;
     type LeftRecArg = Option<Kind>;
 
-    fn rule() -> Rule {
-        Rule::kind
-    }
+    const RULE: Rule = Rule::kind;
 
     fn from_pair(p: Pair<'_, Rule>, left_rec: Self::LeftRecArg) -> Result<Kind, Self::ParseError> {
         if let Some(knd) = left_rec {

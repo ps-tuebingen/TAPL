@@ -13,9 +13,8 @@ where
     type ParseError = <Ty as Parse>::ParseError;
     type LeftRecArg = ();
 
-    fn rule() -> Rule {
-        Rule::record_type
-    }
+    const RULE: Rule = Rule::record_type;
+
     fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Record<Ty>, Self::ParseError> {
         let mut recs = HashMap::new();
         let mut inner = p.into_inner();

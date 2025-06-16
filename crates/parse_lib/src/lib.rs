@@ -15,7 +15,7 @@ pub trait Parse: Sized {
     type ParseError: std::error::Error + From<pest::error::Error<Rule>> + From<ParserError>;
     type LeftRecArg;
 
-    fn rule() -> Rule;
+    const RULE: Rule;
 
     fn from_pair(p: Pair<'_, Rule>, left_rec: Self::LeftRecArg) -> Result<Self, Self::ParseError>;
 
@@ -23,11 +23,11 @@ pub trait Parse: Sized {
     where
         Self::LeftRecArg: Default,
     {
-        let mut pairs = LangParser::parse(Self::rule(), &source)?;
+        let mut pairs = LangParser::parse(Self::RULE, &source)?;
         let rule = pairs
             .next()
             .ok_or(<MissingInput as Into<ParserError>>::into(
-                MissingInput::new(&format!("{:?}", Self::rule())),
+                MissingInput::new(&format!("{:?}", Self::RULE)),
             ))?;
         let result = Self::from_pair(rule, Default::default())?;
         if let Some(rule) = pairs.next() {

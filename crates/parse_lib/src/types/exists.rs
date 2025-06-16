@@ -12,9 +12,7 @@ where
     type ParseError = <Ty as Parse>::ParseError;
     type LeftRecArg = ();
 
-    fn rule() -> Rule {
-        Rule::exists_unbounded_type
-    }
+    const RULE: Rule = Rule::exists_unbounded_type;
     fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Exists<Ty>, Self::ParseError> {
         let mut inner = pair_to_n_inner(p, vec!["Exists Variable", "Exists kind", "Exists Type"])?;
         let start_rule = inner.remove(0);

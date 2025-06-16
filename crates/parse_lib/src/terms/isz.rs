@@ -9,9 +9,7 @@ where
     type ParseError = <T as Parse>::ParseError;
     type LeftRecArg = ();
 
-    fn rule() -> Rule {
-        Rule::iszero_term
-    }
+    const RULE: Rule = Rule::iszero_term;
 
     fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<IsZero<T>, Self::ParseError> {
         let mut inner = pair_to_n_inner(p, vec!["IsZero Argument"])?;

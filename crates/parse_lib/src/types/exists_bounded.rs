@@ -9,9 +9,7 @@ where
     type ParseError = <Ty as Parse>::ParseError;
     type LeftRecArg = ();
 
-    fn rule() -> Rule {
-        Rule::exists_bounded_type
-    }
+    const RULE: Rule = Rule::exists_bounded_type;
 
     fn from_pair(
         p: Pair<'_, Rule>,

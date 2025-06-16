@@ -21,9 +21,7 @@ impl Parse for Term {
     type ParseError = Error;
     type LeftRecArg = ();
 
-    fn rule() -> Rule {
-        Rule::term
-    }
+    const RULE: Rule = Rule::term;
 
     fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Self, Self::ParseError> {
         todo!()

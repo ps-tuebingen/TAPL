@@ -13,9 +13,7 @@ where
     type ParseError = <T as Parse>::ParseError;
     type LeftRecArg = ();
 
-    fn rule() -> Rule {
-        Rule::unpack_term
-    }
+    const RULE: Rule = Rule::unpack_term;
 
     fn from_pair(
         p: Pair<'_, Rule>,
