@@ -12,8 +12,11 @@ use terms::pair_to_term;
 impl Parse for Term {
     type ParseError = Error;
 
-    fn parse(input: String) -> Result<Self, Error> {
-        parse(input)
+    fn rule() -> Rule {
+        Rule::term
+    }
+    fn from_pair(p: Pair<'_, Rule>) -> Result<Self, Self::ParseError> {
+        pair_to_term(p)
     }
 }
 

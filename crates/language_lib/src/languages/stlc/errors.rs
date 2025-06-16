@@ -4,7 +4,7 @@ use common::errors::{
     TypeMismatch, UndefinedLabel, ValueMismatch,
 };
 use parse::{
-    errors::{MissingInput, RemainingInput, UnexpectedRule, UnknownKeyword},
+    errors::{MissingInput, ParserError, RemainingInput, UnexpectedRule, UnknownKeyword},
     Rule,
 };
 use pest::error::Error as PestErr;
@@ -21,9 +21,7 @@ pub enum Error {
     FreeVariable(FreeVariable),
     ValueMismatch(ValueMismatch),
     Pest(Box<PestErr<Rule>>),
-    MissingInput(MissingInput),
-    RemainingInput(RemainingInput),
-    UnexpectedRule(UnexpectedRule),
+    Parse(ParserError),
     UnknownKeyword(UnknownKeyword),
     NameMismatch(NameMismatch),
     FreeTypeVariable(FreeTypeVariable),
@@ -41,9 +39,7 @@ impl fmt::Display for Error {
             Error::FreeVariable(fv) => fv.fmt(f),
             Error::ValueMismatch(vm) => vm.fmt(f),
             Error::Pest(err) => err.fmt(f),
-            Error::MissingInput(mi) => mi.fmt(f),
-            Error::RemainingInput(ri) => ri.fmt(f),
-            Error::UnexpectedRule(ur) => ur.fmt(f),
+            Error::Parse(p) => p.fmt(f),
             Error::UnknownKeyword(uk) => uk.fmt(f),
             Error::NameMismatch(nm) => nm.fmt(f),
             Error::FreeTypeVariable(fv) => fv.fmt(f),
@@ -94,7 +90,6 @@ impl From<FreeVariable> for Error {
         Error::FreeVariable(err)
     }
 }
-
 impl From<ValueMismatch> for Error {
     fn from(err: ValueMismatch) -> Error {
         Error::ValueMismatch(err)
@@ -107,21 +102,9 @@ impl From<PestErr<Rule>> for Error {
     }
 }
 
-impl From<MissingInput> for Error {
-    fn from(err: MissingInput) -> Error {
-        Error::MissingInput(err)
-    }
-}
-
-impl From<RemainingInput> for Error {
-    fn from(err: RemainingInput) -> Error {
-        Error::RemainingInput(err)
-    }
-}
-
-impl From<UnexpectedRule> for Error {
-    fn from(err: UnexpectedRule) -> Error {
-        Error::UnexpectedRule(err)
+impl From<ParserError> for Error {
+    fn from(err: ParserError) -> Error {
+        Error::Parse(err)
     }
 }
 
@@ -140,5 +123,23 @@ impl From<NameMismatch> for Error {
 impl From<FreeTypeVariable> for Error {
     fn from(err: FreeTypeVariable) -> Error {
         Error::FreeTypeVariable(err)
+    }
+}
+
+impl From<MissingInput> for Error {
+    fn from(mi: MissingInput) -> Error {
+        Error::Parse(mi.into())
+    }
+}
+
+impl From<RemainingInput> for Error {
+    fn from(ri: RemainingInput) -> Error {
+        Error::Parse(ri.into())
+    }
+}
+
+impl From<UnexpectedRule> for Error {
+    fn from(ur: UnexpectedRule) -> Error {
+        Error::Parse(ur.into())
     }
 }

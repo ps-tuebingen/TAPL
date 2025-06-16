@@ -2,7 +2,7 @@ use common::errors::{
     FreeTypeVariable, FreeVariable, KindMismatch, NotImplemented, TypeMismatch, ValueMismatch,
 };
 use parse::{
-    errors::{MissingInput, RemainingInput, UnexpectedRule},
+    errors::{MissingInput, ParserError, RemainingInput, UnexpectedRule},
     Rule,
 };
 use pest::error::Error as PestErr;
@@ -17,9 +17,7 @@ pub enum Error {
     ValueMismatch(ValueMismatch),
     FreeVariable(FreeVariable),
     Pest(Box<PestErr<Rule>>),
-    MissingInput(MissingInput),
-    RemainingInput(RemainingInput),
-    UnexpectedRule(UnexpectedRule),
+    Parse(ParserError),
 }
 
 impl fmt::Display for Error {
@@ -32,9 +30,7 @@ impl fmt::Display for Error {
             Error::ValueMismatch(vm) => vm.fmt(f),
             Error::FreeVariable(fv) => fv.fmt(f),
             Error::Pest(err) => err.fmt(f),
-            Error::MissingInput(mi) => mi.fmt(f),
-            Error::RemainingInput(ri) => ri.fmt(f),
-            Error::UnexpectedRule(ur) => ur.fmt(f),
+            Error::Parse(p) => p.fmt(f),
         }
     }
 }
@@ -83,20 +79,26 @@ impl From<PestErr<Rule>> for Error {
     }
 }
 
+impl From<ParserError> for Error {
+    fn from(err: ParserError) -> Error {
+        Error::Parse(err)
+    }
+}
+
 impl From<MissingInput> for Error {
-    fn from(err: MissingInput) -> Error {
-        Error::MissingInput(err)
+    fn from(mi: MissingInput) -> Error {
+        Error::Parse(mi.into())
     }
 }
 
 impl From<RemainingInput> for Error {
-    fn from(err: RemainingInput) -> Error {
-        Error::RemainingInput(err)
+    fn from(ri: RemainingInput) -> Error {
+        Error::Parse(ri.into())
     }
 }
 
 impl From<UnexpectedRule> for Error {
-    fn from(err: UnexpectedRule) -> Error {
-        Error::UnexpectedRule(err)
+    fn from(ur: UnexpectedRule) -> Error {
+        Error::Parse(ur.into())
     }
 }

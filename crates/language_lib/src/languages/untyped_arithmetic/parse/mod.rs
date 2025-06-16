@@ -3,6 +3,7 @@ use parse::{
     errors::{MissingInput, RemainingInput, UnexpectedRule},
     Parse, Rule,
 };
+use pest::iterators::Pair;
 pub mod lexer;
 
 use super::terms::Term;
@@ -13,8 +14,12 @@ use syntax::terms::{False, If, IsZero, Num, Pred, Succ, True};
 impl Parse for Term {
     type ParseError = Error;
 
-    fn parse(input: String) -> Result<Self, Error> {
-        parse(input)
+    fn rule() -> Rule {
+        Rule::term
+    }
+
+    fn from_pair(p: Pair<'_, Rule>) -> Result<Self, Self::ParseError> {
+        todo!()
     }
 }
 

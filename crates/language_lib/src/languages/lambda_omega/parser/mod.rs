@@ -13,8 +13,13 @@ use terms::pair_to_term;
 use types::pair_to_type;
 
 impl Parse for Term {
+    fn rule() -> Rule {
+        Rule::term
+    }
     type ParseError = Error;
-
+    fn from_pair(p: Pair<'_, Rule>) -> Result<Self, Self::ParseError> {
+        pair_to_term(p)
+    }
     fn parse(input: String) -> Result<Self, Error> {
         parse(input)
     }

@@ -1,26 +1,23 @@
 use super::{
-    pair_to_n_inner, pair_to_type, Error, MissingInput, RemainingInput, Rule, Term, Type,
-    UnexpectedRule, UnknownKeyword,
+    pair_to_n_inner, pair_to_type, Error, MissingInput, ParserError, RemainingInput, Rule, Term,
+    Type, UnexpectedRule, UnknownKeyword,
 };
+use parse::Parse;
 use pest::iterators::Pair;
-use syntax::terms::{App, Num, Variable};
+use syntax::terms::{App, Lambda, LambdaSub, Num, Pack, Pred, Record, Succ, Unpack, Variable};
 
-mod lambda;
 mod lambda_sub;
-mod nat;
-mod pack;
 mod record;
-use lambda::pair_to_lambda;
-use lambda_sub::{pair_to_lambda_sub, pair_to_tyapp, pair_to_tylambda};
-use nat::{pair_to_pred, pair_to_succ};
-use pack::{pair_to_pack, pair_to_unpack};
-use record::{pair_to_proj, pair_to_rec};
+use lambda_sub::{pair_to_tyapp, pair_to_tylambda};
+use record::pair_to_proj;
 
 pub fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
     let mut inner = p.into_inner();
     let prim_rule = inner
         .next()
-        .ok_or(MissingInput::new("Non Left-Recursive Term"))?;
+        .ok_or(<MissingInput as Into<ParserError>>::into(
+            MissingInput::new("Non Left-Recursive Term"),
+        ))?;
     let prim_inner = pair_to_n_inner(prim_rule, vec!["Non Left-Recursive Term"])?.remove(0);
     let prim_term = pair_to_prim_term(prim_inner)?;
 
@@ -33,7 +30,10 @@ pub fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
     };
 
     if let Some(n) = inner.next() {
-        return Err(RemainingInput::new(&format!("{n:?}")).into());
+        return Err(
+            <RemainingInput as Into<ParserError>>::into(RemainingInput::new(&format!("{n:?}")))
+                .into(),
+        );
     }
     Ok(term)
 }
@@ -44,14 +44,14 @@ fn pair_to_prim_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
             let term_rule = pair_to_n_inner(p, vec!["Term"])?.remove(0);
             pair_to_term(term_rule)
         }
-        Rule::lambda_term => pair_to_lambda(p).map(|lam| lam.into()),
-        Rule::lambda_sub_term => pair_to_lambda_sub(p).map(|lam| lam.into()),
+        Rule::lambda_term => Ok(Lambda::from_pair(p)?.into()),
+        Rule::lambda_sub_term => Ok(LambdaSub::from_pair(p)?.into()),
         Rule::ty_lambda_term => pair_to_tylambda(p).map(|lam| lam.into()),
-        Rule::pack_term => pair_to_pack(p).map(|pack| pack.into()),
-        Rule::unpack_term => pair_to_unpack(p).map(|unp| unp.into()),
-        Rule::record_term => pair_to_rec(p).map(|rec| rec.into()),
-        Rule::succ_term => pair_to_succ(p).map(|s| s.into()),
-        Rule::pred_term => pair_to_pred(p).map(|p| p.into()),
+        Rule::pack_term => Ok(Pack::from_pair(p)?.into()),
+        Rule::unpack_term => Ok(Unpack::from_pair(p)?.into()),
+        Rule::record_term => Ok(Record::from_pair(p)?.into()),
+        Rule::succ_term => Ok(Succ::from_pair(p)?.into()),
+        Rule::pred_term => Ok(Pred::from_pair(p)?.into()),
         Rule::number => {
             let num = p
                 .as_str()
@@ -61,7 +61,13 @@ fn pair_to_prim_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
             Ok(Num::new(num).into())
         }
         Rule::variable => Ok(Variable::new(p.as_str().trim()).into()),
-        r => Err(UnexpectedRule::new(r, "Non Left-Recursive Term").into()),
+        r => Err(
+            <UnexpectedRule as Into<ParserError>>::into(UnexpectedRule::new(
+                r,
+                "Non Left-Recursive Term",
+            ))
+            .into(),
+        ),
     }
 }
 
@@ -77,6 +83,12 @@ fn pair_to_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
             }
             .into())
         }
-        r => Err(UnexpectedRule::new(r, "Type or Term Application").into()),
+        r => Err(
+            <UnexpectedRule as Into<ParserError>>::into(UnexpectedRule::new(
+                r,
+                "Type or Term Application",
+            ))
+            .into(),
+        ),
     }
 }

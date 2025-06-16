@@ -6,6 +6,7 @@ use parse::{
     errors::{MissingInput, UnexpectedRule},
     Parse, Rule,
 };
+use pest::iterators::Pair;
 use std::collections::VecDeque;
 use syntax::{
     terms::{App, Lambda, Variable},
@@ -19,8 +20,12 @@ use lexer::{lex, Token};
 impl Parse for Term {
     type ParseError = Error;
 
-    fn parse(mut input: String) -> Result<Self, Error> {
-        parse(&mut input)
+    fn rule() -> Rule {
+        Rule::term
+    }
+
+    fn from_pair(p: Pair<'_, Rule>) -> Result<Self, Self::ParseError> {
+        todo!()
     }
 }
 

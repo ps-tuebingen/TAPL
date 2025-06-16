@@ -6,7 +6,7 @@ use common::errors::{
 };
 
 use parse::{
-    errors::{MissingInput, RemainingInput, UnexpectedRule, UnknownKeyword},
+    errors::{MissingInput, ParserError, RemainingInput, UnexpectedRule, UnknownKeyword},
     Rule,
 };
 use pest::error::Error as PestErr;
@@ -21,9 +21,7 @@ pub enum Error {
     NameMismatch(NameMismatch),
     NotASubtype(NotASubtype<Type, Type>),
     Pest(Box<PestErr<Rule>>),
-    MissingInput(MissingInput),
-    RemainingInput(RemainingInput),
-    UnexpectedRule(UnexpectedRule),
+    Parse(ParserError),
     UnknownKeyword(UnknownKeyword),
     UndefinedLabel(UndefinedLabel),
     FreeVariable(FreeVariable),
@@ -39,10 +37,8 @@ impl fmt::Display for Error {
             Error::KindMismatch(km) => km.fmt(f),
             Error::NameMismatch(nm) => nm.fmt(f),
             Error::NotASubtype(ns) => ns.fmt(f),
+            Error::Parse(p) => p.fmt(f),
             Error::Pest(err) => err.fmt(f),
-            Error::MissingInput(mi) => mi.fmt(f),
-            Error::RemainingInput(ri) => ri.fmt(f),
-            Error::UnexpectedRule(ur) => ur.fmt(f),
             Error::UnknownKeyword(uk) => uk.fmt(f),
             Error::UndefinedLabel(ul) => ul.fmt(f),
             Error::FreeVariable(fv) => fv.fmt(f),
@@ -95,21 +91,9 @@ impl From<PestErr<Rule>> for Error {
     }
 }
 
-impl From<MissingInput> for Error {
-    fn from(err: MissingInput) -> Error {
-        Error::MissingInput(err)
-    }
-}
-
-impl From<RemainingInput> for Error {
-    fn from(err: RemainingInput) -> Error {
-        Error::RemainingInput(err)
-    }
-}
-
-impl From<UnexpectedRule> for Error {
-    fn from(err: UnexpectedRule) -> Error {
-        Error::UnexpectedRule(err)
+impl From<ParserError> for Error {
+    fn from(err: ParserError) -> Error {
+        Error::Parse(err)
     }
 }
 
@@ -134,5 +118,23 @@ impl From<FreeVariable> for Error {
 impl From<ValueMismatch> for Error {
     fn from(err: ValueMismatch) -> Error {
         Error::ValueMismatch(err)
+    }
+}
+
+impl From<MissingInput> for Error {
+    fn from(mi: MissingInput) -> Error {
+        Error::Parse(mi.into())
+    }
+}
+
+impl From<RemainingInput> for Error {
+    fn from(ri: RemainingInput) -> Error {
+        Error::Parse(ri.into())
+    }
+}
+
+impl From<UnexpectedRule> for Error {
+    fn from(ur: UnexpectedRule) -> Error {
+        Error::Parse(ur.into())
     }
 }
