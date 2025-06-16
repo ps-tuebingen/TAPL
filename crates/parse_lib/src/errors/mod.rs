@@ -1,3 +1,5 @@
+use super::Rule;
+use pest::error::Error as PestErr;
 use std::fmt;
 
 pub mod missing_input;
@@ -12,6 +14,7 @@ pub use unknown_keyword::UnknownKeyword;
 
 #[derive(Debug)]
 pub enum ParserError {
+    Pest(PestErr<Rule>),
     MissingInput(MissingInput),
     RemainingInput(RemainingInput),
     UnexpectedRule(UnexpectedRule),
@@ -21,6 +24,7 @@ pub enum ParserError {
 impl fmt::Display for ParserError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
+            ParserError::Pest(err) => write!(f, "Error in Pest:\n{err}"),
             ParserError::MissingInput(mi) => mi.fmt(f),
             ParserError::RemainingInput(ri) => ri.fmt(f),
             ParserError::UnexpectedRule(ur) => ur.fmt(f),
@@ -28,6 +32,8 @@ impl fmt::Display for ParserError {
         }
     }
 }
+
+impl std::error::Error for ParserError {}
 
 impl From<MissingInput> for ParserError {
     fn from(mi: MissingInput) -> ParserError {
@@ -50,5 +56,11 @@ impl From<UnexpectedRule> for ParserError {
 impl From<UnknownKeyword> for ParserError {
     fn from(ur: UnknownKeyword) -> ParserError {
         ParserError::UnknownKeyword(ur)
+    }
+}
+
+impl From<PestErr<Rule>> for ParserError {
+    fn from(err: PestErr<Rule>) -> ParserError {
+        ParserError::Pest(err)
     }
 }

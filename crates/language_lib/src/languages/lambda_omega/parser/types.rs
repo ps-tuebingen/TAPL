@@ -1,7 +1,8 @@
 use super::{
-    pair_to_kind, pair_to_n_inner, Error, MissingInput, RemainingInput, Rule, Type, UnexpectedRule,
+    pair_to_n_inner, Error, MissingInput, RemainingInput, Rule, Type, UnexpectedRule,
     UnknownKeyword,
 };
+use parse::Parse;
 use pest::iterators::Pair;
 use syntax::{
     kinds::Kind,
@@ -68,7 +69,7 @@ fn pair_to_lambda_ty(p: Pair<'_, Rule>) -> Result<Type, Error> {
     let mut inner = pair_to_n_inner(p, vec!["Lambda Variable", "Lambda Kind", "Lambda Body"])?;
     let var = inner.remove(0).as_str().trim();
     let knd_rule = inner.remove(0);
-    let knd = pair_to_kind(knd_rule)?;
+    let knd = Kind::from_pair(knd_rule)?;
     let body_rule = inner.remove(0);
     let body = pair_to_type(body_rule)?;
     Ok(OpLambda::new(var, knd, body).into())

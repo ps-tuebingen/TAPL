@@ -10,7 +10,6 @@ use std::fmt;
 pub enum Error {
     NotImplemented(NotImplemented),
     ValueMismatch(ValueMismatch),
-    Pest(Box<PestErr<Rule>>),
     Parse(ParserError),
 }
 
@@ -19,7 +18,6 @@ impl fmt::Display for Error {
         match self {
             Error::NotImplemented(ni) => ni.fmt(f),
             Error::ValueMismatch(vm) => vm.fmt(f),
-            Error::Pest(_) => panic!("Impossible"),
             Error::Parse(p) => p.fmt(f),
         }
     }
@@ -41,7 +39,7 @@ impl From<ValueMismatch> for Error {
 
 impl From<PestErr<Rule>> for Error {
     fn from(err: PestErr<Rule>) -> Error {
-        Error::Pest(Box::new(err))
+        Error::Parse(err.into())
     }
 }
 

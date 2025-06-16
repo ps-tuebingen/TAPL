@@ -1,22 +1,10 @@
-use super::{
-    pair_to_n_inner, pair_to_type, Error, MissingInput, Rule, Term, Type, UnexpectedRule,
-    UnknownKeyword,
-};
+use super::{pair_to_n_inner, Error, MissingInput, Rule, Term, UnexpectedRule, UnknownKeyword};
+use parse::Parse;
 use pest::iterators::Pair;
-use syntax::terms::{App, False, Num, RecordProj, True, Unit, Variable};
-
-mod bool;
-mod fix;
-mod lambda;
-mod nat;
-mod pack;
-mod record;
-use bool::pair_to_if;
-use fix::pair_to_fix;
-use lambda::pair_to_lambda;
-use nat::{pair_to_iszero, pair_to_pred, pair_to_succ};
-use pack::{pair_to_pack, pair_to_unpack};
-use record::pair_to_record;
+use syntax::terms::{
+    App, False, Fix, If, IsZero, Lambda, Num, Pack, Pred, Record, RecordProj, Succ, True, Unit,
+    Unpack, Variable,
+};
 
 pub fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
     let mut inner = p.into_inner();
@@ -43,15 +31,15 @@ fn pair_to_primterm(p: Pair<'_, Rule>) -> Result<Term, Error> {
             pair_to_term(term_rule)
         }
         Rule::const_term => str_to_term(p.as_str()),
-        Rule::lambda_term => pair_to_lambda(p).map(|lam| lam.into()),
-        Rule::pack_term => pair_to_pack(p).map(|pck| pck.into()),
-        Rule::unpack_term => pair_to_unpack(p).map(|unp| unp.into()),
-        Rule::succ_term => pair_to_succ(p).map(|succ| succ.into()),
-        Rule::pred_term => pair_to_pred(p).map(|pred| pred.into()),
-        Rule::iszero_term => pair_to_iszero(p).map(|isz| isz.into()),
-        Rule::fix_term => pair_to_fix(p).map(|fix| fix.into()),
-        Rule::record_term => pair_to_record(p).map(|rec| rec.into()),
-        Rule::if_term => pair_to_if(p).map(|ift| ift.into()),
+        Rule::lambda_term => Ok(Lambda::from_pair(p)?.into()),
+        Rule::pack_term => Ok(Pack::from_pair(p)?.into()),
+        Rule::unpack_term => Ok(Unpack::from_pair(p)?.into()),
+        Rule::succ_term => Ok(Succ::from_pair(p)?.into()),
+        Rule::pred_term => Ok(Pred::from_pair(p)?.into()),
+        Rule::iszero_term => Ok(IsZero::from_pair(p)?.into()),
+        Rule::fix_term => Ok(Fix::from_pair(p)?.into()),
+        Rule::record_term => Ok(Record::from_pair(p)?.into()),
+        Rule::if_term => Ok(If::from_pair(p)?.into()),
         Rule::number => {
             let num = p
                 .as_str()

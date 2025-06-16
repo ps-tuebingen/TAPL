@@ -2,6 +2,7 @@ use super::{
     pair_to_n_inner, Error, MissingInput, RemainingInput, Rule, Type, UnexpectedRule,
     UnknownKeyword,
 };
+use parse::Parse;
 use pest::iterators::Pair;
 use std::collections::HashMap;
 use syntax::{
@@ -39,7 +40,7 @@ fn pair_to_prim_ty(p: Pair<'_, Rule>) -> Result<Type, Error> {
         }
         Rule::const_type => str_to_type(p.as_str()),
         Rule::exists_unbounded_type => pair_to_pack_ty(p),
-        Rule::exists_kinded_type => pair_to_kinded_pack(p),
+        Rule::exists_kinded_type => Ok(Exists::from_pair(p)?.into()),
         Rule::record_type => pair_to_record_ty(p),
         Rule::variable => Ok(TypeVariable::new(p.as_str().trim()).into()),
         _ => Err(UnexpectedRule::new(p.as_rule(), "Non Left-Recursive Type").into()),
@@ -66,17 +67,6 @@ fn pair_to_pack_ty(p: Pair<'_, Rule>) -> Result<Type, Error> {
     let mut inner = pair_to_n_inner(p, vec!["Exists Variable", "Exists Type"])?;
     let start_rule = inner.remove(0);
     let mut start_inner = pair_to_n_inner(start_rule, vec!["Exists Variable"])?;
-    let var = start_inner.remove(0).as_str().trim();
-    let ty_rule = inner.remove(0);
-    let inner_ty = pair_to_type(ty_rule)?;
-    Ok(Exists::new(var, Kind::Star, inner_ty).into())
-}
-
-fn pair_to_kinded_pack(p: Pair<'_, Rule>) -> Result<Type, Error> {
-    let mut inner = pair_to_n_inner(p, vec!["Exists Variable", "Exists kind", "Exists Type"])?;
-    let start_rule = inner.remove(0);
-    let mut start_inner = pair_to_n_inner(start_rule, vec!["Exists Variable"])?;
-    inner.remove(0);
     let var = start_inner.remove(0).as_str().trim();
     let ty_rule = inner.remove(0);
     let inner_ty = pair_to_type(ty_rule)?;

@@ -20,7 +20,6 @@ pub enum Error {
     TypeMismatch(TypeMismatch),
     NameMismatch(NameMismatch),
     NotASubtype(NotASubtype<Type, Type>),
-    Pest(Box<PestErr<Rule>>),
     Parse(ParserError),
     UndefinedLabel(UndefinedLabel),
     FreeVariable(FreeVariable),
@@ -37,7 +36,6 @@ impl fmt::Display for Error {
             Error::NameMismatch(nm) => nm.fmt(f),
             Error::NotASubtype(ns) => ns.fmt(f),
             Error::Parse(p) => p.fmt(f),
-            Error::Pest(err) => err.fmt(f),
             Error::UndefinedLabel(ul) => ul.fmt(f),
             Error::FreeVariable(fv) => fv.fmt(f),
             Error::ValueMismatch(vm) => vm.fmt(f),
@@ -85,7 +83,7 @@ impl From<NotASubtype<Type, Type>> for Error {
 
 impl From<PestErr<Rule>> for Error {
     fn from(err: PestErr<Rule>) -> Error {
-        Error::Pest(Box::new(err))
+        Error::Parse(err.into())
     }
 }
 

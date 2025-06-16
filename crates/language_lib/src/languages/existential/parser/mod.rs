@@ -22,6 +22,17 @@ impl Parse for Term {
     }
 }
 
+impl Parse for Type {
+    type ParseError = Error;
+    fn rule() -> Rule {
+        Rule::r#type
+    }
+
+    fn from_pair(p: Pair<'_, Rule>) -> Result<Self, Self::ParseError> {
+        pair_to_type(p)
+    }
+}
+
 pub fn parse(input: String) -> Result<Term, Error> {
     let mut parsed = LangParser::parse(Rule::program, &input)?
         .next()

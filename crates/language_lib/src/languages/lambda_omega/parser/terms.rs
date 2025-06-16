@@ -1,9 +1,13 @@
 use super::{
-    pair_to_kind, pair_to_n_inner, pair_to_type, Error, MissingInput, RemainingInput, Rule, Term,
-    UnexpectedRule, UnknownKeyword,
+    pair_to_n_inner, pair_to_type, Error, MissingInput, RemainingInput, Rule, Term, UnexpectedRule,
+    UnknownKeyword,
 };
+use parse::Parse;
 use pest::iterators::Pair;
-use syntax::terms::{App, False, Lambda, Num, True, TyApp, TyLambda, Unit, Variable};
+use syntax::{
+    kinds::Kind,
+    terms::{App, False, Lambda, Num, True, TyApp, TyLambda, Unit, Variable},
+};
 
 pub fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
     let mut inner = p.into_inner();
@@ -87,7 +91,7 @@ fn pair_to_tylambda(p: Pair<'_, Rule>) -> Result<Term, Error> {
     )?;
     let var = inner.remove(0).as_str().trim();
     let knd_rule = inner.remove(0);
-    let knd = pair_to_kind(knd_rule)?;
+    let knd = Kind::from_pair(knd_rule)?;
 
     let body_rule = inner.remove(0);
     let body = pair_to_term(body_rule)?;

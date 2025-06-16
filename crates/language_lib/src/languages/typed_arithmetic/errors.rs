@@ -12,7 +12,6 @@ pub enum Error {
     KindMismatch(KindMismatch),
     TypeMismatch(TypeMismatch),
     ValueMismatch(ValueMismatch),
-    Pest(Box<PestErr<Rule>>),
     Parse(ParserError),
 }
 
@@ -23,7 +22,6 @@ impl fmt::Display for Error {
             Error::KindMismatch(ki) => ki.fmt(f),
             Error::TypeMismatch(tm) => tm.fmt(f),
             Error::ValueMismatch(vm) => vm.fmt(f),
-            Error::Pest(err) => err.fmt(f),
             Error::Parse(p) => p.fmt(f),
         }
     }
@@ -57,7 +55,7 @@ impl From<ValueMismatch> for Error {
 
 impl From<PestErr<Rule>> for Error {
     fn from(err: PestErr<Rule>) -> Error {
-        Error::Pest(Box::new(err))
+        Error::Parse(err.into())
     }
 }
 

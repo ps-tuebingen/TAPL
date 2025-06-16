@@ -5,10 +5,8 @@ use parse::{
 };
 use pest::{iterators::Pair, Parser};
 
-mod kinds;
 mod terms;
 mod types;
-use kinds::pair_to_kind;
 use terms::pair_to_term;
 use types::pair_to_type;
 

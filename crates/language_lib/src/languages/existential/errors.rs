@@ -18,7 +18,6 @@ pub enum Error {
     NameMismatch(NameMismatch),
     ValueMismatch(ValueMismatch),
     FreeVariable(FreeVariable),
-    Pest(Box<PestErr<Rule>>),
     Parse(ParserError),
     UndefinedLabel(UndefinedLabel),
 }
@@ -34,7 +33,6 @@ impl fmt::Display for Error {
             Error::ValueMismatch(vm) => vm.fmt(f),
             Error::FreeVariable(fv) => fv.fmt(f),
             Error::Parse(p) => p.fmt(f),
-            Error::Pest(err) => err.fmt(f),
             Error::UndefinedLabel(ul) => ul.fmt(f),
         }
     }
@@ -80,7 +78,7 @@ impl From<FreeVariable> for Error {
 
 impl From<PestErr<Rule>> for Error {
     fn from(err: PestErr<Rule>) -> Error {
-        Error::Pest(Box::new(err))
+        Error::Parse(err.into())
     }
 }
 

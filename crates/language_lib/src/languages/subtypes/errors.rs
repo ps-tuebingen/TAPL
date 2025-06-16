@@ -21,7 +21,6 @@ pub enum Error {
     NotASubtype(NotASubtype<Type, Type>),
     FreeVariable(FreeVariable),
     ValueMismatch(ValueMismatch),
-    Pest(Box<PestErr<Rule>>),
     Parse(ParserError),
     FreeTypeVariable(FreeTypeVariable),
 }
@@ -37,7 +36,6 @@ impl fmt::Display for Error {
             Error::NotASubtype(ns) => ns.fmt(f),
             Error::FreeVariable(fv) => fv.fmt(f),
             Error::ValueMismatch(vm) => vm.fmt(f),
-            Error::Pest(err) => err.fmt(f),
             Error::FreeTypeVariable(fv) => fv.fmt(f),
             Error::Parse(p) => p.fmt(f),
         }
@@ -96,7 +94,7 @@ impl From<ValueMismatch> for Error {
 
 impl From<PestErr<Rule>> for Error {
     fn from(err: PestErr<Rule>) -> Error {
-        Error::Pest(Box::new(err))
+        Error::Parse(err.into())
     }
 }
 impl From<ParserError> for Error {
