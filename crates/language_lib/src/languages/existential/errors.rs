@@ -20,7 +20,6 @@ pub enum Error {
     FreeVariable(FreeVariable),
     Pest(Box<PestErr<Rule>>),
     Parse(ParserError),
-    UnknownKeyword(UnknownKeyword),
     UndefinedLabel(UndefinedLabel),
 }
 
@@ -36,7 +35,6 @@ impl fmt::Display for Error {
             Error::FreeVariable(fv) => fv.fmt(f),
             Error::Parse(p) => p.fmt(f),
             Error::Pest(err) => err.fmt(f),
-            Error::UnknownKeyword(uk) => uk.fmt(f),
             Error::UndefinedLabel(ul) => ul.fmt(f),
         }
     }
@@ -94,7 +92,7 @@ impl From<ParserError> for Error {
 
 impl From<UnknownKeyword> for Error {
     fn from(err: UnknownKeyword) -> Error {
-        Error::UnknownKeyword(err)
+        Error::Parse(err.into())
     }
 }
 

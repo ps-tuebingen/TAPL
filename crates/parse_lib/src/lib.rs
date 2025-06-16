@@ -1,7 +1,8 @@
 pub mod errors;
 pub mod terms;
+pub mod types;
 
-use errors::{MissingInput, ParserError, RemainingInput, UnexpectedRule};
+use errors::{MissingInput, ParserError, RemainingInput};
 use pest::{iterators::Pair, Parser};
 use pest_derive::Parser;
 
@@ -52,18 +53,4 @@ pub fn pair_to_n_inner<'a>(
         return Err(RemainingInput::new(&format!("{n:?}")).into());
     }
     Ok(pairs)
-}
-
-pub fn to_paren_term_inner<'a>(p: Pair<'a, Rule>) -> Result<Pair<'a, Rule>, ParserError> {
-    if p.as_rule() != Rule::paren_term {
-        return Err(UnexpectedRule::new(p.as_rule(), "Paren Term").into());
-    }
-    let mut inner = p.into_inner();
-    let rule = inner.next().ok_or(MissingInput::new("Paren Term inner"))?;
-
-    if let Some(r) = inner.next() {
-        return Err(RemainingInput::new(&format!("{:?}", r)).into());
-    }
-
-    Ok(rule)
 }

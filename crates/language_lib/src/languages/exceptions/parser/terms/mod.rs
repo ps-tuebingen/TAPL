@@ -1,18 +1,13 @@
 use super::{
-    pair_to_n_inner, pair_to_type, Error, MissingInput, RemainingInput, Rule, Term, Type,
-    UnexpectedRule, UnknownKeyword,
+    pair_to_n_inner, Error, MissingInput, RemainingInput, Rule, Term, UnexpectedRule,
+    UnknownKeyword,
 };
+use parse::Parse;
 use pest::iterators::Pair;
-use syntax::terms::{App, False, Num, True, Unit, Variable};
-
-mod bool;
-mod err;
-mod lambda;
-mod nat;
-use bool::pair_to_if;
-use err::{pair_to_err, pair_to_raise, pair_to_try_catch, pair_to_try_with};
-use lambda::pair_to_lambda;
-use nat::{pair_to_isz, pair_to_pred, pair_to_succ};
+use syntax::terms::{
+    App, Exception, False, If, IsZero, Lambda, Num, Pred, Raise, Succ, True, Try, TryWithVal, Unit,
+    Variable,
+};
 
 pub fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
     let mut inner = p.into_inner();
@@ -48,15 +43,15 @@ pub fn pair_to_prim_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
         }
         Rule::variable => Ok(Variable::new(p.as_str().trim()).into()),
         Rule::const_term => str_to_term(p.as_str()),
-        Rule::lambda_term => pair_to_lambda(p).map(|lam| lam.into()),
-        Rule::succ_term => pair_to_succ(p).map(|succ| succ.into()),
-        Rule::pred_term => pair_to_pred(p).map(|pred| pred.into()),
-        Rule::iszero_term => pair_to_isz(p).map(|isz| isz.into()),
-        Rule::if_term => pair_to_if(p).map(|ift| ift.into()),
-        Rule::try_term => pair_to_try_with(p).map(|tryt| tryt.into()),
-        Rule::try_catch => pair_to_try_catch(p).map(|tryt| tryt.into()),
-        Rule::raise_term => pair_to_raise(p).map(|r| r.into()),
-        Rule::err_term => pair_to_err(p).map(|err| err.into()),
+        Rule::lambda_term => Ok(Lambda::from_pair(p)?.into()),
+        Rule::succ_term => Ok(Succ::from_pair(p)?.into()),
+        Rule::pred_term => Ok(Pred::from_pair(p)?.into()),
+        Rule::iszero_term => Ok(IsZero::from_pair(p)?.into()),
+        Rule::if_term => Ok(If::from_pair(p)?.into()),
+        Rule::try_term => Ok(Try::from_pair(p)?.into()),
+        Rule::try_catch => Ok(TryWithVal::from_pair(p)?.into()),
+        Rule::raise_term => Ok(Raise::from_pair(p)?.into()),
+        Rule::err_term => Ok(Exception::from_pair(p)?.into()),
         Rule::paren_term => {
             let inner = pair_to_n_inner(p, vec!["Term"])?.remove(0);
             pair_to_term(inner)

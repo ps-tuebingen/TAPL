@@ -22,7 +22,6 @@ pub enum Error {
     NotASubtype(NotASubtype<Type, Type>),
     Pest(Box<PestErr<Rule>>),
     Parse(ParserError),
-    UnknownKeyword(UnknownKeyword),
     UndefinedLabel(UndefinedLabel),
     FreeVariable(FreeVariable),
     ValueMismatch(ValueMismatch),
@@ -39,7 +38,6 @@ impl fmt::Display for Error {
             Error::NotASubtype(ns) => ns.fmt(f),
             Error::Parse(p) => p.fmt(f),
             Error::Pest(err) => err.fmt(f),
-            Error::UnknownKeyword(uk) => uk.fmt(f),
             Error::UndefinedLabel(ul) => ul.fmt(f),
             Error::FreeVariable(fv) => fv.fmt(f),
             Error::ValueMismatch(vm) => vm.fmt(f),
@@ -99,7 +97,7 @@ impl From<ParserError> for Error {
 
 impl From<UnknownKeyword> for Error {
     fn from(err: UnknownKeyword) -> Error {
-        Error::UnknownKeyword(err)
+        Error::Parse(err.into())
     }
 }
 

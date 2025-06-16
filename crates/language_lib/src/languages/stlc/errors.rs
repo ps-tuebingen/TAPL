@@ -22,7 +22,6 @@ pub enum Error {
     ValueMismatch(ValueMismatch),
     Pest(Box<PestErr<Rule>>),
     Parse(ParserError),
-    UnknownKeyword(UnknownKeyword),
     NameMismatch(NameMismatch),
     FreeTypeVariable(FreeTypeVariable),
 }
@@ -40,7 +39,6 @@ impl fmt::Display for Error {
             Error::ValueMismatch(vm) => vm.fmt(f),
             Error::Pest(err) => err.fmt(f),
             Error::Parse(p) => p.fmt(f),
-            Error::UnknownKeyword(uk) => uk.fmt(f),
             Error::NameMismatch(nm) => nm.fmt(f),
             Error::FreeTypeVariable(fv) => fv.fmt(f),
         }
@@ -110,7 +108,7 @@ impl From<ParserError> for Error {
 
 impl From<UnknownKeyword> for Error {
     fn from(err: UnknownKeyword) -> Error {
-        Error::UnknownKeyword(err)
+        Error::Parse(err.into())
     }
 }
 

@@ -15,6 +15,7 @@ pub enum ParserError {
     MissingInput(MissingInput),
     RemainingInput(RemainingInput),
     UnexpectedRule(UnexpectedRule),
+    UnknownKeyword(UnknownKeyword),
 }
 
 impl fmt::Display for ParserError {
@@ -23,6 +24,7 @@ impl fmt::Display for ParserError {
             ParserError::MissingInput(mi) => mi.fmt(f),
             ParserError::RemainingInput(ri) => ri.fmt(f),
             ParserError::UnexpectedRule(ur) => ur.fmt(f),
+            ParserError::UnknownKeyword(uk) => uk.fmt(f),
         }
     }
 }
@@ -42,5 +44,11 @@ impl From<RemainingInput> for ParserError {
 impl From<UnexpectedRule> for ParserError {
     fn from(ur: UnexpectedRule) -> ParserError {
         ParserError::UnexpectedRule(ur)
+    }
+}
+
+impl From<UnknownKeyword> for ParserError {
+    fn from(ur: UnknownKeyword) -> ParserError {
+        ParserError::UnknownKeyword(ur)
     }
 }
