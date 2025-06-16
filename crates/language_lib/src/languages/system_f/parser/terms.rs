@@ -34,7 +34,8 @@ pub fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
 fn pair_to_prim_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
     match p.as_rule() {
         Rule::lambda_term => pair_to_lambda(p).map(|lam| lam.into()),
-        Rule::tylambda_term => pair_to_tylambda(p).map(|tylam| tylam.into()),
+        Rule::ty_lambda_term => pair_to_tylambda(p).map(|tylam| tylam.into()),
+        Rule::ty_lambda_kinded_term => pair_to_tylambda_kinded(p).map(|tylam| tylam.into()),
         Rule::paren_term => {
             let term_rule = pair_to_n_inner(p, vec!["Term"])?.remove(0);
             pair_to_term(term_rule)
@@ -50,10 +51,6 @@ fn pair_to_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
             let ty_rule = pair_to_n_inner(p, vec!["Type"])?.remove(0);
             let ty = pair_to_type(ty_rule)?;
             Ok(TyApp::new(t, ty).into())
-        }
-        Rule::paren_tyapp => {
-            let ty_app_rule = pair_to_n_inner(p, vec!["Type Application"])?.remove(0);
-            pair_to_leftrec(ty_app_rule, t)
         }
         Rule::term => {
             let arg = pair_to_term(p)?;
@@ -80,6 +77,15 @@ fn pair_to_lambda(p: Pair<'_, Rule>) -> Result<Lambda<Term, Type>, Error> {
 fn pair_to_tylambda(p: Pair<'_, Rule>) -> Result<TyLambda<Term>, Error> {
     let mut inner = pair_to_n_inner(p, vec!["Type Variable", "Type Abstraction Body"])?;
     let var = inner.remove(0).as_str().trim();
+    let body_rule = inner.remove(0);
+    let body = pair_to_term(body_rule)?;
+    Ok(TyLambda::new(var, Kind::Star, body))
+}
+
+fn pair_to_tylambda_kinded(p: Pair<'_, Rule>) -> Result<TyLambda<Term>, Error> {
+    let mut inner = pair_to_n_inner(p, vec!["Type Variable", "Kind", "Type Abstraction Body"])?;
+    let var = inner.remove(0).as_str().trim();
+    inner.remove(0);
     let body_rule = inner.remove(0);
     let body = pair_to_term(body_rule)?;
     Ok(TyLambda::new(var, Kind::Star, body))

@@ -29,9 +29,10 @@ pub fn pair_to_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
 
 fn pair_to_prim_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
     match p.as_rule() {
-        Rule::forall_ty => pair_to_forall(p),
+        Rule::forall_kinded_type => pair_to_forall_kinded(p),
+        Rule::forall_unbounded_type => pair_to_forall(p),
         Rule::variable => Ok(TypeVariable::new(p.as_str().trim()).into()),
-        Rule::paren_ty => {
+        Rule::paren_type => {
             let ty_rule = pair_to_n_inner(p, vec!["Type"])?.remove(0);
             pair_to_type(ty_rule)
         }
@@ -41,18 +42,27 @@ fn pair_to_prim_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
 
 fn pair_to_leftrec_ty(p: Pair<'_, Rule>, ty: Type) -> Result<Type, Error> {
     match p.as_rule() {
-        Rule::fun_ty => pair_to_fun_type(p, ty),
+        Rule::fun_type => pair_to_fun_type(p, ty),
         r => Err(UnexpectedRule::new(r, "Function Type").into()),
     }
 }
 
 fn pair_to_forall(p: Pair<'_, Rule>) -> Result<Type, Error> {
     let mut inner = pair_to_n_inner(p, vec!["Forall Variable", "Forall Type"])?;
-    let start_rule = inner.remove(0);
-    let mut start_inner = pair_to_n_inner(start_rule, vec!["Forall Keyword", "Forall Variable"])?;
-    start_inner.remove(0);
-    let var = start_inner.remove(0).as_str().trim();
+    let var_rule = pair_to_n_inner(inner.remove(0), vec!["Forall Variable"])?.remove(0);
+    let var = var_rule.as_str().trim();
 
+    let ty_rule = inner.remove(0);
+    let ty = pair_to_type(ty_rule)?;
+    Ok(Forall::new(var, Kind::Star, ty).into())
+}
+
+fn pair_to_forall_kinded(p: Pair<'_, Rule>) -> Result<Type, Error> {
+    let mut inner = pair_to_n_inner(p, vec!["Forall Variable", "Forall Kind", "Forall Type"])?;
+    let var_rule = pair_to_n_inner(inner.remove(0), vec!["Forall Variable"])?.remove(0);
+    let var = var_rule.as_str().trim();
+
+    inner.remove(0);
     let ty_rule = inner.remove(0);
     let ty = pair_to_type(ty_rule)?;
     Ok(Forall::new(var, Kind::Star, ty).into())
