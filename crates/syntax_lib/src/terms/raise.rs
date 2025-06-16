@@ -85,8 +85,8 @@ where
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(
             f,
-            "raise[{}]({} : {})",
-            self.cont_ty, self.exception, self.exception_ty
+            "raise[{},{}]({})",
+            self.cont_ty, self.exception_ty, self.exception,
         )
     }
 }

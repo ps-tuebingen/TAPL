@@ -1,10 +1,10 @@
 \_:Unit.(
   let (r = {x=ref(1), a=ref(0)}) in 
   (fix((
-    \r:{x:Ref(Nat), a:Ref(Nat)}.(
+    \r:{x:Ref[Nat], a:Ref[Nat]}.(
       \self:(Unit -> {get:(Unit->Nat), set:(Nat->Unit), inc:(Unit->Unit), accesses:(Unit->Nat)}).(
         \_:Unit.(
-          let (super = (((\r:{x:Ref(Nat)}.(
+          let (super = (((\r:{x:Ref[Nat]}.(
             \self:(Unit -> {get:(Unit -> Nat), set:(Nat->Unit), inc:(Unit -> Unit)}).(
               \_:Unit.(
               {

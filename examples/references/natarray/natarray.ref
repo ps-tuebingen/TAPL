@@ -10,8 +10,8 @@ let (equal=fix(
     (f(pred(n)))(pred(m))
   } ))))) in 
 let (newarray=\_:Unit.(ref(\n:Nat.(0)))) in 
-let (lookup=\a:(Ref(Nat->Nat)).(\n:Nat.((!a)(n)))) in 
-let (update=\a:(Ref(Nat->Nat)).(\m:Nat.(\v:Nat.(
+let (lookup=\a:(Ref[Nat->Nat]).(\n:Nat.((!a)(n)))) in 
+let (update=\a:(Ref[Nat->Nat]).(\m:Nat.(\v:Nat.(
   let (oldf = !a) in 
   (a := (\n:Nat.(if (((equal(n))(m))) {
       v

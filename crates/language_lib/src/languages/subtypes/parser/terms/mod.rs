@@ -54,7 +54,7 @@ pub fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
 
 fn pair_to_prim_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
     match p.as_rule() {
-        Rule::r#const => str_to_term(p.as_str()),
+        Rule::const_term => str_to_term(p.as_str()),
         Rule::variable => Ok(Variable::new(p.as_str().trim()).into()),
         Rule::number => {
             let num = p
@@ -65,12 +65,12 @@ fn pair_to_prim_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
             Ok(Num::new(num).into())
         }
         Rule::lambda_term => pair_to_lambda(p).map(|lam| lam.into()),
-        Rule::rec_term => pair_to_record(p).map(|rec| rec.into()),
+        Rule::record_term => pair_to_record(p).map(|rec| rec.into()),
         Rule::variant_term => pair_to_variant(p).map(|variant| variant.into()),
-        Rule::variant_case => pair_to_variantcase(p).map(|case| case.into()),
+        Rule::variantcase_term => pair_to_variantcase(p).map(|case| case.into()),
         Rule::nil_term => pair_to_nil(p).map(|n| n.into()),
         Rule::cons_term => pair_to_cons(p).map(|c| c.into()),
-        Rule::list_case => pair_to_listcase(p).map(|case| case.into()),
+        Rule::listcase_term => pair_to_listcase(p).map(|case| case.into()),
         Rule::succ_term => pair_to_succ(p).map(|succ| succ.into()),
         Rule::pred_term => pair_to_pred(p).map(|pred| pred.into()),
         Rule::ref_term => pair_to_ref(p).map(|reft| reft.into()),
@@ -98,14 +98,14 @@ fn str_to_term(s: &str) -> Result<Term, Error> {
 
 fn pair_to_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
     match p.as_rule() {
-        Rule::cast_term => pair_to_cast(p, t).map(|cast| cast.into()),
-        Rule::proj_term => pair_to_proj(p, t).map(|proj| proj.into()),
-        Rule::assign_term => pair_to_assign(p, t).map(|ass| ass.into()),
-        Rule::seq_term => {
+        Rule::record_proj => pair_to_proj(p, t).map(|proj| proj.into()),
+        Rule::assign => pair_to_assign(p, t).map(|ass| ass.into()),
+        Rule::sequence => {
             let second = pair_to_n_inner(p, vec!["Term"])?.remove(0);
             let term = pair_to_term(second)?;
             Ok(App::new(Lambda::new("_", UnitTy::new(), term), t).into())
         }
+        Rule::cast => pair_to_cast(p, t).map(|cast| cast.into()),
         Rule::term => {
             let arg = pair_to_term(p)?;
             Ok(App {

@@ -53,6 +53,6 @@ where
     Ty: Type,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Sink({})", self.ty)
+        write!(f, "Sink[{}]", self.ty)
     }
 }

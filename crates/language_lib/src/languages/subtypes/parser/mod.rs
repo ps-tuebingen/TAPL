@@ -12,7 +12,7 @@ use terms::pair_to_term;
 use types::pair_to_type;
 
 #[derive(Parser)]
-#[grammar = "languages/subtypes/parser/subtypes.pest"]
+#[grammar = "../../parse_lib/src/grammar.pest"]
 struct SubtypesParser;
 
 impl Parse for Term {

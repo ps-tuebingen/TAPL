@@ -28,18 +28,18 @@ pub fn pair_to_raise(p: Pair<'_, Rule>) -> Result<Raise<Term, Type>, Error> {
         p,
         vec![
             "Raise Continuation Type",
-            "Raise Term",
             "Raise Exception Type",
+            "Raise Term",
         ],
     )?;
     let cont_ty_rule = inner.remove(0);
     let cont_ty_pair = pair_to_n_inner(cont_ty_rule, vec!["Type"])?.remove(0);
     let cont_ty = pair_to_type(cont_ty_pair)?;
-    let catch_rule = inner.remove(0);
-    let catch_term = pair_to_term(catch_rule)?;
     let ex_ty_rule = inner.remove(0);
     let ex_ty_pair = pair_to_n_inner(ex_ty_rule, vec!["Type"])?.remove(0);
     let ex_ty = pair_to_type(ex_ty_pair)?;
+    let catch_rule = inner.remove(0);
+    let catch_term = pair_to_term(catch_rule)?;
     Ok(Raise::new(catch_term, cont_ty, ex_ty))
 }
 

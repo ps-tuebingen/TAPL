@@ -1,1 +1,1 @@
-(\x:Top.((x as {a:Nat}).a))({a=0,b=2})
+(\x:Top.((x as {a:Nat} ).a))({a=0,b=2})

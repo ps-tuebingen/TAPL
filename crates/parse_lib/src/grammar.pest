@@ -45,6 +45,9 @@ kw_tyunit = _{ "Unit" }
 kw_tynat = _{ "Nat" }
 kw_tybool = _{ "Bool" }
 kw_tyref = _{ "Ref" }
+kw_tysink = _{ "Sink" }
+kw_tysource = _{ "Source" }
+kw_tylist  = _{ "List" }
 
 keyword = _{
   | kw_unit
@@ -119,6 +122,7 @@ prim_term = {
   | somecase_term
   | sumcase_term
   | variantcase_term
+  | listcase_term
   | ref_term
   | deref_term
   | some_term
@@ -157,19 +161,28 @@ if_term = { kw_if ~ "(" ~ term ~ ")" ~ "{" ~ term ~ "}" ~ kw_else ~ "{" ~ term ~
 try_term = { kw_try ~ "{" ~ term ~ "}" ~ kw_with ~ "{" ~ term ~ "}" }
 try_catch = { kw_try ~ "{" ~ term ~ "}" ~ kw_catch ~ "{" ~ term ~ "}" }
 err_term = { kw_error ~ "[" ~ type ~ "]" }
-raise_term = { kw_raise ~ "[" ~ type ~ "]" ~ "(" ~ term ~ ":" ~ type ~ ")" } 
+raise_term = { kw_raise ~ "[" ~ type ~ "," ~ type ~ "]" ~ "(" ~ term ~ ")" } 
 fold_term = { kw_fold ~ "[" ~ type ~ "]" ~ term }
 unfold_term = { kw_unfold ~ "[" ~ type ~ "]" ~ term }
+
 somecase_term = { kw_case ~ term ~ kw_of ~ "{" ~ somecase_patterns ~ "}" }
 somecase_patterns = _{ (some_pattern ~ "|" ~ none_pattern) | (none_pattern ~ "|" ~ some_pattern) }
 none_pattern = { kw_nothing ~ "=>" ~ term }
 some_pattern = { kw_something ~ "(" ~ variable ~ ")" ~ "=>" ~ term }
+
 sumcase_term = { kw_case ~ term ~ kw_of ~ "{" ~ sumcase_patterns ~ "}" }
 sumcase_patterns = _{ (left_pattern ~ "|" ~ right_pattern) | (right_pattern ~ "|" ~ left_pattern) }
 left_pattern = { kw_inl ~ "(" ~ variable ~ ")" ~ "=>" ~ term } 
 right_pattern = { kw_inr ~ "(" ~ variable ~ ")" ~ "=>" ~ term }
+
 variantcase_term = { kw_case ~ term ~ kw_of ~ "{" ~ variant_pattern ~ ("|" ~ variant_pattern)* ~ "}" }
 variant_pattern = { "<" ~ variable ~ "=" ~ variable ~ ">" ~ "=>" ~ term }
+
+listcase_term = { kw_case ~ term ~ kw_of ~ "{" ~ listcase_patterns ~ "}" }
+listcase_patterns = _{ (nil_pattern ~ "|" ~ cons_pattern) | (cons_pattern ~ "|" ~ nil_pattern) }
+nil_pattern = { kw_nil ~ "=>" ~ term}
+cons_pattern = { kw_cons ~ "(" ~ variable ~ "," ~ variable ~ ")" ~ "=>" ~ term }
+
 deref_term = { "!" ~ term }
 ref_term = { kw_ref ~ paren_term }
 some_term = { kw_something ~ paren_term } 
@@ -182,7 +195,7 @@ head_term = { kw_head ~ "[" ~ type ~ "]" ~ "(" ~ term ~ ")" }
 tail_term = { kw_tail ~ "[" ~ type ~ "]" ~ "(" ~ term ~ ")" }
 isnil_term = { kw_isnil ~ "[" ~ type ~ "]" ~ "(" ~ term ~ ")" }
 
-left_rec = { tyapp | fst_term | snd_term | projection | record_proj |  sequence | assign | ascription | term }
+left_rec = { tyapp | fst_term | snd_term | projection | record_proj |  sequence | assign | ascription | cast | term }
 record_proj = { "." ~ variable } 
 tyapp = { "[" ~ type ~ "]" }
 fst_term = @{ "." ~ kw_fst ~ !(ASCII_ALPHA | ASCII_DIGIT | "_") }
@@ -190,7 +203,8 @@ snd_term = @{ "." ~ kw_snd ~ !(ASCII_ALPHA | ASCII_DIGIT | "_") }
 projection = { "." ~ number }
 sequence = { ";" ~ term }
 assign = { ":=" ~ term }
-ascription = { kw_as ~ type }
+ascription = { ":" ~ type }
+cast = { kw_as ~ type } 
 
 variable = @{ !(keyword ~ WHITESPACE) ~  (ASCII_ALPHA|ASCII_DIGIT|"_")+ }
 number = { ASCII_DIGIT+ }
@@ -220,21 +234,29 @@ prim_type = {
   | variant_type
   | mu_type
   | ref_type
+  | source_type
+  | sink_type 
+  | list_type
   | variable
   | paren_type
 }
 
+ty_arg = _{ "[" ~ type ~ "]" }
+
 const_type = { kw_tybool | kw_tynat | kw_tyunit }
 top_type  = { kw_tytop ~ "[" ~ kind ~ "]" }
 top_type_star = { kw_tytop }
+
 forall_bounded_type = { forall_start ~ "<:" ~ type ~ "." ~ type } 
 forall_unbounded_type = { forall_start ~ "." ~ type }
 forall_kinded_type = { forall_start ~ "::" ~ kind ~ "." ~ type } 
 forall_start = ${ kw_forall ~ " " ~ variable }
+
 exists_bounded_type ={ "{" ~ exists_start ~ "<:" ~ type ~ "," ~ type ~ "}"  } 
 exists_unbounded_type = { "{" ~ exists_start ~ "," ~ type ~ "}" }
 exists_kinded_type = { "{" ~ exists_start ~ "::" ~ kind ~ "," ~ type ~ "}" }
 exists_start = ${ kw_exists ~ " " ~ variable }
+
 op_lambda_star_type = { "\\" ~ variable ~ "." ~ type }
 op_lambda_type = { "\\" ~ variable ~ "::" ~ kind ~ "." ~ type }
 op_lambda_sub_type = { "\\" ~ variable ~ "<:" ~ type ~ "." ~ type }
@@ -244,7 +266,10 @@ record_type =  { "{" ~ variable ~ ":" ~ type ~ ("," ~ variable ~ ":" ~ type)* ~ 
 variant_type = { "<" ~ variable ~ ":" ~ type ~ ("," ~ variable ~ ":" ~ type)* ~ ">" }
 tuple_type = { "(" ~ type ~ ("," ~ type)+ ~ ")" }
 mu_type = { kw_mu ~ variable ~ "." ~ type }
-ref_type = { kw_tyref ~ type }
+ref_type = { kw_tyref ~ ty_arg }
+source_type = { kw_tysource ~ ty_arg }
+sink_type = { kw_tysink ~ ty_arg } 
+list_type = { kw_tylist ~ ty_arg }
 
 left_rec_type = { fun_type | op_app_type }
 fun_type = { "->" ~ type }

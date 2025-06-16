@@ -11,10 +11,10 @@ where
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!(
-            "\\text{{raise}}[{}]({} : {})",
+            "\\text{{raise}}[{},{}]({})",
             self.cont_ty.to_latex(conf),
+            self.exception_ty.to_latex(conf),
             self.exception.to_latex(conf),
-            self.exception_ty.to_latex(conf)
         )
     }
 }
