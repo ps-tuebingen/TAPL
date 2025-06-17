@@ -9,3 +9,4 @@ mod fun;
 mod nat;
 mod record;
 mod unit;
+mod variable;

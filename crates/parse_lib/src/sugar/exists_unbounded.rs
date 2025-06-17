@@ -1,6 +1,9 @@
 use crate::{pair_to_n_inner, Parse, Rule};
 use pest::iterators::Pair;
-use syntax::types::{ExistsBounded, Top, Type};
+use syntax::{
+    kinds::Kind,
+    types::{Exists, ExistsBounded, Top, Type},
+};
 
 pub struct ExistsUnbounded<Ty>
 where
@@ -19,6 +22,10 @@ where
         Ty: Type,
         Top<Ty>: Into<Ty>,
     {
+        self.into()
+    }
+
+    pub fn to_exists_kinded(self) -> Exists<Ty> {
         self.into()
     }
 }
@@ -54,5 +61,14 @@ where
 {
     fn from(eu: ExistsUnbounded<Ty>) -> ExistsBounded<Ty> {
         ExistsBounded::new_unbounded(&eu.var, eu.body_ty)
+    }
+}
+
+impl<Ty> From<ExistsUnbounded<Ty>> for Exists<Ty>
+where
+    Ty: Type,
+{
+    fn from(eu: ExistsUnbounded<Ty>) -> Exists<Ty> {
+        Exists::new(&eu.var, Kind::Star, eu.body_ty)
     }
 }
