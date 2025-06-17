@@ -1,6 +1,9 @@
 use crate::{pair_to_n_inner, Parse, Rule};
 use pest::iterators::Pair;
-use syntax::types::{ForallBounded, Top, Type};
+use syntax::{
+    kinds::Kind,
+    types::{Forall, ForallBounded, Top, Type},
+};
 
 pub struct ForallUnbounded<Ty>
 where
@@ -18,6 +21,10 @@ where
     where
         Top<Ty>: Into<Ty>,
     {
+        self.into()
+    }
+
+    pub fn to_forall_kinded(self) -> Forall<Ty> {
         self.into()
     }
 }
@@ -52,5 +59,14 @@ where
 {
     fn from(fu: ForallUnbounded<Ty>) -> ForallBounded<Ty> {
         ForallBounded::new_unbounded(&fu.var, fu.body_ty)
+    }
+}
+
+impl<Ty> From<ForallUnbounded<Ty>> for Forall<Ty>
+where
+    Ty: Type,
+{
+    fn from(fu: ForallUnbounded<Ty>) -> Forall<Ty> {
+        Forall::new(&fu.var, Kind::Star, fu.body_ty)
     }
 }

@@ -91,7 +91,7 @@ fn pair_to_tylambda(p: Pair<'_, Rule>) -> Result<Term, Error> {
     )?;
     let var = inner.remove(0).as_str().trim();
     let knd_rule = inner.remove(0);
-    let knd = Kind::from_pair(knd_rule, None)?;
+    let knd = Kind::from_pair(knd_rule, ())?;
 
     let body_rule = inner.remove(0);
     let body = pair_to_term(body_rule)?;

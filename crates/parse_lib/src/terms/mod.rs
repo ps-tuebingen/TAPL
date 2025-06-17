@@ -18,4 +18,6 @@ mod succ;
 mod tryt;
 mod tryval;
 mod tyapp;
+mod tylambda;
 mod unpack;
+mod variable;
