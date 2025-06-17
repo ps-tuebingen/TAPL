@@ -1,3 +1,6 @@
+pub mod string_term;
+pub use string_term::StringTerm;
+
 mod app;
 mod exception;
 mod fix;

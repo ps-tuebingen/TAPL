@@ -1,7 +1,7 @@
 pub mod errors;
 mod kinds;
 pub mod sugar;
-mod terms;
+pub mod terms;
 pub mod types;
 
 use errors::{MissingInput, ParserError, RemainingInput};
