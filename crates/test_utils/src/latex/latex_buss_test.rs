@@ -19,6 +19,7 @@ use syntax::terms::Term;
 pub struct LatexTestBuss<'a, T, Conf>
 where
     T: Term + Parse + Typecheck<Term = T> + LatexFmt,
+    <T as Parse>::LeftRecArg: Default,
     T::Type: fmt::Display + LatexFmt,
     Conf: TestConfig,
 {
@@ -29,6 +30,7 @@ where
 impl<'a, T, Conf> LatexTestBuss<'a, T, Conf>
 where
     T: Term + Parse + Typecheck<Term = T> + LatexFmt,
+    <T as Parse>::LeftRecArg: Default,
     T::Type: fmt::Display + LatexFmt,
     Conf: TestConfig,
 {
@@ -43,6 +45,7 @@ where
 impl<'a, T, Conf> Test<'a> for LatexTestBuss<'a, T, Conf>
 where
     T: Term + Parse + Typecheck<Term = T> + LatexFmt,
+    <T as Parse>::LeftRecArg: Default,
     T::Type: fmt::Display + LatexFmt,
     Conf: TestConfig,
 {

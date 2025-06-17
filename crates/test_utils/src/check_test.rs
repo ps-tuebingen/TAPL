@@ -9,6 +9,7 @@ use std::{fmt, marker::PhantomData};
 pub struct CheckTest<'a, T, Conf>
 where
     T: Parse + Typecheck,
+    <T as Parse>::LeftRecArg: Default,
     T::Type: fmt::Display,
     Conf: TestConfig,
 {
@@ -19,6 +20,7 @@ where
 impl<'a, T, Conf> CheckTest<'a, T, Conf>
 where
     T: Parse + Typecheck,
+    <T as Parse>::LeftRecArg: Default,
     T::Type: fmt::Display,
     Conf: TestConfig,
 {
@@ -33,6 +35,7 @@ where
 impl<'a, T, Conf> Test<'a> for CheckTest<'a, T, Conf>
 where
     T: Parse + Typecheck,
+    <T as Parse>::LeftRecArg: Default,
     T::Type: fmt::Display,
     Conf: TestConfig,
 {

@@ -18,6 +18,7 @@ use syntax::terms::Term;
 pub struct LatexTestTrace<'a, T, Conf>
 where
     T: Term + Parse + Eval<Term = T> + LatexFmt,
+    <T as Parse>::LeftRecArg: Default,
     T::Value: LatexFmt,
     Conf: TestConfig,
 {
@@ -28,6 +29,7 @@ where
 impl<'a, T, Conf> LatexTestTrace<'a, T, Conf>
 where
     T: Term + Parse + Eval<Term = T> + LatexFmt,
+    <T as Parse>::LeftRecArg: Default,
     T::Value: LatexFmt,
     Conf: TestConfig,
 {
@@ -42,6 +44,7 @@ where
 impl<'a, T, Conf> Test<'a> for LatexTestTrace<'a, T, Conf>
 where
     T: Term + Parse + Eval<Term = T> + LatexFmt,
+    <T as Parse>::LeftRecArg: Default,
     T::Value: LatexFmt,
     Conf: TestConfig,
 {

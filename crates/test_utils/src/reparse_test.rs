@@ -17,6 +17,7 @@ where
 impl<'a, T, Conf> ReparseTest<'a, T, Conf>
 where
     T: Parse + fmt::Display,
+    <T as Parse>::LeftRecArg: Default,
     Conf: TestConfig,
 {
     pub fn new(conf: &'a Conf) -> ReparseTest<'a, T, Conf> {
@@ -30,6 +31,7 @@ where
 impl<'a, T, Conf> Test<'a> for ReparseTest<'a, T, Conf>
 where
     T: Parse + fmt::Display,
+    <T as Parse>::LeftRecArg: Default,
     Conf: TestConfig,
 {
     fn name(&self) -> String {

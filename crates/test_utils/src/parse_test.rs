@@ -30,6 +30,7 @@ where
 impl<'a, T, Conf> Test<'a> for ParseTest<'a, T, Conf>
 where
     T: Parse,
+    <T as Parse>::LeftRecArg: Default,
     Conf: TestConfig,
 {
     fn name(&self) -> String {

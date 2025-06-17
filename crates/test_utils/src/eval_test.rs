@@ -10,6 +10,7 @@ use std::marker::PhantomData;
 pub struct EvalTest<'a, T, Conf>
 where
     T: Eval + Parse,
+    <T as Parse>::LeftRecArg: Default,
     T::Value: fmt::Display,
     Conf: TestConfig,
 {
@@ -20,6 +21,7 @@ where
 impl<'a, T, Conf> EvalTest<'a, T, Conf>
 where
     T: Eval + Parse,
+    <T as Parse>::LeftRecArg: Default,
     T::Value: fmt::Display,
     Conf: TestConfig,
 {
@@ -34,6 +36,7 @@ where
 impl<'a, T, Conf> Test<'a> for EvalTest<'a, T, Conf>
 where
     T: Eval + Parse,
+    <T as Parse>::LeftRecArg: Default,
     T::Value: fmt::Display,
     Conf: TestConfig,
 {
