@@ -5,7 +5,7 @@ mod terms;
 pub mod types;
 
 use errors::{MissingInput, ParserError, RemainingInput};
-use pest::{iterators::Pair, Parser};
+use pest::{error::Error as PestErr, iterators::Pair, Parser};
 use pest_derive::Parser;
 
 #[derive(Parser)]
@@ -13,7 +13,7 @@ use pest_derive::Parser;
 pub struct LangParser;
 
 pub trait Parse: Sized {
-    type ParseError: std::error::Error + From<pest::error::Error<Rule>> + From<ParserError>;
+    type ParseError: std::error::Error + From<ParserError>;
     type LeftRecArg;
 
     const RULE: Rule;
@@ -24,7 +24,8 @@ pub trait Parse: Sized {
     where
         Self::LeftRecArg: Default,
     {
-        let mut pairs = LangParser::parse(Self::RULE, &source)?;
+        let mut pairs = LangParser::parse(Self::RULE, &source)
+            .map_err(|err| <PestErr<Rule> as Into<ParserError>>::into(err))?;
         let rule = pairs
             .next()
             .ok_or(<MissingInput as Into<ParserError>>::into(
@@ -42,6 +43,53 @@ pub trait Parse: Sized {
         } else {
             Ok(result)
         }
+    }
+}
+
+pub trait GroupParse: Sized {
+    type ParseError: std::error::Error + From<ParserError>;
+
+    const RULE: Rule;
+
+    fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Self, Self::ParseError>;
+    fn from_pair_leftrec(p: Pair<'_, Rule>, left_rec: Self) -> Result<Self, Self::ParseError>;
+}
+
+impl<T> Parse for T
+where
+    T: GroupParse,
+{
+    type ParseError = <T as GroupParse>::ParseError;
+    type LeftRecArg = ();
+
+    const RULE: Rule = <T as GroupParse>::RULE;
+
+    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Self, Self::ParseError> {
+        let mut inner = p.into_inner();
+        let prim_rule = inner
+            .next()
+            .ok_or(<MissingInput as Into<ParserError>>::into(
+                MissingInput::new("Non Left-Recursive"),
+            ))?;
+        let prim_inner = pair_to_n_inner(prim_rule, vec!["Non Left-Recursive"])?.remove(0);
+        let prim_self = Self::from_pair_nonrec(prim_inner)?;
+
+        let slf = match inner.next() {
+            None => prim_self,
+            Some(leftrec) => {
+                let leftrec_inner =
+                    pair_to_n_inner(leftrec, vec!["Left Recursive Term"])?.remove(0);
+                Self::from_pair_leftrec(leftrec_inner, prim_self)?
+            }
+        };
+
+        if let Some(n) = inner.next() {
+            return Err(
+                <RemainingInput as Into<ParserError>>::into(RemainingInput::new(&format!("{n:?}")))
+                    .into(),
+            );
+        }
+        Ok(slf)
     }
 }
 
