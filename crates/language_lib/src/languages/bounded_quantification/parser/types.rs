@@ -1,5 +1,5 @@
 use super::{pair_to_n_inner, Error, MissingInput, RemainingInput, Rule, Type, UnexpectedRule};
-use parse::Parse;
+use parse::{types::StringTy, Parse};
 use pest::iterators::Pair;
 use syntax::types::{ExistsBounded, ForallBounded, Fun, Nat, Record, Top, TypeVariable};
 
@@ -27,20 +27,14 @@ pub fn pair_to_type(p: Pair<'_, Rule>) -> Result<Type, Error> {
 
 fn pair_to_prim_ty(p: Pair<'_, Rule>) -> Result<Type, Error> {
     match p.as_rule() {
-        Rule::const_type => match p.as_str().to_lowercase().trim() {
-            "nat" => Ok(Nat::new().into()),
-            _ => Err(UnexpectedRule::new(p.as_rule(), "Nat").into()),
-        },
+        Rule::const_type => Ok(StringTy::new().with_nat().from_pair(p)?),
         Rule::top_type_star | Rule::top_type => Ok(Top::new_star().into()),
         Rule::forall_bounded_type => Ok(ForallBounded::from_pair(p, ())?.into()),
         Rule::forall_unbounded_type => pair_to_forall_unbounded(p),
         Rule::exists_unbounded_type => pair_to_exists_unbounded(p),
         Rule::exists_bounded_type => Ok(ExistsBounded::from_pair(p, ())?.into()),
         Rule::record_type => Ok(Record::from_pair(p, ())?.into()),
-        Rule::paren_type => {
-            let inner_rule = pair_to_n_inner(p, vec!["Type"])?.remove(0);
-            pair_to_type(inner_rule)
-        }
+        Rule::paren_type => pair_to_type(pair_to_n_inner(p, vec!["Type"])?.remove(0)),
         Rule::variable => Ok(TypeVariable::new(p.as_str().trim()).into()),
         r => Err(UnexpectedRule::new(r, "Non Left-Recursive Type").into()),
     }
@@ -48,7 +42,7 @@ fn pair_to_prim_ty(p: Pair<'_, Rule>) -> Result<Type, Error> {
 
 fn pair_to_leftrec_ty(p: Pair<'_, Rule>, ty: Type) -> Result<Type, Error> {
     match p.as_rule() {
-        Rule::fun_type => pair_to_fun_ty(p, ty),
+        Rule::fun_type => Ok(Fun::from_pair(p, ty)?.into()),
         r => Err(UnexpectedRule::new(r, "Function Type").into()),
     }
 }
@@ -72,10 +66,4 @@ fn pair_to_exists_unbounded(p: Pair<'_, Rule>) -> Result<Type, Error> {
     let body_ty = pair_to_type(body_rule)?;
 
     Ok(ExistsBounded::new_unbounded(var, body_ty).into())
-}
-
-fn pair_to_fun_ty(p: Pair<'_, Rule>, ty: Type) -> Result<Type, Error> {
-    let to_rule = pair_to_n_inner(p, vec!["Function Return Type"])?.remove(0);
-    let to_ty = pair_to_type(to_rule)?;
-    Ok(Fun::new(ty, to_ty).into())
 }
