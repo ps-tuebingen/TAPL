@@ -2,6 +2,8 @@ pub mod string_term;
 pub use string_term::StringTerm;
 
 mod app;
+mod assign;
+mod deref;
 mod exception;
 mod fix;
 mod fold;
@@ -18,6 +20,7 @@ mod pred;
 mod raise;
 mod record;
 mod recordproj;
+mod reft;
 mod snd;
 mod succ;
 mod tryt;

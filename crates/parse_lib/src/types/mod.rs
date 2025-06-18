@@ -14,6 +14,7 @@ mod oplambda;
 mod oplambda_sub;
 mod product;
 mod record;
+mod reference;
 mod top;
 mod unit;
 mod variable;

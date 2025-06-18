@@ -1,0 +1,41 @@
+use crate::{pair_to_n_inner, Parse, Rule};
+use pest::iterators::Pair;
+use std::marker::PhantomData;
+use syntax::{
+    terms::{App, Lambda, Term},
+    types::{Type, Unit},
+};
+
+pub struct Sequence<T, Ty>
+where
+    T: Term,
+    Ty: Type,
+{
+    fst: T,
+    snd: T,
+    phantom: PhantomData<Ty>,
+}
+
+impl<T, Ty> Parse for Sequence<T, Ty>
+where
+    T: Term + Parse<LeftRecArg = ()>,
+    Ty: Type,
+{
+    type ParseError = <T as Parse>::ParseError;
+    type LeftRecArg = T;
+
+    const RULE: Rule = Rule::sequence;
+
+    fn from_pair(
+        p: Pair<'_, Rule>,
+        t: Self::LeftRecArg,
+    ) -> Result<Sequence<T, Ty>, Self::ParseError> {
+        let term_rule = pair_to_n_inner(p, vec!["Sequence Second Term"])?.remove(0);
+        let term = T::from_pair(term_rule, ())?;
+        Ok(Sequence {
+            fst: t,
+            snd: term,
+            phantom: PhantomData,
+        })
+    }
+}
