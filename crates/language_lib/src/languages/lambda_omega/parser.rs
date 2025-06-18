@@ -9,9 +9,6 @@ use syntax::{
     types::{Fun, OpApp, OpLambda, TypeVariable},
 };
 
-//mod terms;
-//mod types;
-
 impl GroupParse for Term {
     const RULE: Rule = Rule::term;
     type ParseError = Error;

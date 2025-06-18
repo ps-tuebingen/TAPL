@@ -2,10 +2,11 @@ use super::{
     get_n_inner, pair_to_type, Error, MissingInput, RemainingInput, Rule, Term, Type,
     UnexpectedRule, UnknownKeyword,
 };
+use parse::Parse;
 use pest::iterators::Pair;
 use syntax::terms::{
     variantcase::VariantPattern, App, False, Fst, Num, Pair as PairT, Projection, RecordProj, Snd,
-    SomeCase, SumCase, True, Unit, Variable, VariantCase,
+    SomeCase, SumCase, True, Unit, Variable, Variant, VariantCase,
 };
 
 mod ascribe;
@@ -31,7 +32,6 @@ use optional::{pair_to_none, pair_to_some};
 use record::pair_to_rec;
 use sum::{pair_to_left, pair_to_right};
 use tup::pair_to_tup;
-use variant::pair_to_variant;
 
 pub fn pair_to_term(p: Pair<'_, Rule>) -> Result<Term, Error> {
     if p.as_rule() != Rule::term {
@@ -71,7 +71,7 @@ pub fn pair_to_primterm(p: Pair<'_, Rule>) -> Result<Term, Error> {
         Rule::left_term => pair_to_left(p).map(|lft| lft.into()),
         Rule::right_term => pair_to_right(p).map(|rgt| rgt.into()),
         Rule::pred_term => pair_to_pred(p).map(|pred| pred.into()),
-        Rule::variant_term => pair_to_variant(p).map(|v| v.into()),
+        Rule::variant_term => Ok(Variant::from_pair(p, ())?.into()),
         Rule::succ_term => pair_to_succ(p).map(|s| s.into()),
         Rule::iszero_term => pair_to_isz(p).map(|isz| isz.into()),
         Rule::cons_term => pair_to_cons(p).map(|cons| cons.into()),
