@@ -10,6 +10,8 @@ mod fun;
 mod nat;
 mod opapp;
 mod oplambda;
+mod oplambda_sub;
 mod record;
+mod top;
 mod unit;
 mod variable;

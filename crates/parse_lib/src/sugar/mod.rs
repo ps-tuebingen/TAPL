@@ -1,11 +1,11 @@
 mod exists_unbounded;
 mod forall_unbounded;
 mod lambdasub_unbounded;
-mod oplambda_star;
+mod oplambda_unbounded;
 mod tylambda_star;
 
 pub use exists_unbounded::ExistsUnbounded;
 pub use forall_unbounded::ForallUnbounded;
 pub use lambdasub_unbounded::LambdaSubUnbounded;
-pub use oplambda_star::OpLambdaStar;
+pub use oplambda_unbounded::OpLambdaUnbounded;
 pub use tylambda_star::TyLambdaStar;

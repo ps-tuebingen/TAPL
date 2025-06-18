@@ -1,5 +1,5 @@
-use super::Type;
-use crate::{subst::SubstType, TypeVar};
+use super::{Top, Type};
+use crate::{kinds::Kind, subst::SubstType, TypeVar};
 use common::errors::TypeKind;
 use std::fmt;
 
@@ -25,6 +25,18 @@ where
         OpLambdaSub {
             var: var.to_owned(),
             sup: Box::new(sup.into()),
+            body: Box::new(ty.into()),
+        }
+    }
+
+    pub fn new_unbounded<Ty1>(var: &str, knd: Kind, ty: Ty1) -> OpLambdaSub<Ty>
+    where
+        Ty1: Into<Ty>,
+        Top<Ty>: Into<Ty>,
+    {
+        OpLambdaSub {
+            var: var.to_owned(),
+            sup: Box::new(Top::new(knd).into()),
             body: Box::new(ty.into()),
         }
     }

@@ -1,4 +1,4 @@
-use super::Type;
+use super::{ExistsBounded, Top, Type};
 use crate::{kinds::Kind, subst::SubstType, TypeVar};
 use common::errors::TypeKind;
 use std::fmt;
@@ -26,6 +26,13 @@ where
             kind: knd,
             ty: Box::new(ty.into()),
         }
+    }
+
+    pub fn to_exists_bounded(self) -> ExistsBounded<Ty>
+    where
+        Top<Ty>: Into<Ty>,
+    {
+        ExistsBounded::new_unbounded(&self.var, self.kind, *self.ty)
     }
 }
 

@@ -8,6 +8,7 @@ mod ift;
 mod isz;
 mod lambda;
 mod lambda_sub;
+mod lett;
 mod num;
 mod pack;
 mod pred;

@@ -1,4 +1,4 @@
-use super::Type;
+use super::{OpLambdaSub, Top, Type};
 use crate::{kinds::Kind, subst::SubstType, TypeVar};
 use common::errors::TypeKind;
 use std::fmt;
@@ -26,6 +26,13 @@ where
             annot: knd,
             body: Box::new(ty.into()),
         }
+    }
+
+    pub fn to_oplambda_unbounded(self) -> OpLambdaSub<Ty>
+    where
+        Top<Ty>: Into<Ty>,
+    {
+        OpLambdaSub::new_unbounded(&self.var, self.annot, *self.body)
     }
 }
 

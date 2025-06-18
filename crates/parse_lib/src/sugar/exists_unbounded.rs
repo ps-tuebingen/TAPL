@@ -60,7 +60,7 @@ where
     Top<Ty>: Into<Ty>,
 {
     fn from(eu: ExistsUnbounded<Ty>) -> ExistsBounded<Ty> {
-        ExistsBounded::new_unbounded(&eu.var, eu.body_ty)
+        ExistsBounded::new_unbounded(&eu.var, Kind::Star, eu.body_ty)
     }
 }
 

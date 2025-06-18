@@ -1,5 +1,5 @@
 use super::{Top, Type};
-use crate::{subst::SubstType, TypeVar};
+use crate::{kinds::Kind, subst::SubstType, TypeVar};
 use common::errors::TypeKind;
 use std::fmt;
 
@@ -29,14 +29,14 @@ where
         }
     }
 
-    pub fn new_unbounded<Ty1>(v: &str, ty: Ty1) -> ExistsBounded<Ty>
+    pub fn new_unbounded<Ty1>(v: &str, knd: Kind, ty: Ty1) -> ExistsBounded<Ty>
     where
         Ty1: Into<Ty>,
         Top<Ty>: Into<Ty>,
     {
         ExistsBounded {
             var: v.to_owned(),
-            sup_ty: Box::new(Top::new_star().into()),
+            sup_ty: Box::new(Top::new(knd).into()),
             ty: Box::new(ty.into()),
         }
     }
