@@ -1,6 +1,7 @@
-use super::{errors::Error, terms::Term, types::Type};
-use parse::{errors::UnexpectedRule, terms::StringTerm, types::StringTy, GroupParse, Parse, Rule};
+use super::{errors::Error, terms::Term};
+use parse::{errors::UnexpectedRule, terms::StringTerm, GroupParse, Parse, Rule};
 use pest::iterators::Pair;
+
 use syntax::terms::{If, IsZero, Num, Pred, Succ};
 
 impl GroupParse for Term {
@@ -26,21 +27,5 @@ impl GroupParse for Term {
 
     fn from_pair_leftrec(p: Pair<'_, Rule>, _: Term) -> Result<Self, Self::ParseError> {
         Err(UnexpectedRule::new(p.as_rule(), "Non Left-Recursive Term").into())
-    }
-}
-
-impl GroupParse for Type {
-    type ParseError = Error;
-    const RULE: Rule = Rule::r#type;
-
-    fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Self, Self::ParseError> {
-        match p.as_rule() {
-            Rule::const_type => Ok(StringTy::new().with_nat().with_bool().from_pair(p)?),
-            _ => Err(UnexpectedRule::new(p.as_rule(), "Non Left-Recursive Type").into()),
-        }
-    }
-
-    fn from_pair_leftrec(p: Pair<'_, Rule>, _: Type) -> Result<Self, Self::ParseError> {
-        Err(UnexpectedRule::new(p.as_rule(), "Non Left-Recursive Type").into())
     }
 }
