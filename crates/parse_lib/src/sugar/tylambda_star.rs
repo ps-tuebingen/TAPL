@@ -29,7 +29,7 @@ where
     type ParseError = <T as Parse>::ParseError;
     type LeftRecArg = ();
 
-    const RULE: Rule = Rule::ty_lambda_term;
+    const RULE: Rule = Rule::ty_lambda_star_term;
 
     fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Self, Self::ParseError> {
         let mut inner = pair_to_n_inner(p, vec!["Type Variable", "Type Abstraction Body"])?;

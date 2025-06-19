@@ -2,7 +2,7 @@ use super::{errors::Error, terms::Term, types::Type};
 use parse::{
     errors::UnexpectedRule,
     pair_to_n_inner,
-    sugar::{ExistsUnbounded, ForallUnbounded, LambdaSubUnbounded, OpLambdaUnbounded},
+    sugar::{ExistsUnbounded, ForallUnbounded, LambdaSubStar, OpLambdaUnbounded},
     terms::StringTerm,
     types::StringTy,
     GroupParse, Parse, Rule,
@@ -34,8 +34,8 @@ impl GroupParse for Term {
             Rule::succ_term => Ok(Succ::from_pair(p, ())?.into()),
             Rule::pred_term => Ok(Pred::from_pair(p, ())?.into()),
             Rule::lambda_sub_term => Ok(LambdaSub::from_pair(p, ())?.into()),
-            Rule::ty_lambda_term => {
-                Ok(LambdaSubUnbounded::from_pair(p, ())?.to_lambda_sub().into())
+            Rule::ty_lambda_star_term => {
+                Ok(LambdaSubStar::from_pair(p, ())?.to_lambda_sub().into())
             }
             Rule::pack_term => Ok(Pack::from_pair(p, ())?.into()),
             Rule::unpack_term => Ok(Unpack::from_pair(p, ())?.into()),

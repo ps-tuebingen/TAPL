@@ -18,7 +18,7 @@ impl GroupParse for Term {
     fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Term, Error> {
         match p.as_rule() {
             Rule::lambda_term => Ok(Lambda::from_pair(p, ())?.into()),
-            Rule::ty_lambda_term => Ok(TyLambdaStar::from_pair(p, ())?.to_tylambda().into()),
+            Rule::ty_lambda_star_term => Ok(TyLambdaStar::from_pair(p, ())?.to_tylambda().into()),
             Rule::ty_lambda_kinded_term => Ok(TyLambda::from_pair(p, ())?.into()),
             Rule::paren_term => Self::from_pair(pair_to_n_inner(p, vec!["Term"])?.remove(0), ()),
             Rule::variable => Ok(Variable::from_pair(p, ())?.into()),

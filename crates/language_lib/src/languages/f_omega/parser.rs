@@ -38,7 +38,7 @@ impl GroupParse for Term {
             Rule::iszero_term => Ok(IsZero::from_pair(p, ())?.into()),
             Rule::if_term => Ok(If::from_pair(p, ())?.into()),
             Rule::ty_lambda_kinded_term => Ok(TyLambda::from_pair(p, ())?.into()),
-            Rule::ty_lambda_term => Ok(TyLambdaStar::from_pair(p, ())?.to_tylambda().into()),
+            Rule::ty_lambda_star_term => Ok(TyLambdaStar::from_pair(p, ())?.to_tylambda().into()),
             Rule::pack_term => Ok(Pack::from_pair(p, ())?.into()),
             Rule::unpack_term => Ok(Unpack::from_pair(p, ())?.into()),
             Rule::record_term => Ok(Record::from_pair(p, ())?.into()),

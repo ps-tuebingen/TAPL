@@ -1,6 +1,11 @@
 WHITESPACE = _{ " " | "\n" | "\t" }
 program = { SOI ~ term ~ EOI }
 
+variable = @{ !(keyword ~ WHITESPACE) ~  (ASCII_ALPHA_LOWER | "_") ~ (ASCII_ALPHA|ASCII_DIGIT|"_")* }
+type_variable = @{ !(keyword ~ WHITESPACE) ~  ASCII_ALPHA_UPPER ~ (ASCII_ALPHA|ASCII_DIGIT|"_")* }
+number = { ASCII_DIGIT+ }
+
+
 // Keyword 
 kw_unit = _{ "unit" }
 kw_fix = _{ "fix" }
@@ -103,7 +108,7 @@ prim_term = {
   | untyped_lambda_term
   | lambda_term
   | lambda_sub_term
-  | ty_lambda_term
+  | ty_lambda_star_term
   | ty_lambda_kinded_term
   | pack_term
   | unpack_term
@@ -144,42 +149,57 @@ prim_term = {
 
 const_term = { kw_unit | kw_zero | kw_true | kw_false } 
 fix_term = { kw_fix ~ paren_term }
+if_term = { kw_if ~ "(" ~ term ~ ")" ~ "{" ~ term ~ "}" ~ kw_else ~ "{" ~ term ~ "}" }
 let_term = { kw_let ~ "(" ~ variable ~ "=" ~ term ~ ")" ~ kw_in ~ term }
 pair_term = { "{" ~ term ~ "," ~ term ~ "}" }
 record_term = { "{" ~ variable ~ "=" ~ term ~ ("," ~ variable ~ "=" ~ term)* ~ "}" }
 tuple_term = { "(" ~ term ~ "," ~ term? ~ ("," ~ term)* ~ ")" }
-variant_term = { "<" ~ variable ~ "=" ~ term ~ ">" ~ kw_as ~ type}
+
 untyped_lambda_term = { "\\" ~ variable ~ "." ~ term }
 lambda_term = { "\\" ~ variable ~ ":" ~ type ~ "." ~ term }
+
 lambda_sub_term = { "\\" ~ type_variable ~ "<:" ~ type ~ "." ~ term }
-ty_lambda_term = { "\\" ~ type_variable ~ "." ~ term }
+ty_lambda_star_term = { "\\" ~ type_variable ~ "." ~ term }
 ty_lambda_kinded_term = { "\\" ~ type_variable ~ "::" ~ kind ~ "." ~ term }
+
 pack_term = { "{" ~ "*" ~ type ~ "," ~ term ~ "}" ~ kw_as ~ type }
 unpack_term = { kw_let ~ "{" ~ type_variable ~ "," ~ variable ~ "}" ~ "=" ~ term ~ kw_in ~ term }
+
 succ_term = { kw_succ ~ paren_term }
 pred_term = { kw_pred ~ paren_term }
 iszero_term = { kw_iszero ~ paren_term }
-if_term = { kw_if ~ "(" ~ term ~ ")" ~ "{" ~ term ~ "}" ~ kw_else ~ "{" ~ term ~ "}" }
+
 try_term = { kw_try ~ "{" ~ term ~ "}" ~ kw_with ~ "{" ~ term ~ "}" }
 try_catch = { kw_try ~ "{" ~ term ~ "}" ~ kw_catch ~ "{" ~ term ~ "}" }
 err_term = { kw_error ~ "[" ~ type ~ "]" }
 raise_term = { kw_raise ~ "[" ~ type ~ "," ~ type ~ "]" ~ "(" ~ term ~ ")" } 
+
 fold_term = { kw_fold ~ "[" ~ type ~ "]" ~ term }
 unfold_term = { kw_unfold ~ "[" ~ type ~ "]" ~ term }
 
+some_term = { kw_something ~ paren_term } 
+none_term = { kw_nothing ~ "[" ~ type ~ "]" } 
 somecase_term = { kw_case ~ term ~ kw_of ~ "{" ~ somecase_patterns ~ "}" }
 somecase_patterns = _{ (some_pattern ~ "|" ~ none_pattern) | (none_pattern ~ "|" ~ some_pattern) }
 none_pattern = { kw_nothing ~ "=>" ~ term }
 some_pattern = { kw_something ~ "(" ~ variable ~ ")" ~ "=>" ~ term }
 
+left_term = { kw_inl ~ paren_term ~ kw_as ~ type } 
+right_term = { kw_inr ~ paren_term ~ kw_as ~ type }
 sumcase_term = { kw_case ~ term ~ kw_of ~ "{" ~ sumcase_patterns ~ "}" }
 sumcase_patterns = _{ (left_pattern ~ "|" ~ right_pattern) | (right_pattern ~ "|" ~ left_pattern) }
 left_pattern = { kw_inl ~ "(" ~ variable ~ ")" ~ "=>" ~ term } 
 right_pattern = { kw_inr ~ "(" ~ variable ~ ")" ~ "=>" ~ term }
 
+variant_term = { "<" ~ variable ~ "=" ~ term ~ ">" ~ kw_as ~ type}
 variantcase_term = { kw_case ~ term ~ kw_of ~ "{" ~ variant_pattern ~ ("|" ~ variant_pattern)* ~ "}" }
 variant_pattern = { "<" ~ variable ~ "=" ~ variable ~ ">" ~ "=>" ~ term }
 
+nil_term = { kw_nil ~ "[" ~ type ~ "]" }
+cons_term = { kw_cons ~ "[" ~ type ~ "]" ~ "(" ~ term ~ "," ~ term ~ ")" } 
+head_term = { kw_head ~ "[" ~ type ~ "]" ~ "(" ~ term ~ ")" }
+tail_term = { kw_tail ~ "[" ~ type ~ "]" ~ "(" ~ term ~ ")" }
+isnil_term = { kw_isnil ~ "[" ~ type ~ "]" ~ "(" ~ term ~ ")" }
 listcase_term = { kw_case ~ term ~ kw_of ~ "{" ~ listcase_patterns ~ "}" }
 listcase_patterns = _{ (nil_pattern ~ "|" ~ cons_pattern) | (cons_pattern ~ "|" ~ nil_pattern) }
 nil_pattern = { kw_nil ~ "=>" ~ term}
@@ -187,15 +207,6 @@ cons_pattern = { kw_cons ~ "(" ~ variable ~ "," ~ variable ~ ")" ~ "=>" ~ term }
 
 deref_term = { "!" ~ term }
 ref_term = { kw_ref ~ paren_term }
-some_term = { kw_something ~ paren_term } 
-none_term = { kw_nothing ~ "[" ~ type ~ "]" } 
-left_term = { kw_inl ~ paren_term ~ kw_as ~ type } 
-right_term = { kw_inr ~ paren_term ~ kw_as ~ type }
-nil_term = { kw_nil ~ "[" ~ type ~ "]" }
-cons_term = { kw_cons ~ "[" ~ type ~ "]" ~ "(" ~ term ~ "," ~ term ~ ")" } 
-head_term = { kw_head ~ "[" ~ type ~ "]" ~ "(" ~ term ~ ")" }
-tail_term = { kw_tail ~ "[" ~ type ~ "]" ~ "(" ~ term ~ ")" }
-isnil_term = { kw_isnil ~ "[" ~ type ~ "]" ~ "(" ~ term ~ ")" }
 
 left_rec = { tyapp | fst_term | snd_term | projection | record_proj |  sequence | assign | ascription | cast | term }
 record_proj = { "." ~ variable } 
@@ -208,9 +219,6 @@ assign = { ":=" ~ term }
 ascription = { ":" ~ type }
 cast = { kw_as ~ type } 
 
-variable = @{ !(keyword ~ WHITESPACE) ~  (ASCII_ALPHA_LOWER | "_") ~ (ASCII_ALPHA|ASCII_DIGIT|"_")* }
-type_variable = @{ !(keyword ~ WHITESPACE) ~  ASCII_ALPHA_UPPER ~ (ASCII_ALPHA|ASCII_DIGIT|"_")* }
-number = { ASCII_DIGIT+ }
 
 // Types
 paren_type = {"(" ~ type ~ ")"}
@@ -262,16 +270,18 @@ exists_start = ${ kw_exists ~ " " ~ type_variable }
 op_lambda_star_type = { "\\" ~ type_variable ~ "." ~ type }
 op_lambda_type = { "\\" ~ type_variable ~ "::" ~ kind ~ "." ~ type }
 op_lambda_sub_type = { "\\" ~ type_variable ~ "<:" ~ type ~ "." ~ type }
+
 prod_type = { "(" ~ type ~ "x" ~ type ~ ")" }
 sum_type = { "(" ~ type ~ "+" ~ type ~ ")" }
 record_type =  { "{" ~ variable ~ ":" ~ type ~ ("," ~ variable ~ ":" ~ type)* ~ "}" }
 variant_type = { "<" ~ variable ~ ":" ~ type ~ ("," ~ variable ~ ":" ~ type)* ~ ">" }
 tuple_type = { "(" ~ type ~ ("," ~ type)+ ~ ")" }
 mu_type = { kw_mu ~ type_variable ~ "." ~ type }
+list_type = { kw_tylist ~ ty_arg }
+
 ref_type = { kw_tyref ~ ty_arg }
 source_type = { kw_tysource ~ ty_arg }
 sink_type = { kw_tysink ~ ty_arg } 
-list_type = { kw_tylist ~ ty_arg }
 
 left_rec_type = { fun_type | op_app_type }
 fun_type = { "->" ~ type }
