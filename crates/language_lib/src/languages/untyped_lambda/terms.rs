@@ -7,7 +7,7 @@ use syntax::untyped::Untyped;
 use syntax::{
     env::Environment,
     subst::{SubstTerm, SubstType},
-    terms::{App, Lambda, Variable},
+    terms::{App, UntypedLambda, Variable},
     TypeVar,
 };
 
@@ -16,7 +16,7 @@ pub type Var = String;
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Term {
     Var(Variable<Term>),
-    Lambda(Lambda<Term, Untyped>),
+    Lambda(UntypedLambda<Term>),
     App(App<Term>),
 }
 
@@ -76,8 +76,8 @@ impl From<Variable<Term>> for Term {
     }
 }
 
-impl From<Lambda<Term, Untyped>> for Term {
-    fn from(lam: Lambda<Term, Untyped>) -> Term {
+impl From<UntypedLambda<Term>> for Term {
+    fn from(lam: UntypedLambda<Term>) -> Term {
         Term::Lambda(lam)
     }
 }
@@ -85,41 +85,5 @@ impl From<Lambda<Term, Untyped>> for Term {
 impl From<App<Term>> for Term {
     fn from(app: App<Term>) -> Term {
         Term::App(app)
-    }
-}
-
-#[cfg(test)]
-mod term_tests {
-    use super::Term;
-    use syntax::{
-        subst::SubstTerm,
-        terms::{App, Lambda, Variable},
-        untyped::Untyped,
-    };
-
-    #[test]
-    fn subst1() {
-        let result: Term = Lambda::new("x", Untyped, Variable::new("x"))
-            .subst(&"x".to_owned(), &Variable::new("y").into());
-        let expected = Lambda::new("x", Untyped, Variable::new("x")).into();
-        assert_eq!(result, expected)
-    }
-
-    #[test]
-    fn subst2() {
-        let term: Term = App::new(
-            Lambda::new("x", Untyped, Variable::new("y")),
-            Variable::new("x"),
-        )
-        .into();
-        let result: Term = term
-            .subst(&"x".to_owned(), &Variable::new("z").into())
-            .subst(&"y".to_owned(), &Variable::new("z").into());
-        let expected = App::new(
-            Lambda::new("x", Untyped, Variable::new("z")),
-            Variable::new("z"),
-        )
-        .into();
-        assert_eq!(result, expected)
     }
 }

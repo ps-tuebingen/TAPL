@@ -45,6 +45,7 @@ mod tyapp;
 mod tylambda;
 mod unfold;
 mod unpack;
+mod untyped_lambda;
 mod variable;
 mod variant;
 mod variantcase;

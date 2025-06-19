@@ -100,6 +100,7 @@ prim_term = {
   | const_term 
   | fix_term
   | let_term
+  | untyped_lambda_term
   | lambda_term
   | lambda_sub_term
   | ty_lambda_term
@@ -148,6 +149,7 @@ pair_term = { "{" ~ term ~ "," ~ term ~ "}" }
 record_term = { "{" ~ variable ~ "=" ~ term ~ ("," ~ variable ~ "=" ~ term)* ~ "}" }
 tuple_term = { "(" ~ term ~ "," ~ term? ~ ("," ~ term)* ~ ")" }
 variant_term = { "<" ~ variable ~ "=" ~ term ~ ">" ~ kw_as ~ type}
+untyped_lambda_term = { "\\" ~ variable ~ "." ~ term }
 lambda_term = { "\\" ~ variable ~ ":" ~ type ~ "." ~ term }
 lambda_sub_term = { "\\" ~ variable ~ "<:" ~ type ~ "." ~ term }
 ty_lambda_term = { "\\" ~ variable ~ "." ~ term }

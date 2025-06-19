@@ -39,6 +39,7 @@ pub mod tru;
 pub mod tuple;
 pub mod tylambda;
 pub mod unit;
+pub mod untyped_lambda;
 pub mod variant;
 
 pub use cons::Cons;
@@ -62,4 +63,5 @@ pub use tru::True;
 pub use tuple::Tuple;
 pub use tylambda::TyLambda;
 pub use unit::Unit;
+pub use untyped_lambda::UntypedLambda;
 pub use variant::Variant;

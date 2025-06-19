@@ -513,6 +513,14 @@ where
             premises: rhs_derivs,
         }
     }
+
+    pub fn untyped_lambda(conc: Conclusion<T, Ty>) -> Derivation<T, Ty> {
+        Derivation {
+            conc,
+            label: TypingRule::Empty,
+            premises: vec![],
+        }
+    }
 }
 
 impl<T> Derivation<T, Untyped>

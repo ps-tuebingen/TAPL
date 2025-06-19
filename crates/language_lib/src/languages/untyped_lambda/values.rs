@@ -1,13 +1,13 @@
 use super::terms::Term;
-use common::errors::{ValueKind, ValueMismatch};
+use common::errors::ValueKind;
 use latex::{LatexConfig, LatexFmt};
 use syntax::untyped::Untyped;
-use syntax::values::{Lambda, Value as ValueTrait, ValueGroup};
+use syntax::values::{UntypedLambda, Value as ValueTrait, ValueGroup};
 
 use std::fmt;
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Value {
-    Lambda(Lambda<Term, Untyped>),
+    Lambda(UntypedLambda<Term>),
 }
 
 impl ValueTrait for Value {
@@ -22,12 +22,6 @@ impl ValueTrait for Value {
 impl ValueGroup for Value {
     type Term = Term;
     type Type = Untyped;
-
-    fn into_lambda(self) -> Result<Lambda<Term, Untyped>, ValueMismatch> {
-        match self {
-            Value::Lambda(lam) => Ok(lam),
-        }
-    }
 }
 
 impl fmt::Display for Value {
@@ -54,8 +48,8 @@ impl From<Value> for Term {
     }
 }
 
-impl From<Lambda<Term, Untyped>> for Value {
-    fn from(lam: Lambda<Term, Untyped>) -> Value {
+impl From<UntypedLambda<Term>> for Value {
+    fn from(lam: UntypedLambda<Term>) -> Value {
         Value::Lambda(lam)
     }
 }
