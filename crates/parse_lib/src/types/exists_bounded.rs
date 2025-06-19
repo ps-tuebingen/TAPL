@@ -29,6 +29,6 @@ where
         let ty_rule = inner.remove(0);
         let ty = Ty::from_pair(ty_rule, ())?;
 
-        Ok(ExistsBounded::new(var, sup_ty, ty).into())
+        Ok(ExistsBounded::new(var, sup_ty, ty))
     }
 }

@@ -14,6 +14,6 @@ where
     fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Deref<T>, Self::ParseError> {
         let term_rule = pair_to_n_inner(p, vec!["Deref Term"])?.remove(0);
         let term = T::from_pair(term_rule, ())?;
-        Ok(Deref::new(term).into())
+        Ok(Deref::new(term))
     }
 }

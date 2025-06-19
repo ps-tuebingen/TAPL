@@ -14,6 +14,6 @@ where
         let mut inner = pair_to_n_inner(p, vec!["Source Type"])?;
         let ty_rule = inner.remove(0);
         let ty = Ty::from_pair(ty_rule, ())?;
-        Ok(Source::new(ty).into())
+        Ok(Source::new(ty))
     }
 }

@@ -23,6 +23,6 @@ where
         let kind = Kind::from_pair(kind_rule, ())?;
         let ty_rule = inner.remove(0);
         let inner_ty = Ty::from_pair(ty_rule, ())?;
-        Ok(Exists::new(var, kind, inner_ty).into())
+        Ok(Exists::new(var, kind, inner_ty))
     }
 }

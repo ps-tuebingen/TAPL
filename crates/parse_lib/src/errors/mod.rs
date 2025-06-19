@@ -14,7 +14,7 @@ pub use unknown_keyword::UnknownKeyword;
 
 #[derive(Debug)]
 pub enum ParserError {
-    Pest(PestErr<Rule>),
+    Pest(Box<PestErr<Rule>>),
     MissingInput(MissingInput),
     RemainingInput(RemainingInput),
     UnexpectedRule(UnexpectedRule),
@@ -61,6 +61,6 @@ impl From<UnknownKeyword> for ParserError {
 
 impl From<PestErr<Rule>> for ParserError {
     fn from(err: PestErr<Rule>) -> ParserError {
-        ParserError::Pest(err)
+        ParserError::Pest(Box::new(err))
     }
 }

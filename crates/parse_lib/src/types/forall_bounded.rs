@@ -28,6 +28,6 @@ where
         let body_rule = inner.remove(0);
         let body_ty = Ty::from_pair(body_rule, ())?;
 
-        Ok(ForallBounded::new(var, super_ty, body_ty).into())
+        Ok(ForallBounded::new(var, super_ty, body_ty))
     }
 }

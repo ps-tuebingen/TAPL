@@ -17,6 +17,6 @@ where
             let inner_ty = Ty::from_pair(inner_pair, ())?;
             tys.push(inner_ty)
         }
-        Ok(Tuple::new(tys).into())
+        Ok(Tuple::new(tys))
     }
 }

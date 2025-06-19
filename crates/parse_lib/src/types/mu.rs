@@ -16,6 +16,6 @@ where
         let var = inner.remove(0).as_str().trim();
         let ty_rule = inner.remove(0);
         let ty = Ty::from_pair(ty_rule, ())?;
-        Ok(Mu::new(var, ty).into())
+        Ok(Mu::new(var, ty))
     }
 }

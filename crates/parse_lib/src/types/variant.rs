@@ -27,6 +27,6 @@ where
             let ty = Ty::from_pair(ty_rule, ())?;
             variants.insert(label, ty);
         }
-        Ok(Variant::new(variants).into())
+        Ok(Variant::new(variants))
     }
 }

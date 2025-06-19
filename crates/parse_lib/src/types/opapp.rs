@@ -14,6 +14,6 @@ where
     fn from_pair(p: Pair<'_, Rule>, ty: Self::LeftRecArg) -> Result<OpApp<Ty>, Self::ParseError> {
         let arg_rule = pair_to_n_inner(p, vec!["Type"])?.remove(0);
         let arg = Ty::from_pair(arg_rule, ())?;
-        Ok(OpApp::new(ty, arg).into())
+        Ok(OpApp::new(ty, arg))
     }
 }

@@ -17,6 +17,6 @@ where
     fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Self, Self::ParseError> {
         let kind_rule = pair_to_n_inner(p, vec!["Kind"])?.remove(0);
         let kind = Kind::from_pair(kind_rule, ())?;
-        Ok(Top::new(kind).into())
+        Ok(Top::new(kind))
     }
 }

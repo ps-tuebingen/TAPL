@@ -14,6 +14,6 @@ where
     fn from_pair(p: Pair<'_, Rule>, t: Self::LeftRecArg) -> Result<Assign<T>, Self::ParseError> {
         let term_rule = pair_to_n_inner(p, vec!["Assign Right hand side"])?.remove(0);
         let rhs = T::from_pair(term_rule, ())?;
-        Ok(Assign::new(t, rhs).into())
+        Ok(Assign::new(t, rhs))
     }
 }

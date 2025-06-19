@@ -111,3 +111,12 @@ where
         }
     }
 }
+
+impl<Ty> Default for StringTy<Ty>
+where
+    Ty: Type,
+{
+    fn default() -> StringTy<Ty> {
+        StringTy::new()
+    }
+}

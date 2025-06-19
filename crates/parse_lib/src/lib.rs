@@ -25,7 +25,7 @@ pub trait Parse: Sized {
         Self::LeftRecArg: Default,
     {
         let mut pairs = LangParser::parse(Self::RULE, &source)
-            .map_err(|err| <PestErr<Rule> as Into<ParserError>>::into(err))?;
+            .map_err(<PestErr<Rule> as Into<ParserError>>::into)?;
         let rule = pairs
             .next()
             .ok_or(<MissingInput as Into<ParserError>>::into(

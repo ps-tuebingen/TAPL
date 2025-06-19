@@ -16,6 +16,6 @@ where
         let fst = Ty::from_pair(fst_rule, ())?;
         let snd_rule = inner.remove(0);
         let snd = Ty::from_pair(snd_rule, ())?;
-        Ok(Product::new(fst, snd).into())
+        Ok(Product::new(fst, snd))
     }
 }

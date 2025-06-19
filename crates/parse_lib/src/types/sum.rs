@@ -19,6 +19,6 @@ where
         let snd_pair = inner.remove(0);
         let snd_ty = Ty::from_pair(snd_pair, ())?;
 
-        Ok(Sum::new(fst_ty, snd_ty).into())
+        Ok(Sum::new(fst_ty, snd_ty))
     }
 }

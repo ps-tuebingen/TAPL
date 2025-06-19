@@ -17,6 +17,6 @@ where
         let mut inner = pair_to_n_inner(p, vec!["Ref Type"])?;
         let ty_rule = inner.remove(0);
         let ty = Ty::from_pair(ty_rule, ())?;
-        Ok(Reference::new(ty).into())
+        Ok(Reference::new(ty))
     }
 }

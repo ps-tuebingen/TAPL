@@ -18,6 +18,6 @@ where
         let num = p.as_str().trim().parse::<i64>().map_err(|_| {
             <UnknownKeyword as Into<ParserError>>::into(UnknownKeyword::new(p.as_str()))
         })?;
-        Ok(Num::new(num).into())
+        Ok(Num::new(num))
     }
 }

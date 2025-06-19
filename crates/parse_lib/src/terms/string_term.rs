@@ -111,3 +111,12 @@ where
         }
     }
 }
+
+impl<T> Default for StringTerm<T>
+where
+    T: Term,
+{
+    fn default() -> StringTerm<T> {
+        StringTerm::new()
+    }
+}
