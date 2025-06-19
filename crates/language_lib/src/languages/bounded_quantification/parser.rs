@@ -65,7 +65,7 @@ impl GroupParse for Type {
             Rule::exists_bounded_type => Ok(ExistsBounded::from_pair(p, ())?.into()),
             Rule::record_type => Ok(RecordTy::from_pair(p, ())?.into()),
             Rule::paren_type => Self::from_pair(pair_to_n_inner(p, vec!["Type"])?.remove(0), ()),
-            Rule::variable => Ok(TypeVariable::new(p.as_str().trim()).into()),
+            Rule::type_variable => Ok(TypeVariable::new(p.as_str().trim()).into()),
             r => Err(UnexpectedRule::new(r, "Non Left-Recursive Type").into()),
         }
     }

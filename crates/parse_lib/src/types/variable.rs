@@ -9,7 +9,7 @@ where
     type ParseError = <Ty as Parse>::ParseError;
     type LeftRecArg = ();
 
-    const RULE: Rule = Rule::variable;
+    const RULE: Rule = Rule::type_variable;
 
     fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Self, Self::ParseError> {
         Ok(TypeVariable::new(p.as_str().trim()))

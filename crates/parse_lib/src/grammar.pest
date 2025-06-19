@@ -151,11 +151,11 @@ tuple_term = { "(" ~ term ~ "," ~ term? ~ ("," ~ term)* ~ ")" }
 variant_term = { "<" ~ variable ~ "=" ~ term ~ ">" ~ kw_as ~ type}
 untyped_lambda_term = { "\\" ~ variable ~ "." ~ term }
 lambda_term = { "\\" ~ variable ~ ":" ~ type ~ "." ~ term }
-lambda_sub_term = { "\\" ~ variable ~ "<:" ~ type ~ "." ~ term }
-ty_lambda_term = { "\\" ~ variable ~ "." ~ term }
-ty_lambda_kinded_term = { "\\" ~ variable ~ "::" ~ kind ~ "." ~ term }
+lambda_sub_term = { "\\" ~ type_variable ~ "<:" ~ type ~ "." ~ term }
+ty_lambda_term = { "\\" ~ type_variable ~ "." ~ term }
+ty_lambda_kinded_term = { "\\" ~ type_variable ~ "::" ~ kind ~ "." ~ term }
 pack_term = { "{" ~ "*" ~ type ~ "," ~ term ~ "}" ~ kw_as ~ type }
-unpack_term = { kw_let ~ "{" ~ variable ~ "," ~ variable ~ "}" ~ "=" ~ term ~ kw_in ~ term }
+unpack_term = { kw_let ~ "{" ~ type_variable ~ "," ~ variable ~ "}" ~ "=" ~ term ~ kw_in ~ term }
 succ_term = { kw_succ ~ paren_term }
 pred_term = { kw_pred ~ paren_term }
 iszero_term = { kw_iszero ~ paren_term }
@@ -208,7 +208,8 @@ assign = { ":=" ~ term }
 ascription = { ":" ~ type }
 cast = { kw_as ~ type } 
 
-variable = @{ !(keyword ~ WHITESPACE) ~  (ASCII_ALPHA|ASCII_DIGIT|"_")+ }
+variable = @{ !(keyword ~ WHITESPACE) ~  (ASCII_ALPHA_LOWER | "_") ~ (ASCII_ALPHA|ASCII_DIGIT|"_")* }
+type_variable = @{ !(keyword ~ WHITESPACE) ~  ASCII_ALPHA_UPPER ~ (ASCII_ALPHA|ASCII_DIGIT|"_")* }
 number = { ASCII_DIGIT+ }
 
 // Types
@@ -231,7 +232,6 @@ prim_type = {
   | op_lambda_star_type
   | sum_type
   | record_type
-  | variant_type
   | tuple_type
   | variant_type
   | mu_type
@@ -239,7 +239,7 @@ prim_type = {
   | source_type
   | sink_type 
   | list_type
-  | variable
+  | type_variable
   | paren_type
 }
 
@@ -252,22 +252,22 @@ top_type_star = { kw_tytop }
 forall_bounded_type = { forall_start ~ "<:" ~ type ~ "." ~ type } 
 forall_unbounded_type = { forall_start ~ "." ~ type }
 forall_kinded_type = { forall_start ~ "::" ~ kind ~ "." ~ type } 
-forall_start = ${ kw_forall ~ " " ~ variable }
+forall_start = ${ kw_forall ~ " " ~ type_variable }
 
 exists_bounded_type ={ "{" ~ exists_start ~ "<:" ~ type ~ "," ~ type ~ "}"  } 
 exists_unbounded_type = { "{" ~ exists_start ~ "," ~ type ~ "}" }
 exists_kinded_type = { "{" ~ exists_start ~ "::" ~ kind ~ "," ~ type ~ "}" }
-exists_start = ${ kw_exists ~ " " ~ variable }
+exists_start = ${ kw_exists ~ " " ~ type_variable }
 
-op_lambda_star_type = { "\\" ~ variable ~ "." ~ type }
-op_lambda_type = { "\\" ~ variable ~ "::" ~ kind ~ "." ~ type }
-op_lambda_sub_type = { "\\" ~ variable ~ "<:" ~ type ~ "." ~ type }
+op_lambda_star_type = { "\\" ~ type_variable ~ "." ~ type }
+op_lambda_type = { "\\" ~ type_variable ~ "::" ~ kind ~ "." ~ type }
+op_lambda_sub_type = { "\\" ~ type_variable ~ "<:" ~ type ~ "." ~ type }
 prod_type = { "(" ~ type ~ "x" ~ type ~ ")" }
 sum_type = { "(" ~ type ~ "+" ~ type ~ ")" }
 record_type =  { "{" ~ variable ~ ":" ~ type ~ ("," ~ variable ~ ":" ~ type)* ~ "}" }
 variant_type = { "<" ~ variable ~ ":" ~ type ~ ("," ~ variable ~ ":" ~ type)* ~ ">" }
 tuple_type = { "(" ~ type ~ ("," ~ type)+ ~ ")" }
-mu_type = { kw_mu ~ variable ~ "." ~ type }
+mu_type = { kw_mu ~ type_variable ~ "." ~ type }
 ref_type = { kw_tyref ~ ty_arg }
 source_type = { kw_tysource ~ ty_arg }
 sink_type = { kw_tysink ~ ty_arg } 

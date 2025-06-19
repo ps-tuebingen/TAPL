@@ -43,7 +43,7 @@ impl GroupParse for Type {
             Rule::forall_unbounded_type => {
                 Ok(ForallUnbounded::from_pair(p, ())?.to_forall_kinded().into())
             }
-            Rule::variable => Ok(TypeVariable::from_pair(p, ())?.into()),
+            Rule::type_variable => Ok(TypeVariable::from_pair(p, ())?.into()),
             Rule::paren_type => Self::from_pair(pair_to_n_inner(p, vec!["Type"])?.remove(0), ()),
             r => Err(UnexpectedRule::new(r, "Forall Type or Type Variable").into()),
         }

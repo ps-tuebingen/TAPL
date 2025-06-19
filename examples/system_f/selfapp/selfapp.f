@@ -1,1 +1,1 @@
-\x:forall X.X->X.(x[forall x.X->X])(x)
+\x:forall X.X->X.(x[forall X.X->X])(x)

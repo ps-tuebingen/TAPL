@@ -79,7 +79,7 @@ impl GroupParse for Type {
             Rule::op_lambda_type => Ok(OpLambda::from_pair(p, ())?.into()),
             Rule::exists_kinded_type => Ok(Exists::from_pair(p, ())?.into()),
             Rule::record_type => Ok(RecordTy::from_pair(p, ())?.into()),
-            Rule::variable => Ok(TypeVariable::from_pair(p, ())?.into()),
+            Rule::type_variable => Ok(TypeVariable::from_pair(p, ())?.into()),
             _ => Err(UnexpectedRule::new(p.as_rule(), "Non Left-Recursive Type").into()),
         }
     }
