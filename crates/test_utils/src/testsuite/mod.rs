@@ -10,13 +10,17 @@ use super::{
     parse_test::ParseTest,
     reparse_test::ReparseTest,
     setup,
-    test::{Test, TestConfig},
+    test::{Test, TestConfig, TestInclusions},
     test_result::TestResult,
 };
+use clap::Parser;
 use derivation::Derivation;
 use language::Language;
 use std::path::PathBuf;
 use trace::EvalTrace;
+
+mod cli;
+use cli::Args;
 
 pub mod bounded_quantification;
 pub mod exceptions;
@@ -122,9 +126,8 @@ pub trait TestSuite {
         res
     }
 
-    fn run_conf(conf: &Self::Config) -> TestResult<()> {
+    fn run_conf(conf: &Self::Config, inclusions: &TestInclusions) -> TestResult<()> {
         let name = conf.name();
-        let inclusions = conf.inclusions();
         println!("Running tests for {}", name);
 
         let t = match Self::run_parse(conf) {
@@ -160,13 +163,13 @@ pub trait TestSuite {
         TestResult::Success(())
     }
 
-    fn run_all(&self) -> Result<usize, Error> {
+    fn run_all(&self, inclusions: &TestInclusions) -> Result<usize, Error> {
         println!("Running Test Suite {}\n", self.name());
         let configs = self.configs()?;
         let num_tests = configs.len();
         let mut num_fail = 0;
         for conf in configs {
-            let result = Self::run_conf(&conf);
+            let result = Self::run_conf(&conf, inclusions);
             if matches!(result, TestResult::Fail(_)) {
                 num_fail += 1
             }
@@ -184,7 +187,9 @@ pub trait TestSuite {
     fn run_report(&self) -> Result<(), Error> {
         setup()?;
 
-        let fails = self.run_all()?;
+        let inclusions = Args::parse().to_inclusions();
+
+        let fails = self.run_all(&inclusions)?;
         let fail_str = if fails > 0 {
             format!("\x1b[31m{fails} fails\x1b[39m")
         } else {

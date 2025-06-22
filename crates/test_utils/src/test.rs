@@ -23,9 +23,6 @@ pub trait TestConfig: for<'a> serde::Deserialize<'a> {
 
     fn name(&self) -> &str;
     fn contents(&self) -> &str;
-    fn inclusions(&self) -> TestInclusions {
-        TestInclusions::default()
-    }
 }
 
 impl Default for TestInclusions {
