@@ -1,5 +1,5 @@
 use super::Type;
-use crate::{subst::SubstType, Label, TypeVar};
+use crate::{Label, TypeVar, subst::SubstType};
 use common::errors::TypeKind;
 use std::collections::HashMap;
 use std::fmt;

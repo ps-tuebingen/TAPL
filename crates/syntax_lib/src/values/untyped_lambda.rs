@@ -1,7 +1,7 @@
 use super::Value;
 use crate::{
-    terms::{Term, UntypedLambda as UntypedLambdaT},
     Var,
+    terms::{Term, UntypedLambda as UntypedLambdaT},
 };
 use common::errors::ValueKind;
 use std::fmt;

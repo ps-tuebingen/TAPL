@@ -1,4 +1,4 @@
-use super::{terms::Term, types::Type, TypeVar, Var};
+use super::{TypeVar, Var, terms::Term, types::Type};
 
 pub trait SubstTerm<T>
 where

@@ -2,12 +2,12 @@ use super::types::Type;
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
 use syntax::{
+    TypeVar, Var,
     subst::{SubstTerm, SubstType},
     terms::{
         App, Lambda, LambdaSub, Let, Num, Pack, Pred, Record, RecordProj, Succ, TyApp, Unpack,
         Variable,
     },
-    TypeVar, Var,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]

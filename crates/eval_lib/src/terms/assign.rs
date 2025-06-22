@@ -1,4 +1,4 @@
-use crate::{env::EvalEnvironment, Eval};
+use crate::{Eval, env::EvalEnvironment};
 use common::errors::ValueMismatch;
 use syntax::{
     terms::{Assign, Term, Unit},

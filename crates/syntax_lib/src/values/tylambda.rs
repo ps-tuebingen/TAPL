@@ -1,8 +1,8 @@
 use super::Value;
 use crate::{
+    TypeVar,
     kinds::Kind,
     terms::{Term, TyLambda as TyLambdaT},
-    TypeVar,
 };
 use common::errors::ValueKind;
 use std::fmt;

@@ -5,10 +5,10 @@ use latex::{LatexConfig, LatexFmt};
 use std::fmt;
 use syntax::untyped::Untyped;
 use syntax::{
+    TypeVar,
     env::Environment,
     subst::{SubstTerm, SubstType},
     terms::{App, UntypedLambda, Variable},
-    TypeVar,
 };
 
 pub type Var = String;

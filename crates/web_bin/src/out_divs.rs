@@ -1,6 +1,6 @@
 use super::{get_by_id, log};
 use std::rc::Rc;
-use wasm_bindgen::{closure::Closure, JsCast};
+use wasm_bindgen::{JsCast, closure::Closure};
 use web_sys::{Document, HtmlButtonElement, HtmlDivElement};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

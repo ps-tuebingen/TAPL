@@ -1,5 +1,5 @@
 use super::{examples::all_examples, get_by_id, log};
-use language::{languages::UntypedArithmetic, AllLanguages};
+use language::{AllLanguages, languages::UntypedArithmetic};
 use std::collections::HashMap;
 use wasm_bindgen::JsCast;
 use web_sys::{Document, HtmlOptionElement, HtmlSelectElement, HtmlTextAreaElement};

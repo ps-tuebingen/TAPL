@@ -37,6 +37,9 @@ pub mod typed_arithmetic;
 pub mod untyped_arithmetic;
 pub mod untyped_lambda;
 
+type LangTrace<L> = EvalTrace<<L as Language>::Term, <L as Language>::Value>;
+type LangDerivation<L> = Derivation<<L as Language>::Term, <L as Language>::Type>;
+
 pub trait TestSuite {
     type Config: TestConfig;
     type Lang: Language;
@@ -51,14 +54,14 @@ pub trait TestSuite {
 
     fn run_parse(conf: &Self::Config) -> TestResult<<Self::Lang as Language>::Term> {
         let name = conf.name();
-        let parse_test = ParseTest::<<Self::Lang as Language>::Term>::new(&name, &conf.contents());
+        let parse_test = ParseTest::<<Self::Lang as Language>::Term>::new(name, conf.contents());
         let parse_res = parse_test.run();
         parse_res.report(&parse_test.name());
         parse_res
     }
 
     fn run_reparse(name: &str, parsed: &<Self::Lang as Language>::Term) -> TestResult<()> {
-        let reparse_test = ReparseTest::<<Self::Lang as Language>::Term>::new(name, &parsed);
+        let reparse_test = ReparseTest::<<Self::Lang as Language>::Term>::new(name, parsed);
         let res = reparse_test.run();
         res.report(&reparse_test.name());
         res
@@ -67,19 +70,18 @@ pub trait TestSuite {
     fn run_check(
         conf: &Self::Config,
         term: <Self::Lang as Language>::Term,
-    ) -> TestResult<Derivation<<Self::Lang as Language>::Term, <Self::Lang as Language>::Type>>
-    {
+    ) -> TestResult<LangDerivation<Self::Lang>> {
         let check_test =
-            CheckTest::<<Self::Lang as Language>::Term>::new(&conf.name(), term, conf.ty());
+            CheckTest::<<Self::Lang as Language>::Term>::new(conf.name(), term, conf.ty());
         let res = check_test.run();
+        res.report(&check_test.name());
         res
     }
 
     fn run_eval(
         conf: &Self::Config,
         t: <Self::Lang as Language>::Term,
-    ) -> TestResult<EvalTrace<<Self::Lang as Language>::Term, <Self::Lang as Language>::Value>>
-    {
+    ) -> TestResult<LangTrace<Self::Lang>> {
         let eval_test =
             EvalTest::<<Self::Lang as Language>::Term>::new(conf.name(), t, conf.evaluated());
         let res = eval_test.run();
@@ -136,26 +138,26 @@ pub trait TestSuite {
         };
 
         if inclusions.reparse {
-            Self::run_reparse(&name, &t);
+            Self::run_reparse(name, &t);
         };
 
         if inclusions.check {
-            let deriv = Self::run_check(&conf, t.clone());
+            let deriv = Self::run_check(conf, t.clone());
             if let TestResult::Success(ref deriv) = deriv {
                 if inclusions.derivation_buss {
-                    Self::run_derivation_buss(&name, deriv);
+                    Self::run_derivation_buss(name, deriv);
                 }
                 if inclusions.derivation_frac {
-                    Self::run_derivation_frac(&name, deriv);
+                    Self::run_derivation_frac(name, deriv);
                 }
             }
         }
 
         if inclusions.eval {
-            let trace = Self::run_eval(&conf, t);
+            let trace = Self::run_eval(conf, t);
             if let TestResult::Success(ref tr) = trace {
                 if inclusions.trace {
-                    Self::run_trace(&name, tr);
+                    Self::run_trace(name, tr);
                 }
             }
         }

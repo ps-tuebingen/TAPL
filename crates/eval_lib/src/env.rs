@@ -1,6 +1,6 @@
 use common::errors::NotImplemented;
-use syntax::values::Value;
 use syntax::Location;
+use syntax::values::Value;
 
 pub trait EvalEnvironment<V>
 where

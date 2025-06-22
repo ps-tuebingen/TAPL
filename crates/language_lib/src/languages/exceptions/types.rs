@@ -2,9 +2,9 @@ use common::errors::{TypeKind, TypeMismatch};
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
 use syntax::{
+    TypeVar,
     subst::SubstType,
     types::{Bool, Fun, Nat, Type as TypeTrait, TypeGroup, Unit},
-    TypeVar,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]

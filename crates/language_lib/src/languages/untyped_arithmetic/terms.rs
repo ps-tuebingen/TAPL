@@ -4,11 +4,11 @@ use derivation::Derivation;
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
 use syntax::{
+    TypeVar, Var,
     env::Environment,
     subst::{SubstTerm, SubstType},
     terms::{False, If, IsZero, Num, Pred, Succ, True},
     untyped::Untyped,
-    TypeVar, Var,
 };
 
 #[derive(Clone, Debug, PartialEq, Eq)]

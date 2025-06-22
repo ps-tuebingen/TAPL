@@ -1,7 +1,7 @@
 use common::errors::{FreeVariable, NotImplemented, ValueMismatch};
 use parse::{
-    errors::{MissingInput, ParserError, RemainingInput, UnexpectedRule},
     Rule,
+    errors::{MissingInput, ParserError, RemainingInput, UnexpectedRule},
 };
 use pest::error::Error as PestErr;
 use std::fmt;

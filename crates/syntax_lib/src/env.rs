@@ -1,4 +1,4 @@
-use super::{kinds::Kind, types::Type, Location, TypeVar, Var};
+use super::{Location, TypeVar, Var, kinds::Kind, types::Type};
 use common::errors::{FreeTypeVariable, FreeVariable, UndefinedLocation};
 use std::collections::HashMap;
 

@@ -1,9 +1,9 @@
 use crate::Eval;
 use std::collections::HashMap;
 use syntax::{
+    Label,
     terms::{Record, Term},
     values::Record as RecordVal,
-    Label,
 };
 use trace::EvalTrace;
 

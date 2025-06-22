@@ -1,6 +1,6 @@
 use crate::{
-    errors::{MissingInput, ParserError, RemainingInput},
     Parse, Rule,
+    errors::{MissingInput, ParserError, RemainingInput},
 };
 use pest::iterators::Pair;
 use syntax::{

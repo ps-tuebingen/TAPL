@@ -5,8 +5,8 @@ use common::errors::{
     UndefinedLabel, ValueMismatch,
 };
 use parse::{
-    errors::{MissingInput, ParserError, RemainingInput, UnexpectedRule, UnknownKeyword},
     Rule,
+    errors::{MissingInput, ParserError, RemainingInput, UnexpectedRule, UnknownKeyword},
 };
 
 use pest::error::Error as PestErr;

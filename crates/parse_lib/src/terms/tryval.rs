@@ -1,4 +1,4 @@
-use crate::{pair_to_n_inner, Parse, Rule};
+use crate::{Parse, Rule, pair_to_n_inner};
 use pest::iterators::Pair;
 use syntax::terms::{Term, TryWithVal};
 

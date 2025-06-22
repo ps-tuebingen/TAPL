@@ -1,4 +1,4 @@
-use super::{errors::UndefinedLanguage, FormatMethod, Language};
+use super::{FormatMethod, Language, errors::UndefinedLanguage};
 use std::{fmt, str::FromStr};
 
 pub mod bounded_quantification;

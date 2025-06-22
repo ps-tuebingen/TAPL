@@ -1,5 +1,5 @@
 use super::{errors::Error, terms::Term};
-use parse::{errors::UnexpectedRule, pair_to_n_inner, GroupParse, Parse, Rule};
+use parse::{GroupParse, Parse, Rule, errors::UnexpectedRule, pair_to_n_inner};
 use pest::iterators::Pair;
 use syntax::terms::{App, UntypedLambda, Variable};
 

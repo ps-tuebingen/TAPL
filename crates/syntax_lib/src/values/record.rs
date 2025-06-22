@@ -1,5 +1,5 @@
 use super::Value;
-use crate::{terms::Record as RecordT, Label};
+use crate::{Label, terms::Record as RecordT};
 use common::errors::ValueKind;
 use std::{collections::HashMap, fmt};
 

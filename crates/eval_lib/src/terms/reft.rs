@@ -1,4 +1,4 @@
-use crate::{env::EvalEnvironment, Eval};
+use crate::{Eval, env::EvalEnvironment};
 use syntax::{
     terms::{Loc as LocT, Ref, Term},
     values::Loc,

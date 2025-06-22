@@ -2,9 +2,9 @@ use super::types::Type;
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
 use syntax::{
+    TypeVar, Var,
     subst::{SubstTerm, SubstType},
     terms::{False, If, IsZero, Num, Pred, Succ, True},
-    TypeVar, Var,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]

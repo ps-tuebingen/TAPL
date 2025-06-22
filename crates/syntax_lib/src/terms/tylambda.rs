@@ -1,9 +1,9 @@
 use super::Term;
 use crate::{
+    TypeVar, Var,
     kinds::Kind,
     subst::{SubstTerm, SubstType},
     types::Type,
-    TypeVar, Var,
 };
 use std::fmt;
 

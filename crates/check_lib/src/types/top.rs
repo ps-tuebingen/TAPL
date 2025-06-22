@@ -1,4 +1,4 @@
-use crate::{errors::NotASubtype, Kindcheck, Normalize, Subtypecheck};
+use crate::{Kindcheck, Normalize, Subtypecheck, errors::NotASubtype};
 use syntax::{
     env::Environment,
     kinds::Kind,

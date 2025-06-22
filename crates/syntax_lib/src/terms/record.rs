@@ -1,8 +1,8 @@
 use super::Term;
 use crate::{
+    Label, TypeVar, Var,
     subst::{SubstTerm, SubstType},
     types::Type,
-    Label, TypeVar, Var,
 };
 use std::{collections::HashMap, fmt};
 

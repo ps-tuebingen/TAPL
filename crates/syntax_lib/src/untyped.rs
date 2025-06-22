@@ -1,7 +1,7 @@
 use crate::{
+    TypeVar,
     subst::SubstType,
     types::{Type, TypeGroup},
-    TypeVar,
 };
 use common::errors::TypeKind;
 use std::fmt;

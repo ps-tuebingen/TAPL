@@ -12,7 +12,7 @@ pub struct Args {
 }
 
 impl Args {
-    pub fn to_inclusions(self) -> TestInclusions {
+    pub fn to_inclusions(&self) -> TestInclusions {
         let mut inc = TestInclusions::default();
         if self.exclude_check {
             inc.check = false;

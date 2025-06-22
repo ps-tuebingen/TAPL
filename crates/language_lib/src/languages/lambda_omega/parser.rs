@@ -1,7 +1,7 @@
 use super::{errors::Error, terms::Term, types::Type};
 use parse::{
-    errors::UnexpectedRule, pair_to_n_inner, sugar::ForallUnbounded, terms::StringTerm,
-    types::StringTy, GroupParse, Parse, Rule,
+    GroupParse, Parse, Rule, errors::UnexpectedRule, pair_to_n_inner, sugar::ForallUnbounded,
+    terms::StringTerm, types::StringTy,
 };
 use pest::iterators::Pair;
 use syntax::{

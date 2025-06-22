@@ -1,8 +1,8 @@
 use super::{Lambda, Term};
 use crate::{
+    TypeVar, Var,
     subst::{SubstTerm, SubstType},
     types::{Type, Unit as UnitTy},
-    TypeVar, Var,
 };
 use std::fmt;
 

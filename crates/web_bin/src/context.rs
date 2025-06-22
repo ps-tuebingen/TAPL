@@ -1,7 +1,7 @@
 use super::{example_select::ExampleSelect, get_by_id, out_divs::OutDivs, typeset};
 use language::{AllLanguages, FormatMethod};
 use std::rc::Rc;
-use wasm_bindgen::{closure::Closure, JsCast};
+use wasm_bindgen::{JsCast, closure::Closure};
 use web_sys::{
     Document, HtmlButtonElement, HtmlOptionElement, HtmlSelectElement, HtmlTextAreaElement,
 };

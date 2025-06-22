@@ -1,6 +1,6 @@
 use check::{Kindcheck, Normalize, Subtypecheck, Typecheck};
 use derivation::Derivation;
-use eval::{env::EvalEnvironment, Eval};
+use eval::{Eval, env::EvalEnvironment};
 use latex::{LatexConfig, LatexFmt};
 use parse::Parse;
 use syntax::{

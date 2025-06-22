@@ -2,7 +2,7 @@ use super::{errors::Error, terms::Term, types::Type};
 use check::{Kindcheck, Subtypecheck, Typecheck};
 use derivation::Derivation;
 use std::collections::HashMap;
-use syntax::{env::Environment, kinds::Kind, Location, Var};
+use syntax::{Location, Var, env::Environment, kinds::Kind};
 
 pub type Env = HashMap<Var, Type>;
 pub type StoreTy = HashMap<Location, Type>;

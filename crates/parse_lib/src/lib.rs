@@ -5,7 +5,7 @@ pub mod terms;
 pub mod types;
 
 use errors::{MissingInput, ParserError, RemainingInput};
-use pest::{error::Error as PestErr, iterators::Pair, Parser};
+use pest::{Parser, error::Error as PestErr, iterators::Pair};
 use pest_derive::Parser;
 
 #[derive(Parser)]

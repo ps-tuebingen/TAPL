@@ -1,9 +1,10 @@
 use crate::{
+    Parse, Rule,
     errors::{MissingInput, ParserError},
-    pair_to_n_inner, Parse, Rule,
+    pair_to_n_inner,
 };
 use pest::iterators::Pair;
-use syntax::terms::{variantcase::VariantPattern, Term, VariantCase};
+use syntax::terms::{Term, VariantCase, variantcase::VariantPattern};
 
 impl<T> Parse for VariantCase<T>
 where

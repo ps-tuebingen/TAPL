@@ -1,5 +1,5 @@
 use super::super::{LatexConfig, LatexFmt};
-use syntax::terms::{variantcase::VariantPattern, Term, VariantCase};
+use syntax::terms::{Term, VariantCase, variantcase::VariantPattern};
 
 impl<T> LatexFmt for VariantCase<T>
 where

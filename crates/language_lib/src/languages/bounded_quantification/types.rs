@@ -3,13 +3,13 @@ use common::errors::{TypeKind, TypeMismatch};
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
 use syntax::{
+    TypeVar,
     env::Environment,
     subst::SubstType,
     types::{
         ExistsBounded, ForallBounded, Fun, Nat, Record, Top, Type as TypeTrait, TypeGroup,
         TypeVariable,
     },
-    TypeVar,
 };
 
 #[derive(Clone, Debug, PartialEq, Eq)]

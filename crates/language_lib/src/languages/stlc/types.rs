@@ -2,12 +2,12 @@ use common::errors::{TypeKind, TypeMismatch};
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
 use syntax::{
+    TypeVar,
     subst::SubstType,
     types::{
         Bool, Fun, List, Nat, Optional, Product, Record, Sum, Tuple, Type as TypeTrait, TypeGroup,
         Unit, Variant,
     },
-    TypeVar,
 };
 
 #[derive(PartialEq, Eq, Clone, Debug)]

@@ -2,8 +2,8 @@ use common::errors::{
     FreeTypeVariable, FreeVariable, KindMismatch, NotImplemented, TypeMismatch, ValueMismatch,
 };
 use parse::{
-    errors::{MissingInput, ParserError, RemainingInput, UnexpectedRule},
     Rule,
+    errors::{MissingInput, ParserError, RemainingInput, UnexpectedRule},
 };
 use pest::error::Error as PestErr;
 use std::fmt;

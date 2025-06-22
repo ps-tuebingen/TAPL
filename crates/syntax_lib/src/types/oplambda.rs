@@ -1,5 +1,5 @@
 use super::{OpLambdaSub, Top, Type};
-use crate::{kinds::Kind, subst::SubstType, TypeVar};
+use crate::{TypeVar, kinds::Kind, subst::SubstType};
 use common::errors::TypeKind;
 use std::fmt;
 

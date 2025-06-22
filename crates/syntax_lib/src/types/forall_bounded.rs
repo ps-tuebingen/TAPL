@@ -1,5 +1,5 @@
 use super::{Top, Type};
-use crate::{subst::SubstType, TypeVar};
+use crate::{TypeVar, subst::SubstType};
 use common::errors::TypeKind;
 use std::fmt;
 

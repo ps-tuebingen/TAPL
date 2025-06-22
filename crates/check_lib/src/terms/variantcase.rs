@@ -1,4 +1,4 @@
-use crate::{errors::EmptyCase, Kindcheck, Normalize, Typecheck};
+use crate::{Kindcheck, Normalize, Typecheck, errors::EmptyCase};
 use common::errors::{KindMismatch, TypeMismatch, UndefinedLabel};
 use derivation::{Conclusion, Derivation};
 use syntax::{

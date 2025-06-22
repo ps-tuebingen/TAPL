@@ -1,8 +1,8 @@
 use super::Value;
 use crate::{
+    Var,
     terms::{Lambda as LambdaT, Term},
     types::Type,
-    Var,
 };
 use common::errors::ValueKind;
 use std::fmt;

@@ -1,9 +1,9 @@
 use super::{errors::Error, terms::Term, types::Type, values::Value};
 use check::Normalize;
 use common::errors::UndefinedLocation;
-use eval::{env::EvalEnvironment, Eval};
+use eval::{Eval, env::EvalEnvironment};
 use std::collections::HashMap;
-use syntax::{env::Environment, Location};
+use syntax::{Location, env::Environment};
 use trace::EvalTrace;
 
 #[derive(Default)]

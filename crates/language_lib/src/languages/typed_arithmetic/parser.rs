@@ -1,5 +1,5 @@
 use super::{errors::Error, terms::Term, types::Type};
-use parse::{errors::UnexpectedRule, terms::StringTerm, types::StringTy, GroupParse, Parse, Rule};
+use parse::{GroupParse, Parse, Rule, errors::UnexpectedRule, terms::StringTerm, types::StringTy};
 use pest::iterators::Pair;
 use syntax::terms::{If, IsZero, Num, Pred, Succ};
 

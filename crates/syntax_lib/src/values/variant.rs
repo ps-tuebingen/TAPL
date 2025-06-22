@@ -1,5 +1,5 @@
 use super::Value;
-use crate::{terms::Variant as VariantT, types::Type, Label};
+use crate::{Label, terms::Variant as VariantT, types::Type};
 use common::errors::ValueKind;
 use std::fmt;
 
