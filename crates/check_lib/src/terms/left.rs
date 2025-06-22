@@ -1,5 +1,5 @@
 use crate::{errors::CheckError, Kindcheck, Normalize, Typecheck};
-use derivation::{Conclusion, Derivation};
+use derivation::{Conclusion, TypingDerivation};
 use syntax::{
     env::Environment,
     terms::{Left, Term},
@@ -8,17 +8,18 @@ use syntax::{
 
 impl<T, Ty> Typecheck for Left<T, Ty>
 where
-    T: Term + Typecheck<Type = Ty, Term = T>,
+    T: Term + Typecheck<Type = Ty, Term = T, Deriv = TypingDerivation<T, <T as Typecheck>::Type>>,
     Ty: TypeGroup + Normalize<Ty> + Kindcheck<Ty>,
     Self: Into<T>,
 {
+    type Term = <T as Typecheck>::Term;
     type Type = <T as Typecheck>::Type;
-    type Term = T;
+    type Deriv = TypingDerivation<Self::Term, Self::Type>;
 
     fn check(
         &self,
         env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError<Self::Type>> {
+    ) -> Result<Self::Deriv, CheckError<Self::Type>> {
         let left_res = self.left_term.check(env.clone())?;
         let left_ty = left_res.ty().normalize(env.clone());
         let left_knd = left_ty.check_kind(env.clone())?;
@@ -29,7 +30,7 @@ where
         sum_ty.left.check_equal(&left_ty)?;
 
         let conc = Conclusion::new(env, self.clone(), self.ty.clone());
-        let deriv = Derivation::left(conc, left_res);
-        Ok(deriv)
+        let deriv = TypingDerivation::left(conc, left_res);
+        Ok(deriv.into())
     }
 }

@@ -1,5 +1,5 @@
 use crate::{errors::CheckError, Kindcheck, Normalize, Typecheck};
-use derivation::{Conclusion, Derivation};
+use derivation::{Conclusion, TypingDerivation};
 use syntax::{
     env::Environment,
     terms::{Term, TryWithVal},
@@ -8,18 +8,19 @@ use syntax::{
 
 impl<T> Typecheck for TryWithVal<T>
 where
-    T: Term + Typecheck<Term = T>,
+    T: Term + Typecheck<Term = T, Deriv = TypingDerivation<T, <T as Typecheck>::Type>>,
     <T as Typecheck>::Type:
         TypeGroup + Normalize<<T as Typecheck>::Type> + Kindcheck<<T as Typecheck>::Type>,
     Self: Into<T>,
 {
+    type Term = <T as Typecheck>::Term;
     type Type = <T as Typecheck>::Type;
-    type Term = T;
+    type Deriv = TypingDerivation<Self::Term, Self::Type>;
 
     fn check(
         &self,
         env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError<Self::Type>> {
+    ) -> Result<Self::Deriv, CheckError<Self::Type>> {
         let t_res = self.term.check(env.clone())?;
         let t_ty = t_res.ty().normalize(env.clone());
         let t_knd = t_ty.check_kind(env.clone())?;
@@ -33,7 +34,7 @@ where
         fun.to.check_equal(&t_ty)?;
 
         let conc = Conclusion::new(env, self.clone(), t_ty);
-        let deriv = Derivation::try_val(conc, t_res, handler_res);
-        Ok(deriv)
+        let deriv = TypingDerivation::try_val(conc, t_res, handler_res);
+        Ok(deriv.into())
     }
 }

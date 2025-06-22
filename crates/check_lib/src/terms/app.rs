@@ -1,5 +1,5 @@
 use crate::{errors::CheckError, Kindcheck, Normalize, Subtypecheck, Typecheck};
-use derivation::{Conclusion, Derivation};
+use derivation::{Conclusion, TypingDerivation};
 use syntax::{
     env::Environment,
     terms::{App, Term},
@@ -8,7 +8,7 @@ use syntax::{
 
 impl<T> Typecheck for App<T>
 where
-    T: Term + Typecheck<Term = T>,
+    T: Term + Typecheck<Term = T, Deriv = TypingDerivation<T, <T as Typecheck>::Type>>,
     <T as Typecheck>::Type: TypeGroup
         + Normalize<<T as Typecheck>::Type>
         + Kindcheck<<T as Typecheck>::Type>
@@ -18,11 +18,12 @@ where
 {
     type Type = <T as Typecheck>::Type;
     type Term = T;
+    type Deriv = TypingDerivation<Self::Term, Self::Type>;
 
     fn check(
         &self,
         env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError<Self::Type>> {
+    ) -> Result<Self::Deriv, CheckError<Self::Type>> {
         let fun_res = self.fun.check(env.clone())?;
         let fun_ty = fun_res.ty().normalize(env.clone());
         fun_ty.check_kind(env.clone())?.into_star()?;
@@ -34,7 +35,7 @@ where
         arg_ty.check_subtype(&(*fun.from), env.clone())?;
 
         let deriv_conc = Conclusion::new(env.clone(), self.clone(), *fun.to);
-        let deriv = Derivation::app(deriv_conc, fun_res, arg_res);
-        Ok(deriv)
+        let deriv = TypingDerivation::app(deriv_conc, fun_res, arg_res);
+        Ok(deriv.into())
     }
 }

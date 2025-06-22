@@ -1,6 +1,6 @@
 use crate::{errors::CheckError, Kindcheck, Normalize, Typecheck};
 use common::errors::{NameMismatch, TypeKind, TypeMismatch};
-use derivation::{Conclusion, Derivation};
+use derivation::{Conclusion, TypingDerivation};
 use syntax::{
     env::Environment,
     terms::{Term, Unpack},
@@ -9,17 +9,18 @@ use syntax::{
 
 impl<T, Ty> Typecheck for Unpack<T, Ty>
 where
-    T: Term + Typecheck<Type = Ty, Term = T>,
+    T: Term + Typecheck<Type = Ty, Term = T, Deriv = TypingDerivation<T, <T as Typecheck>::Type>>,
     Ty: TypeGroup + Normalize<<T as Typecheck>::Type> + Kindcheck<Ty>,
     Self: Into<T>,
 {
+    type Term = <T as Typecheck>::Term;
     type Type = <T as Typecheck>::Type;
-    type Term = T;
+    type Deriv = TypingDerivation<Self::Term, Self::Type>;
 
     fn check(
         &self,
         mut env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError<Self::Type>> {
+    ) -> Result<Self::Deriv, CheckError<Self::Type>> {
         let bound_res = self.bound_term.check(env.clone())?;
         let bound_ty = bound_res.ty().normalize(env.clone());
         if let Ok(bound_exists) = bound_ty.clone().into_exists() {
@@ -31,8 +32,8 @@ where
             let in_res = self.in_term.check(env.clone())?;
             let in_ty = in_res.ty().normalize(env.clone());
             let conc = Conclusion::new(env, self.clone(), in_ty);
-            let deriv = Derivation::unpack(conc, bound_res, in_res);
-            Ok(deriv)
+            let deriv = TypingDerivation::unpack(conc, bound_res, in_res);
+            Ok(deriv.into())
         } else if let Ok(bound_bound) = bound_ty.clone().into_exists_bounded() {
             if self.ty_name != bound_bound.var {
                 return Err(NameMismatch::new(&bound_bound.var, &self.ty_name).into());
@@ -44,8 +45,8 @@ where
             let inner_res = self.in_term.check(env.clone())?;
             let inner_ty = inner_res.ty().normalize(env.clone());
             let conc = Conclusion::new(env.clone(), self.clone(), inner_ty);
-            let deriv = Derivation::unpack_bounded(conc, bound_res, inner_res);
-            Ok(deriv)
+            let deriv = TypingDerivation::unpack_bounded(conc, bound_res, inner_res);
+            Ok(deriv.into())
         } else {
             Err(TypeMismatch::new(bound_ty.knd(), TypeKind::Existential).into())
         }

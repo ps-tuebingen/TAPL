@@ -1,6 +1,6 @@
 use crate::{errors::CheckError, Kindcheck, Normalize, Typecheck};
 use common::errors::UndefinedLabel;
-use derivation::{Conclusion, Derivation};
+use derivation::{Conclusion, TypingDerivation};
 use syntax::{
     env::Environment,
     terms::{Term, Variant},
@@ -9,18 +9,19 @@ use syntax::{
 
 impl<T, Ty> Typecheck for Variant<T, Ty>
 where
-    T: Term + Typecheck<Type = Ty, Term = T>,
+    T: Term + Typecheck<Type = Ty, Term = T, Deriv = TypingDerivation<T, <T as Typecheck>::Type>>,
     Ty: TypeGroup + Normalize<Ty> + Kindcheck<Ty>,
     VariantTy<Ty>: Into<Ty>,
     Self: Into<T>,
 {
+    type Term = <T as Typecheck>::Term;
     type Type = <T as Typecheck>::Type;
-    type Term = T;
+    type Deriv = TypingDerivation<Self::Term, Self::Type>;
 
     fn check(
         &self,
         env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError<Self::Type>> {
+    ) -> Result<Self::Deriv, CheckError<Self::Type>> {
         let ty_norm = self.ty.clone().normalize(env.clone());
         let term_res = self.term.check(env.clone())?;
         let term_ty = term_res.ty().normalize(env.clone());
@@ -38,7 +39,7 @@ where
         lb_ty.check_equal(&term_ty)?;
 
         let conc = Conclusion::new(env, self.clone(), ty_norm);
-        let deriv = Derivation::variant(conc, term_res);
-        Ok(deriv)
+        let deriv = TypingDerivation::variant(conc, term_res);
+        Ok(deriv.into())
     }
 }

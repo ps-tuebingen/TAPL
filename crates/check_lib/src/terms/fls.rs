@@ -1,5 +1,5 @@
 use crate::{errors::CheckError, Normalize, Typecheck};
-use derivation::{Conclusion, Derivation};
+use derivation::{Conclusion, TypingDerivation};
 use syntax::{
     env::Environment,
     terms::{False, Term},
@@ -8,19 +8,20 @@ use syntax::{
 
 impl<T> Typecheck for False<T>
 where
-    T: Term + Typecheck<Term = T>,
+    T: Term + Typecheck<Term = T, Deriv = TypingDerivation<T, <T as Typecheck>::Type>>,
     <T as Typecheck>::Type: Type + Normalize<<T as Typecheck>::Type>,
     Bool<<T as Typecheck>::Type>: Into<<T as Typecheck>::Type>,
     Self: Into<T>,
 {
+    type Term = <T as Typecheck>::Term;
     type Type = <T as Typecheck>::Type;
-    type Term = T;
+    type Deriv = TypingDerivation<Self::Term, Self::Type>;
 
     fn check(
         &self,
         env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError<Self::Type>> {
+    ) -> Result<Self::Deriv, CheckError<Self::Type>> {
         let conc = Conclusion::new(env.clone(), self.clone(), Bool::new());
-        Ok(Derivation::fls(conc))
+        Ok(TypingDerivation::fls(conc).into())
     }
 }

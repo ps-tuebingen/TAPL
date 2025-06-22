@@ -1,5 +1,5 @@
 use crate::{errors::CheckError, Typecheck};
-use derivation::{Conclusion, Derivation};
+use derivation::{Conclusion, TypingDerivation};
 use syntax::{
     env::Environment,
     terms::{Term, UntypedLambda},
@@ -9,22 +9,22 @@ use syntax::{
 
 impl<T> Typecheck for UntypedLambda<T>
 where
-    T: Term + Typecheck<Term = T>,
+    T: Term + Typecheck<Term = T, Deriv = TypingDerivation<T, <T as Typecheck>::Type>>,
     Fun<<T as Typecheck>::Type>: Into<<T as Typecheck>::Type>,
     Self: Into<T>,
     Untyped: Into<<T as Typecheck>::Type>,
 {
+    type Term = <T as Typecheck>::Term;
     type Type = <T as Typecheck>::Type;
-    type Term = T;
+    type Deriv = TypingDerivation<Self::Term, Self::Type>;
 
     fn check(
         &self,
         env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError<Self::Type>> {
-        Ok(Derivation::untyped_lambda(Conclusion::new(
-            env,
-            self.clone(),
-            Untyped.into(),
-        )))
+    ) -> Result<Self::Deriv, CheckError<Self::Type>> {
+        Ok(
+            TypingDerivation::untyped_lambda(Conclusion::new(env, self.clone(), Untyped.into()))
+                .into(),
+        )
     }
 }

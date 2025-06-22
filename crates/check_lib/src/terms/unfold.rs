@@ -1,5 +1,5 @@
 use crate::{errors::CheckError, Kindcheck, Normalize, Typecheck};
-use derivation::{Conclusion, Derivation};
+use derivation::{Conclusion, TypingDerivation};
 use syntax::{
     env::Environment,
     subst::SubstType,
@@ -10,16 +10,17 @@ use syntax::{
 impl<T, Ty> Typecheck for Unfold<T, Ty>
 where
     Ty: TypeGroup + Normalize<Ty> + Kindcheck<Ty> + SubstType<Ty, Target = Ty>,
-    T: Term + Typecheck<Type = Ty, Term = T>,
+    T: Term + Typecheck<Type = Ty, Term = T, Deriv = TypingDerivation<T, <T as Typecheck>::Type>>,
     Self: Into<T>,
 {
+    type Term = <T as Typecheck>::Term;
     type Type = <T as Typecheck>::Type;
-    type Term = T;
+    type Deriv = TypingDerivation<Self::Term, Self::Type>;
 
     fn check(
         &self,
         env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError<Self::Type>> {
+    ) -> Result<Self::Deriv, CheckError<Self::Type>> {
         let ty_norm = self.ty.clone().normalize(env.clone());
         let ty_kind = ty_norm.check_kind(env.clone())?;
 
@@ -32,7 +33,7 @@ where
         let mu_ty = term_ty.clone().into_mu()?;
         let ty = mu_ty.ty.subst_type(&mu_ty.var, &term_ty);
         let conc = Conclusion::new(env.clone(), self.clone(), ty);
-        let deriv = Derivation::unfold(conc, term_res);
-        Ok(deriv)
+        let deriv = TypingDerivation::unfold(conc, term_res);
+        Ok(deriv.into())
     }
 }

@@ -1,5 +1,5 @@
 use crate::{errors::CheckError, Kindcheck, Normalize, Typecheck};
-use derivation::{Conclusion, Derivation};
+use derivation::{Conclusion, TypingDerivation};
 use syntax::{
     env::Environment,
     terms::{Term, Tuple},
@@ -8,18 +8,19 @@ use syntax::{
 
 impl<T> Typecheck for Tuple<T>
 where
-    T: Term + Typecheck<Term = T>,
+    T: Term + Typecheck<Term = T, Deriv = TypingDerivation<T, <T as Typecheck>::Type>>,
     <T as Typecheck>::Type: Normalize<<T as Typecheck>::Type> + Kindcheck<<T as Typecheck>::Type>,
     TupleTy<<T as Typecheck>::Type>: Into<<T as Typecheck>::Type>,
     Self: Into<T>,
 {
+    type Term = <T as Typecheck>::Term;
     type Type = <T as Typecheck>::Type;
-    type Term = T;
+    type Deriv = TypingDerivation<Self::Term, Self::Type>;
 
     fn check(
         &self,
         env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError<Self::Type>> {
+    ) -> Result<Self::Deriv, CheckError<Self::Type>> {
         let mut tys: Vec<Self::Type> = vec![];
         let mut ress = vec![];
         let mut knd = None;
@@ -41,7 +42,7 @@ where
         }
 
         let conc = Conclusion::new(env, self.clone(), TupleTy::new::<Self::Type>(tys));
-        let deriv = Derivation::tuple(conc, ress);
-        Ok(deriv)
+        let deriv = TypingDerivation::tuple(conc, ress);
+        Ok(deriv.into())
     }
 }

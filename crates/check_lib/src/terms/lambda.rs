@@ -1,5 +1,5 @@
 use crate::{errors::CheckError, Kindcheck, Normalize, Typecheck};
-use derivation::{Conclusion, Derivation};
+use derivation::{Conclusion, TypingDerivation};
 use syntax::{
     env::Environment,
     terms::{Lambda, Term},
@@ -8,18 +8,19 @@ use syntax::{
 
 impl<T, Ty> Typecheck for Lambda<T, Ty>
 where
-    T: Term + Typecheck<Type = Ty, Term = T>,
+    T: Term + Typecheck<Type = Ty, Term = T, Deriv = TypingDerivation<T, <T as Typecheck>::Type>>,
     Ty: Type + Normalize<Ty> + Kindcheck<Ty>,
     Fun<<T as Typecheck>::Type>: Into<<T as Typecheck>::Type>,
     Self: Into<T>,
 {
+    type Term = <T as Typecheck>::Term;
     type Type = <T as Typecheck>::Type;
-    type Term = T;
+    type Deriv = TypingDerivation<Self::Term, Self::Type>;
 
     fn check(
         &self,
         mut env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError<Self::Type>> {
+    ) -> Result<Self::Deriv, CheckError<Self::Type>> {
         self.annot.check_kind(env.clone())?;
         env.add_var(self.var.clone(), self.annot.clone());
         let body_res = self.body.check(env.clone())?;
@@ -31,8 +32,8 @@ where
             self.clone(),
             Fun::new(self.annot.clone(), body_ty).into(),
         );
-        let deriv = Derivation::lambda(conc, body_res);
+        let deriv = TypingDerivation::lambda(conc, body_res);
 
-        Ok(deriv)
+        Ok(deriv.into())
     }
 }

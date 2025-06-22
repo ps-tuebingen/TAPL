@@ -1,8 +1,60 @@
 use super::{LatexConfig, LatexFmt};
-use derivation::Derivation;
+use derivation::{DefinitionDerivation, ProgramDerivation, TypingDerivation};
 use syntax::{terms::Term, types::Type};
 
-impl<T, Ty> LatexFmt for Derivation<T, Ty>
+impl<T, Ty> LatexFmt for ProgramDerivation<T, Ty>
+where
+    T: Term + LatexFmt,
+    Ty: Type + LatexFmt,
+{
+    fn to_latex(&self, conf: &mut LatexConfig) -> String {
+        let (env_start, env_end) = if conf.include_envs {
+            ("\\[", "\\]")
+        } else {
+            ("", "")
+        };
+
+        let mut def_strs = vec![];
+        for def in self.def_derivations.iter() {
+            def_strs.push(def.to_latex(conf))
+        }
+
+        let main_str = if let Some(ref md) = self.main_derivation {
+            md.to_latex(conf)
+        } else {
+            "".to_owned()
+        };
+
+        format!(
+            "{env_start} {} \\\\ \\\\{main_str} {env_end}",
+            def_strs.join("\\\\\\\\")
+        )
+    }
+}
+
+impl<T, Ty> LatexFmt for DefinitionDerivation<T, Ty>
+where
+    T: Term + LatexFmt,
+    Ty: Type + LatexFmt,
+{
+    fn to_latex(&self, conf: &mut LatexConfig) -> String {
+        let (env_start, env_end) = if conf.include_envs {
+            ("\\[", "\\]")
+        } else {
+            ("", "")
+        };
+
+        conf.include_envs = false;
+        let body_str = self.body_derivation.to_latex(conf);
+
+        format!(
+            "{env_start}{body_str}\\UnaryInfC{{\\vdash {}:{}}}{env_end}",
+            self.name,
+            self.body_derivation.ty()
+        )
+    }
+}
+impl<T, Ty> LatexFmt for TypingDerivation<T, Ty>
 where
     T: Term + LatexFmt,
     Ty: Type + LatexFmt,
@@ -16,7 +68,10 @@ where
     }
 }
 
-fn derivation_to_bussproofs<T, Ty>(deriv: &Derivation<T, Ty>, conf: &mut LatexConfig) -> String
+fn derivation_to_bussproofs<T, Ty>(
+    deriv: &TypingDerivation<T, Ty>,
+    conf: &mut LatexConfig,
+) -> String
 where
     T: Term + LatexFmt,
     Ty: Type + LatexFmt,
@@ -44,7 +99,7 @@ where
         conf.include_envs = false;
         for prem in deriv.premises.iter() {
             out += "\t";
-            out += &derivation_to_bussproofs(prem, conf);
+            out += &prem.to_latex(conf);
             out += "\n";
         }
         conf.include_envs = old_inc;
@@ -61,7 +116,10 @@ where
     out
 }
 
-fn derivation_to_frac_array<T, Ty>(deriv: &Derivation<T, Ty>, conf: &mut LatexConfig) -> String
+fn derivation_to_frac_array<T, Ty>(
+    deriv: &TypingDerivation<T, Ty>,
+    conf: &mut LatexConfig,
+) -> String
 where
     T: Term + LatexFmt,
     Ty: Type + LatexFmt,
@@ -79,10 +137,7 @@ where
 
         let mut premise_strs = vec![];
         for premise in deriv.premises.iter() {
-            premise_strs.push(format!(
-                "\\displaystyle {}",
-                derivation_to_frac_array(premise, conf)
-            ));
+            premise_strs.push(format!("\\displaystyle {}", premise.to_latex(conf)));
         }
         premise_str += &premise_strs.join("&");
         conf.include_envs = inc_old;

@@ -1,5 +1,5 @@
 use check::{errors::CheckError, Kindcheck, Normalize, Subtypecheck, Typecheck};
-use derivation::Derivation;
+use derivation::{Derivation, ProgramDerivation};
 use eval::Eval;
 use latex::{LatexConfig, LatexFmt};
 use parse::{errors::ParserError, GroupParse, Parse};
@@ -31,7 +31,7 @@ where
     Lang: Language,
 {
     pub parse_res: Option<Lang::Term>,
-    pub check_res: Option<Derivation<Lang::Term, Lang::Type>>,
+    pub check_res: Option<ProgramDerivation<Lang::Term, Lang::Type>>,
     pub eval_res: Option<EvalTrace<Lang::Term, Lang::Value>>,
     pub err: Option<Lang::LanguageError>,
 }

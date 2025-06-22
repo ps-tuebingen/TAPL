@@ -1,5 +1,5 @@
 use crate::{errors::CheckError, Kindcheck, Normalize, Typecheck};
-use derivation::{Conclusion, Derivation};
+use derivation::{Conclusion, TypingDerivation};
 use syntax::{
     env::Environment,
     terms::{SumCase, Term},
@@ -8,18 +8,19 @@ use syntax::{
 
 impl<T> Typecheck for SumCase<T>
 where
-    T: Term + Typecheck<Term = T>,
+    T: Term + Typecheck<Term = T, Deriv = TypingDerivation<T, <T as Typecheck>::Type>>,
     <T as Typecheck>::Type:
         TypeGroup + Normalize<<T as Typecheck>::Type> + Kindcheck<<T as Typecheck>::Type>,
     Self: Into<T>,
 {
+    type Term = <T as Typecheck>::Term;
     type Type = <T as Typecheck>::Type;
-    type Term = T;
+    type Deriv = TypingDerivation<Self::Term, Self::Type>;
 
     fn check(
         &self,
         mut env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError<Self::Type>> {
+    ) -> Result<Self::Deriv, CheckError<Self::Type>> {
         let bound_res = self.bound_term.check(env.clone())?;
         let bound_ty = bound_res.ty().normalize(env.clone());
         bound_ty.check_kind(env.clone())?.into_star()?;
@@ -40,7 +41,7 @@ where
         left_ty.check_equal(&right_ty)?;
 
         let conc = Conclusion::new(env.clone(), self.clone(), right_ty);
-        let deriv = Derivation::sumcase(conc, bound_res, left_res, right_res);
-        Ok(deriv)
+        let deriv = TypingDerivation::sumcase(conc, bound_res, left_res, right_res);
+        Ok(deriv.into())
     }
 }
