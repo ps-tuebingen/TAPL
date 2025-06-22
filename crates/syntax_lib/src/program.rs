@@ -15,7 +15,7 @@ where
     Ty: Type,
 {
     pub definitions: Vec<Definition<T, Ty>>,
-    pub main: Option<Definition<T, Ty>>,
+    pub main: T,
 }
 
 impl<T, Ty> Program<T, Ty>
@@ -23,10 +23,13 @@ where
     T: Term,
     Ty: Type,
 {
-    pub fn new() -> Program<T, Ty> {
+    pub fn new<T1>(main: T1, definitions: Vec<Definition<T, Ty>>) -> Program<T, Ty>
+    where
+        T1: Into<T>,
+    {
         Program {
-            definitions: vec![],
-            main: None,
+            definitions,
+            main: main.into(),
         }
     }
 
@@ -54,7 +57,7 @@ where
                 .into_iter()
                 .map(|def| def.subst(v, t))
                 .collect(),
-            main: self.main.map(|def| def.subst(v, t)),
+            main: self.main.subst(v, t),
         }
     }
 }
@@ -89,7 +92,7 @@ where
                 .into_iter()
                 .map(|def| def.subst_type(v, ty))
                 .collect(),
-            main: self.main.map(|def| def.subst_type(v, ty)),
+            main: self.main.subst_type(v, ty),
         }
     }
 }
@@ -116,20 +119,15 @@ where
     Ty: Type,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let main_str = if let Some(ref main) = self.main {
-            main.to_string()
-        } else {
-            "".to_owned()
-        };
         write!(
             f,
-            "{}\n\n{}",
+            "{}\n\n def main := {}",
             self.definitions
                 .iter()
                 .map(|def| def.to_string())
                 .collect::<Vec<String>>()
                 .join("\n\n"),
-            main_str
+            self.main.to_string()
         )
     }
 }

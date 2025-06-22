@@ -11,17 +11,15 @@ where
     type Type = Ty;
     type Deriv = ProgramDerivation<T, Ty>;
 
-    fn check(&self, env: Environment<Ty>) -> Result<Self::Deriv, CheckError> {
-        let mut deriv = ProgramDerivation::new();
+    fn check(&self, mut env: Environment<Ty>) -> Result<Self::Deriv, CheckError> {
+        let mut derivs = vec![];
         for def in self.definitions.iter() {
             let def_res = def.check(env.clone())?;
-            deriv.def_derivations.push(def_res);
+            env.add_var(def.name.clone(), def_res.ty());
+            derivs.push(def_res);
         }
 
-        if let Some(ref mn) = self.main {
-            let main_res = mn.check(env)?;
-            deriv.main_derivation = Some(main_res)
-        }
-        Ok(deriv)
+        let main_res = self.main.check(env)?;
+        Ok(ProgramDerivation::new(main_res, derivs))
     }
 }

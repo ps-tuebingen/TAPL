@@ -1,6 +1,6 @@
 use check::{Kindcheck, Normalize, Subtypecheck, Typecheck};
 use derivation::{ProgramDerivation, TypingDerivation};
-use eval::Eval;
+use eval::{eval_main, Eval};
 use latex::{LatexConfig, LatexFmt};
 use parse::{GroupParse, Parse};
 use syntax::{
@@ -113,7 +113,7 @@ pub trait Language {
         };
         res.check_res = Some(checked);
 
-        let evaled = match parsed.eval_start() {
+        let evaled = match eval_main(parsed) {
             Ok(v) => v,
             Err(err) => {
                 res.err = Some(err.into());

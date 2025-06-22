@@ -1,5 +1,7 @@
-use crate::{errors::ParserError, Parse, Rule};
-use common::errors::DuplicateDefinition;
+use crate::{
+    errors::{MissingInput, ParserError, UndefinedMain, UnexpectedRule},
+    pair_to_n_inner, Parse, Rule,
+};
 use pest::iterators::Pair;
 use syntax::{definition::Definition, program::Program, terms::Term, types::Type};
 
@@ -14,25 +16,33 @@ where
 
     fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Self, ParserError> {
         let mut inner = p.into_inner();
-        let mut prog = Program::new();
+        let mut defs = vec![];
+        let mut main = None;
         inner.next();
 
         while let Some(n) = inner.next() {
-            if n.as_rule() == Rule::EOI {
-                return Ok(prog);
-            }
-            let def = Definition::<T, Ty>::from_pair(n, ())?;
-            if def.name == "main" {
-                if prog.main.is_none() {
-                    prog.main = Some(def)
-                } else {
-                    return Err(DuplicateDefinition::new("main").into());
+            let def_rule = pair_to_n_inner(n, vec!["Definition"])?.remove(0);
+            match def_rule.as_rule() {
+                Rule::top_level_def => {
+                    let def = Definition::<T, Ty>::from_pair(def_rule, ())?;
+                    defs.push(def);
                 }
-            } else {
-                prog.add_definition(def)?;
+                Rule::main_def => {
+                    let term_rule = pair_to_n_inner(def_rule, vec!["Main Body"])?.remove(0);
+                    let main_body = T::from_pair(term_rule, ())?;
+                    main = Some(main_body);
+                }
+                Rule::EOI => {
+                    if let Some(mn) = main {
+                        return Ok(Program::new(mn, defs));
+                    } else {
+                        return Err(UndefinedMain.into());
+                    }
+                }
+                _ => return Err(UnexpectedRule::new(def_rule.as_rule(), "Definition").into()),
             }
         }
 
-        Ok(prog)
+        Err(MissingInput::new("EOI").into())
     }
 }

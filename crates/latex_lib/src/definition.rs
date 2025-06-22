@@ -15,7 +15,7 @@ where
 
         conf.include_envs = false;
         format!(
-            "{env_start}{}::{}\\coloneq {}{env_end}",
+            "{env_start}\\text{{def }} {}::{}\\coloneq {}{env_end}",
             self.name,
             self.annot.to_latex(conf),
             self.body.to_latex(conf)

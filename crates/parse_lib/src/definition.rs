@@ -9,7 +9,7 @@ where
 {
     type LeftRecArg = ();
 
-    const RULE: Rule = Rule::definition;
+    const RULE: Rule = Rule::top_level_def;
 
     fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Self, ParserError> {
         let mut inner = pair_to_n_inner(

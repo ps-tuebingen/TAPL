@@ -5,11 +5,13 @@ use std::fmt;
 
 pub mod missing_input;
 pub mod remaining_input;
+pub mod undefined_main;
 pub mod unexpected_rule;
 pub mod unknown_keyword;
 
 pub use missing_input::MissingInput;
 pub use remaining_input::RemainingInput;
+pub use undefined_main::UndefinedMain;
 pub use unexpected_rule::UnexpectedRule;
 pub use unknown_keyword::UnknownKeyword;
 
@@ -21,6 +23,7 @@ pub enum ParserError {
     UnexpectedRule(UnexpectedRule),
     UnknownKeyword(UnknownKeyword),
     DuplicateDefinition(DuplicateDefinition),
+    UndefinedMain(UndefinedMain),
 }
 
 impl fmt::Display for ParserError {
@@ -32,6 +35,7 @@ impl fmt::Display for ParserError {
             ParserError::UnexpectedRule(ur) => ur.fmt(f),
             ParserError::UnknownKeyword(uk) => uk.fmt(f),
             ParserError::DuplicateDefinition(dd) => dd.fmt(f),
+            ParserError::UndefinedMain(um) => um.fmt(f),
         }
     }
 }
@@ -71,5 +75,11 @@ impl From<PestErr<Rule>> for ParserError {
 impl From<DuplicateDefinition> for ParserError {
     fn from(err: DuplicateDefinition) -> ParserError {
         ParserError::DuplicateDefinition(err)
+    }
+}
+
+impl From<UndefinedMain> for ParserError {
+    fn from(err: UndefinedMain) -> ParserError {
+        ParserError::UndefinedMain(err)
     }
 }

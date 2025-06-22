@@ -1,7 +1,9 @@
 WHITESPACE = _{ " " | "\n" | "\t" }
 program = { SOI ~ definition* ~ EOI }
 
-definition = { variable ~ "::" ~ type ~ ":=" ~ term }
+definition = { top_level_def | main_def } 
+top_level_def = { kw_def ~  variable ~ "::" ~ type ~ ":=" ~ term }
+main_def = { kw_def ~ kw_main ~ ":=" ~ term }
 
 variable = @{ !(keyword ~ WHITESPACE) ~  (ASCII_ALPHA_LOWER | "_") ~ (ASCII_ALPHA|ASCII_DIGIT|"_")* }
 type_variable = @{ !(keyword ~ WHITESPACE) ~  ASCII_ALPHA_UPPER ~ (ASCII_ALPHA|ASCII_DIGIT|"_")* }
@@ -9,6 +11,8 @@ number = { ASCII_DIGIT+ }
 
 
 // Keyword 
+kw_def = _{ "def" } 
+kw_main = _{ "main" }
 kw_unit = _{ "unit" }
 kw_fix = _{ "fix" }
 kw_let = _{ "let" }
@@ -57,6 +61,8 @@ kw_tysource = _{ "Source" }
 kw_tylist  = _{ "List" }
 
 keyword = _{
+  | kw_main
+  | kw_def
   | kw_unit
   | kw_fix
   | kw_try

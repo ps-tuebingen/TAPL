@@ -19,14 +19,9 @@ where
             def_strs.push(def.to_latex(conf))
         }
 
-        let main_str = if let Some(ref md) = self.main_derivation {
-            md.to_latex(conf)
-        } else {
-            "".to_owned()
-        };
-
         format!(
-            "{env_start} {} \\\\ \\\\{main_str} {env_end}",
+            "{env_start} {} \\\\ \\\\{} {env_end}",
+            self.main_derivation.to_latex(conf),
             def_strs.join("\\\\\\\\")
         )
     }

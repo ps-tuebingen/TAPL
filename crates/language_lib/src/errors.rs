@@ -23,3 +23,21 @@ impl fmt::Display for LanguageError {
 }
 
 impl std::error::Error for LanguageError {}
+
+impl From<ParserError> for LanguageError {
+    fn from(err: ParserError) -> LanguageError {
+        LanguageError::Parse(err)
+    }
+}
+
+impl From<CheckError> for LanguageError {
+    fn from(err: CheckError) -> LanguageError {
+        LanguageError::Check(err)
+    }
+}
+
+impl From<EvalError> for LanguageError {
+    fn from(err: EvalError) -> LanguageError {
+        LanguageError::Eval(err)
+    }
+}

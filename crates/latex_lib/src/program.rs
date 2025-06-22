@@ -15,19 +15,14 @@ where
 
         conf.include_envs = false;
 
-        let main_str = if let Some(ref main) = self.main {
-            main.to_latex(conf)
-        } else {
-            "".to_owned()
-        };
         format!(
-            "{env_start}{} {}{env_end}",
+            "{env_start}{} \\\\ \\text{{def main }} {}{env_end}",
             self.definitions
                 .iter()
                 .map(|def| def.to_latex(conf))
                 .collect::<Vec<String>>()
                 .join("\n\\\\\n"),
-            main_str
+            self.main.to_latex(conf)
         )
     }
 }

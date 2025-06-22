@@ -1,4 +1,4 @@
-use crate::definition_derivation::DefinitionDerivation;
+use crate::{definition_derivation::DefinitionDerivation, typing_derivation::TypingDerivation};
 use std::collections::HashMap;
 use syntax::{terms::Term, types::Type};
 
@@ -8,7 +8,7 @@ where
     Ty: Type,
 {
     pub def_derivations: Vec<DefinitionDerivation<T, Ty>>,
-    pub main_derivation: Option<DefinitionDerivation<T, Ty>>,
+    pub main_derivation: TypingDerivation<T, Ty>,
 }
 
 impl<T, Ty> ProgramDerivation<T, Ty>
@@ -16,10 +16,13 @@ where
     T: Term,
     Ty: Type,
 {
-    pub fn new() -> ProgramDerivation<T, Ty> {
+    pub fn new(
+        main_derivation: TypingDerivation<T, Ty>,
+        def_derivations: Vec<DefinitionDerivation<T, Ty>>,
+    ) -> ProgramDerivation<T, Ty> {
         ProgramDerivation {
-            def_derivations: vec![],
-            main_derivation: None,
+            def_derivations,
+            main_derivation,
         }
     }
 
@@ -29,9 +32,7 @@ where
             tys.insert(df_deriv.name.clone(), df_deriv.ty());
         }
 
-        if let Some(ref md) = self.main_derivation {
-            tys.insert(md.name.clone(), md.ty());
-        }
+        tys.insert("main".to_owned(), self.main_derivation.ty());
         tys
     }
 }
