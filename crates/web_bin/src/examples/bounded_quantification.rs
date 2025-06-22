@@ -26,19 +26,19 @@ pub const SONE: &str = include_str!("../../../../examples/bounded_quantification
 
 pub fn bounded_quantification_all() -> Vec<(&'static str,&'static str)> { 
     vec![
-         ("szero",SZERO), 
-         ("counteradt",COUNTERADT), 
-         ("snd",SND), 
-         ("pair",PAIR), 
-         ("unboundid",UNBOUNDID), 
-         ("recordpoly",RECORDPOLY), 
-         ("sthree",STHREE), 
-         ("fst",FST), 
-         ("spluspp",SPLUSPP), 
-         ("counterthree",COUNTERTHREE), 
-         ("stwo",STWO), 
-         ("ssucc",SSUCC), 
-         ("sone",SONE), 
+         ("SZero",SZERO), 
+         ("CounterADT",COUNTERADT), 
+         ("Snd",SND), 
+         ("Pair",PAIR), 
+         ("UnboundedId",UNBOUNDID), 
+         ("PolymorphicRecord",RECORDPOLY), 
+         ("SThree",STHREE), 
+         ("Fst",FST), 
+         ("SPlusPP",SPLUSPP), 
+         ("CounterThree",COUNTERTHREE), 
+         ("STwo",STWO), 
+         ("SSucc",SSUCC), 
+         ("SOne",SONE), 
 
     ]
 }

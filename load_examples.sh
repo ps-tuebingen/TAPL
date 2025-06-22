@@ -36,6 +36,7 @@ do
   NUM_EXAMPLES=$(ls $example_dir | wc -l);
   NUM_EXAMPLES_STR=$(printf "%02d" $NUM_EXAMPLES);
   CURRENT_NUM=0;
+  EXAMPLE_CONST_NAMES=();
   EXAMPLE_NAMES=();
 
   debug "Loading examples for $EXAMPLE_DIR_BASE";
@@ -56,11 +57,14 @@ do
     fi 
 
     EXAMPLE_BASE="${example##*/}";
+    EXAMPLE_TOML="${example%.*}.toml";
     EXAMPLE_NAME="${EXAMPLE_BASE%.*}";
     EXAMPLE_UPPER=$(echo $EXAMPLE_NAME | tr '[:lower:]' '[:upper:]')
 
     CURRENT_NUM=$(($CURRENT_NUM+1));
-    EXAMPLE_NAMES+=("$EXAMPLE_UPPER");
+    EXAMPLE_CONST_NAMES+=("$EXAMPLE_UPPER");
+    EXAMPLE_NAME=$(grep "name=" $EXAMPLE_TOML | sed 's/name=//g' | sed 's/"//g');
+    EXAMPLE_NAMES+=("$EXAMPLE_NAME");
     NUM_STR=$(printf "%02d" $CURRENT_NUM);
 
     debug "($NUM_STR/$NUM_EXAMPLES_STR) $EXAMPLE_NAME";
@@ -74,10 +78,12 @@ do
   #write all examples into an array
   echo "pub fn $ALL_EXAMPLES_NAME() -> Vec<(&'static str,&'static str)> { " >> $OUT_PATH;
   printf "    vec![\n" >> $OUT_PATH;
-  for example_name in ${EXAMPLE_NAMES[@]};
+  NUM_EXAMPLES=$(expr ${#EXAMPLE_CONST_NAMES[*]} - 1);
+  for NUM_EXAMPLE in $(seq 0 $NUM_EXAMPLES);
   do
-    EXAMPLE_LOWER=$(echo $example_name | tr '[:upper:]' '[:lower:'])
-    echo "         (\"$EXAMPLE_LOWER\",$example_name), " >> $OUT_PATH
+    EXAMPLE_CONST_NAME=${EXAMPLE_CONST_NAMES[$NUM_EXAMPLE]};
+    EXAMPLE_NAME=${EXAMPLE_NAMES[$NUM_EXAMPLE]};
+    echo "         (\"$EXAMPLE_NAME\",$EXAMPLE_CONST_NAME), " >> $OUT_PATH
   done 
   printf "\n" >> $OUT_PATH;
   printf "    ]\n" >> $OUT_PATH;

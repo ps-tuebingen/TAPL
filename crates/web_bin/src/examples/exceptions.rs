@@ -6,9 +6,9 @@ pub const TRYERR: &str = include_str!("../../../../examples/exceptions/tryerr/tr
 
 pub fn exceptions_all() -> Vec<(&'static str,&'static str)> { 
     vec![
-         ("lambdaerr",LAMBDAERR), 
-         ("tryraise",TRYRAISE), 
-         ("tryerr",TRYERR), 
+         ("LambdaError",LAMBDAERR), 
+         ("TryRaise",TRYRAISE), 
+         ("TryError",TRYERR), 
 
     ]
 }

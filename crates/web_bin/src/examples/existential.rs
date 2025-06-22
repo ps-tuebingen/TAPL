@@ -24,18 +24,18 @@ pub const UNPACKNAT: &str = include_str!("../../../../examples/existential/unpac
 
 pub fn existential_all() -> Vec<(&'static str,&'static str)> { 
     vec![
-         ("sendget",SENDGET), 
-         ("iseven",ISEVEN), 
-         ("add3",ADD3), 
-         ("flipflop",FLIPFLOP), 
-         ("unpackcounter",UNPACKCOUNTER), 
-         ("counteradt",COUNTERADT), 
-         ("packbool",PACKBOOL), 
-         ("counterobject",COUNTEROBJECT), 
-         ("counterrec",COUNTERREC), 
-         ("packnat",PACKNAT), 
-         ("sendinc",SENDINC), 
-         ("unpacknat",UNPACKNAT), 
+         ("SendGet",SENDGET), 
+         ("IsEven",ISEVEN), 
+         ("Add3",ADD3), 
+         ("FlipFlop",FLIPFLOP), 
+         ("UnpackCounter",UNPACKCOUNTER), 
+         ("CounterADT",COUNTERADT), 
+         ("PackBool",PACKBOOL), 
+         ("CounterObject",COUNTEROBJECT), 
+         ("CounterRec",COUNTERREC), 
+         ("PackNat",PACKNAT), 
+         ("SendInc",SENDINC), 
+         ("UnpackNat",UNPACKNAT), 
 
     ]
 }
