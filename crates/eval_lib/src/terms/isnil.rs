@@ -1,7 +1,7 @@
-use crate::{Eval, errors::EvalError};
+use crate::{errors::EvalError, Eval};
 use common::errors::{ValueKind, ValueMismatch};
 use syntax::{
-    store::Store,
+    eval_context::EvalContext,
     terms::{False as FalseT, IsNil, Term, True as TrueT},
     types::Type,
     values::{False, True, Value, ValueGroup},
@@ -24,7 +24,7 @@ where
     type Term = T;
     fn eval(
         self,
-        env: &mut Store<Self::Value>,
+        env: &mut EvalContext<T, Self::Value>,
     ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
         let term_res = self.term.eval(env)?;
         let term_val = term_res.val();

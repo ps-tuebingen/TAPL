@@ -1,8 +1,8 @@
 pub mod definition;
 pub mod env;
+pub mod eval_context;
 pub mod kinds;
 pub mod program;
-pub mod store;
 pub mod subst;
 pub mod terms;
 pub mod types;

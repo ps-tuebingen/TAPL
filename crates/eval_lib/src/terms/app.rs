@@ -1,7 +1,7 @@
-use crate::{Eval, errors::EvalError};
+use crate::{errors::EvalError, Eval};
 
 use syntax::{
-    store::Store,
+    eval_context::EvalContext,
     subst::SubstTerm,
     terms::{App, Term},
     values::ValueGroup,
@@ -19,7 +19,7 @@ where
     type Term = T;
     fn eval(
         self,
-        env: &mut Store<<T as Eval>::Value>,
+        env: &mut EvalContext<T, Self::Value>,
     ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
         let fun_res = self.fun.clone().eval(env)?;
         let fun_val = fun_res.val();

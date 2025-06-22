@@ -2,7 +2,9 @@ pub mod errors;
 pub mod terms;
 
 use errors::EvalError;
-use syntax::{program::Program, store::Store, terms::Term, types::Type, values::ValueGroup};
+use syntax::{
+    eval_context::EvalContext, program::Program, terms::Term, types::Type, values::ValueGroup,
+};
 use trace::EvalTrace;
 
 pub trait Eval: Sized {
@@ -15,7 +17,7 @@ pub trait Eval: Sized {
 
     fn eval(
         self,
-        env: &mut Store<Self::Value>,
+        env: &mut EvalContext<Self::Term, Self::Value>,
     ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError>;
 }
 

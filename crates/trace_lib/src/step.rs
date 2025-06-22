@@ -1,9 +1,11 @@
 use super::rules::EvaluationRule;
 use syntax::{
-    Location,
-    terms::{Assign, Cast, Deref, False, IsNil, Loc, Num, Pair, Pred, Succ, Term, True, Unit},
+    terms::{
+        Assign, Cast, Deref, False, IsNil, Loc, Num, Pair, Pred, Succ, Term, True, Unit, Variable,
+    },
     types::Type,
     values::Value,
+    Location, Var,
 };
 
 pub struct EvalStep<T>
@@ -475,6 +477,17 @@ where
             source: source.into(),
             rule: EvaluationRule::VariantCase,
             target: target.into(),
+        }
+    }
+
+    pub fn subst_var(var: &Var, body: T) -> EvalStep<T>
+    where
+        Variable<T>: Into<T>,
+    {
+        EvalStep {
+            source: Variable::new(var).into(),
+            rule: EvaluationRule::SubstName,
+            target: body,
         }
     }
 }

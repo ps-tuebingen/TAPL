@@ -39,6 +39,7 @@ pub enum EvaluationRule {
     UnfoldFold,
     UnpackPack,
     VariantCase,
+    SubstName,
 }
 
 impl fmt::Display for EvaluationRule {
@@ -81,6 +82,7 @@ impl fmt::Display for EvaluationRule {
             EvaluationRule::UnfoldFold => f.write_str("E-UnfoldFold"),
             EvaluationRule::UnpackPack => f.write_str("E-UnpackPack"),
             EvaluationRule::VariantCase => f.write_str("E-VariantCase"),
+            EvaluationRule::SubstName => f.write_str("E-SubstName"),
         }
     }
 }

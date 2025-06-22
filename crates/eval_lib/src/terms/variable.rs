@@ -1,22 +1,27 @@
-use crate::{Eval, errors::EvalError};
-use common::errors::FreeVariable;
+use crate::{errors::EvalError, Eval};
 use syntax::{
-    store::Store,
+    eval_context::EvalContext,
     terms::{Term, Variable},
 };
-use trace::EvalTrace;
+use trace::{EvalStep, EvalTrace};
 
 impl<T> Eval for Variable<T>
 where
     T: Term + Eval<Term = T>,
+    Variable<T>: Into<T>,
 {
     type Value = <T as Eval>::Value;
-
     type Term = T;
+
     fn eval(
         self,
-        _: &mut Store<Self::Value>,
+        ctx: &mut EvalContext<Self::Term, Self::Value>,
     ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
-        Err(FreeVariable::new(&self.var).into())
+        let body = ctx.get_name(&self.var)?;
+        let mut term_res = body.clone().eval(ctx)?;
+        term_res
+            .steps
+            .insert(0, EvalStep::subst_var(&self.var, body));
+        Ok(term_res)
     }
 }

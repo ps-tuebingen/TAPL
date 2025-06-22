@@ -1,7 +1,7 @@
 use super::{terms::Term, types::Type, values::Value};
 use check::Normalize;
-use eval::{Eval, errors::EvalError};
-use syntax::{env::Environment, store::Store};
+use eval::{errors::EvalError, Eval};
+use syntax::{env::Environment, eval_context::EvalContext};
 use trace::EvalTrace;
 
 impl Eval for Term {
@@ -10,7 +10,7 @@ impl Eval for Term {
 
     fn eval(
         self,
-        env: &mut Store<Self::Value>,
+        env: &mut EvalContext<Term, Self::Value>,
     ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
         match self {
             Term::True(tru) => tru.eval(env),

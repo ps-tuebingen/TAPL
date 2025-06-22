@@ -1,6 +1,6 @@
-use crate::{Eval, errors::EvalError};
+use crate::{errors::EvalError, Eval};
 use syntax::{
-    store::Store,
+    eval_context::EvalContext,
     terms::{LambdaSub, Term},
     types::Type,
     values::LambdaSub as LambdaSubVal,
@@ -19,7 +19,7 @@ where
     type Term = T;
     fn eval(
         self,
-        _: &mut Store<Self::Value>,
+        _: &mut EvalContext<T, Self::Value>,
     ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
         Ok(EvalTrace::new(
             vec![],

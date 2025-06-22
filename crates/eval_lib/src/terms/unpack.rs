@@ -1,7 +1,7 @@
-use crate::{Eval, errors::EvalError};
+use crate::{errors::EvalError, Eval};
 
 use syntax::{
-    store::Store,
+    eval_context::EvalContext,
     subst::{SubstTerm, SubstType},
     terms::{Term, Unpack},
     types::Type,
@@ -26,7 +26,7 @@ where
 
     fn eval(
         self,
-        env: &mut Store<Self::Value>,
+        env: &mut EvalContext<T, Self::Value>,
     ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
         let term_res = self.bound_term.eval(env)?;
         let term_val = term_res.val();
