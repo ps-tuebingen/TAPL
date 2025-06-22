@@ -1,4 +1,4 @@
-use crate::{errors::CheckError, Kindcheck, Normalize, Typecheck};
+use crate::{Kindcheck, Normalize, Typecheck, errors::CheckError};
 use derivation::{Conclusion, TypingDerivation};
 use syntax::{
     env::Environment,
@@ -23,6 +23,6 @@ where
         term_ty.check_kind(env.clone())?.into_star()?;
         let conc = Conclusion::new(env, self.clone(), Optional::new(term_ty.clone()));
         let deriv = TypingDerivation::something(conc, term_res);
-        Ok(deriv.into())
+        Ok(deriv)
     }
 }

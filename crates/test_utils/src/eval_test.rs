@@ -1,5 +1,5 @@
 use super::{test::Test, test_result::TestResult};
-use eval::{eval_main, Eval};
+use eval::{Eval, eval_main};
 use syntax::{program::Program, terms::Term, types::Type};
 use trace::EvalTrace;
 

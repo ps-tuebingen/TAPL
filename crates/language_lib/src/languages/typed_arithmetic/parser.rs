@@ -1,9 +1,9 @@
 use super::{terms::Term, types::Type};
 use parse::{
+    GroupParse, Parse, Rule,
     errors::{ParserError, UnexpectedRule},
     terms::StringTerm,
     types::StringTy,
-    GroupParse, Parse, Rule,
 };
 use pest::iterators::Pair;
 use syntax::terms::{If, IsZero, Num, Pred, Succ};

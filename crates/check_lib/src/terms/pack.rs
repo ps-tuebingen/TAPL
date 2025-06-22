@@ -1,4 +1,4 @@
-use crate::{errors::CheckError, Kindcheck, Normalize, Subtypecheck, Typecheck};
+use crate::{Kindcheck, Normalize, Subtypecheck, Typecheck, errors::CheckError};
 use common::errors::{TypeKind, TypeMismatch};
 use derivation::{Conclusion, TypingDerivation};
 use syntax::{
@@ -43,7 +43,7 @@ where
 
             let conc = Conclusion::new(env, self.clone(), self.outer_ty.clone());
             let deriv = TypingDerivation::pack(conc, term_res);
-            Ok(deriv.into())
+            Ok(deriv)
         } else if let Ok(outer_bound) = outer_norm.clone().into_exists_bounded() {
             let sup_norm = outer_bound.sup_ty.clone().normalize(env.clone());
             let sup_kind = sup_norm.check_kind(env.clone())?;
@@ -60,7 +60,7 @@ where
             let conc = Conclusion::new(env, self.clone(), self.outer_ty.clone());
             let deriv = TypingDerivation::pack_bound(conc, term_res);
 
-            Ok(deriv.into())
+            Ok(deriv)
         } else {
             Err(TypeMismatch::new(outer_norm.knd(), TypeKind::Existential).into())
         }

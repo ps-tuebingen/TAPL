@@ -1,13 +1,13 @@
-use check::{errors::CheckError, Typecheck};
+use check::{Typecheck, errors::CheckError};
 use derivation::TypingDerivation;
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
 use syntax::{
+    TypeVar, Var,
     env::Environment,
     subst::{SubstTerm, SubstType},
     terms::{False, If, IsZero, Num, Pred, Succ, True},
     untyped::Untyped,
-    TypeVar, Var,
 };
 
 #[derive(Clone, Debug, PartialEq, Eq)]

@@ -1,4 +1,4 @@
-use crate::{errors::CheckError, Typecheck};
+use crate::{Typecheck, errors::CheckError};
 use derivation::{Conclusion, TypingDerivation};
 use syntax::{
     env::Environment,
@@ -19,9 +19,10 @@ where
     type Deriv = TypingDerivation<Self::Term, Self::Type>;
 
     fn check(&self, env: Environment<<T as Typecheck>::Type>) -> Result<Self::Deriv, CheckError> {
-        Ok(
-            TypingDerivation::untyped_lambda(Conclusion::new(env, self.clone(), Untyped.into()))
-                .into(),
-        )
+        Ok(TypingDerivation::untyped_lambda(Conclusion::new(
+            env,
+            self.clone(),
+            Untyped.into(),
+        )))
     }
 }

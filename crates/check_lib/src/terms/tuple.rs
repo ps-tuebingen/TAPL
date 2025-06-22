@@ -1,4 +1,4 @@
-use crate::{errors::CheckError, Kindcheck, Normalize, Typecheck};
+use crate::{Kindcheck, Normalize, Typecheck, errors::CheckError};
 use derivation::{Conclusion, TypingDerivation};
 use syntax::{
     env::Environment,
@@ -40,6 +40,6 @@ where
 
         let conc = Conclusion::new(env, self.clone(), TupleTy::new::<Self::Type>(tys));
         let deriv = TypingDerivation::tuple(conc, ress);
-        Ok(deriv.into())
+        Ok(deriv)
     }
 }

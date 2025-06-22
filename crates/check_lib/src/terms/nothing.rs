@@ -1,4 +1,4 @@
-use crate::{errors::CheckError, Kindcheck, Normalize, Typecheck};
+use crate::{Kindcheck, Normalize, Typecheck, errors::CheckError};
 use derivation::{Conclusion, TypingDerivation};
 use syntax::{
     env::Environment,
@@ -27,6 +27,6 @@ where
             Optional::new(ty_norm.clone()).into(),
         );
         let deriv = TypingDerivation::nothing(conc);
-        Ok(deriv.into())
+        Ok(deriv)
     }
 }

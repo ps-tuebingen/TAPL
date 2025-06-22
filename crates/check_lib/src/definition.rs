@@ -1,4 +1,4 @@
-use crate::{errors::CheckError, Typecheck};
+use crate::{Typecheck, errors::CheckError};
 use common::errors::TypeMismatch;
 use derivation::{DefinitionDerivation, TypingDerivation};
 use syntax::{definition::Definition, env::Environment, terms::Term, types::Type};

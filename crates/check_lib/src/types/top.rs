@@ -1,6 +1,6 @@
 use crate::{
-    errors::{CheckError, NotASubtype},
     Kindcheck, Normalize, Subtypecheck,
+    errors::{CheckError, NotASubtype},
 };
 use syntax::{
     env::Environment,

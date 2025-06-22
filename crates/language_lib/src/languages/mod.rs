@@ -1,4 +1,4 @@
-use super::{errors::LanguageError, FormatMethod, Language};
+use super::{FormatMethod, Language, errors::LanguageError};
 use std::{fmt, str::FromStr};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

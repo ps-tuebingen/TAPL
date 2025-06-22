@@ -1,6 +1,6 @@
 use super::{terms::Term, types::Type, values::Value};
 use check::Normalize;
-use eval::{errors::EvalError, Eval};
+use eval::{Eval, errors::EvalError};
 use syntax::env::Environment;
 use syntax::store::Store;
 use trace::EvalTrace;

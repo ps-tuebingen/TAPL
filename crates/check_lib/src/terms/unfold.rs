@@ -1,4 +1,4 @@
-use crate::{errors::CheckError, Kindcheck, Normalize, Typecheck};
+use crate::{Kindcheck, Normalize, Typecheck, errors::CheckError};
 use derivation::{Conclusion, TypingDerivation};
 use syntax::{
     env::Environment,
@@ -31,6 +31,6 @@ where
         let ty = mu_ty.ty.subst_type(&mu_ty.var, &term_ty);
         let conc = Conclusion::new(env.clone(), self.clone(), ty);
         let deriv = TypingDerivation::unfold(conc, term_res);
-        Ok(deriv.into())
+        Ok(deriv)
     }
 }

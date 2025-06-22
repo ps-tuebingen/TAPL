@@ -1,4 +1,4 @@
-use crate::{errors::CheckError, Kindcheck, Normalize, Typecheck};
+use crate::{Kindcheck, Normalize, Typecheck, errors::CheckError};
 use common::errors::IndexOutOfBounds;
 use derivation::{Conclusion, TypingDerivation};
 use syntax::{
@@ -30,6 +30,6 @@ where
             .cloned()?;
         let conc = Conclusion::new(env, self.clone(), tup);
         let deriv = TypingDerivation::projection(conc, term_res);
-        Ok(deriv.into())
+        Ok(deriv)
     }
 }

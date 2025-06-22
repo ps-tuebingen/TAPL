@@ -1,4 +1,4 @@
-use crate::{errors::EvalError, Eval};
+use crate::{Eval, errors::EvalError};
 
 use syntax::{
     store::Store,
@@ -18,7 +18,6 @@ where
         + From<<T as Eval>::Value>,
     <T as Eval>::Value: ValueGroup<Type = Ty>,
     Unpack<T, Ty>: Into<T>,
-
     Ty: Type + SubstType<Ty, Target = Ty>,
 {
     type Value = <T as Eval>::Value;

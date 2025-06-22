@@ -1,4 +1,4 @@
-use crate::{errors::CheckError, Kindcheck, Normalize, Typecheck};
+use crate::{Kindcheck, Normalize, Typecheck, errors::CheckError};
 use common::errors::{NameMismatch, TypeKind, TypeMismatch};
 use derivation::{Conclusion, TypingDerivation};
 use syntax::{
@@ -33,7 +33,7 @@ where
             let in_ty = in_res.ty().normalize(env.clone());
             let conc = Conclusion::new(env, self.clone(), in_ty);
             let deriv = TypingDerivation::unpack(conc, bound_res, in_res);
-            Ok(deriv.into())
+            Ok(deriv)
         } else if let Ok(bound_bound) = bound_ty.clone().into_exists_bounded() {
             if self.ty_name != bound_bound.var {
                 return Err(NameMismatch::new(&bound_bound.var, &self.ty_name).into());
@@ -46,7 +46,7 @@ where
             let inner_ty = inner_res.ty().normalize(env.clone());
             let conc = Conclusion::new(env.clone(), self.clone(), inner_ty);
             let deriv = TypingDerivation::unpack_bounded(conc, bound_res, inner_res);
-            Ok(deriv.into())
+            Ok(deriv)
         } else {
             Err(TypeMismatch::new(bound_ty.knd(), TypeKind::Existential).into())
         }

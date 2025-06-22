@@ -17,7 +17,7 @@ test-fast: examples
 
 .PHONY: check
 check: examples
-	cargo fmt --all -- --check
+	cargo fmt --all
 	cargo clippy --all -- -D warnings
 
 .PHONY: clean

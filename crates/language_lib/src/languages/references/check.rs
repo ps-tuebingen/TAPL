@@ -1,8 +1,8 @@
 use super::{terms::Term, types::Type};
-use check::{errors::CheckError, Kindcheck, Subtypecheck, Typecheck};
+use check::{Kindcheck, Subtypecheck, Typecheck, errors::CheckError};
 use derivation::TypingDerivation;
 use std::collections::HashMap;
-use syntax::{env::Environment, kinds::Kind, Location, Var};
+use syntax::{Location, Var, env::Environment, kinds::Kind};
 
 pub type Env = HashMap<Var, Type>;
 pub type StoreTy = HashMap<Location, Type>;

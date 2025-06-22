@@ -38,8 +38,9 @@ pub mod typed_arithmetic;
 pub mod untyped_arithmetic;
 pub mod untyped_lambda;
 
+type LangProg<L> = Program<<L as Language>::Term, <L as Language>::Type>;
 type LangTrace<L> = EvalTrace<<L as Language>::Term, <L as Language>::Value>;
-type LangProgramDerivation<L> = ProgramDerivation<<L as Language>::Term, <L as Language>::Type>;
+type LangDerivation<L> = ProgramDerivation<<L as Language>::Term, <L as Language>::Type>;
 
 pub trait TestSuite {
     type Config: TestConfig;
@@ -53,9 +54,7 @@ pub trait TestSuite {
         load_dir(&self.source_dir(), self.ext())
     }
 
-    fn run_parse(
-        conf: &Self::Config,
-    ) -> TestResult<Program<<Self::Lang as Language>::Term, <Self::Lang as Language>::Type>> {
+    fn run_parse(conf: &Self::Config) -> TestResult<LangProg<Self::Lang>> {
         let name = conf.name();
         let parse_test =
             ParseTest::<<Self::Lang as Language>::Term, <Self::Lang as Language>::Type>::new(
@@ -67,10 +66,7 @@ pub trait TestSuite {
         parse_res
     }
 
-    fn run_reparse(
-        name: &str,
-        parsed: &Program<<Self::Lang as Language>::Term, <Self::Lang as Language>::Type>,
-    ) -> TestResult<()> {
+    fn run_reparse(name: &str, parsed: &LangProg<Self::Lang>) -> TestResult<()> {
         let reparse_test = ReparseTest::<
             <Self::Lang as Language>::Term,
             <Self::Lang as Language>::Type,
@@ -82,8 +78,8 @@ pub trait TestSuite {
 
     fn run_check(
         conf: &Self::Config,
-        prog: Program<<Self::Lang as Language>::Term, <Self::Lang as Language>::Type>,
-    ) -> TestResult<LangProgramDerivation<Self::Lang>> {
+        prog: LangProg<Self::Lang>,
+    ) -> TestResult<LangDerivation<Self::Lang>> {
         let check_test =
             CheckTest::<<Self::Lang as Language>::Term, <Self::Lang as Language>::Type>::new(
                 conf.name(),
@@ -97,7 +93,7 @@ pub trait TestSuite {
 
     fn run_eval(
         conf: &Self::Config,
-        prog: Program<<Self::Lang as Language>::Term, <Self::Lang as Language>::Type>,
+        prog: LangProg<Self::Lang>,
     ) -> TestResult<LangTrace<Self::Lang>> {
         let eval_test =
             EvalTest::<<Self::Lang as Language>::Term, <Self::Lang as Language>::Type>::new(

@@ -1,6 +1,6 @@
 use crate::{
-    errors::{MissingInput, ParserError, RemainingInput},
     Parse, Rule,
+    errors::{MissingInput, ParserError, RemainingInput},
 };
 use pest::iterators::Pair;
 use syntax::{
@@ -19,28 +19,14 @@ where
 
     fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Tail<T, Ty>, ParserError> {
         let mut inner = p.into_inner();
-        let ty_rule = inner
-            .next()
-            .ok_or(<MissingInput as Into<ParserError>>::into(
-                MissingInput::new("Head Type"),
-            ))?;
+        let ty_rule = inner.next().ok_or(MissingInput::new("Head Type"))?;
         let ty = Ty::from_pair(ty_rule, ())?;
 
-        let term_pair = inner
-            .next()
-            .ok_or(<MissingInput as Into<ParserError>>::into(
-                MissingInput::new("Head Argument"),
-            ))?;
+        let term_pair = inner.next().ok_or(MissingInput::new("Head Argument"))?;
         let term = T::from_pair(term_pair, ())?;
 
         if let Some(next) = inner.next() {
-            return Err(
-                <RemainingInput as Into<ParserError>>::into(RemainingInput::new(&format!(
-                    "{:?}",
-                    next.as_rule()
-                )))
-                .into(),
-            );
+            return Err(RemainingInput::new(&format!("{:?}", next.as_rule())).into());
         }
         Ok(Tail::new(term, ty))
     }

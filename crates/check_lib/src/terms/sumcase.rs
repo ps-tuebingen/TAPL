@@ -1,4 +1,4 @@
-use crate::{errors::CheckError, Kindcheck, Normalize, Typecheck};
+use crate::{Kindcheck, Normalize, Typecheck, errors::CheckError};
 use derivation::{Conclusion, TypingDerivation};
 use syntax::{
     env::Environment,
@@ -42,6 +42,6 @@ where
 
         let conc = Conclusion::new(env.clone(), self.clone(), right_ty);
         let deriv = TypingDerivation::sumcase(conc, bound_res, left_res, right_res);
-        Ok(deriv.into())
+        Ok(deriv)
     }
 }

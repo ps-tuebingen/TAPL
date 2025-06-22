@@ -1,6 +1,7 @@
 use crate::{
+    Parse, Rule,
     errors::{MissingInput, ParserError, RemainingInput, UnexpectedRule},
-    pair_to_n_inner, Parse, Rule,
+    pair_to_n_inner,
 };
 use pest::iterators::Pair;
 use syntax::kinds::Kind;

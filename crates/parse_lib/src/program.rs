@@ -1,6 +1,7 @@
 use crate::{
+    Parse, Rule,
     errors::{MissingInput, ParserError, UndefinedMain, UnexpectedRule},
-    pair_to_n_inner, Parse, Rule,
+    pair_to_n_inner,
 };
 use pest::iterators::Pair;
 use syntax::{definition::Definition, program::Program, terms::Term, types::Type};
@@ -20,7 +21,7 @@ where
         let mut main = None;
         inner.next();
 
-        while let Some(n) = inner.next() {
+        for n in inner {
             let def_rule = pair_to_n_inner(n, vec!["Definition"])?.remove(0);
             match def_rule.as_rule() {
                 Rule::top_level_def => {

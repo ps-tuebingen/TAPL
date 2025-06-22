@@ -1,4 +1,4 @@
-use crate::{errors::CheckError, Kindcheck, Normalize, Subtypecheck};
+use crate::{Kindcheck, Normalize, Subtypecheck, errors::CheckError};
 use common::errors::UndefinedLabel;
 use std::collections::HashMap;
 use syntax::{

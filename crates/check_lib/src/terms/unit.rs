@@ -1,4 +1,4 @@
-use crate::{errors::CheckError, Typecheck};
+use crate::{Typecheck, errors::CheckError};
 use derivation::{Conclusion, TypingDerivation};
 use syntax::{
     env::Environment,
@@ -19,6 +19,6 @@ where
     fn check(&self, env: Environment<<T as Typecheck>::Type>) -> Result<Self::Deriv, CheckError> {
         let conc = Conclusion::new(env.clone(), self.clone(), UnitTy::new());
         let deriv = TypingDerivation::unit(conc);
-        Ok(deriv.into())
+        Ok(deriv)
     }
 }

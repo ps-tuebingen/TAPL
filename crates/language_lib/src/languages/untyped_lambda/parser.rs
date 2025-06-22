@@ -1,7 +1,8 @@
 use super::terms::Term;
 use parse::{
+    GroupParse, Parse, Rule,
     errors::{ParserError, UnexpectedRule},
-    pair_to_n_inner, GroupParse, Parse, Rule,
+    pair_to_n_inner,
 };
 use pest::iterators::Pair;
 use syntax::terms::{App, UntypedLambda, Variable};

@@ -1,4 +1,4 @@
-use crate::{errors::CheckError, Kindcheck, Normalize, Typecheck};
+use crate::{Kindcheck, Normalize, Typecheck, errors::CheckError};
 use derivation::{Conclusion, TypingDerivation};
 use syntax::{
     env::Environment,
@@ -30,6 +30,6 @@ where
 
         let conc = Conclusion::new(env, self.clone(), Product::new(fst_ty, snd_ty));
         let deriv = TypingDerivation::pair(conc, fst_res, snd_res);
-        Ok(deriv.into())
+        Ok(deriv)
     }
 }

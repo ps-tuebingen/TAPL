@@ -1,4 +1,4 @@
-use crate::{errors::ParserError, Parse, Rule};
+use crate::{Parse, Rule, errors::ParserError};
 use pest::iterators::Pair;
 use std::marker::PhantomData;
 use syntax::types::{Top, Type};

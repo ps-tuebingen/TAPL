@@ -1,6 +1,6 @@
 use crate::{
-    errors::{ParserError, UnknownKeyword},
     Parse, Rule,
+    errors::{ParserError, UnknownKeyword},
 };
 use pest::iterators::Pair;
 use syntax::types::{Type, Unit};
@@ -19,7 +19,7 @@ where
         if p_str == u.to_string().to_lowercase() {
             Ok(u)
         } else {
-            Err(<UnknownKeyword as Into<ParserError>>::into(UnknownKeyword::new(&p_str)).into())
+            Err(UnknownKeyword::new(&p_str).into())
         }
     }
 }

@@ -1,4 +1,4 @@
-use crate::{errors::CheckError, Kindcheck, Normalize, Typecheck};
+use crate::{Kindcheck, Normalize, Typecheck, errors::CheckError};
 use derivation::{Conclusion, TypingDerivation};
 use syntax::{
     env::Environment,
@@ -29,6 +29,6 @@ where
         let ty = Forall::new(&self.var, self.annot.clone(), term_ty);
         let conc = Conclusion::new(env, self.clone(), ty);
         let deriv = TypingDerivation::tylambda(conc, term_res);
-        Ok(deriv.into())
+        Ok(deriv)
     }
 }

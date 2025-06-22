@@ -1,11 +1,11 @@
 use super::{terms::Term, types::Type};
 use parse::{
+    GroupParse, Parse, Rule,
     errors::{ParserError, UnexpectedRule, UnknownKeyword},
     pair_to_n_inner,
     sugar::ExistsUnbounded,
     terms::StringTerm,
     types::StringTy,
-    GroupParse, Parse, Rule,
 };
 use pest::iterators::Pair;
 use syntax::{

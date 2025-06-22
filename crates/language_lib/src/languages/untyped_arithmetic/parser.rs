@@ -1,8 +1,8 @@
 use super::terms::Term;
 use parse::{
+    GroupParse, Parse, Rule,
     errors::{ParserError, UnexpectedRule},
     terms::StringTerm,
-    GroupParse, Parse, Rule,
 };
 use pest::iterators::Pair;
 

@@ -1,4 +1,4 @@
-use crate::{errors::CheckError, Kindcheck, Normalize};
+use crate::{Kindcheck, Normalize, errors::CheckError};
 use syntax::{
     env::Environment,
     kinds::Kind,

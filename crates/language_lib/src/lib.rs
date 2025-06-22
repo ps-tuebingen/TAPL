@@ -1,6 +1,6 @@
 use check::{Kindcheck, Normalize, Subtypecheck, Typecheck};
 use derivation::{ProgramDerivation, TypingDerivation};
-use eval::{eval_main, Eval};
+use eval::{Eval, eval_main};
 use latex::{LatexConfig, LatexFmt};
 use parse::{GroupParse, Parse};
 use syntax::{
@@ -98,7 +98,7 @@ pub trait Language {
         let parsed = match self.parse(input) {
             Ok(p) => p,
             Err(err) => {
-                res.err = Some(err.into());
+                res.err = Some(err);
                 return res;
             }
         };

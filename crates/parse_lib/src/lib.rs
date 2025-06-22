@@ -8,7 +8,7 @@ pub mod types;
 mod untyped;
 
 use errors::{MissingInput, ParserError, RemainingInput};
-use pest::{error::Error as PestErr, iterators::Pair, Parser};
+use pest::{Parser, iterators::Pair};
 use pest_derive::Parser;
 
 #[derive(Parser)]
@@ -26,22 +26,13 @@ pub trait Parse: Sized {
     where
         Self::LeftRecArg: Default,
     {
-        let mut pairs = LangParser::parse(Self::RULE, &source)
-            .map_err(<PestErr<Rule> as Into<ParserError>>::into)?;
+        let mut pairs = LangParser::parse(Self::RULE, &source)?;
         let rule = pairs
             .next()
-            .ok_or(<MissingInput as Into<ParserError>>::into(
-                MissingInput::new(&format!("{:?}", Self::RULE)),
-            ))?;
+            .ok_or(MissingInput::new(&format!("{:?}", Self::RULE)))?;
         let result = Self::from_pair(rule, Default::default())?;
         if let Some(rule) = pairs.next() {
-            Err(
-                <RemainingInput as Into<ParserError>>::into(RemainingInput::new(&format!(
-                    "{:?}",
-                    rule
-                )))
-                .into(),
-            )
+            Err(RemainingInput::new(&format!("{:?}", rule)).into())
         } else {
             Ok(result)
         }
@@ -83,10 +74,7 @@ where
         };
 
         if let Some(n) = inner.next() {
-            return Err(
-                <RemainingInput as Into<ParserError>>::into(RemainingInput::new(&format!("{n:?}")))
-                    .into(),
-            );
+            return Err(RemainingInput::new(&format!("{n:?}")).into());
         }
         Ok(slf)
     }

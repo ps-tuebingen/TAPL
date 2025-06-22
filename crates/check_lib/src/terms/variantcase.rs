@@ -1,4 +1,4 @@
-use crate::{errors::CheckError, errors::EmptyCase, Kindcheck, Normalize, Typecheck};
+use crate::{Kindcheck, Normalize, Typecheck, errors::CheckError, errors::EmptyCase};
 use common::errors::{TypeMismatch, UndefinedLabel};
 use derivation::{Conclusion, TypingDerivation};
 use syntax::{
@@ -67,6 +67,6 @@ where
         let conc = Conclusion::new(env, self.clone(), rhs_fst);
         let deriv = TypingDerivation::variantcase(conc, bound_res, rhs_ress);
 
-        Ok(deriv.into())
+        Ok(deriv)
     }
 }

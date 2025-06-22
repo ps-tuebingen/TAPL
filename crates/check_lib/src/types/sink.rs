@@ -1,4 +1,4 @@
-use crate::{errors::CheckError, Subtypecheck};
+use crate::{Subtypecheck, errors::CheckError};
 use syntax::{
     env::Environment,
     types::{Sink, TypeGroup},

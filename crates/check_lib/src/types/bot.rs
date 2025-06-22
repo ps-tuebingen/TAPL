@@ -1,4 +1,4 @@
-use crate::{errors::CheckError, Kindcheck, Subtypecheck};
+use crate::{Kindcheck, Subtypecheck, errors::CheckError};
 use syntax::{
     env::Environment,
     kinds::Kind,

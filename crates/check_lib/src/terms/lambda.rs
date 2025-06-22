@@ -1,4 +1,4 @@
-use crate::{errors::CheckError, Kindcheck, Normalize, Typecheck};
+use crate::{Kindcheck, Normalize, Typecheck, errors::CheckError};
 use derivation::{Conclusion, TypingDerivation};
 use syntax::{
     env::Environment,
@@ -34,6 +34,6 @@ where
         );
         let deriv = TypingDerivation::lambda(conc, body_res);
 
-        Ok(deriv.into())
+        Ok(deriv)
     }
 }

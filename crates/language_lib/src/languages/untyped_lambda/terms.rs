@@ -1,13 +1,13 @@
-use check::{errors::CheckError, Typecheck};
+use check::{Typecheck, errors::CheckError};
 use derivation::TypingDerivation;
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
 use syntax::untyped::Untyped;
 use syntax::{
+    TypeVar,
     env::Environment,
     subst::{SubstTerm, SubstType},
     terms::{App, UntypedLambda, Variable},
-    TypeVar,
 };
 
 pub type Var = String;

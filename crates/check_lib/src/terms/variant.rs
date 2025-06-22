@@ -1,4 +1,4 @@
-use crate::{errors::CheckError, Kindcheck, Normalize, Typecheck};
+use crate::{Kindcheck, Normalize, Typecheck, errors::CheckError};
 use common::errors::UndefinedLabel;
 use derivation::{Conclusion, TypingDerivation};
 use syntax::{
@@ -37,6 +37,6 @@ where
 
         let conc = Conclusion::new(env, self.clone(), ty_norm);
         let deriv = TypingDerivation::variant(conc, term_res);
-        Ok(deriv.into())
+        Ok(deriv)
     }
 }

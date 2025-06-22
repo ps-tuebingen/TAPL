@@ -1,9 +1,9 @@
 use super::{terms::Term, types::Type};
 use parse::{
+    GroupParse, Parse, Rule,
     errors::{ParserError, UnexpectedRule},
     pair_to_n_inner,
     sugar::{ForallUnbounded, TyLambdaStar},
-    GroupParse, Parse, Rule,
 };
 use pest::iterators::Pair;
 use syntax::{

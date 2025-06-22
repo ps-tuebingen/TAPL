@@ -1,5 +1,5 @@
 use super::{terms::Term, types::Type};
-use check::{errors::CheckError, Kindcheck, Subtypecheck, Typecheck};
+use check::{Kindcheck, Subtypecheck, Typecheck, errors::CheckError};
 use derivation::TypingDerivation;
 use syntax::{env::Environment, kinds::Kind};
 impl Typecheck for Term {

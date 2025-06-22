@@ -1,4 +1,4 @@
-use crate::{errors::CheckError, Kindcheck, Normalize, Typecheck};
+use crate::{Kindcheck, Normalize, Typecheck, errors::CheckError};
 use derivation::{Conclusion, TypingDerivation};
 use std::collections::HashMap;
 use syntax::{
@@ -41,6 +41,6 @@ where
 
         let conc = Conclusion::new(env, self.clone(), RecordTy::new(recs));
         let deriv = TypingDerivation::record(conc, ress);
-        Ok(deriv.into())
+        Ok(deriv)
     }
 }
