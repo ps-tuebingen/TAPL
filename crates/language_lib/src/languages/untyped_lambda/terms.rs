@@ -1,14 +1,13 @@
-use super::errors::Error;
-use check::Typecheck;
+use check::{errors::CheckError, Typecheck};
 use derivation::Derivation;
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
 use syntax::untyped::Untyped;
 use syntax::{
-    TypeVar,
     env::Environment,
     subst::{SubstTerm, SubstType},
     terms::{App, UntypedLambda, Variable},
+    TypeVar,
 };
 
 pub type Var = String;
@@ -25,9 +24,11 @@ impl syntax::terms::Term for Term {}
 impl Typecheck for Term {
     type Term = Term;
     type Type = Untyped;
-    type CheckError = Error;
 
-    fn check(&self, _: Environment<Untyped>) -> Result<Derivation<Self::Term, Self::Type>, Error> {
+    fn check(
+        &self,
+        _: Environment<Untyped>,
+    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError<Untyped>> {
         Ok(Derivation::empty(self.clone()))
     }
 }

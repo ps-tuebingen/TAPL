@@ -1,19 +1,14 @@
-use crate::{Kindcheck, Normalize, Subtypecheck};
-use common::errors::NotImplemented;
+use crate::{errors::CheckError, Kindcheck, Normalize, Subtypecheck};
 use syntax::{env::Environment, kinds::Kind, untyped::Untyped};
 
 impl Subtypecheck<Untyped> for Untyped {
-    type CheckError = NotImplemented;
-
-    fn check_subtype(&self, _: &Self, _: Environment<Untyped>) -> Result<(), Self::CheckError> {
+    fn check_subtype(&self, _: &Self, _: Environment<Untyped>) -> Result<(), CheckError<Untyped>> {
         Ok(())
     }
 }
 
 impl Kindcheck<Untyped> for Untyped {
-    type CheckError = NotImplemented;
-
-    fn check_kind(&self, _: Environment<Untyped>) -> Result<Kind, Self::CheckError> {
+    fn check_kind(&self, _: Environment<Untyped>) -> Result<Kind, CheckError<Untyped>> {
         Ok(Kind::Star)
     }
 }

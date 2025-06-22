@@ -1,5 +1,5 @@
-use crate::{Kindcheck, Normalize, Subtypecheck, Typecheck};
-use common::errors::{KindMismatch, TypeKind, TypeMismatch};
+use crate::{errors::CheckError, Kindcheck, Normalize, Subtypecheck, Typecheck};
+use common::errors::{TypeKind, TypeMismatch};
 use derivation::{Conclusion, Derivation};
 use syntax::{
     env::Environment,
@@ -12,20 +12,15 @@ impl<T, Ty> Typecheck for TyApp<T, Ty>
 where
     T: Term + Typecheck<Type = Ty, Term = T>,
     Ty: TypeGroup + SubstType<Ty, Target = Ty> + Normalize<Ty> + Kindcheck<Ty> + Subtypecheck<Ty>,
-    <T as Typecheck>::CheckError: From<TypeMismatch>
-        + From<KindMismatch>
-        + From<<Ty as Kindcheck<Ty>>::CheckError>
-        + From<<Ty as Subtypecheck<Ty>>::CheckError>,
     Self: Into<T>,
 {
     type Type = <T as Typecheck>::Type;
     type Term = T;
-    type CheckError = <T as Typecheck>::CheckError;
 
     fn check(
         &self,
         env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, Self::CheckError> {
+    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError<Self::Type>> {
         let fun_res = self.fun.check(env.clone())?;
         let fun_ty = fun_res.ty().normalize(env.clone());
         let arg_norm = self.arg.clone().normalize(env.clone());

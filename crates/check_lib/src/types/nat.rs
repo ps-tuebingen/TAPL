@@ -1,5 +1,4 @@
-use crate::{Kindcheck, Normalize, Subtypecheck};
-use common::errors::TypeMismatch;
+use crate::{errors::CheckError, Kindcheck, Normalize, Subtypecheck};
 use syntax::{
     env::Environment,
     kinds::Kind,
@@ -9,11 +8,8 @@ use syntax::{
 impl<Ty> Subtypecheck<Ty> for Nat<Ty>
 where
     Ty: TypeGroup + Subtypecheck<Ty>,
-    <Ty as Subtypecheck<Ty>>::CheckError: From<TypeMismatch>,
 {
-    type CheckError = <Ty as Subtypecheck<Ty>>::CheckError;
-
-    fn check_subtype(&self, sup: &Ty, _: Environment<Ty>) -> Result<(), Self::CheckError> {
+    fn check_subtype(&self, sup: &Ty, _: Environment<Ty>) -> Result<(), CheckError<Ty>> {
         if sup.clone().into_top().is_ok() {
             return Ok(());
         }
@@ -27,9 +23,7 @@ impl<Ty> Kindcheck<Ty> for Nat<Ty>
 where
     Ty: Type + Kindcheck<Ty>,
 {
-    type CheckError = <Ty as Kindcheck<Ty>>::CheckError;
-
-    fn check_kind(&self, _: Environment<Ty>) -> Result<Kind, Self::CheckError> {
+    fn check_kind(&self, _: Environment<Ty>) -> Result<Kind, CheckError<Ty>> {
         Ok(Kind::Star)
     }
 }

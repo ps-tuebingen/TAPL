@@ -1,5 +1,5 @@
-use crate::{Kindcheck, Normalize, Subtypecheck};
-use common::errors::{NameMismatch, TypeMismatch};
+use crate::{errors::CheckError, Kindcheck, Normalize, Subtypecheck};
+use common::errors::NameMismatch;
 use syntax::{
     env::Environment,
     kinds::Kind,
@@ -9,11 +9,8 @@ use syntax::{
 impl<Ty> Subtypecheck<Ty> for ExistsBounded<Ty>
 where
     Ty: TypeGroup + Subtypecheck<Ty> + Normalize<Ty>,
-    <Ty as Subtypecheck<Ty>>::CheckError: From<NameMismatch> + From<TypeMismatch>,
 {
-    type CheckError = <Ty as Subtypecheck<Ty>>::CheckError;
-
-    fn check_subtype(&self, sup: &Ty, mut env: Environment<Ty>) -> Result<(), Self::CheckError> {
+    fn check_subtype(&self, sup: &Ty, mut env: Environment<Ty>) -> Result<(), CheckError<Ty>> {
         if sup.clone().into_top().is_ok() {
             return Ok(());
         }
@@ -37,9 +34,7 @@ impl<Ty> Kindcheck<Ty> for ExistsBounded<Ty>
 where
     Ty: Type + Kindcheck<Ty>,
 {
-    type CheckError = <Ty as Kindcheck<Ty>>::CheckError;
-
-    fn check_kind(&self, mut env: Environment<Ty>) -> Result<Kind, Self::CheckError> {
+    fn check_kind(&self, mut env: Environment<Ty>) -> Result<Kind, CheckError<Ty>> {
         let sup_kind = self.sup_ty.check_kind(env.clone())?;
         env.add_tyvar_kind(self.var.clone(), sup_kind);
         self.ty.check_kind(env)

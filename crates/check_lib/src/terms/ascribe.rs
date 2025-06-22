@@ -1,5 +1,4 @@
-use crate::{Kindcheck, Normalize, Typecheck};
-use common::errors::{KindMismatch, TypeMismatch};
+use crate::{errors::CheckError, Kindcheck, Normalize, Typecheck};
 use derivation::{Conclusion, Derivation};
 use syntax::{
     env::Environment,
@@ -11,18 +10,15 @@ impl<T, Ty> Typecheck for Ascribe<T, Ty>
 where
     T: Term + Typecheck<Type = Ty, Term = T>,
     Ty: TypeGroup + Normalize<Ty> + Kindcheck<Ty>,
-    <T as Typecheck>::CheckError:
-        From<TypeMismatch> + From<KindMismatch> + From<<Ty as Kindcheck<Ty>>::CheckError>,
     Self: Into<T>,
 {
     type Type = <T as Typecheck>::Type;
     type Term = T;
-    type CheckError = <T as Typecheck>::CheckError;
 
     fn check(
         &self,
         env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, Self::CheckError> {
+    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError<Ty>> {
         let t_res = self.term.check(env.clone())?;
         let t_ty = t_res.ty().normalize(env.clone());
         let asc_norm = self.ty.clone().normalize(env.clone());

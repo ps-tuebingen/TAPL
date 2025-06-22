@@ -1,5 +1,5 @@
-use crate::{Kindcheck, Normalize, Subtypecheck};
-use common::errors::{KindMismatch, TypeMismatch};
+use crate::{errors::CheckError, Kindcheck, Normalize, Subtypecheck};
+use common::errors::KindMismatch;
 use syntax::{
     env::Environment,
     kinds::Kind,
@@ -10,11 +10,9 @@ use syntax::{
 impl<Ty> Subtypecheck<Ty> for OpApp<Ty>
 where
     Ty: TypeGroup + Subtypecheck<Ty>,
-    <Ty as Subtypecheck<Ty>>::CheckError: From<TypeMismatch>,
     Self: Into<Ty>,
 {
-    type CheckError = <Ty as Subtypecheck<Ty>>::CheckError;
-    fn check_subtype(&self, sup: &Ty, env: Environment<Ty>) -> Result<(), Self::CheckError> {
+    fn check_subtype(&self, sup: &Ty, env: Environment<Ty>) -> Result<(), CheckError<Ty>> {
         if sup.clone().into_top().is_ok() {
             return Ok(());
         }
@@ -27,11 +25,8 @@ where
 impl<Ty> Kindcheck<Ty> for OpApp<Ty>
 where
     Ty: TypeGroup + Kindcheck<Ty>,
-    <Ty as Kindcheck<Ty>>::CheckError: From<KindMismatch>,
 {
-    type CheckError = <Ty as Kindcheck<Ty>>::CheckError;
-
-    fn check_kind(&self, env: Environment<Ty>) -> Result<Kind, Self::CheckError> {
+    fn check_kind(&self, env: Environment<Ty>) -> Result<Kind, CheckError<Ty>> {
         let fun_kind = self.fun.check_kind(env.clone())?;
         let (fun_from, fun_to) = fun_kind.into_arrow()?;
         let arg_kind = self.arg.check_kind(env)?;

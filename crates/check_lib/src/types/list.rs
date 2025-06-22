@@ -1,5 +1,4 @@
-use crate::Subtypecheck;
-use common::errors::TypeMismatch;
+use crate::{errors::CheckError, Subtypecheck};
 use syntax::{
     env::Environment,
     types::{List, TypeGroup},
@@ -8,11 +7,8 @@ use syntax::{
 impl<Ty> Subtypecheck<Ty> for List<Ty>
 where
     Ty: TypeGroup + Subtypecheck<Ty>,
-    <Ty as Subtypecheck<Ty>>::CheckError: From<TypeMismatch>,
 {
-    type CheckError = <Ty as Subtypecheck<Ty>>::CheckError;
-
-    fn check_subtype(&self, sup: &Ty, env: Environment<Ty>) -> Result<(), Self::CheckError> {
+    fn check_subtype(&self, sup: &Ty, env: Environment<Ty>) -> Result<(), CheckError<Ty>> {
         if sup.clone().into_top().is_ok() {
             return Ok(());
         }

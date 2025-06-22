@@ -1,5 +1,4 @@
-use crate::{Kindcheck, Normalize, Typecheck};
-use common::errors::{KindMismatch, TypeMismatch};
+use crate::{errors::CheckError, Kindcheck, Normalize, Typecheck};
 use derivation::{Conclusion, Derivation};
 use syntax::{
     env::Environment,
@@ -10,20 +9,17 @@ use syntax::{
 impl<T> Typecheck for SumCase<T>
 where
     T: Term + Typecheck<Term = T>,
-    <T as Typecheck>::Type: TypeGroup
-        + Normalize<<T as Typecheck>::Type>
-        + Kindcheck<<T as Typecheck>::Type, CheckError = <T as Typecheck>::CheckError>,
-    <T as Typecheck>::CheckError: From<TypeMismatch> + From<KindMismatch>,
+    <T as Typecheck>::Type:
+        TypeGroup + Normalize<<T as Typecheck>::Type> + Kindcheck<<T as Typecheck>::Type>,
     Self: Into<T>,
 {
     type Type = <T as Typecheck>::Type;
     type Term = T;
-    type CheckError = <T as Typecheck>::CheckError;
 
     fn check(
         &self,
         mut env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, Self::CheckError> {
+    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError<Self::Type>> {
         let bound_res = self.bound_term.check(env.clone())?;
         let bound_ty = bound_res.ty().normalize(env.clone());
         bound_ty.check_kind(env.clone())?.into_star()?;

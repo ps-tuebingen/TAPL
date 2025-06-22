@@ -1,14 +1,13 @@
-use super::errors::Error;
-use check::Typecheck;
+use check::{errors::CheckError, Typecheck};
 use derivation::Derivation;
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
 use syntax::{
-    TypeVar, Var,
     env::Environment,
     subst::{SubstTerm, SubstType},
     terms::{False, If, IsZero, Num, Pred, Succ, True},
     untyped::Untyped,
+    TypeVar, Var,
 };
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -41,9 +40,11 @@ impl SubstType<Untyped> for Term {
 impl Typecheck for Term {
     type Term = Term;
     type Type = Untyped;
-    type CheckError = Error;
 
-    fn check(&self, _: Environment<Untyped>) -> Result<Derivation<Self::Term, Self::Type>, Error> {
+    fn check(
+        &self,
+        _: Environment<Untyped>,
+    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError<Untyped>> {
         Ok(Derivation::empty(self.clone()))
     }
 }

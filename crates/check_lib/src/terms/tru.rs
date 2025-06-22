@@ -1,4 +1,4 @@
-use crate::Typecheck;
+use crate::{errors::CheckError, Typecheck};
 use derivation::{Conclusion, Derivation};
 use syntax::{
     env::Environment,
@@ -14,12 +14,11 @@ where
 {
     type Type = <T as Typecheck>::Type;
     type Term = T;
-    type CheckError = <T as Typecheck>::CheckError;
 
     fn check(
         &self,
         env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, Self::CheckError> {
+    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError<Self::Type>> {
         let conc = Conclusion::new(env.clone(), self.clone(), Bool::new());
         let deriv = Derivation::tru(conc);
         Ok(deriv)

@@ -1,9 +1,10 @@
-use check::{Kindcheck, Normalize, Subtypecheck, Typecheck};
+use check::{errors::CheckError, Kindcheck, Normalize, Subtypecheck, Typecheck};
 use derivation::Derivation;
 use eval::Eval;
 use latex::{LatexConfig, LatexFmt};
-use parse::Parse;
-use syntax::{program::Program,
+use parse::{errors::ParserError, GroupParse, Parse};
+use syntax::{
+    program::Program,
     subst::{SubstTerm, SubstType},
     terms::Term,
     types::TypeGroup,
@@ -51,39 +52,37 @@ where
 
 pub trait Language {
     type Term: Term
-        + Parse<ParseError = Self::LanguageError, LeftRecArg = ()>
+        + GroupParse
         + SubstTerm<Self::Term, Target = Self::Term>
         + SubstType<Self::Type, Target = Self::Term>
         + Eval<
             Term = Self::Term,
             Value = Self::Value,
             EvalError: Into<<Self as Language>::LanguageError>,
-        > + Typecheck<
-            Term = Self::Term,
-            Type = Self::Type,
-            CheckError: Into<<Self as Language>::LanguageError>,
-        > + LatexFmt;
+        > + Typecheck<Term = Self::Term, Type = Self::Type>
+        + LatexFmt;
 
     type Type: TypeGroup
+        + GroupParse
         + SubstType<Self::Type, Target = Self::Type>
-        + Subtypecheck<Self::Type, CheckError: Into<<Self as Language>::LanguageError>>
+        + Subtypecheck<Self::Type>
         + Normalize<Self::Type>
-        + Kindcheck<Self::Type, CheckError: Into<<Self as Language>::LanguageError>>
+        + Kindcheck<Self::Type>
         + LatexFmt;
 
     type Value: ValueGroup<Term = Self::Term, Type = Self::Type> + LatexFmt;
 
-    type LanguageError: std::error::Error;
+    type LanguageError: std::error::Error + From<ParserError> + From<CheckError<Self::Type>>;
 
-    fn parse(&self, input: String) -> Result<Self::Term, Self::LanguageError> {
-        Program<Self::Term,Self::Type>::parse(input)
+    fn parse(&self, input: String) -> Result<Program<Self::Term, Self::Type>, Self::LanguageError> {
+        Ok(Program::<Self::Term, Self::Type>::parse(input)?)
     }
 
     fn check(
         &self,
         input: String,
     ) -> Result<Derivation<Self::Term, Self::Type>, Self::LanguageError> {
-        let parsed = Self::Term::parse(input)?;
+        let parsed = self.parse(input)?;
         Self::Term::check_start(&parsed).map_err(|err| err.into())
     }
 

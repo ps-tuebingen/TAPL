@@ -1,4 +1,4 @@
-use crate::{Kindcheck, Normalize};
+use crate::{errors::CheckError, Kindcheck, Normalize};
 use syntax::{
     env::Environment,
     kinds::Kind,
@@ -9,9 +9,7 @@ impl<Ty> Kindcheck<Ty> for Exists<Ty>
 where
     Ty: Type + Kindcheck<Ty>,
 {
-    type CheckError = <Ty as Kindcheck<Ty>>::CheckError;
-
-    fn check_kind(&self, mut env: Environment<Ty>) -> Result<Kind, Self::CheckError> {
+    fn check_kind(&self, mut env: Environment<Ty>) -> Result<Kind, CheckError<Ty>> {
         env.add_tyvar_kind(self.var.clone(), self.kind.clone());
         self.ty.check_kind(env)
     }

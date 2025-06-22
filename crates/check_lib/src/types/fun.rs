@@ -1,5 +1,5 @@
-use crate::{Kindcheck, Normalize, Subtypecheck};
-use common::errors::{KindKind, KindMismatch, TypeMismatch};
+use crate::{errors::CheckError, Kindcheck, Normalize, Subtypecheck};
+use common::errors::{KindKind, KindMismatch};
 use syntax::{
     env::Environment,
     kinds::Kind,
@@ -9,11 +9,8 @@ use syntax::{
 impl<Ty> Subtypecheck<Ty> for Fun<Ty>
 where
     Ty: TypeGroup + Subtypecheck<Ty>,
-    <Ty as Subtypecheck<Ty>>::CheckError: From<TypeMismatch>,
 {
-    type CheckError = <Ty as Subtypecheck<Ty>>::CheckError;
-
-    fn check_subtype(&self, sup: &Ty, env: Environment<Ty>) -> Result<(), Self::CheckError> {
+    fn check_subtype(&self, sup: &Ty, env: Environment<Ty>) -> Result<(), CheckError<Ty>> {
         if sup.clone().into_top().is_ok() {
             return Ok(());
         }
@@ -28,11 +25,8 @@ where
 impl<Ty> Kindcheck<Ty> for Fun<Ty>
 where
     Ty: Type + Kindcheck<Ty>,
-    <Ty as Kindcheck<Ty>>::CheckError: From<KindMismatch>,
 {
-    type CheckError = <Ty as Kindcheck<Ty>>::CheckError;
-
-    fn check_kind(&self, env: Environment<Ty>) -> Result<Kind, Self::CheckError> {
+    fn check_kind(&self, env: Environment<Ty>) -> Result<Kind, CheckError<Ty>> {
         let from_kind = self.from.check_kind(env.clone())?;
         if from_kind != Kind::Star {
             return Err(KindMismatch::new(from_kind.into(), KindKind::Star).into());

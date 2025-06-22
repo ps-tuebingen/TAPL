@@ -1,5 +1,4 @@
-use crate::{Kindcheck, Normalize, Typecheck};
-use common::errors::{KindMismatch, TypeMismatch};
+use crate::{errors::CheckError, Kindcheck, Normalize, Typecheck};
 use derivation::{Conclusion, Derivation};
 use syntax::{
     env::Environment,
@@ -11,19 +10,16 @@ use syntax::{
 impl<T, Ty> Typecheck for Unfold<T, Ty>
 where
     Ty: TypeGroup + Normalize<Ty> + Kindcheck<Ty> + SubstType<Ty, Target = Ty>,
-    <T as Typecheck>::CheckError:
-        From<TypeMismatch> + From<KindMismatch> + From<<Ty as Kindcheck<Ty>>::CheckError>,
     T: Term + Typecheck<Type = Ty, Term = T>,
     Self: Into<T>,
 {
     type Type = <T as Typecheck>::Type;
     type Term = T;
-    type CheckError = <T as Typecheck>::CheckError;
 
     fn check(
         &self,
         env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, Self::CheckError> {
+    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError<Self::Type>> {
         let ty_norm = self.ty.clone().normalize(env.clone());
         let ty_kind = ty_norm.check_kind(env.clone())?;
 

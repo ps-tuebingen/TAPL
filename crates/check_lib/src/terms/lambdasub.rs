@@ -1,4 +1,4 @@
-use crate::{Kindcheck, Normalize, Typecheck};
+use crate::{errors::CheckError, Kindcheck, Normalize, Typecheck};
 use derivation::{Conclusion, Derivation};
 use syntax::{
     env::Environment,
@@ -10,18 +10,16 @@ impl<T, Ty> Typecheck for LambdaSub<T, Ty>
 where
     T: Term + Typecheck<Type = Ty, Term = T>,
     Ty: Type + Kindcheck<Ty> + Normalize<Ty>,
-    <T as Typecheck>::CheckError: From<<Ty as Kindcheck<Ty>>::CheckError>,
     ForallBounded<<T as Typecheck>::Type>: Into<<T as Typecheck>::Type>,
     Self: Into<T>,
 {
     type Type = <T as Typecheck>::Type;
     type Term = T;
-    type CheckError = <T as Typecheck>::CheckError;
 
     fn check(
         &self,
         mut env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, Self::CheckError> {
+    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError<Self::Type>> {
         let sup_norm = self.sup_ty.clone().normalize(env.clone());
         let sup_kind = sup_norm.check_kind(env.clone())?;
         env.add_tyvar_super(self.var.clone(), sup_norm.clone());

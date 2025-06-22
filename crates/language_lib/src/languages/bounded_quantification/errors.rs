@@ -5,8 +5,8 @@ use common::errors::{
     UndefinedLabel, ValueMismatch,
 };
 use parse::{
-    Rule,
     errors::{MissingInput, ParserError, RemainingInput, UnexpectedRule, UnknownKeyword},
+    Rule,
 };
 
 use pest::error::Error as PestErr;
@@ -20,7 +20,7 @@ pub enum Error {
     KindMismatch(KindMismatch),
     NameMismatch(NameMismatch),
     UndefinedLabel(UndefinedLabel),
-    NotASubtype(NotASubtype<Type, Type>),
+    NotASubtype(NotASubtype<Type>),
     FreeVariable(FreeVariable),
     ValueMismatch(ValueMismatch),
     Parse(ParserError),
@@ -81,8 +81,8 @@ impl From<UndefinedLabel> for Error {
     }
 }
 
-impl From<NotASubtype<Type, Type>> for Error {
-    fn from(err: NotASubtype<Type, Type>) -> Error {
+impl From<NotASubtype<Type>> for Error {
+    fn from(err: NotASubtype<Type>) -> Error {
         Error::NotASubtype(err)
     }
 }

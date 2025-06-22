@@ -2,38 +2,37 @@ use std::fmt;
 use syntax::types::Type;
 
 #[derive(Debug)]
-pub struct NotASubtype<Ty1, Ty2>
+pub struct NotASubtype<Ty>
 where
-    Ty1: Type,
-    Ty2: Type,
+    Ty: Type,
 {
-    sub: Ty1,
-    sup: Ty2,
+    sub: Ty,
+    sup: Ty,
 }
 
-impl<Ty1, Ty2> NotASubtype<Ty1, Ty2>
+impl<Ty> NotASubtype<Ty>
 where
-    Ty1: Type,
-    Ty2: Type,
+    Ty: Type,
 {
-    pub fn new(sub: Ty1, sup: Ty2) -> NotASubtype<Ty1, Ty2> {
-        NotASubtype { sub, sup }
+    pub fn new<Ty1, Ty2>(sub: Ty1, sup: Ty2) -> NotASubtype<Ty>
+    where
+        Ty1: Into<Ty>,
+        Ty2: Into<Ty>,
+    {
+        NotASubtype {
+            sub: sub.into(),
+            sup: sup.into(),
+        }
     }
 }
 
-impl<Ty1, Ty2> fmt::Display for NotASubtype<Ty1, Ty2>
+impl<Ty> fmt::Display for NotASubtype<Ty>
 where
-    Ty1: Type,
-    Ty2: Type,
+    Ty: Type,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{} is not a subtype of {}", self.sub, self.sup)
     }
 }
 
-impl<Ty1, Ty2> std::error::Error for NotASubtype<Ty1, Ty2>
-where
-    Ty1: Type,
-    Ty2: Type,
-{
-}
+impl<Ty> std::error::Error for NotASubtype<Ty> where Ty: Type {}

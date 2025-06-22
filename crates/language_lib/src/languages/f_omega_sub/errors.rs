@@ -6,8 +6,8 @@ use common::errors::{
 };
 
 use parse::{
-    Rule,
     errors::{MissingInput, ParserError, RemainingInput, UnexpectedRule, UnknownKeyword},
+    Rule,
 };
 use pest::error::Error as PestErr;
 use std::fmt;
@@ -19,7 +19,7 @@ pub enum Error {
     KindMismatch(KindMismatch),
     TypeMismatch(TypeMismatch),
     NameMismatch(NameMismatch),
-    NotASubtype(NotASubtype<Type, Type>),
+    NotASubtype(NotASubtype<Type>),
     Parse(ParserError),
     UndefinedLabel(UndefinedLabel),
     FreeVariable(FreeVariable),
@@ -75,8 +75,8 @@ impl From<NameMismatch> for Error {
     }
 }
 
-impl From<NotASubtype<Type, Type>> for Error {
-    fn from(err: NotASubtype<Type, Type>) -> Error {
+impl From<NotASubtype<Type>> for Error {
+    fn from(err: NotASubtype<Type>) -> Error {
         Error::NotASubtype(err)
     }
 }

@@ -1,5 +1,5 @@
-use crate::{Kindcheck, Normalize, Typecheck};
-use common::errors::{KindMismatch, TypeMismatch, UndefinedLabel};
+use crate::{errors::CheckError, Kindcheck, Normalize, Typecheck};
+use common::errors::UndefinedLabel;
 use derivation::{Conclusion, Derivation};
 use syntax::{
     env::Environment,
@@ -12,20 +12,15 @@ where
     T: Term + Typecheck<Type = Ty, Term = T>,
     Ty: TypeGroup + Normalize<Ty> + Kindcheck<Ty>,
     VariantTy<Ty>: Into<Ty>,
-    <T as Typecheck>::CheckError: From<UndefinedLabel>
-        + From<TypeMismatch>
-        + From<KindMismatch>
-        + From<<Ty as Kindcheck<Ty>>::CheckError>,
     Self: Into<T>,
 {
     type Type = <T as Typecheck>::Type;
     type Term = T;
-    type CheckError = <T as Typecheck>::CheckError;
 
     fn check(
         &self,
         env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, Self::CheckError> {
+    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError<Self::Type>> {
         let ty_norm = self.ty.clone().normalize(env.clone());
         let term_res = self.term.check(env.clone())?;
         let term_ty = term_res.ty().normalize(env.clone());

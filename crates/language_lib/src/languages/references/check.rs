@@ -1,8 +1,8 @@
-use super::{errors::Error, terms::Term, types::Type};
-use check::{Kindcheck, Subtypecheck, Typecheck};
+use super::{terms::Term, types::Type};
+use check::{errors::CheckError, Kindcheck, Subtypecheck, Typecheck};
 use derivation::Derivation;
 use std::collections::HashMap;
-use syntax::{Location, Var, env::Environment, kinds::Kind};
+use syntax::{env::Environment, kinds::Kind, Location, Var};
 
 pub type Env = HashMap<Var, Type>;
 pub type StoreTy = HashMap<Location, Type>;
@@ -10,9 +10,11 @@ pub type StoreTy = HashMap<Location, Type>;
 impl Typecheck for Term {
     type Term = Term;
     type Type = Type;
-    type CheckError = Error;
 
-    fn check(&self, env: Environment<Type>) -> Result<Derivation<Self::Term, Self::Type>, Error> {
+    fn check(
+        &self,
+        env: Environment<Type>,
+    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError<Type>> {
         match self {
             Term::Var(var) => var.check(env),
             Term::Num(c) => c.check(env),
@@ -36,17 +38,13 @@ impl Typecheck for Term {
 }
 
 impl Subtypecheck<Type> for Type {
-    type CheckError = Error;
-
-    fn check_subtype(&self, _: &Self, _: Environment<Type>) -> Result<(), Error> {
+    fn check_subtype(&self, _: &Self, _: Environment<Type>) -> Result<(), CheckError<Type>> {
         Ok(())
     }
 }
 
 impl Kindcheck<Type> for Type {
-    type CheckError = Error;
-
-    fn check_kind(&self, _: Environment<Type>) -> Result<Kind, Error> {
+    fn check_kind(&self, _: Environment<Type>) -> Result<Kind, CheckError<Type>> {
         Ok(Kind::Star)
     }
 }

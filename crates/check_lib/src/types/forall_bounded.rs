@@ -1,5 +1,5 @@
-use crate::{Kindcheck, Normalize, Subtypecheck};
-use common::errors::{NameMismatch, TypeMismatch};
+use crate::{errors::CheckError, Kindcheck, Normalize, Subtypecheck};
+use common::errors::NameMismatch;
 use syntax::{
     env::Environment,
     kinds::Kind,
@@ -9,11 +9,8 @@ use syntax::{
 impl<Ty> Subtypecheck<Ty> for ForallBounded<Ty>
 where
     Ty: TypeGroup + Subtypecheck<Ty> + Normalize<Ty>,
-    <Ty as Subtypecheck<Ty>>::CheckError: From<TypeMismatch> + From<NameMismatch>,
 {
-    type CheckError = <Ty as Subtypecheck<Ty>>::CheckError;
-
-    fn check_subtype(&self, sup: &Ty, env: Environment<Ty>) -> Result<(), Self::CheckError> {
+    fn check_subtype(&self, sup: &Ty, env: Environment<Ty>) -> Result<(), CheckError<Ty>> {
         let other_forall = sup.clone().into_forall_bounded()?;
         let sup_norm = other_forall.sup_ty.normalize(env.clone());
         let self_norm = self.sup_ty.clone().normalize(env.clone());
@@ -30,9 +27,7 @@ impl<Ty> Kindcheck<Ty> for ForallBounded<Ty>
 where
     Ty: Type + Kindcheck<Ty>,
 {
-    type CheckError = <Ty as Kindcheck<Ty>>::CheckError;
-
-    fn check_kind(&self, mut env: Environment<Ty>) -> Result<Kind, Self::CheckError> {
+    fn check_kind(&self, mut env: Environment<Ty>) -> Result<Kind, CheckError<Ty>> {
         let sup_kind = self.sup_ty.check_kind(env.clone())?;
         env.add_tyvar_kind(self.var.clone(), sup_kind);
         self.ty.check_kind(env)

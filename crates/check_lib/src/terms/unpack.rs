@@ -1,4 +1,4 @@
-use crate::{Kindcheck, Normalize, Typecheck};
+use crate::{errors::CheckError, Kindcheck, Normalize, Typecheck};
 use common::errors::{NameMismatch, TypeKind, TypeMismatch};
 use derivation::{Conclusion, Derivation};
 use syntax::{
@@ -11,18 +11,15 @@ impl<T, Ty> Typecheck for Unpack<T, Ty>
 where
     T: Term + Typecheck<Type = Ty, Term = T>,
     Ty: TypeGroup + Normalize<<T as Typecheck>::Type> + Kindcheck<Ty>,
-    <T as Typecheck>::CheckError:
-        From<TypeMismatch> + From<NameMismatch> + From<<Ty as Kindcheck<Ty>>::CheckError>,
     Self: Into<T>,
 {
     type Type = <T as Typecheck>::Type;
     type Term = T;
-    type CheckError = <T as Typecheck>::CheckError;
 
     fn check(
         &self,
         mut env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, Self::CheckError> {
+    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError<Self::Type>> {
         let bound_res = self.bound_term.check(env.clone())?;
         let bound_ty = bound_res.ty().normalize(env.clone());
         if let Ok(bound_exists) = bound_ty.clone().into_exists() {
