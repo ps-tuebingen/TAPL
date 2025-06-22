@@ -8,7 +8,7 @@ use crate::{
 use common::errors::DuplicateDefinition;
 use std::fmt;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Program<T, Ty>
 where
     T: Term,

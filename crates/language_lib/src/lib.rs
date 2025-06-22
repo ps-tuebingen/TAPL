@@ -30,7 +30,7 @@ pub struct AllResults<Lang>
 where
     Lang: Language,
 {
-    pub parse_res: Option<Lang::Term>,
+    pub parse_res: Option<Program<Lang::Term, Lang::Type>>,
     pub check_res: Option<ProgramDerivation<Lang::Term, Lang::Type>>,
     pub eval_res: Option<EvalTrace<Lang::Term, Lang::Value>>,
     pub err: Option<Lang::LanguageError>,

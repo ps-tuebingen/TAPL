@@ -1,7 +1,9 @@
 mod conclusion;
+mod definition;
 mod derivations;
 mod env;
 mod kind;
+mod program;
 mod terms;
 mod traces;
 mod types;

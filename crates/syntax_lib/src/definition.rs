@@ -1,7 +1,7 @@
 use crate::{terms::Term, types::Type, Name};
 use std::fmt;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Definition<T, Ty>
 where
     T: Term,
