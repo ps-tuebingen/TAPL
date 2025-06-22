@@ -1,11 +1,9 @@
-pub mod errors;
 pub mod eval;
 pub mod parser;
 pub mod terms;
 pub mod values;
 
 use crate::Language;
-use errors::Error;
 use syntax::untyped::Untyped;
 use terms::Term;
 use values::Value;
@@ -17,7 +15,6 @@ impl Language for UntypedArithmetic {
     type Term = Term;
     type Type = Untyped;
     type Value = Value;
-    type LanguageError = Error;
 }
 
 #[cfg(test)]

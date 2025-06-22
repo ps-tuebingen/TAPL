@@ -3,7 +3,6 @@ use common::errors::{
     UndefinedLabel, UndefinedLocation,
 };
 use std::fmt;
-use syntax::types::Type;
 
 pub mod empty_case;
 pub mod not_a_subtype;
@@ -12,12 +11,9 @@ pub use empty_case::EmptyCase;
 pub use not_a_subtype::NotASubtype;
 
 #[derive(Debug)]
-pub enum CheckError<Ty>
-where
-    Ty: Type,
-{
+pub enum CheckError {
     EmptyCase(EmptyCase),
-    NotASubtype(NotASubtype<Ty>),
+    NotASubtype(NotASubtype),
     KindMismatch(KindMismatch),
     TypeMismatch(TypeMismatch),
     UndefinedLocation(UndefinedLocation),
@@ -28,10 +24,7 @@ where
     FreeVariable(FreeVariable),
 }
 
-impl<Ty> fmt::Display for CheckError<Ty>
-where
-    Ty: Type,
-{
+impl fmt::Display for CheckError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             CheckError::EmptyCase(ec) => ec.fmt(f),
@@ -48,94 +41,64 @@ where
     }
 }
 
-impl<Ty> std::error::Error for CheckError<Ty> where Ty: Type {}
+impl std::error::Error for CheckError {}
 
-impl<Ty> From<EmptyCase> for CheckError<Ty>
-where
-    Ty: Type,
-{
-    fn from(err: EmptyCase) -> CheckError<Ty> {
+impl From<EmptyCase> for CheckError {
+    fn from(err: EmptyCase) -> CheckError {
         CheckError::EmptyCase(err)
     }
 }
 
-impl<Ty> From<NotASubtype<Ty>> for CheckError<Ty>
-where
-    Ty: Type,
-{
-    fn from(err: NotASubtype<Ty>) -> CheckError<Ty> {
+impl From<NotASubtype> for CheckError {
+    fn from(err: NotASubtype) -> CheckError {
         CheckError::NotASubtype(err)
     }
 }
 
-impl<Ty> From<KindMismatch> for CheckError<Ty>
-where
-    Ty: Type,
-{
-    fn from(err: KindMismatch) -> CheckError<Ty> {
+impl From<KindMismatch> for CheckError {
+    fn from(err: KindMismatch) -> CheckError {
         CheckError::KindMismatch(err)
     }
 }
 
-impl<Ty> From<TypeMismatch> for CheckError<Ty>
-where
-    Ty: Type,
-{
-    fn from(err: TypeMismatch) -> CheckError<Ty> {
+impl From<TypeMismatch> for CheckError {
+    fn from(err: TypeMismatch) -> CheckError {
         CheckError::TypeMismatch(err)
     }
 }
 
-impl<Ty> From<UndefinedLocation> for CheckError<Ty>
-where
-    Ty: Type,
-{
-    fn from(err: UndefinedLocation) -> CheckError<Ty> {
+impl From<UndefinedLocation> for CheckError {
+    fn from(err: UndefinedLocation) -> CheckError {
         CheckError::UndefinedLocation(err)
     }
 }
 
-impl<Ty> From<IndexOutOfBounds> for CheckError<Ty>
-where
-    Ty: Type,
-{
-    fn from(err: IndexOutOfBounds) -> CheckError<Ty> {
+impl From<IndexOutOfBounds> for CheckError {
+    fn from(err: IndexOutOfBounds) -> CheckError {
         CheckError::IndexOutOfBounds(err)
     }
 }
 
-impl<Ty> From<FreeTypeVariable> for CheckError<Ty>
-where
-    Ty: Type,
-{
-    fn from(err: FreeTypeVariable) -> CheckError<Ty> {
+impl From<FreeTypeVariable> for CheckError {
+    fn from(err: FreeTypeVariable) -> CheckError {
         CheckError::FreeTypeVariable(err)
     }
 }
 
-impl<Ty> From<UndefinedLabel> for CheckError<Ty>
-where
-    Ty: Type,
-{
-    fn from(err: UndefinedLabel) -> CheckError<Ty> {
+impl From<UndefinedLabel> for CheckError {
+    fn from(err: UndefinedLabel) -> CheckError {
         CheckError::UndefinedLabel(err)
     }
 }
 
-impl<Ty> From<NameMismatch> for CheckError<Ty>
-where
-    Ty: Type,
-{
-    fn from(err: NameMismatch) -> CheckError<Ty> {
+impl From<NameMismatch> for CheckError {
+    fn from(err: NameMismatch) -> CheckError {
         CheckError::NameMismatch(err)
     }
 }
 
-impl<Ty> From<FreeVariable> for CheckError<Ty>
-where
-    Ty: Type,
-{
-    fn from(err: FreeVariable) -> CheckError<Ty> {
+impl From<FreeVariable> for CheckError {
+    fn from(err: FreeVariable) -> CheckError {
         CheckError::FreeVariable(err)
     }
 }

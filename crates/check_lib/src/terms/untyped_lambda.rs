@@ -18,10 +18,7 @@ where
     type Type = <T as Typecheck>::Type;
     type Deriv = TypingDerivation<Self::Term, Self::Type>;
 
-    fn check(
-        &self,
-        env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Self::Deriv, CheckError<Self::Type>> {
+    fn check(&self, env: Environment<<T as Typecheck>::Type>) -> Result<Self::Deriv, CheckError> {
         Ok(
             TypingDerivation::untyped_lambda(Conclusion::new(env, self.clone(), Untyped.into()))
                 .into(),

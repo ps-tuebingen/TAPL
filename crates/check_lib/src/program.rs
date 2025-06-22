@@ -11,7 +11,7 @@ where
     type Type = Ty;
     type Deriv = ProgramDerivation<T, Ty>;
 
-    fn check(&self, env: Environment<Ty>) -> Result<Self::Deriv, CheckError<Ty>> {
+    fn check(&self, env: Environment<Ty>) -> Result<Self::Deriv, CheckError> {
         let mut deriv = ProgramDerivation::new();
         for def in self.definitions.iter() {
             let def_res = def.check(env.clone())?;

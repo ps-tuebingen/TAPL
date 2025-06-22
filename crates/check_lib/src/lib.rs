@@ -14,11 +14,11 @@ pub trait Typecheck {
     type Term: Term;
     type Deriv: Derivation<Self::Term, Self::Type>;
 
-    fn check_start(&self) -> Result<Self::Deriv, CheckError<Self::Type>> {
+    fn check_start(&self) -> Result<Self::Deriv, CheckError> {
         self.check(Environment::default())
     }
 
-    fn check(&self, env: Environment<Self::Type>) -> Result<Self::Deriv, CheckError<Self::Type>>;
+    fn check(&self, env: Environment<Self::Type>) -> Result<Self::Deriv, CheckError>;
 }
 
 pub trait Subtypecheck<Ty>
@@ -26,14 +26,14 @@ where
     Self: Type,
     Ty: Type,
 {
-    fn check_subtype(&self, sup: &Ty, env: Environment<Ty>) -> Result<(), CheckError<Ty>>;
+    fn check_subtype(&self, sup: &Ty, env: Environment<Ty>) -> Result<(), CheckError>;
 }
 
 pub trait Kindcheck<Ty>
 where
     Ty: Type,
 {
-    fn check_kind(&self, env: Environment<Ty>) -> Result<Kind, CheckError<Ty>>;
+    fn check_kind(&self, env: Environment<Ty>) -> Result<Kind, CheckError>;
 }
 
 pub trait Normalize<Ty>

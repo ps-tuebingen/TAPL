@@ -10,7 +10,7 @@ impl<Ty> Subtypecheck<Ty> for Fun<Ty>
 where
     Ty: TypeGroup + Subtypecheck<Ty>,
 {
-    fn check_subtype(&self, sup: &Ty, env: Environment<Ty>) -> Result<(), CheckError<Ty>> {
+    fn check_subtype(&self, sup: &Ty, env: Environment<Ty>) -> Result<(), CheckError> {
         if sup.clone().into_top().is_ok() {
             return Ok(());
         }
@@ -26,7 +26,7 @@ impl<Ty> Kindcheck<Ty> for Fun<Ty>
 where
     Ty: Type + Kindcheck<Ty>,
 {
-    fn check_kind(&self, env: Environment<Ty>) -> Result<Kind, CheckError<Ty>> {
+    fn check_kind(&self, env: Environment<Ty>) -> Result<Kind, CheckError> {
         let from_kind = self.from.check_kind(env.clone())?;
         if from_kind != Kind::Star {
             return Err(KindMismatch::new(from_kind.into(), KindKind::Star).into());

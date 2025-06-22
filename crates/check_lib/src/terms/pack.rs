@@ -21,7 +21,7 @@ where
     fn check(
         &self,
         mut env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Self::Deriv, CheckError<Self::Type>> {
+    ) -> Result<Self::Deriv, CheckError> {
         let outer_norm = self.outer_ty.clone().normalize(env.clone());
         let inner_kind = self.inner_ty.check_kind(env.clone())?;
         let outer_knd = outer_norm.check_kind(env.clone())?;

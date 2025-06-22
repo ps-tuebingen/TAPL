@@ -20,7 +20,7 @@ where
     fn check(
         &self,
         mut env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Self::Deriv, CheckError<Self::Type>> {
+    ) -> Result<Self::Deriv, CheckError> {
         let bound_res = self.bound_term.check(env.clone())?;
         let bound_ty = bound_res.ty().normalize(env.clone());
         bound_ty.check_kind(env.clone())?.into_star()?;

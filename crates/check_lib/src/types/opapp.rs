@@ -12,7 +12,7 @@ where
     Ty: TypeGroup + Subtypecheck<Ty>,
     Self: Into<Ty>,
 {
-    fn check_subtype(&self, sup: &Ty, env: Environment<Ty>) -> Result<(), CheckError<Ty>> {
+    fn check_subtype(&self, sup: &Ty, env: Environment<Ty>) -> Result<(), CheckError> {
         if sup.clone().into_top().is_ok() {
             return Ok(());
         }
@@ -26,7 +26,7 @@ impl<Ty> Kindcheck<Ty> for OpApp<Ty>
 where
     Ty: TypeGroup + Kindcheck<Ty>,
 {
-    fn check_kind(&self, env: Environment<Ty>) -> Result<Kind, CheckError<Ty>> {
+    fn check_kind(&self, env: Environment<Ty>) -> Result<Kind, CheckError> {
         let fun_kind = self.fun.check_kind(env.clone())?;
         let (fun_from, fun_to) = fun_kind.into_arrow()?;
         let arg_kind = self.arg.check_kind(env)?;

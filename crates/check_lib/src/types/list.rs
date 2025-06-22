@@ -8,7 +8,7 @@ impl<Ty> Subtypecheck<Ty> for List<Ty>
 where
     Ty: TypeGroup + Subtypecheck<Ty>,
 {
-    fn check_subtype(&self, sup: &Ty, env: Environment<Ty>) -> Result<(), CheckError<Ty>> {
+    fn check_subtype(&self, sup: &Ty, env: Environment<Ty>) -> Result<(), CheckError> {
         if sup.clone().into_top().is_ok() {
             return Ok(());
         }

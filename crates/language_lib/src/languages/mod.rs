@@ -1,35 +1,5 @@
-use super::{errors::UndefinedLanguage, FormatMethod, Language};
+use super::{errors::LanguageError, FormatMethod, Language};
 use std::{fmt, str::FromStr};
-
-pub mod bounded_quantification;
-pub mod exceptions;
-pub mod existential;
-pub mod f_omega;
-pub mod f_omega_sub;
-pub mod lambda_omega;
-pub mod recursive;
-pub mod references;
-pub mod stlc;
-pub mod subtypes;
-pub mod system_f;
-pub mod typed_arithmetic;
-pub mod untyped_arithmetic;
-pub mod untyped_lambda;
-
-pub use bounded_quantification::BoundedQuantification;
-pub use exceptions::Exceptions;
-pub use existential::Existential;
-pub use f_omega::FOmega;
-pub use f_omega_sub::FOmegaSub;
-pub use lambda_omega::LambdaOmega;
-pub use recursive::Recursive;
-pub use references::References;
-pub use stlc::Stlc;
-pub use subtypes::Subtypes;
-pub use system_f::SystemF;
-pub use typed_arithmetic::TypedArithmetic;
-pub use untyped_arithmetic::UntypedArithmetic;
-pub use untyped_lambda::UntypedLambda;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum AllLanguages {
@@ -425,7 +395,7 @@ impl AllLanguages {
 }
 
 impl FromStr for AllLanguages {
-    type Err = UndefinedLanguage;
+    type Err = LanguageError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_lowercase().trim() {
             "untyped-arithmetic" => Ok(untyped_arithmetic::UntypedArithmetic.into()),
@@ -442,7 +412,7 @@ impl FromStr for AllLanguages {
             "lambda-omega" => Ok(lambda_omega::LambdaOmega.into()),
             "f-omega" => Ok(f_omega::FOmega.into()),
             "f-omega-sub" => Ok(f_omega_sub::FOmegaSub.into()),
-            _ => Err(UndefinedLanguage::new(s)),
+            _ => Err(LanguageError::UndefinedLanguage(s.to_owned())),
         }
     }
 }
@@ -549,6 +519,36 @@ impl From<f_omega_sub::FOmegaSub> for AllLanguages {
         AllLanguages::FOmegaSub(fomegasub)
     }
 }
+
+pub mod bounded_quantification;
+pub mod exceptions;
+pub mod existential;
+pub mod f_omega;
+pub mod f_omega_sub;
+pub mod lambda_omega;
+pub mod recursive;
+pub mod references;
+pub mod stlc;
+pub mod subtypes;
+pub mod system_f;
+pub mod typed_arithmetic;
+pub mod untyped_arithmetic;
+pub mod untyped_lambda;
+
+pub use bounded_quantification::BoundedQuantification;
+pub use exceptions::Exceptions;
+pub use existential::Existential;
+pub use f_omega::FOmega;
+pub use f_omega_sub::FOmegaSub;
+pub use lambda_omega::LambdaOmega;
+pub use recursive::Recursive;
+pub use references::References;
+pub use stlc::Stlc;
+pub use subtypes::Subtypes;
+pub use system_f::SystemF;
+pub use typed_arithmetic::TypedArithmetic;
+pub use untyped_arithmetic::UntypedArithmetic;
+pub use untyped_lambda::UntypedLambda;
 
 #[cfg(test)]
 mod lang_tests {

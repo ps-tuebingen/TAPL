@@ -10,7 +10,7 @@ impl<Ty> Subtypecheck<Ty> for ExistsBounded<Ty>
 where
     Ty: TypeGroup + Subtypecheck<Ty> + Normalize<Ty>,
 {
-    fn check_subtype(&self, sup: &Ty, mut env: Environment<Ty>) -> Result<(), CheckError<Ty>> {
+    fn check_subtype(&self, sup: &Ty, mut env: Environment<Ty>) -> Result<(), CheckError> {
         if sup.clone().into_top().is_ok() {
             return Ok(());
         }
@@ -34,7 +34,7 @@ impl<Ty> Kindcheck<Ty> for ExistsBounded<Ty>
 where
     Ty: Type + Kindcheck<Ty>,
 {
-    fn check_kind(&self, mut env: Environment<Ty>) -> Result<Kind, CheckError<Ty>> {
+    fn check_kind(&self, mut env: Environment<Ty>) -> Result<Kind, CheckError> {
         let sup_kind = self.sup_ty.check_kind(env.clone())?;
         env.add_tyvar_kind(self.var.clone(), sup_kind);
         self.ty.check_kind(env)

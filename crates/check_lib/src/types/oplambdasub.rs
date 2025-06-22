@@ -10,7 +10,7 @@ where
     Ty: TypeGroup + Subtypecheck<Ty> + Normalize<Ty> + SubstType<Ty, Target = Ty>,
     TypeVariable<Ty>: Into<Ty>,
 {
-    fn check_subtype(&self, sup: &Ty, mut env: Environment<Ty>) -> Result<(), CheckError<Ty>> {
+    fn check_subtype(&self, sup: &Ty, mut env: Environment<Ty>) -> Result<(), CheckError> {
         let sup_norm = sup.clone().normalize(env.clone());
         let self_sup_norm = self.sup.clone().normalize(env.clone());
         let sup_op = sup_norm.into_oplambdasub()?;
@@ -30,7 +30,7 @@ impl<Ty> Kindcheck<Ty> for OpLambdaSub<Ty>
 where
     Ty: Type + Kindcheck<Ty>,
 {
-    fn check_kind(&self, mut env: Environment<Ty>) -> Result<Kind, CheckError<Ty>> {
+    fn check_kind(&self, mut env: Environment<Ty>) -> Result<Kind, CheckError> {
         let sup_kind = self.sup.check_kind(env.clone())?;
         env.add_tyvar_kind(self.var.clone(), sup_kind.clone());
         let body_kind = self.body.check_kind(env)?;

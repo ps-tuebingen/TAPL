@@ -16,10 +16,7 @@ where
     type Type = <T as Typecheck>::Type;
     type Deriv = TypingDerivation<Self::Term, Self::Type>;
 
-    fn check(
-        &self,
-        env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Self::Deriv, CheckError<Self::Type>> {
+    fn check(&self, env: Environment<<T as Typecheck>::Type>) -> Result<Self::Deriv, CheckError> {
         let right_res = self.right_term.check(env.clone())?;
         let right_ty = right_res.ty().normalize(env.clone());
         let right_knd = right_ty.check_kind(env.clone())?;

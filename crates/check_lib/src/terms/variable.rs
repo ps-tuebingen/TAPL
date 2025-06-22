@@ -14,10 +14,7 @@ where
     type Type = <T as Typecheck>::Type;
     type Deriv = TypingDerivation<Self::Term, Self::Type>;
 
-    fn check(
-        &self,
-        env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Self::Deriv, CheckError<Self::Type>> {
+    fn check(&self, env: Environment<<T as Typecheck>::Type>) -> Result<Self::Deriv, CheckError> {
         let ty = env.get_var(&self.var)?;
         let conc = Conclusion::new(env.clone(), self.clone(), ty);
         let deriv = TypingDerivation::var(conc);

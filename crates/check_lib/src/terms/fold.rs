@@ -22,7 +22,7 @@ where
     fn check(
         &self,
         mut env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Self::Deriv, CheckError<Self::Type>> {
+    ) -> Result<Self::Deriv, CheckError> {
         let mu_ty = self.ty.clone().normalize(env.clone()).into_mu()?;
         env.add_tyvar_kind(mu_ty.var.clone(), Kind::Star);
         mu_ty.ty.check_kind(env.clone())?.into_star()?;

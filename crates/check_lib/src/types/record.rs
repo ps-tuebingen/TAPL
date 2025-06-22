@@ -10,7 +10,7 @@ impl<Ty> Subtypecheck<Ty> for Record<Ty>
 where
     Ty: TypeGroup + Subtypecheck<Ty> + Normalize<Ty>,
 {
-    fn check_subtype(&self, sup: &Ty, env: Environment<Ty>) -> Result<(), CheckError<Ty>> {
+    fn check_subtype(&self, sup: &Ty, env: Environment<Ty>) -> Result<(), CheckError> {
         if sup.clone().into_top().is_ok() {
             return Ok(());
         }
@@ -29,7 +29,7 @@ impl<Ty> Kindcheck<Ty> for Record<Ty>
 where
     Ty: Type + Kindcheck<Ty>,
 {
-    fn check_kind(&self, env: Environment<Ty>) -> Result<Kind, CheckError<Ty>> {
+    fn check_kind(&self, env: Environment<Ty>) -> Result<Kind, CheckError> {
         for (_, t) in self.records.iter() {
             t.check_kind(env.clone())?.into_star()?;
         }

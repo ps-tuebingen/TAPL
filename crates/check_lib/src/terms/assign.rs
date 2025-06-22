@@ -18,10 +18,7 @@ where
     type Deriv = TypingDerivation<Self::Term, Self::Type>;
     type Term = T;
 
-    fn check(
-        &self,
-        env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Self::Deriv, CheckError<Self::Type>> {
+    fn check(&self, env: Environment<<T as Typecheck>::Type>) -> Result<Self::Deriv, CheckError> {
         let lhs_res = self.lhs.check(env.clone())?;
         let lhs_ty = lhs_res.ty().normalize(env.clone());
         lhs_ty.check_kind(env.clone())?.into_star()?;

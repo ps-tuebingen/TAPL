@@ -20,7 +20,7 @@ where
     fn check(
         &self,
         mut env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Self::Deriv, CheckError<Self::Type>> {
+    ) -> Result<Self::Deriv, CheckError> {
         self.annot.check_kind(env.clone())?;
         env.add_var(self.var.clone(), self.annot.clone());
         let body_res = self.body.check(env.clone())?;

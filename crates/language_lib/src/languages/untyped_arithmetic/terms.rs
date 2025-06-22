@@ -42,7 +42,7 @@ impl Typecheck for Term {
     type Type = Untyped;
     type Deriv = TypingDerivation<Self::Term, Self::Type>;
 
-    fn check(&self, _: Environment<Untyped>) -> Result<Self::Deriv, CheckError<Untyped>> {
+    fn check(&self, _: Environment<Untyped>) -> Result<Self::Deriv, CheckError> {
         Ok(TypingDerivation::empty(self.clone()))
     }
 }

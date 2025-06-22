@@ -8,7 +8,7 @@ impl<Ty> Subtypecheck<Ty> for TypeVariable<Ty>
 where
     Ty: TypeGroup + Subtypecheck<Ty> + Normalize<Ty>,
 {
-    fn check_subtype(&self, sup: &Ty, env: Environment<Ty>) -> Result<(), CheckError<Ty>> {
+    fn check_subtype(&self, sup: &Ty, env: Environment<Ty>) -> Result<(), CheckError> {
         let ty_super = env.get_tyvar_super(&self.v)?;
         let sup_norm = sup.clone().normalize(env);
 
@@ -30,7 +30,7 @@ impl<Ty> Kindcheck<Ty> for TypeVariable<Ty>
 where
     Ty: TypeGroup + Kindcheck<Ty>,
 {
-    fn check_kind(&self, env: Environment<Ty>) -> Result<Kind, CheckError<Ty>> {
+    fn check_kind(&self, env: Environment<Ty>) -> Result<Kind, CheckError> {
         env.get_tyvar_kind(&self.v).map_err(|err| err.into())
     }
 }

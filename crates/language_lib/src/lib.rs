@@ -1,8 +1,8 @@
-use check::{errors::CheckError, Kindcheck, Normalize, Subtypecheck, Typecheck};
+use check::{Kindcheck, Normalize, Subtypecheck, Typecheck};
 use derivation::{ProgramDerivation, TypingDerivation};
 use eval::Eval;
 use latex::{LatexConfig, LatexFmt};
-use parse::{errors::ParserError, GroupParse, Parse};
+use parse::{GroupParse, Parse};
 use syntax::{
     program::Program,
     subst::{SubstTerm, SubstType},
@@ -15,6 +15,7 @@ use trace::EvalTrace;
 pub mod errors;
 pub mod languages;
 
+use errors::LanguageError;
 pub use languages::AllLanguages;
 
 #[derive(Default)]
@@ -33,7 +34,7 @@ where
     pub parse_res: Option<Program<Lang::Term, Lang::Type>>,
     pub check_res: Option<ProgramDerivation<Lang::Term, Lang::Type>>,
     pub eval_res: Option<EvalTrace<Lang::Term, Lang::Value>>,
-    pub err: Option<Lang::LanguageError>,
+    pub err: Option<LanguageError>,
 }
 
 impl<Lang> Default for AllResults<Lang>
@@ -72,24 +73,19 @@ pub trait Language {
 
     type Value: ValueGroup<Term = Self::Term, Type = Self::Type> + LatexFmt;
 
-    type LanguageError: std::error::Error + From<ParserError> + From<CheckError<Self::Type>>;
-
-    fn parse(&self, input: String) -> Result<Program<Self::Term, Self::Type>, Self::LanguageError> {
+    fn parse(&self, input: String) -> Result<Program<Self::Term, Self::Type>, LanguageError> {
         Ok(Program::<Self::Term, Self::Type>::parse(input)?)
     }
 
     fn check(
         &self,
         input: String,
-    ) -> Result<ProgramDerivation<Self::Term, Self::Type>, Self::LanguageError> {
+    ) -> Result<ProgramDerivation<Self::Term, Self::Type>, LanguageError> {
         let parsed = self.parse(input)?;
         Program::<Self::Term, Self::Type>::check_start(&parsed).map_err(|err| err.into())
     }
 
-    fn eval(
-        &self,
-        input: String,
-    ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::LanguageError> {
+    fn eval(&self, input: String) -> Result<EvalTrace<Self::Term, Self::Value>, LanguageError> {
         let parsed = Self::Term::parse(input)?;
         Self::Term::eval_start(parsed).map_err(|err| err.into())
     }

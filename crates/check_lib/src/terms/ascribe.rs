@@ -16,10 +16,7 @@ where
     type Deriv = TypingDerivation<Self::Term, Self::Type>;
     type Term = T;
 
-    fn check(
-        &self,
-        env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Self::Deriv, CheckError<Ty>> {
+    fn check(&self, env: Environment<<T as Typecheck>::Type>) -> Result<Self::Deriv, CheckError> {
         let t_res = self.term.check(env.clone())?;
         let t_ty = t_res.ty().normalize(env.clone());
         let asc_norm = self.ty.clone().normalize(env.clone());

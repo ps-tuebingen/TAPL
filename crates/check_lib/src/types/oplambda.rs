@@ -10,7 +10,7 @@ where
     Ty: TypeGroup + Subtypecheck<Ty> + SubstType<Ty, Target = Ty>,
     TypeVariable<Ty>: Into<Ty>,
 {
-    fn check_subtype(&self, sup: &Ty, mut env: Environment<Ty>) -> Result<(), CheckError<Ty>> {
+    fn check_subtype(&self, sup: &Ty, mut env: Environment<Ty>) -> Result<(), CheckError> {
         if sup.clone().into_top().is_ok() {
             return Ok(());
         }
@@ -32,7 +32,7 @@ impl<Ty> Kindcheck<Ty> for OpLambda<Ty>
 where
     Ty: Type + Kindcheck<Ty>,
 {
-    fn check_kind(&self, mut env: Environment<Ty>) -> Result<Kind, CheckError<Ty>> {
+    fn check_kind(&self, mut env: Environment<Ty>) -> Result<Kind, CheckError> {
         env.add_tyvar_kind(self.var.clone(), self.annot.clone());
         let body_kind = self.body.check_kind(env)?;
         Ok(Kind::Arrow(

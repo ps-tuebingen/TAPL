@@ -9,7 +9,7 @@ impl<Ty> Kindcheck<Ty> for Forall<Ty>
 where
     Ty: Type + Kindcheck<Ty>,
 {
-    fn check_kind(&self, mut env: Environment<Ty>) -> Result<Kind, CheckError<Ty>> {
+    fn check_kind(&self, mut env: Environment<Ty>) -> Result<Kind, CheckError> {
         env.add_tyvar_kind(self.var.clone(), self.kind.clone());
         let ty_kind = self.ty.check_kind(env)?;
         Ok(ty_kind)

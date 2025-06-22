@@ -20,7 +20,7 @@ where
     fn check(
         &self,
         mut env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Self::Deriv, CheckError<Self::Type>> {
+    ) -> Result<Self::Deriv, CheckError> {
         let sup_norm = self.sup_ty.clone().normalize(env.clone());
         let sup_kind = sup_norm.check_kind(env.clone())?;
         env.add_tyvar_super(self.var.clone(), sup_norm.clone());

@@ -10,7 +10,7 @@ impl<Ty> Subtypecheck<Ty> for ForallBounded<Ty>
 where
     Ty: TypeGroup + Subtypecheck<Ty> + Normalize<Ty>,
 {
-    fn check_subtype(&self, sup: &Ty, env: Environment<Ty>) -> Result<(), CheckError<Ty>> {
+    fn check_subtype(&self, sup: &Ty, env: Environment<Ty>) -> Result<(), CheckError> {
         let other_forall = sup.clone().into_forall_bounded()?;
         let sup_norm = other_forall.sup_ty.normalize(env.clone());
         let self_norm = self.sup_ty.clone().normalize(env.clone());
@@ -27,7 +27,7 @@ impl<Ty> Kindcheck<Ty> for ForallBounded<Ty>
 where
     Ty: Type + Kindcheck<Ty>,
 {
-    fn check_kind(&self, mut env: Environment<Ty>) -> Result<Kind, CheckError<Ty>> {
+    fn check_kind(&self, mut env: Environment<Ty>) -> Result<Kind, CheckError> {
         let sup_kind = self.sup_ty.check_kind(env.clone())?;
         env.add_tyvar_kind(self.var.clone(), sup_kind);
         self.ty.check_kind(env)

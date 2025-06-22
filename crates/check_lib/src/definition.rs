@@ -11,7 +11,7 @@ where
     type Term = T;
     type Type = Ty;
     type Deriv = DefinitionDerivation<T, Ty>;
-    fn check(&self, env: Environment<Ty>) -> Result<Self::Deriv, CheckError<Ty>> {
+    fn check(&self, env: Environment<Ty>) -> Result<Self::Deriv, CheckError> {
         let body_res = self.body.check(env)?;
         let body_ty = body_res.ty();
         if self.annot != body_ty {

@@ -1,5 +1,4 @@
 pub mod check;
-pub mod errors;
 pub mod eval;
 pub mod parser;
 pub mod terms;
@@ -7,7 +6,6 @@ pub mod types;
 pub mod values;
 
 use crate::Language;
-use errors::Error;
 use terms::Term;
 use types::Type;
 use values::Value;
@@ -19,5 +17,4 @@ impl Language for Stlc {
     type Term = Term;
     type Type = Type;
     type Value = Value;
-    type LanguageError = Error;
 }

@@ -11,7 +11,7 @@ impl Typecheck for Term {
     fn check(
         &self,
         env: Environment<Type>,
-    ) -> Result<TypingDerivation<Self::Term, Self::Type>, CheckError<Type>> {
+    ) -> Result<TypingDerivation<Self::Term, Self::Type>, CheckError> {
         match self {
             Term::Var(var) => var.check(env),
             Term::Lambda(lam) => lam.check(env),
@@ -31,7 +31,7 @@ impl Typecheck for Term {
 }
 
 impl Subtypecheck<Type> for Type {
-    fn check_subtype(&self, sup: &Type, env: Environment<Type>) -> Result<(), CheckError<Type>> {
+    fn check_subtype(&self, sup: &Type, env: Environment<Type>) -> Result<(), CheckError> {
         match self {
             Type::Var(var) => var.check_subtype(sup, env),
             Type::Top(top) => top.check_subtype(sup, env),
@@ -47,7 +47,7 @@ impl Subtypecheck<Type> for Type {
 }
 
 impl Kindcheck<Type> for Type {
-    fn check_kind(&self, env: Environment<Type>) -> Result<Kind, CheckError<Type>> {
+    fn check_kind(&self, env: Environment<Type>) -> Result<Kind, CheckError> {
         match self {
             Type::Var(var) => var.check_kind(env),
             Type::Top(top) => top.check_kind(env),
