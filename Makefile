@@ -10,6 +10,11 @@ web: examples
 test: examples
 	cargo test --all --no-fail-fast 
 
+.PHONY: test-fast
+test-fast: examples
+	cargo test --all --no-fail-fast --exclude e2e_tests
+	cargo test -p e2e_tests -- --exclude-latex
+
 .PHONY: check
 check: examples
 	cargo fmt --all -- --check
