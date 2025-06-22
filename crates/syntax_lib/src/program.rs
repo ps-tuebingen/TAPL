@@ -1,39 +1,14 @@
 use crate::{
+    definition::Definition,
     subst::{SubstTerm, SubstType},
     terms::Term,
     types::Type,
-    Name, TypeVar, Var,
+    TypeVar, Var,
 };
 use common::errors::DuplicateDefinition;
+use std::fmt;
 
-pub struct Definition<T, Ty>
-where
-    T: Term,
-    Ty: Type,
-{
-    pub name: Name,
-    pub annot: Ty,
-    pub body: T,
-}
-
-impl<T, Ty> Definition<T, Ty>
-where
-    T: Term,
-    Ty: Type,
-{
-    pub fn new<T1, Ty1>(name: &str, annot: Ty1, body: T1) -> Definition<T, Ty>
-    where
-        T1: Into<T>,
-        Ty1: Into<Ty>,
-    {
-        Definition {
-            name: name.to_owned(),
-            annot: annot.into(),
-            body: body.into(),
-        }
-    }
-}
-
+#[derive(Debug)]
 pub struct Program<T, Ty>
 where
     T: Term,
@@ -132,5 +107,29 @@ where
             annot: self.annot.subst_type(v, ty),
             body: self.body.subst_type(v, ty),
         }
+    }
+}
+
+impl<T, Ty> fmt::Display for Program<T, Ty>
+where
+    T: Term,
+    Ty: Type,
+{
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let main_str = if let Some(ref main) = self.main {
+            main.to_string()
+        } else {
+            "".to_owned()
+        };
+        write!(
+            f,
+            "{}\n\n{}",
+            self.definitions
+                .iter()
+                .map(|def| def.to_string())
+                .collect::<Vec<String>>()
+                .join("\n\n"),
+            main_str
+        )
     }
 }

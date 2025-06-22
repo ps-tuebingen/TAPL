@@ -1,3 +1,4 @@
+pub mod definition;
 pub mod env;
 pub mod kinds;
 pub mod program;

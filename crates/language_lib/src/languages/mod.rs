@@ -1,4 +1,4 @@
-use super::{FormatMethod, Language, errors::UndefinedLanguage};
+use super::{errors::UndefinedLanguage, FormatMethod, Language};
 use std::{fmt, str::FromStr};
 
 pub mod bounded_quantification;
@@ -96,59 +96,59 @@ impl AllLanguages {
         match self {
             Self::UntypedArithmetic(ua) => {
                 let res = ua.parse(input)?;
-                Ok(ua.format_term(&res, method))
+                Ok(ua.format_prog(&res, method))
             }
             Self::UntypedLambda(ul) => {
                 let res = ul.parse(input)?;
-                Ok(ul.format_term(&res, method))
+                Ok(ul.format_prog(&res, method))
             }
             Self::TypedArithmetic(ta) => {
                 let res = ta.parse(input)?;
-                Ok(ta.format_term(&res, method))
+                Ok(ta.format_prog(&res, method))
             }
             Self::Stlc(stlc) => {
                 let res = stlc.parse(input)?;
-                Ok(stlc.format_term(&res, method))
+                Ok(stlc.format_prog(&res, method))
             }
             Self::References(rf) => {
                 let res = rf.parse(input)?;
-                Ok(rf.format_term(&res, method))
+                Ok(rf.format_prog(&res, method))
             }
             Self::Exceptions(ex) => {
                 let res = ex.parse(input)?;
-                Ok(ex.format_term(&res, method))
+                Ok(ex.format_prog(&res, method))
             }
             Self::Subtypes(s) => {
                 let res = s.parse(input)?;
-                Ok(s.format_term(&res, method))
+                Ok(s.format_prog(&res, method))
             }
             Self::Recursive(rec) => {
                 let res = rec.parse(input)?;
-                Ok(rec.format_term(&res, method))
+                Ok(rec.format_prog(&res, method))
             }
             Self::Existential(ex) => {
                 let res = ex.parse(input)?;
-                Ok(ex.format_term(&res, method))
+                Ok(ex.format_prog(&res, method))
             }
             Self::SystemF(sys) => {
                 let res = sys.parse(input)?;
-                Ok(sys.format_term(&res, method))
+                Ok(sys.format_prog(&res, method))
             }
             Self::BoundedQuantification(bd) => {
                 let res = bd.parse(input)?;
-                Ok(bd.format_term(&res, method))
+                Ok(bd.format_prog(&res, method))
             }
             Self::LambdaOmega(lo) => {
                 let res = lo.parse(input)?;
-                Ok(lo.format_term(&res, method))
+                Ok(lo.format_prog(&res, method))
             }
             Self::FOmega(fo) => {
                 let res = fo.parse(input)?;
-                Ok(fo.format_term(&res, method))
+                Ok(fo.format_prog(&res, method))
             }
             Self::FOmegaSub(fos) => {
                 let res = fos.parse(input)?;
-                Ok(fos.format_term(&res, method))
+                Ok(fos.format_prog(&res, method))
             }
         }
     }
@@ -297,7 +297,7 @@ impl AllLanguages {
             Self::UntypedArithmetic(ua) => {
                 let res = ua.run_all(input);
                 (
-                    res.parse_res.map(|p| ua.format_term(&p, method)),
+                    res.parse_res.map(|p| ua.format_prog(&p, method)),
                     res.check_res.map(|c| ua.format_derivation(&c, method)),
                     res.eval_res.map(|e| ua.format_trace(&e, method)),
                     res.err.map(|e| e.to_string()),
@@ -306,7 +306,7 @@ impl AllLanguages {
             Self::UntypedLambda(ul) => {
                 let res = ul.run_all(input);
                 (
-                    res.parse_res.map(|p| ul.format_term(&p, method)),
+                    res.parse_res.map(|p| ul.format_prog(&p, method)),
                     res.check_res.map(|c| ul.format_derivation(&c, method)),
                     res.eval_res.map(|e| ul.format_trace(&e, method)),
                     res.err.map(|e| e.to_string()),
@@ -315,7 +315,7 @@ impl AllLanguages {
             Self::TypedArithmetic(ta) => {
                 let res = ta.run_all(input);
                 (
-                    res.parse_res.map(|p| ta.format_term(&p, method)),
+                    res.parse_res.map(|p| ta.format_prog(&p, method)),
                     res.check_res.map(|c| ta.format_derivation(&c, method)),
                     res.eval_res.map(|e| ta.format_trace(&e, method)),
                     res.err.map(|e| e.to_string()),
@@ -324,7 +324,7 @@ impl AllLanguages {
             Self::Stlc(stlc) => {
                 let res = stlc.run_all(input);
                 (
-                    res.parse_res.map(|p| stlc.format_term(&p, method)),
+                    res.parse_res.map(|p| stlc.format_prog(&p, method)),
                     res.check_res.map(|c| stlc.format_derivation(&c, method)),
                     res.eval_res.map(|e| stlc.format_trace(&e, method)),
                     res.err.map(|e| e.to_string()),
@@ -333,7 +333,7 @@ impl AllLanguages {
             Self::References(rf) => {
                 let res = rf.run_all(input);
                 (
-                    res.parse_res.map(|p| rf.format_term(&p, method)),
+                    res.parse_res.map(|p| rf.format_prog(&p, method)),
                     res.check_res.map(|c| rf.format_derivation(&c, method)),
                     res.eval_res.map(|e| rf.format_trace(&e, method)),
                     res.err.map(|e| e.to_string()),
@@ -342,7 +342,7 @@ impl AllLanguages {
             Self::Exceptions(ex) => {
                 let res = ex.run_all(input);
                 (
-                    res.parse_res.map(|p| ex.format_term(&p, method)),
+                    res.parse_res.map(|p| ex.format_prog(&p, method)),
                     res.check_res.map(|c| ex.format_derivation(&c, method)),
                     res.eval_res.map(|e| ex.format_trace(&e, method)),
                     res.err.map(|e| e.to_string()),
@@ -351,7 +351,7 @@ impl AllLanguages {
             Self::Subtypes(s) => {
                 let res = s.run_all(input);
                 (
-                    res.parse_res.map(|p| s.format_term(&p, method)),
+                    res.parse_res.map(|p| s.format_prog(&p, method)),
                     res.check_res.map(|c| s.format_derivation(&c, method)),
                     res.eval_res.map(|e| s.format_trace(&e, method)),
                     res.err.map(|e| e.to_string()),
@@ -360,7 +360,7 @@ impl AllLanguages {
             Self::Recursive(rec) => {
                 let res = rec.run_all(input);
                 (
-                    res.parse_res.map(|p| rec.format_term(&p, method)),
+                    res.parse_res.map(|p| rec.format_prog(&p, method)),
                     res.check_res.map(|c| rec.format_derivation(&c, method)),
                     res.eval_res.map(|e| rec.format_trace(&e, method)),
                     res.err.map(|e| e.to_string()),
@@ -369,7 +369,7 @@ impl AllLanguages {
             Self::Existential(ex) => {
                 let res = ex.run_all(input);
                 (
-                    res.parse_res.map(|p| ex.format_term(&p, method)),
+                    res.parse_res.map(|p| ex.format_prog(&p, method)),
                     res.check_res.map(|c| ex.format_derivation(&c, method)),
                     res.eval_res.map(|e| ex.format_trace(&e, method)),
                     res.err.map(|e| e.to_string()),
@@ -378,7 +378,7 @@ impl AllLanguages {
             Self::SystemF(sys) => {
                 let res = sys.run_all(input);
                 (
-                    res.parse_res.map(|p| sys.format_term(&p, method)),
+                    res.parse_res.map(|p| sys.format_prog(&p, method)),
                     res.check_res.map(|c| sys.format_derivation(&c, method)),
                     res.eval_res.map(|e| sys.format_trace(&e, method)),
                     res.err.map(|e| e.to_string()),
@@ -387,7 +387,7 @@ impl AllLanguages {
             Self::BoundedQuantification(bd) => {
                 let res = bd.run_all(input);
                 (
-                    res.parse_res.map(|p| bd.format_term(&p, method)),
+                    res.parse_res.map(|p| bd.format_prog(&p, method)),
                     res.check_res.map(|c| bd.format_derivation(&c, method)),
                     res.eval_res.map(|e| bd.format_trace(&e, method)),
                     res.err.map(|e| e.to_string()),
@@ -396,7 +396,7 @@ impl AllLanguages {
             Self::LambdaOmega(lo) => {
                 let res = lo.run_all(input);
                 (
-                    res.parse_res.map(|p| lo.format_term(&p, method)),
+                    res.parse_res.map(|p| lo.format_prog(&p, method)),
                     res.check_res.map(|c| lo.format_derivation(&c, method)),
                     res.eval_res.map(|e| lo.format_trace(&e, method)),
                     res.err.map(|e| e.to_string()),
@@ -405,7 +405,7 @@ impl AllLanguages {
             Self::FOmega(fo) => {
                 let res = fo.run_all(input);
                 (
-                    res.parse_res.map(|p| fo.format_term(&p, method)),
+                    res.parse_res.map(|p| fo.format_prog(&p, method)),
                     res.check_res.map(|c| fo.format_derivation(&c, method)),
                     res.eval_res.map(|e| fo.format_trace(&e, method)),
                     res.err.map(|e| e.to_string()),
@@ -414,7 +414,7 @@ impl AllLanguages {
             Self::FOmegaSub(fos) => {
                 let res = fos.run_all(input);
                 (
-                    res.parse_res.map(|p| fos.format_term(&p, method)),
+                    res.parse_res.map(|p| fos.format_prog(&p, method)),
                     res.check_res.map(|c| fos.format_derivation(&c, method)),
                     res.eval_res.map(|e| fos.format_trace(&e, method)),
                     res.err.map(|e| e.to_string()),

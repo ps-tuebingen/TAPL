@@ -1,5 +1,5 @@
 use check::{errors::CheckError, Typecheck};
-use derivation::Derivation;
+use derivation::TypingDerivation;
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
 use syntax::{
@@ -40,12 +40,10 @@ impl SubstType<Untyped> for Term {
 impl Typecheck for Term {
     type Term = Term;
     type Type = Untyped;
+    type Deriv = TypingDerivation<Self::Term, Self::Type>;
 
-    fn check(
-        &self,
-        _: Environment<Untyped>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError<Untyped>> {
-        Ok(Derivation::empty(self.clone()))
+    fn check(&self, _: Environment<Untyped>) -> Result<Self::Deriv, CheckError<Untyped>> {
+        Ok(TypingDerivation::empty(self.clone()))
     }
 }
 

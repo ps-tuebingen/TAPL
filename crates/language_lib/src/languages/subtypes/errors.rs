@@ -1,4 +1,5 @@
 use super::types::Type;
+use check::errors::CheckError;
 use check::errors::{EmptyCase, NotASubtype};
 use common::errors::{
     FreeTypeVariable, FreeVariable, KindMismatch, TypeMismatch, UndefinedLabel, UndefinedLocation,
@@ -23,6 +24,7 @@ pub enum Error {
     ValueMismatch(ValueMismatch),
     Parse(ParserError),
     FreeTypeVariable(FreeTypeVariable),
+    Check(CheckError<Type>),
 }
 
 impl fmt::Display for Error {
@@ -38,6 +40,7 @@ impl fmt::Display for Error {
             Error::ValueMismatch(vm) => vm.fmt(f),
             Error::FreeTypeVariable(fv) => fv.fmt(f),
             Error::Parse(p) => p.fmt(f),
+            Error::Check(err) => err.fmt(f),
         }
     }
 }
@@ -130,5 +133,11 @@ impl From<RemainingInput> for Error {
 impl From<UnexpectedRule> for Error {
     fn from(ur: UnexpectedRule) -> Error {
         Error::Parse(ur.into())
+    }
+}
+
+impl From<CheckError<Type>> for Error {
+    fn from(ur: CheckError<Type>) -> Error {
+        Error::Check(ur.into())
     }
 }

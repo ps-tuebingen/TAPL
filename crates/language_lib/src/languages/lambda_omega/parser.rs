@@ -1,7 +1,11 @@
-use super::{errors::Error, terms::Term, types::Type};
+use super::{terms::Term, types::Type};
 use parse::{
-    GroupParse, Parse, Rule, errors::UnexpectedRule, pair_to_n_inner, sugar::ForallUnbounded,
-    terms::StringTerm, types::StringTy,
+    errors::{ParserError, UnexpectedRule},
+    pair_to_n_inner,
+    sugar::ForallUnbounded,
+    terms::StringTerm,
+    types::StringTy,
+    GroupParse, Parse, Rule,
 };
 use pest::iterators::Pair;
 use syntax::{
@@ -11,8 +15,8 @@ use syntax::{
 
 impl GroupParse for Term {
     const RULE: Rule = Rule::term;
-    type ParseError = Error;
-    fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Term, Error> {
+
+    fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Term, ParserError> {
         match p.as_rule() {
             Rule::const_term => Ok(StringTerm::new()
                 .with_unit()
@@ -28,7 +32,7 @@ impl GroupParse for Term {
         }
     }
 
-    fn from_pair_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
+    fn from_pair_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, ParserError> {
         match p.as_rule() {
             Rule::tyapp => Ok(TyApp::from_pair(p, t)?.into()),
             Rule::term => Ok(App::from_pair(p, t)?.into()),
@@ -37,10 +41,9 @@ impl GroupParse for Term {
     }
 }
 impl GroupParse for Type {
-    type ParseError = Error;
     const RULE: Rule = Rule::r#type;
 
-    fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Type, Error> {
+    fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Type, ParserError> {
         match p.as_rule() {
             Rule::const_type => Ok(StringTy::new()
                 .with_unit()
@@ -57,7 +60,7 @@ impl GroupParse for Type {
         }
     }
 
-    fn from_pair_leftrec(p: Pair<'_, Rule>, ty: Type) -> Result<Type, Error> {
+    fn from_pair_leftrec(p: Pair<'_, Rule>, ty: Type) -> Result<Type, ParserError> {
         match p.as_rule() {
             Rule::fun_type => Ok(Fun::from_pair(p, ty)?.into()),
             Rule::r#type => Ok(OpApp::from_pair(p, ty)?.into()),

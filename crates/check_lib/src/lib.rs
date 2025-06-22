@@ -1,6 +1,7 @@
 use derivation::Derivation;
 use syntax::{env::Environment, kinds::Kind, terms::Term, types::Type};
 
+pub mod definition;
 pub mod errors;
 pub mod program;
 pub mod terms;

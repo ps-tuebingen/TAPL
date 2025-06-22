@@ -1,5 +1,5 @@
 use check::{errors::CheckError, Kindcheck, Normalize, Subtypecheck, Typecheck};
-use derivation::{Derivation, ProgramDerivation};
+use derivation::{ProgramDerivation, TypingDerivation};
 use eval::Eval;
 use latex::{LatexConfig, LatexFmt};
 use parse::{errors::ParserError, GroupParse, Parse};
@@ -59,8 +59,11 @@ pub trait Language {
             Term = Self::Term,
             Value = Self::Value,
             EvalError: Into<<Self as Language>::LanguageError>,
-        > + Typecheck<Term = Self::Term, Type = Self::Type>
-        + LatexFmt;
+        > + Typecheck<
+            Term = Self::Term,
+            Type = Self::Type,
+            Deriv = TypingDerivation<<Self as Language>::Term, <Self as Language>::Type>,
+        > + LatexFmt;
 
     type Type: TypeGroup
         + GroupParse
@@ -81,9 +84,9 @@ pub trait Language {
     fn check(
         &self,
         input: String,
-    ) -> Result<Derivation<Self::Term, Self::Type>, Self::LanguageError> {
+    ) -> Result<ProgramDerivation<Self::Term, Self::Type>, Self::LanguageError> {
         let parsed = self.parse(input)?;
-        Self::Term::check_start(&parsed).map_err(|err| err.into())
+        Program::<Self::Term, Self::Type>::check_start(&parsed).map_err(|err| err.into())
     }
 
     fn eval(
@@ -99,10 +102,10 @@ pub trait Language {
         Self: Sized,
     {
         let mut res = AllResults::<Self>::default();
-        let parsed = match Self::Term::parse(input) {
+        let parsed = match self.parse(input) {
             Ok(p) => p,
             Err(err) => {
-                res.err = Some(err);
+                res.err = Some(err.into());
                 return res;
             }
         };
@@ -130,23 +133,28 @@ pub trait Language {
 
     fn format_derivation(
         &self,
-        deriv: &Derivation<Self::Term, Self::Type>,
+        deriv: &ProgramDerivation<Self::Term, Self::Type>,
         method: &FormatMethod,
     ) -> String {
         match method {
-            FormatMethod::Simple => deriv.ty().to_string(),
+            FormatMethod::Simple => deriv
+                .tys()
+                .iter()
+                .map(|(nm, ty)| format!("{nm}:{ty}"))
+                .collect::<Vec<String>>()
+                .join("\n"),
             FormatMethod::LatexBus => deriv.to_latex(&mut Default::default()),
             FormatMethod::LatexFrac => deriv.to_latex(&mut LatexConfig::new_frac()),
-            FormatMethod::Debug => format!("{:?}", deriv.ty()),
+            FormatMethod::Debug => format!("{:?}", deriv.tys()),
         }
     }
 
-    fn format_term(&self, term: &Self::Term, method: &FormatMethod) -> String {
+    fn format_prog(&self, prog: &Program<Self::Term, Self::Type>, method: &FormatMethod) -> String {
         match method {
-            FormatMethod::Simple => term.to_string(),
-            FormatMethod::LatexBus => term.to_latex(&mut Default::default()),
-            FormatMethod::LatexFrac => term.to_latex(&mut LatexConfig::new_frac()),
-            FormatMethod::Debug => format!("{:?}", term),
+            FormatMethod::Simple => prog.to_string(),
+            FormatMethod::LatexBus => prog.to_latex(&mut Default::default()),
+            FormatMethod::LatexFrac => prog.to_latex(&mut LatexConfig::new_frac()),
+            FormatMethod::Debug => format!("{:?}", prog),
         }
     }
 

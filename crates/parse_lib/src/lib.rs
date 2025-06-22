@@ -1,9 +1,11 @@
+pub mod definition;
 pub mod errors;
 mod kinds;
 pub mod program;
 pub mod sugar;
 pub mod terms;
 pub mod types;
+mod untyped;
 
 use errors::{MissingInput, ParserError, RemainingInput};
 use pest::{error::Error as PestErr, iterators::Pair, Parser};
@@ -47,8 +49,6 @@ pub trait Parse: Sized {
 }
 
 pub trait GroupParse: Sized {
-    type ParseError: std::error::Error + From<ParserError>;
-
     const RULE: Rule;
 
     fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Self, ParserError>;

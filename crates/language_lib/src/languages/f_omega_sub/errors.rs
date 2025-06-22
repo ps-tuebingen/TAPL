@@ -1,5 +1,5 @@
 use super::types::Type;
-use check::errors::NotASubtype;
+use check::errors::{CheckError, NotASubtype};
 use common::errors::{
     FreeTypeVariable, FreeVariable, KindMismatch, NameMismatch, NotImplemented, TypeMismatch,
     UndefinedLabel, ValueMismatch,
@@ -24,6 +24,7 @@ pub enum Error {
     UndefinedLabel(UndefinedLabel),
     FreeVariable(FreeVariable),
     ValueMismatch(ValueMismatch),
+    Check(CheckError<Type>),
 }
 
 impl fmt::Display for Error {
@@ -39,6 +40,7 @@ impl fmt::Display for Error {
             Error::UndefinedLabel(ul) => ul.fmt(f),
             Error::FreeVariable(fv) => fv.fmt(f),
             Error::ValueMismatch(vm) => vm.fmt(f),
+            Error::Check(err) => err.fmt(f),
         }
     }
 }
@@ -132,5 +134,11 @@ impl From<RemainingInput> for Error {
 impl From<UnexpectedRule> for Error {
     fn from(ur: UnexpectedRule) -> Error {
         Error::Parse(ur.into())
+    }
+}
+
+impl From<CheckError<Type>> for Error {
+    fn from(err: CheckError<Type>) -> Error {
+        Error::Check(err)
     }
 }

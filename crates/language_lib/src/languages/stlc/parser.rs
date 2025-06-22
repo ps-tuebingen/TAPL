@@ -1,7 +1,10 @@
-use super::{errors::Error, terms::Term, types::Type};
+use super::{terms::Term, types::Type};
 use parse::{
-    GroupParse, Parse, Rule, errors::UnexpectedRule, pair_to_n_inner, terms::StringTerm,
+    errors::{ParserError, UnexpectedRule},
+    pair_to_n_inner,
+    terms::StringTerm,
     types::StringTy,
+    GroupParse, Parse, Rule,
 };
 use pest::iterators::Pair;
 use syntax::{
@@ -14,9 +17,8 @@ use syntax::{
 };
 
 impl GroupParse for Term {
-    type ParseError = Error;
     const RULE: Rule = Rule::term;
-    fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Term, Error> {
+    fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Term, ParserError> {
         match p.as_rule() {
             Rule::const_term => Ok(StringTerm::new()
                 .with_true()
@@ -55,7 +57,7 @@ impl GroupParse for Term {
             r => Err(UnexpectedRule::new(r, "Non Left-Recursive Term").into()),
         }
     }
-    fn from_pair_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
+    fn from_pair_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, ParserError> {
         match p.as_rule() {
             Rule::ascription => Ok(Ascribe::from_pair(p, t)?.into()),
             Rule::projection => Ok(Projection::from_pair(p, t)?.into()),
@@ -69,9 +71,8 @@ impl GroupParse for Term {
 }
 
 impl GroupParse for Type {
-    type ParseError = Error;
     const RULE: Rule = Rule::r#type;
-    fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Type, Error> {
+    fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Type, ParserError> {
         match p.as_rule() {
             Rule::const_type => Ok(StringTy::new()
                 .with_bool()
@@ -88,7 +89,7 @@ impl GroupParse for Type {
         }
     }
 
-    fn from_pair_leftrec(p: Pair<'_, Rule>, ty: Type) -> Result<Type, Error> {
+    fn from_pair_leftrec(p: Pair<'_, Rule>, ty: Type) -> Result<Type, ParserError> {
         match p.as_rule() {
             Rule::fun_type => Ok(Fun::from_pair(p, ty)?.into()),
             _ => Err(UnexpectedRule::new(p.as_rule(), "Left Recursive Type").into()),

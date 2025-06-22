@@ -1,10 +1,12 @@
+use check::errors::CheckError;
 use common::errors::{FreeVariable, NotImplemented, ValueMismatch};
 use parse::{
-    Rule,
     errors::{MissingInput, ParserError, RemainingInput, UnexpectedRule},
+    Rule,
 };
 use pest::error::Error as PestErr;
 use std::fmt;
+use syntax::untyped::Untyped;
 
 #[derive(Debug)]
 pub enum Error {
@@ -12,6 +14,7 @@ pub enum Error {
     ValueMismatch(ValueMismatch),
     FreeVariable(FreeVariable),
     Parse(ParserError),
+    Check(CheckError<Untyped>),
 }
 
 impl fmt::Display for Error {
@@ -21,6 +24,7 @@ impl fmt::Display for Error {
             Error::ValueMismatch(vm) => vm.fmt(f),
             Error::FreeVariable(fv) => fv.fmt(f),
             Error::Parse(p) => p.fmt(f),
+            Error::Check(err) => err.fmt(f),
         }
     }
 }
@@ -72,5 +76,11 @@ impl From<RemainingInput> for Error {
 impl From<UnexpectedRule> for Error {
     fn from(ur: UnexpectedRule) -> Error {
         Error::Parse(ur.into())
+    }
+}
+
+impl From<CheckError<Untyped>> for Error {
+    fn from(ur: CheckError<Untyped>) -> Error {
+        Error::Check(ur.into())
     }
 }

@@ -1,10 +1,10 @@
-use super::{errors::Error, terms::Term, types::Type};
+use super::{terms::Term, types::Type};
 use parse::{
-    GroupParse, Parse, Rule,
-    errors::UnexpectedRule,
+    errors::{ParserError, UnexpectedRule},
     pair_to_n_inner,
     sugar::{ExistsUnbounded, ForallUnbounded, LambdaSubStar},
     types::StringTy,
+    GroupParse, Parse, Rule,
 };
 use pest::iterators::Pair;
 use syntax::{
@@ -15,10 +15,8 @@ use syntax::{
 };
 
 impl GroupParse for Term {
-    type ParseError = Error;
-
     const RULE: Rule = Rule::term;
-    fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Term, Error> {
+    fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Self, ParserError> {
         match p.as_rule() {
             Rule::paren_term => Self::from_pair(pair_to_n_inner(p, vec!["Term"])?.remove(0), ()),
             Rule::lambda_term => Ok(Lambda::from_pair(p, ())?.into()),
@@ -37,7 +35,7 @@ impl GroupParse for Term {
         }
     }
 
-    fn from_pair_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, Error> {
+    fn from_pair_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Self, ParserError> {
         match p.as_rule() {
             Rule::record_proj => Ok(RecordProj::from_pair(p, t)?.into()),
             Rule::tyapp => Ok(TyApp::from_pair(p, t)?.into()),
@@ -48,10 +46,9 @@ impl GroupParse for Term {
 }
 
 impl GroupParse for Type {
-    type ParseError = Error;
     const RULE: Rule = Rule::r#type;
 
-    fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Self, Self::ParseError> {
+    fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Self, ParserError> {
         match p.as_rule() {
             Rule::const_type => Ok(StringTy::new().with_nat().from_pair(p)?),
             Rule::top_type_star | Rule::top_type => Ok(Top::new_star().into()),
@@ -70,7 +67,7 @@ impl GroupParse for Type {
         }
     }
 
-    fn from_pair_leftrec(p: Pair<'_, Rule>, ty: Type) -> Result<Type, Error> {
+    fn from_pair_leftrec(p: Pair<'_, Rule>, ty: Type) -> Result<Type, ParserError> {
         match p.as_rule() {
             Rule::fun_type => Ok(Fun::from_pair(p, ty)?.into()),
             r => Err(UnexpectedRule::new(r, "Function Type").into()),

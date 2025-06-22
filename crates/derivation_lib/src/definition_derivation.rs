@@ -24,4 +24,8 @@ where
             body_derivation,
         }
     }
+
+    pub fn ty(&self) -> Ty {
+        self.body_derivation.ty()
+    }
 }
