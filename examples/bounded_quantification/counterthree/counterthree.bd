@@ -1,4 +1,4 @@
-def counterAdt :: {exists Counter<:Nat,
+def counterADT :: {exists Counter<:Nat,
   { new:Counter,
     get:Counter -> Nat,
     inc:Counter -> Counter

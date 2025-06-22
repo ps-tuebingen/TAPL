@@ -26,5 +26,6 @@ where
     T: Term + Eval<Term = T>,
     Ty: Type,
 {
-    prog.main.eval_start()
+    let mut ctx = EvalContext::<T, <T as Eval>::Value>::from_prog(&prog);
+    prog.main.eval(&mut ctx)
 }
