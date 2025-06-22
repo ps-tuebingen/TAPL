@@ -1,5 +1,4 @@
-use crate::Eval;
-use common::errors::{UndefinedLocation, ValueMismatch};
+use crate::{errors::EvalError, Eval};
 use syntax::{
     store::Store,
     terms::{Deref, Term},
@@ -12,16 +11,14 @@ where
     T: Term + Eval<Term = T>,
     <T as Eval>::Value: Into<T>,
     Deref<T>: Into<T>,
-    <T as Eval>::EvalError: From<ValueMismatch> + From<UndefinedLocation>,
 {
     type Value = <T as Eval>::Value;
-    type EvalError = <T as Eval>::EvalError;
 
     type Term = T;
     fn eval(
         self,
         env: &mut Store<Self::Value>,
-    ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
+    ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
         let term_res = self.term.clone().eval(env)?;
         let term_val = term_res.val();
         let loc_val = term_val.clone().into_loc()?;

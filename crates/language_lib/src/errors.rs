@@ -1,22 +1,25 @@
+use check::errors::CheckError;
+use eval::errors::EvalError;
+use parse::errors::ParserError;
 use std::fmt;
 
 #[derive(Debug)]
-pub struct UndefinedLanguage {
-    name: String,
+pub enum LanguageError {
+    Parse(ParserError),
+    Check(CheckError),
+    Eval(EvalError),
+    UndefinedLanguage(String),
 }
 
-impl UndefinedLanguage {
-    pub fn new(name: &str) -> UndefinedLanguage {
-        UndefinedLanguage {
-            name: name.to_owned(),
+impl fmt::Display for LanguageError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            LanguageError::Parse(err) => err.fmt(f),
+            LanguageError::Check(err) => err.fmt(f),
+            LanguageError::Eval(err) => err.fmt(f),
+            LanguageError::UndefinedLanguage(lang) => write!(f, "Undefined Language {lang}"),
         }
     }
 }
 
-impl fmt::Display for UndefinedLanguage {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Undefined language {}", self.name)
-    }
-}
-
-impl std::error::Error for UndefinedLanguage {}
+impl std::error::Error for LanguageError {}

@@ -1,10 +1,10 @@
-use crate::Eval;
+use crate::{errors::EvalError, Eval};
 use std::collections::HashMap;
 use syntax::{
-    Label,
     store::Store,
     terms::{Record, Term},
     values::Record as RecordVal,
+    Label,
 };
 use trace::EvalTrace;
 
@@ -16,13 +16,12 @@ where
     RecordVal<<T as Eval>::Value>: Into<<T as Eval>::Value>,
 {
     type Value = <T as Eval>::Value;
-    type EvalError = <T as Eval>::EvalError;
 
     type Term = T;
     fn eval(
         self,
         env: &mut Store<Self::Value>,
-    ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
+    ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
         let mut recs: HashMap<Label, Self::Value> = HashMap::new();
         let mut old_recs = self.records.clone();
         let mut steps = vec![];

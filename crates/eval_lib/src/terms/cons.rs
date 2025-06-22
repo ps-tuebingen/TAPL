@@ -1,4 +1,4 @@
-use crate::Eval;
+use crate::{errors::EvalError, Eval};
 use syntax::{
     store::Store,
     terms::{Cons, Term},
@@ -16,13 +16,12 @@ where
     ConsVal<V, Ty>: Into<<T as Eval>::Value>,
 {
     type Value = <T as Eval>::Value;
-    type EvalError = <T as Eval>::EvalError;
 
     type Term = T;
     fn eval(
         self,
         env: &mut Store<Self::Value>,
-    ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
+    ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
         let hd_res = self.head.clone().eval(env)?;
         let hd_val = hd_res.val();
 

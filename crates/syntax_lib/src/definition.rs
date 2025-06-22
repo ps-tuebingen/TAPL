@@ -1,7 +1,7 @@
 use crate::{terms::Term, types::Type, Name};
 use std::fmt;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Definition<T, Ty>
 where
     T: Term,
@@ -38,4 +38,11 @@ where
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}::{}:={}", self.name, self.annot, self.body)
     }
+}
+
+impl<T, Ty> Term for Definition<T, Ty>
+where
+    T: Term,
+    Ty: Type,
+{
 }

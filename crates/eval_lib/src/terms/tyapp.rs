@@ -1,4 +1,4 @@
-use crate::Eval;
+use crate::{errors::EvalError, Eval};
 use common::errors::{ValueKind, ValueMismatch};
 use syntax::{
     store::Store,
@@ -16,16 +16,14 @@ where
     <T as Eval>::Value: ValueGroup<Term = T>,
     TyApp<T, Ty>: Into<T>,
     Ty: Type,
-    <T as Eval>::EvalError: From<ValueMismatch>,
 {
     type Value = <T as Eval>::Value;
-    type EvalError = <T as Eval>::EvalError;
 
     type Term = T;
     fn eval(
         self,
         env: &mut Store<Self::Value>,
-    ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
+    ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
         let fun_res = self.fun.eval(env)?;
         let fun_val = fun_res.val();
         let (res_steps, res_val) = if let Ok(tylam) = fun_val.clone().into_tylambda() {

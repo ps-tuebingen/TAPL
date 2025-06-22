@@ -1,5 +1,5 @@
-use crate::Eval;
-use common::errors::{UndefinedLabel, ValueMismatch};
+use crate::{errors::EvalError, Eval};
+use common::errors::UndefinedLabel;
 use syntax::{
     store::Store,
     subst::SubstTerm,
@@ -12,16 +12,14 @@ impl<T> Eval for VariantCase<T>
 where
     T: Term + Eval<Term = T> + SubstTerm<T, Target = T> + From<<T as Eval>::Value>,
     VariantCase<T>: Into<T>,
-    <T as Eval>::EvalError: From<UndefinedLabel> + From<ValueMismatch>,
 {
     type Value = <T as Eval>::Value;
-    type EvalError = <T as Eval>::EvalError;
 
     type Term = T;
     fn eval(
         self,
         env: &mut Store<Self::Value>,
-    ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
+    ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
         let bound_res = self.bound_term.eval(env)?;
         let bound_val = bound_res.val();
 

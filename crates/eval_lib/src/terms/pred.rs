@@ -1,5 +1,5 @@
-use crate::Eval;
-use common::errors::ValueMismatch;
+use crate::{errors::EvalError, Eval};
+
 use syntax::{
     store::Store,
     terms::{Num as NumT, Pred, Term},
@@ -14,16 +14,14 @@ where
     NumT<T>: Into<T>,
     <T as Eval>::Value: Into<T>,
     Num<T>: Into<<T as Eval>::Value>,
-    <T as Eval>::EvalError: From<ValueMismatch>,
 {
     type Value = <T as Eval>::Value;
-    type EvalError = <T as Eval>::EvalError;
 
     type Term = T;
     fn eval(
         self,
         env: &mut Store<Self::Value>,
-    ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
+    ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
         let term_res = self.term.eval(env)?;
         let term_val = term_res.val();
         let num = term_val.into_num()?;

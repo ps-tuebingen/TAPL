@@ -1,4 +1,4 @@
-use crate::Eval;
+use crate::{errors::EvalError, Eval};
 use common::errors::FreeVariable;
 use syntax::{
     store::Store,
@@ -9,16 +9,14 @@ use trace::EvalTrace;
 impl<T> Eval for Variable<T>
 where
     T: Term + Eval<Term = T>,
-    <T as Eval>::EvalError: From<FreeVariable>,
 {
     type Value = <T as Eval>::Value;
-    type EvalError = <T as Eval>::EvalError;
 
     type Term = T;
     fn eval(
         self,
         _: &mut Store<Self::Value>,
-    ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
+    ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
         Err(FreeVariable::new(&self.var).into())
     }
 }

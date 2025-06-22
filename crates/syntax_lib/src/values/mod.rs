@@ -17,6 +17,8 @@ where
 
 pub mod group;
 pub use group::ValueGroup;
+pub mod definition;
+pub use definition::DefinitionValue;
 
 pub mod cons;
 pub mod exception;

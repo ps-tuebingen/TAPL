@@ -1,5 +1,5 @@
-use crate::Eval;
-use common::errors::ValueMismatch;
+use crate::{errors::EvalError, Eval};
+
 use syntax::{
     store::Store,
     subst::SubstTerm,
@@ -13,16 +13,14 @@ where
     T: Term + Eval<Term = T> + SubstTerm<T, Target = T>,
     <T as Eval>::Value: ValueGroup<Term = T>,
     Self: Into<T>,
-    <T as Eval>::EvalError: From<ValueMismatch>,
 {
     type Value = <T as Eval>::Value;
-    type EvalError = <T as Eval>::EvalError;
 
     type Term = T;
     fn eval(
         self,
         env: &mut Store<Self::Value>,
-    ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
+    ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
         let term_res = self.term.clone().eval(env)?;
         let term_val = term_res.val();
         let lam_val = term_val.into_lambda()?;

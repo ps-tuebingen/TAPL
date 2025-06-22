@@ -1,4 +1,4 @@
-use crate::Eval;
+use crate::{errors::EvalError, Eval};
 use syntax::{
     store::Store,
     terms::{Cast, Term},
@@ -13,13 +13,12 @@ where
     Ty: Type,
 {
     type Value = <T as Eval>::Value;
-    type EvalError = <T as Eval>::EvalError;
 
     type Term = T;
     fn eval(
         self,
         env: &mut Store<Self::Value>,
-    ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
+    ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
         let inner_res = self.term.eval(env)?;
         let inner_val = inner_res.val();
         let last_step = EvalStep::cast(self.ty.clone(), inner_val.clone());

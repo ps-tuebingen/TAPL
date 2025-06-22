@@ -1,5 +1,5 @@
-use super::{errors::Error, terms::Term, values::Value};
-use eval::Eval;
+use super::{terms::Term, values::Value};
+use eval::{errors::EvalError, Eval};
 use syntax::store::Store;
 use trace::EvalTrace;
 
@@ -7,12 +7,10 @@ impl Eval for Term {
     type Value = Value;
     type Term = Term;
 
-    type EvalError = Error;
-
     fn eval(
         self,
         env: &mut Store<Self::Value>,
-    ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
+    ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
         match self {
             Term::Var(var) => var.eval(env),
             Term::Num(num) => num.eval(env),

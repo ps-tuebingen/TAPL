@@ -55,11 +55,8 @@ pub trait Language {
         + GroupParse
         + SubstTerm<Self::Term, Target = Self::Term>
         + SubstType<Self::Type, Target = Self::Term>
-        + Eval<
-            Term = Self::Term,
-            Value = Self::Value,
-            EvalError: Into<<Self as Language>::LanguageError>,
-        > + Typecheck<
+        + Eval<Term = Self::Term, Value = Self::Value>
+        + Typecheck<
             Term = Self::Term,
             Type = Self::Type,
             Deriv = TypingDerivation<<Self as Language>::Term, <Self as Language>::Type>,

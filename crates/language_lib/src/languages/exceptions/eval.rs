@@ -1,6 +1,6 @@
-use super::{errors::Error, terms::Term, types::Type, values::Value};
+use super::{terms::Term, types::Type, values::Value};
 use check::Normalize;
-use eval::Eval;
+use eval::{errors::EvalError, Eval};
 use syntax::store::Store;
 use syntax::{
     env::Environment,
@@ -12,12 +12,10 @@ impl Eval for Term {
     type Value = Value;
     type Term = Term;
 
-    type EvalError = Error;
-
     fn eval(
         self,
         env: &mut Store<Self::Value>,
-    ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
+    ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
         match self {
             Term::Var(v) => <Variable<Term> as Eval>::eval(v, env),
             Term::Lambda(lam) => lam.eval(env),
@@ -47,7 +45,7 @@ impl Normalize<Type> for Type {
 #[cfg(test)]
 mod eval_tests {
     use super::super::terms::term_tests::{example_term1, example_term2};
-    use eval::Eval;
+    use eval::{errors::EvalError, Eval};
     use syntax::values::Unit;
 
     #[test]

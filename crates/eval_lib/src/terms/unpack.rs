@@ -1,5 +1,5 @@
-use crate::Eval;
-use common::errors::ValueMismatch;
+use crate::{errors::EvalError, Eval};
+
 use syntax::{
     store::Store,
     subst::{SubstTerm, SubstType},
@@ -18,18 +18,17 @@ where
         + From<<T as Eval>::Value>,
     <T as Eval>::Value: ValueGroup<Type = Ty>,
     Unpack<T, Ty>: Into<T>,
-    <T as Eval>::EvalError: From<ValueMismatch>,
+
     Ty: Type + SubstType<Ty, Target = Ty>,
 {
     type Value = <T as Eval>::Value;
-    type EvalError = <T as Eval>::EvalError;
 
     type Term = T;
 
     fn eval(
         self,
         env: &mut Store<Self::Value>,
-    ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
+    ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
         let term_res = self.bound_term.eval(env)?;
         let term_val = term_res.val();
         let pack_val = term_val.clone().into_pack()?;
