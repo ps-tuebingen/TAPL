@@ -1,8 +1,17 @@
 use super::test_result::TestResult;
 
-pub trait Test<'a> {
+pub struct TestInclusions {
+    pub reparse: bool,
+    pub check: bool,
+    pub eval: bool,
+    pub derivation_buss: bool,
+    pub derivation_frac: bool,
+    pub trace: bool,
+}
+
+pub trait Test<T> {
     fn name(&self) -> String;
-    fn run(&self) -> TestResult;
+    fn run(&self) -> TestResult<T>;
 }
 
 pub trait TestConfig: for<'a> serde::Deserialize<'a> {
@@ -14,4 +23,20 @@ pub trait TestConfig: for<'a> serde::Deserialize<'a> {
 
     fn name(&self) -> &str;
     fn contents(&self) -> &str;
+    fn inclusions(&self) -> TestInclusions {
+        TestInclusions::default()
+    }
+}
+
+impl Default for TestInclusions {
+    fn default() -> TestInclusions {
+        TestInclusions {
+            reparse: true,
+            check: true,
+            eval: true,
+            derivation_buss: true,
+            derivation_frac: true,
+            trace: true,
+        }
+    }
 }

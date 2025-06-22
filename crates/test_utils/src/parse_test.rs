@@ -1,45 +1,40 @@
-use super::{
-    test::{Test, TestConfig},
-    test_result::TestResult,
-};
+use super::{test::Test, test_result::TestResult};
 use parse::Parse;
 use std::marker::PhantomData;
 
-pub struct ParseTest<'a, T, Conf>
+pub struct ParseTest<T>
 where
     T: Parse,
-    Conf: TestConfig,
 {
-    conf: &'a Conf,
+    name: String,
+    contents: String,
     phantom: PhantomData<T>,
 }
 
-impl<'a, T, Conf> ParseTest<'a, T, Conf>
+impl<T> ParseTest<T>
 where
     T: Parse,
-    Conf: TestConfig,
 {
-    pub fn new(conf: &'a Conf) -> ParseTest<'a, T, Conf> {
+    pub fn new(name: &str, contents: &str) -> ParseTest<T> {
         ParseTest {
-            conf,
+            name: name.to_owned(),
+            contents: contents.to_owned(),
             phantom: PhantomData,
         }
     }
 }
 
-impl<'a, T, Conf> Test<'a> for ParseTest<'a, T, Conf>
+impl<T> Test<T> for ParseTest<T>
 where
-    T: Parse,
-    <T as Parse>::LeftRecArg: Default,
-    Conf: TestConfig,
+    T: Parse<LeftRecArg = ()>,
 {
     fn name(&self) -> String {
-        format!("Parsing {}", self.conf.name())
+        format!("Parsing {}", self.name)
     }
 
-    fn run(&self) -> TestResult {
-        match T::parse(self.conf.contents().to_owned()) {
-            Ok(_) => TestResult::Success,
+    fn run(&self) -> TestResult<T> {
+        match T::parse(self.contents.clone()) {
+            Ok(t) => TestResult::Success(t),
             Err(err) => TestResult::from_err(err),
         }
     }

@@ -13,8 +13,10 @@ use super::{
     test::{Test, TestConfig},
     test_result::TestResult,
 };
+use derivation::Derivation;
 use language::Language;
 use std::path::PathBuf;
+use trace::EvalTrace;
 
 pub mod bounded_quantification;
 pub mod exceptions;
@@ -32,7 +34,7 @@ pub mod untyped_arithmetic;
 pub mod untyped_lambda;
 
 pub trait TestSuite {
-    type Config: for<'a> serde::Deserialize<'a> + TestConfig;
+    type Config: TestConfig;
     type Lang: Language;
 
     fn name(&self) -> &str;
@@ -43,51 +45,128 @@ pub trait TestSuite {
         load_dir(&self.source_dir(), self.ext())
     }
 
-    fn load<'a>(
-        &'a self,
-        contents: &'a [Self::Config],
-    ) -> Result<Vec<Box<dyn Test<'a> + 'a>>, Error> {
-        let mut tests = vec![];
-        for content in contents {
-            let parse_test =
-                ParseTest::<<Self::Lang as Language>::Term, Self::Config>::new(content);
-            tests.push(Box::new(parse_test) as Box<dyn Test>);
+    fn run_parse(conf: &Self::Config) -> TestResult<<Self::Lang as Language>::Term> {
+        let name = conf.name();
+        let parse_test = ParseTest::<<Self::Lang as Language>::Term>::new(&name, &conf.contents());
+        let parse_res = parse_test.run();
+        parse_res.report(&parse_test.name());
+        parse_res
+    }
 
-            let reparse_test =
-                ReparseTest::<<Self::Lang as Language>::Term, Self::Config>::new(content);
-            tests.push(Box::new(reparse_test) as Box<dyn Test>);
+    fn run_reparse(name: &str, parsed: &<Self::Lang as Language>::Term) -> TestResult<()> {
+        let reparse_test = ReparseTest::<<Self::Lang as Language>::Term>::new(name, &parsed);
+        let res = reparse_test.run();
+        res.report(&reparse_test.name());
+        res
+    }
 
-            let check_test =
-                CheckTest::<<Self::Lang as Language>::Term, Self::Config>::new(content);
-            tests.push(Box::new(check_test) as Box<dyn Test>);
+    fn run_check(
+        conf: &Self::Config,
+        term: <Self::Lang as Language>::Term,
+    ) -> TestResult<Derivation<<Self::Lang as Language>::Term, <Self::Lang as Language>::Type>>
+    {
+        let check_test =
+            CheckTest::<<Self::Lang as Language>::Term>::new(&conf.name(), term, conf.ty());
+        let res = check_test.run();
+        res
+    }
 
-            let eval_test = EvalTest::<<Self::Lang as Language>::Term, Self::Config>::new(content);
-            tests.push(Box::new(eval_test) as Box<dyn Test>);
+    fn run_eval(
+        conf: &Self::Config,
+        t: <Self::Lang as Language>::Term,
+    ) -> TestResult<EvalTrace<<Self::Lang as Language>::Term, <Self::Lang as Language>::Value>>
+    {
+        let eval_test =
+            EvalTest::<<Self::Lang as Language>::Term>::new(conf.name(), t, conf.evaluated());
+        let res = eval_test.run();
+        res.report(&eval_test.name());
+        res
+    }
 
-            let latex_test =
-                LatexTestBuss::<<Self::Lang as Language>::Term, Self::Config>::new(content);
-            tests.push(Box::new(latex_test) as Box<dyn Test>);
+    fn run_derivation_buss(
+        name: &str,
+        deriv: &Derivation<<Self::Lang as Language>::Term, <Self::Lang as Language>::Type>,
+    ) -> TestResult<()> {
+        let buss_test = LatexTestBuss::<
+            <Self::Lang as Language>::Term,
+            <Self::Lang as Language>::Type,
+        >::new(name, deriv);
+        let res = buss_test.run();
+        res.report(&buss_test.name());
+        res
+    }
 
-            let latex_test =
-                LatexTestFrac::<<Self::Lang as Language>::Term, Self::Config>::new(content);
-            tests.push(Box::new(latex_test) as Box<dyn Test>);
+    fn run_derivation_frac(
+        name: &str,
+        deriv: &Derivation<<Self::Lang as Language>::Term, <Self::Lang as Language>::Type>,
+    ) -> TestResult<()> {
+        let frac_test = LatexTestFrac::<
+            <Self::Lang as Language>::Term,
+            <Self::Lang as Language>::Type,
+        >::new(name, deriv);
+        let res = frac_test.run();
+        res.report(&frac_test.name());
+        res
+    }
 
-            let latex_test =
-                LatexTestTrace::<<Self::Lang as Language>::Term, Self::Config>::new(content);
-            tests.push(Box::new(latex_test) as Box<dyn Test>);
+    fn run_trace(
+        name: &str,
+        tr: &EvalTrace<<Self::Lang as Language>::Term, <Self::Lang as Language>::Value>,
+    ) -> TestResult<()> {
+        let trace_test = LatexTestTrace::<
+            <Self::Lang as Language>::Term,
+            <Self::Lang as Language>::Value,
+        >::new(name, tr);
+        let res = trace_test.run();
+        res.report(&trace_test.name());
+        res
+    }
+
+    fn run_conf(conf: &Self::Config) -> TestResult<()> {
+        let name = conf.name();
+        let inclusions = conf.inclusions();
+        println!("Running tests for {}", name);
+
+        let t = match Self::run_parse(conf) {
+            TestResult::Success(t) => t,
+            TestResult::Fail(err) => return TestResult::Fail(err),
+        };
+
+        if inclusions.reparse {
+            Self::run_reparse(&name, &t);
+        };
+
+        if inclusions.check {
+            let deriv = Self::run_check(&conf, t.clone());
+            if let TestResult::Success(ref deriv) = deriv {
+                if inclusions.derivation_buss {
+                    Self::run_derivation_buss(&name, deriv);
+                }
+                if inclusions.derivation_frac {
+                    Self::run_derivation_frac(&name, deriv);
+                }
+            }
         }
-        Ok(tests)
+
+        if inclusions.eval {
+            let trace = Self::run_eval(&conf, t);
+            if let TestResult::Success(ref tr) = trace {
+                if inclusions.trace {
+                    Self::run_trace(&name, tr);
+                }
+            }
+        }
+
+        TestResult::Success(())
     }
 
     fn run_all(&self) -> Result<usize, Error> {
         println!("Running Test Suite {}\n", self.name());
         let configs = self.configs()?;
-        let tests = self.load(&configs)?;
-        let num_tests = tests.len();
+        let num_tests = configs.len();
         let mut num_fail = 0;
-        for test in tests {
-            let result = test.run();
-            result.report(&test.name());
+        for conf in configs {
+            let result = Self::run_conf(&conf);
             if matches!(result, TestResult::Fail(_)) {
                 num_fail += 1
             }

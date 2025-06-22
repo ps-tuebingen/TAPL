@@ -1,7 +1,7 @@
 [package]
 name = "test_utils"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 
 
 [dependencies]
@@ -12,6 +12,7 @@ check = { path="../check_lib" }
 eval = { path="../eval_lib" }
 language = { path="../language_lib" }
 derivation = { path="../derivation_lib" }
+trace = { path="../trace_lib" }
 syntax = {path="../syntax_lib"}
 latex = { path="../latex_lib"}
 parse = { path="../parse_lib"}

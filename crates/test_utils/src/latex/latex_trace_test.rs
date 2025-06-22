@@ -1,72 +1,49 @@
-use crate::{
-    paths::LATEX_OUT,
-    test::{Test, TestConfig},
-    test_result::TestResult,
-};
-use eval::Eval;
+use crate::{paths::LATEX_OUT, test::Test, test_result::TestResult};
 use latex::LatexFmt;
-use parse::Parse;
 use std::{
     fs::File,
     io::Write,
-    marker::PhantomData,
     path::PathBuf,
     process::{Command, Stdio},
 };
-use syntax::terms::Term;
+use syntax::{terms::Term, values::Value};
+use trace::EvalTrace;
 
-pub struct LatexTestTrace<'a, T, Conf>
+pub struct LatexTestTrace<'a, T, V>
 where
-    T: Term + Parse + Eval<Term = T> + LatexFmt,
-    <T as Parse>::LeftRecArg: Default,
-    T::Value: LatexFmt,
-    Conf: TestConfig,
+    T: Term + LatexFmt,
+    V: Value + LatexFmt,
 {
-    conf: &'a Conf,
-    phantom: PhantomData<T>,
+    name: String,
+    trace: &'a EvalTrace<T, V>,
 }
 
-impl<'a, T, Conf> LatexTestTrace<'a, T, Conf>
+impl<'a, T, V> LatexTestTrace<'a, T, V>
 where
-    T: Term + Parse + Eval<Term = T> + LatexFmt,
-    <T as Parse>::LeftRecArg: Default,
-    T::Value: LatexFmt,
-    Conf: TestConfig,
+    T: Term + LatexFmt,
+    V: Value + LatexFmt,
 {
-    pub fn new(conf: &'a Conf) -> LatexTestTrace<'a, T, Conf> {
+    pub fn new(name: &str, tr: &'a EvalTrace<T, V>) -> LatexTestTrace<'a, T, V> {
         LatexTestTrace {
-            conf,
-            phantom: PhantomData,
+            name: name.to_owned(),
+            trace: tr,
         }
     }
 }
 
-impl<'a, T, Conf> Test<'a> for LatexTestTrace<'a, T, Conf>
+impl<'a, T, V> Test<()> for LatexTestTrace<'a, T, V>
 where
-    T: Term + Parse + Eval<Term = T> + LatexFmt,
-    <T as Parse>::LeftRecArg: Default,
-    T::Value: LatexFmt,
-    Conf: TestConfig,
+    T: Term + LatexFmt,
+    V: Value + LatexFmt,
 {
     fn name(&self) -> String {
-        format!(
-            "Generating Latex for Evaluation Trace of {}",
-            self.conf.name()
-        )
+        format!("Generating Latex for Evaluation Trace of {}", self.name)
     }
 
-    fn run(&self) -> TestResult {
-        let parsed = match T::parse(self.conf.contents().to_owned()) {
-            Ok(p) => p,
-            Err(err) => return TestResult::from_err(err),
-        };
-        let evaled = match parsed.eval_start() {
-            Ok(v) => v,
-            Err(err) => return TestResult::from_err(err),
-        };
-        let latex_src = evaled.to_document(&mut Default::default());
+    fn run(&self) -> TestResult<()> {
+        let latex_src = self.trace.to_document(&mut Default::default());
 
-        let mut out_path = PathBuf::from(LATEX_OUT).join(format!("{}_trace", self.conf.name()));
+        let mut out_path = PathBuf::from(LATEX_OUT).join(format!("{}_trace", self.name));
         out_path.set_extension("tex");
 
         let mut out_file = match File::create(&out_path) {
@@ -90,7 +67,7 @@ where
             Err(err) => TestResult::from_err(err),
             Ok(exit) => {
                 if exit.success() {
-                    TestResult::Success
+                    TestResult::Success(())
                 } else {
                     TestResult::Fail("xelatex exited with non-zero exit status".to_owned())
                 }

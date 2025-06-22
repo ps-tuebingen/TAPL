@@ -1,57 +1,57 @@
-use super::{
-    test::{Test, TestConfig},
-    test_result::TestResult,
-};
+use super::{test::Test, test_result::TestResult};
 use check::Typecheck;
-use parse::Parse;
+use derivation::Derivation;
 use std::{fmt, marker::PhantomData};
+use syntax::terms::Term;
 
-pub struct CheckTest<'a, T, Conf>
+pub struct CheckTest<T>
 where
-    T: Parse + Typecheck,
-    <T as Parse>::LeftRecArg: Default,
+    T: Term + Typecheck<Term = T>,
     T::Type: fmt::Display,
-    Conf: TestConfig,
 {
-    conf: &'a Conf,
+    name: String,
+    term: T,
+    expected: String,
     phantom: PhantomData<T>,
 }
 
-impl<'a, T, Conf> CheckTest<'a, T, Conf>
+impl<T> CheckTest<T>
 where
-    T: Parse + Typecheck,
-    <T as Parse>::LeftRecArg: Default,
+    T: Term + Typecheck<Term = T>,
     T::Type: fmt::Display,
-    Conf: TestConfig,
 {
-    pub fn new(conf: &'a Conf) -> CheckTest<'a, T, Conf> {
+    pub fn new(name: &str, term: T, exp: &str) -> CheckTest<T> {
         CheckTest {
-            conf,
+            name: name.to_owned(),
+            term,
+            expected: exp.to_owned(),
             phantom: PhantomData,
         }
     }
 }
 
-impl<'a, T, Conf> Test<'a> for CheckTest<'a, T, Conf>
+impl<T> Test<Derivation<T, T::Type>> for CheckTest<T>
 where
-    T: Parse + Typecheck,
-    <T as Parse>::LeftRecArg: Default,
+    T: Term + Typecheck<Term = T>,
     T::Type: fmt::Display,
-    Conf: TestConfig,
 {
     fn name(&self) -> String {
-        format!("Checking {}", self.conf.name())
+        format!("Checking {}", self.name)
     }
 
-    fn run(&self) -> TestResult {
-        let parsed = match T::parse(self.conf.contents().to_owned()) {
-            Ok(p) => p,
-            Err(err) => return TestResult::from_err(err),
-        };
-        let checked = match parsed.check_start() {
+    fn run(&self) -> TestResult<Derivation<T, T::Type>> {
+        let checked = match self.term.check_start() {
             Ok(c) => c,
             Err(err) => return TestResult::from_err(err),
         };
-        TestResult::from_eq(&checked.ty(), &self.conf.ty())
+        let checked_str = checked.ty().to_string();
+        if checked_str == self.expected {
+            TestResult::Success(checked)
+        } else {
+            TestResult::Fail(format!(
+                "Result!=Expected:\n\tresult:   {checked_str}\n\texpected: {}",
+                self.expected
+            ))
+        }
     }
 }

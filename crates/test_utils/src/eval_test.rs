@@ -1,58 +1,55 @@
-use super::{
-    test::{Test, TestConfig},
-    test_result::TestResult,
-};
+use super::{test::Test, test_result::TestResult};
 use eval::Eval;
-use parse::Parse;
 use std::fmt;
-use std::marker::PhantomData;
+use syntax::terms::Term;
+use trace::EvalTrace;
 
-pub struct EvalTest<'a, T, Conf>
+pub struct EvalTest<T>
 where
-    T: Eval + Parse,
-    <T as Parse>::LeftRecArg: Default,
+    T: Term + Eval<Term = T>,
     T::Value: fmt::Display,
-    Conf: TestConfig,
 {
-    conf: &'a Conf,
-    phantom: PhantomData<T>,
+    name: String,
+    expected: String,
+    term: T,
 }
 
-impl<'a, T, Conf> EvalTest<'a, T, Conf>
+impl<T> EvalTest<T>
 where
-    T: Eval + Parse,
-    <T as Parse>::LeftRecArg: Default,
+    T: Term + Eval<Term = T>,
     T::Value: fmt::Display,
-    Conf: TestConfig,
 {
-    pub fn new(conf: &'a Conf) -> EvalTest<'a, T, Conf> {
+    pub fn new(name: &str, t: T, exp: &str) -> EvalTest<T> {
         EvalTest {
-            conf,
-            phantom: PhantomData,
+            name: name.to_owned(),
+            term: t,
+            expected: exp.to_owned(),
         }
     }
 }
 
-impl<'a, T, Conf> Test<'a> for EvalTest<'a, T, Conf>
+impl<T> Test<EvalTrace<T, T::Value>> for EvalTest<T>
 where
-    T: Eval + Parse,
-    <T as Parse>::LeftRecArg: Default,
+    T: Term + Eval<Term = T>,
     T::Value: fmt::Display,
-    Conf: TestConfig,
 {
     fn name(&self) -> String {
-        format!("Evaluating {}", self.conf.name())
+        format!("Evaluating {}", self.name)
     }
 
-    fn run(&self) -> TestResult {
-        let parsed = match T::parse(self.conf.contents().to_owned()) {
-            Ok(p) => p,
-            Err(err) => return TestResult::from_err(err),
-        };
-        let evaled = match T::eval_start(parsed) {
+    fn run(&self) -> TestResult<EvalTrace<T, T::Value>> {
+        let evaled = match self.term.clone().eval_start() {
             Ok(v) => v,
             Err(err) => return TestResult::from_err(err),
         };
-        TestResult::from_eq(&evaled.val(), &self.conf.evaluated())
+        let evaled_str = evaled.val().to_string();
+        if evaled_str == self.expected {
+            TestResult::Success(evaled)
+        } else {
+            TestResult::Fail(format!(
+                "Result!=Expected:\n\tresult:   {evaled_str}\n\texpected: {}",
+                self.expected
+            ))
+        }
     }
 }

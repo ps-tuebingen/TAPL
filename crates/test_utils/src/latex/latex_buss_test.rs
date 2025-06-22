@@ -1,73 +1,52 @@
-use crate::{
-    paths::LATEX_OUT,
-    test::{Test, TestConfig},
-    test_result::TestResult,
-};
-use check::Typecheck;
+use crate::{paths::LATEX_OUT, test::Test, test_result::TestResult};
+use derivation::Derivation;
 use latex::LatexFmt;
-use parse::Parse;
 use std::{
-    fmt,
     fs::File,
     io::Write,
-    marker::PhantomData,
     path::PathBuf,
     process::{Command, Stdio},
 };
-use syntax::terms::Term;
+use syntax::{terms::Term, types::Type};
 
-pub struct LatexTestBuss<'a, T, Conf>
+pub struct LatexTestBuss<'a, T, Ty>
 where
-    T: Term + Parse + Typecheck<Term = T> + LatexFmt,
-    <T as Parse>::LeftRecArg: Default,
-    T::Type: fmt::Display + LatexFmt,
-    Conf: TestConfig,
+    T: Term + LatexFmt,
+    Ty: Type + LatexFmt,
 {
-    conf: &'a Conf,
-    phantom: PhantomData<T>,
+    name: String,
+    deriv: &'a Derivation<T, Ty>,
 }
 
-impl<'a, T, Conf> LatexTestBuss<'a, T, Conf>
+impl<'a, T, Ty> LatexTestBuss<'a, T, Ty>
 where
-    T: Term + Parse + Typecheck<Term = T> + LatexFmt,
-    <T as Parse>::LeftRecArg: Default,
-    T::Type: fmt::Display + LatexFmt,
-    Conf: TestConfig,
+    T: Term + LatexFmt,
+    Ty: Type + LatexFmt,
 {
-    pub fn new(conf: &'a Conf) -> LatexTestBuss<'a, T, Conf> {
+    pub fn new(name: &str, deriv: &'a Derivation<T, Ty>) -> LatexTestBuss<'a, T, Ty> {
         LatexTestBuss {
-            conf,
-            phantom: PhantomData,
+            name: name.to_owned(),
+            deriv,
         }
     }
 }
 
-impl<'a, T, Conf> Test<'a> for LatexTestBuss<'a, T, Conf>
+impl<'a, T, Ty> Test<()> for LatexTestBuss<'a, T, Ty>
 where
-    T: Term + Parse + Typecheck<Term = T> + LatexFmt,
-    <T as Parse>::LeftRecArg: Default,
-    T::Type: fmt::Display + LatexFmt,
-    Conf: TestConfig,
+    T: Term + LatexFmt,
+    Ty: Type + LatexFmt,
 {
     fn name(&self) -> String {
         format!(
             "Generating Latex for Derivation Trees of {} (Bussproofs)",
-            self.conf.name()
+            self.name
         )
     }
 
-    fn run(&self) -> TestResult {
-        let parsed = match T::parse(self.conf.contents().to_owned()) {
-            Ok(p) => p,
-            Err(err) => return TestResult::from_err(err),
-        };
-        let checked = match parsed.check_start() {
-            Ok(c) => c,
-            Err(err) => return TestResult::from_err(err),
-        };
-        let latex_src = checked.to_document(&mut Default::default());
+    fn run(&self) -> TestResult<()> {
+        let latex_src = self.deriv.to_document(&mut Default::default());
 
-        let mut out_path = PathBuf::from(LATEX_OUT).join(format!("{}_buss", self.conf.name()));
+        let mut out_path = PathBuf::from(LATEX_OUT).join(format!("{}_buss", self.name));
         out_path.set_extension("tex");
 
         let mut out_file = match File::create(&out_path) {
@@ -91,7 +70,7 @@ where
             Err(err) => TestResult::from_err(err),
             Ok(exit) => {
                 if exit.success() {
-                    TestResult::Success
+                    TestResult::Success(())
                 } else {
                     TestResult::Fail("xelatex exited with non-zero exit status".to_owned())
                 }
