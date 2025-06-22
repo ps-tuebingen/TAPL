@@ -1,1 +1,1 @@
-try { (\x:Nat.(0)) error[Nat] } with { 0 } 
+def main := try { (\x:Nat.(0)) error[Nat] } with { 0 };
