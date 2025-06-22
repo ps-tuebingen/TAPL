@@ -1,4 +1,4 @@
-{*Nat, 
+def main := {*Nat, 
   { new = 1, 
     get = \i:Nat.i, 
     inc=\i:Nat. succ(i) 
@@ -8,4 +8,4 @@
   exists Counter<:Nat,
   { new: Counter,
     get: Counter -> Nat,
-    inc: Counter -> Counter }}
+    inc: Counter -> Counter }};

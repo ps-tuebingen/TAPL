@@ -1,9 +1,9 @@
 use crate::{
-    TypeVar, Var,
     definition::Definition,
     subst::{SubstTerm, SubstType},
     terms::Term,
     types::Type,
+    TypeVar, Var,
 };
 use common::errors::DuplicateDefinition;
 use std::fmt;
@@ -121,7 +121,7 @@ where
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(
             f,
-            "{}\n\n def main := {}",
+            "{}\n\n def main := {};",
             self.definitions
                 .iter()
                 .map(|def| def.to_string())

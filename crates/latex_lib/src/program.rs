@@ -16,7 +16,7 @@ where
         conf.include_envs = false;
 
         format!(
-            "{env_start}{} \\\\ \\text{{def main }} {}{env_end}",
+            "{env_start}{} \\\\ \\text{{def main }} {};{env_end}",
             self.definitions
                 .iter()
                 .map(|def| def.to_latex(conf))

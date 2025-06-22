@@ -1,1 +1,1 @@
-\X.\S<:X.\Z<:X.\s:X->S.\z:Z.s(s(s(z)))
+def main := \X.\S<:X.\Z<:X.\s:X->S.\z:Z.s(s(s(z)));

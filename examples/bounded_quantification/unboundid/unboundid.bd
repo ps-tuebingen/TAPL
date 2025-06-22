@@ -1,1 +1,3 @@
-\X<:Top.\x:X.x
+def id :: forall X.X->X := \X<:Top.\x:X.x;
+
+def main := (id [Nat]) 1;

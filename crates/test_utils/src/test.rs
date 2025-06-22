@@ -9,6 +9,31 @@ pub struct TestInclusions {
     pub trace: bool,
 }
 
+impl TestInclusions {
+    pub fn num_tests(&self) -> usize {
+        let mut num = 1;
+        if self.reparse {
+            num += 1;
+        }
+        if self.check {
+            num += 1;
+        }
+        if self.eval {
+            num += 1;
+        }
+        if self.derivation_buss {
+            num += 1;
+        }
+        if self.derivation_frac {
+            num += 1;
+        }
+        if self.trace {
+            num += 1;
+        }
+        num
+    }
+}
+
 pub trait Test<T> {
     fn name(&self) -> String;
     fn run(&self) -> TestResult<T>;

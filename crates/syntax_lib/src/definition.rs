@@ -1,4 +1,4 @@
-use crate::{Name, terms::Term, types::Type};
+use crate::{terms::Term, types::Type, Name};
 use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -36,7 +36,7 @@ where
     Ty: Type,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "def {}::{}:={}", self.name, self.annot, self.body)
+        write!(f, "def {}::{}:={};", self.name, self.annot, self.body)
     }
 }
 

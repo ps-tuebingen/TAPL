@@ -145,53 +145,77 @@ pub trait TestSuite {
         res
     }
 
-    fn run_conf(conf: &Self::Config, inclusions: &TestInclusions) -> TestResult<()> {
+    fn run_conf(conf: &Self::Config, inclusions: &TestInclusions) -> usize {
         let name = conf.name();
+        let mut num_fails = 0;
         println!("Running tests for {}", name);
 
         let prog = match Self::run_parse(conf) {
             TestResult::Success(p) => p,
-            TestResult::Fail(err) => return TestResult::Fail(err),
+            TestResult::Fail(_) => return inclusions.num_tests(),
         };
 
         if inclusions.reparse {
-            Self::run_reparse(name, &prog);
+            if matches!(Self::run_reparse(name, &prog), TestResult::Fail(_)) {
+                num_fails += 1
+            };
         };
 
         if inclusions.check {
             let deriv = Self::run_check(conf, prog.clone());
-            if let TestResult::Success(ref deriv) = deriv {
-                if inclusions.derivation_buss {
-                    Self::run_derivation_buss(name, deriv);
+            match deriv {
+                TestResult::Success(ref deriv) => {
+                    if inclusions.derivation_buss {
+                        if matches!(Self::run_derivation_buss(name, deriv), TestResult::Fail(_)) {
+                            num_fails += 1;
+                        }
+                    }
+                    if inclusions.derivation_frac {
+                        if matches!(Self::run_derivation_frac(name, deriv), TestResult::Fail(_)) {
+                            num_fails += 1;
+                        }
+                    }
                 }
-                if inclusions.derivation_frac {
-                    Self::run_derivation_frac(name, deriv);
+                TestResult::Fail(_) => {
+                    num_fails += 1;
+                    if inclusions.derivation_buss {
+                        num_fails += 1;
+                    }
+                    if inclusions.derivation_frac {
+                        num_fails += 1;
+                    }
                 }
-            }
+            };
         }
 
         if inclusions.eval {
             let trace = Self::run_eval(conf, prog);
-            if let TestResult::Success(ref tr) = trace {
-                if inclusions.trace {
-                    Self::run_trace(name, tr);
+            match trace {
+                TestResult::Success(ref tr) => {
+                    if inclusions.trace {
+                        Self::run_trace(name, tr);
+                    }
+                }
+                TestResult::Fail(_) => {
+                    num_fails += 1;
+                    if inclusions.trace {
+                        num_fails += 1
+                    }
                 }
             }
         }
 
-        TestResult::Success(())
+        num_fails
     }
 
     fn run_all(&self, inclusions: &TestInclusions) -> Result<usize, Error> {
         println!("Running Test Suite {}\n", self.name());
         let configs = self.configs()?;
-        let num_tests = configs.len();
+        let num_tests = configs.len() * inclusions.num_tests();
         let mut num_fail = 0;
         for conf in configs {
             let result = Self::run_conf(&conf, inclusions);
-            if matches!(result, TestResult::Fail(_)) {
-                num_fail += 1
-            }
+            num_fail += result;
         }
         println!();
         println!(

@@ -1,1 +1,4 @@
-\X<:{a:Nat}.\x:X.{orig=x,asucc=succ(x.a)}
+def rec :: forall X<:{a:Nat}.X -> {orig:X,asucc:Nat} := 
+  \X<:{a:Nat}.\x:X.{orig=x,asucc=succ(x.a)};
+
+def main := (rec [{a:Mat}]) {a=1};
