@@ -1,2 +1,3 @@
+name="SendInc"
 ty="({exists X::*,{methods:{get:(X -> Nat), inc:(X -> X)}, state:X}} -> {exists X::*,{methods:{get:(X -> Nat), inc:(X -> X)}, state:X}})"
 evaluated="\\c:{exists X::*,{methods:{get:(X -> Nat), inc:(X -> X)}, state:X}}.(let {X,body}=c in {*(X),{methods=(body).methods, state=(((body).methods).inc) ((body).state)}} as {exists X::*,{methods:{get:(X -> Nat), inc:(X -> X)}, state:X}})"

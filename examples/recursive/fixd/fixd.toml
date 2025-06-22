@@ -1,2 +1,3 @@
+name="FixD"
 ty="mu X.(X -> X)"
 evaluated="fold[mu X.(X -> X)](\\f:mu X.(X -> X).(((\\f:mu X.(X -> X).(\\a:mu X.(X -> X).((unfold[mu X.(X -> X)](f)) (a)))) ((\\f:(mu X.(X -> X) -> mu X.(X -> X)).(fold[mu X.(X -> X)](f))) (\\x:mu X.(X -> X).(((\\f:mu X.(X -> X).(\\a:mu X.(X -> X).((unfold[mu X.(X -> X)](f)) (a)))) (f)) (((\\f:mu X.(X -> X).(\\a:mu X.(X -> X).((unfold[mu X.(X -> X)](f)) (a)))) (x)) (x)))))) ((\\f:(mu X.(X -> X) -> mu X.(X -> X)).(fold[mu X.(X -> X)](f))) (\\x:mu X.(X -> X).(((\\f:mu X.(X -> X).(\\a:mu X.(X -> X).((unfold[mu X.(X -> X)](f)) (a)))) (f)) (((\\f:mu X.(X -> X).(\\a:mu X.(X -> X).((unfold[mu X.(X -> X)](f)) (a)))) (x)) (x)))))))"

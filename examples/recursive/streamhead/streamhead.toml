@@ -1,2 +1,3 @@
+name="StreamHead"
 ty="(mu A.(Unit -> (Nat x A)) -> mu A.(Unit -> (Nat x A)))"
 evaluated="\\s:mu A.(Unit -> (Nat x A)).(((unfold[mu A.(Unit -> (Nat x A))](s)) (unit)).snd)"

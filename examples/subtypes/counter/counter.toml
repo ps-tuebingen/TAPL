@@ -1,2 +1,3 @@
+name="Counter"
 ty="{get:(Unit -> Nat), inc:(Unit -> Unit)}"
 evaluated="{get=\\_:Unit.(!({x=0}).x), inc=\\_:Unit.((({x=0}).x) := succ(!({x=0}).x))}" 

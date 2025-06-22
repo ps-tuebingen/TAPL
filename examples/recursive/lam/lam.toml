@@ -1,2 +1,3 @@
+name="Lam"
 ty="((mu X.(X -> X) -> mu X.(X -> X)) -> (mu X.(X -> X) -> mu X.(X -> X)))"
 evaluated="\\f:(mu X.(X -> X) -> mu X.(X -> X)).(f)"

@@ -10,16 +10,12 @@ use std::path::PathBuf;
 pub struct TypedArithConf {
     ty: String,
     expected: String,
-    #[serde(default)]
     name: String,
     #[serde(default)]
     contents: String,
 }
 
 impl TestConfig for TypedArithConf {
-    fn set_name(&mut self, name: String) {
-        self.name = name
-    }
     fn set_contents(&mut self, contents: String) {
         self.contents = contents
     }

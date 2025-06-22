@@ -1,2 +1,3 @@
+name="BoolBool"
 ty="((Bool -> Bool) -> (Bool -> Bool))"
 evaled="\\f:(Bool -> Bool).(\\x:Bool.((f) (if (x) { false } else { x })))"

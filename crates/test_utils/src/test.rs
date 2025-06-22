@@ -15,7 +15,6 @@ pub trait Test<T> {
 }
 
 pub trait TestConfig: for<'a> serde::Deserialize<'a> {
-    fn set_name(&mut self, name: String);
     fn set_contents(&mut self, contents: String);
 
     fn ty(&self) -> &str;

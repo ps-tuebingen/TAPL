@@ -1,2 +1,3 @@
+name="SSucc"
 ty="(forall X<:Top[*].forall S<:X.forall Z<:X.((X -> S) -> (Z -> X)) -> forall X<:Top[*].forall S<:X.forall Z<:X.((X -> S) -> (Z -> S)))"
 evaluated="\\n:forall X<:Top[*].forall S<:X.forall Z<:X.((X -> S) -> (Z -> X)).(\\X<:(Top[*]).\\S<:(X).\\Z<:(X).\\s:(X -> S).(\\z:Z.((s) (((((((((n)[X]))[S]))[Z])) (s)) (z)))))"

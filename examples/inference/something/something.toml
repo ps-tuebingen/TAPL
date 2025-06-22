@@ -1,2 +1,3 @@
+name="Something"
 ty="Optional(Nat)"
 can_bi=false

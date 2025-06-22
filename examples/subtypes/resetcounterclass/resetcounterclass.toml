@@ -1,2 +1,3 @@
+name="ResetCounterClass"
 ty="({x:Ref[Nat]} -> {get:(Unit -> Nat), inc:(Unit -> Unit), reset:(Unit -> Unit)})"
 evaluated="\\r:{x:Ref[Nat]}.(let (super = (\\r:{x:Ref[Nat]}.({get=\\_:Unit.(!(r).x), inc=\\_:Unit.(((r).x) := succ(!(r).x))})) (r)) in {get=(super).get, inc=(super).inc, reset=\\_:Unit.(((r).x) := 1)})"

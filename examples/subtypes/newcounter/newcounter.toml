@@ -1,2 +1,3 @@
+name="NewCounter"
 ty="(Unit -> {get:(Unit -> Nat), inc:(Unit -> Unit)})"
 evaluated="\\_:Unit.(let (r = {x=ref(1)}) in (\\r:{x:Ref[Nat]}.({get=\\_:Unit.(!(r).x), inc=\\_:Unit.(((r).x) := succ(!(r).x))})) (r))"

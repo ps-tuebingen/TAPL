@@ -1,2 +1,3 @@
+name="PolymorphicRecord"
 ty="forall X<:{a:Nat}.(X -> {asucc:Nat, orig:X})"
 evaluated="\\X<:({a:Nat}).\\x:X.({asucc=succ((x).a), orig=x})"

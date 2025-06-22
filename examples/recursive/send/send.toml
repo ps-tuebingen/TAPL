@@ -1,3 +1,4 @@
+name="Send"
 ty="(Nat -> (mu A.(Nat -> (Nat x A)) -> mu A.(Nat -> (Nat x A))))"
 evaluated="\\n:Nat.(\\s:mu A.(Nat -> (Nat x A)).(((unfold[mu A.(Nat -> (Nat x A))](s)) (n)).snd))"
 

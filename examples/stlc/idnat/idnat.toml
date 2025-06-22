@@ -1,2 +1,3 @@
+name="IdNat"
 ty="(Nat -> Nat)"
 evaled="\\x:Nat.(x)"

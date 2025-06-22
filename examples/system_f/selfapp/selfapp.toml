@@ -1,2 +1,3 @@
+name="SelfApp"
 ty="(forall X::*.(X -> X) -> forall X::*.(X -> X))"
 evaluated="\\x:forall X::*.(X -> X).((((x)[forall X::*.(X -> X)])) (x))"

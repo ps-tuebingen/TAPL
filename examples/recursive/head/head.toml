@@ -1,3 +1,4 @@
+name="Head"
 ty="(mu X.<cons_:(Nat x X), nil_:Unit> -> Nat)"
 evaluated="\\l:mu X.<cons_:(Nat x X), nil_:Unit>.(case unfold[mu X.<cons_:(Nat x X), nil_:Unit>](l) of { <cons_ = p> => p.fst| <nil_ = u> => 0 })"
 

@@ -10,16 +10,12 @@ use std::path::PathBuf;
 pub struct StlcConf {
     ty: String,
     evaled: String,
-    #[serde(default)]
     name: String,
     #[serde(default)]
     contents: String,
 }
 
 impl TestConfig for StlcConf {
-    fn set_name(&mut self, name: String) {
-        self.name = name
-    }
     fn set_contents(&mut self, contents: String) {
         self.contents = contents
     }

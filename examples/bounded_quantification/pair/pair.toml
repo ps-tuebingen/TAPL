@@ -1,2 +1,3 @@
+name="Pair"
 ty="forall X<:Top[*].forall Y<:Top[*].(X -> (Y -> forall R<:Top[*].((X -> (Y -> R)) -> R)))"
 evaluated="\\X<:(Top[*]).\\Y<:(Top[*]).\\x:X.(\\y:Y.(\\R<:(Top[*]).\\p:(X -> (Y -> R)).(((p) (x)) (y))))"

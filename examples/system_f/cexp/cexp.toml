@@ -1,2 +1,3 @@
+name="CExp"
 ty="(forall X::*.((X -> X) -> (X -> X)) -> (forall X::*.((X -> X) -> (X -> X)) -> forall X::*.((X -> X) -> (X -> X))))"
 evaluated="\\m:forall X::*.((X -> X) -> (X -> X)).(\\n:forall X::*.((X -> X) -> (X -> X)).(\\X::*.((((n)[(X -> X)])) (((m)[X])))))"

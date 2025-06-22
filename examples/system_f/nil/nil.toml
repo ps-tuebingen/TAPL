@@ -1,2 +1,3 @@
+name="Nil"
 ty="forall X::*.forall R::*.((X -> (R -> R)) -> (R -> R))"
 evaluated="\\X::*.\\R::*.(\\c:(X -> (R -> R)).(\\n:R.(n)))"

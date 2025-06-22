@@ -1,3 +1,4 @@
+name="Hungry"
 ty="mu A.(Nat -> A)"
 evaluated="fold[mu A.(Nat -> A)](\\n:Nat.(fold[mu A.(Nat -> A)](fix(\\f:(Nat -> mu A.(Nat -> A)).(\\n:Nat.(fold[mu A.(Nat -> A)](f)))))))"
 

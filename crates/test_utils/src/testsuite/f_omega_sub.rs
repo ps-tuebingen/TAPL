@@ -10,16 +10,12 @@ use std::path::PathBuf;
 pub struct FOmegaSubConf {
     ty: String,
     evaluated: String,
-    #[serde(default)]
     name: String,
     #[serde(default)]
     contents: String,
 }
 
 impl TestConfig for FOmegaSubConf {
-    fn set_name(&mut self, name: String) {
-        self.name = name
-    }
     fn set_contents(&mut self, contents: String) {
         self.contents = contents
     }

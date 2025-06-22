@@ -1,3 +1,4 @@
+name="If"
 nameless="\\_.\\_.\\_.(2) ((1) (0))"
 restored="\\x0.\\x1.\\x2.(x0 (x1 x2))"
 evaluated="\\l.\\m.\\n.(l) ((m) (n))"

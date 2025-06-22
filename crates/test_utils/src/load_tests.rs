@@ -37,7 +37,6 @@ where
             .map_err(|err| Error::file_access(&format!("Read File {config_file:?}"), err))?;
         let mut config: Conf = basic_toml::from_str(&config_contents)
             .map_err(|err| Error::toml(&config_contents, err))?;
-        config.set_name(stem);
         config.set_contents(contents);
 
         tests.push(config);

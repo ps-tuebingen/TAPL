@@ -1,2 +1,3 @@
+name="Left"
 ty="(Nat+Bool)"
 evaled="inl(1) as (Nat+Bool)"

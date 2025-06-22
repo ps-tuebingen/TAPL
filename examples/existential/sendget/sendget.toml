@@ -1,2 +1,3 @@
+name="SendGet"
 ty="({exists X::*,{methods:{get:(X -> Nat), inc:(X -> X)}, state:X}} -> Nat)"
 evaluated="\\c:{exists X::*,{methods:{get:(X -> Nat), inc:(X -> X)}, state:X}}.(let {X,body}=c in (((body).methods).get) ((body).state))"

@@ -9,15 +9,11 @@ use std::path::PathBuf;
 #[derive(serde::Deserialize)]
 pub struct UntypedLambdaConf {
     evaluated: String,
-    #[serde(default)]
     name: String,
     #[serde(default)]
     contents: String,
 }
 impl TestConfig for UntypedLambdaConf {
-    fn set_name(&mut self, name: String) {
-        self.name = name
-    }
     fn set_contents(&mut self, contents: String) {
         self.contents = contents
     }

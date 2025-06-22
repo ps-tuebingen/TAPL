@@ -9,16 +9,12 @@ use std::path::PathBuf;
 #[derive(serde::Deserialize)]
 pub struct UntypedArithConf {
     expected: String,
-    #[serde(default)]
     name: String,
     #[serde(default)]
     contents: String,
 }
 
 impl TestConfig for UntypedArithConf {
-    fn set_name(&mut self, name: String) {
-        self.name = name
-    }
     fn set_contents(&mut self, contents: String) {
         self.contents = contents
     }

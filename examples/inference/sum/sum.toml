@@ -1,2 +1,3 @@
+name="Sum"
 ty="Nat -> Bool+Nat"
 can_bi=false
