@@ -1,4 +1,4 @@
-use crate::{Parse, Rule, pair_to_n_inner};
+use crate::{errors::ParserError, pair_to_n_inner, Parse, Rule};
 use pest::iterators::Pair;
 use syntax::{
     terms::{Term, Variant},
@@ -9,17 +9,12 @@ impl<T, Ty> Parse for Variant<T, Ty>
 where
     T: Term + Parse<LeftRecArg = ()>,
     Ty: Type + Parse<LeftRecArg = ()>,
-    <T as Parse>::ParseError: From<<Ty as Parse>::ParseError>,
 {
-    type ParseError = <T as Parse>::ParseError;
     type LeftRecArg = ();
 
     const RULE: Rule = Rule::variant_term;
 
-    fn from_pair(
-        p: Pair<'_, Rule>,
-        _: Self::LeftRecArg,
-    ) -> Result<Variant<T, Ty>, Self::ParseError> {
+    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Variant<T, Ty>, ParserError> {
         let mut inner = pair_to_n_inner(p, vec!["Variant Label", "Variant Term", "Variant Type"])?;
 
         let var_pair = inner.remove(0);

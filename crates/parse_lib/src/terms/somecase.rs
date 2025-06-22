@@ -1,4 +1,4 @@
-use crate::{Parse, Rule, pair_to_n_inner};
+use crate::{errors::ParserError, pair_to_n_inner, Parse, Rule};
 use pest::iterators::Pair;
 use syntax::terms::{SomeCase, Term};
 
@@ -6,11 +6,10 @@ impl<T> Parse for SomeCase<T>
 where
     T: Term + Parse<LeftRecArg = ()>,
 {
-    type ParseError = <T as Parse>::ParseError;
     type LeftRecArg = ();
     const RULE: Rule = Rule::somecase_term;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<SomeCase<T>, Self::ParseError> {
+    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<SomeCase<T>, ParserError> {
         let mut inner = pair_to_n_inner(
             p,
             vec!["Case Bound term", "Some/None Pattern", "Some/None Pattern"],

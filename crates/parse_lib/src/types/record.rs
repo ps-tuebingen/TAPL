@@ -1,6 +1,6 @@
 use crate::{
-    Parse, Rule,
     errors::{MissingInput, ParserError},
+    Parse, Rule,
 };
 use pest::iterators::Pair;
 use std::collections::HashMap;
@@ -10,12 +10,11 @@ impl<Ty> Parse for Record<Ty>
 where
     Ty: Type + Parse<LeftRecArg = ()>,
 {
-    type ParseError = <Ty as Parse>::ParseError;
     type LeftRecArg = ();
 
     const RULE: Rule = Rule::record_type;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Record<Ty>, Self::ParseError> {
+    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Record<Ty>, ParserError> {
         let mut recs = HashMap::new();
         let mut inner = p.into_inner();
         while let Some(label_rule) = inner.next() {

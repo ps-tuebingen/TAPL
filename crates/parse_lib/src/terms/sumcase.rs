@@ -1,4 +1,4 @@
-use crate::{Parse, Rule, pair_to_n_inner};
+use crate::{errors::ParserError, pair_to_n_inner, Parse, Rule};
 use pest::iterators::Pair;
 use syntax::terms::{SumCase, Term};
 
@@ -6,11 +6,10 @@ impl<T> Parse for SumCase<T>
 where
     T: Term + Parse<LeftRecArg = ()>,
 {
-    type ParseError = <T as Parse>::ParseError;
     type LeftRecArg = ();
     const RULE: Rule = Rule::sumcase_term;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<SumCase<T>, Self::ParseError> {
+    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<SumCase<T>, ParserError> {
         let mut inner = pair_to_n_inner(
             p,
             vec![
@@ -34,7 +33,7 @@ where
 fn pairs_to_sum_patterns<T>(
     p1: Pair<'_, Rule>,
     p2: Pair<'_, Rule>,
-) -> Result<(String, String, T, T), <T as Parse>::ParseError>
+) -> Result<(String, String, T, T), ParserError>
 where
     T: Term + Parse<LeftRecArg = ()>,
 {

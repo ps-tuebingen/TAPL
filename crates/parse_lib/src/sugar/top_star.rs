@@ -1,4 +1,4 @@
-use crate::{Parse, Rule};
+use crate::{errors::ParserError, Parse, Rule};
 use pest::iterators::Pair;
 use std::marker::PhantomData;
 use syntax::types::{Top, Type};
@@ -24,12 +24,11 @@ impl<Ty> Parse for TopStar<Ty>
 where
     Ty: Type + Parse<LeftRecArg = ()>,
 {
-    type ParseError = <Ty as Parse>::ParseError;
     type LeftRecArg = ();
 
     const RULE: Rule = Rule::top_type_star;
 
-    fn from_pair(_: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<TopStar<Ty>, Self::ParseError> {
+    fn from_pair(_: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<TopStar<Ty>, ParserError> {
         Ok(TopStar {
             phantom: PhantomData,
         })

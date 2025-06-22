@@ -1,6 +1,6 @@
 use crate::{
-    Parse, Rule,
     errors::{MissingInput, ParserError, RemainingInput},
+    Parse, Rule,
 };
 use pest::iterators::Pair;
 use syntax::{
@@ -12,14 +12,12 @@ impl<T, Ty> Parse for Tail<T, Ty>
 where
     T: Term + Parse<LeftRecArg = ()>,
     Ty: Type + Parse<LeftRecArg = ()>,
-    <T as Parse>::ParseError: From<<Ty as Parse>::ParseError>,
 {
-    type ParseError = <T as Parse>::ParseError;
     type LeftRecArg = ();
 
     const RULE: Rule = Rule::tail_term;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Tail<T, Ty>, Self::ParseError> {
+    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Tail<T, Ty>, ParserError> {
         let mut inner = p.into_inner();
         let ty_rule = inner
             .next()

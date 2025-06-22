@@ -11,14 +11,12 @@ impl<T, Ty> Parse for Definition<T, Ty>
 where
     T: Term + Parse<LeftRecArg = ()>,
     Ty: Type + Parse<LeftRecArg = ()>,
-    <T as Parse>::ParseError: From<<Ty as Parse>::ParseError>,
 {
-    type ParseError = <T as Parse>::ParseError;
     type LeftRecArg = ();
 
     const RULE: Rule = Rule::definition;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Self, Self::ParseError> {
+    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Self, ParserError> {
         let mut inner = pair_to_n_inner(
             p,
             vec!["Definition Name", "Definition Annot", "Definition Body"],
@@ -36,14 +34,12 @@ impl<T, Ty> Parse for Program<T, Ty>
 where
     T: Term + Parse<LeftRecArg = ()>,
     Ty: Type + Parse<LeftRecArg = ()>,
-    <T as Parse>::ParseError: From<<Ty as Parse>::ParseError>,
 {
-    type ParseError = <T as Parse>::ParseError;
     type LeftRecArg = ();
 
     const RULE: Rule = Rule::program;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Self, Self::ParseError> {
+    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Self, ParserError> {
         let mut inner = p.into_inner();
         let mut prog = Program::new();
         inner.next();
@@ -57,14 +53,10 @@ where
                 if prog.main.is_none() {
                     prog.main = Some(def)
                 } else {
-                    return Err(<DuplicateDefinition as Into<ParserError>>::into(
-                        DuplicateDefinition::new("main"),
-                    )
-                    .into());
+                    return Err(DuplicateDefinition::new("main").into());
                 }
             } else {
-                prog.add_definition(def)
-                    .map_err(<DuplicateDefinition as Into<ParserError>>::into)?;
+                prog.add_definition(def)?;
             }
         }
 

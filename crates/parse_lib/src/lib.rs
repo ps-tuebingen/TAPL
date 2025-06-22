@@ -14,14 +14,13 @@ use pest_derive::Parser;
 pub struct LangParser;
 
 pub trait Parse: Sized {
-    type ParseError: std::error::Error + From<ParserError>;
     type LeftRecArg;
 
     const RULE: Rule;
 
-    fn from_pair(p: Pair<'_, Rule>, left_rec: Self::LeftRecArg) -> Result<Self, Self::ParseError>;
+    fn from_pair(p: Pair<'_, Rule>, left_rec: Self::LeftRecArg) -> Result<Self, ParserError>;
 
-    fn parse(source: String) -> Result<Self, Self::ParseError>
+    fn parse(source: String) -> Result<Self, ParserError>
     where
         Self::LeftRecArg: Default,
     {
@@ -52,20 +51,19 @@ pub trait GroupParse: Sized {
 
     const RULE: Rule;
 
-    fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Self, Self::ParseError>;
-    fn from_pair_leftrec(p: Pair<'_, Rule>, left_rec: Self) -> Result<Self, Self::ParseError>;
+    fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Self, ParserError>;
+    fn from_pair_leftrec(p: Pair<'_, Rule>, left_rec: Self) -> Result<Self, ParserError>;
 }
 
 impl<T> Parse for T
 where
     T: GroupParse,
 {
-    type ParseError = <T as GroupParse>::ParseError;
     type LeftRecArg = ();
 
     const RULE: Rule = <T as GroupParse>::RULE;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Self, Self::ParseError> {
+    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Self, ParserError> {
         let mut inner = p.into_inner();
         let prim_rule = inner
             .next()

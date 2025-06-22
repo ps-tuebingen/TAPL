@@ -1,7 +1,6 @@
 use crate::{
-    Parse, Rule,
     errors::{ParserError, UnexpectedRule},
-    pair_to_n_inner,
+    pair_to_n_inner, Parse, Rule,
 };
 use pest::iterators::Pair;
 use syntax::terms::{ListCase, Term};
@@ -10,12 +9,11 @@ impl<T> Parse for ListCase<T>
 where
     T: Term + Parse<LeftRecArg = ()>,
 {
-    type ParseError = <T as Parse>::ParseError;
     type LeftRecArg = ();
 
     const RULE: Rule = Rule::listcase_term;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<ListCase<T>, Self::ParseError> {
+    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<ListCase<T>, ParserError> {
         let mut inner = pair_to_n_inner(
             p,
             vec![

@@ -1,4 +1,4 @@
-use crate::{Parse, Rule, pair_to_n_inner};
+use crate::{errors::ParserError, pair_to_n_inner, Parse, Rule};
 use pest::iterators::Pair;
 use syntax::{
     kinds::Kind,
@@ -9,12 +9,11 @@ impl<T> Parse for TyLambda<T>
 where
     T: Term + Parse<LeftRecArg = ()>,
 {
-    type ParseError = <T as Parse>::ParseError;
     type LeftRecArg = ();
 
     const RULE: Rule = Rule::ty_lambda_kinded_term;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<TyLambda<T>, Self::ParseError> {
+    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<TyLambda<T>, ParserError> {
         let mut inner = pair_to_n_inner(
             p,
             vec!["TyLambda Variable", "TyLambda Kind", "TyLambda Term"],

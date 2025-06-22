@@ -1,4 +1,4 @@
-use crate::{Parse, Rule, pair_to_n_inner};
+use crate::{errors::ParserError, pair_to_n_inner, Parse, Rule};
 use pest::iterators::Pair;
 use syntax::{
     terms::{Cons, Term},
@@ -9,14 +9,12 @@ impl<T, Ty> Parse for Cons<T, Ty>
 where
     T: Term + Parse<LeftRecArg = ()>,
     Ty: Type + Parse<LeftRecArg = ()>,
-    <T as Parse>::ParseError: From<<Ty as Parse>::ParseError>,
 {
-    type ParseError = <T as Parse>::ParseError;
     type LeftRecArg = ();
 
     const RULE: Rule = Rule::cons_term;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Cons<T, Ty>, Self::ParseError> {
+    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Cons<T, Ty>, ParserError> {
         let mut inner = pair_to_n_inner(
             p,
             vec!["Cons Type", "First Const Argument", "Second Cons Argument"],

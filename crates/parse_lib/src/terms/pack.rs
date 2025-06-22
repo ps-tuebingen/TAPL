@@ -1,4 +1,4 @@
-use crate::{Parse, Rule, pair_to_n_inner};
+use crate::{errors::ParserError, pair_to_n_inner, Parse, Rule};
 use pest::iterators::Pair;
 use syntax::{
     terms::{Pack, Term},
@@ -9,14 +9,12 @@ impl<T, Ty> Parse for Pack<T, Ty>
 where
     T: Term + Parse<LeftRecArg = ()>,
     Ty: Type + Parse<LeftRecArg = ()>,
-    <T as Parse>::ParseError: From<<Ty as Parse>::ParseError>,
 {
-    type ParseError = <T as Parse>::ParseError;
     type LeftRecArg = ();
 
     const RULE: Rule = Rule::pack_term;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Pack<T, Ty>, Self::ParseError> {
+    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Pack<T, Ty>, ParserError> {
         let mut inner = pair_to_n_inner(p, vec!["Packed Type", "Packed Term", "Pack Type"])?;
         let packed_rule = inner.remove(0);
         let packed_ty = Ty::from_pair(packed_rule, ())?;

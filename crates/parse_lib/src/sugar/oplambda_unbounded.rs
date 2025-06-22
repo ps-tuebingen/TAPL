@@ -1,4 +1,4 @@
-use crate::{Parse, Rule, pair_to_n_inner};
+use crate::{errors::ParserError, pair_to_n_inner, Parse, Rule};
 use pest::iterators::Pair;
 use syntax::{
     kinds::Kind,
@@ -33,12 +33,11 @@ impl<Ty> Parse for OpLambdaUnbounded<Ty>
 where
     Ty: Type + Parse<LeftRecArg = ()>,
 {
-    type ParseError = <Ty as Parse>::ParseError;
     type LeftRecArg = ();
 
     const RULE: Rule = Rule::op_lambda_star_type;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Self, Self::ParseError> {
+    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Self, ParserError> {
         let mut inner = pair_to_n_inner(p, vec!["Type Variable", "Type Abstraction Body"])?;
         let var = inner.remove(0).as_str().trim().to_owned();
         let ty_rule = inner.remove(0);

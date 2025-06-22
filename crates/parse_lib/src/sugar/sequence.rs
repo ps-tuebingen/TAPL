@@ -1,4 +1,4 @@
-use crate::{Parse, Rule, pair_to_n_inner};
+use crate::{errors::ParserError, pair_to_n_inner, Parse, Rule};
 use pest::iterators::Pair;
 use syntax::{
     terms::{App, Lambda, Term},
@@ -32,12 +32,11 @@ impl<T> Parse for Sequence<T>
 where
     T: Term + Parse<LeftRecArg = ()>,
 {
-    type ParseError = <T as Parse>::ParseError;
     type LeftRecArg = T;
 
     const RULE: Rule = Rule::sequence;
 
-    fn from_pair(p: Pair<'_, Rule>, t: Self::LeftRecArg) -> Result<Sequence<T>, Self::ParseError> {
+    fn from_pair(p: Pair<'_, Rule>, t: Self::LeftRecArg) -> Result<Sequence<T>, ParserError> {
         let term_rule = pair_to_n_inner(p, vec!["Sequence Second Term"])?.remove(0);
         let term = T::from_pair(term_rule, ())?;
         Ok(Sequence { fst: t, snd: term })

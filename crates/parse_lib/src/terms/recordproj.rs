@@ -1,4 +1,4 @@
-use crate::{Parse, Rule, pair_to_n_inner};
+use crate::{errors::ParserError, pair_to_n_inner, Parse, Rule};
 use pest::iterators::Pair;
 use syntax::terms::{RecordProj, Term};
 
@@ -6,15 +6,11 @@ impl<T> Parse for RecordProj<T>
 where
     T: Term + Parse,
 {
-    type ParseError = <T as Parse>::ParseError;
     type LeftRecArg = T;
 
     const RULE: Rule = Rule::record_proj;
 
-    fn from_pair(
-        p: Pair<'_, Rule>,
-        t: Self::LeftRecArg,
-    ) -> Result<RecordProj<T>, Self::ParseError> {
+    fn from_pair(p: Pair<'_, Rule>, t: Self::LeftRecArg) -> Result<RecordProj<T>, ParserError> {
         let label = pair_to_n_inner(p, vec!["Projection Target"])?
             .remove(0)
             .as_str()

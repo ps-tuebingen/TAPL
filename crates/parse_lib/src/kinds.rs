@@ -1,18 +1,16 @@
 use crate::{
-    Parse, Rule,
     errors::{MissingInput, ParserError, RemainingInput, UnexpectedRule},
-    pair_to_n_inner,
+    pair_to_n_inner, Parse, Rule,
 };
 use pest::iterators::Pair;
 use syntax::kinds::Kind;
 
 impl Parse for Kind {
-    type ParseError = ParserError;
     type LeftRecArg = ();
 
     const RULE: Rule = Rule::kind;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Kind, Self::ParseError> {
+    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Kind, ParserError> {
         let mut inner = p.into_inner();
         let prim_rule = inner.next().ok_or(MissingInput::new("Kind"))?;
         let prim_inner = pair_to_n_inner(prim_rule, vec!["Kind"])?.remove(0);

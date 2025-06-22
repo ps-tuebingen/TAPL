@@ -1,4 +1,4 @@
-use crate::{Parse, Rule, pair_to_n_inner};
+use crate::{errors::ParserError, pair_to_n_inner, Parse, Rule};
 use pest::iterators::Pair;
 use syntax::types::{ForallBounded, Type};
 
@@ -6,15 +6,11 @@ impl<Ty> Parse for ForallBounded<Ty>
 where
     Ty: Type + Parse<LeftRecArg = ()>,
 {
-    type ParseError = <Ty as Parse>::ParseError;
     type LeftRecArg = ();
 
     const RULE: Rule = Rule::forall_bounded_type;
 
-    fn from_pair(
-        p: Pair<'_, Rule>,
-        _: Self::LeftRecArg,
-    ) -> Result<ForallBounded<Ty>, Self::ParseError> {
+    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<ForallBounded<Ty>, ParserError> {
         let mut inner = pair_to_n_inner(
             p,
             vec!["Forall Variable", "Forall Super Type", "Forall Body"],

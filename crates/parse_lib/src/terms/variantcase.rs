@@ -1,24 +1,19 @@
 use crate::{
-    Parse, Rule,
     errors::{MissingInput, ParserError},
-    pair_to_n_inner,
+    pair_to_n_inner, Parse, Rule,
 };
 use pest::iterators::Pair;
-use syntax::terms::{Term, VariantCase, variantcase::VariantPattern};
+use syntax::terms::{variantcase::VariantPattern, Term, VariantCase};
 
 impl<T> Parse for VariantCase<T>
 where
     T: Term + Parse<LeftRecArg = ()>,
 {
-    type ParseError = <T as Parse>::ParseError;
     type LeftRecArg = ();
 
     const RULE: Rule = Rule::variantcase_term;
 
-    fn from_pair(
-        p: Pair<'_, Rule>,
-        _: Self::LeftRecArg,
-    ) -> Result<VariantCase<T>, Self::ParseError> {
+    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<VariantCase<T>, ParserError> {
         let mut inner = p.into_inner();
         let bound_rule = inner
             .next()
@@ -38,15 +33,11 @@ impl<T> Parse for VariantPattern<T>
 where
     T: Term + Parse<LeftRecArg = ()>,
 {
-    type ParseError = <T as Parse>::ParseError;
     type LeftRecArg = ();
 
     const RULE: Rule = Rule::variant_pattern;
 
-    fn from_pair(
-        p: Pair<'_, Rule>,
-        _: Self::LeftRecArg,
-    ) -> Result<VariantPattern<T>, Self::ParseError> {
+    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<VariantPattern<T>, ParserError> {
         let mut inner = pair_to_n_inner(
             p,
             vec![

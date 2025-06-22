@@ -1,4 +1,4 @@
-use crate::{Parse, Rule, pair_to_n_inner};
+use crate::{errors::ParserError, pair_to_n_inner, Parse, Rule};
 use pest::iterators::Pair;
 use syntax::{
     terms::{IsNil, Term},
@@ -9,13 +9,11 @@ impl<T, Ty> Parse for IsNil<T, Ty>
 where
     T: Term + Parse<LeftRecArg = ()>,
     Ty: Type + Parse<LeftRecArg = ()>,
-    <T as Parse>::ParseError: From<<Ty as Parse>::ParseError>,
 {
-    type ParseError = <T as Parse>::ParseError;
     type LeftRecArg = ();
     const RULE: Rule = Rule::isnil_term;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<IsNil<T, Ty>, Self::ParseError> {
+    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<IsNil<T, Ty>, ParserError> {
         let mut inner = pair_to_n_inner(p, vec!["IsNil Type", "IsNil Argument"])?;
 
         let ty_pair = inner.remove(0);

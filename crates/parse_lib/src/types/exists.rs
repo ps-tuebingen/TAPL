@@ -1,4 +1,4 @@
-use crate::{Parse, Rule, pair_to_n_inner};
+use crate::{errors::ParserError, pair_to_n_inner, Parse, Rule};
 use pest::iterators::Pair;
 use syntax::{
     kinds::Kind,
@@ -9,11 +9,10 @@ impl<Ty> Parse for Exists<Ty>
 where
     Ty: Type + Parse<LeftRecArg = ()>,
 {
-    type ParseError = <Ty as Parse>::ParseError;
     type LeftRecArg = ();
 
     const RULE: Rule = Rule::exists_kinded_type;
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Exists<Ty>, Self::ParseError> {
+    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Exists<Ty>, ParserError> {
         let mut inner = pair_to_n_inner(p, vec!["Exists Variable", "Exists kind", "Exists Type"])?;
         let start_rule = inner.remove(0);
         let mut start_inner = pair_to_n_inner(start_rule, vec!["Exists Variable"])?;
