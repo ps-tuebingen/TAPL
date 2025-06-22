@@ -1,44 +1,43 @@
 use super::{test::Test, test_result::TestResult};
-use eval::Eval;
-use std::fmt;
-use syntax::terms::Term;
+use eval::{eval_main, Eval};
+use syntax::{program::Program, terms::Term, types::Type};
 use trace::EvalTrace;
 
-pub struct EvalTest<T>
+pub struct EvalTest<T, Ty>
 where
     T: Term + Eval<Term = T>,
-    T::Value: fmt::Display,
+    Ty: Type,
 {
     name: String,
     expected: String,
-    term: T,
+    prog: Program<T, Ty>,
 }
 
-impl<T> EvalTest<T>
+impl<T, Ty> EvalTest<T, Ty>
 where
     T: Term + Eval<Term = T>,
-    T::Value: fmt::Display,
+    Ty: Type,
 {
-    pub fn new(name: &str, t: T, exp: &str) -> EvalTest<T> {
+    pub fn new(name: &str, prog: Program<T, Ty>, exp: &str) -> EvalTest<T, Ty> {
         EvalTest {
             name: name.to_owned(),
-            term: t,
+            prog,
             expected: exp.to_owned(),
         }
     }
 }
 
-impl<T> Test<EvalTrace<T, T::Value>> for EvalTest<T>
+impl<T, Ty> Test<EvalTrace<T, T::Value>> for EvalTest<T, Ty>
 where
     T: Term + Eval<Term = T>,
-    T::Value: fmt::Display,
+    Ty: Type,
 {
     fn name(&self) -> String {
         format!("Evaluating {}", self.name)
     }
 
     fn run(&self) -> TestResult<EvalTrace<T, T::Value>> {
-        let evaled = match self.term.clone().eval_start() {
+        let evaled = match eval_main(self.prog.clone()) {
             Ok(v) => v,
             Err(err) => return TestResult::from_err(err),
         };

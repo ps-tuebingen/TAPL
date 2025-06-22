@@ -1,5 +1,5 @@
 use crate::{paths::LATEX_OUT, test::Test, test_result::TestResult};
-use derivation::Derivation;
+use derivation::ProgramDerivation;
 use latex::LatexFmt;
 use std::{
     fs::File,
@@ -15,7 +15,7 @@ where
     Ty: Type + LatexFmt,
 {
     name: String,
-    deriv: &'a Derivation<T, Ty>,
+    deriv: &'a ProgramDerivation<T, Ty>,
 }
 
 impl<'a, T, Ty> LatexTestBuss<'a, T, Ty>
@@ -23,7 +23,7 @@ where
     T: Term + LatexFmt,
     Ty: Type + LatexFmt,
 {
-    pub fn new(name: &str, deriv: &'a Derivation<T, Ty>) -> LatexTestBuss<'a, T, Ty> {
+    pub fn new(name: &str, deriv: &'a ProgramDerivation<T, Ty>) -> LatexTestBuss<'a, T, Ty> {
         LatexTestBuss {
             name: name.to_owned(),
             deriv,

@@ -45,7 +45,7 @@ impl Normalize<Type> for Type {
 #[cfg(test)]
 mod eval_tests {
     use super::super::terms::term_tests::{example_term1, example_term2};
-    use eval::{errors::EvalError, Eval};
+    use eval::Eval;
     use syntax::values::Unit;
 
     #[test]
