@@ -1,4 +1,4 @@
-use super::{Location, TypeVar, Var, kinds::Kind, types::Type};
+use crate::{kinds::Kind, program::Program, terms::Term, types::Type, Location, TypeVar, Var};
 use common::errors::{FreeTypeVariable, FreeVariable, UndefinedLocation};
 use std::collections::HashMap;
 
@@ -24,6 +24,17 @@ where
             tyvar_super: HashMap::new(),
             location_bindings: HashMap::new(),
         }
+    }
+
+    pub fn from_prog<T>(prog: &Program<T, Ty>) -> Environment<Ty>
+    where
+        T: Term,
+    {
+        let mut env = Environment::new();
+        for def in prog.definitions.iter() {
+            env.var_bindings.insert(def.name.clone(), def.annot.clone());
+        }
+        env
     }
 
     pub fn add_var(&mut self, var: Var, ty: Ty) {
