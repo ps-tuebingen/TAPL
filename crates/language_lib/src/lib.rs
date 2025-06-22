@@ -3,7 +3,7 @@ use derivation::Derivation;
 use eval::Eval;
 use latex::{LatexConfig, LatexFmt};
 use parse::Parse;
-use syntax::{
+use syntax::{program::Program,
     subst::{SubstTerm, SubstType},
     terms::Term,
     types::TypeGroup,
@@ -76,7 +76,7 @@ pub trait Language {
     type LanguageError: std::error::Error;
 
     fn parse(&self, input: String) -> Result<Self::Term, Self::LanguageError> {
-        Self::Term::parse(input)
+        Program<Self::Term,Self::Type>::parse(input)
     }
 
     fn check(

@@ -1,9 +1,10 @@
 use crate::{
-    Name, TypeVar, Var,
     subst::{SubstTerm, SubstType},
     terms::Term,
     types::Type,
+    Name, TypeVar, Var,
 };
+use common::errors::DuplicateDefinition;
 
 pub struct Definition<T, Ty>
 where
@@ -15,6 +16,24 @@ where
     pub body: T,
 }
 
+impl<T, Ty> Definition<T, Ty>
+where
+    T: Term,
+    Ty: Type,
+{
+    pub fn new<T1, Ty1>(name: &str, annot: Ty1, body: T1) -> Definition<T, Ty>
+    where
+        T1: Into<T>,
+        Ty1: Into<Ty>,
+    {
+        Definition {
+            name: name.to_owned(),
+            annot: annot.into(),
+            body: body.into(),
+        }
+    }
+}
+
 pub struct Program<T, Ty>
 where
     T: Term,
@@ -22,6 +41,28 @@ where
 {
     pub definitions: Vec<Definition<T, Ty>>,
     pub main: Option<Definition<T, Ty>>,
+}
+
+impl<T, Ty> Program<T, Ty>
+where
+    T: Term,
+    Ty: Type,
+{
+    pub fn new() -> Program<T, Ty> {
+        Program {
+            definitions: vec![],
+            main: None,
+        }
+    }
+
+    pub fn add_definition(&mut self, def: Definition<T, Ty>) -> Result<(), DuplicateDefinition> {
+        if self.definitions.iter().any(|df| df.name == def.name) {
+            Err(DuplicateDefinition::new(&def.name))
+        } else {
+            self.definitions.push(def);
+            Ok(())
+        }
+    }
 }
 
 impl<T, Ty> SubstTerm<T> for Program<T, Ty>

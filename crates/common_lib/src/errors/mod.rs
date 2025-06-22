@@ -1,3 +1,4 @@
+pub mod duplicate_definition;
 pub mod free_type_variable;
 pub mod free_variable;
 pub mod index_out_of_bounds;
@@ -10,6 +11,7 @@ pub mod undefined_label;
 pub mod undefined_location;
 pub mod value_mismatch;
 
+pub use duplicate_definition::DuplicateDefinition;
 pub use free_type_variable::FreeTypeVariable;
 pub use free_variable::FreeVariable;
 pub use index_out_of_bounds::IndexOutOfBounds;

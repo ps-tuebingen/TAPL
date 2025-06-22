@@ -1,4 +1,5 @@
 use super::Rule;
+use common::errors::DuplicateDefinition;
 use pest::error::Error as PestErr;
 use std::fmt;
 
@@ -19,6 +20,7 @@ pub enum ParserError {
     RemainingInput(RemainingInput),
     UnexpectedRule(UnexpectedRule),
     UnknownKeyword(UnknownKeyword),
+    DuplicateDefinition(DuplicateDefinition),
 }
 
 impl fmt::Display for ParserError {
@@ -29,6 +31,7 @@ impl fmt::Display for ParserError {
             ParserError::RemainingInput(ri) => ri.fmt(f),
             ParserError::UnexpectedRule(ur) => ur.fmt(f),
             ParserError::UnknownKeyword(uk) => uk.fmt(f),
+            ParserError::DuplicateDefinition(dd) => dd.fmt(f),
         }
     }
 }
@@ -62,5 +65,11 @@ impl From<UnknownKeyword> for ParserError {
 impl From<PestErr<Rule>> for ParserError {
     fn from(err: PestErr<Rule>) -> ParserError {
         ParserError::Pest(Box::new(err))
+    }
+}
+
+impl From<DuplicateDefinition> for ParserError {
+    fn from(err: DuplicateDefinition) -> ParserError {
+        ParserError::DuplicateDefinition(err)
     }
 }

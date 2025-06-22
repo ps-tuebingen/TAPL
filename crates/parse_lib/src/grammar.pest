@@ -1,5 +1,7 @@
 WHITESPACE = _{ " " | "\n" | "\t" }
-program = { SOI ~ term ~ EOI }
+program = { SOI ~ definition* ~ EOI }
+
+definition = { variable ~ "::" ~ type ~ ":=" ~ term }
 
 variable = @{ !(keyword ~ WHITESPACE) ~  (ASCII_ALPHA_LOWER | "_") ~ (ASCII_ALPHA|ASCII_DIGIT|"_")* }
 type_variable = @{ !(keyword ~ WHITESPACE) ~  ASCII_ALPHA_UPPER ~ (ASCII_ALPHA|ASCII_DIGIT|"_")* }

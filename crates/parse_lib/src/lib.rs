@@ -1,11 +1,12 @@
 pub mod errors;
 mod kinds;
+pub mod program;
 pub mod sugar;
 pub mod terms;
 pub mod types;
 
 use errors::{MissingInput, ParserError, RemainingInput};
-use pest::{Parser, error::Error as PestErr, iterators::Pair};
+use pest::{error::Error as PestErr, iterators::Pair, Parser};
 use pest_derive::Parser;
 
 #[derive(Parser)]
