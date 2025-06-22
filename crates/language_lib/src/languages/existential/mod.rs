@@ -19,6 +19,5 @@ impl Language for Existential {
     type Term = Term;
     type Type = Type;
     type Value = Value;
-    type EvalEnv = ();
     type LanguageError = Error;
 }

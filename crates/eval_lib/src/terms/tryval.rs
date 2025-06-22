@@ -1,5 +1,6 @@
 use crate::Eval;
 use syntax::{
+    store::Store,
     terms::{App, Term, TryWithVal},
     values::{Raise, ValueGroup},
 };
@@ -15,12 +16,11 @@ where
 {
     type Value = <T as Eval>::Value;
     type EvalError = <T as Eval>::EvalError;
-    type Env = <T as Eval>::Env;
 
     type Term = T;
     fn eval(
         self,
-        env: &mut Self::Env,
+        env: &mut Store<Self::Value>,
     ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
         let term_res = self.term.eval(env)?;
         let term_val = term_res.val();

@@ -1,16 +1,17 @@
 use super::{errors::Error, terms::Term, values::Value};
 use eval::Eval;
+use syntax::store::Store;
 use trace::EvalTrace;
 
 impl Eval for Term {
     type Value = Value;
     type Term = Term;
-    type Env = ();
+
     type EvalError = Error;
 
     fn eval(
         self,
-        env: &mut Self::Env,
+        env: &mut Store<Self::Value>,
     ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
         match self {
             Term::True(tru) => tru.eval(env),

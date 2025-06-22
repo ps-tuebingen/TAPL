@@ -1,5 +1,6 @@
 use crate::Eval;
 use syntax::{
+    store::Store,
     terms::{Ascribe, Term},
     types::Type,
 };
@@ -10,14 +11,13 @@ where
     T: Term + Eval<Term = T> + From<Ascribe<T, Ty>> + From<<T as Eval>::Value>,
     Ty: Type,
 {
-    type Env = <T as Eval>::Env;
     type Value = <T as Eval>::Value;
     type EvalError = <T as Eval>::EvalError;
 
     type Term = T;
     fn eval(
         self,
-        env: &mut Self::Env,
+        env: &mut Store<Self::Value>,
     ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
         let inner_res = self.term.clone().eval(env)?;
         let val = inner_res.val();

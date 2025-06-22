@@ -1,4 +1,4 @@
-use crate::{terms::Term, types::Type, TypeVar, Var};
+use crate::{TypeVar, Var, terms::Term, types::Type};
 
 pub trait SubstTerm<T>
 where

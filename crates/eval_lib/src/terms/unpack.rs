@@ -1,6 +1,7 @@
 use crate::Eval;
 use common::errors::ValueMismatch;
 use syntax::{
+    store::Store,
     subst::{SubstTerm, SubstType},
     terms::{Term, Unpack},
     types::Type,
@@ -22,12 +23,12 @@ where
 {
     type Value = <T as Eval>::Value;
     type EvalError = <T as Eval>::EvalError;
-    type Env = <T as Eval>::Env;
+
     type Term = T;
 
     fn eval(
         self,
-        env: &mut Self::Env,
+        env: &mut Store<Self::Value>,
     ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
         let term_res = self.bound_term.eval(env)?;
         let term_val = term_res.val();

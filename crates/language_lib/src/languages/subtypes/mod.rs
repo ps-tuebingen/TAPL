@@ -8,7 +8,6 @@ pub mod values;
 
 use crate::Language;
 use errors::Error;
-use eval::Store;
 use terms::Term;
 use types::Type;
 use values::Value;
@@ -20,6 +19,5 @@ impl Language for Subtypes {
     type Term = Term;
     type Type = Type;
     type Value = Value;
-    type EvalEnv = Store;
     type LanguageError = Error;
 }

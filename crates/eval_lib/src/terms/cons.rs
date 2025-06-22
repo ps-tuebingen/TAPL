@@ -1,5 +1,6 @@
 use crate::Eval;
 use syntax::{
+    store::Store,
     terms::{Cons, Term},
     types::Type,
     values::{Cons as ConsVal, ValueGroup},
@@ -14,14 +15,13 @@ where
     Cons<T, Ty>: Into<T>,
     ConsVal<V, Ty>: Into<<T as Eval>::Value>,
 {
-    type Env = <T as Eval>::Env;
     type Value = <T as Eval>::Value;
     type EvalError = <T as Eval>::EvalError;
 
     type Term = T;
     fn eval(
         self,
-        env: &mut Self::Env,
+        env: &mut Store<Self::Value>,
     ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
         let hd_res = self.head.clone().eval(env)?;
         let hd_val = hd_res.val();

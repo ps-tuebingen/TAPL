@@ -1,6 +1,7 @@
 use crate::Eval;
 use common::errors::{ValueKind, ValueMismatch};
 use syntax::{
+    store::Store,
     subst::SubstTerm,
     terms::{ListCase, Term},
     values::{Value, ValueGroup},
@@ -13,14 +14,13 @@ where
     ListCase<T>: Into<T>,
     <T as Eval>::EvalError: From<ValueMismatch>,
 {
-    type Env = <T as Eval>::Env;
     type Value = <T as Eval>::Value;
     type EvalError = <T as Eval>::EvalError;
 
     type Term = T;
     fn eval(
         self,
-        env: &mut Self::Env,
+        env: &mut Store<Self::Value>,
     ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
         let bound_res = self.bound_term.eval(env)?;
         let bound_val = bound_res.val();

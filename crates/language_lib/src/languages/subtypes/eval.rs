@@ -1,44 +1,17 @@
 use super::{errors::Error, terms::Term, types::Type, values::Value};
 use check::Normalize;
-use common::errors::UndefinedLocation;
-use eval::{Eval, env::EvalEnvironment};
-use std::collections::HashMap;
-use syntax::{Location, env::Environment};
+use eval::Eval;
+use syntax::{env::Environment, store::Store};
 use trace::EvalTrace;
 
-#[derive(Default)]
-pub struct Store(HashMap<Location, Value>);
-
-impl EvalEnvironment<Value> for Store {
-    type EvalError = Error;
-
-    fn fresh_location(&self) -> Location {
-        let mut next_loc = 0;
-        while self.0.contains_key(&next_loc) {
-            next_loc += 1;
-        }
-        next_loc
-    }
-    fn get_location(&self, loc: Location) -> Result<Value, Self::EvalError> {
-        self.0
-            .get(&loc)
-            .ok_or(UndefinedLocation::new(loc).into())
-            .cloned()
-    }
-
-    fn save_location(&mut self, loc: Location, val: Value) {
-        self.0.insert(loc, val);
-    }
-}
 impl Eval for Term {
-    type Env = Store;
     type Term = Term;
     type Value = Value;
     type EvalError = Error;
 
     fn eval(
         self,
-        env: &mut Self::Env,
+        env: &mut Store<Self::Value>,
     ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
         match self {
             Term::Var(var) => var.eval(env),

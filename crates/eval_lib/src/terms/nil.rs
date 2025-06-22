@@ -1,5 +1,6 @@
 use crate::Eval;
 use syntax::{
+    store::Store,
     terms::{Nil, Term},
     types::Type,
     values::Nil as NilVal,
@@ -13,14 +14,13 @@ where
     Ty: Type,
     NilVal<T, Ty>: Into<<T as Eval>::Value>,
 {
-    type Env = <T as Eval>::Env;
     type Value = <T as Eval>::Value;
     type EvalError = <T as Eval>::EvalError;
 
     type Term = T;
     fn eval(
         self,
-        _: &mut Self::Env,
+        _: &mut Store<Self::Value>,
     ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
         Ok(EvalTrace::<T, <T as Eval>::Value>::new(
             vec![],

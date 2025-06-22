@@ -1,6 +1,7 @@
-use crate::{Eval, env::EvalEnvironment};
+use crate::Eval;
 use common::errors::ValueMismatch;
 use syntax::{
+    store::Store,
     terms::{Assign, Term, Unit},
     values::{Unit as UnitVal, ValueGroup},
 };
@@ -15,14 +16,13 @@ where
     Unit<T>: Into<T>,
     <T as Eval>::EvalError: From<ValueMismatch>,
 {
-    type Env = <T as Eval>::Env;
     type Value = <T as Eval>::Value;
     type EvalError = <T as Eval>::EvalError;
 
     type Term = T;
     fn eval(
         self,
-        env: &mut Self::Env,
+        env: &mut Store<Self::Value>,
     ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
         let lhs_res = self.lhs.clone().eval(env)?;
         let lhs_val = lhs_res.val();

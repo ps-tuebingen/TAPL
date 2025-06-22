@@ -1,6 +1,7 @@
 use super::{errors::Error, terms::Term, types::Type, values::Value};
 use check::Normalize;
 use eval::Eval;
+use syntax::store::Store;
 use syntax::{
     env::Environment,
     terms::{False, Num, True, Unit, Variable},
@@ -10,10 +11,13 @@ use trace::EvalTrace;
 impl Eval for Term {
     type Value = Value;
     type Term = Term;
-    type Env = ();
+
     type EvalError = Error;
 
-    fn eval(self, env: &mut ()) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
+    fn eval(
+        self,
+        env: &mut Store<Self::Value>,
+    ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
         match self {
             Term::Var(v) => <Variable<Term> as Eval>::eval(v, env),
             Term::Lambda(lam) => lam.eval(env),

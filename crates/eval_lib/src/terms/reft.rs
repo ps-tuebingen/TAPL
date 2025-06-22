@@ -1,5 +1,6 @@
-use crate::{Eval, env::EvalEnvironment};
+use crate::Eval;
 use syntax::{
+    store::Store,
     terms::{Loc as LocT, Ref, Term},
     values::Loc,
 };
@@ -13,14 +14,13 @@ where
     Ref<T>: Into<T>,
     Loc<T>: Into<<T as Eval>::Value>,
 {
-    type Env = <T as Eval>::Env;
     type Value = <T as Eval>::Value;
     type EvalError = <T as Eval>::EvalError;
 
     type Term = T;
     fn eval(
         self,
-        env: &mut Self::Env,
+        env: &mut Store<Self::Value>,
     ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
         let term_res = self.term.clone().eval(env)?;
         let term_val = term_res.val();

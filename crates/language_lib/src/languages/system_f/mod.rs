@@ -19,6 +19,5 @@ impl Language for SystemF {
     type Term = Term;
     type Type = Type;
     type Value = Value;
-    type EvalEnv = ();
     type LanguageError = Error;
 }

@@ -1,6 +1,6 @@
 use check::{Kindcheck, Normalize, Subtypecheck, Typecheck};
 use derivation::Derivation;
-use eval::{Eval, env::EvalEnvironment};
+use eval::Eval;
 use latex::{LatexConfig, LatexFmt};
 use parse::Parse;
 use syntax::{
@@ -56,7 +56,6 @@ pub trait Language {
         + SubstType<Self::Type, Target = Self::Term>
         + Eval<
             Term = Self::Term,
-            Env = Self::EvalEnv,
             Value = Self::Value,
             EvalError: Into<<Self as Language>::LanguageError>,
         > + Typecheck<
@@ -75,8 +74,6 @@ pub trait Language {
     type Value: ValueGroup<Term = Self::Term, Type = Self::Type> + LatexFmt;
 
     type LanguageError: std::error::Error;
-
-    type EvalEnv: EvalEnvironment<Self::Value>;
 
     fn parse(&self, input: String) -> Result<Self::Term, Self::LanguageError> {
         Self::Term::parse(input)

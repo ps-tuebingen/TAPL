@@ -1,8 +1,8 @@
 use crate::{
+    Name, TypeVar, Var,
     subst::{SubstTerm, SubstType},
     terms::Term,
     types::Type,
-    Name, TypeVar, Var,
 };
 
 pub struct Definition<T, Ty>

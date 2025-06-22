@@ -1,18 +1,17 @@
 use super::{errors::Error, terms::Term, types::Type, values::Value};
 use check::Normalize;
 use eval::Eval;
-use syntax::env::Environment;
+use syntax::{env::Environment, store::Store};
 use trace::EvalTrace;
 
 impl Eval for Term {
-    type Env = ();
     type Term = Term;
     type Value = Value;
     type EvalError = Error;
 
     fn eval(
         self,
-        env: &mut Self::Env,
+        env: &mut Store<Self::Value>,
     ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
         match self {
             Term::Var(var) => var.eval(env),

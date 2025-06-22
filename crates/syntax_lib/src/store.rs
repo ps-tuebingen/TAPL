@@ -1,4 +1,4 @@
-use crate::{values::Value, Location};
+use crate::{Location, values::Value};
 use common::errors::UndefinedLocation;
 use std::collections::HashMap;
 

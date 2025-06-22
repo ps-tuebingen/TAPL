@@ -1,6 +1,7 @@
 use crate::Eval;
 use common::errors::{UndefinedLabel, ValueMismatch};
 use syntax::{
+    store::Store,
     terms::{RecordProj, Term},
     values::ValueGroup,
 };
@@ -13,14 +14,13 @@ where
     <T as Eval>::Value: Into<T>,
     <T as Eval>::EvalError: From<ValueMismatch> + From<UndefinedLabel>,
 {
-    type Env = <T as Eval>::Env;
     type Value = <T as Eval>::Value;
     type EvalError = <T as Eval>::EvalError;
 
     type Term = T;
     fn eval(
         self,
-        env: &mut Self::Env,
+        env: &mut Store<Self::Value>,
     ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
         let term_res = self.record.eval(env)?;
         let term_val = term_res.val();

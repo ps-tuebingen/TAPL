@@ -1,5 +1,6 @@
 use crate::Eval;
 use syntax::{
+    store::Store,
     terms::{Pair, Term},
     values::Pair as PairVal,
 };
@@ -12,14 +13,13 @@ where
     <T as Eval>::Value: Into<T>,
     PairVal<<T as Eval>::Value>: Into<<T as Eval>::Value>,
 {
-    type Env = <T as Eval>::Env;
     type Value = <T as Eval>::Value;
     type EvalError = <T as Eval>::EvalError;
 
     type Term = T;
     fn eval(
         self,
-        env: &mut Self::Env,
+        env: &mut Store<Self::Value>,
     ) -> Result<EvalTrace<Self::Term, Self::Value>, Self::EvalError> {
         let fst_res = self.fst.clone().eval(env)?;
         let fst_val = fst_res.val();
