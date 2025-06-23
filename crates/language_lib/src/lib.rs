@@ -1,6 +1,6 @@
 use check::{Kindcheck, Normalize, Subtypecheck, Typecheck};
 use derivation::{ProgramDerivation, TypingDerivation};
-use eval::{Eval, eval_main};
+use eval::{eval_main, Eval};
 use latex::{LatexConfig, LatexFmt};
 use parse::{GroupParse, Parse};
 use syntax::{
@@ -86,8 +86,8 @@ pub trait Language {
     }
 
     fn eval(&self, input: String) -> Result<EvalTrace<Self::Term, Self::Value>, LanguageError> {
-        let parsed = Self::Term::parse(input)?;
-        Self::Term::eval_start(parsed).map_err(|err| err.into())
+        let parsed = self.parse(input)?;
+        eval_main(parsed).map_err(|err| err.into())
     }
 
     fn run_all(&self, input: String) -> AllResults<Self>

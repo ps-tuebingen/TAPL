@@ -1,3 +1,3 @@
 name="PairADT"
-ty="{exists Pair::(*) => ((*) => (*)),{fst_:forall X::*.forall Y::*.(((Pair[X])[Y]) -> X), pair:forall X::*.forall Y::*.(X -> (Y -> ((Pair[X])[Y]))), snd_:forall X::*.forall Y::*.(((Pair[X])[Y]) -> Y)}}" 
-evaluated="{*\\X::*.\\Y::*.forall R::*.((X -> (Y -> R)) -> R),{fst_=\\X::*.\\Y::*.(\\p:forall R::*.((X -> (Y -> R)) -> R).((((p)[X])) (\\x:X.(\\y:Y.(x))))), pair=\\X::*.\\Y::*.(\\x:X.(\\y:Y.(\\R::*.(\\p:(X -> (Y -> R)).(((p) (x)) (y)))))), snd_=\\X::*.\\Y::*.(\\p:forall R::*.((X -> (Y -> R)) -> R).((((p)[Y])) (\\x:X.(\\y:Y.(y)))))}} as {exists Pair::(*) => ((*) => (*)),{fst_:forall X::*.forall Y::*.(((Pair[X])[Y]) -> X), pair:forall X::*.forall Y::*.(X -> (Y -> ((Pair[X])[Y]))), snd_:forall X::*.forall Y::*.(((Pair[X])[Y]) -> Y)}}"
+ty="Nat"
+evaluated="1"

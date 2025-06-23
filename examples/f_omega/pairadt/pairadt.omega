@@ -1,14 +1,22 @@
-{*\X.\Y.forall R.(X->Y->R) -> R,
-  { pair = \X.\Y.\x:X.\y:Y.\R.\p:X->Y->R.((p x) y),
-    fst_ = \X.\Y.\p:forall R.(X->Y->R) -> R.
-      (p [X]) (\x:X.\y:Y.x),
-    snd_ = \X.\Y.\p:forall R.(X->Y->R) -> R.
-      (p [Y]) (\x:X.\y:Y.y)
-  } 
-} as 
-{ exists Pair :: * => * => *,
-  { pair: forall X.forall Y.(X->Y->(Pair[X])[Y]),
-    fst_: forall X.forall Y.(((Pair[X])[Y]) -> X),
-    snd_: forall X.forall Y.(((Pair[X])[Y]) -> Y)
-  }
-}
+def pairadt :: { exists Pair :: * => * => *,
+    { pair: forall X.forall Y.(X->Y->(Pair[X])[Y]),
+      fst_: forall X.forall Y.(((Pair[X])[Y]) -> X),
+      snd_: forall X.forall Y.(((Pair[X])[Y]) -> Y)
+    }
+  } := 
+  {*\X.\Y.forall R.(X->Y->R) -> R,
+    { pair = \X.\Y.\x:X.\y:Y.\R.\p:X->Y->R.((p x) y),
+      fst_ = \X.\Y.\p:forall R.(X->Y->R) -> R.
+        (p [X]) (\x:X.\y:Y.x),
+      snd_ = \X.\Y.\p:forall R.(X->Y->R) -> R.
+        (p [Y]) (\x:X.\y:Y.y)
+    } 
+  } as 
+  { exists Pair :: * => * => *,
+    { pair: forall X.forall Y.(X->Y->(Pair[X])[Y]),
+      fst_: forall X.forall Y.(((Pair[X])[Y]) -> X),
+      snd_: forall X.forall Y.(((Pair[X])[Y]) -> Y)
+    }
+  };
+
+def main := let {Pair,pair} = pairadt in ((((pair.fst_) [Nat]) [Nat]) (((((pair.pair) [Nat]) [Nat]) 1) 2));

@@ -1,5 +1,10 @@
-let {List_,list} = 
-{*\X. forall R.(X->R->R) -> R -> R,
+def listadt :: { exists List_ :: * => *, 
+  { nil_ : forall X.List_[X],
+    cons_: forall X.(X -> (List_[X]) -> List_[X]),
+    isnil_: forall X.((List_[X]) -> Bool),
+    head_: forall X.((List_[X]) -> X)
+  }
+} := {*\X. forall R.(X->R->R) -> R -> R,
   { nil_ = \X.(\R.\c:X->R->R.\n:R.n),
     cons_ = \X.\hd:X.\tl:(forall R.(X->R->R) -> R ->R ).(\R.\c:X->R->R.\n:R.(c hd) (((tl [R]) c) n)),
     isnil_ = \X.\l:(forall R.(X->R->R) -> R -> R).((l [Bool]) (\hd:X.\tl:Bool. false)) true,
@@ -11,5 +16,7 @@ let {List_,list} =
     isnil_: forall X.((List_[X]) -> Bool),
     head_: forall X.((List_[X]) -> X)
   }
-} in 
-((list.isnil_) [Nat]) ((((list.cons_) [Nat]) 1) ((((list.cons_) [Nat]) 2) ((list.nil_) [Nat] )))
+};
+
+def main := let {List_,list} = listadt in 
+  ((list.isnil_) [Nat]) ((((list.cons_) [Nat]) 1) ((((list.cons_) [Nat]) 2) ((list.nil_) [Nat] )));
