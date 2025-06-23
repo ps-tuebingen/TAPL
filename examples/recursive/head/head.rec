@@ -1,5 +1,5 @@
-\l:(mu X.<nil_:Unit, cons_:(Nat x X)>). 
+def main := \l:(mu X.<nil_:Unit, cons_:(Nat x X)>). 
   case (unfold [mu X.<nil_:Unit, cons_:(Nat x X)>] l) of {
     <nil_=u> => 0
     | <cons_=p> => p.fst
-  }
+  };

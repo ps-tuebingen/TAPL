@@ -1,31 +1,34 @@
-let (isnil_ = 
+def isnil_ :: (mu X.<nil_:Unit, cons_:(Nat x X)>) -> Bool := 
     \l:(mu X.<nil_:Unit, cons_:(Nat x X)>).
     case (unfold [mu X.<nil_:Unit,cons_:(Nat x X)>] l) of {
       <nil_=u> => true
       | <cons_=p> => false
-    }
-) in 
-let (head_ = \l:(mu X.<nil_:Unit, cons_:(Nat x X)>). 
+    };
+
+def head_ :: (mu X.<nil_:Unit, cons_:(Nat x X)>) -> Nat := 
+  \l:(mu X.<nil_:Unit, cons_:(Nat x X)>). 
     case (unfold [mu X.<nil_:Unit,cons_:(Nat x X)>] l) of {
       <nil_=u> => 0
       | <cons_=p> => p.fst
-    }
-) in
-let (tail_ = \l:(mu X.<nil_:Unit, cons_:(Nat x X)>).
+    };
+
+def tail_ :: (mu X.<nil_:Unit, cons_:(Nat x X)>) -> mu X.<nil_:Unit,cons_:(Nat x X)> := 
+  \l:(mu X.<nil_:Unit, cons_:(Nat x X)>).
       case (unfold [mu X.<nil_:Unit,cons_:(Nat x X)>] l) of {
       <nil_=u> => l
       | <cons_=p> => p.snd
-      }
-) in
-let (plus = fix(
+      };
+
+def plus :: Nat -> Nat -> Nat := fix(
   \f:Nat->(Nat->Nat).\n:Nat.\m:Nat.
   if (iszero(n)) {
     m
   }else {
     (f(pred(n)))(m)
   }
-)) in 
-fix (
+);
+
+def main := fix (
   \s:(mu X.<nil_:Unit, cons_:(Nat x X)>)->Nat.
   \l:(mu X.<nil_:Unit, cons_:(Nat x X)>). 
   if (isnil_(l)) {
@@ -33,4 +36,4 @@ fix (
   } else {
     (plus (head_ l)) (s(tail_(l)))
   }
-)
+);

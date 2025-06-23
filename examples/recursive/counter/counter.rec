@@ -1,8 +1,10 @@
-let (create = fix(
+def create :: {x:Nat} -> mu C.{get:Nat,inc:Unit->C,dec:Unit->C} := fix(
   \f:{x:Nat} -> (mu C.{get:Nat,inc:Unit->C,dec:Unit->C}).
   \s:{x:Nat}.fold [mu C.{get:Nat,inc:Unit->C,dec:Unit->C}]{
     get = s.x,
     inc = \_:Unit. f({x=succ(s.x)}),
     dec = \_:Unit. f({x=pred(s.x)})
   }
-)) in (create)({x=0})
+);
+
+def main := (create)({x=0});

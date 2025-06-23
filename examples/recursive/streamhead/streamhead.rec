@@ -1,1 +1,1 @@
-\s:(mu A. Unit -> (Nat x A)).((unfold [mu A.Unit->(Nat x A)] s) unit).snd
+def main := \s:(mu A. Unit -> (Nat x A)).((unfold [mu A.Unit->(Nat x A)] s) unit).snd;

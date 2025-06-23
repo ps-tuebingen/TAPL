@@ -1,3 +1,3 @@
 name="Process"
 ty="mu A.(Nat -> (Nat x A))"
-evaluated="fold[mu A.(Nat -> (Nat x A))](\\n:Nat.(let (newacc = ((\\n:Nat.(\\m:Nat.(if (iszero(n)) { m } else { ((fix(\\f:(Nat -> (Nat -> Nat)).(\\n:Nat.(\\m:Nat.(if (iszero(n)) { m } else { ((f) (pred(n))) (m) }))))) (pred(n))) (m) }))) (0)) (n)) in { newacc, (fix(\\f:(Nat -> mu A.(Nat -> (Nat x A))).(\\acc:Nat.(fold[mu A.(Nat -> (Nat x A))](\\n:Nat.(let (newacc = ((\\n:Nat.(\\m:Nat.(if (iszero(n)) { m } else { ((fix(\\f:(Nat -> (Nat -> Nat)).(\\n:Nat.(\\m:Nat.(if (iszero(n)) { m } else { ((f) (pred(n))) (m) }))))) (pred(n))) (m) }))) (acc)) (n)) in { newacc, (f) (newacc) })))))) (newacc) }))"
+evaluated="fold[mu A.(Nat -> (Nat x A))](\\n:Nat.(let (newacc = ((plus) (0)) (n)) in { newacc, (fix(\\f:(Nat -> mu A.(Nat -> (Nat x A))).(\\acc:Nat.(fold[mu A.(Nat -> (Nat x A))](\\n:Nat.(let (newacc = ((plus) (acc)) (n)) in { newacc, (f) (newacc) })))))) (newacc) }))"

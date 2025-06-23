@@ -1,1 +1,1 @@
-\f:(mu X.X->X)->(mu X.X->X).f
+def main := \f:(mu X.X->X)->(mu X.X->X).f;

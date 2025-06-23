@@ -1,14 +1,13 @@
-let (plus = fix(
+def plus :: Nat -> Nat -> Nat := fix(
       \f:Nat->(Nat->Nat).\n:Nat.\m:Nat.
       if (iszero(n)) {
       m
       }else {
       (f(pred(n)))(m)
-      })
-) in 
-fix(
+      });
+def main := fix(
   \f:Nat -> (mu A.Nat->(Nat x A)).
   \acc:Nat.(fold [mu A.Nat->(Nat x A)] \n:Nat.
   let (newacc = ((plus acc) n)) in 
   ({ newacc, f(newacc) }))
-)(0)
+)(0);
