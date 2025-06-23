@@ -1,1 +1,1 @@
-let (r = ref(5)) in ((r:=(succ(!r)));!r)
+def main := let (r = ref(5)) in ((r:=(succ(!r)));!r);

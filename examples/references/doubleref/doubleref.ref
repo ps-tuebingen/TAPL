@@ -1,3 +1,3 @@
-let (r = ref(5)) in 
-  let (s = r) in 
-    (s:=82);!r
+def ref5 :: Ref[Nat] := ref(5);
+def refref :: Ref[Nat] :=  ref5;
+def main := refref:=82;!ref5;

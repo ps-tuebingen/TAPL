@@ -1,4 +1,4 @@
-let (equal=fix(
+def equal :: Nat -> Nat -> Bool := fix(
   \f:(Nat->(Nat->Bool)).(\n:Nat.(\m:Nat.(
   if (iszero(n)) {
     if (iszero(m)) { 
@@ -8,17 +8,22 @@ let (equal=fix(
     }
   } else {
     (f(pred(n)))(pred(m))
-  } ))))) in 
-let (newarray=\_:Unit.(ref(\n:Nat.(0)))) in 
-let (lookup=\a:(Ref[Nat->Nat]).(\n:Nat.((!a)(n)))) in 
-let (update=\a:(Ref[Nat->Nat]).(\m:Nat.(\v:Nat.(
-  let (oldf = !a) in 
-  (a := (\n:Nat.(if (((equal(n))(m))) {
+  } ))));
+  
+def newarray :: Unit -> Ref[Nat->Nat] := \_:Unit.(ref(\n:Nat.(0)));
+
+def lookup :: Ref[Nat->Nat] -> Nat -> Nat :=\a:(Ref[Nat->Nat]).(\n:Nat.((!a)(n)));
+
+def update :: Ref[Nat->Nat] -> Nat -> Nat -> Ref[Nat->Nat] :=  
+  \a:(Ref[Nat->Nat]).(\m:Nat.(\v:Nat.(
+    let (oldf = !a) in 
+    (a := (\n:Nat.(if (((equal(n))(m))) {
       v
     } else {
       oldf(n)
     }))); a)
-))) in 
-(lookup(
+  ));
+
+def main := (lookup(
   (((update(newarray(unit)))(1))(2))))
-  (1)
+  (1);
