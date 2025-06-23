@@ -1,1 +1,1 @@
-\X.(\R.\c:X->R->R.\n:R.n)
+def main := \X.(\R.\c:X->R->R.\n:R.n);

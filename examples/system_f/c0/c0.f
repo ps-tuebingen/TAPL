@@ -1,1 +1,1 @@
-\X.\s:X->X.\z:X.z
+def main := \X.\s:X->X.\z:X.z;

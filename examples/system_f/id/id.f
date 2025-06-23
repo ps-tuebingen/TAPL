@@ -1,1 +1,1 @@
-\X.\x:X.x
+def main := \X.\x:X.x;

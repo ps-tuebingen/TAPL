@@ -1,1 +1,1 @@
-\x:forall X.X->X.(x[forall X.X->X])(x)
+def main := \x:forall X.X->X.(x[forall X.X->X])(x);
