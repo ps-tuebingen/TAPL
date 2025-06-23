@@ -1,4 +1,4 @@
-\c:{exists X, {
+def main := \c:{exists X, {
   state:X,
   methods:{
     get:X->Nat,
@@ -13,4 +13,4 @@ let {X,body} = c in {*X, {
     get:X->Nat,
     inc:X->X
   }  
-}}
+}};

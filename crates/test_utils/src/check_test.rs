@@ -2,12 +2,12 @@ use super::{test::Test, test_result::TestResult};
 use check::Typecheck;
 use derivation::{ProgramDerivation, TypingDerivation};
 use std::marker::PhantomData;
-use syntax::{program::Program, terms::Term, types::Type};
+use syntax::{program::Program, terms::Term, types::TypeGroup};
 
 pub struct CheckTest<T, Ty>
 where
     T: Term + Typecheck<Term = T, Type = Ty, Deriv = TypingDerivation<T, Ty>>,
-    Ty: Type,
+    Ty: TypeGroup,
 {
     name: String,
     prog: Program<T, Ty>,
@@ -18,7 +18,7 @@ where
 impl<T, Ty> CheckTest<T, Ty>
 where
     T: Term + Typecheck<Term = T, Type = Ty, Deriv = TypingDerivation<T, Ty>>,
-    Ty: Type,
+    Ty: TypeGroup,
 {
     pub fn new(name: &str, prog: Program<T, Ty>, exp: &str) -> CheckTest<T, Ty> {
         CheckTest {
@@ -33,7 +33,7 @@ where
 impl<T, Ty> Test<ProgramDerivation<T, T::Type>> for CheckTest<T, Ty>
 where
     T: Term + Typecheck<Term = T, Type = Ty, Deriv = TypingDerivation<T, Ty>>,
-    Ty: Type,
+    Ty: TypeGroup,
 {
     fn name(&self) -> String {
         format!("Checking {}", self.name)

@@ -1,4 +1,9 @@
-let {Counter, counter} = 
+def cnt :: {exists Counter, 
+    { new: Counter,
+      get: Counter->Nat,
+      inc: Counter->Counter
+    }
+  } :=
   {*Nat, 
     { new=1,
       get=\i:Nat.i,
@@ -9,5 +14,7 @@ let {Counter, counter} =
       get: Counter->Nat,
       inc: Counter->Counter
     }
-  } in 
-(counter.get)((counter.inc) (counter.new))
+  };
+
+def main := let {Counter, counter} = cnt in 
+  (counter.get)((counter.inc) (counter.new));

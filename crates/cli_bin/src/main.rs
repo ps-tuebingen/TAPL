@@ -14,6 +14,6 @@ fn main() {
     };
     match res {
         Ok(res) => println!("{res}"),
-        Err(err) => println!("Error during {}:\n\t{err}", args.cmd),
+        Err(err) => panic!("Error during {}:\n\t{err}", args.cmd),
     }
 }

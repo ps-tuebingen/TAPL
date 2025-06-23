@@ -1,4 +1,4 @@
-fix(
+def ise :: Nat -> Bool := fix(
   \f:Nat->Bool.\n:Nat. 
     if (iszero(n)) {
       true
@@ -9,4 +9,6 @@ fix(
         f(pred(n))
       }
     }
-)
+);
+
+def main := ise 5;

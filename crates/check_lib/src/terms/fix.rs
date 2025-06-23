@@ -1,4 +1,4 @@
-use crate::{Kindcheck, Normalize, Typecheck, errors::CheckError};
+use crate::{errors::CheckError, Kindcheck, Normalize, Typecheck};
 use derivation::{Conclusion, TypingDerivation};
 use syntax::{
     env::Environment,
