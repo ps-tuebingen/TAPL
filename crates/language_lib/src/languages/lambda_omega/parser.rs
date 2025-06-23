@@ -1,16 +1,16 @@
 use super::{terms::Term, types::Type};
 use parse::{
-    GroupParse, Parse, Rule,
     errors::{ParserError, UnexpectedRule},
     pair_to_n_inner,
     sugar::ForallUnbounded,
     terms::StringTerm,
     types::StringTy,
+    GroupParse, Parse, Rule,
 };
 use pest::iterators::Pair;
 use syntax::{
     terms::{App, Lambda, Num, TyApp, TyLambda, Variable},
-    types::{Fun, OpApp, OpLambda, TypeVariable},
+    types::{Forall, Fun, OpApp, OpLambda, TypeVariable},
 };
 
 impl GroupParse for Term {
@@ -53,6 +53,7 @@ impl GroupParse for Type {
             Rule::forall_unbounded_type => {
                 Ok(ForallUnbounded::from_pair(p, ())?.to_forall_kinded().into())
             }
+            Rule::forall_kinded_type => Ok(Forall::from_pair(p, ())?.into()),
             Rule::op_lambda_type => Ok(OpLambda::from_pair(p, ())?.into()),
             Rule::paren_type => Self::from_pair(pair_to_n_inner(p, vec!["Type"])?.remove(0), ()),
             Rule::type_variable => Ok(TypeVariable::from_pair(p, ())?.into()),

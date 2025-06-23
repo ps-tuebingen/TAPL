@@ -1,1 +1,3 @@
-((((\X::*.\Y::*.\x:X.\y:Y.(\R::*.\p:X->Y->R.((p x) y)))[Nat])[Bool])(5))(false)
+def pair :: forall X.forall Y.X->Y->(forall R.(X->Y->R) -> R) := (\X::*.\Y::*.\x:X.\y:Y.(\R::*.\p:X->Y->R.((p x) y)));
+
+def main := (((pair [Nat])[Bool])(5))(false);

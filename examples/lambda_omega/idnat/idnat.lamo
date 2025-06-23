@@ -1,1 +1,2 @@
-(\x:Nat.x)(5)
+def id :: Nat -> Nat := (\x:Nat.x);
+def main := id (5);
