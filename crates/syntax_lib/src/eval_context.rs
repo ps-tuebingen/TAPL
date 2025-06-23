@@ -1,4 +1,4 @@
-use crate::{program::Program, terms::Term, types::Type, values::Value, Location, Name};
+use crate::{Location, Name, program::Program, terms::Term, types::Type, values::Value};
 use common::errors::{FreeVariable, UndefinedLocation};
 use std::collections::HashMap;
 

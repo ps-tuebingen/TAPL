@@ -1,4 +1,4 @@
-use crate::{errors::EvalError, Eval};
+use crate::{Eval, errors::EvalError};
 use syntax::{
     eval_context::EvalContext,
     terms::{Loc as LocT, Ref, Term},

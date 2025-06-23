@@ -1,4 +1,4 @@
-use crate::{kinds::Kind, types::Type, Location, Name, TypeVar, Var};
+use crate::{Location, Name, TypeVar, Var, kinds::Kind, types::Type};
 use common::errors::{FreeTypeVariable, FreeVariable, UndefinedLocation};
 use std::collections::HashMap;
 

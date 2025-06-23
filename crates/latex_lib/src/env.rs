@@ -10,8 +10,8 @@ where
 
         out += &self
             .definitions
-            .iter()
-            .map(|(n, _)| format!("\\text{{{}}}", n.replace("_", "\\_")))
+            .keys()
+            .map(|n| format!("\\text{{{}}}", n.replace("_", "\\_")))
             .collect::<Vec<String>>()
             .join(", ");
 

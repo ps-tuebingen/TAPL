@@ -1,9 +1,9 @@
 use crate::{
+    TypeVar, Var,
     definition::Definition,
     subst::{SubstTerm, SubstType},
     terms::Term,
     types::Type,
-    TypeVar, Var,
 };
 use common::errors::DuplicateDefinition;
 use std::fmt;

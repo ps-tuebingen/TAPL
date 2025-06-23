@@ -1,4 +1,4 @@
-use crate::{errors::CheckError, Kindcheck, Normalize, Typecheck};
+use crate::{Kindcheck, Normalize, Typecheck, errors::CheckError};
 use derivation::{Conclusion, TypingDerivation};
 use std::collections::HashMap;
 use syntax::{

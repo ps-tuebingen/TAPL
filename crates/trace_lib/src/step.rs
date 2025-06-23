@@ -1,11 +1,11 @@
 use super::rules::EvaluationRule;
 use syntax::{
+    Location, Var,
     terms::{
         Assign, Cast, Deref, False, IsNil, Loc, Num, Pair, Pred, Succ, Term, True, Unit, Variable,
     },
     types::Type,
     values::Value,
-    Location, Var,
 };
 
 pub struct EvalStep<T>

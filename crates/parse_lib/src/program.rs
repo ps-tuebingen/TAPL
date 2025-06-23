@@ -1,6 +1,7 @@
 use crate::{
+    Parse, Rule,
     errors::{MissingInput, ParserError, UndefinedMain, UnexpectedRule},
-    pair_to_n_inner, Parse, Rule,
+    pair_to_n_inner,
 };
 use pest::iterators::Pair;
 use syntax::{definition::Definition, program::Program, terms::Term, types::Type};

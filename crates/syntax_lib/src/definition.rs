@@ -1,4 +1,4 @@
-use crate::{terms::Term, types::Type, Name};
+use crate::{Name, terms::Term, types::Type};
 use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]

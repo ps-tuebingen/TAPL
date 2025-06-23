@@ -1,4 +1,4 @@
-use crate::{errors::CheckError, Typecheck};
+use crate::{Typecheck, errors::CheckError};
 use derivation::{ProgramDerivation, TypingDerivation};
 use syntax::{
     env::Environment,

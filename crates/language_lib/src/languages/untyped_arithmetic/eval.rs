@@ -1,5 +1,5 @@
 use super::{terms::Term, values::Value};
-use eval::{errors::EvalError, Eval};
+use eval::{Eval, errors::EvalError};
 use syntax::eval_context::EvalContext;
 use trace::EvalTrace;
 

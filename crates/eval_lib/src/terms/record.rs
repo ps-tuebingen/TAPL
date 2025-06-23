@@ -1,10 +1,10 @@
-use crate::{errors::EvalError, Eval};
+use crate::{Eval, errors::EvalError};
 use std::collections::HashMap;
 use syntax::{
+    Label,
     eval_context::EvalContext,
     terms::{Record, Term},
     values::Record as RecordVal,
-    Label,
 };
 use trace::EvalTrace;
 
