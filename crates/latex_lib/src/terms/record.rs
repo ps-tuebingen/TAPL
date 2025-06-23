@@ -10,7 +10,7 @@ where
             "\\{{ {} \\}}",
             self.records
                 .iter()
-                .map(|(lb, t)| format!("{}={}", lb, t.to_latex(conf)))
+                .map(|(lb, t)| format!("\\text{{{}}}={}", lb.replace("_", "\\_"), t.to_latex(conf)))
                 .collect::<Vec<String>>()
                 .join(", ")
         )

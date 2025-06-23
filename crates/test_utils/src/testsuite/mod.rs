@@ -150,27 +150,32 @@ pub trait TestSuite {
         let mut num_fails = 0;
         println!("Running tests for {}", name);
 
+        print!("\t");
         let prog = match Self::run_parse(conf) {
             TestResult::Success(p) => p,
             TestResult::Fail(_) => return inclusions.num_tests(),
         };
 
         if inclusions.reparse {
+            print!("\t");
             if matches!(Self::run_reparse(name, &prog), TestResult::Fail(_)) {
                 num_fails += 1
             };
         };
 
         if inclusions.check {
+            print!("\t");
             let deriv = Self::run_check(conf, prog.clone());
             match deriv {
                 TestResult::Success(ref deriv) => {
                     if inclusions.derivation_buss {
+                        print!("\t");
                         if matches!(Self::run_derivation_buss(name, deriv), TestResult::Fail(_)) {
                             num_fails += 1;
                         }
                     }
                     if inclusions.derivation_frac {
+                        print!("\t");
                         if matches!(Self::run_derivation_frac(name, deriv), TestResult::Fail(_)) {
                             num_fails += 1;
                         }
@@ -189,10 +194,12 @@ pub trait TestSuite {
         }
 
         if inclusions.eval {
+            print!("\t");
             let trace = Self::run_eval(conf, prog);
             match trace {
                 TestResult::Success(ref tr) => {
                     if inclusions.trace {
+                        print!("\t");
                         Self::run_trace(name, tr);
                     }
                 }

@@ -19,7 +19,7 @@ where
     fn check(&self, mut env: Environment<Ty>) -> Result<Self::Deriv, CheckError> {
         let mut derivs = vec![];
         for def in self.definitions.iter() {
-            env.add_var(def.name.clone(), def.annot.clone());
+            env.add_definition(def.name.clone(), def.annot.clone());
         }
         for def in self.definitions.iter() {
             let def_res = def.check(env.clone())?;

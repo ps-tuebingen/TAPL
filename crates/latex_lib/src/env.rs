@@ -9,6 +9,17 @@ where
         let mut out = "".to_owned();
 
         out += &self
+            .definitions
+            .iter()
+            .map(|(n, _)| format!("\\text{{{}}}", n.replace("_", "\\_")))
+            .collect::<Vec<String>>()
+            .join(", ");
+
+        if !out.is_empty() && !self.var_bindings.is_empty() {
+            out += ";";
+        }
+
+        out += &self
             .var_bindings
             .iter()
             .map(|(var, ty)| {

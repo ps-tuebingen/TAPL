@@ -6,6 +6,10 @@ where
     T: Term + LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
-        format!("({}).{}", self.record.to_latex(conf), self.label)
+        format!(
+            "({}).{}",
+            self.record.to_latex(conf),
+            self.label.replace("_", "\\_")
+        )
     }
 }

@@ -1,4 +1,4 @@
-use crate::{Location, TypeVar, Var, kinds::Kind, program::Program, terms::Term, types::Type};
+use crate::{kinds::Kind, types::Type, Location, Name, TypeVar, Var};
 use common::errors::{FreeTypeVariable, FreeVariable, UndefinedLocation};
 use std::collections::HashMap;
 
@@ -8,6 +8,7 @@ where
     Ty: Type,
 {
     pub var_bindings: HashMap<Var, Ty>,
+    pub definitions: HashMap<Name, Ty>,
     pub tyvar_bindings: HashMap<TypeVar, Kind>,
     pub tyvar_super: HashMap<TypeVar, Ty>,
     pub location_bindings: HashMap<Location, Ty>,
@@ -20,21 +21,15 @@ where
     pub fn new() -> Environment<Ty> {
         Environment {
             var_bindings: HashMap::new(),
+            definitions: HashMap::new(),
             tyvar_bindings: HashMap::new(),
             tyvar_super: HashMap::new(),
             location_bindings: HashMap::new(),
         }
     }
 
-    pub fn from_prog<T>(prog: &Program<T, Ty>) -> Environment<Ty>
-    where
-        T: Term,
-    {
-        let mut env = Environment::new();
-        for def in prog.definitions.iter() {
-            env.var_bindings.insert(def.name.clone(), def.annot.clone());
-        }
-        env
+    pub fn add_definition(&mut self, n: Name, ty: Ty) {
+        self.definitions.insert(n, ty);
     }
 
     pub fn add_var(&mut self, var: Var, ty: Ty) {
@@ -42,10 +37,15 @@ where
     }
 
     pub fn get_var(&self, v: &Var) -> Result<Ty, FreeVariable> {
-        self.var_bindings
-            .get(v)
-            .cloned()
-            .ok_or(FreeVariable::new(v))
+        let mut res = self.var_bindings.get(v);
+        if res.is_none() {
+            res = self.definitions.get(v);
+        }
+
+        match res {
+            Some(ty) => Ok(ty.clone()),
+            None => Err(FreeVariable::new(v)),
+        }
     }
 
     pub fn add_tyvar_kind(&mut self, v: TypeVar, knd: Kind) {
