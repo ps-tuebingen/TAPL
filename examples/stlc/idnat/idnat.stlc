@@ -1,1 +1,1 @@
-\x:Nat.(x)
+def main := \x:Nat.(x);

@@ -1,1 +1,1 @@
-<label = unit> as <label:Unit>
+def main := <label = unit> as <label:Unit>;

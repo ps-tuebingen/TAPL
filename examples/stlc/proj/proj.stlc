@@ -1,1 +1,1 @@
-\a:{x:Nat, y:Bool, z:(Nat->Nat)}.(a.z)
+def main := \a:{x:Nat, y:Bool, z:(Nat->Nat)}.(a.z);

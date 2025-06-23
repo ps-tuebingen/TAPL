@@ -1,1 +1,1 @@
-\p:(Nat,Nat).((p.1), (p.0))
+def main := \p:(Nat,Nat).((p.1), (p.0));

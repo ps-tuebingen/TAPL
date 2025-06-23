@@ -1,1 +1,1 @@
-({pred(4), if ( true ) { false } else { false } }).snd
+def main := ({pred(4), if ( true ) { false } else { false } }).snd;

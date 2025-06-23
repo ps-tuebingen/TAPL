@@ -1,1 +1,1 @@
-(\x:(Nat,Nat).(x.1))(pred(4), pred(5))
+def main := (\x:(Nat,Nat).(x.1))(pred(4), pred(5));

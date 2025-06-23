@@ -1,6 +1,7 @@
-let (x = Cons[Bool](false,Cons[Bool](true,Cons[Bool](false,Nil[Bool])))) in 
-  if (isnil[Bool](x)) { 
+def lst :: List[Bool] := Cons[Bool](false,Cons[Bool](true,Cons[Bool](false,Nil[Bool])));
+def main := 
+  if (isnil[Bool](lst)) { 
     false 
   } else { 
-    head[Bool](x)
-  }
+    head[Bool](lst)
+  };

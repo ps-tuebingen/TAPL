@@ -1,1 +1,1 @@
-unit : Unit
+def main := unit : Unit;

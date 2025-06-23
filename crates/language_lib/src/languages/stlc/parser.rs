@@ -1,10 +1,10 @@
 use super::{terms::Term, types::Type};
 use parse::{
-    GroupParse, Parse, Rule,
     errors::{ParserError, UnexpectedRule},
     pair_to_n_inner,
     terms::StringTerm,
     types::StringTy,
+    GroupParse, Parse, Rule,
 };
 use pest::iterators::Pair;
 use syntax::{
@@ -13,7 +13,7 @@ use syntax::{
         Num, Pair as PairT, Pred, Projection, Record, RecordProj, Right, Snd, SomeCase, Something,
         Succ, SumCase, Tail, Tuple, Variable, Variant, VariantCase,
     },
-    types::{Fun, Product, Record as RecordTy, Sum, Tuple as TupleTy, Variant as VariantTy},
+    types::{Fun, List, Product, Record as RecordTy, Sum, Tuple as TupleTy, Variant as VariantTy},
 };
 
 impl GroupParse for Term {
@@ -85,6 +85,7 @@ impl GroupParse for Type {
             Rule::sum_type => Ok(Sum::from_pair(p, ())?.into()),
             Rule::variant_type => Ok(VariantTy::from_pair(p, ())?.into()),
             Rule::tuple_type => Ok(TupleTy::from_pair(p, ())?.into()),
+            Rule::list_type => Ok(List::from_pair(p, ())?.into()),
             r => Err(UnexpectedRule::new(r, "Non Left-Recursive Type").into()),
         }
     }

@@ -1,1 +1,5 @@
-case (inr(true) as (Nat+Bool)) of { inl(n) => succ(n) | inr(b) => if (b) { zero } else { succ(zero) } }
+def main := 
+  case (inr(true) as (Nat+Bool)) of {
+    inl(n) => succ(n) 
+  | inr(b) => if (b) { zero } else { succ(zero) } 
+  };

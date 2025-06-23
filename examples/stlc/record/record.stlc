@@ -1,1 +1,1 @@
-{a = true, b = false, c = succ(zero)}
+def main := {a = true, b = false, c = succ(zero)};

@@ -1,1 +1,5 @@
-case Nothing[Nat] of { Nothing => Nothing[Nat] | Something(n) => Something(succ(n)) }
+def main := 
+  case Nothing[Nat] of {
+    Nothing => Nothing[Nat] 
+  | Something(n) => Something(succ(n)) 
+};
