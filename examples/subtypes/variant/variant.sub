@@ -1,5 +1,5 @@
-\x:<label1:Nat,label2:Bool>.(
+def main := \x:<label1:Nat,label2:Bool>.(
   case x of {
     <label1=x> => x
     | <label2=b> => if (b) { 0 } else { 1 } 
-  })
+  });

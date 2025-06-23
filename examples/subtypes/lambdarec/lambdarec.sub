@@ -1,1 +1,1 @@
-(\r:{x:Nat}.(r.x))({x=0,y=1})
+def main := (\r:{x:Nat}.(r.x))({x=0,y=1});

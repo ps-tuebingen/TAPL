@@ -1,2 +1,1 @@
-let (x = ref(3)) in 
-  x := succ(!x)
+def main := let (x = ref(3)) in x := succ(!x);

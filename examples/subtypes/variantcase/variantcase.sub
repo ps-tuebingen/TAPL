@@ -1,4 +1,4 @@
-case (<label1=true> as <label1:Bool, label2:Nat>) of {
+def main := case (<label1=true> as <label1:Bool, label2:Nat>) of {
   <label1=x> => if (x) { 0 } else { 1 } 
   | <label2=n> => n
-}
+};

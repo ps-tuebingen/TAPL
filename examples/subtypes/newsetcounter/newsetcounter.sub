@@ -1,4 +1,4 @@
-\_:Unit.(
+def main := \_:Unit.(
   let (r = {x=ref(1)}) in
   (fix(((
     \r:{x:Ref[Nat]}.(
@@ -12,4 +12,4 @@
       )
     )
   )(r))))(unit)
-)
+);

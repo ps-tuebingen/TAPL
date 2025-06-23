@@ -1,8 +1,9 @@
-\r:{x:Ref[Nat], a:Ref[Nat]}.(
-  \self:(Unit -> {get:(Unit->Nat), set:(Nat->Unit), inc:(Unit->Unit), accesses:(Unit->Nat)}).(
-    \_:Unit.(
-      let (super = (((\r:{x:Ref[Nat]}.(
-       \self:(Unit -> {get:(Unit -> Nat), set:(Nat->Unit), inc:(Unit -> Unit)}).(
+def inccounterclass :: 
+  {x:Ref[Nat]} -> 
+  (Unit -> {get:(Unit -> Nat), set:(Nat->Unit), inc:(Unit -> Unit)}) -> 
+  Unit -> {get:Unit->Nat,set:Nat -> Unit,inc:Unit -> Unit} := 
+  (\r:{x:Ref[Nat]}.(
+    \self:(Unit -> {get:(Unit -> Nat), set:(Nat->Unit), inc:(Unit -> Unit)}).(
         \_:Unit.(
           {
             get = \_:Unit.(!(r.x)),
@@ -11,7 +12,12 @@
           }
         )
        )
-      ))(r))(self))(unit)) in 
+      ));
+
+def main := \r:{x:Ref[Nat], a:Ref[Nat]}.(
+  \self:(Unit -> {get:(Unit->Nat), set:(Nat->Unit), inc:(Unit->Unit), accesses:(Unit->Nat)}).(
+    \_:Unit.(
+      let (super = (((inccounterclass (r))self) (unit))) in 
       {
         get=super.get,
         set=\i:Nat.(((r.a):=succ(!(r.a)));((super.set)(i))),
@@ -20,4 +26,4 @@
       }
     )
   )
-)
+);

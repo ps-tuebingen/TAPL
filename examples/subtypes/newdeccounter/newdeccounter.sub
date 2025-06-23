@@ -1,17 +1,23 @@
-\r:{x:Ref[Nat]}.(
-  let (super = (\r:{x:Ref[Nat]}.(
-    let (super = (\r:{x:Ref[Nat]}.({
+def inccounterclass :: {x:Ref[Nat]} -> {get:Unit -> Nat,inc:Unit -> Unit} := 
+  \r:{x:Ref[Nat]}.({
       get = \_:Unit.(!(r.x)),
       inc = \_:Unit.((r.x):=succ(!(r.x)))
-    }))(r)) in 
+    });
+
+def resetcounterclass :: {x:Ref[Nat]} -> {get:Unit->Nat,inc:Unit->Unit,reset:Unit->Unit} := 
+  \r:{x:Ref[Nat]}.(
+    let (super = inccounterclass (r)) in 
     {
       get = super.get,
       inc = super.inc,
       reset = \_:Unit.((r.x) := 1)
-    }))(r)) in {
+    });
+
+def main := \r:{x:Ref[Nat]}.(
+  let (super = resetcounterclass (r)) in {
       get = super.get,
       inc = super.inc,
       reset = super.reset,
       dec = \n:Nat.((r.x) := pred(!(r.x)))
     }
-)
+);

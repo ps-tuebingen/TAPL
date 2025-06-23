@@ -1,11 +1,14 @@
-\r:{x:Ref[Nat]}.(
-  let (super = (\r:{x:Ref[Nat]}.({
+def counterclass :: {x:Ref[Nat]} -> {get:Unit -> Nat,inc:Unit -> Unit} := 
+  (\r:{x:Ref[Nat]}.({
     get = \_:Unit.(!(r.x)),
     inc = \_:Unit.((r.x):=succ(!(r.x)))
-   }))(r)) in 
+   }));
+
+def main := \r:{x:Ref[Nat]}.(
+  let (super = counterclass (r)) in 
    {
      get = super.get,
      inc = super.inc,
      reset = \_:Unit.((r.x) := 1)
    }
-)
+);
