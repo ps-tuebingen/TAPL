@@ -11,33 +11,51 @@ where
         out += &self
             .var_bindings
             .iter()
-            .map(|(var, ty)| format!("{var}:{}", ty.to_latex(conf)))
+            .map(|(var, ty)| {
+                format!(
+                    "\\text{{{}}}:{}",
+                    var.replace("_", "\\_"),
+                    ty.to_latex(conf)
+                )
+            })
             .collect::<Vec<String>>()
             .join(", ");
 
-        if !out.is_empty() {
+        if !out.is_empty() && !self.tyvar_bindings.is_empty() {
             out += ";";
         }
 
         out += &self
             .tyvar_bindings
             .iter()
-            .map(|(tyvar, knd)| format!("{tyvar}::{}", knd.to_latex(conf)))
+            .map(|(tyvar, knd)| {
+                format!(
+                    "\\text{{{}}}::{}",
+                    tyvar.replace("_", "\\_"),
+                    knd.to_latex(conf)
+                )
+            })
             .collect::<Vec<String>>()
             .join(", ");
 
-        if !out.is_empty() {
+        if !out.is_empty() && !self.tyvar_super.is_empty() {
             out += ";";
         }
 
         out += &self
             .tyvar_super
             .iter()
-            .map(|(tyvar, sup)| format!("{tyvar} <: {}", sup.to_latex(conf)))
+            .map(|(tyvar, sup)| {
+                format!(
+                    "\\text{{{}}} <: {}",
+                    tyvar.replace("_", "\\_"),
+                    sup.to_latex(conf)
+                )
+            })
             .collect::<Vec<String>>()
             .join(", ");
 
-        if !out.is_empty() {
+        if !out.is_empty() && !self.location_bindings.is_empty() {
             out += " \\bar";
         }
 

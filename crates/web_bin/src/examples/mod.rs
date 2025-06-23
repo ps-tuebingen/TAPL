@@ -12,17 +12,11 @@ pub use bounded_quantification::bounded_quantification_all;
 pub mod exceptions;
 pub use exceptions::exceptions_all;
 
-pub mod featherweight;
-pub use featherweight::featherweight_all;
-
 pub mod references;
 pub use references::references_all;
 
 pub mod lambda_omega;
 pub use lambda_omega::lambda_omega_all;
-
-pub mod inference;
-pub use inference::inference_all;
 
 pub mod untyped_arithmetic;
 pub use untyped_arithmetic::untyped_arithmetic_all;
@@ -54,10 +48,8 @@ pub fn all_examples() -> HashMap<&'static str, Vec<(&'static str,&'static str)>>
         ("subtypes", subtypes_all()),
         ("bounded-quantification", bounded_quantification_all()),
         ("exceptions", exceptions_all()),
-        ("featherweight", featherweight_all()),
         ("references", references_all()),
         ("lambda-omega", lambda_omega_all()),
-        ("inference", inference_all()),
         ("untyped-arithmetic", untyped_arithmetic_all()),
         ("untyped-lambda", untyped_lambda_all()),
         ("stlc", stlc_all()),

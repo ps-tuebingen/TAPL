@@ -8,21 +8,17 @@ where
     Ty: Type + LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
-        let (env_start, env_end) = if conf.include_envs {
-            ("\\[", "\\]")
-        } else {
-            ("", "")
-        };
-
         let mut def_strs = vec![];
+        let old_inc = conf.include_envs;
         for def in self.def_derivations.iter() {
-            def_strs.push(def.to_latex(conf))
+            def_strs.push(def.to_latex(conf));
+            conf.include_envs = old_inc;
         }
 
         format!(
-            "{env_start} {} \\\\ \\\\{} {env_end}",
+            " {}\\quad \\\\ \\quad \\\\{}",
+            def_strs.join("\n\\quad \\\\ \\quad \\\\\n"),
             self.main_derivation.to_latex(conf),
-            def_strs.join("\\\\\\\\")
         )
     }
 }
@@ -33,8 +29,10 @@ where
     Ty: Type + LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
-        let (env_start, env_end) = if conf.include_envs {
+        let (env_start, env_end) = if conf.include_envs && conf.use_frac_array {
             ("\\[", "\\]")
+        } else if conf.include_envs {
+            ("\\begin{prooftree}", "\\end{prooftree}")
         } else {
             ("", "")
         };
@@ -42,11 +40,19 @@ where
         conf.include_envs = false;
         let body_str = self.body_derivation.to_latex(conf);
 
-        format!(
-            "{env_start}{body_str}\\UnaryInfC{{\\vdash {}:{}}}{env_end}",
-            self.name,
-            self.body_derivation.ty()
-        )
+        if conf.use_frac_array {
+            format!(
+                "{env_start}\n\\frac{{ {body_str} }}{{ \\vdash {}:{} }}\n{env_end}",
+                self.name,
+                self.body_derivation.ty().to_latex(conf)
+            )
+        } else {
+            format!(
+                "{env_start}\n{body_str}\n\\UnaryInfC{{$\\vdash {}:{}$}}\n{env_end}",
+                self.name,
+                self.body_derivation.ty().to_latex(conf)
+            )
+        }
     }
 }
 impl<T, Ty> LatexFmt for TypingDerivation<T, Ty>
