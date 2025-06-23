@@ -1,10 +1,10 @@
-{* {x:Nat}, {
-  state = {x=0},
-  methods = { 
-    get = \r:{x:Nat}.(r.x),
-    inc = \r:{x:Nat}.{x=succ(r.x)}
-  }
-}} as  
- (\M::*=>*. {exists X::*,{state:X,methods:M[X]}})
- [\R::*.{get:R->Nat, inc:R->R}]
-
+def main := 
+  {* {x:Nat}, {
+    state = {x=0},
+    methods = { 
+      get = \r:{x:Nat}.(r.x),
+      inc = \r:{x:Nat}.{x=succ(r.x)}
+    }
+  }} as  
+    (\M::*=>*. {exists X::*,{state:X,methods:M[X]}})
+    [\R::*.{get:R->Nat, inc:R->R}];
