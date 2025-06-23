@@ -1,1 +1,1 @@
-\m.\n.m ((\m.\n.\s.\z.m s (n s z)) n) (\s.\z.z)
+def main := \m.\n.m ((\m.\n.\s.\z.m s (n s z)) n) (\s.\z.z);

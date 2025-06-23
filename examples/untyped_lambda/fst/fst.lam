@@ -1,1 +1,1 @@
-\p. p (\t.\f.t)
+def main := \p. p (\t.\f.t);

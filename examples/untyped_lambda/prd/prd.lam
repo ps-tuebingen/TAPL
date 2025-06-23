@@ -1,1 +1,1 @@
-\m. (\f. p (\t.\f.t)) (m (\p. (\f.\s.\b.b f s) ((\p.p (\t.\f.f)) p) ((\m.\n.\s.\z.m s (n s z)) (\s.\z.s z) ((\p.p (\t.\f.f)) p))) ((\f.\s.\b.b f s) (\s.\z.z) (\s.\z.z) ))
+def main := \m. (\f. p (\t.\f.t)) (m (\p. (\f.\s.\b.b f s) ((\p.p (\t.\f.f)) p) ((\m.\n.\s.\z.m s (n s z)) (\s.\z.s z) ((\p.p (\t.\f.f)) p))) ((\f.\s.\b.b f s) (\s.\z.z) (\s.\z.z) ));

@@ -1,1 +1,1 @@
-\b.\c.b c (\t.\f.f)
+def main := \b.\c.b c (\t.\f.f);

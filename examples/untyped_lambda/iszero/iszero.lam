@@ -1,1 +1,1 @@
-\m.\n. (\x. (\t.\f.f)) (\t.\f.t)
+def main := \m.\n. (\x. (\t.\f.f)) (\t.\f.t);
