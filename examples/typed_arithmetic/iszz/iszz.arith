@@ -1,1 +1,1 @@
-iszero(pred(succ(0)))
+def main := iszero(pred(succ(0)));
