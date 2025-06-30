@@ -12,6 +12,7 @@ check = { path="../check_lib" }
 derivation = { path="../derivation_lib" } 
 trace = { path="../trace_lib" }
 latex = { path="../latex_lib"}
+grammar = { path="../grammar_lib"}
 
 pest={version="2.7.15"}
 pest_derive={version="2.7.15"}

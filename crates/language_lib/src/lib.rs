@@ -1,6 +1,7 @@
 use check::{Kindcheck, Normalize, Subtypecheck, Typecheck};
 use derivation::{ProgramDerivation, TypingDerivation};
 use eval::{Eval, eval_main};
+use grammar::{GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
 use parse::{GroupParse, Parse};
 use syntax::{
@@ -61,7 +62,8 @@ pub trait Language {
             Term = Self::Term,
             Type = Self::Type,
             Deriv = TypingDerivation<<Self as Language>::Term, <Self as Language>::Type>,
-        > + LatexFmt;
+        > + RuleDescribe
+        + LatexFmt;
 
     type Type: TypeGroup
         + GroupParse
@@ -69,9 +71,10 @@ pub trait Language {
         + Subtypecheck<Self::Type>
         + Normalize<Self::Type>
         + Kindcheck<Self::Type>
+        + RuleDescribe
         + LatexFmt;
 
-    type Value: ValueGroup<Term = Self::Term, Type = Self::Type> + LatexFmt;
+    type Value: ValueGroup<Term = Self::Term, Type = Self::Type> + RuleDescribe + LatexFmt;
 
     fn parse(&self, input: String) -> Result<Program<Self::Term, Self::Type>, LanguageError> {
         Ok(Program::<Self::Term, Self::Type>::parse(input)?)
