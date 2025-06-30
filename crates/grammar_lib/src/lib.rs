@@ -3,6 +3,7 @@ mod rule;
 mod symbol;
 
 mod terms;
+mod types;
 mod untyped;
 mod values;
 

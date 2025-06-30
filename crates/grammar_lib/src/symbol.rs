@@ -2,7 +2,12 @@ pub enum Symbol {
     Terminal(String),
     Term,
     Type,
+    Variable,
     If,
+    App,
+    Lambda {
+        annot: bool,
+    },
     Call {
         name: String,
         annot: bool,
@@ -29,5 +34,13 @@ impl Symbol {
             annot: false,
             num_args,
         }
+    }
+
+    pub fn lam() -> Symbol {
+        Symbol::Lambda { annot: true }
+    }
+
+    pub fn lam_untyped() -> Symbol {
+        Symbol::Lambda { annot: false }
     }
 }

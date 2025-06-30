@@ -1,5 +1,6 @@
 use super::terms::Term;
 use common::errors::ValueKind;
+use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
 use syntax::untyped::Untyped;
 use syntax::values::{UntypedLambda, Value as ValueTrait, ValueGroup};
@@ -22,6 +23,12 @@ impl ValueTrait for Value {
 impl ValueGroup for Value {
     type Term = Term;
     type Type = Untyped;
+}
+
+impl GrammarDescribe for Value {
+    fn grammar() -> Grammar {
+        Grammar::value(vec![UntypedLambda::<Term>::rule()])
+    }
 }
 
 impl fmt::Display for Value {

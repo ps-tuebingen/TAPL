@@ -1,5 +1,6 @@
 use check::{Typecheck, errors::CheckError};
 use derivation::TypingDerivation;
+use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
 use syntax::untyped::Untyped;
@@ -35,6 +36,16 @@ impl SubstType<Untyped> for Term {
     type Target = Term;
     fn subst_type(self, _: &TypeVar, _: &Untyped) -> Self::Target {
         self
+    }
+}
+
+impl GrammarDescribe for Term {
+    fn grammar() -> Grammar {
+        Grammar::term(vec![
+            Variable::<Term>::rule(),
+            UntypedLambda::<Term>::rule(),
+            App::<Term>::rule(),
+        ])
     }
 }
 
