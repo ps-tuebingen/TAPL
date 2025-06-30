@@ -9,6 +9,7 @@ members = [
     "crates/common_lib",
     "crates/language_lib",
     "crates/derivation_lib",
+    "crates/grammar_lib",
     "crates/trace_lib",
     "crates/test_utils",
     "crates/latex_lib",
