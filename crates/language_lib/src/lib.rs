@@ -1,7 +1,7 @@
 use check::{Kindcheck, Normalize, Subtypecheck, Typecheck};
 use derivation::{ProgramDerivation, TypingDerivation};
 use eval::{Eval, eval_main};
-use grammar::{GrammarDescribe, RuleDescribe};
+use grammar::{GrammarDescribe, LanguageDescribe, LanguageGrammar};
 use latex::{LatexConfig, LatexFmt};
 use parse::{GroupParse, Parse};
 use syntax::{
@@ -62,7 +62,7 @@ pub trait Language {
             Term = Self::Term,
             Type = Self::Type,
             Deriv = TypingDerivation<<Self as Language>::Term, <Self as Language>::Type>,
-        > + RuleDescribe
+        > + GrammarDescribe
         + LatexFmt;
 
     type Type: TypeGroup
@@ -71,10 +71,10 @@ pub trait Language {
         + Subtypecheck<Self::Type>
         + Normalize<Self::Type>
         + Kindcheck<Self::Type>
-        + RuleDescribe
+        + GrammarDescribe
         + LatexFmt;
 
-    type Value: ValueGroup<Term = Self::Term, Type = Self::Type> + RuleDescribe + LatexFmt;
+    type Value: ValueGroup<Term = Self::Term, Type = Self::Type> + GrammarDescribe + LatexFmt;
 
     fn parse(&self, input: String) -> Result<Program<Self::Term, Self::Type>, LanguageError> {
         Ok(Program::<Self::Term, Self::Type>::parse(input)?)
@@ -164,6 +164,19 @@ pub trait Language {
             FormatMethod::LatexBus => tr.to_latex(&mut Default::default()),
             FormatMethod::LatexFrac => tr.to_latex(&mut LatexConfig::new_frac()),
             FormatMethod::Debug => format!("{:?}", tr.val()),
+        }
+    }
+}
+
+impl<L> LanguageDescribe for L
+where
+    L: Language,
+{
+    fn grammars() -> LanguageGrammar {
+        LanguageGrammar {
+            term_grammar: L::Term::grammar(),
+            type_grammar: L::Type::grammar(),
+            value_grammar: L::Value::grammar(),
         }
     }
 }

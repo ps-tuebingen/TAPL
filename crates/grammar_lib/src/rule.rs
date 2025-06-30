@@ -1,6 +1,15 @@
 use crate::symbol::Symbol;
 
 pub struct Rule {
-    symbols: Vec<Symbol>,
+    symbol: Symbol,
     description: String,
+}
+
+impl Rule {
+    pub fn new(symbol: Symbol, desc: &str) -> Rule {
+        Rule {
+            symbol,
+            description: desc.to_owned(),
+        }
+    }
 }

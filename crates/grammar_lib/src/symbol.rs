@@ -1,18 +1,33 @@
-use crate::{non_terminal::NonTerminal, terminal::Terminal};
-
 pub enum Symbol {
-    Terminal(Terminal),
-    NonTerminal(NonTerminal),
+    Terminal(String),
+    Term,
+    Type,
+    If,
+    Call {
+        name: String,
+        annot: bool,
+        num_args: usize,
+    },
 }
 
-impl From<Terminal> for Symbol {
-    fn from(t: Terminal) -> Symbol {
-        Symbol::Terminal(t)
+impl Symbol {
+    pub fn term(t: &str) -> Symbol {
+        Symbol::Terminal(t.to_owned())
     }
-}
 
-impl From<NonTerminal> for Symbol {
-    fn from(nt: NonTerminal) -> Symbol {
-        Symbol::NonTerminal(nt)
+    pub fn call_annot(nm: &str, num_args: usize) -> Symbol {
+        Symbol::Call {
+            name: nm.to_owned(),
+            annot: true,
+            num_args,
+        }
+    }
+
+    pub fn call(nm: &str, num_args: usize) -> Symbol {
+        Symbol::Call {
+            name: nm.to_owned(),
+            annot: false,
+            num_args,
+        }
     }
 }

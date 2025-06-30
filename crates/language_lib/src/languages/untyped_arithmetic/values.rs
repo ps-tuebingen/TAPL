@@ -1,5 +1,6 @@
 use super::terms::Term;
 use common::errors::{ValueKind, ValueMismatch};
+use grammar::{Grammar, GrammarDescribe};
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
 use syntax::untyped::Untyped;
@@ -49,6 +50,16 @@ impl ValueGroup for Value {
         } else {
             Err(ValueMismatch::new(self.knd(), ValueKind::Number))
         }
+    }
+}
+
+impl GrammarDescribe for Value {
+    fn grammar() -> Grammar {
+        Grammar::value(vec![
+            True::<Term>::rule(),
+            False::<Term>::rule(),
+            Num::<Term>::rule(),
+        ])
     }
 }
 

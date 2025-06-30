@@ -1,16 +1,23 @@
 mod grammar;
-mod non_terminal;
 mod rule;
 mod symbol;
-mod terminal;
 
-pub use grammar::Grammar;
+mod terms;
+mod untyped;
+mod values;
+
+pub use grammar::{Grammar, LanguageGrammar};
 pub use rule::Rule;
+pub use symbol::Symbol;
 
-pub trait GrammarDescribe: RuleDescribe {
-    fn describe(&self) -> Grammar;
+pub trait GrammarDescribe {
+    fn grammar() -> Grammar;
+}
+
+pub trait LanguageDescribe {
+    fn grammars() -> LanguageGrammar;
 }
 
 pub trait RuleDescribe {
-    fn rule(&self) -> Rule;
+    fn rule() -> Rule;
 }
