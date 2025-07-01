@@ -1,4 +1,5 @@
 use common::errors::{TypeKind, TypeMismatch};
+use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
 use syntax::{
@@ -139,6 +140,25 @@ impl TypeGroup for Type {
         } else {
             Err(TypeMismatch::new(self.knd(), TypeKind::Bool))
         }
+    }
+}
+
+impl GrammarDescribe for Type {
+    fn grammar() -> Grammar {
+        Grammar::ty(vec![
+            Top::<Type>::rule(),
+            Bot::rule(),
+            Fun::<Type>::rule(),
+            Record::<Type>::rule(),
+            Variant::<Type>::rule(),
+            List::<Type>::rule(),
+            Reference::<Type>::rule(),
+            Source::<Type>::rule(),
+            Sink::<Type>::rule(),
+            Nat::<Type>::rule(),
+            Unit::<Type>::rule(),
+            Bool::<Type>::rule(),
+        ])
     }
 }
 

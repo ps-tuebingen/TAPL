@@ -186,4 +186,12 @@ impl Symbol {
             rhs: Box::new(Symbol::Term),
         }
     }
+
+    pub fn cast() -> Symbol {
+        Symbol::Separated {
+            fst: Box::new(Symbol::Term),
+            separator: "as".to_owned(),
+            snd: Box::new(Symbol::Type),
+        }
+    }
 }
