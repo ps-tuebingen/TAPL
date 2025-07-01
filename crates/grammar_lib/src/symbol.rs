@@ -52,6 +52,9 @@ pub enum Symbol {
     Let,
     Try,
     TryCatch,
+    Pack,
+    Unpack,
+    Exists,
 }
 
 impl Symbol {

@@ -1,4 +1,5 @@
 mod bool;
+mod exists;
 mod fun;
 mod list;
 mod nat;
@@ -9,4 +10,5 @@ mod reference;
 mod sum;
 mod tuple;
 mod unit;
+mod variable;
 mod variant;
