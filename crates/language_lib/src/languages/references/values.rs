@@ -1,5 +1,6 @@
 use super::{terms::Term, types::Type};
 use common::errors::{ValueKind, ValueMismatch};
+use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
 use syntax::values::{False, Lambda, Loc, Num, True, Unit, Value as ValueTrait, ValueGroup};
@@ -84,6 +85,19 @@ impl From<Value> for Term {
             Value::True(tru) => tru.into_term().into(),
             Value::False(fls) => fls.into_term().into(),
         }
+    }
+}
+
+impl GrammarDescribe for Value {
+    fn grammar() -> Grammar {
+        Grammar::value(vec![
+            Lambda::<Term, Type>::rule(),
+            Num::<Term>::rule(),
+            Unit::<Term>::rule(),
+            Loc::<Term>::rule(),
+            True::<Term>::rule(),
+            False::<Term>::rule(),
+        ])
     }
 }
 

@@ -1,11 +1,11 @@
 mod bool;
-mod nat;
-
 mod fun;
 mod list;
+mod nat;
 mod optional;
 mod product;
 mod record;
+mod reference;
 mod sum;
 mod tuple;
 mod unit;

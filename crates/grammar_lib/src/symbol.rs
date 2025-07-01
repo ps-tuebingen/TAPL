@@ -16,6 +16,7 @@ pub enum Symbol {
 
     Variable,
     Label,
+    Location,
 
     Assignment {
         lhs: Box<Symbol>,
@@ -49,6 +50,8 @@ pub enum Symbol {
     },
     If,
     Let,
+    Try,
+    TryCatch,
 }
 
 impl Symbol {
@@ -171,6 +174,13 @@ impl Symbol {
             fst: Box::new(fun),
             separator: " ".to_owned(),
             snd: Box::new(arg),
+        }
+    }
+
+    pub fn assign() -> Symbol {
+        Symbol::Assignment {
+            lhs: Box::new(Symbol::Term),
+            rhs: Box::new(Symbol::Term),
         }
     }
 }

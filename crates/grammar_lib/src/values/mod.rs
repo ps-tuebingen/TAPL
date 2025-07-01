@@ -1,17 +1,19 @@
-mod fls;
-mod num;
-mod tru;
-mod untyped_lambda;
-
 mod cons;
+mod exception;
+mod fls;
 mod lambda;
 mod left;
+mod loc;
 mod nil;
 mod nothing;
+mod num;
 mod pair;
+mod raise;
 mod record;
 mod right;
 mod something;
+mod tru;
 mod tuple;
 mod unit;
+mod untyped_lambda;
 mod variant;
