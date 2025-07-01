@@ -1,7 +1,7 @@
-use crate::rule::Rule;
+use crate::{rule::Rule, symbol::Symbol};
 
 pub struct Grammar {
-    symbol: String,
+    symbol: Symbol,
     description: String,
     alternatives: Vec<Rule>,
 }
@@ -9,7 +9,7 @@ pub struct Grammar {
 impl Grammar {
     pub fn term(alternatives: Vec<Rule>) -> Grammar {
         Grammar {
-            symbol: "t".to_owned(),
+            symbol: Symbol::Term,
             description: "Term".to_owned(),
             alternatives,
         }
@@ -17,7 +17,7 @@ impl Grammar {
 
     pub fn ty(alternatives: Vec<Rule>) -> Grammar {
         Grammar {
-            symbol: "T".to_owned(),
+            symbol: Symbol::Type,
             description: "Type".to_owned(),
             alternatives,
         }
@@ -25,7 +25,7 @@ impl Grammar {
 
     pub fn value(alternatives: Vec<Rule>) -> Grammar {
         Grammar {
-            symbol: "v".to_owned(),
+            symbol: Symbol::Value,
             description: "Value".to_owned(),
             alternatives,
         }

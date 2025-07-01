@@ -6,6 +6,6 @@ where
     T: Term,
 {
     fn rule() -> Rule {
-        Rule::new(Symbol::call_annot("iszero", 1), "IsZero")
+        Rule::new(Symbol::call_annot("iszero", 1, Symbol::Term), "IsZero")
     }
 }

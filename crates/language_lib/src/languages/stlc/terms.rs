@@ -1,4 +1,5 @@
 use super::types::Type;
+use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
 use syntax::{
@@ -50,6 +51,47 @@ pub enum Term {
 }
 
 impl syntax::terms::Term for Term {}
+
+impl GrammarDescribe for Term {
+    fn grammar() -> Grammar {
+        Grammar::term(vec![
+            Variable::<Term>::rule(),
+            Lambda::<Term, Type>::rule(),
+            App::<Term>::rule(),
+            Unit::<Term>::rule(),
+            True::<Term>::rule(),
+            False::<Term>::rule(),
+            If::<Term>::rule(),
+            Num::<Term>::rule(),
+            Pred::<Term>::rule(),
+            Succ::<Term>::rule(),
+            IsZero::<Term>::rule(),
+            Ascribe::<Term, Type>::rule(),
+            Let::<Term>::rule(),
+            Pair::<Term>::rule(),
+            Fst::<Term>::rule(),
+            Snd::<Term>::rule(),
+            Tuple::<Term>::rule(),
+            Projection::<Term>::rule(),
+            Record::<Term>::rule(),
+            RecordProj::<Term>::rule(),
+            Left::<Term, Type>::rule(),
+            Right::<Term, Type>::rule(),
+            SumCase::<Term>::rule(),
+            Variant::<Term, Type>::rule(),
+            VariantCase::<Term>::rule(),
+            Nothing::<Term, Type>::rule(),
+            Something::<Term>::rule(),
+            SomeCase::<Term>::rule(),
+            Fix::<Term>::rule(),
+            Nil::<Term, Type>::rule(),
+            Cons::<Term, Type>::rule(),
+            IsNil::<Term, Type>::rule(),
+            Head::<Term, Type>::rule(),
+            Tail::<Term, Type>::rule(),
+        ])
+    }
+}
 
 impl SubstType<Type> for Term {
     type Target = Term;

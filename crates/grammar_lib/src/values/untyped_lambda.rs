@@ -6,6 +6,9 @@ where
     T: Term,
 {
     fn rule() -> Rule {
-        Rule::new(Symbol::lam_untyped(), "Lambda Abstraction")
+        Rule::new(
+            Symbol::lam(Symbol::Empty, Symbol::Term),
+            "Lambda Abstraction",
+        )
     }
 }
