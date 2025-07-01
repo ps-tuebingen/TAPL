@@ -6,6 +6,6 @@ where
     Ty: Type,
 {
     fn rule() -> Rule {
-        Rule::new(Symbol::RecordTy, "Record Type")
+        Rule::new(Symbol::record(Symbol::Type), "Record Type")
     }
 }

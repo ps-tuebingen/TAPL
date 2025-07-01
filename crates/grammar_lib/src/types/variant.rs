@@ -6,6 +6,6 @@ where
     Ty: Type,
 {
     fn rule() -> Rule {
-        Rule::new(Symbol::VariantTy, "Variant Type")
+        Rule::new(Symbol::variant(Symbol::Type), "Variant Type")
     }
 }

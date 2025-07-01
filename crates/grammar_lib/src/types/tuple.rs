@@ -6,6 +6,6 @@ where
     Ty: Type,
 {
     fn rule() -> Rule {
-        Rule::new(Symbol::TupleTy, "Tuple Type")
+        Rule::new(Symbol::tuple(Symbol::Type), "Tuple Type")
     }
 }

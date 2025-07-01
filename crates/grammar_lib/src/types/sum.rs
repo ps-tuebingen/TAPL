@@ -6,6 +6,6 @@ where
     Ty: Type,
 {
     fn rule() -> Rule {
-        Rule::new(Symbol::Sum, "Sum Type")
+        Rule::new(Symbol::sum_ty(), "Sum Type")
     }
 }

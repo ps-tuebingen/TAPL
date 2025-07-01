@@ -6,6 +6,6 @@ where
     T: Term,
 {
     fn rule() -> Rule {
-        Rule::new(Symbol::Tuple, "Tuple")
+        Rule::new(Symbol::tuple(Symbol::Term), "Tuple")
     }
 }

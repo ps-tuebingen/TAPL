@@ -6,6 +6,6 @@ where
     T: Term,
 {
     fn rule() -> Rule {
-        Rule::new(Symbol::App, "Application")
+        Rule::new(Symbol::app(Symbol::Term, Symbol::Term), "Application")
     }
 }

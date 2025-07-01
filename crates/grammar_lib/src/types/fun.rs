@@ -6,6 +6,6 @@ where
     Ty: Type,
 {
     fn rule() -> Rule {
-        Rule::new(Symbol::Arrow, "Function Type")
+        Rule::new(Symbol::fun_ty(), "Function Type")
     }
 }

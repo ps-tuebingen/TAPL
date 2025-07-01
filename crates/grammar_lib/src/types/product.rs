@@ -6,6 +6,6 @@ where
     Ty: Type,
 {
     fn rule() -> Rule {
-        Rule::new(Symbol::Product, "Product Type")
+        Rule::new(Symbol::product_ty(), "Product Type")
     }
 }

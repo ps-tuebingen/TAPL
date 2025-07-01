@@ -1,18 +1,31 @@
 #[derive(Clone)]
 pub enum Symbol {
     Empty,
+    Many(Box<Symbol>),
+    Separated {
+        fst: Box<Symbol>,
+        separator: String,
+        snd: Box<Symbol>,
+    },
+
     Terminal(String),
+    Keyword(String),
     Term,
     Type,
     Value,
+
     Variable,
-    If,
-    App,
-    Let,
-    Pair,
-    Record,
-    Tuple,
-    Variant,
+    Label,
+
+    Assignment {
+        lhs: Box<Symbol>,
+        rhs: Box<Symbol>,
+    },
+    Delim {
+        delim_open: char,
+        inner: Box<Symbol>,
+        delim_close: char,
+    },
     Lambda {
         annot: Box<Symbol>,
         body: Box<Symbol>,
@@ -34,12 +47,8 @@ pub enum Symbol {
         lhs: String,
         num_vars: usize,
     },
-    Arrow,
-    Product,
-    RecordTy,
-    Sum,
-    TupleTy,
-    VariantTy,
+    If,
+    Let,
 }
 
 impl Symbol {
@@ -88,6 +97,80 @@ impl Symbol {
         Symbol::Pattern {
             lhs: ctor.to_owned(),
             num_vars,
+        }
+    }
+
+    pub fn variant(inner: Symbol) -> Symbol {
+        Symbol::Delim {
+            delim_open: '<',
+            inner: Box::new(Symbol::Many(Box::new(Symbol::Assignment {
+                lhs: Box::new(Symbol::Label),
+                rhs: Box::new(inner),
+            }))),
+            delim_close: '>',
+        }
+    }
+
+    pub fn tuple(inner: Symbol) -> Symbol {
+        Symbol::Delim {
+            delim_open: '(',
+            inner: Box::new(Symbol::Many(Box::new(inner))),
+            delim_close: ')',
+        }
+    }
+
+    pub fn pair(inner: Symbol) -> Symbol {
+        Symbol::Delim {
+            delim_open: '{',
+            inner: Box::new(Symbol::Separated {
+                fst: Box::new(inner.clone()),
+                separator: ",".to_owned(),
+                snd: Box::new(inner),
+            }),
+            delim_close: '}',
+        }
+    }
+
+    pub fn record(inner: Symbol) -> Symbol {
+        Symbol::Delim {
+            delim_open: '{',
+            inner: Box::new(Symbol::Many(Box::new(Symbol::Assignment {
+                lhs: Box::new(Symbol::Label),
+                rhs: Box::new(inner),
+            }))),
+            delim_close: '}',
+        }
+    }
+
+    pub fn sum_ty() -> Symbol {
+        Symbol::Separated {
+            fst: Box::new(Symbol::Type),
+            separator: "+".to_owned(),
+            snd: Box::new(Symbol::Type),
+        }
+    }
+
+    pub fn product_ty() -> Symbol {
+        Symbol::Separated {
+            fst: Box::new(Symbol::Type),
+            separator: "x".to_owned(),
+            snd: Box::new(Symbol::Type),
+        }
+    }
+
+    pub fn fun_ty() -> Symbol {
+        Symbol::Separated {
+            fst: Box::new(Symbol::Type),
+            separator: "->".to_owned(),
+            snd: Box::new(Symbol::Type),
+        }
+    }
+
+    pub fn app(fun: Symbol, arg: Symbol) -> Symbol {
+        Symbol::Separated {
+            fst: Box::new(fun),
+            separator: " ".to_owned(),
+            snd: Box::new(arg),
         }
     }
 }
