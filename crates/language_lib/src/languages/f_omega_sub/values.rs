@@ -1,5 +1,6 @@
 use super::{terms::Term, types::Type};
 use common::errors::{ValueKind, ValueMismatch};
+use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
 use syntax::values::{Lambda, LambdaSub, Num, Pack, Record, Value as ValueTrait, ValueGroup};
@@ -23,6 +24,18 @@ impl ValueTrait for Value {
             Value::Record(v) => v.knd(),
             Value::Num(v) => v.knd(),
         }
+    }
+}
+
+impl GrammarDescribe for Value {
+    fn grammar() -> Grammar {
+        Grammar::value(vec![
+            Lambda::<Term, Type>::rule(),
+            LambdaSub::<Term, Type>::rule(),
+            Pack::<Value, Type>::rule(),
+            Record::<Value>::rule(),
+            Num::<Term>::rule(),
+        ])
     }
 }
 

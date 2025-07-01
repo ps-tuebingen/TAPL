@@ -1,4 +1,5 @@
 use super::types::Type;
+use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
 use syntax::{
@@ -34,6 +35,31 @@ pub enum Term {
 }
 
 impl syntax::terms::Term for Term {}
+
+impl GrammarDescribe for Term {
+    fn grammar() -> Grammar {
+        Grammar::term(vec![
+            Variable::<Term>::rule(),
+            Lambda::<Term, Type>::rule(),
+            App::<Term>::rule(),
+            TyLambda::<Term>::rule(),
+            TyApp::<Term, Type>::rule(),
+            Pack::<Term, Type>::rule(),
+            Unpack::<Term, Type>::rule(),
+            Record::<Term>::rule(),
+            RecordProj::<Term>::rule(),
+            True::<Term>::rule(),
+            False::<Term>::rule(),
+            If::<Term>::rule(),
+            Unit::<Term>::rule(),
+            Fix::<Term>::rule(),
+            Num::<Term>::rule(),
+            Succ::<Term>::rule(),
+            Pred::<Term>::rule(),
+            IsZero::<Term>::rule(),
+        ])
+    }
+}
 
 impl SubstTerm<Term> for Term {
     type Target = Self;

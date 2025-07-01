@@ -1,4 +1,5 @@
 use super::types::Type;
+use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
 use syntax::{
@@ -28,6 +29,18 @@ impl SubstType<Type> for Term {
             Term::TyLambda(lam) => lam.subst_type(v, ty),
             Term::TyApp(app) => app.subst_type(v, ty),
         }
+    }
+}
+
+impl GrammarDescribe for Term {
+    fn grammar() -> Grammar {
+        Grammar::term(vec![
+            Variable::<Term>::rule(),
+            Lambda::<Term, Type>::rule(),
+            App::<Term>::rule(),
+            TyLambda::<Term>::rule(),
+            TyApp::<Term, Type>::rule(),
+        ])
     }
 }
 

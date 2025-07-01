@@ -12,6 +12,7 @@ pub enum Symbol {
     Keyword(String),
     Term,
     Type,
+    Kind,
     Value,
 
     Variable,
@@ -54,7 +55,12 @@ pub enum Symbol {
     TryCatch,
     Pack,
     Unpack,
-    Exists,
+    Exists {
+        bounded: bool,
+    },
+    Forall {
+        bounded: bool,
+    },
 }
 
 impl Symbol {

@@ -1,5 +1,6 @@
 use super::{terms::Term, types::Type};
 use common::errors::{ValueKind, ValueMismatch};
+use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
 use syntax::values::{Lambda, TyLambda, Value as ValueTrait, ValueGroup};
@@ -47,6 +48,12 @@ impl From<Value> for Term {
             Value::Lambda(lam) => lam.into_term().into(),
             Value::TyLambda(tylam) => tylam.into_term().into(),
         }
+    }
+}
+
+impl GrammarDescribe for Value {
+    fn grammar() -> Grammar {
+        Grammar::value(vec![Lambda::<Term, Type>::rule(), TyLambda::<Term>::rule()])
     }
 }
 

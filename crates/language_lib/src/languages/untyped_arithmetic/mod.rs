@@ -4,6 +4,7 @@ pub mod terms;
 pub mod values;
 
 use crate::Language;
+use grammar::{GrammarDescribe, LanguageDescribe, LanguageGrammar};
 use syntax::untyped::Untyped;
 use terms::Term;
 use values::Value;
@@ -15,6 +16,16 @@ impl Language for UntypedArithmetic {
     type Term = Term;
     type Type = Untyped;
     type Value = Value;
+}
+
+impl LanguageDescribe for UntypedArithmetic {
+    fn grammars() -> LanguageGrammar {
+        LanguageGrammar {
+            term_grammar: Term::grammar(),
+            type_grammar: Untyped::grammar(),
+            value_grammar: Value::grammar(),
+        }
+    }
 }
 
 #[cfg(test)]

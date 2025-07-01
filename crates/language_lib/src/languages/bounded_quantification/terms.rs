@@ -1,4 +1,5 @@
 use super::types::Type;
+use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
 use syntax::{
@@ -26,6 +27,25 @@ pub enum Term {
 }
 
 impl syntax::terms::Term for Term {}
+
+impl GrammarDescribe for Term {
+    fn grammar() -> Grammar {
+        Grammar::term(vec![
+            Variable::<Term>::rule(),
+            Num::<Term>::rule(),
+            Succ::<Term>::rule(),
+            Pred::<Term>::rule(),
+            Lambda::<Term, Type>::rule(),
+            App::<Term>::rule(),
+            LambdaSub::<Term, Type>::rule(),
+            TyApp::<Term, Type>::rule(),
+            Pack::<Term, Type>::rule(),
+            Unpack::<Term, Type>::rule(),
+            Record::<Term>::rule(),
+            RecordProj::<Term>::rule(),
+        ])
+    }
+}
 
 impl fmt::Display for Term {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {

@@ -6,6 +6,6 @@ where
     Ty: Type,
 {
     fn rule() -> Rule {
-        Rule::new(Symbol::Exists, "Existential Type")
+        Rule::new(Symbol::Exists { bounded: false }, "Existential Type")
     }
 }

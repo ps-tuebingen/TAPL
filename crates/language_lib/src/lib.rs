@@ -167,16 +167,3 @@ pub trait Language {
         }
     }
 }
-
-impl<L> LanguageDescribe for L
-where
-    L: Language,
-{
-    fn grammars() -> LanguageGrammar {
-        LanguageGrammar {
-            term_grammar: L::Term::grammar(),
-            type_grammar: L::Type::grammar(),
-            value_grammar: L::Value::grammar(),
-        }
-    }
-}

@@ -1,5 +1,6 @@
 use super::{terms::Term, types::Type};
 use common::errors::{ValueKind, ValueMismatch};
+use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
 use syntax::values::{False, Lambda, Num, True, TyLambda, Unit, Value as ValueTrait, ValueGroup};
@@ -70,6 +71,19 @@ impl ValueGroup for Value {
         } else {
             Err(ValueMismatch::new(self.knd(), ValueKind::TyLambda))
         }
+    }
+}
+
+impl GrammarDescribe for Value {
+    fn grammar() -> Grammar {
+        Grammar::value(vec![
+            Lambda::<Term, Type>::rule(),
+            TyLambda::<Term>::rule(),
+            Unit::<Term>::rule(),
+            True::<Term>::rule(),
+            False::<Term>::rule(),
+            Num::<Term>::rule(),
+        ])
     }
 }
 

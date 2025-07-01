@@ -1,4 +1,5 @@
 use common::errors::{TypeKind, TypeMismatch};
+use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
 use syntax::{
@@ -36,6 +37,22 @@ impl TypeTrait for Type {
             Type::Record(t) => t.knd(),
             Type::Nat(t) => t.knd(),
         }
+    }
+}
+
+impl GrammarDescribe for Type {
+    fn grammar() -> Grammar {
+        Grammar::ty(vec![
+            TypeVariable::<Type>::rule(),
+            Top::<Type>::rule(),
+            Fun::<Type>::rule(),
+            ForallBounded::<Type>::rule(),
+            OpLambdaSub::<Type>::rule(),
+            OpApp::<Type>::rule(),
+            ExistsBounded::<Type>::rule(),
+            Record::<Type>::rule(),
+            Nat::<Type>::rule(),
+        ])
     }
 }
 

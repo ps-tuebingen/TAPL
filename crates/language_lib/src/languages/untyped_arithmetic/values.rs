@@ -1,6 +1,6 @@
 use super::terms::Term;
 use common::errors::{ValueKind, ValueMismatch};
-use grammar::{Grammar, GrammarDescribe};
+use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
 use syntax::untyped::Untyped;
