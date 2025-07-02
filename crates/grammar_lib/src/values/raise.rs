@@ -1,4 +1,4 @@
-use crate::{Rule, RuleDescribe, Symbol};
+use crate::{Rule, RuleDescribe, Symbol, symbols::Keyword};
 use syntax::{
     types::Type,
     values::{Raise, Value},
@@ -11,7 +11,7 @@ where
 {
     fn rule() -> Rule {
         Rule::new(
-            Symbol::ctor("raise", Some(Symbol::Type), vec![Symbol::Value]),
+            Symbol::ctor(Keyword::Raise, Some(Symbol::Type), vec![Symbol::Value]),
             "Raise",
         )
     }

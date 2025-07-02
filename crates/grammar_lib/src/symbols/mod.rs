@@ -1,10 +1,17 @@
+mod keywords;
+mod special_char;
+
+pub use keywords::Keyword;
+use special_char::SpecialChar;
+
 #[derive(Clone)]
 pub enum Symbol {
     Empty,
     Many(Box<Symbol>),
 
     Terminal(String),
-    Keyword(String),
+    Keyword(Keyword),
+    SpecialChar(SpecialChar),
     Term,
     Type,
     Kind,
@@ -17,7 +24,7 @@ pub enum Symbol {
     Number,
 
     Prefixed {
-        prefix: String,
+        prefix: Box<Symbol>,
         inner: Box<Symbol>,
     },
     Delim {
@@ -47,7 +54,7 @@ impl Symbol {
 
     pub fn lam_untyped(inner: Symbol) -> Symbol {
         Symbol::Prefixed {
-            prefix: "\\".to_owned(),
+            prefix: Box::new(SpecialChar::Lambda.into()),
             inner: Box::new(Symbol::Separated {
                 fst: Box::new(Symbol::Variable),
                 separator: ".".to_owned(),
@@ -82,7 +89,7 @@ impl Symbol {
 
     pub fn lam(annot: Symbol, body: Symbol) -> Symbol {
         Symbol::Prefixed {
-            prefix: "\\".to_owned(),
+            prefix: Box::new(SpecialChar::Lambda.into()),
             inner: Box::new(Symbol::Separated {
                 fst: Box::new(annot),
                 separator: ".".to_owned(),
@@ -93,7 +100,7 @@ impl Symbol {
 
     pub fn mu() -> Symbol {
         Symbol::Prefixed {
-            prefix: "mu".to_owned(),
+            prefix: Box::new(SpecialChar::Mu.into()),
             inner: Box::new(Symbol::Separated {
                 fst: Box::new(Symbol::Variable),
                 separator: ".".to_owned(),
@@ -121,7 +128,7 @@ impl Symbol {
     pub fn unpack() -> Symbol {
         Symbol::Separated {
             fst: Box::new(Symbol::Prefixed {
-                prefix: "let".to_owned(),
+                prefix: Box::new(Keyword::Let.into()),
                 inner: Box::new(Symbol::Separated {
                     fst: Box::new(Symbol::Delim {
                         delim_open: '{',
@@ -144,7 +151,7 @@ impl Symbol {
     pub fn lett() -> Symbol {
         Symbol::Separated {
             fst: Box::new(Symbol::Prefixed {
-                prefix: "let".to_owned(),
+                prefix: Box::new(Keyword::Let.into()),
                 inner: Box::new(Symbol::Delim {
                     delim_open: '(',
                     inner: Box::new(Symbol::Separated {
@@ -163,7 +170,7 @@ impl Symbol {
     pub fn ift() -> Symbol {
         Symbol::Separated {
             fst: Box::new(Symbol::Prefixed {
-                prefix: "if".to_owned(),
+                prefix: Box::new(Keyword::If.into()),
                 inner: Box::new(Symbol::Delim {
                     delim_open: '{',
                     inner: Box::new(Symbol::Term),
@@ -181,14 +188,14 @@ impl Symbol {
 
     pub fn dereft() -> Symbol {
         Symbol::Prefixed {
-            prefix: "!".to_owned(),
+            prefix: Box::new(SpecialChar::Exclamation.into()),
             inner: Box::new(Symbol::Term),
         }
     }
 
     pub fn tryt() -> Symbol {
         Symbol::Prefixed {
-            prefix: "try".to_owned(),
+            prefix: Box::new(Keyword::Try.into()),
             inner: Box::new(Symbol::Delim {
                 delim_open: '{',
                 inner: Box::new(Symbol::Term),
@@ -217,7 +224,7 @@ impl Symbol {
         }
     }
 
-    pub fn ctor(ctor: &str, ty_arg: Option<Symbol>, args: Vec<Symbol>) -> Symbol {
+    pub fn ctor(ctor: Keyword, ty_arg: Option<Symbol>, args: Vec<Symbol>) -> Symbol {
         let mut inner = Symbol::Empty;
 
         for arg in args {
@@ -247,7 +254,7 @@ impl Symbol {
         }
 
         Symbol::Prefixed {
-            prefix: ctor.to_owned(),
+            prefix: Box::new(ctor.into()),
             inner: prefix_inner,
         }
     }
@@ -259,7 +266,7 @@ impl Symbol {
         }
     }
 
-    pub fn ctor_pt(ctor: &str, num_args: usize) -> Symbol {
+    pub fn ctor_pt(ctor: Keyword, num_args: usize) -> Symbol {
         Symbol::ctor(
             ctor,
             None,
@@ -368,7 +375,7 @@ impl Symbol {
 
     pub fn forall_ty(annot: Symbol) -> Symbol {
         Symbol::Prefixed {
-            prefix: "forall".to_owned(),
+            prefix: Box::new(SpecialChar::Forall.into()),
             inner: Box::new(Symbol::Separated {
                 fst: Box::new(annot),
                 separator: ".".to_owned(),
@@ -379,7 +386,7 @@ impl Symbol {
 
     pub fn exists_ty(annot: Symbol) -> Symbol {
         Symbol::Prefixed {
-            prefix: "exists".to_owned(),
+            prefix: Box::new(SpecialChar::Exists.into()),
             inner: Box::new(Symbol::Separated {
                 fst: Box::new(annot),
                 separator: ".".to_owned(),

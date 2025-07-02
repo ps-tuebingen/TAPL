@@ -1,4 +1,4 @@
-use crate::{rule::Rule, symbol::Symbol};
+use crate::{rule::Rule, symbols::Symbol};
 
 pub struct Grammar {
     symbol: Symbol,

@@ -1,6 +1,6 @@
 mod grammar;
 mod rule;
-mod symbol;
+mod symbols;
 
 mod terms;
 mod types;
@@ -9,7 +9,7 @@ mod values;
 
 pub use grammar::{Grammar, LanguageGrammar};
 pub use rule::Rule;
-pub use symbol::Symbol;
+pub use symbols::Symbol;
 
 pub trait GrammarDescribe {
     fn grammar() -> Grammar;

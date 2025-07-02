@@ -1,4 +1,4 @@
-use crate::{Rule, RuleDescribe, Symbol};
+use crate::{Rule, RuleDescribe, Symbol, symbols::Keyword};
 use syntax::{
     terms::{Exception, Term},
     types::Type,
@@ -11,7 +11,7 @@ where
 {
     fn rule() -> Rule {
         Rule::new(
-            Symbol::ctor("error", Some(Symbol::Type), vec![Symbol::Term]),
+            Symbol::ctor(Keyword::Err, Some(Symbol::Type), vec![Symbol::Term]),
             "Exception",
         )
     }

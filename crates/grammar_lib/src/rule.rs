@@ -1,4 +1,4 @@
-use crate::symbol::Symbol;
+use crate::symbols::Symbol;
 
 pub struct Rule {
     symbol: Symbol,

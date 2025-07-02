@@ -1,4 +1,4 @@
-use crate::{Rule, RuleDescribe, Symbol};
+use crate::{Rule, RuleDescribe, Symbol, symbols::Keyword};
 use syntax::types::{Sink, Type};
 
 impl<Ty> RuleDescribe for Sink<Ty>
@@ -7,7 +7,7 @@ where
 {
     fn rule() -> Rule {
         Rule::new(
-            Symbol::ctor("Sink", Some(Symbol::Type), vec![]),
+            Symbol::ctor(Keyword::Sink, Some(Symbol::Type), vec![]),
             "Sink Type",
         )
     }

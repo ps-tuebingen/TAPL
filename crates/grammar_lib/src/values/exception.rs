@@ -1,4 +1,4 @@
-use crate::{Rule, RuleDescribe, Symbol};
+use crate::{Rule, RuleDescribe, Symbol, symbols::Keyword};
 use syntax::{terms::Term, types::Type, values::Exception};
 
 impl<T, Ty> RuleDescribe for Exception<T, Ty>
@@ -8,7 +8,7 @@ where
 {
     fn rule() -> Rule {
         Rule::new(
-            Symbol::ctor("error", Some(Symbol::Type), vec![Symbol::Value]),
+            Symbol::ctor(Keyword::Err, Some(Symbol::Type), vec![Symbol::Value]),
             "Exception",
         )
     }

@@ -1,4 +1,4 @@
-use crate::{Rule, RuleDescribe, Symbol};
+use crate::{Rule, RuleDescribe, Symbol, symbols::Keyword};
 use syntax::types::{Optional, Type};
 
 impl<Ty> RuleDescribe for Optional<Ty>
@@ -7,7 +7,7 @@ where
 {
     fn rule() -> Rule {
         Rule::new(
-            Symbol::ctor("Optional", Some(Symbol::Type), vec![]),
+            Symbol::ctor(Keyword::Optional, Some(Symbol::Type), vec![]),
             "Option Type",
         )
     }

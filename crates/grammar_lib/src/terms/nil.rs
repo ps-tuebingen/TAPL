@@ -1,4 +1,4 @@
-use crate::{Rule, RuleDescribe, Symbol};
+use crate::{Rule, RuleDescribe, Symbol, symbols::Keyword};
 use syntax::{
     terms::{Nil, Term},
     types::Type,
@@ -11,7 +11,7 @@ where
 {
     fn rule() -> Rule {
         Rule::new(
-            Symbol::ctor("nil", Some(Symbol::Term), vec![Symbol::Term]),
+            Symbol::ctor(Keyword::Nil, Some(Symbol::Term), vec![Symbol::Term]),
             "Empty List",
         )
     }

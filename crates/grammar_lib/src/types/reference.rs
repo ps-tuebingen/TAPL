@@ -1,4 +1,4 @@
-use crate::{Rule, RuleDescribe, Symbol};
+use crate::{Rule, RuleDescribe, Symbol, symbols::Keyword};
 use syntax::types::{Reference, Type};
 
 impl<Ty> RuleDescribe for Reference<Ty>
@@ -7,7 +7,7 @@ where
 {
     fn rule() -> Rule {
         Rule::new(
-            Symbol::ctor("Reference", Some(Symbol::Type), vec![]),
+            Symbol::ctor(Keyword::Reference, Some(Symbol::Type), vec![]),
             "Reference Type",
         )
     }

@@ -1,4 +1,4 @@
-use crate::{Rule, RuleDescribe, Symbol};
+use crate::{Rule, RuleDescribe, Symbol, symbols::Keyword};
 use syntax::{types::Type, values::Cons, values::Value};
 
 impl<V, Ty> RuleDescribe for Cons<V, Ty>
@@ -9,7 +9,7 @@ where
     fn rule() -> Rule {
         Rule::new(
             Symbol::ctor(
-                "cons",
+                Keyword::Cons,
                 Some(Symbol::Type),
                 vec![Symbol::Value, Symbol::Value],
             ),

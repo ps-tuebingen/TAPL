@@ -1,4 +1,4 @@
-use crate::{Rule, RuleDescribe, Symbol};
+use crate::{Rule, RuleDescribe, Symbol, symbols::Keyword};
 use syntax::terms::{SomeCase, Term};
 
 impl<T> RuleDescribe for SomeCase<T>
@@ -8,8 +8,8 @@ where
     fn rule() -> Rule {
         Rule::new(
             Symbol::case(vec![
-                Symbol::pt(Symbol::ctor_pt("nothing", 0), Symbol::Term),
-                Symbol::pt(Symbol::ctor_pt("something", 1), Symbol::Term),
+                Symbol::pt(Symbol::ctor_pt(Keyword::Nothing, 0), Symbol::Term),
+                Symbol::pt(Symbol::ctor_pt(Keyword::Something, 1), Symbol::Term),
             ]),
             "Option Case",
         )

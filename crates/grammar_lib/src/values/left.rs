@@ -1,4 +1,4 @@
-use crate::{Rule, RuleDescribe, Symbol};
+use crate::{Rule, RuleDescribe, Symbol, symbols::Keyword};
 use syntax::{
     types::Type,
     values::{Left, Value},
@@ -11,7 +11,7 @@ where
 {
     fn rule() -> Rule {
         Rule::new(
-            Symbol::ctor("inl", Some(Symbol::Type), vec![Symbol::Value]),
+            Symbol::ctor(Keyword::Left, Some(Symbol::Type), vec![Symbol::Value]),
             "Left Injection",
         )
     }
