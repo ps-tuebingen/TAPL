@@ -5,7 +5,7 @@ impl<T> LatexFmt for Variable<T>
 where
     T: Term,
 {
-    fn to_latex(&self, _: &mut LatexConfig) -> String {
-        format!("\\text{{ {} }}", self.var.replace("_", "\\_"))
+    fn to_latex(&self, _conf: &mut LatexConfig) -> String {
+        format!("\\text{{ {} }}", self.var.to_latex(_conf))
     }
 }

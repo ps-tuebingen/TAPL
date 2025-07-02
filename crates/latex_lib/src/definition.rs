@@ -7,12 +7,7 @@ where
     Ty: Type + LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
-        let (env_start, env_end) = if conf.include_envs {
-            ("\\[", "\\]")
-        } else {
-            ("", "")
-        };
-
+        let (env_start, env_end) = conf.mathenv_strs();
         conf.include_envs = false;
         format!(
             "{env_start}\\text{{def }} {}::{}\\coloneq {};{env_end}",

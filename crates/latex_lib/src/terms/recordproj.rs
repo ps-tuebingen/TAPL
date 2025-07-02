@@ -9,7 +9,7 @@ where
         format!(
             "({}).{}",
             self.record.to_latex(conf),
-            self.label.replace("_", "\\_")
+            self.label.to_latex(conf)
         )
     }
 }

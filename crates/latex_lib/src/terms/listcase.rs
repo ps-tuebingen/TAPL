@@ -10,8 +10,8 @@ where
             "\\text{{case}} {} \\text{{of}} \\{{ \\text{{Nil}} \\Rightarrow {} \\mid \\text{{Cons}}({},{}) \\Rightarrow {} \\}}",
             self.bound_term.to_latex(conf),
             self.nil_rhs.to_latex(conf),
-            self.cons_fst,
-            self.cons_rst,
+            self.cons_fst.to_latex(conf),
+            self.cons_rst.to_latex(conf),
             self.cons_rhs.to_latex(conf)
         )
     }

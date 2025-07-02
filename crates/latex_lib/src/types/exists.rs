@@ -8,7 +8,7 @@ where
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!(
             "\\{{\\exists {} :: {}, {} \\}}",
-            self.var,
+            self.var.to_latex(conf),
             self.kind.to_latex(conf),
             self.ty.to_latex(conf)
         )

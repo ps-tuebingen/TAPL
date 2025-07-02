@@ -25,8 +25,8 @@ where
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!(
             "\\langle {} = {} \\rangle \\Rightarrow {}",
-            self.label,
-            self.bound_var,
+            self.label.to_latex(conf),
+            self.bound_var.to_latex(conf),
             self.rhs.to_latex(conf)
         )
     }

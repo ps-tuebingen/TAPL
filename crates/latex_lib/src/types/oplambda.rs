@@ -8,7 +8,7 @@ where
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!(
             "\\lambda {}::{}.{}",
-            self.var,
+            self.var.to_latex(conf),
             self.annot.to_latex(conf),
             self.body.to_latex(conf)
         )

@@ -11,7 +11,7 @@ where
         out += &self
             .definitions
             .keys()
-            .map(|n| format!("\\text{{{}}}", n.replace("_", "\\_")))
+            .map(|n| format!("\\text{{{}}}", n.to_latex(conf)))
             .collect::<Vec<String>>()
             .join(", ");
 
@@ -22,13 +22,7 @@ where
         out += &self
             .var_bindings
             .iter()
-            .map(|(var, ty)| {
-                format!(
-                    "\\text{{{}}}:{}",
-                    var.replace("_", "\\_"),
-                    ty.to_latex(conf)
-                )
-            })
+            .map(|(var, ty)| format!("\\text{{{}}}:{}", var.to_latex(conf), ty.to_latex(conf)))
             .collect::<Vec<String>>()
             .join(", ");
 
@@ -40,11 +34,7 @@ where
             .tyvar_bindings
             .iter()
             .map(|(tyvar, knd)| {
-                format!(
-                    "\\text{{{}}}::{}",
-                    tyvar.replace("_", "\\_"),
-                    knd.to_latex(conf)
-                )
+                format!("\\text{{{}}}::{}", tyvar.to_latex(conf), knd.to_latex(conf))
             })
             .collect::<Vec<String>>()
             .join(", ");
@@ -59,7 +49,7 @@ where
             .map(|(tyvar, sup)| {
                 format!(
                     "\\text{{{}}} <: {}",
-                    tyvar.replace("_", "\\_"),
+                    tyvar.to_latex(conf),
                     sup.to_latex(conf)
                 )
             })

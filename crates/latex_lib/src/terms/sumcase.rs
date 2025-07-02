@@ -9,9 +9,9 @@ where
         format!(
             "\\text{{case}} {} \\text{{of}} \\{{ \\text{{inl}}({}) \\Rightarrow {} \\mid \\text{{inr}}({}) \\Rightarrow {} \\}}",
             self.bound_term.to_latex(conf),
-            self.left_var,
+            self.left_var.to_latex(conf),
             self.left_term.to_latex(conf),
-            self.right_var,
+            self.right_var.to_latex(conf),
             self.right_term.to_latex(conf)
         )
     }

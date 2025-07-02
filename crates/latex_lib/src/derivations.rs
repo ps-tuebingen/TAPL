@@ -29,12 +29,10 @@ where
     Ty: Type + LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
-        let (env_start, env_end) = if conf.include_envs && conf.use_frac_array {
-            ("\\[", "\\]")
-        } else if conf.include_envs {
-            ("\\begin{prooftree}", "\\end{prooftree}")
-        } else {
-            ("", "")
+        let (mut env_start, mut env_end) = conf.mathenv_strs();
+        if conf.use_frac_array {
+            env_start = "\\begin{prooftree}".to_owned();
+            env_end = "\\end{prooftree}".to_owned();
         };
 
         conf.include_envs = false;

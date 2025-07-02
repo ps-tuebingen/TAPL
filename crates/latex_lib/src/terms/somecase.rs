@@ -10,7 +10,7 @@ where
             "\\text{{case}} {} \\text{{of}} \\{{ \\text{{Nothing}} \\Rightarrow {} \\mid \\text{{Something}}({}) \\Rightarrow {} \\}}",
             self.bound_term.to_latex(conf),
             self.none_term.to_latex(conf),
-            self.some_var,
+            self.some_var.to_latex(conf),
             self.some_term.to_latex(conf)
         )
     }

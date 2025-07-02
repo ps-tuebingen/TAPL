@@ -26,6 +26,14 @@ impl LatexConfig {
             use_frac_array: true,
         }
     }
+
+    pub fn mathenv_strs(&self) -> (String, String) {
+        if self.include_envs {
+            ("\\[".to_owned(), "\\]".to_owned())
+        } else {
+            ("".to_owned(), "".to_owned())
+        }
+    }
 }
 
 pub trait LatexFmt {
@@ -39,6 +47,13 @@ pub trait LatexFmt {
         out += &self.to_latex(conf);
         out += "\\end{document}\n";
         out
+    }
+}
+
+impl LatexFmt for String {
+    fn to_latex(&self, conf: &mut LatexConfig) -> String {
+        let (start, end) = conf.mathenv_strs();
+        format!("{}\\text{{{}}}{}", start, self.replace("_", "\\_"), end)
     }
 }
 

@@ -8,13 +8,17 @@ where
     Ty: Type + LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
-        let mut out = "".to_owned();
+        let (env_start, env_end) = conf.mathenv_strs();
+        conf.include_envs = false;
+
+        let mut out = env_start;
 
         out += &self.env.to_latex(conf);
         out += " \\vdash ";
         out += &self.term.to_latex(conf);
         out += " : ";
         out += &self.ty.to_latex(conf);
+        out += &env_end;
 
         out
     }

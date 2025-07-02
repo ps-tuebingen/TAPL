@@ -5,7 +5,7 @@ impl<Ty> LatexFmt for TypeVariable<Ty>
 where
     Ty: Type + LatexFmt,
 {
-    fn to_latex(&self, _: &mut LatexConfig) -> String {
-        format!("\\text{{{}}}", self.v.replace("_", "\\_"))
+    fn to_latex(&self, _conf: &mut LatexConfig) -> String {
+        format!("\\text{{{}}}", self.v.to_latex(_conf))
     }
 }

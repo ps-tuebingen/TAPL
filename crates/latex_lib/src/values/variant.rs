@@ -12,7 +12,7 @@ where
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!(
             "\\langle {} = {} \\rangle",
-            self.label,
+            self.label.to_latex(conf),
             self.val.to_latex(conf)
         )
     }

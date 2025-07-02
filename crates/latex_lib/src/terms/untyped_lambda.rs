@@ -6,6 +6,10 @@ where
     T: Term + LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
-        format!("\\lambda {}.{}", self.var, self.body.to_latex(conf))
+        format!(
+            "\\lambda {}.{}",
+            self.var.to_latex(conf),
+            self.body.to_latex(conf)
+        )
     }
 }

@@ -8,7 +8,7 @@ where
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!(
             "\\text{{ let }} ({} = {}) \\text{{ in }} {}",
-            self.var,
+            self.var.to_latex(conf),
             self.bound_term.to_latex(conf),
             self.in_term.to_latex(conf)
         )
