@@ -20,6 +20,7 @@ pub enum SpecialChar {
     Times,
     Empty,
     Arrow,
+    DoubleArrow,
     Space,
     ColonEq,
     BrackO,
@@ -30,6 +31,7 @@ pub enum SpecialChar {
     SqBrackC,
     AngBrackO,
     AngBrackC,
+    Star,
 }
 
 impl From<SpecialChar> for Symbol {

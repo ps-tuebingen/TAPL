@@ -23,6 +23,7 @@ impl LanguageDescribe for UntypedLambda {
             term_grammar: Term::grammar(),
             type_grammar: Untyped::grammar(),
             value_grammar: Value::grammar(),
+            include_kinds: false,
         }
     }
 }

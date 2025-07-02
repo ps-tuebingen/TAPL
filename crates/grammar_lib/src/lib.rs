@@ -2,6 +2,7 @@ mod grammar;
 mod rule;
 mod symbols;
 
+mod kinds;
 mod terms;
 mod types;
 mod untyped;

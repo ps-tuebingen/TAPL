@@ -1,6 +1,6 @@
 use check::{Typecheck, errors::CheckError};
 use derivation::TypingDerivation;
-use grammar::{Grammar, GrammarDescribe, Rule, RuleDescribe};
+use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
 use syntax::{

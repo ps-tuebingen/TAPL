@@ -25,6 +25,7 @@ impl LanguageDescribe for Stlc {
             term_grammar: Term::grammar(),
             type_grammar: Type::grammar(),
             value_grammar: Value::grammar(),
+            include_kinds: false,
         }
     }
 }

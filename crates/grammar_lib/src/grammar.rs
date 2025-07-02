@@ -1,9 +1,9 @@
 use crate::{rule::Rule, symbols::Symbol};
 
 pub struct Grammar {
-    symbol: Symbol,
-    description: String,
-    alternatives: Vec<Rule>,
+    pub symbol: Symbol,
+    pub description: String,
+    pub alternatives: Vec<Rule>,
 }
 
 impl Grammar {
@@ -36,4 +36,5 @@ pub struct LanguageGrammar {
     pub term_grammar: Grammar,
     pub type_grammar: Grammar,
     pub value_grammar: Grammar,
+    pub include_kinds: bool,
 }
