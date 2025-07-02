@@ -10,6 +10,9 @@ where
     Ty: Type,
 {
     fn rule() -> Rule {
-        Rule::new(Symbol::lam(Symbol::Type, Symbol::Term), "Lambda Sub")
+        Rule::new(
+            Symbol::lam(Symbol::subty_annot(Symbol::Variable), Symbol::Term),
+            "Lambda Sub",
+        )
     }
 }

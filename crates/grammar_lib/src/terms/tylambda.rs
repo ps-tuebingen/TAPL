@@ -6,6 +6,9 @@ where
     T: Term,
 {
     fn rule() -> Rule {
-        Rule::new(Symbol::lam(Symbol::Kind, Symbol::Term), "Type Abstraction")
+        Rule::new(
+            Symbol::lam(Symbol::kind_annot(Symbol::Variable), Symbol::Term),
+            "Type Abstraction",
+        )
     }
 }

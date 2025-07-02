@@ -10,6 +10,9 @@ where
     Ty: Type,
 {
     fn rule() -> Rule {
-        Rule::new(Symbol::call_annot("isnil", 1, Symbol::Term), "Is Nil")
+        Rule::new(
+            Symbol::ctor("isnil", Some(Symbol::Type), vec![Symbol::Term]),
+            "Is Nil",
+        )
     }
 }

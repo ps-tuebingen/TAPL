@@ -6,6 +6,6 @@ where
     T: Term,
 {
     fn rule() -> Rule {
-        Rule::new(Symbol::dot("snd"), "Second Projection")
+        Rule::new(Symbol::dot(Symbol::term("snd")), "Second Projection")
     }
 }

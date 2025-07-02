@@ -6,6 +6,6 @@ where
     T: Term,
 {
     fn rule() -> Rule {
-        Rule::new(Symbol::call("fix", 1, Symbol::Term), "Fixed Point")
+        Rule::new(Symbol::ctor("fix", None, vec![Symbol::Term]), "Fixed Point")
     }
 }

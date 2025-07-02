@@ -6,6 +6,9 @@ where
     Ty: Type,
 {
     fn rule() -> Rule {
-        Rule::new(Symbol::call("Reference", 1, Symbol::Type), "Reference Type")
+        Rule::new(
+            Symbol::ctor("Reference", Some(Symbol::Type), vec![]),
+            "Reference Type",
+        )
     }
 }

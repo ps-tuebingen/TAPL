@@ -6,6 +6,6 @@ where
     T: Term,
 {
     fn rule() -> Rule {
-        Rule::new(Symbol::call("!", 1, Symbol::Term), "Dereference")
+        Rule::new(Symbol::dereft(), "Dereference")
     }
 }

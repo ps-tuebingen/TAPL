@@ -6,6 +6,9 @@ where
     V: Value,
 {
     fn rule() -> Rule {
-        Rule::new(Symbol::call("something", 1, Symbol::Value), "Something")
+        Rule::new(
+            Symbol::ctor("something", None, vec![Symbol::Value]),
+            "Something",
+        )
     }
 }

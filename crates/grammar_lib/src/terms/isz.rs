@@ -6,6 +6,6 @@ where
     T: Term,
 {
     fn rule() -> Rule {
-        Rule::new(Symbol::call_annot("iszero", 1, Symbol::Term), "IsZero")
+        Rule::new(Symbol::ctor("iszero", None, vec![Symbol::Term]), "IsZero")
     }
 }

@@ -10,6 +10,6 @@ where
     Ty: Type,
 {
     fn rule() -> Rule {
-        Rule::new(Symbol::call_annot("ascribe", 0, Symbol::Term), "Ascription")
+        Rule::new(Symbol::ty_annot(Symbol::Term), "Ascription")
     }
 }

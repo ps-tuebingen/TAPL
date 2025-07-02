@@ -10,6 +10,9 @@ where
     Ty: Type,
 {
     fn rule() -> Rule {
-        Rule::new(Symbol::call_annot("error", 0, Symbol::Term), "Exception")
+        Rule::new(
+            Symbol::ctor("error", Some(Symbol::Type), vec![Symbol::Term]),
+            "Exception",
+        )
     }
 }

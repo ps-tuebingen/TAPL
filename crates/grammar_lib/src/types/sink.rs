@@ -6,6 +6,9 @@ where
     Ty: Type,
 {
     fn rule() -> Rule {
-        Rule::new(Symbol::call_annot("Sink", 0, Symbol::Type), "Sink Type")
+        Rule::new(
+            Symbol::ctor("Sink", Some(Symbol::Type), vec![]),
+            "Sink Type",
+        )
     }
 }

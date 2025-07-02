@@ -6,6 +6,6 @@ where
     T: Term,
 {
     fn rule() -> Rule {
-        Rule::new(Symbol::Let, "Let Binding")
+        Rule::new(Symbol::lett(), "Let Binding")
     }
 }

@@ -10,6 +10,9 @@ where
     Ty: Type,
 {
     fn rule() -> Rule {
-        Rule::new(Symbol::call_annot("inl", 1, Symbol::Term), "Left Injection")
+        Rule::new(
+            Symbol::ctor("inl", Some(Symbol::Type), vec![Symbol::Term]),
+            "Left Injection",
+        )
     }
 }

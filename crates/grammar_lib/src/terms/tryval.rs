@@ -6,6 +6,6 @@ where
     T: Term,
 {
     fn rule() -> Rule {
-        Rule::new(Symbol::TryCatch, "Try-Catch")
+        Rule::new(Symbol::try_catch(), "Try-Catch")
     }
 }

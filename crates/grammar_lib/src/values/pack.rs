@@ -10,6 +10,6 @@ where
     Ty: Type,
 {
     fn rule() -> Rule {
-        Rule::new(Symbol::Pack, "Package")
+        Rule::new(Symbol::pack(Symbol::Value), "Package")
     }
 }

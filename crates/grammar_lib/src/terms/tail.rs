@@ -10,6 +10,9 @@ where
     Ty: Type,
 {
     fn rule() -> Rule {
-        Rule::new(Symbol::call_annot("tail", 1, Symbol::Term), "List Tail")
+        Rule::new(
+            Symbol::ctor("tail", Some(Symbol::Type), vec![Symbol::Term]),
+            "List Tail",
+        )
     }
 }

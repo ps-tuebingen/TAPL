@@ -6,6 +6,6 @@ where
     T: Term,
 {
     fn rule() -> Rule {
-        Rule::new(Symbol::call("succ", 1, Symbol::Term), "Succ")
+        Rule::new(Symbol::ctor("succ", None, vec![Symbol::Term]), "Succ")
     }
 }

@@ -2,11 +2,6 @@
 pub enum Symbol {
     Empty,
     Many(Box<Symbol>),
-    Separated {
-        fst: Box<Symbol>,
-        separator: String,
-        snd: Box<Symbol>,
-    },
 
     Terminal(String),
     Keyword(String),
@@ -16,50 +11,32 @@ pub enum Symbol {
     Value,
 
     Variable,
+    Typevariable,
     Label,
     Location,
+    Number,
 
-    Assignment {
-        lhs: Box<Symbol>,
-        rhs: Box<Symbol>,
+    Prefixed {
+        prefix: String,
+        inner: Box<Symbol>,
     },
     Delim {
         delim_open: char,
         inner: Box<Symbol>,
         delim_close: char,
     },
-    Lambda {
-        annot: Box<Symbol>,
-        body: Box<Symbol>,
-    },
-    Call {
-        name: String,
-        annot: Box<Symbol>,
-        args: Vec<Symbol>,
-    },
-    Dot {
-        body: Box<Symbol>,
-        operator: String,
+    Separated {
+        fst: Box<Symbol>,
+        separator: String,
+        snd: Box<Symbol>,
     },
     Case {
         bound: Box<Symbol>,
         patterns: Vec<Symbol>,
     },
     Pattern {
-        lhs: String,
-        num_vars: usize,
-    },
-    If,
-    Let,
-    Try,
-    TryCatch,
-    Pack,
-    Unpack,
-    Exists {
-        bounded: bool,
-    },
-    Forall {
-        bounded: bool,
+        lhs: Box<Symbol>,
+        rhs: Box<Symbol>,
     },
 }
 
@@ -68,33 +45,210 @@ impl Symbol {
         Symbol::Terminal(t.to_owned())
     }
 
-    pub fn call_annot(nm: &str, num_args: usize, arg_sym: Symbol) -> Symbol {
-        Symbol::Call {
-            name: nm.to_owned(),
-            annot: Box::new(Symbol::Type),
-            args: (0..num_args).map(|_| arg_sym.clone()).collect(),
+    pub fn lam_untyped(inner: Symbol) -> Symbol {
+        Symbol::Prefixed {
+            prefix: "\\".to_owned(),
+            inner: Box::new(Symbol::Separated {
+                fst: Box::new(Symbol::Variable),
+                separator: ".".to_owned(),
+                snd: Box::new(inner),
+            }),
         }
     }
 
-    pub fn call(nm: &str, num_args: usize, arg_sym: Symbol) -> Symbol {
-        Symbol::Call {
-            name: nm.to_owned(),
-            annot: Box::new(Symbol::Empty),
-            args: (0..num_args).map(|_| arg_sym.clone()).collect(),
+    pub fn ty_annot(sym: Symbol) -> Symbol {
+        Symbol::Separated {
+            fst: Box::new(sym),
+            separator: ":".to_owned(),
+            snd: Box::new(Symbol::Type),
+        }
+    }
+
+    pub fn kind_annot(sym: Symbol) -> Symbol {
+        Symbol::Separated {
+            fst: Box::new(sym),
+            separator: "::".to_owned(),
+            snd: Box::new(Symbol::Kind),
+        }
+    }
+
+    pub fn subty_annot(sym: Symbol) -> Symbol {
+        Symbol::Separated {
+            fst: Box::new(sym),
+            separator: "<:".to_owned(),
+            snd: Box::new(Symbol::Type),
         }
     }
 
     pub fn lam(annot: Symbol, body: Symbol) -> Symbol {
-        Symbol::Lambda {
-            annot: Box::new(annot),
-            body: Box::new(body),
+        Symbol::Prefixed {
+            prefix: "\\".to_owned(),
+            inner: Box::new(Symbol::Separated {
+                fst: Box::new(annot),
+                separator: ".".to_owned(),
+                snd: Box::new(body),
+            }),
         }
     }
 
-    pub fn dot(op: &str) -> Symbol {
-        Symbol::Dot {
-            body: Box::new(Symbol::Term),
-            operator: op.to_owned(),
+    pub fn mu() -> Symbol {
+        Symbol::Prefixed {
+            prefix: "mu".to_owned(),
+            inner: Box::new(Symbol::Separated {
+                fst: Box::new(Symbol::Variable),
+                separator: ".".to_owned(),
+                snd: Box::new(Symbol::Type),
+            }),
+        }
+    }
+
+    pub fn pack(inner: Symbol) -> Symbol {
+        Symbol::Separated {
+            fst: Box::new(Symbol::Delim {
+                delim_open: '{',
+                inner: Box::new(Symbol::Separated {
+                    fst: Box::new(inner),
+                    separator: ",".to_owned(),
+                    snd: Box::new(Symbol::Type),
+                }),
+                delim_close: '}',
+            }),
+            separator: "as".to_owned(),
+            snd: Box::new(Symbol::Type),
+        }
+    }
+
+    pub fn unpack() -> Symbol {
+        Symbol::Separated {
+            fst: Box::new(Symbol::Prefixed {
+                prefix: "let".to_owned(),
+                inner: Box::new(Symbol::Separated {
+                    fst: Box::new(Symbol::Delim {
+                        delim_open: '{',
+                        inner: Box::new(Symbol::Separated {
+                            fst: Box::new(Symbol::Typevariable),
+                            separator: ",".to_owned(),
+                            snd: Box::new(Symbol::Variable),
+                        }),
+                        delim_close: '}',
+                    }),
+                    separator: "=".to_owned(),
+                    snd: Box::new(Symbol::Term),
+                }),
+            }),
+            separator: "in".to_owned(),
+            snd: Box::new(Symbol::Term),
+        }
+    }
+
+    pub fn lett() -> Symbol {
+        Symbol::Separated {
+            fst: Box::new(Symbol::Prefixed {
+                prefix: "let".to_owned(),
+                inner: Box::new(Symbol::Delim {
+                    delim_open: '(',
+                    inner: Box::new(Symbol::Separated {
+                        fst: Box::new(Symbol::Variable),
+                        separator: "=".to_owned(),
+                        snd: Box::new(Symbol::Term),
+                    }),
+                    delim_close: ')',
+                }),
+            }),
+            separator: "in".to_owned(),
+            snd: Box::new(Symbol::Term),
+        }
+    }
+
+    pub fn ift() -> Symbol {
+        Symbol::Separated {
+            fst: Box::new(Symbol::Prefixed {
+                prefix: "if".to_owned(),
+                inner: Box::new(Symbol::Delim {
+                    delim_open: '{',
+                    inner: Box::new(Symbol::Term),
+                    delim_close: '}',
+                }),
+            }),
+            separator: "else".to_owned(),
+            snd: Box::new(Symbol::Delim {
+                delim_open: '{',
+                inner: Box::new(Symbol::Term),
+                delim_close: '}',
+            }),
+        }
+    }
+
+    pub fn dereft() -> Symbol {
+        Symbol::Prefixed {
+            prefix: "!".to_owned(),
+            inner: Box::new(Symbol::Term),
+        }
+    }
+
+    pub fn tryt() -> Symbol {
+        Symbol::Prefixed {
+            prefix: "try".to_owned(),
+            inner: Box::new(Symbol::Delim {
+                delim_open: '{',
+                inner: Box::new(Symbol::Term),
+                delim_close: '}',
+            }),
+        }
+    }
+
+    pub fn try_catch() -> Symbol {
+        Symbol::Separated {
+            fst: Box::new(Symbol::tryt()),
+            separator: "catch".to_owned(),
+            snd: Box::new(Symbol::Delim {
+                delim_open: '{',
+                inner: Box::new(Symbol::Term),
+                delim_close: '}',
+            }),
+        }
+    }
+
+    pub fn dot(op: Symbol) -> Symbol {
+        Symbol::Separated {
+            fst: Box::new(Symbol::Term),
+            separator: ".".to_owned(),
+            snd: Box::new(op),
+        }
+    }
+
+    pub fn ctor(ctor: &str, ty_arg: Option<Symbol>, args: Vec<Symbol>) -> Symbol {
+        let mut inner = Symbol::Empty;
+
+        for arg in args {
+            inner = Symbol::Separated {
+                fst: Box::new(inner),
+                separator: ",".to_owned(),
+                snd: Box::new(arg),
+            };
+        }
+
+        let mut prefix_inner = Box::new(Symbol::Delim {
+            delim_open: '(',
+            inner: Box::new(inner),
+            delim_close: ')',
+        });
+
+        if let Some(ty) = ty_arg {
+            prefix_inner = Box::new(Symbol::Separated {
+                fst: Box::new(Symbol::Delim {
+                    delim_open: '[',
+                    inner: Box::new(ty),
+                    delim_close: ']',
+                }),
+                separator: "".to_owned(),
+                snd: prefix_inner,
+            })
+        }
+
+        Symbol::Prefixed {
+            prefix: ctor.to_owned(),
+            inner: prefix_inner,
         }
     }
 
@@ -105,19 +259,28 @@ impl Symbol {
         }
     }
 
-    pub fn pt(ctor: &str, num_vars: usize) -> Symbol {
+    pub fn ctor_pt(ctor: &str, num_args: usize) -> Symbol {
+        Symbol::ctor(
+            ctor,
+            None,
+            (0..num_args).map(|_| Symbol::Variable).collect(),
+        )
+    }
+
+    pub fn pt(ctor: Symbol, rhs: Symbol) -> Symbol {
         Symbol::Pattern {
-            lhs: ctor.to_owned(),
-            num_vars,
+            lhs: Box::new(ctor),
+            rhs: Box::new(rhs),
         }
     }
 
     pub fn variant(inner: Symbol) -> Symbol {
         Symbol::Delim {
             delim_open: '<',
-            inner: Box::new(Symbol::Many(Box::new(Symbol::Assignment {
-                lhs: Box::new(Symbol::Label),
-                rhs: Box::new(inner),
+            inner: Box::new(Symbol::Many(Box::new(Symbol::Separated {
+                fst: Box::new(Symbol::Label),
+                separator: ",".to_owned(),
+                snd: Box::new(inner),
             }))),
             delim_close: '>',
         }
@@ -146,9 +309,10 @@ impl Symbol {
     pub fn record(inner: Symbol) -> Symbol {
         Symbol::Delim {
             delim_open: '{',
-            inner: Box::new(Symbol::Many(Box::new(Symbol::Assignment {
-                lhs: Box::new(Symbol::Label),
-                rhs: Box::new(inner),
+            inner: Box::new(Symbol::Many(Box::new(Symbol::Separated {
+                fst: Box::new(Symbol::Label),
+                separator: ",".to_owned(),
+                snd: Box::new(inner),
             }))),
             delim_close: '}',
         }
@@ -187,9 +351,10 @@ impl Symbol {
     }
 
     pub fn assign() -> Symbol {
-        Symbol::Assignment {
-            lhs: Box::new(Symbol::Term),
-            rhs: Box::new(Symbol::Term),
+        Symbol::Separated {
+            fst: Box::new(Symbol::Term),
+            separator: ":=".to_owned(),
+            snd: Box::new(Symbol::Term),
         }
     }
 
@@ -198,6 +363,28 @@ impl Symbol {
             fst: Box::new(Symbol::Term),
             separator: "as".to_owned(),
             snd: Box::new(Symbol::Type),
+        }
+    }
+
+    pub fn forall_ty(annot: Symbol) -> Symbol {
+        Symbol::Prefixed {
+            prefix: "forall".to_owned(),
+            inner: Box::new(Symbol::Separated {
+                fst: Box::new(annot),
+                separator: ".".to_owned(),
+                snd: Box::new(Symbol::Type),
+            }),
+        }
+    }
+
+    pub fn exists_ty(annot: Symbol) -> Symbol {
+        Symbol::Prefixed {
+            prefix: "exists".to_owned(),
+            inner: Box::new(Symbol::Separated {
+                fst: Box::new(annot),
+                separator: ".".to_owned(),
+                snd: Box::new(Symbol::Type),
+            }),
         }
     }
 }

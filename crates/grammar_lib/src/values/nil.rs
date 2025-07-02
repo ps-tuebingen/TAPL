@@ -7,6 +7,9 @@ where
     Ty: Type,
 {
     fn rule() -> Rule {
-        Rule::new(Symbol::call_annot("nil", 0, Symbol::Value), "Empty List")
+        Rule::new(
+            Symbol::ctor("nil", Some(Symbol::Type), vec![Symbol::Value]),
+            "Empty List",
+        )
     }
 }

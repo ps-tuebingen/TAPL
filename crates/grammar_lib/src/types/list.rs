@@ -6,6 +6,9 @@ where
     Ty: Type,
 {
     fn rule() -> Rule {
-        Rule::new(Symbol::call("List", 1, Symbol::Type), "List Type")
+        Rule::new(
+            Symbol::ctor("List", Some(Symbol::Type), vec![]),
+            "List Type",
+        )
     }
 }

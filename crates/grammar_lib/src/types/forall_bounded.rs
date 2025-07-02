@@ -6,6 +6,9 @@ where
     Ty: Type,
 {
     fn rule() -> Rule {
-        Rule::new(Symbol::Forall { bounded: true }, "Universal Type")
+        Rule::new(
+            Symbol::forall_ty(Symbol::subty_annot(Symbol::Typevariable)),
+            "Universal Type",
+        )
     }
 }

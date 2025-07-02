@@ -6,6 +6,9 @@ where
     Ty: Type,
 {
     fn rule() -> Rule {
-        Rule::new(Symbol::Exists { bounded: true }, "Existential Type")
+        Rule::new(
+            Symbol::exists_ty(Symbol::subty_annot(Symbol::Type)),
+            "Existential Type",
+        )
     }
 }

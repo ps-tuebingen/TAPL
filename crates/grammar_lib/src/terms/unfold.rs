@@ -10,6 +10,9 @@ where
     Ty: Type,
 {
     fn rule() -> Rule {
-        Rule::new(Symbol::call_annot("unfold", 1, Symbol::Term), "Unfold")
+        Rule::new(
+            Symbol::ctor("unfold", Some(Symbol::Type), vec![Symbol::Term]),
+            "Unfold",
+        )
     }
 }

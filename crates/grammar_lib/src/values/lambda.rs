@@ -8,7 +8,7 @@ where
 {
     fn rule() -> Rule {
         Rule::new(
-            Symbol::lam(Symbol::Type, Symbol::Term),
+            Symbol::lam(Symbol::ty_annot(Symbol::Variable), Symbol::Term),
             "Lambda Abstraction",
         )
     }

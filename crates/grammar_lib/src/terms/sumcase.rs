@@ -7,7 +7,10 @@ where
 {
     fn rule() -> Rule {
         Rule::new(
-            Symbol::case(vec![Symbol::pt("inl", 1), Symbol::pt("inr", 1)]),
+            Symbol::case(vec![
+                Symbol::pt(Symbol::ctor_pt("inl", 1), Symbol::Term),
+                Symbol::pt(Symbol::ctor_pt("inr", 1), Symbol::Term),
+            ]),
             "Sum Case",
         )
     }

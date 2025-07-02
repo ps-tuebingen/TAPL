@@ -10,6 +10,9 @@ where
     Ty: Type,
 {
     fn rule() -> Rule {
-        Rule::new(Symbol::call_annot("Cons", 2, Symbol::Term), "Cons")
+        Rule::new(
+            Symbol::ctor("Cons", Some(Symbol::Type), vec![Symbol::Term, Symbol::Term]),
+            "Cons",
+        )
     }
 }

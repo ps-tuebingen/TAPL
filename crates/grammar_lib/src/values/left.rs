@@ -11,7 +11,7 @@ where
 {
     fn rule() -> Rule {
         Rule::new(
-            Symbol::call_annot("inl", 1, Symbol::Value),
+            Symbol::ctor("inl", Some(Symbol::Type), vec![Symbol::Value]),
             "Left Injection",
         )
     }
