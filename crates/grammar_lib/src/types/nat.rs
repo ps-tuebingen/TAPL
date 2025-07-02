@@ -1,4 +1,4 @@
-use crate::{Rule, RuleDescribe, Symbol};
+use crate::{Rule, RuleDescribe, symbols::Keyword};
 use syntax::types::{Nat, Type};
 
 impl<Ty> RuleDescribe for Nat<Ty>
@@ -6,6 +6,6 @@ where
     Ty: Type,
 {
     fn rule() -> Rule {
-        Rule::new(Symbol::term("Nat"), "Natural Numbers")
+        Rule::new(Keyword::Nat.into(), "Natural Numbers")
     }
 }

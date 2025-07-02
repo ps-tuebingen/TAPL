@@ -1,8 +1,8 @@
-use crate::{Rule, RuleDescribe, Symbol};
+use crate::{Rule, RuleDescribe, symbols::SpecialChar};
 use syntax::types::Bot;
 
 impl RuleDescribe for Bot {
     fn rule() -> Rule {
-        Rule::new(Symbol::term("Bot"), "Bottom Type")
+        Rule::new(SpecialChar::Bot.into(), "Bottom Type")
     }
 }

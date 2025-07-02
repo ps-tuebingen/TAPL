@@ -2,14 +2,13 @@ mod keywords;
 mod special_char;
 
 pub use keywords::Keyword;
-use special_char::SpecialChar;
+pub use special_char::SpecialChar;
 
 #[derive(Clone)]
 pub enum Symbol {
     Empty,
     Many(Box<Symbol>),
 
-    Terminal(String),
     Keyword(Keyword),
     SpecialChar(SpecialChar),
     Term,
@@ -21,20 +20,19 @@ pub enum Symbol {
     Typevariable,
     Label,
     Location,
-    Number,
 
     Prefixed {
         prefix: Box<Symbol>,
         inner: Box<Symbol>,
     },
     Delim {
-        delim_open: char,
+        delim_open: SpecialChar,
         inner: Box<Symbol>,
-        delim_close: char,
+        delim_close: SpecialChar,
     },
     Separated {
         fst: Box<Symbol>,
-        separator: String,
+        separator: Box<Symbol>,
         snd: Box<Symbol>,
     },
     Case {
@@ -48,16 +46,12 @@ pub enum Symbol {
 }
 
 impl Symbol {
-    pub fn term(t: &str) -> Symbol {
-        Symbol::Terminal(t.to_owned())
-    }
-
     pub fn lam_untyped(inner: Symbol) -> Symbol {
         Symbol::Prefixed {
             prefix: Box::new(SpecialChar::Lambda.into()),
             inner: Box::new(Symbol::Separated {
                 fst: Box::new(Symbol::Variable),
-                separator: ".".to_owned(),
+                separator: Box::new(SpecialChar::Dot.into()),
                 snd: Box::new(inner),
             }),
         }
@@ -66,7 +60,7 @@ impl Symbol {
     pub fn ty_annot(sym: Symbol) -> Symbol {
         Symbol::Separated {
             fst: Box::new(sym),
-            separator: ":".to_owned(),
+            separator: Box::new(SpecialChar::Colon.into()),
             snd: Box::new(Symbol::Type),
         }
     }
@@ -74,7 +68,7 @@ impl Symbol {
     pub fn kind_annot(sym: Symbol) -> Symbol {
         Symbol::Separated {
             fst: Box::new(sym),
-            separator: "::".to_owned(),
+            separator: Box::new(SpecialChar::DoubleColon.into()),
             snd: Box::new(Symbol::Kind),
         }
     }
@@ -82,7 +76,7 @@ impl Symbol {
     pub fn subty_annot(sym: Symbol) -> Symbol {
         Symbol::Separated {
             fst: Box::new(sym),
-            separator: "<:".to_owned(),
+            separator: Box::new(SpecialChar::LessColon.into()),
             snd: Box::new(Symbol::Type),
         }
     }
@@ -92,7 +86,7 @@ impl Symbol {
             prefix: Box::new(SpecialChar::Lambda.into()),
             inner: Box::new(Symbol::Separated {
                 fst: Box::new(annot),
-                separator: ".".to_owned(),
+                separator: Box::new(SpecialChar::Dot.into()),
                 snd: Box::new(body),
             }),
         }
@@ -103,7 +97,7 @@ impl Symbol {
             prefix: Box::new(SpecialChar::Mu.into()),
             inner: Box::new(Symbol::Separated {
                 fst: Box::new(Symbol::Variable),
-                separator: ".".to_owned(),
+                separator: Box::new(SpecialChar::Dot.into()),
                 snd: Box::new(Symbol::Type),
             }),
         }
@@ -112,15 +106,15 @@ impl Symbol {
     pub fn pack(inner: Symbol) -> Symbol {
         Symbol::Separated {
             fst: Box::new(Symbol::Delim {
-                delim_open: '{',
+                delim_open: SpecialChar::BrackO,
                 inner: Box::new(Symbol::Separated {
                     fst: Box::new(inner),
-                    separator: ",".to_owned(),
+                    separator: Box::new(SpecialChar::Comma.into()),
                     snd: Box::new(Symbol::Type),
                 }),
-                delim_close: '}',
+                delim_close: SpecialChar::BrackC,
             }),
-            separator: "as".to_owned(),
+            separator: Box::new(Keyword::As.into()),
             snd: Box::new(Symbol::Type),
         }
     }
@@ -131,19 +125,19 @@ impl Symbol {
                 prefix: Box::new(Keyword::Let.into()),
                 inner: Box::new(Symbol::Separated {
                     fst: Box::new(Symbol::Delim {
-                        delim_open: '{',
+                        delim_open: SpecialChar::BrackO,
                         inner: Box::new(Symbol::Separated {
                             fst: Box::new(Symbol::Typevariable),
-                            separator: ",".to_owned(),
+                            separator: Box::new(SpecialChar::Comma.into()),
                             snd: Box::new(Symbol::Variable),
                         }),
-                        delim_close: '}',
+                        delim_close: SpecialChar::BrackC,
                     }),
-                    separator: "=".to_owned(),
+                    separator: Box::new(SpecialChar::Equals.into()),
                     snd: Box::new(Symbol::Term),
                 }),
             }),
-            separator: "in".to_owned(),
+            separator: Box::new(Keyword::In.into()),
             snd: Box::new(Symbol::Term),
         }
     }
@@ -153,16 +147,16 @@ impl Symbol {
             fst: Box::new(Symbol::Prefixed {
                 prefix: Box::new(Keyword::Let.into()),
                 inner: Box::new(Symbol::Delim {
-                    delim_open: '(',
+                    delim_open: SpecialChar::ParenO,
                     inner: Box::new(Symbol::Separated {
                         fst: Box::new(Symbol::Variable),
-                        separator: "=".to_owned(),
+                        separator: Box::new(SpecialChar::Equals.into()),
                         snd: Box::new(Symbol::Term),
                     }),
-                    delim_close: ')',
+                    delim_close: SpecialChar::ParenC,
                 }),
             }),
-            separator: "in".to_owned(),
+            separator: Box::new(Keyword::In.into()),
             snd: Box::new(Symbol::Term),
         }
     }
@@ -172,16 +166,16 @@ impl Symbol {
             fst: Box::new(Symbol::Prefixed {
                 prefix: Box::new(Keyword::If.into()),
                 inner: Box::new(Symbol::Delim {
-                    delim_open: '{',
+                    delim_open: SpecialChar::BrackO,
                     inner: Box::new(Symbol::Term),
-                    delim_close: '}',
+                    delim_close: SpecialChar::BrackC,
                 }),
             }),
-            separator: "else".to_owned(),
+            separator: Box::new(Keyword::Else.into()),
             snd: Box::new(Symbol::Delim {
-                delim_open: '{',
+                delim_open: SpecialChar::BrackO,
                 inner: Box::new(Symbol::Term),
-                delim_close: '}',
+                delim_close: SpecialChar::BrackC,
             }),
         }
     }
@@ -197,9 +191,9 @@ impl Symbol {
         Symbol::Prefixed {
             prefix: Box::new(Keyword::Try.into()),
             inner: Box::new(Symbol::Delim {
-                delim_open: '{',
+                delim_open: SpecialChar::BrackO,
                 inner: Box::new(Symbol::Term),
-                delim_close: '}',
+                delim_close: SpecialChar::BrackC,
             }),
         }
     }
@@ -207,11 +201,11 @@ impl Symbol {
     pub fn try_catch() -> Symbol {
         Symbol::Separated {
             fst: Box::new(Symbol::tryt()),
-            separator: "catch".to_owned(),
+            separator: Box::new(Keyword::Catch.into()),
             snd: Box::new(Symbol::Delim {
-                delim_open: '{',
+                delim_open: SpecialChar::BrackO,
                 inner: Box::new(Symbol::Term),
-                delim_close: '}',
+                delim_close: SpecialChar::BrackC,
             }),
         }
     }
@@ -219,7 +213,7 @@ impl Symbol {
     pub fn dot(op: Symbol) -> Symbol {
         Symbol::Separated {
             fst: Box::new(Symbol::Term),
-            separator: ".".to_owned(),
+            separator: Box::new(SpecialChar::Dot.into()),
             snd: Box::new(op),
         }
     }
@@ -230,25 +224,25 @@ impl Symbol {
         for arg in args {
             inner = Symbol::Separated {
                 fst: Box::new(inner),
-                separator: ",".to_owned(),
+                separator: Box::new(SpecialChar::Comma.into()),
                 snd: Box::new(arg),
             };
         }
 
         let mut prefix_inner = Box::new(Symbol::Delim {
-            delim_open: '(',
+            delim_open: SpecialChar::ParenO,
             inner: Box::new(inner),
-            delim_close: ')',
+            delim_close: SpecialChar::ParenC,
         });
 
         if let Some(ty) = ty_arg {
             prefix_inner = Box::new(Symbol::Separated {
                 fst: Box::new(Symbol::Delim {
-                    delim_open: '[',
+                    delim_open: SpecialChar::SqBrackO,
                     inner: Box::new(ty),
-                    delim_close: ']',
+                    delim_close: SpecialChar::SqBrackC,
                 }),
-                separator: "".to_owned(),
+                separator: Box::new(SpecialChar::Empty.into()),
                 snd: prefix_inner,
             })
         }
@@ -283,52 +277,52 @@ impl Symbol {
 
     pub fn variant(inner: Symbol) -> Symbol {
         Symbol::Delim {
-            delim_open: '<',
+            delim_open: SpecialChar::AngBrackO,
             inner: Box::new(Symbol::Many(Box::new(Symbol::Separated {
                 fst: Box::new(Symbol::Label),
-                separator: ",".to_owned(),
+                separator: Box::new(SpecialChar::Comma.into()),
                 snd: Box::new(inner),
             }))),
-            delim_close: '>',
+            delim_close: SpecialChar::AngBrackC,
         }
     }
 
     pub fn tuple(inner: Symbol) -> Symbol {
         Symbol::Delim {
-            delim_open: '(',
+            delim_open: SpecialChar::ParenO,
             inner: Box::new(Symbol::Many(Box::new(inner))),
-            delim_close: ')',
+            delim_close: SpecialChar::ParenC,
         }
     }
 
     pub fn pair(inner: Symbol) -> Symbol {
         Symbol::Delim {
-            delim_open: '{',
+            delim_open: SpecialChar::BrackO,
             inner: Box::new(Symbol::Separated {
                 fst: Box::new(inner.clone()),
-                separator: ",".to_owned(),
+                separator: Box::new(SpecialChar::Comma.into()),
                 snd: Box::new(inner),
             }),
-            delim_close: '}',
+            delim_close: SpecialChar::BrackC,
         }
     }
 
     pub fn record(inner: Symbol) -> Symbol {
         Symbol::Delim {
-            delim_open: '{',
+            delim_open: SpecialChar::BrackO,
             inner: Box::new(Symbol::Many(Box::new(Symbol::Separated {
                 fst: Box::new(Symbol::Label),
-                separator: ",".to_owned(),
+                separator: Box::new(SpecialChar::Comma.into()),
                 snd: Box::new(inner),
             }))),
-            delim_close: '}',
+            delim_close: SpecialChar::BrackC,
         }
     }
 
     pub fn sum_ty() -> Symbol {
         Symbol::Separated {
             fst: Box::new(Symbol::Type),
-            separator: "+".to_owned(),
+            separator: Box::new(SpecialChar::Plus.into()),
             snd: Box::new(Symbol::Type),
         }
     }
@@ -336,7 +330,7 @@ impl Symbol {
     pub fn product_ty() -> Symbol {
         Symbol::Separated {
             fst: Box::new(Symbol::Type),
-            separator: "x".to_owned(),
+            separator: Box::new(SpecialChar::Times.into()),
             snd: Box::new(Symbol::Type),
         }
     }
@@ -344,7 +338,7 @@ impl Symbol {
     pub fn fun_ty() -> Symbol {
         Symbol::Separated {
             fst: Box::new(Symbol::Type),
-            separator: "->".to_owned(),
+            separator: Box::new(SpecialChar::Arrow.into()),
             snd: Box::new(Symbol::Type),
         }
     }
@@ -352,7 +346,7 @@ impl Symbol {
     pub fn app(fun: Symbol, arg: Symbol) -> Symbol {
         Symbol::Separated {
             fst: Box::new(fun),
-            separator: " ".to_owned(),
+            separator: Box::new(SpecialChar::Space.into()),
             snd: Box::new(arg),
         }
     }
@@ -360,7 +354,7 @@ impl Symbol {
     pub fn assign() -> Symbol {
         Symbol::Separated {
             fst: Box::new(Symbol::Term),
-            separator: ":=".to_owned(),
+            separator: Box::new(SpecialChar::ColonEq.into()),
             snd: Box::new(Symbol::Term),
         }
     }
@@ -368,7 +362,7 @@ impl Symbol {
     pub fn cast() -> Symbol {
         Symbol::Separated {
             fst: Box::new(Symbol::Term),
-            separator: "as".to_owned(),
+            separator: Box::new(Keyword::As.into()),
             snd: Box::new(Symbol::Type),
         }
     }
@@ -378,7 +372,7 @@ impl Symbol {
             prefix: Box::new(SpecialChar::Forall.into()),
             inner: Box::new(Symbol::Separated {
                 fst: Box::new(annot),
-                separator: ".".to_owned(),
+                separator: Box::new(SpecialChar::Dot.into()),
                 snd: Box::new(Symbol::Type),
             }),
         }
@@ -389,7 +383,7 @@ impl Symbol {
             prefix: Box::new(SpecialChar::Exists.into()),
             inner: Box::new(Symbol::Separated {
                 fst: Box::new(annot),
-                separator: ".".to_owned(),
+                separator: Box::new(SpecialChar::Dot.into()),
                 snd: Box::new(Symbol::Type),
             }),
         }

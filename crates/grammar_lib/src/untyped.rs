@@ -1,4 +1,4 @@
-use crate::{Grammar, GrammarDescribe, Rule, RuleDescribe, Symbol};
+use crate::{Grammar, GrammarDescribe, Rule, RuleDescribe, symbols::SpecialChar};
 use syntax::untyped::Untyped;
 
 impl GrammarDescribe for Untyped {
@@ -9,6 +9,6 @@ impl GrammarDescribe for Untyped {
 
 impl RuleDescribe for Untyped {
     fn rule() -> Rule {
-        Rule::new(Symbol::term(""), "Untyped")
+        Rule::new(SpecialChar::Empty.into(), "Untyped")
     }
 }

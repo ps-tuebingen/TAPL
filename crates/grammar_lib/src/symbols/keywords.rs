@@ -2,9 +2,14 @@ use super::Symbol;
 
 #[derive(Clone)]
 pub enum Keyword {
+    As,
+    In,
+
     Let,
     If,
+    Else,
     Try,
+    Catch,
     Nil,
     Cons,
     Head,
@@ -23,12 +28,20 @@ pub enum Keyword {
     Unfold,
     Ref,
     Fix,
+    Unit,
+    True,
+    False,
+    Fst,
+    Snd,
 
     Source,
     Sink,
     Reference,
     Optional,
     List,
+    UnitTy,
+    Nat,
+    Bool,
 }
 
 impl From<Keyword> for Symbol {
