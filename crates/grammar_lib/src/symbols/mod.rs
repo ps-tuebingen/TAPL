@@ -3,10 +3,10 @@ mod special_char;
 
 pub use keywords::Keyword;
 pub use special_char::SpecialChar;
+use std::fmt;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub enum Symbol {
-    Empty,
     Many(Box<Symbol>),
 
     Keyword(Keyword),
@@ -219,7 +219,7 @@ impl Symbol {
     }
 
     pub fn ctor(ctor: Keyword, ty_arg: Option<Symbol>, args: Vec<Symbol>) -> Symbol {
-        let mut inner = Symbol::Empty;
+        let mut inner = SpecialChar::Empty.into();
 
         for arg in args {
             inner = Symbol::Separated {
@@ -386,6 +386,45 @@ impl Symbol {
                 separator: Box::new(SpecialChar::Dot.into()),
                 snd: Box::new(Symbol::Type),
             }),
+        }
+    }
+}
+
+impl fmt::Display for Symbol {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Symbol::Many(sym) => write!(f, "{sym},..."),
+            Symbol::Keyword(kw) => kw.fmt(f),
+            Symbol::SpecialChar(sc) => sc.fmt(f),
+            Symbol::Term => f.write_str("t"),
+            Symbol::Type => f.write_str("T"),
+            Symbol::Kind => f.write_str("K"),
+            Symbol::Value => f.write_str("v"),
+            Symbol::Variable => f.write_str("x"),
+            Symbol::Typevariable => f.write_str("X"),
+            Symbol::Label => f.write_str("lb"),
+            Symbol::Location => f.write_str("loc"),
+            Symbol::Prefixed { prefix, inner } => write!(f, "{prefix} {inner}"),
+            Symbol::Delim {
+                delim_open,
+                inner,
+                delim_close,
+            } => write!(f, "{delim_open} {inner} {delim_close}"),
+            Symbol::Separated {
+                fst,
+                separator,
+                snd,
+            } => write!(f, "{fst} {separator} {snd}"),
+            Symbol::Case { bound, patterns } => write!(
+                f,
+                "case {bound} of {{ {} }}",
+                patterns
+                    .iter()
+                    .map(|pt| pt.to_string())
+                    .collect::<Vec<String>>()
+                    .join(" | ")
+            ),
+            Symbol::Pattern { lhs, rhs } => write!(f, "{lhs} => {rhs}"),
         }
     }
 }
