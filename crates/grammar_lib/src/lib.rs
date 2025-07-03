@@ -1,6 +1,6 @@
 mod grammar;
 mod rule;
-mod symbols;
+pub mod symbols;
 
 mod kinds;
 mod terms;

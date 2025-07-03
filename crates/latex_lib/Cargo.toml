@@ -7,3 +7,4 @@ edition = "2024"
 syntax={path="../syntax_lib"}
 derivation={path="../derivation_lib"}
 trace={path="../trace_lib"}
+grammar={path="../grammar_lib"}

@@ -3,8 +3,8 @@ use std::fmt;
 
 #[derive(Debug)]
 pub struct Rule {
-    symbol: Symbol,
-    description: String,
+    pub symbol: Symbol,
+    pub description: String,
 }
 
 impl Rule {
