@@ -8,15 +8,6 @@ where
     Ty: Type + LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
-        println!("formatting program with conf {conf:?}");
-        println!(
-            "definitions: {}",
-            self.def_derivations
-                .iter()
-                .map(|def| def.name.clone())
-                .collect::<Vec<String>>()
-                .join(",")
-        );
         let mut def_strs = vec![];
         let old_inc = conf.include_envs;
         for def in self.def_derivations.iter() {
@@ -24,7 +15,6 @@ where
             conf.include_envs = old_inc;
         }
 
-        println!("formatting program main");
         format!(
             " {}\\quad \\\\ \\quad \\\\{}",
             def_strs.join("\n\\quad \\\\ \\quad \\\\\n"),
@@ -83,13 +73,14 @@ where
     T: Term + LatexFmt,
     Ty: Type + LatexFmt,
 {
-    println!("formatting typing derivation buss {deriv:?}");
     let (env_start, env_end) = if conf.include_envs {
         ("\\begin{prooftree}", "\\end{prooftree}")
     } else {
         ("", "")
     };
 
+    let old_inc = conf.include_envs;
+    conf.include_envs = false;
     let conc_str = match deriv.premises.len() {
         0 => format!("\\UnaryInfC{{${}$}}", deriv.conc.to_latex(conf)),
         1 => format!("\\UnaryInfC{{${}$}}", deriv.conc.to_latex(conf)),
@@ -109,7 +100,6 @@ where
     };
 
     let mut prem_strs = vec![];
-    let old_inc = conf.include_envs;
     for prem in deriv.premises.iter() {
         prem_strs.push(prem.to_latex(conf));
         conf.include_envs = old_inc;
@@ -129,34 +119,29 @@ where
     T: Term + LatexFmt,
     Ty: Type + LatexFmt,
 {
-    let mut premise_str;
-    if deriv.premises.is_empty() {
-        premise_str = "\\quad".to_owned();
-    } else {
-        let cs = (0..deriv.premises.len())
-            .map(|_| "c")
-            .collect::<Vec<&str>>();
-        premise_str = format!("\\begin{{array}}{{ {} }}", cs.join(" "));
-        let inc_old = conf.include_envs;
+    let (env_start, env_end) = conf.mathenv_strs();
+    let mut prem_strs = vec![];
+
+    for prem in deriv.premises.iter() {
         conf.include_envs = false;
-
-        let mut premise_strs = vec![];
-        for premise in deriv.premises.iter() {
-            premise_strs.push(format!("\\displaystyle {}", premise.to_latex(conf)));
-        }
-        premise_str += &premise_strs.join("&");
-        conf.include_envs = inc_old;
-        premise_str += "\\end{array}";
+        prem_strs.push(format!("\\displaystyle {}", prem.to_latex(conf)));
+    }
+    if prem_strs.is_empty() {
+        prem_strs.push("\\quad".to_owned());
     }
 
-    let mut out = format!(
-        "\n\\frac{{ \\displaystyle {} }}{{ {} }} \\quad \\text{{ {} }}\n",
-        premise_str,
-        deriv.conc.to_latex(conf),
-        deriv.label
-    );
-    if conf.include_envs {
-        out = format!("\\[{out}\\]");
-    }
-    out
+    let cs = (0..prem_strs.len()).map(|_| "c").collect::<Vec<&str>>();
+
+    let array_start = format!("\\begin{{array}}{{ {} }}\n", cs.join(" "));
+    let array_end = "\n\\end{array}\n";
+
+    let array_str = format!("{array_start}\n{}\n{array_end}", prem_strs.join(" &\n "));
+
+    conf.include_envs = false;
+    let conc_str = deriv.conc.to_latex(conf);
+
+    format!(
+        "{env_start}\n\\frac{{\n{array_str}\n}}{{\n{conc_str}\n
+        }}\n{env_end}"
+    )
 }

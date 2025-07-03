@@ -8,6 +8,7 @@ use super::{
     },
     load_tests::load_dir,
     parse_test::ParseTest,
+    paths::LATEX_OUT,
     reparse_test::ReparseTest,
     setup,
     test::{Test, TestConfig, TestInclusions},
@@ -110,6 +111,7 @@ pub trait TestSuite {
         name: &str,
         deriv: &ProgramDerivation<<Self::Lang as Language>::Term, <Self::Lang as Language>::Type>,
     ) -> TestResult<()> {
+        std::fs::create_dir_all(PathBuf::from(LATEX_OUT)).unwrap();
         let buss_test = LatexTestBuss::<
             <Self::Lang as Language>::Term,
             <Self::Lang as Language>::Type,
@@ -123,6 +125,7 @@ pub trait TestSuite {
         name: &str,
         deriv: &ProgramDerivation<<Self::Lang as Language>::Term, <Self::Lang as Language>::Type>,
     ) -> TestResult<()> {
+        std::fs::create_dir_all(PathBuf::from(LATEX_OUT)).unwrap();
         let frac_test = LatexTestFrac::<
             <Self::Lang as Language>::Term,
             <Self::Lang as Language>::Type,
@@ -136,6 +139,7 @@ pub trait TestSuite {
         name: &str,
         tr: &EvalTrace<<Self::Lang as Language>::Term, <Self::Lang as Language>::Value>,
     ) -> TestResult<()> {
+        std::fs::create_dir_all(PathBuf::from(LATEX_OUT)).unwrap();
         let trace_test = LatexTestTrace::<
             <Self::Lang as Language>::Term,
             <Self::Lang as Language>::Value,

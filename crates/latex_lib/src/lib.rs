@@ -47,7 +47,7 @@ pub trait LatexFmt {
         out += "\\usepackage{amsmath}\n";
         out += "\\begin{document}\n";
         out += &self.to_latex(conf);
-        out += "\\end{document}\n";
+        out += "\n\\end{document}\n";
         out
     }
 }
