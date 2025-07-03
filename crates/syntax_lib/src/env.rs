@@ -2,7 +2,7 @@ use crate::{Location, Name, TypeVar, Var, kinds::Kind, types::Type};
 use common::errors::{FreeTypeVariable, FreeVariable, UndefinedLocation};
 use std::collections::HashMap;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Environment<Ty>
 where
     Ty: Type,

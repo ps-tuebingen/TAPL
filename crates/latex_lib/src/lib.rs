@@ -11,6 +11,7 @@ mod types;
 mod untyped;
 mod values;
 
+#[derive(Debug)]
 pub struct LatexConfig {
     pub include_envs: bool,
     pub use_frac_array: bool,

@@ -8,6 +8,15 @@ where
     Ty: Type + LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
+        println!("formatting program with conf {conf:?}");
+        println!(
+            "definitions: {}",
+            self.def_derivations
+                .iter()
+                .map(|def| def.name.clone())
+                .collect::<Vec<String>>()
+                .join(",")
+        );
         let mut def_strs = vec![];
         let old_inc = conf.include_envs;
         for def in self.def_derivations.iter() {
@@ -15,6 +24,7 @@ where
             conf.include_envs = old_inc;
         }
 
+        println!("formatting program main");
         format!(
             " {}\\quad \\\\ \\quad \\\\{}",
             def_strs.join("\n\\quad \\\\ \\quad \\\\\n"),
@@ -30,7 +40,7 @@ where
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         let (mut env_start, mut env_end) = conf.mathenv_strs();
-        if conf.use_frac_array {
+        if !conf.use_frac_array {
             env_start = "\\begin{prooftree}".to_owned();
             env_end = "\\end{prooftree}".to_owned();
         };
@@ -41,14 +51,12 @@ where
         if conf.use_frac_array {
             format!(
                 "{env_start}\n\\frac{{ {body_str} }}{{ \\vdash {}:{} }}\n{env_end}",
-                self.name,
-                self.body_derivation.ty().to_latex(conf)
+                self.name, body_str
             )
         } else {
             format!(
                 "{env_start}\n{body_str}\n\\UnaryInfC{{$\\vdash {}:{}$}}\n{env_end}",
-                self.name,
-                self.body_derivation.ty().to_latex(conf)
+                self.name, body_str
             )
         }
     }
@@ -75,6 +83,13 @@ where
     T: Term + LatexFmt,
     Ty: Type + LatexFmt,
 {
+    println!("formatting typing derivation buss {deriv:?}");
+    let (env_start, env_end) = if conf.include_envs {
+        ("\\begin{prooftree}", "\\end{prooftree}")
+    } else {
+        ("", "")
+    };
+
     let conc_str = match deriv.premises.len() {
         0 => format!("\\UnaryInfC{{${}$}}", deriv.conc.to_latex(conf)),
         1 => format!("\\UnaryInfC{{${}$}}", deriv.conc.to_latex(conf)),
@@ -85,34 +100,25 @@ where
         _ => panic!("Derivations with more than 5 premises are not supported"),
     };
 
-    let mut out = "".to_owned();
+    let label_str = format!("\\RightLabel{{ {} }}\n", deriv.label);
 
-    if conf.include_envs {
-        out += "\\begin{prooftree}\n";
-    }
-
-    if deriv.premises.is_empty() {
-        out += "\\AxiomC{\\quad}\n";
+    let start_str = if deriv.premises.is_empty() {
+        "\\AxiomC{\\quad}\n"
     } else {
-        let old_inc = conf.include_envs;
-        conf.include_envs = false;
-        for prem in deriv.premises.iter() {
-            out += "\t";
-            out += &prem.to_latex(conf);
-            out += "\n";
-        }
+        ""
+    };
+
+    let mut prem_strs = vec![];
+    let old_inc = conf.include_envs;
+    for prem in deriv.premises.iter() {
+        prem_strs.push(prem.to_latex(conf));
         conf.include_envs = old_inc;
     }
 
-    out += "\\RightLabel{";
-    out += &deriv.label.to_string();
-    out += "}\n";
-    out += &conc_str;
-    if conf.include_envs {
-        out += "\n\\end{prooftree}";
-    }
-
-    out
+    format!(
+        "{env_start}{start_str}\n{}\n{label_str}\n{conc_str}\n{env_end}",
+        prem_strs.join("\n")
+    )
 }
 
 fn derivation_to_frac_array<T, Ty>(

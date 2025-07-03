@@ -1,6 +1,7 @@
 use super::TypingDerivation;
 use syntax::{terms::Term, types::Type};
 
+#[derive(Debug)]
 pub struct DefinitionDerivation<T, Ty>
 where
     T: Term,

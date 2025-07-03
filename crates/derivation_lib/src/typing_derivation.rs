@@ -1,6 +1,7 @@
 use super::{Conclusion, TypingRule};
 use syntax::{env::Environment, terms::Term, types::Type, untyped::Untyped};
 
+#[derive(Debug)]
 pub struct TypingDerivation<T, Ty>
 where
     T: Term,

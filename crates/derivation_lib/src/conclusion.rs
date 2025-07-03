@@ -1,5 +1,6 @@
 use syntax::{env::Environment, terms::Term, types::Type};
 
+#[derive(Debug)]
 pub struct Conclusion<T, Ty>
 where
     T: Term,

@@ -2,6 +2,7 @@ use crate::{definition_derivation::DefinitionDerivation, typing_derivation::Typi
 use std::collections::HashMap;
 use syntax::{terms::Term, types::Type};
 
+#[derive(Debug)]
 pub struct ProgramDerivation<T, Ty>
 where
     T: Term,
