@@ -132,8 +132,8 @@ where
 
     let cs = (0..prem_strs.len()).map(|_| "c").collect::<Vec<&str>>();
 
-    let array_start = format!("\\begin{{array}}{{ {} }}\n", cs.join(" "));
-    let array_end = "\n\\end{array}\n";
+    let array_start = format!("\\begin{{array}}{{ {} }}", cs.join(" "));
+    let array_end = "\\end{array}\n";
 
     let array_str = format!("{array_start}\n{}\n{array_end}", prem_strs.join(" &\n "));
 
@@ -141,7 +141,7 @@ where
     let conc_str = deriv.conc.to_latex(conf);
 
     format!(
-        "{env_start}\n\\frac{{\n{array_str}\n}}{{\n{conc_str}\n
+        "{env_start}\n\\frac{{\n{array_str}}}{{\n{conc_str}
         }}\n{env_end}"
     )
 }
