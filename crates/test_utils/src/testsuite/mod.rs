@@ -224,22 +224,24 @@ pub trait TestSuite {
             }
         }
 
-        if inclusions.grammar {
-            print!("\t");
-            let res = Self::run_grammar(&name);
-            if matches!(res, TestResult::Fail(_)) {
-                num_fails += 1;
-            }
-        }
-
         num_fails
     }
 
     fn run_all(&self, inclusions: &TestInclusions) -> Result<usize, Error> {
-        println!("Running Test Suite {}\n", self.name());
+        println!("Running Test Suite {}", self.name());
+
+        let mut num_fail = 0;
+        if inclusions.grammar {
+            print!("\t");
+            let res = Self::run_grammar(&self.name());
+            if matches!(res, TestResult::Fail(_)) {
+                num_fail += 1;
+            }
+        }
+        println!("");
+
         let configs = self.configs()?;
         let num_tests = configs.len() * inclusions.num_tests();
-        let mut num_fail = 0;
         for conf in configs {
             let result = Self::run_conf(&conf, inclusions);
             num_fail += result;
