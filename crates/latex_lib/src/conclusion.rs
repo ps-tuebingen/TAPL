@@ -11,15 +11,12 @@ where
         let (env_start, env_end) = conf.mathenv_strs();
         conf.include_envs = false;
 
-        let mut out = env_start;
+        let env_str = self.env.to_latex(conf);
+        conf.include_envs = false;
+        let term_str = self.term.to_latex(conf);
+        conf.include_envs = false;
+        let ty_str = self.ty.to_latex(conf);
 
-        out += &self.env.to_latex(conf);
-        out += " \\vdash ";
-        out += &self.term.to_latex(conf);
-        out += " : ";
-        out += &self.ty.to_latex(conf);
-        out += &env_end;
-
-        out
+        format!("{env_start} {env_str} \\vdash {term_str} : {ty_str} {env_end}")
     }
 }

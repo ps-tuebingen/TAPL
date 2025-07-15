@@ -27,6 +27,7 @@ where
         } else {
             ("", "")
         };
+        conf.include_envs = false;
         let step_strs = self
             .steps
             .iter()

@@ -6,59 +6,74 @@ where
     Ty: Type + LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
-        let mut out = "".to_owned();
+        let (env_start, env_end) = conf.mathenv_strs();
+        conf.include_envs = false;
 
-        out += &self
+        let def_strs = self
             .definitions
             .keys()
-            .map(|n| format!("{}", n.to_latex(conf)))
-            .collect::<Vec<String>>()
-            .join(", ");
+            .map(|name| {
+                let out = name.to_latex(conf);
+                conf.include_envs = false;
+                out
+            })
+            .collect::<Vec<String>>();
 
-        if !out.is_empty() && !self.var_bindings.is_empty() {
-            out += ";";
-        }
+        let def_sep = if def_strs.is_empty() { "" } else { ";" };
 
-        out += &self
+        let var_strs = self
             .var_bindings
             .iter()
-            .map(|(var, ty)| format!("{}:{}", var.to_latex(conf), ty.to_latex(conf)))
-            .collect::<Vec<String>>()
-            .join(", ");
+            .map(|(var, ty)| {
+                let out = format!("{}:{}", var.to_latex(conf), ty.to_latex(conf));
+                conf.include_envs = false;
+                out
+            })
+            .collect::<Vec<String>>();
 
-        if !out.is_empty() && !self.tyvar_bindings.is_empty() {
-            out += ";";
-        }
+        let var_sep = if var_strs.is_empty() { "" } else { ";" };
 
-        out += &self
+        let tyvar_strs = self
             .tyvar_bindings
             .iter()
-            .map(|(tyvar, knd)| format!("{}::{}", tyvar.to_latex(conf), knd.to_latex(conf)))
-            .collect::<Vec<String>>()
-            .join(", ");
+            .map(|(var, knd)| {
+                let out = format!("{}::{}", var.to_latex(conf), knd.to_latex(conf));
+                conf.include_envs = false;
+                out
+            })
+            .collect::<Vec<String>>();
 
-        if !out.is_empty() && !self.tyvar_super.is_empty() {
-            out += ";";
-        }
+        let tyvar_sep = if tyvar_strs.is_empty() { "" } else { ";" };
 
-        out += &self
+        let super_strs = self
             .tyvar_super
             .iter()
-            .map(|(tyvar, sup)| format!("{} <: {}", tyvar.to_latex(conf), sup.to_latex(conf)))
-            .collect::<Vec<String>>()
-            .join(", ");
+            .map(|(var, ty)| {
+                let out = format!("{}<:{}", var.to_latex(conf), ty.to_latex(conf));
+                conf.include_envs = false;
+                out
+            })
+            .collect::<Vec<String>>();
 
-        if !out.is_empty() && !self.location_bindings.is_empty() {
-            out += " \\bar";
-        }
+        let super_sep = if super_strs.is_empty() { "" } else { ";" };
 
-        out += &self
+        let loc_strs = self
             .location_bindings
             .iter()
-            .map(|(loc, ty)| format!("{loc}:{}", ty.to_latex(conf)))
-            .collect::<Vec<String>>()
-            .join(", ");
+            .map(|(loc, ty)| {
+                let out = format!("{loc}:{}", ty.to_latex(conf));
+                conf.include_envs = false;
+                out
+            })
+            .collect::<Vec<String>>();
 
-        out
+        format!(
+            "{env_start}{}{def_sep}{}{var_sep}{}{tyvar_sep}{}{super_sep}{}{env_end}",
+            def_strs.join(", "),
+            var_strs.join(", "),
+            tyvar_strs.join(", "),
+            super_strs.join(", "),
+            loc_strs.join(", ")
+        )
     }
 }

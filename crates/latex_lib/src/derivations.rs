@@ -30,7 +30,7 @@ where
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         let (mut env_start, mut env_end) = conf.mathenv_strs();
-        if !conf.use_frac_array {
+        if !conf.use_frac_array && conf.include_envs {
             env_start = "\\begin{prooftree}".to_owned();
             env_end = "\\end{prooftree}".to_owned();
         };
@@ -44,6 +44,10 @@ where
                 self.name, body_str
             )
         } else {
+            if body_str.is_empty() {
+                println!("body of {} is empty ", self.name);
+            }
+
             format!(
                 "{env_start}\n{body_str}\n\\UnaryInfC{{$\\vdash {}:{}$}}\n{env_end}",
                 self.name, body_str
@@ -79,7 +83,6 @@ where
         ("", "")
     };
 
-    let old_inc = conf.include_envs;
     conf.include_envs = false;
     let conc_str = match deriv.premises.len() {
         0 => format!("\\UnaryInfC{{${}$}}", deriv.conc.to_latex(conf)),
@@ -102,7 +105,7 @@ where
     let mut prem_strs = vec![];
     for prem in deriv.premises.iter() {
         prem_strs.push(prem.to_latex(conf));
-        conf.include_envs = old_inc;
+        conf.include_envs = false;
     }
 
     format!(
