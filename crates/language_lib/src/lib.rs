@@ -1,7 +1,7 @@
 use check::{Kindcheck, Normalize, Subtypecheck, Typecheck};
 use derivation::{ProgramDerivation, TypingDerivation};
 use eval::{Eval, eval_main};
-use grammar::{GrammarDescribe, LanguageDescribe, LanguageGrammar};
+use grammar::GrammarDescribe;
 use latex::{LatexConfig, LatexFmt};
 use parse::{GroupParse, Parse};
 use syntax::{
@@ -23,8 +23,10 @@ pub use languages::AllLanguages;
 pub enum FormatMethod {
     #[default]
     Simple,
-    LatexBus,
-    LatexFrac,
+    LatexBusStripped,
+    LatexBusDoc,
+    LatexFracStripped,
+    LatexFracDoc,
     Debug,
 }
 
@@ -139,8 +141,10 @@ pub trait Language {
                 .map(|(nm, ty)| format!("{nm}:{ty}"))
                 .collect::<Vec<String>>()
                 .join("\n"),
-            FormatMethod::LatexBus => deriv.to_latex(&mut Default::default()),
-            FormatMethod::LatexFrac => deriv.to_latex(&mut LatexConfig::new_frac()),
+            FormatMethod::LatexBusStripped => deriv.to_latex(&mut Default::default()),
+            FormatMethod::LatexBusDoc => deriv.to_document(&mut Default::default()),
+            FormatMethod::LatexFracStripped => deriv.to_latex(&mut LatexConfig::new_frac()),
+            FormatMethod::LatexFracDoc => deriv.to_document(&mut LatexConfig::new_frac()),
             FormatMethod::Debug => format!("{:?}", deriv.tys()),
         }
     }
@@ -148,8 +152,10 @@ pub trait Language {
     fn format_prog(&self, prog: &Program<Self::Term, Self::Type>, method: &FormatMethod) -> String {
         match method {
             FormatMethod::Simple => prog.to_string(),
-            FormatMethod::LatexBus => prog.to_latex(&mut Default::default()),
-            FormatMethod::LatexFrac => prog.to_latex(&mut LatexConfig::new_frac()),
+            FormatMethod::LatexBusStripped => prog.to_latex(&mut Default::default()),
+            FormatMethod::LatexBusDoc => prog.to_document(&mut Default::default()),
+            FormatMethod::LatexFracStripped => prog.to_latex(&mut LatexConfig::new_frac()),
+            FormatMethod::LatexFracDoc => prog.to_document(&mut LatexConfig::new_frac()),
             FormatMethod::Debug => format!("{:?}", prog),
         }
     }
@@ -161,8 +167,10 @@ pub trait Language {
     ) -> String {
         match method {
             FormatMethod::Simple => tr.val().to_string(),
-            FormatMethod::LatexBus => tr.to_latex(&mut Default::default()),
-            FormatMethod::LatexFrac => tr.to_latex(&mut LatexConfig::new_frac()),
+            FormatMethod::LatexBusStripped => tr.to_latex(&mut Default::default()),
+            FormatMethod::LatexBusDoc => tr.to_document(&mut Default::default()),
+            FormatMethod::LatexFracStripped => tr.to_latex(&mut LatexConfig::new_frac()),
+            FormatMethod::LatexFracDoc => tr.to_document(&mut Default::default()),
             FormatMethod::Debug => format!("{:?}", tr.val()),
         }
     }

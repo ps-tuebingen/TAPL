@@ -95,7 +95,7 @@ impl HtmlContext {
         let source = self.source_area.value();
         self.out_divs.clear();
         let (parse_res, check_res, eval_res, err_res) =
-            lang.run_all(source, &FormatMethod::LatexFrac);
+            lang.run_all(source, &FormatMethod::LatexFracStripped);
 
         self.out_divs.parsed.set_contents(parse_res);
         self.out_divs.checked.set_contents(check_res);

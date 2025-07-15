@@ -1,4 +1,4 @@
-use crate::{Rule, RuleDescribe, Symbol, symbols::SpecialChar};
+use crate::{Rule, RuleDescribe, symbols::SpecialChar};
 use syntax::types::{Top, Type};
 
 impl<Ty> RuleDescribe for Top<Ty>

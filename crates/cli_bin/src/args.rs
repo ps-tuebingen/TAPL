@@ -80,7 +80,7 @@ pub struct OutMethod {
 impl OutMethod {
     pub fn to_format_method(&self) -> FormatMethod {
         if self.latex {
-            FormatMethod::LatexBus
+            FormatMethod::LatexBusDoc
         } else if self.dbg {
             FormatMethod::Debug
         } else {
