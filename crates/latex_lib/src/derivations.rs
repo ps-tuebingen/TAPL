@@ -37,20 +37,18 @@ where
 
         conf.include_envs = false;
         let body_str = self.body_derivation.to_latex(conf);
+        conf.include_envs = false;
+        let ty_str = self.body_derivation.ty().to_latex(conf);
 
         if conf.use_frac_array {
             format!(
                 "{env_start}\n\\frac{{ {body_str} }}{{ \\vdash {}:{} }}\n{env_end}",
-                self.name, body_str
+                self.name, ty_str
             )
         } else {
-            if body_str.is_empty() {
-                println!("body of {} is empty ", self.name);
-            }
-
             format!(
                 "{env_start}\n{body_str}\n\\UnaryInfC{{$\\vdash {}:{}$}}\n{env_end}",
-                self.name, body_str
+                self.name, ty_str
             )
         }
     }
@@ -84,13 +82,14 @@ where
     };
 
     conf.include_envs = false;
-    let conc_str = match deriv.premises.len() {
-        0 => format!("\\UnaryInfC{{${}$}}", deriv.conc.to_latex(conf)),
-        1 => format!("\\UnaryInfC{{${}$}}", deriv.conc.to_latex(conf)),
-        2 => format!("\\BinaryInfC{{${}$}}", deriv.conc.to_latex(conf)),
-        3 => format!("\\TrinaryInfC{{${}$}}", deriv.conc.to_latex(conf)),
-        4 => format!("\\QuaternaryInfC{{${}$}}", deriv.conc.to_latex(conf)),
-        5 => format!("\\QuinaryInfC{{${}$}}", deriv.conc.to_latex(conf)),
+    let mut conc_str = deriv.conc.to_latex(conf);
+    conc_str = match deriv.premises.len() {
+        0 => format!("\\UnaryInfC{{${}$}}", conc_str),
+        1 => format!("\\UnaryInfC{{${}$}}", conc_str),
+        2 => format!("\\BinaryInfC{{${}$}}", conc_str),
+        3 => format!("\\TrinaryInfC{{${}$}}", conc_str),
+        4 => format!("\\QuaternaryInfC{{${}$}}", conc_str),
+        5 => format!("\\QuinaryInfC{{${}$}}", conc_str),
         _ => panic!("Derivations with more than 5 premises are not supported"),
     };
 
