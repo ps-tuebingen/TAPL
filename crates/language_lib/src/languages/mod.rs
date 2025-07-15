@@ -252,6 +252,24 @@ impl AllLanguages {
             }
         }
     }
+    pub fn grammars(&self, method: &FormatMethod) -> String {
+        match self {
+            Self::UntypedArithmetic(ua) => ua.lang_grammar(method),
+            Self::UntypedLambda(ul) => ul.lang_grammar(method),
+            Self::TypedArithmetic(ta) => ta.lang_grammar(method),
+            Self::Stlc(stlc) => stlc.lang_grammar(method),
+            Self::References(rf) => rf.lang_grammar(method),
+            Self::Exceptions(ex) => ex.lang_grammar(method),
+            Self::Subtypes(s) => s.lang_grammar(method),
+            Self::Recursive(rec) => rec.lang_grammar(method),
+            Self::Existential(ex) => ex.lang_grammar(method),
+            Self::SystemF(sys) => sys.lang_grammar(method),
+            Self::BoundedQuantification(bd) => bd.lang_grammar(method),
+            Self::LambdaOmega(lo) => lo.lang_grammar(method),
+            Self::FOmega(fo) => fo.lang_grammar(method),
+            Self::FOmegaSub(fos) => fos.lang_grammar(method),
+        }
+    }
 
     pub fn run_all(
         &self,

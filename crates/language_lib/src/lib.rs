@@ -2,6 +2,7 @@ use check::{Kindcheck, Normalize, Subtypecheck, Typecheck};
 use derivation::{ProgramDerivation, TypingDerivation};
 use eval::{Eval, eval_main};
 use grammar::GrammarDescribe;
+use grammar::LanguageDescribe;
 use latex::{LatexConfig, LatexFmt};
 use parse::{GroupParse, Parse};
 use syntax::{
@@ -54,7 +55,7 @@ where
     }
 }
 
-pub trait Language {
+pub trait Language: LanguageDescribe {
     type Term: Term
         + GroupParse
         + SubstTerm<Self::Term, Target = Self::Term>
@@ -172,6 +173,18 @@ pub trait Language {
             FormatMethod::LatexFracStripped => tr.to_latex(&mut LatexConfig::new_frac()),
             FormatMethod::LatexFracDoc => tr.to_document(&mut Default::default()),
             FormatMethod::Debug => format!("{:?}", tr.val()),
+        }
+    }
+
+    fn lang_grammar(&self, method: &FormatMethod) -> String {
+        let grammars = Self::grammars();
+        match method {
+            FormatMethod::Simple => grammars.to_string(),
+            FormatMethod::LatexBusStripped => grammars.to_latex(&mut Default::default()),
+            FormatMethod::LatexBusDoc => grammars.to_document(&mut Default::default()),
+            FormatMethod::LatexFracStripped => grammars.to_latex(&mut LatexConfig::new_frac()),
+            FormatMethod::LatexFracDoc => grammars.to_document(&mut Default::default()),
+            FormatMethod::Debug => format!("{:?}", grammars),
         }
     }
 }

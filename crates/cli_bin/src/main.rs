@@ -12,6 +12,7 @@ fn main() {
         Command::Parse => args.lang.parse(src, &method),
         Command::Check => args.lang.check(src, &method),
         Command::Evaluate => args.lang.eval(src, &method),
+        Command::Grammar => Ok(args.lang.grammars(&method)),
     };
 
     match res {

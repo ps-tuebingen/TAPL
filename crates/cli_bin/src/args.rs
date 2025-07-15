@@ -20,6 +20,7 @@ pub enum Command {
     Parse,
     Evaluate,
     Check,
+    Grammar,
 }
 
 impl FromStr for Command {
@@ -29,6 +30,7 @@ impl FromStr for Command {
             "parse" => Ok(Command::Parse),
             "eval" | "evaluate" => Ok(Command::Evaluate),
             "check" | "typecheck" => Ok(Command::Check),
+            "grammar" => Ok(Command::Grammar),
             _ => panic!("Not a valid command"),
         }
     }
@@ -39,12 +41,13 @@ impl fmt::Display for Command {
             Command::Parse => f.write_str("parse"),
             Command::Evaluate => f.write_str("evaluate"),
             Command::Check => f.write_str("check"),
+            Command::Grammar => f.write_str("grammar"),
         }
     }
 }
 
 #[derive(Debug, Clone, clap::Args)]
-#[group(required = true, multiple = false)]
+#[group(required = false, multiple = false)]
 pub struct Source {
     /// Load source from file
     #[clap(short, long)]
