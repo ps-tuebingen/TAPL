@@ -28,6 +28,7 @@ impl Args {
         if self.exclude_latex {
             inc.derivation_buss = false;
             inc.derivation_frac = false;
+            inc.grammar = false;
             inc.trace = false;
         }
         inc

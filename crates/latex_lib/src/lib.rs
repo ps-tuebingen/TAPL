@@ -45,6 +45,7 @@ pub trait LatexFmt {
         out += "\\documentclass{article}\n";
         out += "\\usepackage{bussproofs}\n";
         out += "\\usepackage{amsmath}\n";
+        out += "\\usepackage{mathtools}\n";
         out += "\\begin{document}\n";
         out += &self.to_latex(conf);
         out += "\n\\end{document}\n";

@@ -16,7 +16,7 @@ impl LatexFmt for Symbol {
             Symbol::Value => "v".to_owned(),
             Symbol::Variable => "x".to_owned(),
             Symbol::Typevariable => "X".to_owned(),
-            Symbol::Label => "\\text{label}}".to_owned(),
+            Symbol::Label => "\\text{{label}}".to_owned(),
             Symbol::Location => "l".to_owned(),
             Symbol::Prefixed { prefix, inner } => {
                 format!("{} {}", prefix.to_latex(conf), inner.to_latex(conf))
