@@ -11,6 +11,8 @@ pub struct Args {
     pub source: Source,
     #[clap(flatten)]
     pub out_method: OutMethod,
+    #[clap(short, long)]
+    pub out_file: Option<PathBuf>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -70,7 +72,7 @@ impl Source {
 #[group(required = false, multiple = false)]
 pub struct OutMethod {
     #[clap(short, long)]
-    latex: bool,
+    pub latex: bool,
     #[clap(short, long)]
     dbg: bool,
 }
