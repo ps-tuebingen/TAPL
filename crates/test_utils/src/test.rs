@@ -6,6 +6,7 @@ pub struct TestInclusions {
     pub eval: bool,
     pub derivation_buss: bool,
     pub derivation_frac: bool,
+    pub grammar: bool,
     pub trace: bool,
 }
 
@@ -57,6 +58,7 @@ impl Default for TestInclusions {
             eval: true,
             derivation_buss: true,
             derivation_frac: true,
+            grammar: true,
             trace: true,
         }
     }

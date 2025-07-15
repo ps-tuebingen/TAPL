@@ -4,7 +4,7 @@ use super::{
     eval_test::EvalTest,
     latex::{
         latex_buss_test::LatexTestBuss, latex_frac_test::LatexTestFrac,
-        latex_trace_test::LatexTestTrace,
+        latex_grammar_test::LatexTestGrammar, latex_trace_test::LatexTestTrace,
     },
     load_tests::load_dir,
     parse_test::ParseTest,
@@ -135,6 +135,14 @@ pub trait TestSuite {
         res
     }
 
+    fn run_grammar(name: &str) -> TestResult<()> {
+        std::fs::create_dir_all(PathBuf::from(LATEX_OUT)).unwrap();
+        let grammar_test = LatexTestGrammar::<Self::Lang>::new(name);
+        let res = grammar_test.run();
+        res.report(&grammar_test.name());
+        res
+    }
+
     fn run_trace(
         name: &str,
         tr: &EvalTrace<<Self::Lang as Language>::Term, <Self::Lang as Language>::Value>,
@@ -213,6 +221,14 @@ pub trait TestSuite {
                         num_fails += 1
                     }
                 }
+            }
+        }
+
+        if inclusions.grammar {
+            print!("\t");
+            let res = Self::run_grammar(&name);
+            if matches!(res, TestResult::Fail(_)) {
+                num_fails += 1;
             }
         }
 
