@@ -9,6 +9,7 @@ pub enum OutDivName {
     Checked,
     Evaled,
     Error,
+    Grammar,
 }
 
 impl OutDivName {
@@ -18,6 +19,7 @@ impl OutDivName {
             OutDivName::Checked => "checked_out",
             OutDivName::Evaled => "evaled_out",
             OutDivName::Error => "error_out",
+            OutDivName::Grammar => "grammar_out",
         }
     }
 
@@ -27,6 +29,7 @@ impl OutDivName {
             OutDivName::Checked => "checked_collapse",
             OutDivName::Evaled => "evaled_collapse",
             OutDivName::Error => "error_collapse",
+            OutDivName::Grammar => "grammar_collapse",
         }
     }
 }
@@ -115,6 +118,7 @@ pub struct OutDivs {
     pub checked: Rc<OutDiv>,
     pub evaled: Rc<OutDiv>,
     pub error: Rc<OutDiv>,
+    pub grammar: Rc<OutDiv>,
 }
 
 impl OutDivs {
@@ -123,12 +127,14 @@ impl OutDivs {
         let checked = OutDiv::new(OutDivName::Checked, doc);
         let evaled = OutDiv::new(OutDivName::Evaled, doc);
         let error = OutDiv::new(OutDivName::Error, doc);
+        let grammar = OutDiv::new(OutDivName::Grammar, doc);
 
         OutDivs {
             parsed,
             checked,
             evaled,
             error,
+            grammar,
         }
     }
 

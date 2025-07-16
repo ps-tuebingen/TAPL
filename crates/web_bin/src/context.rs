@@ -1,4 +1,4 @@
-use super::{example_select::ExampleSelect, get_by_id, out_divs::OutDivs, typeset};
+use super::{example_select::ExampleSelect, get_by_id, log, out_divs::OutDivs, typeset};
 use language::{AllLanguages, FormatMethod};
 use std::rc::Rc;
 use wasm_bindgen::{JsCast, closure::Closure};
@@ -50,6 +50,9 @@ impl HtmlContext {
             lang_option.set_id(&lang.to_string());
             lang_option.set_inner_html(lang.describe());
             self.language_select.append_child(&lang_option).unwrap();
+            self.out_divs.grammar.set_contents(Some(
+                self.get_lang().grammars(&FormatMethod::LatexFracStripped),
+            ));
         }
     }
 
@@ -64,9 +67,13 @@ impl HtmlContext {
 
         let self_ = self.clone();
         let change_handler = Closure::wrap(Box::new(move || {
+            self_.out_divs.grammar.clear();
             self_
                 .example_select
-                .change_language(&self_.get_lang(), &self_.document)
+                .change_language(&self_.get_lang(), &self_.document);
+            self_.out_divs.grammar.set_contents(Some(
+                self_.get_lang().grammars(&FormatMethod::LatexFracStripped),
+            ));
         }) as Box<dyn Fn()>);
         self.language_select
             .add_event_listener_with_callback("change", change_handler.as_ref().unchecked_ref())
@@ -74,11 +81,9 @@ impl HtmlContext {
         change_handler.forget();
 
         let self_ = self.clone();
-        let change_handler =
-            Closure::wrap(
-                Box::new(move || self_.example_select.change_contents(&self_.get_lang()))
-                    as Box<dyn Fn()>,
-            );
+        let change_handler = Closure::wrap(Box::new(move || {
+            self_.example_select.change_contents(&self_.get_lang());
+        }) as Box<dyn Fn()>);
         self.example_select
             .element
             .add_event_listener_with_callback("change", change_handler.as_ref().unchecked_ref())
