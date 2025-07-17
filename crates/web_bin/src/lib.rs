@@ -1,6 +1,6 @@
 use wasm_bindgen::JsCast;
 use wasm_bindgen::prelude::wasm_bindgen;
-use web_sys::Document;
+use web_sys::{Document, HtmlElement};
 
 mod context;
 mod example_select;
@@ -20,8 +20,9 @@ extern "C" {
     #[wasm_bindgen(js_namespace=console)]
     pub fn log(msg: &str);
 
-    #[wasm_bindgen(js_namespace=MathJax)]
-    pub fn typeset();
+    #[wasm_bindgen(js_namespace=window)]
+    pub fn renderMathInElement(elem: &HtmlElement);
+
 }
 
 pub fn get_by_id<T>(id: &str, doc: &Document) -> T

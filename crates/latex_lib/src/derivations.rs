@@ -14,12 +14,8 @@ where
             def_strs.push(def.to_latex(conf));
             conf.include_envs = old_inc;
         }
-
-        format!(
-            " {}\\quad \\\\ \\quad \\\\{}",
-            def_strs.join("\n\\quad \\\\ \\quad \\\\\n"),
-            self.main_derivation.to_latex(conf),
-        )
+        def_strs.push(self.main_derivation.to_latex(conf));
+        def_strs.join("\n\\quad \\\\ \\quad \\\\\n")
     }
 }
 

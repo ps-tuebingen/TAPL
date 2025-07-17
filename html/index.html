@@ -4,28 +4,19 @@
     <title>Types and Programming Languages</title>
     <link rel="icon" type="image/x-icon" href="favicon.ico"/>
     <link rel="stylesheet" type="text/css" href="main.css"/> 
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3.0.1/es5/tex-mml-chtml.js">
-    </script>
-    <script>
-      MathJax = {
-        tex: {
-          inlineMath: [['$','$']],
-          displayMath: [['\\[','\\]']]
-        }
-      }
-    </script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css" integrity="sha384-5TcZemv2l/9On385z///+d7MSYlvIEw9FuZTIdZ14vJLqWphw7e7ZPuOiCHJcFCP" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js" integrity="sha384-cMkvdD8LoxVzGF/RPUKAcvmm49FQ0oxwDF3BGKtDXcEc+T1b2N+teh/OJfpU0jr6" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js" integrity="sha384-hCXGrW6PitJEwbkoStFjeJxv+fSOOQKOPbJxSfM6G5sWZjAyWhXiTIIAmQqnlLlh" crossorigin="anonymous"
+    onload="renderMathInElement(document.body);"></script>
   </head>
   <body>
     <script type="module">
       import init, { setup } from "./pkg/tapl_web.js";
       await init();
     </script>
-
     <div id="content-grid">
       <h1> Types and Programming Languages Playground </h1>  
-
       <div class="hline"></div>
-
       <div id="input_column">
         <div id="control-box">
           <div>Language:</div>
@@ -42,23 +33,18 @@
         </div>
         <textarea id="source_code"></textarea>
       </div>
-
       <div class="vline"></div>
-
       <div id="output_column">
         <h2>Results</h2>
         <div class="output_label" id="text-parsed"> Parsed:</div>
         <button class="collapse_button" id="parsed_collapse">+</button>
         <div id="parsed_out" class="output"></div>
-        
         <div class="output_label" id="text-checked">Typechecked:</div>
         <button class="collapse_button" id="checked_collapse">+</button>
         <div id="checked_out" class="output"></div>
-        
         <div class="output_label" id="text-evaled">Evaluated:</div>
         <button class="collapse_button" id="evaled_collapse">+</button>
         <div id="evaled_out" class="output"></div>
-        
         <div class="output_label" id="text-error">Errors:</div>
         <button class="collapse_button" id="error_collapse">+</button>
         <div id="error_out" class="output"></div>

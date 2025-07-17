@@ -36,7 +36,7 @@ impl OutDivName {
 
 #[derive(Clone)]
 pub struct OutDiv {
-    out_div: HtmlDivElement,
+    pub out_div: HtmlDivElement,
     collapse_button: HtmlButtonElement,
     which: OutDivName,
 }

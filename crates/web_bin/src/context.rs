@@ -1,4 +1,4 @@
-use super::{example_select::ExampleSelect, get_by_id, log, out_divs::OutDivs, typeset};
+use crate::{example_select::ExampleSelect, get_by_id, out_divs::OutDivs, renderMathInElement};
 use language::{AllLanguages, FormatMethod};
 use std::rc::Rc;
 use wasm_bindgen::{JsCast, closure::Closure};
@@ -72,10 +72,14 @@ impl HtmlContext {
             self_
                 .example_select
                 .change_language(&self_.get_lang(), &self_.document);
+            let hidden = self_.out_divs.grammar.hidden();
             self_.out_divs.grammar.set_contents(Some(
                 self_.get_lang().grammars(&FormatMethod::LatexFracStripped),
             ));
-            typeset();
+            renderMathInElement(&self_.out_divs.grammar.out_div);
+            if hidden {
+                self_.out_divs.grammar.hide();
+            }
         }) as Box<dyn Fn()>);
         self.language_select
             .add_event_listener_with_callback("change", change_handler.as_ref().unchecked_ref())
@@ -108,6 +112,9 @@ impl HtmlContext {
         self.out_divs.checked.set_contents(check_res);
         self.out_divs.evaled.set_contents(eval_res);
         self.out_divs.error.set_contents(err_res);
-        typeset();
+        renderMathInElement(&self.out_divs.parsed.out_div);
+        renderMathInElement(&self.out_divs.checked.out_div);
+        renderMathInElement(&self.out_divs.evaled.out_div);
+        renderMathInElement(&self.out_divs.error.out_div);
     }
 }
