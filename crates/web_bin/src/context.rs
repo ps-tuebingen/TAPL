@@ -53,6 +53,7 @@ impl HtmlContext {
             self.out_divs.grammar.set_contents(Some(
                 self.get_lang().grammars(&FormatMethod::LatexFracStripped),
             ));
+            self.out_divs.grammar.hide();
         }
     }
 
@@ -74,6 +75,7 @@ impl HtmlContext {
             self_.out_divs.grammar.set_contents(Some(
                 self_.get_lang().grammars(&FormatMethod::LatexFracStripped),
             ));
+            typeset();
         }) as Box<dyn Fn()>);
         self.language_select
             .add_event_listener_with_callback("change", change_handler.as_ref().unchecked_ref())

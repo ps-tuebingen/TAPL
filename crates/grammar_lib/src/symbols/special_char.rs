@@ -1,7 +1,7 @@
 use super::Symbol;
 use std::fmt;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub enum SpecialChar {
     Number,
     Lambda,

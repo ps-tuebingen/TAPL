@@ -64,6 +64,13 @@ impl OutDiv {
             .expect("Could not set attribute");
     }
 
+    pub fn hidden(&self) -> bool {
+        self.out_div
+            .get_attribute("hidden")
+            .unwrap_or("true".to_owned())
+            == "true"
+    }
+
     pub fn show(&self) {
         self.out_div
             .set_attribute("style", "display:block;")
@@ -74,11 +81,7 @@ impl OutDiv {
     }
 
     pub fn toggle(&self) {
-        let hidden = self
-            .out_div
-            .get_attribute("hidden")
-            .unwrap_or("true".to_owned());
-        if &hidden == "true" {
+        if self.hidden() {
             self.show()
         } else {
             self.hide()
@@ -90,10 +93,7 @@ impl OutDiv {
     }
 
     pub fn set_contents(&self, new_content: Option<String>) {
-        if let Some(mut s) = new_content {
-            if self.which == OutDivName::Parsed {
-                s = format!("\\[{s}\\]");
-            }
+        if let Some(s) = new_content {
             log(&format!("setting content {:?}:\n{s}", self.which));
             self.out_div.set_inner_html(&s.to_string());
             self.show();

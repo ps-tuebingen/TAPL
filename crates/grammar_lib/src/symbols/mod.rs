@@ -5,7 +5,7 @@ pub use keywords::Keyword;
 pub use special_char::SpecialChar;
 use std::fmt;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Symbol {
     Many(Box<Symbol>),
 
@@ -222,11 +222,15 @@ impl Symbol {
         let mut inner = SpecialChar::Empty.into();
 
         for arg in args {
-            inner = Symbol::Separated {
-                fst: Box::new(inner),
-                separator: Box::new(SpecialChar::Comma.into()),
-                snd: Box::new(arg),
-            };
+            if inner == SpecialChar::Empty.into() {
+                inner = arg;
+            } else {
+                inner = Symbol::Separated {
+                    fst: Box::new(inner),
+                    separator: Box::new(SpecialChar::Comma.into()),
+                    snd: Box::new(arg),
+                };
+            }
         }
 
         let mut prefix_inner = Box::new(Symbol::Delim {
