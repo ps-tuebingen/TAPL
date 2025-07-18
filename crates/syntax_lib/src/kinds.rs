@@ -1,4 +1,4 @@
-use common::errors::{KindKind, KindMismatch};
+use errors::{KindKind, KindMismatch};
 use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]

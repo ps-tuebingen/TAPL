@@ -1,6 +1,6 @@
 use super::Value;
 use crate::terms::{Loc as LocT, Term};
-use common::errors::ValueKind;
+use errors::ValueKind;
 use std::{fmt, marker::PhantomData};
 
 #[derive(Debug, PartialEq, Eq, Clone)]

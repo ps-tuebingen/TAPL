@@ -3,7 +3,7 @@ use crate::{
     subst::SubstType,
     types::{Type, TypeGroup},
 };
-use common::errors::TypeKind;
+use errors::TypeKind;
 use std::fmt;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

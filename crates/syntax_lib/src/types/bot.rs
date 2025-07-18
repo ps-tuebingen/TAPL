@@ -1,6 +1,6 @@
 use super::Type;
 use crate::{TypeVar, kinds::Kind, subst::SubstType};
-use common::errors::TypeKind;
+use errors::TypeKind;
 use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]

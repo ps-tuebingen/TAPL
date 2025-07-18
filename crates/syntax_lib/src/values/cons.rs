@@ -1,5 +1,5 @@
 use crate::{terms::Cons as ConsT, types::Type, values::Value};
-use common::errors::ValueKind;
+use errors::ValueKind;
 use std::fmt;
 
 #[derive(Debug, PartialEq, Eq, Clone)]

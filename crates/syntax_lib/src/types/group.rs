@@ -3,7 +3,7 @@ use crate::types::{
     OpLambdaSub, Optional, Product, Record, Reference, Sink, Source, Sum, Top, Tuple, Type,
     TypeVariable, Unit, Variant,
 };
-use common::errors::{TypeKind, TypeMismatch};
+use errors::{TypeKind, TypeMismatch};
 
 pub trait TypeGroup: Type {
     fn check_equal(&self, other: &Self) -> Result<(), TypeMismatch> {

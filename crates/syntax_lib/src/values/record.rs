@@ -1,6 +1,6 @@
 use super::Value;
 use crate::{Label, terms::Record as RecordT};
-use common::errors::ValueKind;
+use errors::ValueKind;
 use std::{collections::HashMap, fmt};
 
 #[derive(Debug, PartialEq, Eq, Clone)]

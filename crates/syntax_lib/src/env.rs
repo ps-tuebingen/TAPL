@@ -1,5 +1,5 @@
 use crate::{Location, Name, TypeVar, Var, kinds::Kind, types::Type};
-use common::errors::{FreeTypeVariable, FreeVariable, UndefinedLocation};
+use errors::{FreeTypeVariable, FreeVariable, UndefinedLocation};
 use std::collections::HashMap;
 
 #[derive(Clone, Debug)]

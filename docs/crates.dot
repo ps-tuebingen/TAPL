@@ -63,7 +63,6 @@ digraph crates{
 
   errors -> syntax
 
-  syntax -> trace
-
+  syntax -> tracetrace
 
 }  

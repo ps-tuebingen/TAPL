@@ -6,7 +6,7 @@ use crate::{
         Raise, Record, Right, Something, True, Tuple, TyLambda, Value, Variant,
     },
 };
-use common::errors::{ValueKind, ValueMismatch};
+use errors::{ValueKind, ValueMismatch};
 
 pub trait ValueGroup: Value {
     type Term: Term + From<Self>;

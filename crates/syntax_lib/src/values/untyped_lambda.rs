@@ -3,7 +3,7 @@ use crate::{
     Var,
     terms::{Term, UntypedLambda as UntypedLambdaT},
 };
-use common::errors::ValueKind;
+use errors::ValueKind;
 use std::fmt;
 
 #[derive(Debug, PartialEq, Eq, Clone)]

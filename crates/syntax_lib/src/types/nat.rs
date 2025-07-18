@@ -1,6 +1,6 @@
 use super::Type;
 use crate::{TypeVar, subst::SubstType};
-use common::errors::TypeKind;
+use errors::TypeKind;
 use std::{fmt, marker::PhantomData};
 
 #[derive(Clone, Debug, PartialEq, Eq)]

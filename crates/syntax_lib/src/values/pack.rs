@@ -1,6 +1,6 @@
 use super::Value;
 use crate::{terms::Pack as PackT, types::Type};
-use common::errors::ValueKind;
+use errors::ValueKind;
 use std::fmt;
 
 #[derive(Debug, PartialEq, Eq, Clone)]

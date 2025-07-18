@@ -1,5 +1,5 @@
 use crate::terms::Term;
-use common::errors::ValueKind;
+use errors::ValueKind;
 use std::fmt;
 
 pub trait Value

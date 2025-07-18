@@ -5,7 +5,7 @@ use crate::{
     terms::Term,
     types::Type,
 };
-use common::errors::DuplicateDefinition;
+use errors::DuplicateDefinition;
 use std::fmt;
 
 #[derive(Debug, Clone)]

@@ -1,4 +1,4 @@
-use common::errors::TypeKind;
+use errors::TypeKind;
 use std::fmt;
 
 pub trait Type

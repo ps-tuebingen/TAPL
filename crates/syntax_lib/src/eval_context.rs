@@ -1,5 +1,5 @@
 use crate::{Location, Name, program::Program, terms::Term, types::Type, values::Value};
-use common::errors::{FreeVariable, UndefinedLocation};
+use errors::{FreeVariable, UndefinedLocation};
 use std::collections::HashMap;
 
 pub struct EvalContext<T, V>

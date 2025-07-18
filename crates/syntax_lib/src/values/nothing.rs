@@ -3,7 +3,7 @@ use crate::{
     terms::{Nothing as NothingT, Term},
     types::Type,
 };
-use common::errors::ValueKind;
+use errors::ValueKind;
 use std::{fmt, marker::PhantomData};
 
 #[derive(Debug, PartialEq, Eq, Clone)]

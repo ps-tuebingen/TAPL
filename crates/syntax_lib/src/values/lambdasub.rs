@@ -4,7 +4,7 @@ use crate::{
     terms::{LambdaSub as LambdaSubT, Term},
     types::Type,
 };
-use common::errors::ValueKind;
+use errors::ValueKind;
 use std::fmt;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
