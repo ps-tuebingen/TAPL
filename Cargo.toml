@@ -6,7 +6,7 @@ members = [
     "crates/parse_lib",
     "crates/eval_lib",
     "crates/check_lib",
-    "crates/common_lib",
+    "crates/error_lib",
     "crates/language_lib",
     "crates/derivation_lib",
     "crates/grammar_lib",

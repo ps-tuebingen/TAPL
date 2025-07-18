@@ -4,6 +4,6 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-common={path="../common_lib"}
+errors={path="../error_lib"}
 syntax={path="../syntax_lib"}
 trace={path="../trace_lib"}

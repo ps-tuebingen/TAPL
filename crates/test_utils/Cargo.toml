@@ -9,7 +9,7 @@ basic-toml = {version="0.1.10"}
 serde = {version="1.0.219", features=["derive"]}
 clap = { version = "4", features=["derive"]}
 
-common = { path="../common_lib" }
+errors = { path="../error_lib" }
 check = { path="../check_lib" }
 eval = { path="../eval_lib" }
 language = { path="../language_lib" }

@@ -9,6 +9,6 @@ path = "src/main.rs"
 
 [dependencies]
 clap = { version = "4", features=["derive"]}
-common = { path="../common_lib" }
+errors = { path="../error_lib" }
 language = {path="../language_lib"}
 grammar = {path="../grammar_lib"}
