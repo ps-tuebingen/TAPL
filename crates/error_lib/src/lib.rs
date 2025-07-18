@@ -1,1 +1,25 @@
-pub mod errors;
+pub mod duplicate_definition;
+pub mod free_type_variable;
+pub mod free_variable;
+pub mod index_out_of_bounds;
+pub mod kind_mismatch;
+pub mod kinds;
+pub mod name_mismatch;
+pub mod not_implemented;
+pub mod type_mismatch;
+pub mod undefined_label;
+pub mod undefined_location;
+pub mod value_mismatch;
+
+pub use duplicate_definition::DuplicateDefinition;
+pub use free_type_variable::FreeTypeVariable;
+pub use free_variable::FreeVariable;
+pub use index_out_of_bounds::IndexOutOfBounds;
+pub use kind_mismatch::KindMismatch;
+pub use kinds::{KindKind, TypeKind, ValueKind};
+pub use name_mismatch::NameMismatch;
+pub use not_implemented::NotImplemented;
+pub use type_mismatch::TypeMismatch;
+pub use undefined_label::UndefinedLabel;
+pub use undefined_location::UndefinedLocation;
+pub use value_mismatch::ValueMismatch;

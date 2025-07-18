@@ -1,13 +1,12 @@
-use crate::Location;
 use std::fmt;
 
 #[derive(Debug)]
 pub struct UndefinedLocation {
-    loc: Location,
+    loc: usize,
 }
 
 impl UndefinedLocation {
-    pub fn new(loc: Location) -> UndefinedLocation {
+    pub fn new(loc: usize) -> UndefinedLocation {
         UndefinedLocation { loc }
     }
 }

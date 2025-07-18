@@ -1,13 +1,12 @@
-use crate::Var;
 use std::fmt;
 
 #[derive(Debug)]
 pub struct FreeVariable {
-    var: Var,
+    var: String,
 }
 
 impl FreeVariable {
-    pub fn new(var: &Var) -> FreeVariable {
+    pub fn new(var: &String) -> FreeVariable {
         FreeVariable { var: var.clone() }
     }
 }

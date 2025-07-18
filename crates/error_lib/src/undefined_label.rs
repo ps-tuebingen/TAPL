@@ -1,9 +1,8 @@
-use crate::Label;
 use std::fmt;
 
 #[derive(Debug)]
 pub struct UndefinedLabel {
-    label: Label,
+    label: String,
 }
 
 impl UndefinedLabel {
