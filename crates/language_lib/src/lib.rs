@@ -157,7 +157,7 @@ pub trait Language: LanguageDescribe {
             FormatMethod::LatexBusDoc => prog.to_document(&mut Default::default()),
             FormatMethod::LatexFracStripped => prog.to_latex(&mut LatexConfig::new_frac()),
             FormatMethod::LatexFracDoc => prog.to_document(&mut LatexConfig::new_frac()),
-            FormatMethod::Debug => format!("{:?}", prog),
+            FormatMethod::Debug => format!("{prog:?}",),
         }
     }
 
@@ -184,7 +184,7 @@ pub trait Language: LanguageDescribe {
             FormatMethod::LatexBusDoc => grammars.to_document(&mut Default::default()),
             FormatMethod::LatexFracStripped => grammars.to_latex(&mut LatexConfig::new_frac()),
             FormatMethod::LatexFracDoc => grammars.to_document(&mut Default::default()),
-            FormatMethod::Debug => format!("{:?}", grammars),
+            FormatMethod::Debug => format!("{grammars:?}",),
         }
     }
 }

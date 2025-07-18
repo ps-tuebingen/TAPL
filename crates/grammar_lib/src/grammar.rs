@@ -59,7 +59,7 @@ impl fmt::Display for Grammar {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "{}::=\t\t\t{}", self.symbol, self.description)?;
         for alt in self.alternatives.iter() {
-            writeln!(f, "| {}", alt)?;
+            writeln!(f, "| {alt}",)?;
         }
         Ok(())
     }

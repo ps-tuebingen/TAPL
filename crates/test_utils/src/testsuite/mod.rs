@@ -160,7 +160,7 @@ pub trait TestSuite {
     fn run_conf(conf: &Self::Config, inclusions: &TestInclusions) -> usize {
         let name = conf.name();
         let mut num_fails = 0;
-        println!("Running tests for {}", name);
+        println!("Running tests for {name}",);
 
         print!("\t");
         let prog = match Self::run_parse(conf) {
@@ -233,12 +233,12 @@ pub trait TestSuite {
         let mut num_fail = 0;
         if inclusions.grammar {
             print!("\t");
-            let res = Self::run_grammar(&self.name());
+            let res = Self::run_grammar(self.name());
             if matches!(res, TestResult::Fail(_)) {
                 num_fail += 1;
             }
         }
-        println!("");
+        println!();
 
         let configs = self.configs()?;
         let num_tests = configs.len() * inclusions.num_tests();

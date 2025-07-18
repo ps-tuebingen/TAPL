@@ -22,7 +22,7 @@ impl LatexFmt for SpecialChar {
             SpecialChar::Equals => format!("{env_start}={env_end}"),
             SpecialChar::Plus => format!("{env_start}+{env_end}"),
             SpecialChar::Times => format!("{env_start}\\times{env_end}"),
-            SpecialChar::Empty => format!(""),
+            SpecialChar::Empty => "".to_owned(),
             SpecialChar::Arrow => format!("{env_start}\\rightarrow{env_end}"),
             SpecialChar::DoubleArrow => format!("{env_start}\\Rightarrow{env_end}"),
             SpecialChar::Space => format!("{env_start}\\, {env_end}"),

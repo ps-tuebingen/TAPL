@@ -76,7 +76,7 @@ impl GroupParse for Type {
             Rule::sink_type => Ok(Sink::from_pair(p, ())?.into()),
             Rule::source_type => Ok(Source::from_pair(p, ())?.into()),
             Rule::paren_type => Self::from_pair(pair_to_n_inner(p, vec!["Type"])?.remove(0), ()),
-            r => Err(UnexpectedRule::new(r, &format!("Non Left-Recursive Type ({:?})", p)).into()),
+            r => Err(UnexpectedRule::new(r, &format!("Non Left-Recursive Type ({p:?})",)).into()),
         }
     }
     fn from_pair_leftrec(p: Pair<'_, Rule>, ty: Type) -> Result<Type, ParserError> {

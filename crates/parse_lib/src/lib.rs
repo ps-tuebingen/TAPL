@@ -32,7 +32,7 @@ pub trait Parse: Sized {
             .ok_or(MissingInput::new(&format!("{:?}", Self::RULE)))?;
         let result = Self::from_pair(rule, Default::default())?;
         if let Some(rule) = pairs.next() {
-            Err(RemainingInput::new(&format!("{:?}", rule)).into())
+            Err(RemainingInput::new(&format!("{rule:?}",)).into())
         } else {
             Ok(result)
         }
