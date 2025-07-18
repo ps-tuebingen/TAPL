@@ -55,7 +55,7 @@ where
     }
 }
 
-pub trait Language: LanguageDescribe {
+/*pub trait Language: LanguageDescribe {
     type Term: Term
         + GroupParse
         + SubstTerm<Self::Term, Target = Self::Term>
@@ -187,4 +187,4 @@ pub trait Language: LanguageDescribe {
             FormatMethod::Debug => format!("{grammars:?}",),
         }
     }
-}
+}*/
