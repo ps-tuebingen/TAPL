@@ -3,6 +3,7 @@ use syntax::{
     env::Environment,
     types::{Source, TypeGroup},
 };
+
 impl<Ty> Subtypecheck<Ty> for Source<Ty>
 where
     Ty: TypeGroup + Subtypecheck<Ty>,

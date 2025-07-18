@@ -1,5 +1,5 @@
 use super::{terms::Term, types::Type};
-use common::errors::{ValueKind, ValueMismatch};
+use errors::{ValueKind, ValueMismatch};
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;

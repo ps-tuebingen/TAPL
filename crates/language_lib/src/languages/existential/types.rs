@@ -1,4 +1,4 @@
-use common::errors::{TypeKind, TypeMismatch};
+use errors::{TypeKind, TypeMismatch};
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;

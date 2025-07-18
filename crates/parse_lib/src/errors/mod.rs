@@ -1,5 +1,5 @@
 use super::Rule;
-use common::errors::DuplicateDefinition;
+use errors::DuplicateDefinition;
 use pest::error::Error as PestErr;
 use std::fmt;
 

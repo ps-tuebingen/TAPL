@@ -1,5 +1,5 @@
 use super::terms::Term;
-use common::errors::ValueKind;
+use errors::ValueKind;
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
 use syntax::untyped::Untyped;
