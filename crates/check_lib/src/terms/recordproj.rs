@@ -1,6 +1,6 @@
 use crate::{Kindcheck, Normalize, Typecheck, errors::CheckError};
-use common::errors::UndefinedLabel;
 use derivation::{Conclusion, TypingDerivation};
+use errors::UndefinedLabel;
 use syntax::{
     env::Environment,
     terms::{RecordProj, Term},

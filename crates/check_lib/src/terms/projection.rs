@@ -1,6 +1,6 @@
 use crate::{Kindcheck, Normalize, Typecheck, errors::CheckError};
-use common::errors::IndexOutOfBounds;
 use derivation::{Conclusion, TypingDerivation};
+use errors::IndexOutOfBounds;
 use syntax::{
     env::Environment,
     terms::{Projection, Term},

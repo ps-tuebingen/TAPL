@@ -1,6 +1,6 @@
 use crate::{Kindcheck, Normalize, Typecheck, errors::CheckError, errors::EmptyCase};
-use common::errors::{TypeMismatch, UndefinedLabel};
 use derivation::{Conclusion, TypingDerivation};
+use errors::{TypeMismatch, UndefinedLabel};
 use syntax::{
     env::Environment,
     terms::{Term, VariantCase},

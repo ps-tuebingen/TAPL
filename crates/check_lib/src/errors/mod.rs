@@ -1,4 +1,4 @@
-use common::errors::{
+use errors::{
     FreeTypeVariable, FreeVariable, IndexOutOfBounds, KindMismatch, NameMismatch, TypeMismatch,
     UndefinedLabel, UndefinedLocation,
 };

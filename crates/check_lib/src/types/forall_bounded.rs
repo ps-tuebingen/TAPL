@@ -1,5 +1,5 @@
 use crate::{Kindcheck, Normalize, Subtypecheck, errors::CheckError};
-use common::errors::NameMismatch;
+use errors::NameMismatch;
 use syntax::{
     env::Environment,
     kinds::Kind,

@@ -1,5 +1,5 @@
 use crate::{Subtypecheck, errors::CheckError};
-use common::errors::UndefinedLabel;
+use errors::UndefinedLabel;
 use syntax::{
     env::Environment,
     types::{TypeGroup, Variant},

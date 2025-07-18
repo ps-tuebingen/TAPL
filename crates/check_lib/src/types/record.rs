@@ -1,5 +1,5 @@
 use crate::{Kindcheck, Normalize, Subtypecheck, errors::CheckError};
-use common::errors::UndefinedLabel;
+use errors::UndefinedLabel;
 use std::collections::HashMap;
 use syntax::{
     env::Environment,

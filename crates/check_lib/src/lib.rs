@@ -26,10 +26,7 @@ where
     Self: Type,
     Ty: Type,
 {
-    type Term: Term;
-    type Type: Type;
-    type Deriv: Derivation<Self::Term, Self::Type>;
-    fn check_subtype(&self, sup: &Ty, env: Environment<Ty>) -> Result<Self::Deriv, CheckError>;
+    fn check_subtype(&self, sup: &Ty, env: Environment<Ty>) -> Result<(), CheckError>;
 }
 
 pub trait Kindcheck<Ty>
