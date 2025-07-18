@@ -1,5 +1,5 @@
 use crate::{Eval, errors::EvalError};
-use common::errors::IndexOutOfBounds;
+use errors::IndexOutOfBounds;
 use syntax::{
     eval_context::EvalContext,
     terms::{Projection, Term},

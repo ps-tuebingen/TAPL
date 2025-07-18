@@ -1,5 +1,5 @@
 use crate::{Eval, errors::EvalError};
-use common::errors::{ValueKind, ValueMismatch};
+use errors::{ValueKind, ValueMismatch};
 use syntax::{
     eval_context::EvalContext,
     subst::SubstTerm,

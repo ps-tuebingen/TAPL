@@ -1,5 +1,5 @@
 use crate::{Eval, errors::EvalError};
-use common::errors::UndefinedLabel;
+use errors::UndefinedLabel;
 use syntax::{
     eval_context::EvalContext,
     subst::SubstTerm,

@@ -1,6 +1,4 @@
-use common::errors::{
-    FreeVariable, IndexOutOfBounds, UndefinedLabel, UndefinedLocation, ValueMismatch,
-};
+use errors::{FreeVariable, IndexOutOfBounds, UndefinedLabel, UndefinedLocation, ValueMismatch};
 use std::fmt;
 
 #[derive(Debug)]
