@@ -1,0 +1,69 @@
+digraph crates{
+  check
+  derivation
+  eval
+  language
+  parse
+  test_utils
+  web
+  cli
+  errors
+  grammar
+  latex
+  syntax
+  trace
+
+  errors -> check
+  syntax -> check
+  derivation -> check
+
+  syntax -> derivation
+
+  errors -> eval
+  syntax -> eval
+  trace -> eval
+
+  errors -> language
+  syntax -> language
+  parse -> language
+  eval -> language
+  check -> language
+  derivation -> language
+  trace -> language
+  latex -> language
+  grammar -> language
+
+  errors-> parse
+  syntax-> parse
+
+  errors -> test_utils
+  check -> test_utils
+  eval -> test_utils
+  language -> test_utils
+  derivation -> test_utils
+  trace -> test_utils
+  syntax -> test_utils
+  latex -> test_utils
+  parse -> test_utils
+  grammar -> test_utils
+
+  errors-> web
+  language -> web
+
+  errors -> cli
+  language -> cli
+  grammar -> cli
+
+  syntax -> grammar
+
+  syntax-> latex
+  derivation-> latex
+  trace-> latex
+  grammar-> latex
+
+  errors -> syntax
+
+  syntax -> trace
+
+
+}  
