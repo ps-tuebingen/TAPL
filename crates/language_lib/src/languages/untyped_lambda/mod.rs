@@ -16,7 +16,12 @@ impl Language for UntypedLambda {
     type Term = Term;
     type Type = Untyped;
     type Value = Value;
+
+    fn describe(&self) -> &str {
+        "Untyped Lambda Calculus"
+    }
 }
+
 impl LanguageDescribe for UntypedLambda {
     fn grammars() -> LanguageGrammar {
         LanguageGrammar {

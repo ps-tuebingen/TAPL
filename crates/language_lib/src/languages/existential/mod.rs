@@ -18,7 +18,12 @@ impl Language for Existential {
     type Term = Term;
     type Type = Type;
     type Value = Value;
+
+    fn describe(&self) -> &str {
+        "STLC with Existential Types"
+    }
 }
+
 impl LanguageDescribe for Existential {
     fn grammars() -> LanguageGrammar {
         LanguageGrammar {

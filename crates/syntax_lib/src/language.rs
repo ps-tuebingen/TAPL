@@ -13,4 +13,6 @@ pub trait Language {
     type Type: TypeGroup + SubstType<Self::Type, Target = Self::Type>;
 
     type Value: ValueGroup<Term = Self::Term, Type = Self::Type>;
+
+    fn describe(&self) -> &str;
 }

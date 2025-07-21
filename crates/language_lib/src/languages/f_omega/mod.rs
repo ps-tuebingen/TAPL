@@ -18,7 +18,12 @@ impl Language for FOmega {
     type Term = Term;
     type Type = Type;
     type Value = Value;
+
+    fn describe(&self) -> &str {
+        "Higher Kinded System F"
+    }
 }
+
 impl LanguageDescribe for FOmega {
     fn grammars() -> LanguageGrammar {
         LanguageGrammar {

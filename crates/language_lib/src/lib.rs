@@ -6,6 +6,7 @@ use grammar::LanguageDescribe;
 use latex::{LatexConfig, LatexFmt};
 use parse::{GroupParse, Parse};
 use syntax::{
+    language::Language,
     program::Program,
     subst::{SubstTerm, SubstType},
     terms::Term,
@@ -55,7 +56,7 @@ where
     }
 }
 
-pub trait Language: LanguageDescribe {
+/*pub trait Language: LanguageDescribe {
     type Term: Term
         + GroupParse
         + SubstTerm<Self::Term, Target = Self::Term>
@@ -187,4 +188,4 @@ pub trait Language: LanguageDescribe {
             FormatMethod::Debug => format!("{grammars:?}",),
         }
     }
-}
+}*/

@@ -18,7 +18,12 @@ impl Language for Stlc {
     type Term = Term;
     type Type = Type;
     type Value = Value;
+
+    fn describe(&self) -> &str {
+        "Simply-Typed Lambda Calculus"
+    }
 }
+
 impl LanguageDescribe for Stlc {
     fn grammars() -> LanguageGrammar {
         LanguageGrammar {

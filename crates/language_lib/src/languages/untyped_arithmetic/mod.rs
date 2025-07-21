@@ -16,6 +16,10 @@ impl Language for UntypedArithmetic {
     type Term = Term;
     type Type = Untyped;
     type Value = Value;
+
+    fn describe(&self) -> &str {
+        "Untyped Arithmetic Expressions"
+    }
 }
 
 impl LanguageDescribe for UntypedArithmetic {

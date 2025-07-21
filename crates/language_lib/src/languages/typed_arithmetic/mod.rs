@@ -18,7 +18,11 @@ impl Language for TypedArithmetic {
     type Term = Term;
     type Type = Type;
     type Value = Value;
+    fn describe(&self) -> &str {
+        "Typed Arithmetic Expressions"
+    }
 }
+
 impl LanguageDescribe for TypedArithmetic {
     fn grammars() -> LanguageGrammar {
         LanguageGrammar {

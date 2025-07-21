@@ -1,5 +1,3 @@
-pub mod check;
-pub mod eval;
 pub mod parser;
 pub mod terms;
 pub mod types;
@@ -18,7 +16,12 @@ impl Language for Subtypes {
     type Term = Term;
     type Type = Type;
     type Value = Value;
+
+    fn describe(&self) -> &str {
+        "STLC with Subtyping"
+    }
 }
+
 impl LanguageDescribe for Subtypes {
     fn grammars() -> LanguageGrammar {
         LanguageGrammar {

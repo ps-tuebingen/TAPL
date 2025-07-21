@@ -18,7 +18,12 @@ impl Language for BoundedQuantification {
     type Term = Term;
     type Type = Type;
     type Value = Value;
+
+    fn describe(&self) -> &str {
+        "System F with Bounded Quantification"
+    }
 }
+
 impl LanguageDescribe for BoundedQuantification {
     fn grammars() -> LanguageGrammar {
         LanguageGrammar {

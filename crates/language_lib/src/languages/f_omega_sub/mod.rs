@@ -18,7 +18,12 @@ impl Language for FOmegaSub {
     type Term = Term;
     type Type = Type;
     type Value = Value;
+
+    fn describe(&self) -> &str {
+        "Higher Kinded System F with Subtyping"
+    }
 }
+
 impl LanguageDescribe for FOmegaSub {
     fn grammars() -> LanguageGrammar {
         LanguageGrammar {

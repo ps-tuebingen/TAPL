@@ -18,7 +18,12 @@ impl Language for Recursive {
     type Term = Term;
     type Type = Type;
     type Value = Value;
+
+    fn describe(&self) -> &str {
+        "STLC with Recursive Types"
+    }
 }
+
 impl LanguageDescribe for Recursive {
     fn grammars() -> LanguageGrammar {
         LanguageGrammar {

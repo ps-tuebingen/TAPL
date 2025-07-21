@@ -18,7 +18,12 @@ impl Language for SystemF {
     type Term = Term;
     type Type = Type;
     type Value = Value;
+
+    fn describe(&self) -> &str {
+        "System F"
+    }
 }
+
 impl LanguageDescribe for SystemF {
     fn grammars() -> LanguageGrammar {
         LanguageGrammar {

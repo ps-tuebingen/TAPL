@@ -18,7 +18,12 @@ impl Language for Exceptions {
     type Term = Term;
     type Type = Type;
     type Value = Value;
+
+    fn describe(&self) -> &str {
+        "STLC with Exceptions"
+    }
 }
+
 impl LanguageDescribe for Exceptions {
     fn grammars() -> LanguageGrammar {
         LanguageGrammar {

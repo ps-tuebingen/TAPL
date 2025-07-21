@@ -18,7 +18,12 @@ impl Language for LambdaOmega {
     type Term = Term;
     type Type = Type;
     type Value = Value;
+
+    fn describe(&self) -> &str {
+        "STLC with Higher Kinded Types"
+    }
 }
+
 impl LanguageDescribe for LambdaOmega {
     fn grammars() -> LanguageGrammar {
         LanguageGrammar {

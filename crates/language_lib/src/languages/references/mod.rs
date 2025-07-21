@@ -18,7 +18,12 @@ impl Language for References {
     type Term = Term;
     type Type = Type;
     type Value = Value;
+
+    fn describe(&self) -> &str {
+        "STLC with Referencs"
+    }
 }
+
 impl LanguageDescribe for References {
     fn grammars() -> LanguageGrammar {
         LanguageGrammar {

@@ -39,25 +39,6 @@ impl AllLanguages {
         ]
     }
 
-    pub fn describe(&self) -> &str {
-        match self {
-            Self::UntypedArithmetic(_) => "Untyped Arithmetic Expressions",
-            Self::UntypedLambda(_) => "Untyped Lambda Calculus",
-            Self::TypedArithmetic(_) => "Typed Arithmetic Expressions",
-            Self::Stlc(_) => "Simply-Typed Lambda Calculus",
-            Self::References(_) => "STLC with Referencs",
-            Self::Exceptions(_) => "STLC with Exceptions",
-            Self::Subtypes(_) => "STLC with Subtyping",
-            Self::Recursive(_) => "STLC with Recursive Types",
-            Self::Existential(_) => "STLC with Existential Types",
-            Self::SystemF(_) => "System F",
-            Self::BoundedQuantification(_) => "System F with Bounded Quantification",
-            Self::LambdaOmega(_) => "STLC with Higher Kinded Types",
-            Self::FOmega(_) => "Higher Kinded System F",
-            Self::FOmegaSub(_) => "Higher Kinded System F with Subtyping",
-        }
-    }
-
     pub fn parse(
         &self,
         input: String,
