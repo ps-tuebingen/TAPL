@@ -1,0 +1,14 @@
+[package]
+name = "driver"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+latex = { path="../latex_lib" }
+parse = { path="../parse_lib" }
+check = { path="../check_lib" }
+eval = { path="../eval_lib" }
+syntax = { path="../syntax_lib" }
+errors = { path="../error_lib" }
+derivation = { path="../derivation_lib" }
+trace = { path="../trace_lib" }
