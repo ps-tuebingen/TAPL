@@ -3,7 +3,6 @@ use crate::{
     types::Type,
     values::{Value, ValueGroup},
 };
-use errors::ValueKind;
 use std::fmt;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -23,10 +22,6 @@ where
     Ty: Type,
 {
     type Term = Definition<<V as Value>::Term, Ty>;
-
-    fn knd(&self) -> ValueKind {
-        self.body.knd()
-    }
 }
 
 impl<V, Ty> ValueGroup for DefinitionValue<V, Ty>

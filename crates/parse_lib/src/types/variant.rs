@@ -1,7 +1,6 @@
-use crate::{
-    Parse, Rule,
-    errors::{MissingInput, ParserError},
-};
+use crate::{Parse, Rule};
+
+use errors::{MissingInput, parse_error::ParserError};
 use pest::iterators::Pair;
 use std::collections::HashMap;
 use syntax::types::{Type, Variant};

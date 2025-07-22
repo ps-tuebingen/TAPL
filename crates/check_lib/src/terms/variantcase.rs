@@ -1,10 +1,11 @@
-use crate::{Kindcheck, Normalize, Typecheck, errors::CheckError, errors::EmptyCase};
+use crate::{Kindcheck, Normalize, Typecheck};
 use derivation::{Conclusion, TypingDerivation};
+use errors::{EmptyCase, check_error::CheckError};
 use errors::{TypeMismatch, UndefinedLabel};
 use syntax::{
     env::Environment,
     terms::{Term, VariantCase},
-    types::{Type, TypeGroup},
+    types::TypeGroup,
 };
 
 impl<T> Typecheck for VariantCase<T>
@@ -61,7 +62,7 @@ where
 
         let rhs_fst = rhs_tys.remove(0);
         if let Some(ty) = rhs_tys.iter().find(|ty| rhs_fst.check_equal(ty).is_err()) {
-            return Err(TypeMismatch::new(ty.knd(), rhs_fst.knd()).into());
+            return Err(TypeMismatch::new(ty.to_string(), rhs_fst.to_string()).into());
         }
 
         let conc = Conclusion::new(env, self.clone(), rhs_fst);

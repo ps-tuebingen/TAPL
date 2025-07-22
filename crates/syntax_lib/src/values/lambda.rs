@@ -4,7 +4,6 @@ use crate::{
     terms::{Lambda as LambdaT, Term},
     types::Type,
 };
-use errors::ValueKind;
 use std::fmt;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -42,10 +41,6 @@ where
     Ty: Type,
 {
     type Term = LambdaT<T, Ty>;
-
-    fn knd(&self) -> ValueKind {
-        ValueKind::Lambda
-    }
 }
 
 impl<T, Ty> From<Lambda<T, Ty>> for LambdaT<T, Ty>

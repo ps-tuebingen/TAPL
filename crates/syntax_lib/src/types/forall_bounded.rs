@@ -1,6 +1,5 @@
 use super::{Top, Type};
 use crate::{TypeVar, subst::SubstType};
-use errors::TypeKind;
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -42,14 +41,7 @@ where
     }
 }
 
-impl<Ty> Type for ForallBounded<Ty>
-where
-    Ty: Type,
-{
-    fn knd(&self) -> TypeKind {
-        TypeKind::Universal
-    }
-}
+impl<Ty> Type for ForallBounded<Ty> where Ty: Type {}
 
 impl<Ty> SubstType<Ty> for ForallBounded<Ty>
 where

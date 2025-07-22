@@ -1,6 +1,5 @@
 use super::Value;
 use crate::{terms::Pack as PackT, types::Type};
-use errors::ValueKind;
 use std::fmt;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -39,10 +38,6 @@ where
     Ty: Type,
 {
     type Term = PackT<<V as Value>::Term, Ty>;
-
-    fn knd(&self) -> ValueKind {
-        ValueKind::Package
-    }
 }
 
 impl<V, Ty> From<Pack<V, Ty>> for PackT<<V as Value>::Term, Ty>

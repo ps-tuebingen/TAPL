@@ -3,7 +3,6 @@ use crate::{
     terms::{Nothing as NothingT, Term},
     types::Type,
 };
-use errors::ValueKind;
 use std::{fmt, marker::PhantomData};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -38,10 +37,6 @@ where
     Ty: Type,
 {
     type Term = NothingT<T, Ty>;
-
-    fn knd(&self) -> ValueKind {
-        ValueKind::Nothing
-    }
 }
 
 impl<T, Ty> From<Nothing<T, Ty>> for NothingT<T, Ty>

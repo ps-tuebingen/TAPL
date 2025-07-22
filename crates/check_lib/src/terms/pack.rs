@@ -1,6 +1,7 @@
-use crate::{Kindcheck, Normalize, Subtypecheck, Typecheck, errors::CheckError};
+use crate::{Kindcheck, Normalize, Subtypecheck, Typecheck};
 use derivation::{Conclusion, TypingDerivation};
-use errors::{TypeKind, TypeMismatch};
+use errors::TypeMismatch;
+use errors::check_error::CheckError;
 use syntax::{
     env::Environment,
     subst::SubstType,
@@ -62,7 +63,7 @@ where
 
             Ok(deriv)
         } else {
-            Err(TypeMismatch::new(outer_norm.knd(), TypeKind::Existential).into())
+            Err(TypeMismatch::new(outer_norm.to_string(), "Existential Type".to_owned()).into())
         }
     }
 }

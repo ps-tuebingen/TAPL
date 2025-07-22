@@ -1,4 +1,5 @@
-use crate::{Subtypecheck, errors::CheckError};
+use crate::Subtypecheck;
+use errors::check_error::CheckError;
 use syntax::{
     env::Environment,
     types::{Reference, TypeGroup},

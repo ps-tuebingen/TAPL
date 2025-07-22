@@ -1,4 +1,4 @@
-use errors::{FreeVariable, IndexOutOfBounds, UndefinedLabel, UndefinedLocation, ValueMismatch};
+use crate::{FreeVariable, IndexOutOfBounds, UndefinedLabel, UndefinedLocation, ValueMismatch};
 use std::fmt;
 
 #[derive(Debug)]

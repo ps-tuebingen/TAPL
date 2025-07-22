@@ -1,7 +1,5 @@
-use crate::{
-    Kindcheck, Normalize, Subtypecheck,
-    errors::{CheckError, NotASubtype},
-};
+use crate::{Kindcheck, Normalize, Subtypecheck};
+use errors::{NotASubtype, check_error::CheckError};
 use syntax::{
     env::Environment,
     kinds::Kind,

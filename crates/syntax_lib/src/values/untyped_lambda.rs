@@ -3,7 +3,6 @@ use crate::{
     Var,
     terms::{Term, UntypedLambda as UntypedLambdaT},
 };
-use errors::ValueKind;
 use std::fmt;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -35,10 +34,6 @@ where
     T: Term,
 {
     type Term = UntypedLambdaT<T>;
-
-    fn knd(&self) -> ValueKind {
-        ValueKind::Lambda
-    }
 }
 
 impl<T> From<UntypedLambda<T>> for UntypedLambdaT<T>

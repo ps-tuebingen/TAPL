@@ -1,7 +1,5 @@
-use crate::{
-    Rule,
-    errors::{ParserError, UnknownKeyword},
-};
+use crate::Rule;
+use errors::{UnknownKeyword, parse_error::ParserError};
 use pest::iterators::Pair;
 use syntax::terms::{False, Num, Term, True, Unit};
 

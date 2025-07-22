@@ -1,5 +1,4 @@
 use crate::terms::Term;
-use errors::ValueKind;
 use std::fmt;
 
 pub trait Value
@@ -11,8 +10,6 @@ where
     fn into_term(self) -> Self::Term {
         self.into()
     }
-
-    fn knd(&self) -> ValueKind;
 }
 
 pub mod group;

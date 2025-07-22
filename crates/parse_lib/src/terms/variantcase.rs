@@ -1,8 +1,5 @@
-use crate::{
-    Parse, Rule,
-    errors::{MissingInput, ParserError},
-    pair_to_n_inner,
-};
+use crate::{Parse, Rule, pair_to_n_inner};
+use errors::{MissingInput, parse_error::ParserError};
 use pest::iterators::Pair;
 use syntax::terms::{Term, VariantCase, variantcase::VariantPattern};
 

@@ -1,6 +1,5 @@
 use super::Type;
 use crate::{TypeVar, subst::SubstType};
-use errors::TypeKind;
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -28,14 +27,7 @@ where
     }
 }
 
-impl<Ty> Type for OpApp<Ty>
-where
-    Ty: Type,
-{
-    fn knd(&self) -> TypeKind {
-        TypeKind::OpApp
-    }
-}
+impl<Ty> Type for OpApp<Ty> where Ty: Type {}
 
 impl<Ty> SubstType<Ty> for OpApp<Ty>
 where

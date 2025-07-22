@@ -1,10 +1,11 @@
-use crate::{Eval, errors::EvalError};
-use errors::{ValueKind, ValueMismatch};
+use crate::Eval;
+use errors::ValueMismatch;
+use errors::eval_error::EvalError;
 use syntax::{
     eval_context::EvalContext,
     subst::SubstTerm,
     terms::{SumCase, Term},
-    values::{Value, ValueGroup},
+    values::ValueGroup,
 };
 use trace::{EvalStep, EvalTrace};
 
@@ -65,7 +66,7 @@ where
             right_steps.insert(0, next_step);
             (right_steps, right_val)
         } else {
-            return Err(ValueMismatch::new(bound_val.knd(), ValueKind::Sum).into());
+            return Err(ValueMismatch::new(bound_val.to_string(), "Sum Term".to_owned()).into());
         };
 
         let mut steps = bound_res.congruence(&move |t| {

@@ -1,15 +1,14 @@
-use crate::Rule;
 use std::fmt;
 
 #[derive(Debug)]
 pub struct UnexpectedRule {
-    found: Rule,
+    found: String,
     expected: String,
 }
 impl UnexpectedRule {
-    pub fn new(found: Rule, expected: &str) -> UnexpectedRule {
+    pub fn new(found: &str, expected: &str) -> UnexpectedRule {
         UnexpectedRule {
-            found,
+            found: found.to_owned(),
             expected: expected.to_owned(),
         }
     }

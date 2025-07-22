@@ -1,9 +1,10 @@
-use crate::{Eval, errors::EvalError};
-use errors::{ValueKind, ValueMismatch};
+use crate::Eval;
+use errors::ValueMismatch;
+use errors::eval_error::EvalError;
 use syntax::{
     eval_context::EvalContext,
     terms::{If, Term},
-    values::{Value, ValueGroup},
+    values::ValueGroup,
 };
 use trace::{EvalStep, EvalTrace};
 
@@ -39,7 +40,9 @@ where
                 self.else_term.clone().eval(env)?,
             )
         } else {
-            return Err(ValueMismatch::new(cond_val.knd(), ValueKind::Bool).into());
+            return Err(
+                ValueMismatch::new(cond_val.to_string(), "Boolean Value".to_owned()).into(),
+            );
         };
         let branch_val = branch_res.val();
 

@@ -1,6 +1,4 @@
-use check::errors::CheckError;
-use eval::errors::EvalError;
-use parse::errors::ParserError;
+use crate::{check_error::CheckError, eval_error::EvalError, parse_error::ParserError};
 use std::fmt;
 
 #[derive(Debug)]

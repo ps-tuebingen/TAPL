@@ -1,6 +1,7 @@
-use crate::{Kindcheck, Normalize, Typecheck, errors::CheckError};
+use crate::{Kindcheck, Normalize, Typecheck};
 use derivation::{Conclusion, TypingDerivation};
-use errors::{NameMismatch, TypeKind, TypeMismatch};
+use errors::check_error::CheckError;
+use errors::{NameMismatch, TypeMismatch};
 use syntax::{
     env::Environment,
     terms::{Term, Unpack},
@@ -48,7 +49,7 @@ where
             let deriv = TypingDerivation::unpack_bounded(conc, bound_res, inner_res);
             Ok(deriv)
         } else {
-            Err(TypeMismatch::new(bound_ty.knd(), TypeKind::Existential).into())
+            Err(TypeMismatch::new(bound_ty.to_string(), "Existential Type".to_owned()).into())
         }
     }
 }

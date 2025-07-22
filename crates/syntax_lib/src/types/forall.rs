@@ -1,6 +1,5 @@
 use super::Type;
 use crate::{TypeVar, kinds::Kind, subst::SubstType};
-use errors::TypeKind;
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -29,14 +28,7 @@ where
     }
 }
 
-impl<Ty> Type for Forall<Ty>
-where
-    Ty: Type,
-{
-    fn knd(&self) -> TypeKind {
-        TypeKind::Universal
-    }
-}
+impl<Ty> Type for Forall<Ty> where Ty: Type {}
 
 impl<Ty> SubstType<Ty> for Forall<Ty>
 where

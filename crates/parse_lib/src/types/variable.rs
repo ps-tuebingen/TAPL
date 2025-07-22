@@ -1,4 +1,5 @@
-use crate::{Parse, Rule, errors::ParserError};
+use crate::{Parse, Rule};
+use errors::parse_error::ParserError;
 use pest::iterators::Pair;
 use syntax::types::{Type, TypeVariable};
 

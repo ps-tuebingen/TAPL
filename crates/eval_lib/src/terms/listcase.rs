@@ -1,10 +1,11 @@
-use crate::{Eval, errors::EvalError};
-use errors::{ValueKind, ValueMismatch};
+use crate::Eval;
+use errors::ValueMismatch;
+use errors::eval_error::EvalError;
 use syntax::{
     eval_context::EvalContext,
     subst::SubstTerm,
     terms::{ListCase, Term},
-    values::{Value, ValueGroup},
+    values::ValueGroup,
 };
 use trace::{EvalStep, EvalTrace};
 
@@ -61,7 +62,7 @@ where
             steps.insert(0, next_step);
             (steps, cons_val)
         } else {
-            return Err(ValueMismatch::new(bound_val.knd(), ValueKind::List).into());
+            return Err(ValueMismatch::new(bound_val.to_string(), "List".to_owned()).into());
         };
 
         let mut steps = bound_res.congruence(&move |t| {

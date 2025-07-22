@@ -1,6 +1,7 @@
-use crate::{Kindcheck, Normalize, Typecheck, errors::CheckError};
+use crate::{Kindcheck, Normalize, Typecheck};
 use derivation::{Conclusion, TypingDerivation};
 use errors::UndefinedLabel;
+use errors::check_error::CheckError;
 use syntax::{
     env::Environment,
     terms::{Term, Variant},

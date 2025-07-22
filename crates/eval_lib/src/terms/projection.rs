@@ -1,5 +1,6 @@
-use crate::{Eval, errors::EvalError};
+use crate::Eval;
 use errors::IndexOutOfBounds;
+use errors::eval_error::EvalError;
 use syntax::{
     eval_context::EvalContext,
     terms::{Projection, Term},

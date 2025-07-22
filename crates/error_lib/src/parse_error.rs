@@ -1,23 +1,12 @@
-use super::Rule;
-use errors::DuplicateDefinition;
-use pest::error::Error as PestErr;
+use crate::{
+    DuplicateDefinition, MissingInput, RemainingInput, UndefinedMain, UnexpectedRule,
+    UnknownKeyword,
+};
 use std::fmt;
-
-pub mod missing_input;
-pub mod remaining_input;
-pub mod undefined_main;
-pub mod unexpected_rule;
-pub mod unknown_keyword;
-
-pub use missing_input::MissingInput;
-pub use remaining_input::RemainingInput;
-pub use undefined_main::UndefinedMain;
-pub use unexpected_rule::UnexpectedRule;
-pub use unknown_keyword::UnknownKeyword;
 
 #[derive(Debug)]
 pub enum ParserError {
-    Pest(Box<PestErr<Rule>>),
+    Pest(String),
     MissingInput(MissingInput),
     RemainingInput(RemainingInput),
     UnexpectedRule(UnexpectedRule),
@@ -66,9 +55,12 @@ impl From<UnknownKeyword> for ParserError {
     }
 }
 
-impl From<PestErr<Rule>> for ParserError {
-    fn from(err: PestErr<Rule>) -> ParserError {
-        ParserError::Pest(Box::new(err))
+impl<T> From<pest::error::Error<T>> for ParserError
+where
+    T: fmt::Debug,
+{
+    fn from(err: pest::error::Error<T>) -> ParserError {
+        ParserError::Pest(format!("{err:?}"))
     }
 }
 

@@ -1,5 +1,6 @@
-use crate::{Kindcheck, Normalize, Subtypecheck, errors::CheckError};
-use errors::{KindKind, KindMismatch};
+use crate::{Kindcheck, Normalize, Subtypecheck};
+use errors::KindMismatch;
+use errors::check_error::CheckError;
 use syntax::{
     env::Environment,
     kinds::Kind,
@@ -29,12 +30,12 @@ where
     fn check_kind(&self, env: Environment<Ty>) -> Result<Kind, CheckError> {
         let from_kind = self.from.check_kind(env.clone())?;
         if from_kind != Kind::Star {
-            return Err(KindMismatch::new(from_kind.into(), KindKind::Star).into());
+            return Err(KindMismatch::new(from_kind.to_string(), Kind::Star.to_string()).into());
         };
 
         let to_kind = self.to.check_kind(env)?;
         if to_kind != Kind::Star {
-            return Err(KindMismatch::new(to_kind.into(), KindKind::Star).into());
+            return Err(KindMismatch::new(to_kind.to_string(), Kind::Star.to_string()).into());
         }
         Ok(Kind::Star)
     }

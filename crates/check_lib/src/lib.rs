@@ -1,13 +1,12 @@
 use derivation::Derivation;
+use errors::check_error::CheckError;
 use syntax::{env::Environment, kinds::Kind, terms::Term, types::Type};
 
 pub mod definition;
-pub mod errors;
 pub mod program;
 pub mod terms;
 pub mod types;
 pub mod untyped;
-use errors::CheckError;
 
 pub trait Typecheck {
     type Type: Type;

@@ -1,5 +1,4 @@
 pub mod definition;
-pub mod errors;
 mod kinds;
 pub mod program;
 pub mod sugar;
@@ -7,7 +6,7 @@ pub mod terms;
 pub mod types;
 mod untyped;
 
-use errors::{MissingInput, ParserError, RemainingInput};
+use errors::{MissingInput, RemainingInput, parse_error::ParserError};
 use pest::{Parser, iterators::Pair};
 use pest_derive::Parser;
 

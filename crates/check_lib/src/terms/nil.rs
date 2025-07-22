@@ -1,5 +1,6 @@
-use crate::{Kindcheck, Normalize, Typecheck, errors::CheckError};
+use crate::{Kindcheck, Normalize, Typecheck};
 use derivation::{Conclusion, TypingDerivation};
+use errors::check_error::CheckError;
 use syntax::{
     env::Environment,
     terms::{Nil, Term},

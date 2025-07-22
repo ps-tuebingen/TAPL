@@ -1,7 +1,5 @@
-use crate::{
-    Parse, Rule,
-    errors::{MissingInput, ParserError, RemainingInput},
-};
+use crate::{Parse, Rule};
+use errors::{MissingInput, RemainingInput, parse_error::ParserError};
 use pest::iterators::Pair;
 use syntax::{
     terms::{Tail, Term},

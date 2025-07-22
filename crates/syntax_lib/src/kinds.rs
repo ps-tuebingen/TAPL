@@ -1,4 +1,4 @@
-use errors::{KindKind, KindMismatch};
+use errors::KindMismatch;
 use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -16,7 +16,7 @@ impl Kind {
         if let Kind::Star = self {
             Ok(self)
         } else {
-            Err(KindMismatch::new(self.into(), KindKind::Star))
+            Err(KindMismatch::new(self.to_string(), Kind::Star.to_string()))
         }
     }
 
@@ -24,7 +24,10 @@ impl Kind {
         if let Kind::Arrow(from, to) = self {
             Ok((*from, *to))
         } else {
-            Err(KindMismatch::new(self.into(), KindKind::Arrow))
+            Err(KindMismatch::new(
+                self.to_string(),
+                Kind::Arrow(Box::new(Kind::Star), Box::new(Kind::Star)).to_string(),
+            ))
         }
     }
 
@@ -32,7 +35,10 @@ impl Kind {
         if *self == *other {
             Ok(())
         } else {
-            Err(KindMismatch::new(other.clone().into(), self.clone().into()))
+            Err(KindMismatch::new(
+                other.clone().to_string(),
+                self.clone().to_string(),
+            ))
         }
     }
 }
@@ -42,15 +48,6 @@ impl fmt::Display for Kind {
         match self {
             Kind::Star => f.write_str("*"),
             Kind::Arrow(from, to) => write!(f, "({from}) => ({to})"),
-        }
-    }
-}
-
-impl From<Kind> for KindKind {
-    fn from(knd: Kind) -> KindKind {
-        match knd {
-            Kind::Star => KindKind::Star,
-            Kind::Arrow(_, _) => KindKind::Arrow,
         }
     }
 }

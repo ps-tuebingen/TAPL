@@ -1,4 +1,3 @@
-pub mod errors;
 pub mod load_tests;
 pub mod paths;
 pub mod test;

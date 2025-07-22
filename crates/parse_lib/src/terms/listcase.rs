@@ -1,8 +1,5 @@
-use crate::{
-    Parse, Rule,
-    errors::{ParserError, UnexpectedRule},
-    pair_to_n_inner,
-};
+use crate::{Parse, Rule, pair_to_n_inner};
+use errors::{UnexpectedRule, parse_error::ParserError};
 use pest::iterators::Pair;
 use syntax::terms::{ListCase, Term};
 
@@ -31,7 +28,11 @@ where
             (Rule::nil_pattern, Rule::cons_pattern) => (pt_fst_pair, pt_rst_pair),
             (Rule::cons_pattern, Rule::nil_pattern) => (pt_rst_pair, pt_fst_pair),
             _ => {
-                return Err(UnexpectedRule::new(pt_fst_pair.as_rule(), "List Patterns").into());
+                return Err(UnexpectedRule::new(
+                    &format!("{:?}", pt_fst_pair.as_rule()),
+                    "List Patterns",
+                )
+                .into());
             }
         };
 

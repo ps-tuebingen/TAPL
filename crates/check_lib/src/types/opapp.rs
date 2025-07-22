@@ -1,5 +1,6 @@
-use crate::{Kindcheck, Normalize, Subtypecheck, errors::CheckError};
+use crate::{Kindcheck, Normalize, Subtypecheck};
 use errors::KindMismatch;
+use errors::check_error::CheckError;
 use syntax::{
     env::Environment,
     kinds::Kind,
@@ -33,7 +34,7 @@ where
         if fun_from == arg_kind {
             Ok(fun_to)
         } else {
-            Err(KindMismatch::new(arg_kind.into(), fun_from.into()).into())
+            Err(KindMismatch::new(arg_kind.to_string(), fun_from.to_string()).into())
         }
     }
 }

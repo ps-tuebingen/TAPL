@@ -1,6 +1,5 @@
 use super::Value;
 use crate::terms::{Term, Unit as UnitT};
-use errors::ValueKind;
 use std::{fmt, marker::PhantomData};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -36,10 +35,6 @@ where
     T: Term,
 {
     type Term = UnitT<T>;
-
-    fn knd(&self) -> ValueKind {
-        ValueKind::Unit
-    }
 }
 
 impl<T> From<Unit<T>> for UnitT<T>

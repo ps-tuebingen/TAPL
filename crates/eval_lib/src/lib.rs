@@ -1,7 +1,6 @@
-pub mod errors;
 pub mod terms;
 
-use errors::EvalError;
+use errors::eval_error::EvalError;
 use syntax::{
     eval_context::EvalContext, program::Program, terms::Term, types::Type, values::ValueGroup,
 };

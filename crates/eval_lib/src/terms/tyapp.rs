@@ -1,11 +1,12 @@
-use crate::{Eval, errors::EvalError};
-use errors::{ValueKind, ValueMismatch};
+use crate::Eval;
+use errors::ValueMismatch;
+use errors::eval_error::EvalError;
 use syntax::{
     eval_context::EvalContext,
     subst::SubstType,
     terms::{Term, TyApp},
     types::Type,
-    values::{Value, ValueGroup},
+    values::ValueGroup,
 };
 use trace::{EvalStep, EvalTrace};
 
@@ -45,7 +46,9 @@ where
             steps.push(next_step);
             (steps, term_val)
         } else {
-            return Err(ValueMismatch::new(fun_val.knd(), ValueKind::LambdaSub).into());
+            return Err(
+                ValueMismatch::new(fun_val.to_string(), "LambdaSub Term".to_owned()).into(),
+            );
         };
 
         let mut steps = fun_res.congruence(&move |t| TyApp::new(t, self.arg.clone()).into());

@@ -1,6 +1,5 @@
 use super::Value;
 use crate::terms::{Num as NumT, Term};
-use errors::ValueKind;
 use std::{fmt, marker::PhantomData};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -29,10 +28,6 @@ where
     T: Term,
 {
     type Term = NumT<T>;
-
-    fn knd(&self) -> ValueKind {
-        ValueKind::Number
-    }
 }
 
 impl<T> From<Num<T>> for NumT<T>

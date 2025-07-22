@@ -1,6 +1,6 @@
-use crate::{Kindcheck, Normalize, Subtypecheck, Typecheck, errors::CheckError};
+use crate::{Kindcheck, Normalize, Subtypecheck, Typecheck};
 use derivation::{Conclusion, TypingDerivation};
-use errors::{TypeKind, TypeMismatch};
+use errors::{TypeMismatch, check_error::CheckError};
 use syntax::{
     env::Environment,
     subst::SubstType,
@@ -38,7 +38,7 @@ where
             let deriv = TypingDerivation::tyapp_bounded(conc, fun_res);
             Ok(deriv)
         } else {
-            Err(TypeMismatch::new(fun_ty.knd(), TypeKind::Universal).into())
+            Err(TypeMismatch::new(fun_ty.to_string(), "Universal Type".to_owned()).into())
         }
     }
 }

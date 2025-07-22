@@ -1,6 +1,5 @@
 use super::Type;
 use crate::{TypeVar, subst::SubstType};
-use errors::TypeKind;
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -24,14 +23,7 @@ where
     }
 }
 
-impl<Ty> Type for Fun<Ty>
-where
-    Ty: Type,
-{
-    fn knd(&self) -> TypeKind {
-        TypeKind::Function
-    }
-}
+impl<Ty> Type for Fun<Ty> where Ty: Type {}
 
 impl<Ty> SubstType<Ty> for Fun<Ty>
 where

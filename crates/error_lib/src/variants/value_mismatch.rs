@@ -1,14 +1,13 @@
-use super::kinds::ValueKind;
 use std::fmt;
 
 #[derive(Debug)]
 pub struct ValueMismatch {
-    found: ValueKind,
-    expected: ValueKind,
+    found: String,
+    expected: String,
 }
 
 impl ValueMismatch {
-    pub fn new(found: ValueKind, expected: ValueKind) -> ValueMismatch {
+    pub fn new(found: String, expected: String) -> ValueMismatch {
         ValueMismatch { found, expected }
     }
 }

@@ -3,7 +3,6 @@ use crate::{
     terms::{Exception as ExceptionT, Term},
     types::Type,
 };
-use errors::ValueKind;
 use std::{fmt, marker::PhantomData};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -38,10 +37,6 @@ where
     Ty: Type,
 {
     type Term = ExceptionT<T, Ty>;
-
-    fn knd(&self) -> ValueKind {
-        ValueKind::Exception
-    }
 }
 
 impl<T, Ty> From<Exception<T, Ty>> for ExceptionT<T, Ty>

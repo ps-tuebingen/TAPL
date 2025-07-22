@@ -1,6 +1,5 @@
 use super::Value;
 use crate::{Label, terms::Record as RecordT};
-use errors::ValueKind;
 use std::{collections::HashMap, fmt};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -30,10 +29,6 @@ where
     V: Value,
 {
     type Term = RecordT<<V as Value>::Term>;
-
-    fn knd(&self) -> ValueKind {
-        ValueKind::Record
-    }
 }
 
 impl<V> From<Record<V>> for RecordT<<V as Value>::Term>

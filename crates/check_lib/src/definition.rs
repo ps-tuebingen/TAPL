@@ -1,5 +1,6 @@
-use crate::{Typecheck, errors::CheckError};
+use crate::Typecheck;
 use derivation::{DefinitionDerivation, TypingDerivation};
+use errors::check_error::CheckError;
 use syntax::{
     definition::Definition,
     env::Environment,

@@ -1,6 +1,5 @@
 use super::{OpLambdaSub, Top, Type};
 use crate::{TypeVar, kinds::Kind, subst::SubstType};
-use errors::TypeKind;
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -36,14 +35,7 @@ where
     }
 }
 
-impl<Ty> Type for OpLambda<Ty>
-where
-    Ty: Type,
-{
-    fn knd(&self) -> TypeKind {
-        TypeKind::OpLambda
-    }
-}
+impl<Ty> Type for OpLambda<Ty> where Ty: Type {}
 
 impl<Ty> SubstType<Ty> for OpLambda<Ty>
 where

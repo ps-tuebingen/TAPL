@@ -1,10 +1,11 @@
-use crate::{Eval, errors::EvalError};
-use errors::{ValueKind, ValueMismatch};
+use crate::Eval;
+use errors::ValueMismatch;
+use errors::eval_error::EvalError;
 use syntax::{
     eval_context::EvalContext,
     terms::{False as FalseT, IsNil, Term, True as TrueT},
     types::Type,
-    values::{False, True, Value, ValueGroup},
+    values::{False, True, ValueGroup},
 };
 use trace::{EvalStep, EvalTrace};
 
@@ -35,7 +36,7 @@ where
             let last_step = EvalStep::isnil_false(self.ty.clone());
             (last_step, False::new().into())
         } else {
-            return Err(ValueMismatch::new(term_val.knd(), ValueKind::List).into());
+            return Err(ValueMismatch::new(term_val.to_string(), "List".to_owned()).into());
         };
         let mut steps = term_res.congruence(&move |t| IsNil::new(t, self.ty.clone()).into());
         steps.push(step);

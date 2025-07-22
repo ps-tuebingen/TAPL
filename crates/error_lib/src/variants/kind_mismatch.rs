@@ -1,14 +1,13 @@
-use super::KindKind;
 use std::fmt;
 
 #[derive(Debug)]
 pub struct KindMismatch {
-    found: KindKind,
-    expected: KindKind,
+    found: String,
+    expected: String,
 }
 
 impl KindMismatch {
-    pub fn new(found: KindKind, expected: KindKind) -> KindMismatch {
+    pub fn new(found: String, expected: String) -> KindMismatch {
         KindMismatch { found, expected }
     }
 }

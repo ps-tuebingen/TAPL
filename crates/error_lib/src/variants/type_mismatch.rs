@@ -1,14 +1,13 @@
-use super::TypeKind;
 use std::fmt;
 
 #[derive(Debug)]
 pub struct TypeMismatch {
-    found: TypeKind,
-    expected: TypeKind,
+    found: String,
+    expected: String,
 }
 
 impl TypeMismatch {
-    pub fn new(found: TypeKind, expected: TypeKind) -> TypeMismatch {
+    pub fn new(found: String, expected: String) -> TypeMismatch {
         TypeMismatch { found, expected }
     }
 }

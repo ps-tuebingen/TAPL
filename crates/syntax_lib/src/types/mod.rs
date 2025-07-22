@@ -1,11 +1,9 @@
-use errors::TypeKind;
 use std::fmt;
 
 pub trait Type
 where
     Self: fmt::Display + fmt::Debug + Clone + PartialEq + Eq,
 {
-    fn knd(&self) -> TypeKind;
 }
 
 pub mod group;

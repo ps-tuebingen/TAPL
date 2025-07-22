@@ -1,8 +1,5 @@
-use crate::{
-    Parse, Rule,
-    errors::{MissingInput, ParserError, UndefinedMain, UnexpectedRule},
-    pair_to_n_inner,
-};
+use crate::{Parse, Rule, pair_to_n_inner};
+use errors::{MissingInput, UndefinedMain, UnexpectedRule, parse_error::ParserError};
 use pest::iterators::Pair;
 use syntax::{definition::Definition, program::Program, terms::Term, types::Type};
 
@@ -40,7 +37,13 @@ where
                     main = Some(main_body);
                 }
 
-                _ => return Err(UnexpectedRule::new(def_rule.as_rule(), "Definition").into()),
+                _ => {
+                    return Err(UnexpectedRule::new(
+                        &format!("{:?}", def_rule.as_rule()),
+                        "Definition",
+                    )
+                    .into());
+                }
             }
         }
 

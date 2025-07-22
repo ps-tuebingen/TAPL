@@ -1,5 +1,4 @@
 use crate::{terms::Cons as ConsT, types::Type, values::Value};
-use errors::ValueKind;
 use std::fmt;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -38,9 +37,6 @@ where
     V: Value,
 {
     type Term = ConsT<<V as Value>::Term, Ty>;
-    fn knd(&self) -> ValueKind {
-        ValueKind::Cons
-    }
 }
 
 impl<V, Ty> From<Cons<V, Ty>> for ConsT<<V as Value>::Term, Ty>

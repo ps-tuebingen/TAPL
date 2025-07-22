@@ -1,8 +1,5 @@
-use crate::{
-    Parse, Rule,
-    errors::{ParserError, UnknownKeyword},
-    pair_to_n_inner,
-};
+use crate::{Parse, Rule, pair_to_n_inner};
+use errors::{UnknownKeyword, parse_error::ParserError};
 use pest::iterators::Pair;
 use syntax::terms::{Projection, Term};
 

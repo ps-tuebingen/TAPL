@@ -1,14 +1,8 @@
-use errors::{
-    FreeTypeVariable, FreeVariable, IndexOutOfBounds, KindMismatch, NameMismatch, TypeMismatch,
-    UndefinedLabel, UndefinedLocation,
+use crate::{
+    EmptyCase, FreeTypeVariable, FreeVariable, IndexOutOfBounds, KindMismatch, NameMismatch,
+    NotASubtype, TypeMismatch, UndefinedLabel, UndefinedLocation,
 };
 use std::fmt;
-
-pub mod empty_case;
-pub mod not_a_subtype;
-
-pub use empty_case::EmptyCase;
-pub use not_a_subtype::NotASubtype;
 
 #[derive(Debug)]
 pub enum CheckError {

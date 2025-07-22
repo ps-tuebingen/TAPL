@@ -1,4 +1,5 @@
-use crate::{Parse, Rule, errors::ParserError, pair_to_n_inner};
+use crate::{Parse, Rule, pair_to_n_inner};
+use errors::parse_error::ParserError;
 use pest::iterators::Pair;
 use syntax::terms::{Fix, Term};
 

@@ -1,6 +1,5 @@
 use super::Value;
 use crate::{terms::Right as RightT, types::Type};
-use errors::ValueKind;
 use std::fmt;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -36,10 +35,6 @@ where
     Ty: Type,
 {
     type Term = RightT<<V as Value>::Term, Ty>;
-
-    fn knd(&self) -> ValueKind {
-        ValueKind::Right
-    }
 }
 
 impl<V, Ty> From<Right<V, Ty>> for RightT<<V as Value>::Term, Ty>

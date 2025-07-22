@@ -1,8 +1,5 @@
-use crate::{
-    Parse, Rule,
-    errors::{MissingInput, ParserError, RemainingInput, UnexpectedRule},
-    pair_to_n_inner,
-};
+use crate::{Parse, Rule, pair_to_n_inner};
+use errors::{MissingInput, RemainingInput, UnexpectedRule, parse_error::ParserError};
 use pest::iterators::Pair;
 use syntax::kinds::Kind;
 
@@ -33,7 +30,7 @@ fn pair_to_prim_kind(p: Pair<'_, Rule>) -> Result<Kind, ParserError> {
     match p.as_rule() {
         Rule::star_kind => Ok(Kind::Star),
         Rule::paren_kind => Kind::from_pair(pair_to_n_inner(p, vec!["Kind"])?.remove(0), ()),
-        r => Err(UnexpectedRule::new(r, "Kind").into()),
+        r => Err(UnexpectedRule::new(&format!("{:?}", r), "Kind").into()),
     }
 }
 
