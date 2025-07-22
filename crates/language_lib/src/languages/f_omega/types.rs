@@ -1,4 +1,4 @@
-use errors::{TypeKind, TypeMismatch};
+use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
@@ -25,22 +25,7 @@ pub enum Type {
     Nat(Nat<Type>),
 }
 
-impl TypeTrait for Type {
-    fn knd(&self) -> TypeKind {
-        match self {
-            Type::Var(t) => t.knd(),
-            Type::Fun(t) => t.knd(),
-            Type::Forall(t) => t.knd(),
-            Type::OpLambda(t) => t.knd(),
-            Type::OpApp(t) => t.knd(),
-            Type::Exists(t) => t.knd(),
-            Type::Record(t) => t.knd(),
-            Type::Bool(t) => t.knd(),
-            Type::Unit(t) => t.knd(),
-            Type::Nat(t) => t.knd(),
-        }
-    }
-}
+impl TypeTrait for Type {}
 
 impl GrammarDescribe for Type {
     fn grammar() -> Grammar {
@@ -64,7 +49,7 @@ impl TypeGroup for Type {
         if let Type::Fun(fun) = self {
             Ok(fun)
         } else {
-            Err(TypeMismatch::new(self.knd(), TypeKind::Function))
+            Err(TypeMismatch::new(self.to_string(), "Function".to_owned()))
         }
     }
 
@@ -72,7 +57,7 @@ impl TypeGroup for Type {
         if let Type::Forall(forall) = self {
             Ok(forall)
         } else {
-            Err(TypeMismatch::new(self.knd(), TypeKind::Universal))
+            Err(TypeMismatch::new(self.to_string(), "Universal".to_owned()))
         }
     }
 
@@ -80,7 +65,7 @@ impl TypeGroup for Type {
         if let Type::OpLambda(lam) = self {
             Ok(lam)
         } else {
-            Err(TypeMismatch::new(self.knd(), TypeKind::OpLambda))
+            Err(TypeMismatch::new(self.to_string(), "OpLambda".to_owned()))
         }
     }
 
@@ -88,7 +73,7 @@ impl TypeGroup for Type {
         if let Type::OpApp(app) = self {
             Ok(app)
         } else {
-            Err(TypeMismatch::new(self.knd(), TypeKind::OpApp))
+            Err(TypeMismatch::new(self.to_string(), "OpApp".to_owned()))
         }
     }
 
@@ -96,7 +81,10 @@ impl TypeGroup for Type {
         if let Type::Exists(ex) = self {
             Ok(ex)
         } else {
-            Err(TypeMismatch::new(self.knd(), TypeKind::Existential))
+            Err(TypeMismatch::new(
+                self.to_string(),
+                "Existential".to_owned(),
+            ))
         }
     }
 
@@ -104,7 +92,7 @@ impl TypeGroup for Type {
         if let Type::Record(rec) = self {
             Ok(rec)
         } else {
-            Err(TypeMismatch::new(self.knd(), TypeKind::Record))
+            Err(TypeMismatch::new(self.to_string(), "Record".to_owned()))
         }
     }
 
@@ -112,7 +100,7 @@ impl TypeGroup for Type {
         if let Type::Bool(b) = self {
             Ok(b)
         } else {
-            Err(TypeMismatch::new(self.knd(), TypeKind::Bool))
+            Err(TypeMismatch::new(self.to_string(), "Bool".to_owned()))
         }
     }
 
@@ -120,7 +108,7 @@ impl TypeGroup for Type {
         if let Type::Unit(u) = self {
             Ok(u)
         } else {
-            Err(TypeMismatch::new(self.knd(), TypeKind::Unit))
+            Err(TypeMismatch::new(self.to_string(), "Unit".to_owned()))
         }
     }
 
@@ -128,7 +116,7 @@ impl TypeGroup for Type {
         if let Type::Nat(nat) = self {
             Ok(nat)
         } else {
-            Err(TypeMismatch::new(self.knd(), TypeKind::Nat))
+            Err(TypeMismatch::new(self.to_string(), "Nat".to_owned()))
         }
     }
 }

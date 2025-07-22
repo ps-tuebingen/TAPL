@@ -1,8 +1,6 @@
 use super::{terms::Term, types::Type};
-use parse::{
-    GroupParse, Parse, Rule, errors::ParserError, errors::UnexpectedRule, pair_to_n_inner,
-    terms::StringTerm, types::StringTy,
-};
+use errors::{UnexpectedRule, parse_error::ParserError};
+use parse::{GroupParse, Parse, Rule, pair_to_n_inner, terms::StringTerm, types::StringTy};
 use pest::iterators::Pair;
 use syntax::{
     terms::{
@@ -33,14 +31,14 @@ impl GroupParse for Term {
             Rule::raise_term => Ok(Raise::from_pair(p, ())?.into()),
             Rule::err_term => Ok(Exception::from_pair(p, ())?.into()),
             Rule::paren_term => Self::from_pair(pair_to_n_inner(p, vec!["Term"])?.remove(0), ()),
-            r => Err(UnexpectedRule::new(r, "Non Left-recursive Term").into()),
+            r => Err(UnexpectedRule::new(&format!("{r:?}"), "Non Left-recursive Term").into()),
         }
     }
 
     fn from_pair_leftrec(p: Pair<'_, Rule>, left_rec: Self) -> Result<Self, ParserError> {
         match p.as_rule() {
             Rule::term => Ok(App::from_pair(p, left_rec)?.into()),
-            r => Err(UnexpectedRule::new(r, "Term").into()),
+            r => Err(UnexpectedRule::new(&format!("{r:?}"), "Term").into()),
         }
     }
 }
@@ -56,14 +54,16 @@ impl GroupParse for Type {
                 .with_bool()
                 .from_pair(p)?),
             Rule::paren_type => Self::from_pair(pair_to_n_inner(p, vec!["Type"])?.remove(0), ()),
-            r => Err(UnexpectedRule::new(r, "Non Left-Recursive Type").into()),
+            r => Err(UnexpectedRule::new(&format!("{r:?}"), "Non Left-Recursive Type").into()),
         }
     }
 
     fn from_pair_leftrec(p: Pair<'_, Rule>, left_rec: Self) -> Result<Self, ParserError> {
         match p.as_rule() {
             Rule::fun_type => Ok(Fun::from_pair(p, left_rec)?.into()),
-            _ => Err(UnexpectedRule::new(p.as_rule(), "Left Recursive Type").into()),
+            _ => Err(
+                UnexpectedRule::new(&format!("{:?}", p.as_rule()), "Left Recursive Type").into(),
+            ),
         }
     }
 }

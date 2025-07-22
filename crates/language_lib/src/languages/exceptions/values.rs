@@ -1,5 +1,5 @@
 use super::{terms::Term, types::Type};
-use errors::{ValueKind, ValueMismatch};
+use errors::ValueMismatch;
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
@@ -20,17 +20,6 @@ pub enum Value {
 
 impl ValueTrait for Value {
     type Term = Term;
-    fn knd(&self) -> ValueKind {
-        match self {
-            Value::Lambda(v) => v.knd(),
-            Value::Num(v) => v.knd(),
-            Value::Unit(v) => v.knd(),
-            Value::True(v) => v.knd(),
-            Value::False(v) => v.knd(),
-            Value::Exception(v) => v.knd(),
-            Value::Raise(v) => v.knd(),
-        }
-    }
 }
 
 impl ValueGroup for Value {
@@ -41,7 +30,7 @@ impl ValueGroup for Value {
         if let Value::True(tru) = self {
             Ok(tru)
         } else {
-            Err(ValueMismatch::new(self.knd(), ValueKind::True))
+            Err(ValueMismatch::new(self.to_string(), "True".to_owned()))
         }
     }
 
@@ -49,7 +38,7 @@ impl ValueGroup for Value {
         if let Value::False(fls) = self {
             Ok(fls)
         } else {
-            Err(ValueMismatch::new(self.knd(), ValueKind::False))
+            Err(ValueMismatch::new(self.to_string(), "False".to_owned()))
         }
     }
 
@@ -57,7 +46,7 @@ impl ValueGroup for Value {
         if let Value::Exception(ex) = self {
             Ok(ex)
         } else {
-            Err(ValueMismatch::new(self.knd(), ValueKind::Exception))
+            Err(ValueMismatch::new(self.to_string(), "Exception".to_owned()))
         }
     }
 
@@ -65,7 +54,7 @@ impl ValueGroup for Value {
         if let Value::Lambda(lam) = self {
             Ok(lam)
         } else {
-            Err(ValueMismatch::new(self.knd(), ValueKind::Lambda))
+            Err(ValueMismatch::new(self.to_string(), "Lambda".to_owned()))
         }
     }
 
@@ -73,7 +62,7 @@ impl ValueGroup for Value {
         if let Value::Raise(raise) = self {
             Ok(raise)
         } else {
-            Err(ValueMismatch::new(self.knd(), ValueKind::Raise))
+            Err(ValueMismatch::new(self.to_string(), "Raise".to_owned()))
         }
     }
 
@@ -81,7 +70,7 @@ impl ValueGroup for Value {
         if let Value::Num(num) = self {
             Ok(num)
         } else {
-            Err(ValueMismatch::new(self.knd(), ValueKind::Number))
+            Err(ValueMismatch::new(self.to_string(), "Number".to_owned()))
         }
     }
 }

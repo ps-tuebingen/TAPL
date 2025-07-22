@@ -1,8 +1,7 @@
 use super::{terms::Term, types::Type};
+use errors::{UnexpectedRule, parse_error::ParserError};
 use parse::{
-    GroupParse, Parse, Rule,
-    errors::{ParserError, UnexpectedRule},
-    pair_to_n_inner,
+    GroupParse, Parse, Rule, pair_to_n_inner,
     sugar::{ExistsUnbounded, ForallUnbounded, LambdaSubStar},
     types::StringTy,
 };
@@ -31,7 +30,7 @@ impl GroupParse for Term {
             Rule::pred_term => Ok(Pred::from_pair(p, ())?.into()),
             Rule::number => Ok(Num::from_pair(p, ())?.into()),
             Rule::variable => Ok(Variable::new(p.as_str().trim()).into()),
-            r => Err(UnexpectedRule::new(r, "Non Left-Recursive Term").into()),
+            r => Err(UnexpectedRule::new(&format!("{r:?}"), "Non Left-Recursive Term").into()),
         }
     }
 
@@ -40,7 +39,7 @@ impl GroupParse for Term {
             Rule::record_proj => Ok(RecordProj::from_pair(p, t)?.into()),
             Rule::tyapp => Ok(TyApp::from_pair(p, t)?.into()),
             Rule::term => Ok(App::from_pair(p, t)?.into()),
-            r => Err(UnexpectedRule::new(r, "Type or Term Application").into()),
+            r => Err(UnexpectedRule::new(&format!("{r:?}"), "Type or Term Application").into()),
         }
     }
 }
@@ -63,14 +62,14 @@ impl GroupParse for Type {
             Rule::record_type => Ok(RecordTy::from_pair(p, ())?.into()),
             Rule::paren_type => Self::from_pair(pair_to_n_inner(p, vec!["Type"])?.remove(0), ()),
             Rule::type_variable => Ok(TypeVariable::new(p.as_str().trim()).into()),
-            r => Err(UnexpectedRule::new(r, "Non Left-Recursive Type").into()),
+            r => Err(UnexpectedRule::new(&format!("{r:?}"), "Non Left-Recursive Type").into()),
         }
     }
 
     fn from_pair_leftrec(p: Pair<'_, Rule>, ty: Type) -> Result<Type, ParserError> {
         match p.as_rule() {
             Rule::fun_type => Ok(Fun::from_pair(p, ty)?.into()),
-            r => Err(UnexpectedRule::new(r, "Function Type").into()),
+            r => Err(UnexpectedRule::new(&format!("{r:?}"), "Function Type").into()),
         }
     }
 }

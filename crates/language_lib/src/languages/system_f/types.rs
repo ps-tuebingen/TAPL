@@ -1,4 +1,4 @@
-use errors::{TypeKind, TypeMismatch};
+use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
@@ -15,22 +15,14 @@ pub enum Type {
     Forall(Forall<Type>),
 }
 
-impl TypeTrait for Type {
-    fn knd(&self) -> TypeKind {
-        match self {
-            Type::Var(v) => v.knd(),
-            Type::Fun(f) => f.knd(),
-            Type::Forall(f) => f.knd(),
-        }
-    }
-}
+impl TypeTrait for Type {}
 
 impl TypeGroup for Type {
     fn into_fun(self) -> Result<Fun<Self>, TypeMismatch> {
         if let Type::Fun(fun) = self {
             Ok(fun)
         } else {
-            Err(TypeMismatch::new(self.knd(), TypeKind::Function))
+            Err(TypeMismatch::new(self.to_string(), "Function".to_owned()))
         }
     }
 
@@ -38,7 +30,7 @@ impl TypeGroup for Type {
         if let Type::Forall(forall) = self {
             Ok(forall)
         } else {
-            Err(TypeMismatch::new(self.knd(), TypeKind::Universal))
+            Err(TypeMismatch::new(self.to_string(), "Universal".to_owned()))
         }
     }
 }

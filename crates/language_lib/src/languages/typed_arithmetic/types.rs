@@ -1,4 +1,4 @@
-use errors::{TypeKind, TypeMismatch};
+use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
@@ -14,21 +14,14 @@ pub enum Type {
     Bool(Bool<Type>),
 }
 
-impl TypeTrait for Type {
-    fn knd(&self) -> TypeKind {
-        match self {
-            Type::Nat(n) => n.knd(),
-            Type::Bool(b) => b.knd(),
-        }
-    }
-}
+impl TypeTrait for Type {}
 
 impl TypeGroup for Type {
     fn into_nat(self) -> Result<Nat<Type>, TypeMismatch> {
         if let Type::Nat(nat) = self {
             Ok(nat)
         } else {
-            Err(TypeMismatch::new(self.knd(), TypeKind::Nat))
+            Err(TypeMismatch::new(self.to_string(), "Nat".to_owned()))
         }
     }
 
@@ -36,7 +29,7 @@ impl TypeGroup for Type {
         if let Type::Bool(b) = self {
             Ok(b)
         } else {
-            Err(TypeMismatch::new(self.knd(), TypeKind::Bool))
+            Err(TypeMismatch::new(self.to_string(), "Bool".to_owned()))
         }
     }
 }

@@ -1,5 +1,4 @@
 use super::terms::Term;
-use errors::ValueKind;
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
 use syntax::untyped::Untyped;
@@ -13,11 +12,6 @@ pub enum Value {
 
 impl ValueTrait for Value {
     type Term = Term;
-    fn knd(&self) -> ValueKind {
-        match self {
-            Value::Lambda(l) => l.knd(),
-        }
-    }
 }
 
 impl ValueGroup for Value {

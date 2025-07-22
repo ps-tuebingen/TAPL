@@ -1,5 +1,5 @@
 use super::{terms::Term, types::Type};
-use errors::{ValueKind, ValueMismatch};
+use errors::ValueMismatch;
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
@@ -29,25 +29,6 @@ pub enum Value {
 
 impl ValueTrait for Value {
     type Term = Term;
-    fn knd(&self) -> ValueKind {
-        match self {
-            Value::Lambda(v) => v.knd(),
-            Value::Unit(v) => v.knd(),
-            Value::True(v) => v.knd(),
-            Value::False(v) => v.knd(),
-            Value::Num(v) => v.knd(),
-            Value::Pair(v) => v.knd(),
-            Value::Tuple(v) => v.knd(),
-            Value::Record(v) => v.knd(),
-            Value::Left(v) => v.knd(),
-            Value::Right(v) => v.knd(),
-            Value::Variant(v) => v.knd(),
-            Value::Nothing(v) => v.knd(),
-            Value::Something(v) => v.knd(),
-            Value::Nil(v) => v.knd(),
-            Value::Cons(v) => v.knd(),
-        }
-    }
 }
 
 impl ValueGroup for Value {
@@ -58,7 +39,7 @@ impl ValueGroup for Value {
         if let Value::Lambda(lam) = self {
             Ok(lam)
         } else {
-            Err(ValueMismatch::new(self.knd(), ValueKind::Lambda))
+            Err(ValueMismatch::new(self.to_string(), "Lambda".to_owned()))
         }
     }
 
@@ -66,7 +47,7 @@ impl ValueGroup for Value {
         if let Value::True(tru) = self {
             Ok(tru)
         } else {
-            Err(ValueMismatch::new(self.knd(), ValueKind::True))
+            Err(ValueMismatch::new(self.to_string(), "True".to_owned()))
         }
     }
 
@@ -74,7 +55,7 @@ impl ValueGroup for Value {
         if let Value::False(fls) = self {
             Ok(fls)
         } else {
-            Err(ValueMismatch::new(self.knd(), ValueKind::False))
+            Err(ValueMismatch::new(self.to_string(), "False".to_owned()))
         }
     }
 
@@ -82,7 +63,7 @@ impl ValueGroup for Value {
         if let Value::Num(num) = self {
             Ok(num)
         } else {
-            Err(ValueMismatch::new(self.knd(), ValueKind::Number))
+            Err(ValueMismatch::new(self.to_string(), "Number".to_owned()))
         }
     }
 
@@ -90,7 +71,7 @@ impl ValueGroup for Value {
         if let Value::Pair(pair) = self {
             Ok(pair)
         } else {
-            Err(ValueMismatch::new(self.knd(), ValueKind::Pair))
+            Err(ValueMismatch::new(self.to_string(), "Pair".to_owned()))
         }
     }
 
@@ -98,7 +79,7 @@ impl ValueGroup for Value {
         if let Value::Tuple(tup) = self {
             Ok(tup)
         } else {
-            Err(ValueMismatch::new(self.knd(), ValueKind::Tuple))
+            Err(ValueMismatch::new(self.to_string(), "Tuple".to_owned()))
         }
     }
 
@@ -106,7 +87,7 @@ impl ValueGroup for Value {
         if let Value::Record(rec) = self {
             Ok(rec)
         } else {
-            Err(ValueMismatch::new(self.knd(), ValueKind::Record))
+            Err(ValueMismatch::new(self.to_string(), "Record".to_owned()))
         }
     }
 
@@ -114,7 +95,7 @@ impl ValueGroup for Value {
         if let Value::Left(lft) = self {
             Ok(lft)
         } else {
-            Err(ValueMismatch::new(self.knd(), ValueKind::Left))
+            Err(ValueMismatch::new(self.to_string(), "Left".to_owned()))
         }
     }
 
@@ -122,7 +103,7 @@ impl ValueGroup for Value {
         if let Value::Right(right) = self {
             Ok(right)
         } else {
-            Err(ValueMismatch::new(self.knd(), ValueKind::Right))
+            Err(ValueMismatch::new(self.to_string(), "Right".to_owned()))
         }
     }
 
@@ -130,7 +111,7 @@ impl ValueGroup for Value {
         if let Value::Variant(var) = self {
             Ok(var)
         } else {
-            Err(ValueMismatch::new(self.knd(), ValueKind::Variant))
+            Err(ValueMismatch::new(self.to_string(), "Variant".to_owned()))
         }
     }
 
@@ -138,7 +119,7 @@ impl ValueGroup for Value {
         if let Value::Nothing(not) = self {
             Ok(not)
         } else {
-            Err(ValueMismatch::new(self.knd(), ValueKind::Nothing))
+            Err(ValueMismatch::new(self.to_string(), "Nothing".to_owned()))
         }
     }
 
@@ -146,7 +127,7 @@ impl ValueGroup for Value {
         if let Value::Something(somet) = self {
             Ok(somet)
         } else {
-            Err(ValueMismatch::new(self.knd(), ValueKind::Something))
+            Err(ValueMismatch::new(self.to_string(), "Something".to_owned()))
         }
     }
 
@@ -154,7 +135,7 @@ impl ValueGroup for Value {
         if let Value::Nil(nil) = self {
             Ok(nil)
         } else {
-            Err(ValueMismatch::new(self.knd(), ValueKind::Nil))
+            Err(ValueMismatch::new(self.to_string(), "Nil".to_owned()))
         }
     }
 
@@ -162,7 +143,7 @@ impl ValueGroup for Value {
         if let Value::Cons(cons) = self {
             Ok(cons)
         } else {
-            Err(ValueMismatch::new(self.knd(), ValueKind::Cons))
+            Err(ValueMismatch::new(self.to_string(), "Cons".to_owned()))
         }
     }
 }

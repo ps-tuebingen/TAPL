@@ -1,5 +1,5 @@
 use super::{terms::Term, types::Type};
-use errors::{ValueKind, ValueMismatch};
+use errors::ValueMismatch;
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
@@ -13,12 +13,6 @@ pub enum Value {
 
 impl ValueTrait for Value {
     type Term = Term;
-    fn knd(&self) -> ValueKind {
-        match self {
-            Value::Lambda(l) => l.knd(),
-            Value::TyLambda(t) => t.knd(),
-        }
-    }
 }
 
 impl ValueGroup for Value {
@@ -29,7 +23,7 @@ impl ValueGroup for Value {
         if let Value::Lambda(lam) = self {
             Ok(lam)
         } else {
-            Err(ValueMismatch::new(self.knd(), ValueKind::Lambda))
+            Err(ValueMismatch::new(self.to_string(), "Lambda".to_owned()))
         }
     }
 
@@ -37,7 +31,7 @@ impl ValueGroup for Value {
         if let Value::TyLambda(lam) = self {
             Ok(lam)
         } else {
-            Err(ValueMismatch::new(self.knd(), ValueKind::TyLambda))
+            Err(ValueMismatch::new(self.to_string(), "TyLambda".to_owned()))
         }
     }
 }

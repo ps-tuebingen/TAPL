@@ -1,5 +1,5 @@
 use super::{terms::Term, types::Type};
-use errors::{ValueKind, ValueMismatch};
+use errors::ValueMismatch;
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
@@ -16,15 +16,6 @@ pub enum Value {
 
 impl ValueTrait for Value {
     type Term = Term;
-    fn knd(&self) -> ValueKind {
-        match self {
-            Value::Lambda(v) => v.knd(),
-            Value::LambdaSub(v) => v.knd(),
-            Value::Pack(v) => v.knd(),
-            Value::Num(v) => v.knd(),
-            Value::Record(v) => v.knd(),
-        }
-    }
 }
 
 impl ValueGroup for Value {
@@ -35,7 +26,7 @@ impl ValueGroup for Value {
         if let Value::Lambda(lam) = self {
             Ok(lam)
         } else {
-            Err(ValueMismatch::new(self.knd(), ValueKind::Lambda))
+            Err(ValueMismatch::new(self.to_string(), "Lambda".to_owned()))
         }
     }
 
@@ -43,7 +34,7 @@ impl ValueGroup for Value {
         if let Value::LambdaSub(lam) = self {
             Ok(lam)
         } else {
-            Err(ValueMismatch::new(self.knd(), ValueKind::LambdaSub))
+            Err(ValueMismatch::new(self.to_string(), "LambdaSub".to_owned()))
         }
     }
 
@@ -51,7 +42,7 @@ impl ValueGroup for Value {
         if let Value::Pack(pack) = self {
             Ok(pack)
         } else {
-            Err(ValueMismatch::new(self.knd(), ValueKind::Package))
+            Err(ValueMismatch::new(self.to_string(), "Package".to_owned()))
         }
     }
 
@@ -59,7 +50,7 @@ impl ValueGroup for Value {
         if let Value::Num(num) = self {
             Ok(num)
         } else {
-            Err(ValueMismatch::new(self.knd(), ValueKind::Number))
+            Err(ValueMismatch::new(self.to_string(), "Number".to_owned()))
         }
     }
 
@@ -67,7 +58,7 @@ impl ValueGroup for Value {
         if let Value::Record(rec) = self {
             Ok(rec)
         } else {
-            Err(ValueMismatch::new(self.knd(), ValueKind::Record))
+            Err(ValueMismatch::new(self.to_string(), "Record".to_owned()))
         }
     }
 }

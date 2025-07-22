@@ -1,4 +1,4 @@
-use errors::{TypeKind, TypeMismatch};
+use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
@@ -16,30 +16,21 @@ pub enum Type {
     Fun(Fun<Type>),
 }
 
-impl TypeTrait for Type {
-    fn knd(&self) -> TypeKind {
-        match self {
-            Type::Unit(u) => u.knd(),
-            Type::Nat(n) => n.knd(),
-            Type::Bool(b) => b.knd(),
-            Type::Fun(f) => f.knd(),
-        }
-    }
-}
+impl TypeTrait for Type {}
 
 impl TypeGroup for Type {
     fn into_unit(self) -> Result<Unit<Type>, TypeMismatch> {
         if let Type::Unit(u) = self {
             Ok(u)
         } else {
-            Err(TypeMismatch::new(self.knd(), TypeKind::Unit))
+            Err(TypeMismatch::new(self.to_string(), "Unit".to_owned()))
         }
     }
     fn into_nat(self) -> Result<Nat<Type>, TypeMismatch> {
         if let Type::Nat(n) = self {
             Ok(n)
         } else {
-            Err(TypeMismatch::new(self.knd(), TypeKind::Nat))
+            Err(TypeMismatch::new(self.to_string(), "Nat".to_owned()))
         }
     }
 
@@ -47,7 +38,7 @@ impl TypeGroup for Type {
         if let Type::Bool(b) = self {
             Ok(b)
         } else {
-            Err(TypeMismatch::new(self.knd(), TypeKind::Bool))
+            Err(TypeMismatch::new(self.to_string(), "Bool".to_owned()))
         }
     }
 
@@ -55,7 +46,7 @@ impl TypeGroup for Type {
         if let Type::Fun(fun) = self {
             Ok(fun)
         } else {
-            Err(TypeMismatch::new(self.knd(), TypeKind::Function))
+            Err(TypeMismatch::new(self.to_string(), "Function".to_owned()))
         }
     }
 }

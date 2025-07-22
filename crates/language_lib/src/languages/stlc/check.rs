@@ -1,6 +1,7 @@
 use super::{terms::Term, types::Type};
-use check::{Kindcheck, Subtypecheck, Typecheck, errors::CheckError};
+use check::{Kindcheck, Subtypecheck, Typecheck};
 use derivation::TypingDerivation;
+use errors::check_error::CheckError;
 use syntax::{env::Environment, kinds::Kind};
 
 impl Typecheck for Term {

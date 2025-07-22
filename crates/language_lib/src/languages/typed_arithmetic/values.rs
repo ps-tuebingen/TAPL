@@ -1,5 +1,5 @@
 use super::{terms::Term, types::Type};
-use errors::{ValueKind, ValueMismatch};
+use errors::ValueMismatch;
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
@@ -14,14 +14,6 @@ pub enum Value {
 
 impl ValueTrait for Value {
     type Term = Term;
-
-    fn knd(&self) -> ValueKind {
-        match self {
-            Value::True(t) => t.knd(),
-            Value::False(f) => f.knd(),
-            Value::Num(n) => n.knd(),
-        }
-    }
 }
 
 impl ValueGroup for Value {
@@ -32,21 +24,21 @@ impl ValueGroup for Value {
         if let Value::True(tru) = self {
             Ok(tru)
         } else {
-            Err(ValueMismatch::new(self.knd(), ValueKind::True))
+            Err(ValueMismatch::new(self.to_string(), "True".to_owned()))
         }
     }
     fn into_false(self) -> Result<False<Term>, ValueMismatch> {
         if let Value::False(fls) = self {
             Ok(fls)
         } else {
-            Err(ValueMismatch::new(self.knd(), ValueKind::False))
+            Err(ValueMismatch::new(self.to_string(), "False".to_owned()))
         }
     }
     fn into_num(self) -> Result<Num<Term>, ValueMismatch> {
         if let Value::Num(num) = self {
             Ok(num)
         } else {
-            Err(ValueMismatch::new(self.knd(), ValueKind::Number))
+            Err(ValueMismatch::new(self.to_string(), "Number".to_owned()))
         }
     }
 }

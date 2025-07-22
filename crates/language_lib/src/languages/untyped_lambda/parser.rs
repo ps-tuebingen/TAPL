@@ -1,9 +1,6 @@
 use super::terms::Term;
-use parse::{
-    GroupParse, Parse, Rule,
-    errors::{ParserError, UnexpectedRule},
-    pair_to_n_inner,
-};
+use errors::{UnexpectedRule, parse_error::ParserError};
+use parse::{GroupParse, Parse, Rule, pair_to_n_inner};
 use pest::iterators::Pair;
 use syntax::terms::{App, UntypedLambda, Variable};
 
@@ -17,14 +14,17 @@ impl GroupParse for Term {
             }
             Rule::variable => Ok(Variable::from_pair(p, ())?.into()),
             Rule::untyped_lambda_term => Ok(UntypedLambda::from_pair(p, ())?.into()),
-            _ => Err(UnexpectedRule::new(p.as_rule(), "Non Left-Recursive Term").into()),
+            _ => Err(
+                UnexpectedRule::new(&format!("{:?}", p.as_rule()), "Non Left-Recursive Term")
+                    .into(),
+            ),
         }
     }
 
     fn from_pair_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Self, ParserError> {
         match p.as_rule() {
             Rule::term => Ok(App::from_pair(p, t)?.into()),
-            _ => Err(UnexpectedRule::new(p.as_rule(), "Aplication").into()),
+            _ => Err(UnexpectedRule::new(&format!("{:?}", p.as_rule()), "Aplication").into()),
         }
     }
 }

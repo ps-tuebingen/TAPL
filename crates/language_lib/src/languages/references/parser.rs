@@ -1,11 +1,7 @@
 use super::{terms::Term, types::Type};
+use errors::{UnexpectedRule, parse_error::ParserError};
 use parse::{
-    GroupParse, Parse, Rule,
-    errors::{ParserError, UnexpectedRule},
-    pair_to_n_inner,
-    sugar::Sequence,
-    terms::StringTerm,
-    types::StringTy,
+    GroupParse, Parse, Rule, pair_to_n_inner, sugar::Sequence, terms::StringTerm, types::StringTy,
 };
 use pest::iterators::Pair;
 use syntax::{
@@ -34,7 +30,7 @@ impl GroupParse for Term {
             Rule::let_term => Ok(Let::from_pair(p, ())?.into()),
             Rule::if_term => Ok(If::from_pair(p, ())?.into()),
             Rule::fix_term => Ok(Fix::from_pair(p, ())?.into()),
-            r => Err(UnexpectedRule::new(r, "Term (non-left recursive)").into()),
+            r => Err(UnexpectedRule::new(&format!("{:?}", r), "Term (non-left recursive)").into()),
         }
     }
 
@@ -43,7 +39,7 @@ impl GroupParse for Term {
             Rule::assign => Ok(Assign::from_pair(p, t)?.into()),
             Rule::sequence => Ok(Sequence::from_pair(p, t)?.to_term()),
             Rule::term => Ok(App::from_pair(p, t)?.into()),
-            r => Err(UnexpectedRule::new(r, "Assign or Application").into()),
+            r => Err(UnexpectedRule::new(&format!("{:?}", r), "Assign or Application").into()),
         }
     }
 }
@@ -59,14 +55,19 @@ impl GroupParse for Type {
                 .from_pair(p)?),
             Rule::ref_type => Ok(RefTy::from_pair(p, ())?.into()),
             Rule::paren_type => Self::from_pair(pair_to_n_inner(p, vec!["Type"])?.remove(0), ()),
-            _ => Err(UnexpectedRule::new(p.as_rule(), "Non Left-Recursive Type").into()),
+            _ => Err(
+                UnexpectedRule::new(&format!("{:?}", p.as_rule()), "Non Left-Recursive Type")
+                    .into(),
+            ),
         }
     }
 
     fn from_pair_leftrec(p: Pair<'_, Rule>, ty: Type) -> Result<Type, ParserError> {
         match p.as_rule() {
             Rule::fun_type => Ok(Fun::from_pair(p, ty)?.into()),
-            _ => Err(UnexpectedRule::new(p.as_rule(), "Left Recursive Type").into()),
+            _ => Err(
+                UnexpectedRule::new(&format!("{:?}", p.as_rule()), "Left Recursive Type").into(),
+            ),
         }
     }
 }
