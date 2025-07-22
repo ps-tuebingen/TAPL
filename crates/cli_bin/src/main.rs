@@ -1,8 +1,7 @@
 use clap::Parser;
 use std::{fs::File, io::Write, path::PathBuf};
 
-pub mod args;
-use args::{Args, Command};
+use driver::{Args, Command};
 
 fn main() {
     let args = Args::parse();

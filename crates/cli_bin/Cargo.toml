@@ -12,3 +12,4 @@ clap = { version = "4", features=["derive"]}
 errors = { path="../error_lib" }
 language = {path="../language_lib"}
 grammar = {path="../grammar_lib"}
+driver = {path="../driver_lib"}

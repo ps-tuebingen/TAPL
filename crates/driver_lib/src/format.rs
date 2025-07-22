@@ -3,7 +3,8 @@ use std::fmt;
 
 pub trait Formattable: fmt::Display + fmt::Debug + LatexFmt {}
 
-#[derive(Default)]
+#[derive(Default, Debug, Clone, clap::Args)]
+#[group(required = false, multiple = false)]
 pub enum FormatMethod {
     #[default]
     Simple,

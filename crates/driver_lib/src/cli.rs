@@ -1,7 +1,4 @@
-use clap::Parser;
-use language::{AllLanguages, FormatMethod};
-use std::fmt;
-use std::{convert::Infallible, fs::read_to_string, path::PathBuf, str::FromStr};
+use std::{fmt, path::PathBuf};
 
 #[derive(Parser)]
 pub struct Args {
@@ -69,25 +66,5 @@ impl Source {
         }
 
         panic!("Either --file or --input must be provided")
-    }
-}
-#[derive(Debug, Clone, clap::Args)]
-#[group(required = false, multiple = false)]
-pub struct OutMethod {
-    #[clap(short, long)]
-    pub latex: bool,
-    #[clap(short, long)]
-    dbg: bool,
-}
-
-impl OutMethod {
-    pub fn to_format_method(&self) -> FormatMethod {
-        if self.latex {
-            FormatMethod::LatexBusDoc
-        } else if self.dbg {
-            FormatMethod::Debug
-        } else {
-            FormatMethod::Simple
-        }
     }
 }

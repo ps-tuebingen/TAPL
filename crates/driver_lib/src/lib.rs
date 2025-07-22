@@ -5,7 +5,9 @@ use parse::{GroupParse, Parse, errors::ParserError};
 use syntax::{language::Language, program::Program};
 use trace::EvalTrace;
 
+mod cli;
 mod format;
+mod languages;
 
 pub struct Driver;
 
