@@ -1,10 +1,11 @@
 use crate::{example_select::ExampleSelect, get_by_id, out_divs::OutDivs, renderMathInElement};
-use language::{AllLanguages, FormatMethod};
+use driver::{Driver, cli::Command, format::FormatMethod, languages::AllLanguages};
 use std::rc::Rc;
 use wasm_bindgen::{JsCast, closure::Closure};
 use web_sys::{
     Document, HtmlButtonElement, HtmlOptionElement, HtmlSelectElement, HtmlTextAreaElement,
 };
+
 #[derive(Clone)]
 pub struct HtmlContext {
     document: Document,
@@ -13,6 +14,7 @@ pub struct HtmlContext {
     out_divs: OutDivs,
     example_select: ExampleSelect,
     language_select: HtmlSelectElement,
+    lang_driver: Driver,
 }
 
 impl HtmlContext {
@@ -26,6 +28,8 @@ impl HtmlContext {
         let source_area = get_by_id("source_code", &document);
         let language_select: HtmlSelectElement = get_by_id("language_select", &document);
 
+        let lang_driver = Driver;
+
         let ctx = Rc::new(Self {
             document,
             run_button,
@@ -33,6 +37,7 @@ impl HtmlContext {
             out_divs,
             language_select,
             example_select,
+            lang_driver,
         });
         ctx.setup_languages();
         ctx.setup_events();
@@ -50,8 +55,16 @@ impl HtmlContext {
             lang_option.set_id(&lang.to_string());
             lang_option.set_inner_html(lang.describe());
             self.language_select.append_child(&lang_option).unwrap();
+            let driver = Driver;
             self.out_divs.grammar.set_contents(Some(
-                self.get_lang().grammars(&FormatMethod::LatexFracStripped),
+                self.get_lang()
+                    .dispatch_run(
+                        &driver,
+                        &FormatMethod::LatexFracStripped,
+                        &Command::Grammar,
+                        "".to_owned(),
+                    )
+                    .unwrap(),
             ));
             self.out_divs.grammar.hide();
         }
@@ -74,7 +87,7 @@ impl HtmlContext {
                 .change_language(&self_.get_lang(), &self_.document);
             let hidden = self_.out_divs.grammar.hidden();
             self_.out_divs.grammar.set_contents(Some(
-                self_.get_lang().grammars(&FormatMethod::LatexFracStripped),
+                FormatMethod::LatexFracStripped.format(&self_.get_lang().grammars()),
             ));
             renderMathInElement(&self_.out_divs.grammar.out_div);
             if hidden {
@@ -106,7 +119,8 @@ impl HtmlContext {
         let source = self.source_area.value();
         self.out_divs.clear();
         let (parse_res, check_res, eval_res, err_res) =
-            lang.run_all(source, &FormatMethod::LatexFracStripped);
+            self.lang_driver
+                .run_all_lang(source, &lang, &FormatMethod::LatexFracStripped);
 
         self.out_divs.parsed.set_contents(parse_res);
         self.out_divs.checked.set_contents(check_res);

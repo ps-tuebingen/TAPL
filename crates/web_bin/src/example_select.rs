@@ -1,5 +1,5 @@
 use super::{examples::all_examples, get_by_id, log};
-use language::{AllLanguages, languages::UntypedArithmetic};
+use driver::languages::AllLanguages;
 use std::collections::HashMap;
 use wasm_bindgen::JsCast;
 use web_sys::{Document, HtmlOptionElement, HtmlSelectElement, HtmlTextAreaElement};
@@ -22,7 +22,7 @@ impl ExampleSelect {
             examples,
             source_area,
         };
-        slf.change_language(&UntypedArithmetic.into(), doc);
+        slf.change_language(&AllLanguages::UntypedArithmetic, doc);
         slf
     }
 

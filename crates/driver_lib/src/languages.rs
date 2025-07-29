@@ -1,10 +1,12 @@
 use crate::{Driver, cli::Command, format::FormatMethod};
 use errors::driver_error::DriverError;
+use grammar::{LanguageDescribe, LanguageGrammar};
 use language::languages::{
     BoundedQuantification, Exceptions, Existential, FOmega, FOmegaSub, LambdaOmega, Recursive,
     References, Stlc, Subtypes, SystemF, TypedArithmetic, UntypedArithmetic, UntypedLambda,
 };
 use std::{fmt, str::FromStr};
+use syntax::language::Language;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum AllLanguages {
@@ -25,6 +27,25 @@ pub enum AllLanguages {
 }
 
 impl AllLanguages {
+    pub fn all() -> [AllLanguages; 14] {
+        [
+            AllLanguages::UntypedArithmetic,
+            AllLanguages::UntypedLambda,
+            AllLanguages::TypedArithmetic,
+            AllLanguages::Stlc,
+            AllLanguages::Exceptions,
+            AllLanguages::References,
+            AllLanguages::Existential,
+            AllLanguages::Recursive,
+            AllLanguages::Subtypes,
+            AllLanguages::SystemF,
+            AllLanguages::BoundedQuantification,
+            AllLanguages::LambdaOmega,
+            AllLanguages::FOmega,
+            AllLanguages::FOmegaSub,
+        ]
+    }
+
     pub fn dispatch_run(
         &self,
         driver: &Driver,
@@ -53,6 +74,44 @@ impl AllLanguages {
             AllLanguages::LambdaOmega => driver.run_format::<LambdaOmega>(method, cmd, input),
             AllLanguages::FOmega => driver.run_format::<FOmega>(method, cmd, input),
             AllLanguages::FOmegaSub => driver.run_format::<FOmegaSub>(method, cmd, input),
+        }
+    }
+
+    pub fn describe(&self) -> &str {
+        match self {
+            AllLanguages::UntypedArithmetic => UntypedArithmetic.describe(),
+            AllLanguages::UntypedLambda => UntypedLambda.describe(),
+            AllLanguages::TypedArithmetic => TypedArithmetic.describe(),
+            AllLanguages::Stlc => Stlc.describe(),
+            AllLanguages::Exceptions => Exceptions.describe(),
+            AllLanguages::References => References.describe(),
+            AllLanguages::Existential => Existential.describe(),
+            AllLanguages::Recursive => Recursive.describe(),
+            AllLanguages::Subtypes => Subtypes.describe(),
+            AllLanguages::SystemF => SystemF.describe(),
+            AllLanguages::BoundedQuantification => BoundedQuantification.describe(),
+            AllLanguages::LambdaOmega => LambdaOmega.describe(),
+            AllLanguages::FOmega => FOmega.describe(),
+            AllLanguages::FOmegaSub => FOmegaSub.describe(),
+        }
+    }
+
+    pub fn grammars(&self) -> LanguageGrammar {
+        match self {
+            AllLanguages::UntypedArithmetic => UntypedArithmetic::grammars(),
+            AllLanguages::UntypedLambda => UntypedLambda::grammars(),
+            AllLanguages::TypedArithmetic => TypedArithmetic::grammars(),
+            AllLanguages::Stlc => Stlc::grammars(),
+            AllLanguages::Exceptions => Exceptions::grammars(),
+            AllLanguages::References => References::grammars(),
+            AllLanguages::Existential => Existential::grammars(),
+            AllLanguages::Recursive => Recursive::grammars(),
+            AllLanguages::Subtypes => Subtypes::grammars(),
+            AllLanguages::SystemF => SystemF::grammars(),
+            AllLanguages::BoundedQuantification => BoundedQuantification::grammars(),
+            AllLanguages::LambdaOmega => LambdaOmega::grammars(),
+            AllLanguages::FOmega => FOmega::grammars(),
+            AllLanguages::FOmegaSub => FOmegaSub::grammars(),
         }
     }
 }
