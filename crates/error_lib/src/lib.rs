@@ -1,6 +1,6 @@
 pub mod check_error;
+pub mod driver_error;
 pub mod eval_error;
-pub mod language_error;
 pub mod parse_error;
 pub mod test_error;
 pub mod variants;

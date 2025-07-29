@@ -1,7 +1,7 @@
-use super::{terms::Term, types::Type, values::Value};
-use check::Normalize;
-use eval::{Eval, errors::EvalError};
-use syntax::{env::Environment, eval_context::EvalContext};
+use super::{terms::Term, values::Value};
+use errors::eval_error::EvalError;
+use eval::Eval;
+use syntax::eval_context::EvalContext;
 use trace::EvalTrace;
 
 impl Eval for Term {
@@ -38,11 +38,5 @@ impl Eval for Term {
             Term::Let(lt) => lt.eval(env),
             Term::Fix(fix) => fix.eval(env),
         }
-    }
-}
-
-impl Normalize<Type> for Type {
-    fn normalize(self, _: Environment<Type>) -> Type {
-        self
     }
 }

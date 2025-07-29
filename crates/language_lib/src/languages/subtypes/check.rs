@@ -1,6 +1,7 @@
 use super::{terms::Term, types::Type};
-use check::{Kindcheck, Subtypecheck, Typecheck, errors::CheckError};
+use check::{Kindcheck, Normalize, Subtypecheck, Typecheck};
 use derivation::TypingDerivation;
+use errors::check_error::CheckError;
 use syntax::{env::Environment, kinds::Kind};
 
 impl Typecheck for Term {
@@ -63,5 +64,11 @@ impl Subtypecheck<Type> for Type {
 impl Kindcheck<Type> for Type {
     fn check_kind(&self, _: Environment<Type>) -> Result<Kind, CheckError> {
         Ok(Kind::Star)
+    }
+}
+
+impl Normalize<Type> for Type {
+    fn normalize(self, _: Environment<Type>) -> Type {
+        self
     }
 }

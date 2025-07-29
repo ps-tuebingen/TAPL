@@ -1,3 +1,4 @@
+use std::fmt;
 use syntax::{env::Environment, terms::Term, types::Type};
 
 #[derive(Debug)]
@@ -26,5 +27,15 @@ where
             term: term.into(),
             ty: ty.into(),
         }
+    }
+}
+
+impl<T, Ty> fmt::Display for Conclusion<T, Ty>
+where
+    T: Term,
+    Ty: Type,
+{
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{} |-> {} : {}", self.env, self.term, self.ty)
     }
 }

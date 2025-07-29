@@ -1,4 +1,5 @@
 use super::TypingDerivation;
+use std::fmt;
 use syntax::{terms::Term, types::Type};
 
 #[derive(Debug)]
@@ -28,5 +29,15 @@ where
 
     pub fn ty(&self) -> Ty {
         self.body_derivation.ty()
+    }
+}
+
+impl<T, Ty> fmt::Display for DefinitionDerivation<T, Ty>
+where
+    T: Term,
+    Ty: Type,
+{
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}: {}", self.name, self.body_derivation)
     }
 }

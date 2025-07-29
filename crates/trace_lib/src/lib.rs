@@ -1,3 +1,4 @@
+use std::fmt;
 use syntax::{terms::Term, values::Value};
 
 pub mod rules;
@@ -5,6 +6,7 @@ pub mod step;
 
 pub use step::EvalStep;
 
+#[derive(Debug)]
 pub struct EvalTrace<T, V>
 where
     T: Term,
@@ -38,5 +40,19 @@ where
             .into_iter()
             .map(|step| step.congruence(into_fun))
             .collect()
+    }
+}
+
+impl<T, V> fmt::Display for EvalTrace<T, V>
+where
+    T: Term,
+    V: Value,
+{
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        for step in self.steps.iter() {
+            writeln!(f, "{step}")?;
+        }
+        writeln!(f, "")?;
+        write!(f, "{}", self.val)
     }
 }

@@ -1,13 +1,15 @@
-use std::{fmt, path::PathBuf};
+use crate::{format::FormatMethod, languages::AllLanguages};
+use clap::Parser;
+use errors::driver_error::DriverError;
+use std::{fmt, fs::read_to_string, path::PathBuf, str::FromStr};
 
 #[derive(Parser)]
 pub struct Args {
     pub lang: AllLanguages,
     pub cmd: Command,
+    pub out_method: FormatMethod,
     #[clap(flatten)]
     pub source: Source,
-    #[clap(flatten)]
-    pub out_method: OutMethod,
     #[clap(short, long)]
     pub out_file: Option<PathBuf>,
 }
@@ -21,14 +23,16 @@ pub enum Command {
 }
 
 impl FromStr for Command {
-    type Err = Infallible;
+    type Err = DriverError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_lowercase().trim() {
             "parse" => Ok(Command::Parse),
             "eval" | "evaluate" => Ok(Command::Evaluate),
             "check" | "typecheck" => Ok(Command::Check),
             "grammar" => Ok(Command::Grammar),
-            _ => panic!("Not a valid command"),
+            _ => Err(DriverError::UndefinedCommand(
+                "Not a valid command".to_owned(),
+            )),
         }
     }
 }
@@ -55,16 +59,16 @@ pub struct Source {
 }
 
 impl Source {
-    pub fn get_source(&self) -> String {
+    pub fn get_source(&self) -> Result<String, DriverError> {
         if let Some(ref src) = self.input {
-            return src.clone();
+            return Ok(src.clone());
         }
 
         if let Some(ref path) = self.file {
             let contents = read_to_string(path).expect("Could not read input file");
-            return contents;
+            return Ok(contents);
         }
 
-        panic!("Either --file or --input must be provided")
+        Err(DriverError::EmptyInput)
     }
 }

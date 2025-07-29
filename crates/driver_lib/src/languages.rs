@@ -1,3 +1,9 @@
+use crate::{Driver, cli::Command, format::FormatMethod};
+use errors::driver_error::DriverError;
+use language::languages::{
+    BoundedQuantification, Exceptions, Existential, FOmega, FOmegaSub, LambdaOmega, Recursive,
+    References, Stlc, Subtypes, SystemF, TypedArithmetic, UntypedArithmetic, UntypedLambda,
+};
 use std::{fmt, str::FromStr};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -19,28 +25,40 @@ pub enum AllLanguages {
 }
 
 impl AllLanguages {
-    pub fn all() -> [AllLanguages; 14] {
-        [
-            AllLanguages::UntypedArithmetic,
-            AllLanguages::UntypedLambda,
-            AllLanguages::TypedArithmetic,
-            AllLanguages::Stlc,
-            AllLanguages::Exceptions,
-            AllLanguages::References,
-            AllLanguages::Existential,
-            AllLanguages::Recursive,
-            AllLanguages::Subtypes,
-            AllLanguages::SystemF,
-            AllLanguages::BoundedQuantification,
-            AllLanguages::LambdaOmega,
-            AllLanguages::FOmega,
-            AllLanguages::FOmegaSub,
-        ]
+    pub fn dispatch_run(
+        &self,
+        driver: &Driver,
+        method: &FormatMethod,
+        cmd: &Command,
+        input: String,
+    ) -> Result<String, DriverError> {
+        match self {
+            AllLanguages::UntypedArithmetic => {
+                driver.run_format::<UntypedArithmetic>(method, cmd, input)
+            }
+            AllLanguages::UntypedLambda => driver.run_format::<UntypedLambda>(method, cmd, input),
+            AllLanguages::TypedArithmetic => {
+                driver.run_format::<TypedArithmetic>(method, cmd, input)
+            }
+            AllLanguages::Stlc => driver.run_format::<Stlc>(method, cmd, input),
+            AllLanguages::Exceptions => driver.run_format::<Exceptions>(method, cmd, input),
+            AllLanguages::References => driver.run_format::<References>(method, cmd, input),
+            AllLanguages::Existential => driver.run_format::<Existential>(method, cmd, input),
+            AllLanguages::Recursive => driver.run_format::<Recursive>(method, cmd, input),
+            AllLanguages::Subtypes => driver.run_format::<Subtypes>(method, cmd, input),
+            AllLanguages::SystemF => driver.run_format::<SystemF>(method, cmd, input),
+            AllLanguages::BoundedQuantification => {
+                driver.run_format::<BoundedQuantification>(method, cmd, input)
+            }
+            AllLanguages::LambdaOmega => driver.run_format::<LambdaOmega>(method, cmd, input),
+            AllLanguages::FOmega => driver.run_format::<FOmega>(method, cmd, input),
+            AllLanguages::FOmegaSub => driver.run_format::<FOmegaSub>(method, cmd, input),
+        }
     }
 }
 
 impl FromStr for AllLanguages {
-    type Err = LanguageError;
+    type Err = DriverError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_lowercase().trim() {
             "untyped-arithmetic" => Ok(AllLanguages::UntypedArithmetic),
@@ -57,7 +75,7 @@ impl FromStr for AllLanguages {
             "lambda-omega" => Ok(AllLanguages::LambdaOmega),
             "f-omega" => Ok(AllLanguages::FOmega),
             "f-omega-sub" => Ok(AllLanguages::FOmegaSub),
-            _ => Err(LanguageError::UndefinedLanguage(s.to_owned())),
+            _ => Err(DriverError::UndefinedLanguage(s.to_owned())),
         }
     }
 }

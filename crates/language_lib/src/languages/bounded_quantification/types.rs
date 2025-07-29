@@ -7,10 +7,7 @@ use syntax::{
     TypeVar,
     env::Environment,
     subst::SubstType,
-    types::{
-        ExistsBounded, ForallBounded, Fun, Nat, Record, Top, Type as TypeTrait, TypeGroup,
-        TypeVariable,
-    },
+    types::{ExistsBounded, ForallBounded, Fun, Nat, Record, Top, TypeGroup, TypeVariable},
 };
 
 #[derive(Clone, Debug, PartialEq, Eq)]

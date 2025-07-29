@@ -1,12 +1,12 @@
-use crate::{Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, Parse, Rule, pair_to_n_inner};
 use errors::{MissingInput, UndefinedMain, UnexpectedRule, parse_error::ParserError};
 use pest::iterators::Pair;
 use syntax::{definition::Definition, program::Program, terms::Term, types::Type};
 
 impl<T, Ty> Parse for Program<T, Ty>
 where
-    T: Term + Parse<LeftRecArg = ()>,
-    Ty: Type + Parse<LeftRecArg = ()>,
+    T: Term + GroupParse,
+    Ty: Type + GroupParse,
 {
     type LeftRecArg = ();
 

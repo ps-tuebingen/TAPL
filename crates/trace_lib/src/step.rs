@@ -1,4 +1,5 @@
 use super::rules::EvaluationRule;
+use std::fmt;
 use syntax::{
     Location, Var,
     terms::{
@@ -8,6 +9,7 @@ use syntax::{
     values::Value,
 };
 
+#[derive(Debug)]
 pub struct EvalStep<T>
 where
     T: Term,
@@ -489,5 +491,14 @@ where
             rule: EvaluationRule::SubstName,
             target: body,
         }
+    }
+}
+
+impl<T> fmt::Display for EvalStep<T>
+where
+    T: Term,
+{
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{} -- {} --> {}", self.source, self.rule, self.target)
     }
 }

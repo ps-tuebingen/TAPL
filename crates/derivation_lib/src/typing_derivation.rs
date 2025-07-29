@@ -1,4 +1,5 @@
 use super::{Conclusion, TypingRule};
+use std::fmt;
 use syntax::{env::Environment, terms::Term, types::Type, untyped::Untyped};
 
 #[derive(Debug)]
@@ -591,5 +592,20 @@ where
             label: TypingRule::Empty,
             premises: vec![],
         }
+    }
+}
+
+impl<T, Ty> fmt::Display for TypingDerivation<T, Ty>
+where
+    T: Term,
+    Ty: Type,
+{
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        for prem in self.premises.iter() {
+            writeln!(f, "{prem}")?;
+            writeln!(f, "")?;
+        }
+        writeln!(f, "=== {} ===", self.label)?;
+        write!(f, "{}", self.conc)
     }
 }

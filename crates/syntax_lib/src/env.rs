@@ -1,6 +1,7 @@
 use crate::{Location, Name, TypeVar, Var, kinds::Kind, types::Type};
 use errors::{FreeTypeVariable, FreeVariable, UndefinedLocation};
 use std::collections::HashMap;
+use std::fmt;
 
 #[derive(Clone, Debug)]
 pub struct Environment<Ty>
@@ -88,5 +89,33 @@ where
 {
     fn default() -> Environment<Ty> {
         Environment::new()
+    }
+}
+
+impl<Ty> fmt::Display for Environment<Ty>
+where
+    Ty: Type,
+{
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        for (var, ty) in self.var_bindings.iter() {
+            write!(f, "{var} : {ty},")?;
+        }
+
+        for (nm, ty) in self.definitions.iter() {
+            write!(f, "{nm} : {ty},")?;
+        }
+
+        for (var, knd) in self.tyvar_bindings.iter() {
+            write!(f, "{var} :: {knd}")?;
+        }
+
+        for (var, sup) in self.tyvar_super.iter() {
+            write!(f, "{var} <: {sup}")?;
+        }
+
+        for (loc, ty) in self.location_bindings.iter() {
+            write!(f, "{loc} : {ty}")?;
+        }
+        Ok(())
     }
 }

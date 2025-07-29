@@ -1,5 +1,5 @@
 use crate::{definition_derivation::DefinitionDerivation, typing_derivation::TypingDerivation};
-use std::collections::HashMap;
+use std::{collections::HashMap, fmt};
 use syntax::{terms::Term, types::Type};
 
 #[derive(Debug)]
@@ -35,5 +35,18 @@ where
 
         tys.insert("main".to_owned(), self.main_derivation.ty());
         tys
+    }
+}
+
+impl<T, Ty> fmt::Display for ProgramDerivation<T, Ty>
+where
+    T: Term,
+    Ty: Type,
+{
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        for def_deriv in self.def_derivations.iter() {
+            writeln!(f, "{def_deriv}")?;
+        }
+        write!(f, "{}", self.main_derivation)
     }
 }
