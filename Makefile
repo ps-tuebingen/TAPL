@@ -2,8 +2,12 @@
 examples:
 	./load_examples.sh
 
+.PHONY: html_templates
+html_templates:
+	./html/generate_pages.sh
+
 .PHONY: web
-web: examples
+web: examples html_templates
 	wasm-pack build crates/web_bin --target web --out-dir ../../html/pkg
 
 .PHONY: test 
