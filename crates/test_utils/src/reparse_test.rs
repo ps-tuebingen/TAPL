@@ -1,5 +1,5 @@
 use super::{test::Test, test_result::TestResult};
-use parse::Parse;
+use parse::{GroupParse, Parse};
 use std::marker::PhantomData;
 use syntax::{program::Program, terms::Term, types::Type};
 
@@ -29,8 +29,8 @@ where
 
 impl<T, Ty> Test<()> for ReparseTest<T, Ty>
 where
-    T: Term + Parse<LeftRecArg = ()>,
-    Ty: Type + Parse<LeftRecArg = ()>,
+    T: Term + GroupParse,
+    Ty: Type + GroupParse,
 {
     fn name(&self) -> String {
         format!("Reparsing {}", self.name)

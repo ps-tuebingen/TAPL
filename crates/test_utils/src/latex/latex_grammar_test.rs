@@ -1,5 +1,5 @@
 use crate::{paths::LATEX_OUT, test::Test, test_result::TestResult};
-use language::Language;
+use grammar::LanguageDescribe;
 use latex::LatexFmt;
 use std::marker::PhantomData;
 use std::{
@@ -8,6 +8,7 @@ use std::{
     path::PathBuf,
     process::{Command, Stdio},
 };
+use syntax::language::Language;
 
 pub struct LatexTestGrammar<L>
 where
@@ -31,7 +32,7 @@ where
 
 impl<L> Test<()> for LatexTestGrammar<L>
 where
-    L: Language,
+    L: Language + LanguageDescribe,
 {
     fn name(&self) -> String {
         format!("Generating Latex for Grammar of {}", self.name)

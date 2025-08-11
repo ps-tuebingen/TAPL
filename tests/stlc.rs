@@ -1,6 +1,7 @@
+use errors::test_error::TestError;
 use language::languages::stlc::Stlc;
-use test_utils::{errors::Error, testsuite::TestSuite};
+use test_utils::testsuite::TestSuite;
 
-fn main() -> Result<(), Error> {
+fn main() -> Result<(), TestError> {
     Stlc.run_report()
 }

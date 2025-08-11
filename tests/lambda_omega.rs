@@ -1,6 +1,7 @@
+use errors::test_error::TestError;
 use language::languages::lambda_omega::LambdaOmega;
-use test_utils::{errors::Error, testsuite::TestSuite};
+use test_utils::testsuite::TestSuite;
 
-fn main() -> Result<(), Error> {
+fn main() -> Result<(), TestError> {
     LambdaOmega.run_report()
 }

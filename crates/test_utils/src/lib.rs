@@ -10,15 +10,15 @@ pub mod latex;
 pub mod parse_test;
 pub mod reparse_test;
 
-use errors::Error;
+use errors::{DirAccess, test_error::TestError};
 
 use std::env::{current_dir, set_current_dir};
 
-pub fn setup() -> Result<(), Error> {
+pub fn setup() -> Result<(), TestError> {
     println!("{:?}", current_dir().unwrap());
     let dir = current_dir()
-        .map_err(|err| Error::dir_access("get current dir", err))?
+        .map_err(|err| DirAccess::new("get current dir", err))?
         .join("..");
-    set_current_dir(dir).map_err(|err| Error::dir_access("set current dir", err))?;
+    set_current_dir(dir).map_err(|err| DirAccess::new("set current dir", err))?;
     Ok(())
 }

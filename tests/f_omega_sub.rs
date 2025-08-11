@@ -1,6 +1,7 @@
+use errors::test_error::TestError;
 use language::languages::f_omega_sub::FOmegaSub;
-use test_utils::{errors::Error, testsuite::TestSuite};
+use test_utils::testsuite::TestSuite;
 
-fn main() -> Result<(), Error> {
+fn main() -> Result<(), TestError> {
     FOmegaSub.run_report()
 }
