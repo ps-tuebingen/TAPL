@@ -28,12 +28,11 @@ impl Driver {
         let input = if matches!(args.cmd, Command::Grammar) {
             "".to_owned()
         } else {
-            let src = args.source.get_source()?;
-            src
+            args.source.get_source()?
         };
         let res = args
             .lang
-            .dispatch_run(&self, &args.out_method, &args.cmd, input)?;
+            .dispatch_run(self, &args.out_method, &args.cmd, input)?;
         match args.out_file {
             None => {
                 println!("{res}");
@@ -77,16 +76,16 @@ impl Driver {
         Option<String>,
         Option<String>,
     ) {
-        let parse_res = match lang.dispatch_run(&self, method, &Command::Parse, input.clone()) {
+        let parse_res = match lang.dispatch_run(self, method, &Command::Parse, input.clone()) {
             Ok(p) => p,
             Err(err) => return (None, None, None, Some(err.to_string())),
         };
-        let check_res = match lang.dispatch_run(&self, method, &Command::Check, input.clone()) {
+        let check_res = match lang.dispatch_run(self, method, &Command::Check, input.clone()) {
             Ok(ty) => ty,
             Err(err) => return (None, None, None, Some(err.to_string())),
         };
 
-        let eval_res = match lang.dispatch_run(&self, method, &Command::Check, input.clone()) {
+        let eval_res = match lang.dispatch_run(self, method, &Command::Check, input.clone()) {
             Ok(v) => v,
             Err(err) => return (None, None, None, Some(err.to_string())),
         };

@@ -30,7 +30,7 @@ impl GroupParse for Term {
             Rule::let_term => Ok(Let::from_pair(p, ())?.into()),
             Rule::if_term => Ok(If::from_pair(p, ())?.into()),
             Rule::fix_term => Ok(Fix::from_pair(p, ())?.into()),
-            r => Err(UnexpectedRule::new(&format!("{:?}", r), "Term (non-left recursive)").into()),
+            r => Err(UnexpectedRule::new(&format!("{r:?}"), "Term (non-left recursive)").into()),
         }
     }
 
@@ -39,7 +39,7 @@ impl GroupParse for Term {
             Rule::assign => Ok(Assign::from_pair(p, t)?.into()),
             Rule::sequence => Ok(Sequence::from_pair(p, t)?.to_term()),
             Rule::term => Ok(App::from_pair(p, t)?.into()),
-            r => Err(UnexpectedRule::new(&format!("{:?}", r), "Assign or Application").into()),
+            r => Err(UnexpectedRule::new(&format!("{r:?}"), "Assign or Application").into()),
         }
     }
 }

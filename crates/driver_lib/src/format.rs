@@ -33,7 +33,7 @@ impl FormatMethod {
 impl FromStr for FormatMethod {
     type Err = DriverError;
     fn from_str(s: &str) -> Result<FormatMethod, DriverError> {
-        let s = s.replace('-', "").replace('_', "");
+        let s = s.replace(['-', '_'], "");
         match s.to_lowercase().trim() {
             "print" | "simple" => Ok(FormatMethod::Simple),
             "latex" | "buss" => Ok(FormatMethod::LatexBusDoc),

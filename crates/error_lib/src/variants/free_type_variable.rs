@@ -6,8 +6,10 @@ pub struct FreeTypeVariable {
 }
 
 impl FreeTypeVariable {
-    pub fn new(var: &String) -> FreeTypeVariable {
-        FreeTypeVariable { var: var.clone() }
+    pub fn new(var: &str) -> FreeTypeVariable {
+        FreeTypeVariable {
+            var: var.to_owned(),
+        }
     }
 }
 

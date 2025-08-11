@@ -52,7 +52,7 @@ where
         for step in self.steps.iter() {
             writeln!(f, "{step}")?;
         }
-        writeln!(f, "")?;
+        writeln!(f)?;
         write!(f, "{}", self.val)
     }
 }

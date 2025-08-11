@@ -17,10 +17,10 @@ where
             return Ok(());
         }
 
-        if let Ok(v) = sup_norm.clone().into_variable() {
-            if v.v == self.v {
-                return Ok(());
-            }
+        if let Ok(v) = sup_norm.clone().into_variable()
+            && v.v == self.v
+        {
+            return Ok(());
         }
         ty_super.check_equal(&sup_norm)?;
         Ok(())

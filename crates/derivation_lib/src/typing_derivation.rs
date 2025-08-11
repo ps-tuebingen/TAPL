@@ -603,7 +603,7 @@ where
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         for prem in self.premises.iter() {
             writeln!(f, "{prem}")?;
-            writeln!(f, "")?;
+            writeln!(f,)?;
         }
         writeln!(f, "=== {} ===", self.label)?;
         write!(f, "{}", self.conc)
