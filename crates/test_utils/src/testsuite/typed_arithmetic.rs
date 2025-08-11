@@ -3,7 +3,7 @@ use crate::{
     paths::{EXAMPLES_PATH, TYPED_ARITH_PATH},
     test::TestConfig,
 };
-use language::languages::TypedArithmetic;
+use language::TypedArithmetic;
 use std::path::PathBuf;
 
 #[derive(serde::Deserialize)]

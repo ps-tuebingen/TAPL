@@ -3,7 +3,7 @@ use crate::{
     paths::{EXAMPLES_PATH, F_OMEGA_SUB_PATH},
     test::TestConfig,
 };
-use language::languages::FOmegaSub;
+use language::FOmegaSub;
 use std::path::PathBuf;
 
 #[derive(serde::Deserialize)]

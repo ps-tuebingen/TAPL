@@ -3,7 +3,7 @@ use crate::{
     paths::{EXAMPLES_PATH, UNTYPED_LAMBDA_PATH},
     test::TestConfig,
 };
-use language::languages::UntypedLambda;
+use language::UntypedLambda;
 use std::path::PathBuf;
 
 #[derive(serde::Deserialize)]

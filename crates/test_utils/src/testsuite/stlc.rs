@@ -3,7 +3,7 @@ use crate::{
     paths::{EXAMPLES_PATH, STLC_PATH},
     test::TestConfig,
 };
-use language::languages::Stlc;
+use language::Stlc;
 use std::path::PathBuf;
 
 #[derive(serde::Deserialize)]

@@ -3,7 +3,7 @@ use crate::{
     paths::{EXAMPLES_PATH, SUBTYPES_PATH},
     test::TestConfig,
 };
-use language::languages::Subtypes;
+use language::Subtypes;
 use std::path::PathBuf;
 
 #[derive(serde::Deserialize)]
