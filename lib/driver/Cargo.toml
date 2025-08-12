@@ -1,0 +1,18 @@
+[package]
+name = "driver"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+latex = { path="../latex" }
+parser = { path="../parser" }
+check = { path="../check" }
+eval = { path="../eval" }
+syntax = { path="../syntax" }
+errors = { path="../errors" }
+derivations = { path="../derivations" }
+trace = { path="../trace" }
+languages = { path="../languages" }
+grammar = { path="../grammar" }
+
+clap = { version = "4", features=["derive"]}

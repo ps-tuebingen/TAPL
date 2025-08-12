@@ -1,0 +1,18 @@
+[package]
+name = "languages"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+errors = { path="../errors" }
+syntax = { path="../syntax" }
+parser = { path="../parser" }
+eval = { path="../eval" }
+check = { path="../check" }
+derivations = { path="../derivations" } 
+trace = { path="../trace" }
+latex = { path="../latex"}
+grammar = { path="../grammar"}
+
+pest={version="2.7.15"}
+pest_derive={version="2.7.15"}

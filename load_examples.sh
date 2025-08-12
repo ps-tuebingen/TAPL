@@ -8,7 +8,7 @@ debug() {
   fi
 }
 
-OUT_DIR="crates/web_bin/src/examples";
+OUT_DIR="apps/web/src/examples";
 OUT_MOD="$OUT_DIR/mod.rs";
 EXAMPLES_DIR="examples";
 EXAMPLE_DIR_TUPLES=();

@@ -75,6 +75,7 @@ harness=false
 
 [dependencies]
 serde = {version="1.0.219", features=["derive"]}
-test_utils={path="../crates/test_utils"}
-errors={path="../crates/error_lib"}
-language = {path="../crates/language_lib"}
+
+test_utils = { path = "../lib/test"}
+errors = { path = "../lib/errors"}
+languages = {path = "../lib/languages"}

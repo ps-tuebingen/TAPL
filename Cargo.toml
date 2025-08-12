@@ -1,21 +1,21 @@
 [workspace]
 members = [
-    "crates/cli_bin",
-    "crates/web_bin",
-    "crates/syntax_lib",
-    "crates/parse_lib",
-    "crates/eval_lib",
-    "crates/check_lib",
-    "crates/error_lib",
-    "crates/language_lib",
-    "crates/derivation_lib",
-    "crates/grammar_lib",
-    "crates/trace_lib",
-    "crates/test_utils",
-    "crates/latex_lib",
-    "crates/driver_lib",
+    "apps/cli",
+    "apps/web",
+    "lib/syntax",
+    "lib/parser",
+    "lib/eval",
+    "lib/check",
+    "lib/errors",
+    "lib/languages",
+    "lib/derivations",
+    "lib/grammar",
+    "lib/trace",
+    "lib/test",
+    "lib/latex",
+    "lib/driver",
     "tests",
 ]
 
 resolver = "2"
-default-members = ["crates/cli_bin"]
+default-members = ["apps/cli"]

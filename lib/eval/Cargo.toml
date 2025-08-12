@@ -1,0 +1,9 @@
+[package]
+name = "eval"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+errors={path="../errors"}
+syntax={path="../syntax"}
+trace={path="../trace"}
