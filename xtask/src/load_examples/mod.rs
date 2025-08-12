@@ -1,9 +1,5 @@
 use errors::{DirAccess, FileAccess, build_error::BuildError};
-use std::{
-    fs::{File, read_dir, remove_file},
-    io::Write,
-    path::PathBuf,
-};
+use std::{fs::read_dir, path::PathBuf};
 
 mod examples_mod;
 mod examples_rs;
