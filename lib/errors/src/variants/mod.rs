@@ -1,5 +1,7 @@
+pub mod could_not_cast;
 pub mod dir_access;
 pub mod duplicate_definition;
+pub mod element_not_found;
 pub mod empty_case;
 pub mod file_access;
 pub mod free_type_variable;

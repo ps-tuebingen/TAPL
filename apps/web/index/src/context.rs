@@ -19,14 +19,13 @@ pub struct HtmlContext {
 
 impl HtmlContext {
     pub fn new() -> Rc<HtmlContext> {
-        let document = web_sys::window().unwrap().document().unwrap();
+        let document = 
 
         let example_select = ExampleSelect::new(&document);
         let out_divs = OutDivs::new(&document);
 
         let run_button = get_by_id("run_button", &document);
         let source_area = get_by_id("source_code", &document);
-        let language_select: HtmlSelectElement = get_by_id("language_select", &document);
 
         let lang_driver = Driver;
 

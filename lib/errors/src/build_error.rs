@@ -16,6 +16,8 @@ impl fmt::Display for BuildError {
     }
 }
 
+impl std::error::Error for BuildError {}
+
 impl From<DirAccess> for BuildError {
     fn from(err: DirAccess) -> BuildError {
         BuildError::DirAccess(err)

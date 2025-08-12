@@ -4,11 +4,14 @@ pub mod driver_error;
 pub mod eval_error;
 pub mod parse_error;
 pub mod test_error;
+pub mod web_error;
 
 pub mod variants;
 
+pub use variants::could_not_cast::CouldNotCast;
 pub use variants::dir_access::DirAccess;
 pub use variants::duplicate_definition::DuplicateDefinition;
+pub use variants::element_not_found::ElementNotFound;
 pub use variants::empty_case::EmptyCase;
 pub use variants::file_access::FileAccess;
 pub use variants::free_type_variable::FreeTypeVariable;

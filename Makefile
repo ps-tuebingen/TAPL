@@ -3,7 +3,7 @@
 
 .PHONY: web
 web: prepare
-	wasm-pack build apps/web --target web --out-dir ../../html/pkg
+	wasm-pack build apps/web/index --target web --out-dir ../../html/pkg
 
 .PHONY: test 
 test: prepare
