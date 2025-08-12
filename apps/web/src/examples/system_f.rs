@@ -32,25 +32,24 @@ pub const C0: &str = include_str!("../../../../examples/system_f/c0/c0.f");
 
 pub const CPLUS: &str = include_str!("../../../../examples/system_f/cplus/cplus.f");
 
-pub fn system_f_all() -> Vec<(&'static str,&'static str)> { 
+pub fn system_f_all() -> Vec<(&'static str,&'static str)> {
     vec![
-         ("CExp",CEXP), 
-         ("C1",C1), 
-         ("IsNil",ISNIL), 
-         ("True",TRU), 
-         ("SelfApp",SELFAPP), 
-         ("Nil",NIL), 
-         ("Id",ID), 
-         ("False",FLS), 
-         ("CSucc",CSUCC), 
-         ("Double",DOUBLE), 
-         ("CTimes",CTIMES), 
-         ("Cons",CONS), 
-         ("Quadruple",QUADRUPLE), 
-         ("C2",C2), 
-         ("Not",NOT), 
-         ("C0",C0), 
-         ("CPlus",CPLUS), 
-
+        ("Cexp", CEXP),
+        ("C1", C1),
+        ("Isnil", ISNIL),
+        ("Tru", TRU),
+        ("Selfapp", SELFAPP),
+        ("Nil", NIL),
+        ("Id", ID),
+        ("Fls", FLS),
+        ("Csucc", CSUCC),
+        ("Double", DOUBLE),
+        ("Ctimes", CTIMES),
+        ("Cons", CONS),
+        ("Quadruple", QUADRUPLE),
+        ("C2", C2),
+        ("Not", NOT),
+        ("C0", C0),
+        ("Cplus", CPLUS),
     ]
 }

@@ -22,20 +22,19 @@ pub const ADD3: &str = include_str!("../../../../examples/existential/add3/add3.
 
 pub const ISEVEN: &str = include_str!("../../../../examples/existential/iseven/iseven.ex");
 
-pub fn existential_all() -> Vec<(&'static str,&'static str)> { 
+pub fn existential_all() -> Vec<(&'static str,&'static str)> {
     vec![
-         ("FlipFlop",FLIPFLOP), 
-         ("PackNat",PACKNAT), 
-         ("SendInc",SENDINC), 
-         ("UnpackCounter",UNPACKCOUNTER), 
-         ("CounterObject",COUNTEROBJECT), 
-         ("PackBool",PACKBOOL), 
-         ("CounterRec",COUNTERREC), 
-         ("SendGet",SENDGET), 
-         ("CounterADT",COUNTERADT), 
-         ("UnpackNat",UNPACKNAT), 
-         ("Add3",ADD3), 
-         ("IsEven",ISEVEN), 
-
+        ("Flipflop", FLIPFLOP),
+        ("Packnat", PACKNAT),
+        ("Sendinc", SENDINC),
+        ("Unpackcounter", UNPACKCOUNTER),
+        ("Counterobject", COUNTEROBJECT),
+        ("Packbool", PACKBOOL),
+        ("Counterrec", COUNTERREC),
+        ("Sendget", SENDGET),
+        ("Counteradt", COUNTERADT),
+        ("Unpacknat", UNPACKNAT),
+        ("Add3", ADD3),
+        ("Iseven", ISEVEN),
     ]
 }

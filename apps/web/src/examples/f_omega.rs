@@ -6,12 +6,11 @@ pub const PAIRADT: &str = include_str!("../../../../examples/f_omega/pairadt/pai
 
 pub const LISTADT: &str = include_str!("../../../../examples/f_omega/listadt/listadt.omega");
 
-pub fn f_omega_all() -> Vec<(&'static str,&'static str)> { 
+pub fn f_omega_all() -> Vec<(&'static str,&'static str)> {
     vec![
-         ("UnpackList",UNPACKLIST), 
-         ("UnpackPair",UNPACKPAIR), 
-         ("PairADT",PAIRADT), 
-         ("ListADT",LISTADT), 
-
+        ("Unpacklist", UNPACKLIST),
+        ("Unpackpair", UNPACKPAIR),
+        ("Pairadt", PAIRADT),
+        ("Listadt", LISTADT),
     ]
 }

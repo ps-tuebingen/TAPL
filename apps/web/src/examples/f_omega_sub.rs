@@ -10,14 +10,13 @@ pub const SENDRESET: &str = include_str!("../../../../examples/f_omega_sub/sendr
 
 pub const COUNTERCLASS: &str = include_str!("../../../../examples/f_omega_sub/counterclass/counterclass.omega");
 
-pub fn f_omega_sub_all() -> Vec<(&'static str,&'static str)> { 
+pub fn f_omega_sub_all() -> Vec<(&'static str,&'static str)> {
     vec![
-         ("ResetCounterClass",RESETCOUNTERCLASS), 
-         ("SendInc",SENDINC), 
-         ("NewCounter",NEWCOUNTER), 
-         ("SendGet",SENDGET), 
-         ("SendReset",SENDRESET), 
-         ("CounterClass",COUNTERCLASS), 
-
+        ("Resetcounterclass", RESETCOUNTERCLASS),
+        ("Sendinc", SENDINC),
+        ("Newcounter", NEWCOUNTER),
+        ("Sendget", SENDGET),
+        ("Sendreset", SENDRESET),
+        ("Counterclass", COUNTERCLASS),
     ]
 }

@@ -4,11 +4,10 @@ pub const IF_NESTED: &str = include_str!("../../../../examples/untyped_arithmeti
 
 pub const IFTHENELSE: &str = include_str!("../../../../examples/untyped_arithmetic/ifthenelse/ifthenelse.arith");
 
-pub fn untyped_arithmetic_all() -> Vec<(&'static str,&'static str)> { 
+pub fn untyped_arithmetic_all() -> Vec<(&'static str,&'static str)> {
     vec![
-         ("IsZeroZero",ISZZ), 
-         ("IfNested",IF_NESTED), 
-         ("If",IFTHENELSE), 
-
+        ("Iszz", ISZZ),
+        ("If_nested", IF_NESTED),
+        ("Ifthenelse", IFTHENELSE),
     ]
 }

@@ -8,13 +8,12 @@ pub const DOUBLEREF: &str = include_str!("../../../../examples/references/double
 
 pub const NATARRAY: &str = include_str!("../../../../examples/references/natarray/natarray.ref");
 
-pub fn references_all() -> Vec<(&'static str,&'static str)> { 
+pub fn references_all() -> Vec<(&'static str,&'static str)> {
     vec![
-         ("RefNat",REFNAT), 
-         ("Inc",INCC), 
-         ("RefAssign",REFASSIGN), 
-         ("DoubleRef",DOUBLEREF), 
-         ("NatArray",NATARRAY), 
-
+        ("Refnat", REFNAT),
+        ("Incc", INCC),
+        ("Refassign", REFASSIGN),
+        ("Doubleref", DOUBLEREF),
+        ("Natarray", NATARRAY),
     ]
 }

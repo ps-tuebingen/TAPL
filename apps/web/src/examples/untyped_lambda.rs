@@ -28,23 +28,22 @@ pub const ONE: &str = include_str!("../../../../examples/untyped_lambda/one/one.
 
 pub const AND: &str = include_str!("../../../../examples/untyped_lambda/and/and.lam");
 
-pub fn untyped_lambda_all() -> Vec<(&'static str,&'static str)> { 
+pub fn untyped_lambda_all() -> Vec<(&'static str,&'static str)> {
     vec![
-         ("Zero",ZERO), 
-         ("Snd",SND), 
-         ("Pair",PAIR), 
-         ("IsZero",ISZERO), 
-         ("True",TRU), 
-         ("False",FALSE), 
-         ("Id",ID), 
-         ("Times",TIMES), 
-         ("Plus",PLUS), 
-         ("If",IFTHENELSE), 
-         ("Prd",PRD), 
-         ("Succ",SUCC), 
-         ("Fst",FST), 
-         ("One",ONE), 
-         ("And",AND), 
-
+        ("Zero", ZERO),
+        ("Snd", SND),
+        ("Pair", PAIR),
+        ("Iszero", ISZERO),
+        ("Tru", TRU),
+        ("False", FALSE),
+        ("Id", ID),
+        ("Times", TIMES),
+        ("Plus", PLUS),
+        ("Ifthenelse", IFTHENELSE),
+        ("Prd", PRD),
+        ("Succ", SUCC),
+        ("Fst", FST),
+        ("One", ONE),
+        ("And", AND),
     ]
 }

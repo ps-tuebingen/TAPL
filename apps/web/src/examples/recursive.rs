@@ -34,26 +34,25 @@ pub const SUMLIST: &str = include_str!("../../../../examples/recursive/sumlist/s
 
 pub const CURR: &str = include_str!("../../../../examples/recursive/curr/curr.rec");
 
-pub fn recursive_all() -> Vec<(&'static str,&'static str)> { 
+pub fn recursive_all() -> Vec<(&'static str,&'static str)> {
     vec![
-         ("Process",PROCESS), 
-         ("Tail",TAIL), 
-         ("UpFromZero",UPFROM0), 
-         ("Ap",AP), 
-         ("Head",HEAD), 
-         ("IsNil",ISNIL), 
-         ("Hungry",HUNGRY), 
-         ("StreamHead",STREAMHEAD), 
-         ("Lam",LAM), 
-         ("Send",SEND), 
-         ("Nil",NIL), 
-         ("StreamTail",STREAMTAIL), 
-         ("Plus",PLUS), 
-         ("FixD",FIXD), 
-         ("Counter",COUNTER), 
-         ("Cons",CONS), 
-         ("SumList",SUMLIST), 
-         ("Curr",CURR), 
-
+        ("Process", PROCESS),
+        ("Tail", TAIL),
+        ("Upfrom0", UPFROM0),
+        ("Ap", AP),
+        ("Head", HEAD),
+        ("Isnil", ISNIL),
+        ("Hungry", HUNGRY),
+        ("Streamhead", STREAMHEAD),
+        ("Lam", LAM),
+        ("Send", SEND),
+        ("Nil", NIL),
+        ("Streamtail", STREAMTAIL),
+        ("Plus", PLUS),
+        ("Fixd", FIXD),
+        ("Counter", COUNTER),
+        ("Cons", CONS),
+        ("Sumlist", SUMLIST),
+        ("Curr", CURR),
     ]
 }

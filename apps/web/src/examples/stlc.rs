@@ -40,29 +40,28 @@ pub const TUPLE: &str = include_str!("../../../../examples/stlc/tuple/tuple.stlc
 
 pub const LIST: &str = include_str!("../../../../examples/stlc/list/list.stlc");
 
-pub fn stlc_all() -> Vec<(&'static str,&'static str)> { 
+pub fn stlc_all() -> Vec<(&'static str,&'static str)> {
     vec![
-         ("Snd",SND), 
-         ("PredSucc",PREDSUCC), 
-         ("Pair",PAIR), 
-         ("VariantCase",VARIANTCASE), 
-         ("Left",LEFT), 
-         ("IdFun",IDFUN), 
-         ("Record",RECORD), 
-         ("If",IF), 
-         ("SumCase",SUMCASE), 
-         ("Bool",BOOL), 
-         ("Unit",UNIT), 
-         ("SomeCase",SOMECASE), 
-         ("BoolBool",BOOLBOOL), 
-         ("IdNat",IDNAT), 
-         ("Proj",PROJ), 
-         ("Variant",VARIANT), 
-         ("Let",LET), 
-         ("Fix",FIX), 
-         ("Swap",SWAP), 
-         ("Tuple",TUPLE), 
-         ("List",LIST), 
-
+        ("Snd", SND),
+        ("Predsucc", PREDSUCC),
+        ("Pair", PAIR),
+        ("Variantcase", VARIANTCASE),
+        ("Left", LEFT),
+        ("Idfun", IDFUN),
+        ("Record", RECORD),
+        ("If", IF),
+        ("Sumcase", SUMCASE),
+        ("Bool", BOOL),
+        ("Unit", UNIT),
+        ("Somecase", SOMECASE),
+        ("Boolbool", BOOLBOOL),
+        ("Idnat", IDNAT),
+        ("Proj", PROJ),
+        ("Variant", VARIANT),
+        ("Let", LET),
+        ("Fix", FIX),
+        ("Swap", SWAP),
+        ("Tuple", TUPLE),
+        ("List", LIST),
     ]
 }

@@ -24,21 +24,20 @@ pub const SSUCC: &str = include_str!("../../../../examples/bounded_quantificatio
 
 pub const STWO: &str = include_str!("../../../../examples/bounded_quantification/stwo/stwo.bd");
 
-pub fn bounded_quantification_all() -> Vec<(&'static str,&'static str)> { 
+pub fn bounded_quantification_all() -> Vec<(&'static str,&'static str)> {
     vec![
-         ("SOne",SONE), 
-         ("SPlusPP",SPLUSPP), 
-         ("Snd",SND), 
-         ("Pair",PAIR), 
-         ("UnboundedId",UNBOUNDID), 
-         ("PolymorphicRecord",RECORDPOLY), 
-         ("SThree",STHREE), 
-         ("CounterADT",COUNTERADT), 
-         ("Fst",FST), 
-         ("CounterThree",COUNTERTHREE), 
-         ("SZero",SZERO), 
-         ("SSucc",SSUCC), 
-         ("STwo",STWO), 
-
+        ("Sone", SONE),
+        ("Spluspp", SPLUSPP),
+        ("Snd", SND),
+        ("Pair", PAIR),
+        ("Unboundid", UNBOUNDID),
+        ("Recordpoly", RECORDPOLY),
+        ("Sthree", STHREE),
+        ("Counteradt", COUNTERADT),
+        ("Fst", FST),
+        ("Counterthree", COUNTERTHREE),
+        ("Szero", SZERO),
+        ("Ssucc", SSUCC),
+        ("Stwo", STWO),
     ]
 }

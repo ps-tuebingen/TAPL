@@ -32,25 +32,24 @@ pub const COUNTERCLASS: &str = include_str!("../../../../examples/subtypes/count
 
 pub const LIST: &str = include_str!("../../../../examples/subtypes/list/list.sub");
 
-pub fn subtypes_all() -> Vec<(&'static str,&'static str)> { 
+pub fn subtypes_all() -> Vec<(&'static str,&'static str)> {
     vec![
-         ("ResetCounterClass",RESETCOUNTERCLASS), 
-         ("VariantCase",VARIANTCASE), 
-         ("NewCounter",NEWCOUNTER), 
-         ("RefNat",REFNAT), 
-         ("DownCast",DOWNCAST), 
-         ("BackupCounterClass",BACKUPCOUNTERCLASS), 
-         ("Counter",COUNTER), 
-         ("NewResetCounter",NEWRESETCOUNTER), 
-         ("InstrCounterClass",INSTRCOUNTERCLASS), 
-         ("Variant",VARIANT), 
-         ("DecCounterClass",DECCOUNTERCLASS), 
-         ("SetCounterClass",SETCOUNTERCLASS), 
-         ("NewSetCounter",NEWSETCOUNTER), 
-         ("LambdaRec",LAMBDAREC), 
-         ("NewDecCounter",NEWDECCOUNTER), 
-         ("CounterClass",COUNTERCLASS), 
-         ("List",LIST), 
-
+        ("Resetcounterclass", RESETCOUNTERCLASS),
+        ("Variantcase", VARIANTCASE),
+        ("Newcounter", NEWCOUNTER),
+        ("Refnat", REFNAT),
+        ("Downcast", DOWNCAST),
+        ("Backupcounterclass", BACKUPCOUNTERCLASS),
+        ("Counter", COUNTER),
+        ("Newresetcounter", NEWRESETCOUNTER),
+        ("Instrcounterclass", INSTRCOUNTERCLASS),
+        ("Variant", VARIANT),
+        ("Deccounterclass", DECCOUNTERCLASS),
+        ("Setcounterclass", SETCOUNTERCLASS),
+        ("Newsetcounter", NEWSETCOUNTER),
+        ("Lambdarec", LAMBDAREC),
+        ("Newdeccounter", NEWDECCOUNTER),
+        ("Counterclass", COUNTERCLASS),
+        ("List", LIST),
     ]
 }
