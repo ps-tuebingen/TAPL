@@ -31,15 +31,32 @@
     <div>Language:</div>
     <select id="language_select"></select>
     <div class="spacer"></div>
+    <div>Example:</div>
+    <select id="example_select"></select>
+    <button id="run_button">Run</button>
   </div>
-</div>
-<div class="vline"></div>
-<div id="output_column">
-    <div id="grammar-box">
+  <div id="grammar-box">
     <div>Grammar</div>
     <button class="collapse_button" id="grammar_collapse">+</button>
     <div id="grammar_out"></div>
   </div>
+  <textarea id="source_code"></textarea>
+</div>
+<div class="vline"></div>
+<div id="output_column">
+  <h2>Results</h2>
+  <div class="output_label" id="text-parsed"> Parsed:</div>
+  <button class="collapse_button" id="parsed_collapse">+</button>
+  <div id="parsed_out" class="output"></div>
+  <div class="output_label" id="text-checked">Typechecked:</div>
+  <button class="collapse_button" id="checked_collapse">+</button>
+  <div id="checked_out" class="output"></div>
+  <div class="output_label" id="text-evaled">Evaluated:</div>
+  <button class="collapse_button" id="evaled_collapse">+</button>
+  <div id="evaled_out" class="output"></div>
+  <div class="output_label" id="text-error">Errors:</div>
+  <button class="collapse_button" id="error_collapse">+</button>
+  <div id="error_out" class="output"></div>
 </div>
 </div>
   </body>
