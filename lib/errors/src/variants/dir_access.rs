@@ -9,7 +9,7 @@ pub struct DirAccess {
 impl DirAccess {
     pub fn new<E>(tried: &str, err: E) -> DirAccess
     where
-        E: std::error::Error,
+        E: fmt::Display,
     {
         DirAccess {
             tried: tried.to_owned(),

@@ -1,8 +1,10 @@
+pub mod build_error;
 pub mod check_error;
 pub mod driver_error;
 pub mod eval_error;
 pub mod parse_error;
 pub mod test_error;
+
 pub mod variants;
 
 pub use variants::dir_access::DirAccess;

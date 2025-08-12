@@ -15,6 +15,7 @@ members = [
     "lib/latex",
     "lib/driver",
     "tests",
+    "xtask"
 ]
 
 resolver = "2"
