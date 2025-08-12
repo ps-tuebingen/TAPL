@@ -1,12 +1,8 @@
 .PHONY: prepare
 	cargo run -p xtask
 
-.PHONY: html_templates
-html_templates:
-	./html/generate_pages.sh
-
 .PHONY: web
-web: prepare html_templates
+web: prepare
 	wasm-pack build apps/web --target web --out-dir ../../html/pkg
 
 .PHONY: test 
