@@ -1,7 +1,7 @@
 use crate::{Driver, cli::Command, format::FormatMethod};
 use errors::driver_error::DriverError;
 use grammar::{LanguageDescribe, LanguageGrammar};
-use language::{
+use languages::{
     BoundedQuantification, Exceptions, Existential, FOmega, FOmegaSub, LambdaOmega, Recursive,
     References, Stlc, Subtypes, SystemF, TypedArithmetic, UntypedArithmetic, UntypedLambda,
 };

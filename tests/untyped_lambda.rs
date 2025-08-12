@@ -1,5 +1,5 @@
 use errors::test_error::TestError;
-use language::languages::untyped_lambda::UntypedLambda;
+use languages::untyped_lambda::UntypedLambda;
 use test_utils::testsuite::TestSuite;
 
 fn main() -> Result<(), TestError> {

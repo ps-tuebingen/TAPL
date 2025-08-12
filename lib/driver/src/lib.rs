@@ -1,10 +1,10 @@
 use check::Typecheck;
-use derivation::{ProgramDerivation, TypingDerivation};
+use derivations::{ProgramDerivation, TypingDerivation};
 use errors::{FileAccess, driver_error::DriverError};
 use eval::{Eval, eval_main};
 use grammar::LanguageDescribe;
 use latex::LatexFmt;
-use parse::{GroupParse, Parse};
+use parser::{GroupParse, Parse};
 use syntax::{language::Language, program::Program};
 use trace::EvalTrace;
 

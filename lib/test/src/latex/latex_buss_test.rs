@@ -1,5 +1,5 @@
 use crate::{paths::LATEX_OUT, test::Test, test_result::TestResult};
-use derivation::ProgramDerivation;
+use derivations::ProgramDerivation;
 use latex::LatexFmt;
 use std::{
     fs::File,

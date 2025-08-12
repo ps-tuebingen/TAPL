@@ -3,7 +3,7 @@ use crate::{
     paths::{BOUNDED_PATH, EXAMPLES_PATH},
     test::TestConfig,
 };
-use language::BoundedQuantification;
+use languages::BoundedQuantification;
 use std::path::PathBuf;
 
 #[derive(serde::Deserialize)]

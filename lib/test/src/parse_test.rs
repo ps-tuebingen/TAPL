@@ -1,5 +1,5 @@
 use super::{test::Test, test_result::TestResult};
-use parse::{GroupParse, Parse};
+use parser::{GroupParse, Parse};
 use std::marker::PhantomData;
 use syntax::{program::Program, terms::Term, types::Type};
 

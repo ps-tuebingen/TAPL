@@ -3,7 +3,7 @@ use crate::{
     paths::{EXAMPLES_PATH, LAMBDA_OMEGA_PATH},
     test::TestConfig,
 };
-use language::LambdaOmega;
+use languages::LambdaOmega;
 use std::path::PathBuf;
 
 #[derive(serde::Deserialize)]

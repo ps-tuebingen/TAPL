@@ -3,7 +3,7 @@ use crate::{
     paths::{EXAMPLES_PATH, REFERENCES_PATH},
     test::TestConfig,
 };
-use language::References;
+use languages::References;
 use std::path::PathBuf;
 
 #[derive(serde::Deserialize)]

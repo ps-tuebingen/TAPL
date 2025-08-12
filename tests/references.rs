@@ -1,5 +1,5 @@
 use errors::test_error::TestError;
-use language::languages::references::References;
+use languages::references::References;
 use test_utils::testsuite::TestSuite;
 
 fn main() -> Result<(), TestError> {

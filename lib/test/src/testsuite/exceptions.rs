@@ -3,7 +3,7 @@ use crate::{
     paths::{EXAMPLES_PATH, EXCEPTIONS_PATH},
     test::TestConfig,
 };
-use language::Exceptions;
+use languages::Exceptions;
 use std::path::PathBuf;
 
 #[derive(serde::Deserialize)]

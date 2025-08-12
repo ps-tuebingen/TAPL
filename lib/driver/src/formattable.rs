@@ -1,4 +1,4 @@
-use derivation::ProgramDerivation;
+use derivations::ProgramDerivation;
 use grammar::LanguageGrammar;
 use latex::LatexFmt;
 use std::fmt;

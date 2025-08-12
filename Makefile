@@ -8,7 +8,7 @@ html_templates:
 
 .PHONY: web
 web: examples html_templates
-	wasm-pack build crates/web_bin --target web --out-dir ../../html/pkg
+	wasm-pack build apps/web --target web --out-dir ../../html/pkg
 
 .PHONY: test 
 test: examples

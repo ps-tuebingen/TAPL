@@ -3,7 +3,7 @@ use crate::{
     paths::{EXAMPLES_PATH, RECURSIVE_PATH},
     test::TestConfig,
 };
-use language::Recursive;
+use languages::Recursive;
 use std::path::PathBuf;
 
 #[derive(serde::Deserialize)]

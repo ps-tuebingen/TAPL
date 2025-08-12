@@ -1,6 +1,6 @@
 use super::{test::Test, test_result::TestResult};
 use check::Typecheck;
-use derivation::{ProgramDerivation, TypingDerivation};
+use derivations::{ProgramDerivation, TypingDerivation};
 use std::marker::PhantomData;
 use syntax::{program::Program, terms::Term, types::TypeGroup};
 

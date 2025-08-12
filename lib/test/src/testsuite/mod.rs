@@ -15,13 +15,12 @@ use super::{
 };
 use check::Typecheck;
 use clap::Parser;
-use derivation::ProgramDerivation;
-use derivation::TypingDerivation;
+use derivations::{ProgramDerivation, TypingDerivation};
 use errors::test_error::TestError;
 use eval::Eval;
 use grammar::LanguageDescribe;
 use latex::LatexFmt;
-use parse::GroupParse;
+use parser::GroupParse;
 use std::path::PathBuf;
 use syntax::{language::Language, program::Program};
 use trace::EvalTrace;
