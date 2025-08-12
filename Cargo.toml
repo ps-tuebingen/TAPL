@@ -15,9 +15,10 @@ members = [
     "lib/derivations",
     "lib/grammar",
     "lib/trace",
-    "lib/test",
     "lib/latex",
     "lib/driver",
+    "lib/test",
+    "lib/web",
     # Other
     "tests",
     "xtask"

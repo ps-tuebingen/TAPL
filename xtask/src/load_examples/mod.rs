@@ -7,7 +7,7 @@ use examples_mod::generate_examples_mod;
 use examples_rs::generate_examples_rs;
 
 const EXAMPLES_PATH: &str = "examples";
-const OUT_PATH: &str = "apps/web/src/examples";
+const OUT_PATH: &str = "lib/web/src/examples";
 
 fn load_paths(dir_name: &PathBuf) -> Result<Vec<PathBuf>, BuildError> {
     let base_dir = read_dir(dir_name).map_err(|err| DirAccess::new("read examples dir", err))?;
