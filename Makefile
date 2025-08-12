@@ -1,26 +1,25 @@
-.PHONY: examples
-examples:
-	./load_examples.sh
+.PHONY: prepare
+	cargo run -p xtask
 
 .PHONY: html_templates
 html_templates:
 	./html/generate_pages.sh
 
 .PHONY: web
-web: examples html_templates
+web: prepare html_templates
 	wasm-pack build apps/web --target web --out-dir ../../html/pkg
 
 .PHONY: test 
-test: examples
+test: prepare
 	cargo test --all --no-fail-fast 
 
 .PHONY: test-fast
-test-fast: examples
+test-fast: prepare
 	cargo test --all --no-fail-fast --exclude e2e_tests
 	cargo test -p e2e_tests -- --exclude-latex
 
 .PHONY: check
-check: examples
+check: prepare
 	cargo fmt --all
 	cargo clippy --all -- -D warnings
 
