@@ -1,0 +1,38 @@
+h2 {
+  grid-row:1;
+  grid-column:1; 
+}
+
+#control_box{
+  grid-row:1;
+  justify-self:center;
+  align-self:center;
+  padding:1em;
+  display:grid;
+  grid-template-columns:auto auto;
+  justify-content:center;
+  align-content:center;
+  gap:1em;
+}
+
+#grammar_box{
+  grid-row:2;
+  border-radius:1em;
+  justify-self:center;
+  align-self:center;
+  display:grid;
+  grid-template-columns:auto 1fr;
+  grid-template-rows:1fr auto;
+}
+
+#grammar_out_box{
+  grid-column:1 / span 2;
+  justify-self:stretch;
+  align-self:stretch;
+}
+
+#grammar_out{
+  padding:0.5em;
+  font-size:12pt;  
+  background:var(--bg-color2);
+}

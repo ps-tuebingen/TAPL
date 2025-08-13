@@ -17,30 +17,23 @@
       import init, { setup } from "./wasm/index/web_index.js";
       await init();
     </script>
-    <div id="content-grid">
       <div id="header_row">
         <div class="link_box"><a href="index.html">Languages</a></div>
         <div class="link_box"><a href="check.html">Type checking</a></div>
         <div class="link_box"><a href="eval.html">Evaluation</a></div>
       </div>
-      
-<h1> Types and Programming Languages Playground </h1>  
+      <h1> Types and Programming Languages Playground </h1>  
 <div class="hline"></div>
-<div id="input_column">
-  <div id="control-box">
+<div id="content">
+  <div id="control_box">
     <div>Language:</div>
     <select id="language_select"></select>
-    <div class="spacer"></div>
   </div>
-</div>
-<div class="vline"></div>
-<div id="output_column">
-    <div id="grammar-box">
-    <div>Grammar</div>
+  <div id="grammar_box">
+    <h2>Grammar</h2>
     <button class="collapse_button" id="grammar_collapse">+</button>
     <div id="grammar_out"></div>
   </div>
-</div>
 </div>
 
   </body>
