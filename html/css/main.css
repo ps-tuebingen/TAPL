@@ -82,3 +82,7 @@ a {
 #content{
   display:grid;
 }
+
+#footer_row{
+  padding-top:1em;
+}
