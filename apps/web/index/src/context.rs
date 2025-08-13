@@ -8,7 +8,6 @@ use web_sys::{
 
 #[derive(Clone)]
 pub struct HtmlContext {
-    document: Document,
     run_button: HtmlButtonElement,
     source_area: HtmlTextAreaElement,
     out_divs: OutDivs,
@@ -19,8 +18,6 @@ pub struct HtmlContext {
 
 impl HtmlContext {
     pub fn new() -> Rc<HtmlContext> {
-        let document = 
-
         let example_select = ExampleSelect::new(&document);
         let out_divs = OutDivs::new(&document);
 

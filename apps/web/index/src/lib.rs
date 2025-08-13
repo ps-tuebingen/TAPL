@@ -1,5 +1,10 @@
-use wasm_bindgen::prelude::wasm_bindgen;
-use web::{collapsable::CollapsableElement, language_select::LanguageSelect};
+use driver::format::FormatMethod;
+use errors::web_error::WebError;
+use std::rc::Rc;
+use wasm_bindgen::{closure::Closure, prelude::wasm_bindgen};
+use web::{
+    collapsable::CollapsableElement, language_select::LanguageSelect, log, renderMathInElement,
+};
 use web_sys::{Document, HtmlDivElement};
 //mod context;
 //mod example_select;
@@ -9,24 +14,51 @@ use web_sys::{Document, HtmlDivElement};
 struct IndexContext {
     document: Document,
     language_select: LanguageSelect,
-    grammar_out: CollapsableElement<HtmlDivElement>,
+    grammar_out: Rc<CollapsableElement<HtmlDivElement>>,
 }
 
 impl IndexContext {
-    fn new() -> IndexContext {
-        let document = web_sys::window().unwrap().document().unwrap();
+    fn new() -> Result<Rc<IndexContext>, WebError> {
+        let window = web_sys::window().ok_or(WebError::Window)?;
+        let document = window.document().ok_or(WebError::Document)?;
         let language_select = LanguageSelect::new(&document).unwrap();
         let grammar_out =
             CollapsableElement::new(&document, "grammar_collapse", "grammar_out").unwrap();
-        IndexContext {
+
+        let slf = Rc::new(IndexContext {
             document,
             language_select,
             grammar_out,
-        }
+        });
+        slf.grammar_out.set_contents(Some(slf.get_grammar()))?;
+        slf.grammar_out.show()?;
+        slf.clone().setup_events()?;
+        Ok(slf)
+    }
+
+    fn get_grammar(&self) -> String {
+        FormatMethod::LatexFracStripped.format(&self.language_select.get_lang().grammars())
+    }
+
+    fn setup_events(self: Rc<Self>) -> Result<(), WebError> {
+        let self_ = self.clone();
+        let change_handler = Closure::wrap(Box::new(move || {
+            self_.grammar_out.clear();
+            let res = self_.grammar_out.set_contents(Some(self_.get_grammar()));
+            match res {
+                Ok(_) => return,
+                Err(err) => log(&format!("{err}")),
+            }
+        }) as Box<dyn Fn()>);
+        self.language_select.setup_events(change_handler)?;
+        Ok(())
     }
 }
 
 #[wasm_bindgen(start)]
 pub fn setup() {
-    IndexContext::new();
+    match IndexContext::new() {
+        Ok(_) => return,
+        Err(err) => log(&format!("{err}")),
+    }
 }

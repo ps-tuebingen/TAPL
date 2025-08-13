@@ -2,6 +2,7 @@
 name = "web_index"
 version = "0.1.0"
 edition = "2024"
+description = "wasm for index.html"
 
 [lib]
 crate-type = ["cdylib"]

@@ -1,14 +1,55 @@
 use crate::get_by_id;
-use errors::web_error::WebError;
-use web_sys::{Document, HtmlSelectElement};
+use driver::languages::AllLanguages;
+use errors::{AddEventHandler, AppendChild, CouldNotCast, CreateElement, web_error::WebError};
+use wasm_bindgen::{closure::Closure, prelude::JsCast};
+use web_sys::{Document, HtmlOptionElement, HtmlSelectElement};
 
 pub struct LanguageSelect {
+    document: Document,
+    id: String,
     elem: HtmlSelectElement,
 }
 
 impl LanguageSelect {
     pub fn new(doc: &Document) -> Result<LanguageSelect, WebError> {
-        let elem = get_by_id("language_select", &doc)?;
-        Ok(LanguageSelect { elem })
+        let id = "language_select".to_owned();
+        let elem = get_by_id(&id, &doc)?;
+        let slf = LanguageSelect {
+            id,
+            document: doc.clone(),
+            elem,
+        };
+        slf.setup_languages()?;
+        Ok(slf)
+    }
+
+    fn setup_languages(&self) -> Result<(), WebError> {
+        for lang in AllLanguages::all() {
+            let child_id = lang.to_string();
+            let lang_option = self
+                .document
+                .create_element("option")
+                .map_err(|_| CreateElement::new("option"))?
+                .dyn_into::<HtmlOptionElement>()
+                .map_err(|_| CouldNotCast::new(&child_id, "option"))?;
+            lang_option.set_id(&child_id);
+            lang_option.set_inner_html(lang.describe());
+            self.elem
+                .append_child(&lang_option)
+                .map_err(|_| AppendChild::new(&self.id, &child_id))?;
+        }
+        Ok(())
+    }
+
+    pub fn setup_events(&self, change_handler: Closure<dyn Fn()>) -> Result<(), WebError> {
+        self.elem
+            .add_event_listener_with_callback("change", change_handler.as_ref().unchecked_ref())
+            .map_err(|_| AddEventHandler::new(&self.id, "change"))?;
+        change_handler.forget();
+        Ok(())
+    }
+
+    pub fn get_lang(&self) -> AllLanguages {
+        AllLanguages::all()[self.elem.selected_index() as usize]
     }
 }

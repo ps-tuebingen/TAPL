@@ -8,7 +8,10 @@ pub mod web_error;
 
 pub mod variants;
 
+pub use variants::add_event_handler::AddEventHandler;
+pub use variants::append_child::AppendChild;
 pub use variants::could_not_cast::CouldNotCast;
+pub use variants::create_element::CreateElement;
 pub use variants::dir_access::DirAccess;
 pub use variants::duplicate_definition::DuplicateDefinition;
 pub use variants::element_not_found::ElementNotFound;
@@ -23,6 +26,7 @@ pub use variants::name_mismatch::NameMismatch;
 pub use variants::not_a_subtype::NotASubtype;
 pub use variants::not_implemented::NotImplemented;
 pub use variants::remaining_input::RemainingInput;
+pub use variants::set_attribute::SetAttribute;
 pub use variants::toml::Toml;
 pub use variants::type_mismatch::TypeMismatch;
 pub use variants::undefined_label::UndefinedLabel;

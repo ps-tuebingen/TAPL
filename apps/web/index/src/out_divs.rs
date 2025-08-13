@@ -55,53 +55,6 @@ impl OutDiv {
         slf
     }
 
-    pub fn hide(&self) {
-        self.out_div
-            .set_attribute("style", "display:none;")
-            .expect("Could not set display");
-        self.out_div
-            .set_attribute("hidden", "true")
-            .expect("Could not set attribute");
-    }
-
-    pub fn hidden(&self) -> bool {
-        self.out_div
-            .get_attribute("hidden")
-            .unwrap_or("true".to_owned())
-            == "true"
-    }
-
-    pub fn show(&self) {
-        self.out_div
-            .set_attribute("style", "display:block;")
-            .expect("Could not set display");
-        self.out_div
-            .set_attribute("hidden", "false")
-            .expect("Could not set attribute");
-    }
-
-    pub fn toggle(&self) {
-        if self.hidden() {
-            self.show()
-        } else {
-            self.hide()
-        }
-    }
-
-    pub fn clear(&self) {
-        self.out_div.set_inner_html("");
-    }
-
-    pub fn set_contents(&self, new_content: Option<String>) {
-        if let Some(s) = new_content {
-            log(&format!("setting content {:?}:\n{s}", self.which));
-            self.out_div.set_inner_html(&s.to_string());
-            self.show();
-        } else {
-            self.hide()
-        }
-    }
-
     pub fn setup_events(self: &Rc<Self>) {
         let self_ = self.clone();
         let button_handler = Closure::wrap(Box::new(move || self_.toggle()) as Box<dyn Fn()>);

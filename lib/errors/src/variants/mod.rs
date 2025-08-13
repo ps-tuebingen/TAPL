@@ -1,4 +1,7 @@
+pub mod add_event_handler;
+pub mod append_child;
 pub mod could_not_cast;
+pub mod create_element;
 pub mod dir_access;
 pub mod duplicate_definition;
 pub mod element_not_found;
@@ -13,6 +16,7 @@ pub mod name_mismatch;
 pub mod not_a_subtype;
 pub mod not_implemented;
 pub mod remaining_input;
+pub mod set_attribute;
 pub mod toml;
 pub mod type_mismatch;
 pub mod undefined_label;

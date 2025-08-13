@@ -1,7 +1,7 @@
 use errors::{CouldNotCast, ElementNotFound, web_error::WebError};
 use std::any::type_name;
 use wasm_bindgen::{JsCast, prelude::wasm_bindgen};
-use web_sys::{Document, HtmlElement};
+use web_sys::{Document, Element};
 
 pub mod collapsable;
 pub mod language_select;
@@ -15,7 +15,7 @@ extern "C" {
     pub fn log(msg: &str);
 
     #[wasm_bindgen(js_namespace=window)]
-    pub fn renderMathInElement(elem: &HtmlElement);
+    pub fn renderMathInElement(elem: &Element);
 
 }
 
