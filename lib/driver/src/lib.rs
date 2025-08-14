@@ -32,7 +32,7 @@ impl Driver {
         };
         let res = args
             .lang
-            .dispatch_run(self, &args.out_method, &args.cmd, input)?;
+            .dispatch_run(self, &args.method(), &args.cmd, input)?;
         match args.out_file {
             None => {
                 println!("{res}");

@@ -7,11 +7,20 @@ use std::{fmt, fs::read_to_string, path::PathBuf, str::FromStr};
 pub struct Args {
     pub lang: AllLanguages,
     pub cmd: Command,
-    pub out_method: FormatMethod,
+    pub out_method: Option<FormatMethod>,
     #[clap(flatten)]
     pub source: Source,
     #[clap(short, long)]
     pub out_file: Option<PathBuf>,
+}
+
+impl Args {
+    pub fn method(&self) -> FormatMethod {
+        match self.out_method {
+            Some(mthd) => mthd,
+            None => FormatMethod::Simple,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

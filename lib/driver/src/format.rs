@@ -36,10 +36,12 @@ impl FromStr for FormatMethod {
         let s = s.replace(['-', '_'], "");
         match s.to_lowercase().trim() {
             "print" | "simple" => Ok(FormatMethod::Simple),
-            "latex" | "buss" => Ok(FormatMethod::LatexBusDoc),
+            "latex" | "buss" | "latexbuss" => Ok(FormatMethod::LatexBusDoc),
             "latexstripped" | "bussstripped" => Ok(FormatMethod::LatexBusStripped),
             "frac" | "fracarray" => Ok(FormatMethod::LatexFracDoc),
-            "fracstripped" | "fracarraystripped" => Ok(FormatMethod::LatexFracStripped),
+            "fracstripped" | "fracarraystripped" | "latexfrac" => {
+                Ok(FormatMethod::LatexFracStripped)
+            }
             "debug" | "dbg" => Ok(FormatMethod::Debug),
             _ => Err(DriverError::UndefinedFormatMethod(s.to_owned())),
         }
