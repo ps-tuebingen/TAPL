@@ -13,5 +13,8 @@ web-sys= { version="0.3", features=[
   "HtmlElement",
   "HtmlSelectElement",
   "HtmlOptionElement",
-  "HtmlButtonElement"
+  "HtmlButtonElement",
+  "HtmlTextAreaElement",
+  "EventTarget",
+  "Event"
 ]}

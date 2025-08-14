@@ -1,5 +1,6 @@
 use crate::{
-    AddEventHandler, AppendChild, CouldNotCast, CreateElement, ElementNotFound, SetAttribute,
+    AddEventHandler, AppendChild, CouldNotCast, CreateElement, ElementNotFound, GetAttribute,
+    SetAttribute, TriggerEvent, UndefinedExample, UndefinedLanguage,
 };
 use std::fmt;
 
@@ -11,6 +12,10 @@ pub enum WebError {
     AppendChild(AppendChild),
     AddEventHandler(AddEventHandler),
     SetAttribute(SetAttribute),
+    GetAttribute(GetAttribute),
+    UndefinedExample(UndefinedExample),
+    UndefinedLanguage(UndefinedLanguage),
+    TriggerEvent(TriggerEvent),
     Window,
     Document,
 }
@@ -24,6 +29,10 @@ impl fmt::Display for WebError {
             WebError::AppendChild(ac) => ac.fmt(f),
             WebError::AddEventHandler(aeh) => aeh.fmt(f),
             WebError::SetAttribute(sa) => sa.fmt(f),
+            WebError::GetAttribute(ga) => ga.fmt(f),
+            WebError::UndefinedLanguage(ul) => ul.fmt(f),
+            WebError::UndefinedExample(ue) => ue.fmt(f),
+            WebError::TriggerEvent(te) => te.fmt(f),
             WebError::Window => write!(f, "Could not get window element"),
             WebError::Document => write!(f, "Could not get html document"),
         }
@@ -65,5 +74,29 @@ impl From<AddEventHandler> for WebError {
 impl From<SetAttribute> for WebError {
     fn from(err: SetAttribute) -> WebError {
         WebError::SetAttribute(err)
+    }
+}
+
+impl From<UndefinedLanguage> for WebError {
+    fn from(err: UndefinedLanguage) -> WebError {
+        WebError::UndefinedLanguage(err)
+    }
+}
+
+impl From<GetAttribute> for WebError {
+    fn from(err: GetAttribute) -> WebError {
+        WebError::GetAttribute(err)
+    }
+}
+
+impl From<UndefinedExample> for WebError {
+    fn from(err: UndefinedExample) -> WebError {
+        WebError::UndefinedExample(err)
+    }
+}
+
+impl From<TriggerEvent> for WebError {
+    fn from(err: TriggerEvent) -> WebError {
+        WebError::TriggerEvent(err)
     }
 }

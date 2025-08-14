@@ -79,10 +79,8 @@ a {
   justify-content:stretch;
 }
 
-#content{
-  display:grid;
-}
-
 #footer_row{
-  padding-top:1em;
+  margin-left:1em;
+  padding-top:0.5em;
+  padding-bottom:0.5em;
 }

@@ -54,15 +54,6 @@ impl OutDiv {
         slf.setup_events();
         slf
     }
-
-    pub fn setup_events(self: &Rc<Self>) {
-        let self_ = self.clone();
-        let button_handler = Closure::wrap(Box::new(move || self_.toggle()) as Box<dyn Fn()>);
-        self.collapse_button
-            .add_event_listener_with_callback("click", button_handler.as_ref().unchecked_ref())
-            .unwrap();
-        button_handler.forget();
-    }
 }
 
 #[derive(Clone)]

@@ -1,5 +1,5 @@
 use crate::{Driver, cli::Command, format::FormatMethod};
-use errors::driver_error::DriverError;
+use errors::{UndefinedLanguage, driver_error::DriverError};
 use grammar::{LanguageDescribe, LanguageGrammar};
 use languages::{
     BoundedQuantification, Exceptions, Existential, FOmega, FOmegaSub, LambdaOmega, Recursive,
@@ -134,7 +134,7 @@ impl FromStr for AllLanguages {
             "lambda-omega" => Ok(AllLanguages::LambdaOmega),
             "f-omega" => Ok(AllLanguages::FOmega),
             "f-omega-sub" => Ok(AllLanguages::FOmegaSub),
-            _ => Err(DriverError::UndefinedLanguage(s.to_owned())),
+            _ => Err(UndefinedLanguage::new(s).into()),
         }
     }
 }

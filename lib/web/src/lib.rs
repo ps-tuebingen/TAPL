@@ -1,10 +1,13 @@
+use driver::languages::AllLanguages;
 use errors::{CouldNotCast, ElementNotFound, web_error::WebError};
 use std::any::type_name;
 use wasm_bindgen::{JsCast, prelude::wasm_bindgen};
 use web_sys::{Document, Element};
 
 pub mod collapsable;
+pub mod example_select;
 pub mod language_select;
+pub mod source_area;
 
 #[rustfmt::skip]
 mod examples;
@@ -26,4 +29,8 @@ where
     let elem = doc.get_element_by_id(id).ok_or(ElementNotFound::new(id))?;
     elem.dyn_into::<T>()
         .map_err(|_| CouldNotCast::new(id, type_name::<T>()).into())
+}
+
+pub fn get_lang(ind: usize) -> AllLanguages {
+    AllLanguages::all()[ind]
 }

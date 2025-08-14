@@ -12,7 +12,6 @@ pub struct HtmlContext {
     source_area: HtmlTextAreaElement,
     out_divs: OutDivs,
     example_select: ExampleSelect,
-    language_select: HtmlSelectElement,
     lang_driver: Driver,
 }
 
@@ -31,39 +30,11 @@ impl HtmlContext {
             run_button,
             source_area,
             out_divs,
-            language_select,
             example_select,
             lang_driver,
         });
-        ctx.setup_languages();
         ctx.setup_events();
         ctx
-    }
-
-    fn setup_languages(&self) {
-        for lang in AllLanguages::all() {
-            let lang_option = self
-                .document
-                .create_element("option")
-                .unwrap()
-                .dyn_into::<HtmlOptionElement>()
-                .unwrap();
-            lang_option.set_id(&lang.to_string());
-            lang_option.set_inner_html(lang.describe());
-            self.language_select.append_child(&lang_option).unwrap();
-            let driver = Driver;
-            self.out_divs.grammar.set_contents(Some(
-                self.get_lang()
-                    .dispatch_run(
-                        &driver,
-                        &FormatMethod::LatexFracStripped,
-                        &Command::Grammar,
-                        "".to_owned(),
-                    )
-                    .unwrap(),
-            ));
-            self.out_divs.grammar.hide();
-        }
     }
 
     pub fn setup_events(self: &Rc<Self>) {
@@ -77,26 +48,6 @@ impl HtmlContext {
 
         let self_ = self.clone();
         let change_handler = Closure::wrap(Box::new(move || {
-            self_.out_divs.grammar.clear();
-            self_
-                .example_select
-                .change_language(&self_.get_lang(), &self_.document);
-            let hidden = self_.out_divs.grammar.hidden();
-            self_.out_divs.grammar.set_contents(Some(
-                FormatMethod::LatexFracStripped.format(&self_.get_lang().grammars()),
-            ));
-            renderMathInElement(&self_.out_divs.grammar.out_div);
-            if hidden {
-                self_.out_divs.grammar.hide();
-            }
-        }) as Box<dyn Fn()>);
-        self.language_select
-            .add_event_listener_with_callback("change", change_handler.as_ref().unchecked_ref())
-            .unwrap();
-        change_handler.forget();
-
-        let self_ = self.clone();
-        let change_handler = Closure::wrap(Box::new(move || {
             self_.example_select.change_contents(&self_.get_lang());
         }) as Box<dyn Fn()>);
         self.example_select
@@ -104,10 +55,6 @@ impl HtmlContext {
             .add_event_listener_with_callback("change", change_handler.as_ref().unchecked_ref())
             .unwrap();
         change_handler.forget();
-    }
-
-    fn get_lang(&self) -> AllLanguages {
-        AllLanguages::all()[self.language_select.selected_index() as usize]
     }
 
     fn handle_button(&self) {

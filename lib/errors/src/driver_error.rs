@@ -1,4 +1,7 @@
-use crate::{FileAccess, check_error::CheckError, eval_error::EvalError, parse_error::ParserError};
+use crate::{
+    FileAccess, UndefinedLanguage, check_error::CheckError, eval_error::EvalError,
+    parse_error::ParserError,
+};
 use std::fmt;
 
 #[derive(Debug)]
@@ -7,7 +10,7 @@ pub enum DriverError {
     Check(CheckError),
     Eval(EvalError),
     FileAccess(FileAccess),
-    UndefinedLanguage(String),
+    UndefinedLanguage(UndefinedLanguage),
     UndefinedFormatMethod(String),
     UndefinedCommand(String),
     EmptyInput,
@@ -19,7 +22,7 @@ impl fmt::Display for DriverError {
             DriverError::Parse(err) => err.fmt(f),
             DriverError::Check(err) => err.fmt(f),
             DriverError::Eval(err) => err.fmt(f),
-            DriverError::UndefinedLanguage(lang) => write!(f, "Undefined Language {lang}"),
+            DriverError::UndefinedLanguage(ul) => ul.fmt(f),
             DriverError::UndefinedFormatMethod(method) => {
                 write!(f, "Undefined Format Method {method}")
             }
@@ -53,5 +56,10 @@ impl From<EvalError> for DriverError {
 impl From<FileAccess> for DriverError {
     fn from(err: FileAccess) -> DriverError {
         DriverError::FileAccess(err)
+    }
+}
+impl From<UndefinedLanguage> for DriverError {
+    fn from(err: UndefinedLanguage) -> DriverError {
+        DriverError::UndefinedLanguage(err)
     }
 }

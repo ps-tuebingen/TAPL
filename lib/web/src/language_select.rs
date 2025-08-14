@@ -7,7 +7,7 @@ use web_sys::{Document, HtmlOptionElement, HtmlSelectElement};
 pub struct LanguageSelect {
     document: Document,
     id: String,
-    elem: HtmlSelectElement,
+    element: HtmlSelectElement,
 }
 
 impl LanguageSelect {
@@ -17,7 +17,7 @@ impl LanguageSelect {
         let slf = LanguageSelect {
             id,
             document: doc.clone(),
-            elem,
+            element: elem,
         };
         slf.setup_languages()?;
         Ok(slf)
@@ -34,7 +34,7 @@ impl LanguageSelect {
                 .map_err(|_| CouldNotCast::new(&child_id, "option"))?;
             lang_option.set_id(&child_id);
             lang_option.set_inner_html(lang.describe());
-            self.elem
+            self.element
                 .append_child(&lang_option)
                 .map_err(|_| AppendChild::new(&self.id, &child_id))?;
         }
@@ -42,14 +42,14 @@ impl LanguageSelect {
     }
 
     pub fn setup_events(&self, change_handler: Closure<dyn Fn()>) -> Result<(), WebError> {
-        self.elem
+        self.element
             .add_event_listener_with_callback("change", change_handler.as_ref().unchecked_ref())
             .map_err(|_| AddEventHandler::new(&self.id, "change"))?;
         change_handler.forget();
         Ok(())
     }
 
-    pub fn get_lang(&self) -> AllLanguages {
-        AllLanguages::all()[self.elem.selected_index() as usize]
+    pub fn selected(&self) -> usize {
+        self.element.selected_index() as usize
     }
 }

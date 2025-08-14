@@ -2,17 +2,14 @@ use driver::format::FormatMethod;
 use errors::web_error::WebError;
 use std::rc::Rc;
 use wasm_bindgen::{closure::Closure, prelude::wasm_bindgen};
-use web::{
-    collapsable::CollapsableElement, language_select::LanguageSelect, log, renderMathInElement,
-};
-use web_sys::{Document, HtmlDivElement};
+use web::{collapsable::CollapsableElement, get_lang, language_select::LanguageSelect, log};
+use web_sys::HtmlDivElement;
 //mod context;
 //mod example_select;
 //mod out_divs;
 //use context::HtmlContext;
 
 struct IndexContext {
-    document: Document,
     language_select: LanguageSelect,
     grammar_out: Rc<CollapsableElement<HtmlDivElement>>,
 }
@@ -21,12 +18,11 @@ impl IndexContext {
     fn new() -> Result<Rc<IndexContext>, WebError> {
         let window = web_sys::window().ok_or(WebError::Window)?;
         let document = window.document().ok_or(WebError::Document)?;
-        let language_select = LanguageSelect::new(&document).unwrap();
+        let language_select = LanguageSelect::new(&document)?;
         let grammar_out =
             CollapsableElement::new(&document, "grammar_collapse", "grammar_out").unwrap();
 
         let slf = Rc::new(IndexContext {
-            document,
             language_select,
             grammar_out,
         });
@@ -37,7 +33,8 @@ impl IndexContext {
     }
 
     fn get_grammar(&self) -> String {
-        FormatMethod::LatexFracStripped.format(&self.language_select.get_lang().grammars())
+        FormatMethod::LatexFracStripped
+            .format(&get_lang(self.language_select.selected()).grammars())
     }
 
     fn setup_events(self: Rc<Self>) -> Result<(), WebError> {

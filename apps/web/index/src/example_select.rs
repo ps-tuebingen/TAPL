@@ -4,13 +4,6 @@ use std::collections::HashMap;
 use wasm_bindgen::JsCast;
 use web_sys::{Document, HtmlOptionElement, HtmlSelectElement, HtmlTextAreaElement};
 
-#[derive(Clone)]
-pub struct ExampleSelect {
-    pub element: HtmlSelectElement,
-    examples: HashMap<&'static str, Vec<(&'static str, &'static str)>>,
-    source_area: HtmlTextAreaElement,
-}
-
 impl ExampleSelect {
     pub fn new(doc: &Document) -> ExampleSelect {
         let examples = all_examples();

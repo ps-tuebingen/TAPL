@@ -7,19 +7,8 @@ edition = "2024"
 crate-type = ["cdylib"]
 
 [dependencies]
-errors = {path="../../../lib/errors"}
-languages = { path="../../../lib/languages"}
-driver = { path="../../../lib/driver" }
+web = { path = "../../../lib/web" }
+errors = { path = "../../../lib/errors" }
 
 wasm-bindgen = "0.2"
-web-sys= { version="0.3", features=[ 
-  "Window", 
-  "Document",
-  "Element",
-  "EventListener",
-  "HtmlTextAreaElement",
-  "HtmlButtonElement",
-  "HtmlDivElement",
-  "HtmlSelectElement",
-  "HtmlOptionElement"
-  ] }
+web-sys= { version="0.3", features=["Window"]}
