@@ -1,15 +1,24 @@
-use errors::web_error::WebError;
+use driver::{Driver, cli::Command, format::FormatMethod};
+use errors::{AddEventHandler, web_error::WebError};
 use std::rc::Rc;
-use wasm_bindgen::{closure::Closure, prelude::wasm_bindgen};
-use web::{
-    example_select::ExampleSelect, get_lang, language_select::LanguageSelect, log,
-    source_area::SourceArea,
+use wasm_bindgen::{
+    closure::Closure,
+    prelude::{JsCast, wasm_bindgen},
 };
+use web::{
+    collapsable::CollapsableElement, example_select::ExampleSelect, get_by_id, get_lang,
+    language_select::LanguageSelect, log, source_area::SourceArea,
+};
+use web_sys::{HtmlButtonElement, HtmlDivElement};
 
 struct CheckContext {
     language_select: LanguageSelect,
     example_select: ExampleSelect,
     source_area: SourceArea,
+    run_button: HtmlButtonElement,
+    driver: Driver,
+    check_out: Rc<CollapsableElement<HtmlDivElement>>,
+    error_out: Rc<CollapsableElement<HtmlDivElement>>,
 }
 
 impl CheckContext {
@@ -17,13 +26,24 @@ impl CheckContext {
         let window = web_sys::window().ok_or(WebError::Window)?;
         let document = window.document().ok_or(WebError::Document)?;
         let language_select = LanguageSelect::new(&document)?;
-        let example_select = ExampleSelect::new(&document)?;
+        let example_select =
+            ExampleSelect::new(&document, &get_lang(language_select.selected()).to_string())?;
         let source_area = SourceArea::new(&document)?;
+        let check_out = CollapsableElement::new(&document, "check_collapse", "check_out")?;
+        let error_out = CollapsableElement::new(&document, "error_collapse", "error_out")?;
+        let run_button = get_by_id("run_button", &document)?;
+        let driver = Driver;
         let slf = Rc::new(CheckContext {
             language_select,
             example_select,
             source_area,
+            run_button,
+            driver,
+            check_out,
+            error_out,
         });
+        slf.check_out.hide()?;
+        slf.error_out.hide()?;
         slf.clone().setup_events()?;
         slf.set_example()?;
         Ok(slf)
@@ -60,6 +80,20 @@ impl CheckContext {
             }
         }) as Box<dyn Fn()>);
 
+        let self_ = self.clone();
+        let button_handler = Closure::wrap(Box::new(move || match self_.check_source() {
+            Ok(_) => return,
+            Err(err) => {
+                log(&format!("{err}"));
+                return;
+            }
+        }) as Box<dyn Fn()>);
+
+        self.run_button
+            .add_event_listener_with_callback("click", button_handler.as_ref().unchecked_ref())
+            .map_err(|_| AddEventHandler::new("run_button", "click"))?;
+        button_handler.forget();
+
         self.language_select.setup_events(change_handler_language)?;
         self.example_select.setup_events(change_handler_example)?;
         Ok(())
@@ -69,6 +103,28 @@ impl CheckContext {
         let example = self.example_select.get_example()?;
         self.source_area.set_contents(&example);
         Ok(())
+    }
+
+    fn check_source(&self) -> Result<(), WebError> {
+        let source = self.source_area.get_contents();
+        let lang = get_lang(self.language_select.selected());
+        match self.driver.run_lang(
+            source,
+            &lang,
+            &Command::Check,
+            &FormatMethod::LatexFracStripped,
+        ) {
+            Ok(ty) => {
+                self.check_out.set_contents(&ty)?;
+                self.error_out.clear()?;
+                Ok(())
+            }
+            Err(err) => {
+                self.check_out.clear()?;
+                self.error_out.set_contents(&err.to_string())?;
+                Ok(())
+            }
+        }
     }
 }
 

@@ -17,4 +17,8 @@ impl SourceArea {
     pub fn set_contents(&self, contents: &str) {
         self.element.set_inner_html(contents)
     }
+
+    pub fn get_contents(&self) -> String {
+        self.element.value()
+    }
 }

@@ -78,19 +78,17 @@ where
         }
     }
 
-    pub fn clear(&self) {
-        self.hide_element.as_ref().set_inner_html("");
+    pub fn set_contents(&self, new_content: &str) -> Result<(), WebError> {
+        self.hide_element.as_ref().set_inner_html(new_content);
+        self.show()?;
+        renderMathInElement(self.hide_element.as_ref());
+        Ok(())
     }
 
-    pub fn set_contents(&self, new_content: Option<String>) -> Result<(), WebError> {
-        if let Some(s) = new_content {
-            self.hide_element.as_ref().set_inner_html(&s.to_string());
-            self.show()?;
-            renderMathInElement(self.hide_element.as_ref());
-            Ok(())
-        } else {
-            self.hide()
-        }
+    pub fn clear(&self) -> Result<(), WebError> {
+        self.set_contents("")?;
+        self.hide()?;
+        Ok(())
     }
 
     pub fn setup_events(self: &Rc<Self>) -> Result<(), WebError>

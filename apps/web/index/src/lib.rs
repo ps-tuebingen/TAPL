@@ -26,7 +26,7 @@ impl IndexContext {
             language_select,
             grammar_out,
         });
-        slf.grammar_out.set_contents(Some(slf.get_grammar()))?;
+        slf.grammar_out.set_contents(&slf.get_grammar())?;
         slf.grammar_out.show()?;
         slf.clone().setup_events()?;
         Ok(slf)
@@ -40,8 +40,14 @@ impl IndexContext {
     fn setup_events(self: Rc<Self>) -> Result<(), WebError> {
         let self_ = self.clone();
         let change_handler = Closure::wrap(Box::new(move || {
-            self_.grammar_out.clear();
-            let res = self_.grammar_out.set_contents(Some(self_.get_grammar()));
+            match self_.grammar_out.clear() {
+                Ok(_) => (),
+                Err(err) => {
+                    log(&format!("{err}"));
+                    return;
+                }
+            }
+            let res = self_.grammar_out.set_contents(&self_.get_grammar());
             match res {
                 Ok(_) => return,
                 Err(err) => log(&format!("{err}")),

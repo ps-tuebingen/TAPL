@@ -16,18 +16,17 @@ pub struct ExampleSelect {
 }
 
 impl ExampleSelect {
-    pub fn new(doc: &Document) -> Result<ExampleSelect, WebError> {
+    pub fn new(doc: &Document, start_lang: &str) -> Result<ExampleSelect, WebError> {
         let id = "example_select".to_owned();
         let element = get_by_id(&id, doc)?;
         let examples = all_examples();
-        let language = *examples.keys().next().unwrap();
         let slf = ExampleSelect {
             document: doc.clone(),
             id,
             element,
             examples,
         };
-        slf.set_options(language)?;
+        slf.set_options(start_lang)?;
         Ok(slf)
     }
 

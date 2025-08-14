@@ -65,6 +65,17 @@ impl Driver {
         }
     }
 
+    pub fn run_lang(
+        &self,
+        input: String,
+        lang: &AllLanguages,
+        cmd: &Command,
+        method: &FormatMethod,
+    ) -> Result<String, String> {
+        lang.dispatch_run(self, method, cmd, input)
+            .map_err(|err| err.to_string())
+    }
+
     pub fn run_all_lang(
         &self,
         input: String,
