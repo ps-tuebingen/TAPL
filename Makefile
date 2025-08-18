@@ -6,6 +6,7 @@ prepare:
 web: prepare
 	wasm-pack build apps/web/index --target web --out-dir ../../../html/wasm/index
 	wasm-pack build apps/web/check --target web --out-dir ../../../html/wasm/check
+	wasm-pack build apps/web/eval --target web --out-dir ../../../html/wasm/eval
 
 .PHONY: test 
 test: prepare
