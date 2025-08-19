@@ -1,5 +1,5 @@
 use crate::{Kindcheck, Normalize, Typecheck};
-use derivations::{Conclusion, Derivation, TypingDerivation};
+use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::UndefinedLabel;
 use errors::check_error::CheckError;
 use syntax::{
@@ -37,7 +37,7 @@ where
             .ok_or(UndefinedLabel::new(&self.label))
             .cloned()?;
 
-        let conc = Conclusion::new(env, self.clone(), ty);
+        let conc = TypingConclusion::new(env, self.clone(), ty);
         let deriv = TypingDerivation::recordproj(conc, term_res);
         Ok(deriv.into())
     }

@@ -8,7 +8,7 @@ pub mod program_derivation;
 pub mod rules;
 pub mod typing_derivation;
 
-pub use conclusion::Conclusion;
+pub use conclusion::{Conclusion, SubtypeConclusion, TypingConclusion};
 pub use definition_derivation::DefinitionDerivation;
 pub use program_derivation::ProgramDerivation;
 pub use rules::TypingRule;

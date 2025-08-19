@@ -1,5 +1,5 @@
 use crate::{Kindcheck, Normalize, Typecheck};
-use derivations::{Conclusion, Derivation, TypingDerivation};
+use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::IndexOutOfBounds;
 use errors::check_error::CheckError;
 use syntax::{
@@ -31,7 +31,7 @@ where
             .get(self.index)
             .ok_or(IndexOutOfBounds::new(self.index, tup_ty.tys.len()))
             .cloned()?;
-        let conc = Conclusion::new(env, self.clone(), tup);
+        let conc = TypingConclusion::new(env, self.clone(), tup);
         let deriv = TypingDerivation::projection(conc, term_res);
         Ok(deriv.into())
     }

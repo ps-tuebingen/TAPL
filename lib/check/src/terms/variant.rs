@@ -1,5 +1,5 @@
 use crate::{Kindcheck, Normalize, Typecheck};
-use derivations::{Conclusion, Derivation, TypingDerivation};
+use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::UndefinedLabel;
 use errors::check_error::CheckError;
 use syntax::{
@@ -38,7 +38,7 @@ where
         lb_knd.check_equal(&term_knd)?;
         lb_ty.check_equal(&term_ty)?;
 
-        let conc = Conclusion::new(env, self.clone(), ty_norm);
+        let conc = TypingConclusion::new(env, self.clone(), ty_norm);
         let deriv = TypingDerivation::variant(conc, term_res);
         Ok(deriv.into())
     }

@@ -1,5 +1,5 @@
 use crate::{Kindcheck, Normalize, Typecheck};
-use derivations::{Conclusion, Derivation, TypingDerivation};
+use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
 use errors::{NameMismatch, TypeMismatch};
 use syntax::{
@@ -31,7 +31,7 @@ where
             env.add_var(self.term_name.clone(), *bound_exists.ty);
             let in_res = self.in_term.check(env.clone())?;
             let in_ty = in_res.ret_ty().normalize(env.clone());
-            let conc = Conclusion::new(env, self.clone(), in_ty);
+            let conc = TypingConclusion::new(env, self.clone(), in_ty);
             let deriv = TypingDerivation::unpack(conc, bound_res, in_res);
             Ok(deriv.into())
         } else if let Ok(bound_bound) = bound_ty.clone().into_exists_bounded() {
@@ -44,7 +44,7 @@ where
             env.add_var(self.term_name.clone(), *bound_bound.ty.clone());
             let inner_res = self.in_term.check(env.clone())?;
             let inner_ty = inner_res.ret_ty().normalize(env.clone());
-            let conc = Conclusion::new(env.clone(), self.clone(), inner_ty);
+            let conc = TypingConclusion::new(env.clone(), self.clone(), inner_ty);
             let deriv = TypingDerivation::unpack_bounded(conc, bound_res, inner_res);
             Ok(deriv.into())
         } else {

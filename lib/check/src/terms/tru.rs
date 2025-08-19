@@ -1,5 +1,5 @@
 use crate::Typecheck;
-use derivations::{Conclusion, Derivation, TypingDerivation};
+use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
 use syntax::{
     env::Environment,
@@ -20,7 +20,7 @@ where
         &self,
         env: Environment<<T as Typecheck>::Type>,
     ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
-        let conc = Conclusion::new(env.clone(), self.clone(), Bool::new());
+        let conc = TypingConclusion::new(env.clone(), self.clone(), Bool::new());
         let deriv = TypingDerivation::tru(conc);
         Ok(deriv.into())
     }

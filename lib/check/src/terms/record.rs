@@ -1,5 +1,5 @@
 use crate::{Kindcheck, Normalize, Typecheck};
-use derivations::{Conclusion, Derivation, TypingDerivation};
+use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
 use std::collections::HashMap;
 use syntax::{
@@ -42,7 +42,7 @@ where
             }
         }
 
-        let conc = Conclusion::new(env, self.clone(), RecordTy::new(recs));
+        let conc = TypingConclusion::new(env, self.clone(), RecordTy::new(recs));
         let deriv = TypingDerivation::record(conc, ress);
         Ok(deriv.into())
     }

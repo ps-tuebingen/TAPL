@@ -1,5 +1,5 @@
 use crate::{Kindcheck, Normalize, Typecheck};
-use derivations::{Conclusion, Derivation, TypingDerivation};
+use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
 use syntax::{
     env::Environment,
@@ -27,7 +27,7 @@ where
         inner_ty.check_kind(env.clone())?.into_star()?;
         let nat = inner_ty.into_nat()?;
 
-        let conc = Conclusion::new(env, self.clone(), nat);
+        let conc = TypingConclusion::new(env, self.clone(), nat);
         let deriv = TypingDerivation::succ(conc, inner_res);
         Ok(deriv.into())
     }

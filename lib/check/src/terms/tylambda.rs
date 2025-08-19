@@ -1,5 +1,5 @@
 use crate::{Kindcheck, Normalize, Typecheck};
-use derivations::{Conclusion, Derivation, TypingDerivation};
+use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
 use syntax::{
     env::Environment,
@@ -27,7 +27,7 @@ where
         let term_knd = term_ty.check_kind(env.clone())?;
         self.annot.check_equal(&term_knd)?;
         let ty = Forall::new(&self.var, self.annot.clone(), term_ty);
-        let conc = Conclusion::new(env, self.clone(), ty);
+        let conc = TypingConclusion::new(env, self.clone(), ty);
         let deriv = TypingDerivation::tylambda(conc, term_res);
         Ok(deriv.into())
     }

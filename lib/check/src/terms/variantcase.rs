@@ -1,5 +1,5 @@
 use crate::{Kindcheck, Normalize, Typecheck};
-use derivations::{Conclusion, Derivation, TypingDerivation};
+use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::{EmptyCase, check_error::CheckError};
 use errors::{TypeMismatch, UndefinedLabel};
 use syntax::{
@@ -67,7 +67,7 @@ where
             return Err(TypeMismatch::new(ty.to_string(), rhs_fst.to_string()).into());
         }
 
-        let conc = Conclusion::new(env, self.clone(), rhs_fst);
+        let conc = TypingConclusion::new(env, self.clone(), rhs_fst);
         let deriv = TypingDerivation::variantcase(conc, bound_res, rhs_ress);
 
         Ok(deriv.into())

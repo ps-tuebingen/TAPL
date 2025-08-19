@@ -1,5 +1,5 @@
 use crate::{Kindcheck, Normalize, Typecheck};
-use derivations::{Conclusion, Derivation, TypingDerivation};
+use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
 use syntax::{
     env::Environment,
@@ -28,7 +28,7 @@ where
         let term_res = self.body.check(env.clone())?;
         let term_ty = term_res.ret_ty().normalize(env.clone());
 
-        let conc = Conclusion::new(
+        let conc = TypingConclusion::new(
             env,
             self.clone(),
             ForallBounded::new(&self.var, self.sup_ty.clone(), term_ty).into(),

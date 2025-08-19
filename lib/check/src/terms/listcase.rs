@@ -1,5 +1,5 @@
 use crate::{Kindcheck, Normalize, Typecheck};
-use derivations::{Conclusion, Derivation, TypingDerivation};
+use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
 use syntax::{
     env::Environment,
@@ -39,7 +39,7 @@ where
         nil_kind.check_equal(&cons_kind)?;
         nil_ty.check_equal(&cons_ty)?;
 
-        let conc = Conclusion::new(env.clone(), self.clone(), cons_ty);
+        let conc = TypingConclusion::new(env.clone(), self.clone(), cons_ty);
         let deriv = TypingDerivation::listcase(conc, nil_res, cons_res);
 
         Ok(deriv.into())

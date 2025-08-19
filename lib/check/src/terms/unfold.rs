@@ -1,5 +1,5 @@
 use crate::{Kindcheck, Normalize, Typecheck};
-use derivations::{Conclusion, Derivation, TypingDerivation};
+use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
 use syntax::{
     env::Environment,
@@ -32,7 +32,7 @@ where
         ty_norm.check_equal(&term_ty)?;
         let mu_ty = term_ty.clone().into_mu()?;
         let ty = mu_ty.ty.subst_type(&mu_ty.var, &term_ty);
-        let conc = Conclusion::new(env.clone(), self.clone(), ty);
+        let conc = TypingConclusion::new(env.clone(), self.clone(), ty);
         let deriv = TypingDerivation::unfold(conc, term_res);
         Ok(deriv.into())
     }

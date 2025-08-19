@@ -1,5 +1,5 @@
 use crate::{Kindcheck, Normalize, Subtypecheck, Typecheck};
-use derivations::{Conclusion, Derivation, TypingDerivation};
+use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::{TypeMismatch, check_error::CheckError};
 use syntax::{
     env::Environment,
@@ -28,7 +28,7 @@ where
         if let Ok(forall) = fun_ty.clone().into_forall() {
             forall.kind.check_equal(&arg_kind)?;
             let ty = forall.ty.subst_type(&forall.var, &arg_norm);
-            let conc = Conclusion::new(env.clone(), self.clone(), ty);
+            let conc = TypingConclusion::new(env.clone(), self.clone(), ty);
             let deriv = TypingDerivation::tyapp(conc, fun_res);
             Ok(deriv.into())
         } else if let Ok(forall) = fun_ty.clone().into_forall_bounded() {
@@ -36,7 +36,7 @@ where
             sup_knd.check_equal(&arg_kind)?;
             arg_norm.check_subtype(&forall.sup_ty, env.clone())?;
             let ty = forall.ty.subst_type(&forall.var, &arg_norm);
-            let conc = Conclusion::new(env, self.clone(), ty);
+            let conc = TypingConclusion::new(env, self.clone(), ty);
             let deriv = TypingDerivation::tyapp_bounded(conc, fun_res);
             Ok(deriv.into())
         } else {

@@ -1,8 +1,9 @@
+use super::Conclusion;
 use std::fmt;
 use syntax::{env::Environment, terms::Term, types::Type};
 
 #[derive(Debug)]
-pub struct Conclusion<T, Ty>
+pub struct TypingConclusion<T, Ty>
 where
     T: Term,
     Ty: Type,
@@ -12,25 +13,39 @@ where
     pub ty: Ty,
 }
 
-impl<T, Ty> Conclusion<T, Ty>
+impl<T, Ty> TypingConclusion<T, Ty>
 where
     T: Term,
     Ty: Type,
 {
-    pub fn new<T1, Ty1>(env: Environment<Ty>, term: T1, ty: Ty1) -> Conclusion<T, Ty>
+    pub fn new<T1, Ty1>(env: Environment<Ty>, term: T1, ty: Ty1) -> TypingConclusion<T, Ty>
     where
         T1: Into<T>,
         Ty1: Into<Ty>,
     {
-        Conclusion {
+        TypingConclusion {
             env,
             term: term.into(),
             ty: ty.into(),
         }
     }
+
+    pub fn ty(&self) -> Ty {
+        self.ty.clone()
+    }
 }
 
-impl<T, Ty> fmt::Display for Conclusion<T, Ty>
+impl<T, Ty> From<TypingConclusion<T, Ty>> for Conclusion<T, Ty>
+where
+    T: Term,
+    Ty: Type,
+{
+    fn from(conc: TypingConclusion<T, Ty>) -> Conclusion<T, Ty> {
+        Conclusion::Typing(conc)
+    }
+}
+
+impl<T, Ty> fmt::Display for TypingConclusion<T, Ty>
 where
     T: Term,
     Ty: Type,
