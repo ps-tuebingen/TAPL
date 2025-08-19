@@ -1,5 +1,5 @@
 use crate::{Kindcheck, Normalize, Typecheck};
-use derivations::{Conclusion, TypingDerivation};
+use derivations::{Conclusion, Derivation, TypingDerivation};
 use errors::check_error::CheckError;
 use std::collections::HashMap;
 use syntax::{
@@ -10,22 +10,24 @@ use syntax::{
 
 impl<T> Typecheck for Record<T>
 where
-    T: Term + Typecheck<Term = T, Deriv = TypingDerivation<T, <T as Typecheck>::Type>>,
+    T: Term + Typecheck<Term = T>,
     <T as Typecheck>::Type: Normalize<<T as Typecheck>::Type> + Kindcheck<<T as Typecheck>::Type>,
     RecordTy<<T as Typecheck>::Type>: Into<<T as Typecheck>::Type>,
     Self: Into<T>,
 {
     type Term = <T as Typecheck>::Term;
     type Type = <T as Typecheck>::Type;
-    type Deriv = TypingDerivation<Self::Term, Self::Type>;
 
-    fn check(&self, env: Environment<<T as Typecheck>::Type>) -> Result<Self::Deriv, CheckError> {
+    fn check(
+        &self,
+        env: Environment<<T as Typecheck>::Type>,
+    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
         let mut recs = HashMap::new();
         let mut ress = Vec::new();
         let mut rec_knd = None;
         for (lb, t) in self.records.iter() {
             let term_res = t.check(env.clone())?;
-            let ty = term_res.ty().normalize(env.clone());
+            let ty = term_res.ret_ty().normalize(env.clone());
             ress.push(term_res);
 
             let ty_knd = ty.check_kind(env.clone())?;
@@ -42,6 +44,6 @@ where
 
         let conc = Conclusion::new(env, self.clone(), RecordTy::new(recs));
         let deriv = TypingDerivation::record(conc, ress);
-        Ok(deriv)
+        Ok(deriv.into())
     }
 }

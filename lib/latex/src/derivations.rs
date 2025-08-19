@@ -1,5 +1,5 @@
 use super::{LatexConfig, LatexFmt};
-use derivations::{DefinitionDerivation, ProgramDerivation, TypingDerivation};
+use derivations::{DefinitionDerivation, Derivation, ProgramDerivation, TypingDerivation};
 use syntax::{terms::Term, types::Type};
 
 impl<T, Ty> LatexFmt for ProgramDerivation<T, Ty>
@@ -34,7 +34,7 @@ where
         conf.include_envs = false;
         let body_str = self.body_derivation.to_latex(conf);
         conf.include_envs = false;
-        let ty_str = self.body_derivation.ty().to_latex(conf);
+        let ty_str = self.body_derivation.ret_ty().to_latex(conf);
 
         if conf.use_frac_array {
             format!(
@@ -142,4 +142,18 @@ where
         "{env_start}\n\\frac{{\n{array_str}}}{{\n{conc_str}
         }}\n{env_end}"
     )
+}
+
+impl<T, Ty> LatexFmt for Derivation<T, Ty>
+where
+    T: Term + LatexFmt,
+    Ty: Type + LatexFmt,
+{
+    fn to_latex(&self, conf: &mut LatexConfig) -> String {
+        match self {
+            Derivation::TypingDerivation(deriv) => deriv.to_latex(conf),
+            Derivation::DefinitionDerivation(deriv) => deriv.to_latex(conf),
+            Derivation::ProgramDerivation(deriv) => deriv.to_latex(conf),
+        }
+    }
 }

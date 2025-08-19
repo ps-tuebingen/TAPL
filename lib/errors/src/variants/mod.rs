@@ -26,6 +26,7 @@ pub mod undefined_label;
 pub mod undefined_language;
 pub mod undefined_location;
 pub mod undefined_main;
+pub mod unexpected_derivation;
 pub mod unexpected_rule;
 pub mod unknown_keyword;
 pub mod value_mismatch;

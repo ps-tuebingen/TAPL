@@ -1,5 +1,5 @@
 use crate::{Kindcheck, Normalize, Subtypecheck, Typecheck};
-use derivations::{Conclusion, TypingDerivation};
+use derivations::{Conclusion, Derivation, TypingDerivation};
 use errors::TypeMismatch;
 use errors::check_error::CheckError;
 use syntax::{
@@ -11,18 +11,17 @@ use syntax::{
 
 impl<T, Ty> Typecheck for Pack<T, Ty>
 where
-    T: Term + Typecheck<Type = Ty, Term = T, Deriv = TypingDerivation<T, <T as Typecheck>::Type>>,
+    T: Term + Typecheck<Type = Ty, Term = T>,
     Ty: TypeGroup + Normalize<Ty> + Kindcheck<Ty> + Subtypecheck<Ty> + SubstType<Ty, Target = Ty>,
     Self: Into<T>,
 {
     type Term = <T as Typecheck>::Term;
     type Type = <T as Typecheck>::Type;
-    type Deriv = TypingDerivation<Self::Term, Self::Type>;
 
     fn check(
         &self,
         mut env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Self::Deriv, CheckError> {
+    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
         let outer_norm = self.outer_ty.clone().normalize(env.clone());
         let inner_kind = self.inner_ty.check_kind(env.clone())?;
         let outer_knd = outer_norm.check_kind(env.clone())?;
@@ -30,7 +29,7 @@ where
         if let Ok(outer_exists) = outer_norm.clone().into_exists() {
             env.add_tyvar_kind(outer_exists.var.clone(), outer_exists.kind.clone());
             let term_res = self.term.check(env.clone())?;
-            let term_ty = term_res.ty().normalize(env.clone());
+            let term_ty = term_res.ret_ty().normalize(env.clone());
             let term_kind = term_ty.check_kind(env.clone())?;
 
             term_kind.check_equal(&outer_knd)?;
@@ -44,7 +43,7 @@ where
 
             let conc = Conclusion::new(env, self.clone(), self.outer_ty.clone());
             let deriv = TypingDerivation::pack(conc, term_res);
-            Ok(deriv)
+            Ok(deriv.into())
         } else if let Ok(outer_bound) = outer_norm.clone().into_exists_bounded() {
             let sup_norm = outer_bound.sup_ty.clone().normalize(env.clone());
             let sup_kind = sup_norm.check_kind(env.clone())?;
@@ -52,7 +51,7 @@ where
             env.add_tyvar_kind(outer_bound.var.clone(), sup_kind);
 
             let term_res = self.term.check(env.clone())?;
-            let term_ty = term_res.ty();
+            let term_ty = term_res.ret_ty();
             let term_kind = term_ty.check_kind(env.clone())?;
             term_kind.check_equal(&outer_knd)?;
 
@@ -61,7 +60,7 @@ where
             let conc = Conclusion::new(env, self.clone(), self.outer_ty.clone());
             let deriv = TypingDerivation::pack_bound(conc, term_res);
 
-            Ok(deriv)
+            Ok(deriv.into())
         } else {
             Err(TypeMismatch::new(outer_norm.to_string(), "Existential Type".to_owned()).into())
         }

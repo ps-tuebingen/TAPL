@@ -1,5 +1,5 @@
 use crate::Typecheck;
-use derivations::{Conclusion, TypingDerivation};
+use derivations::{Conclusion, Derivation, TypingDerivation};
 use errors::check_error::CheckError;
 use syntax::{
     env::Environment,
@@ -8,17 +8,19 @@ use syntax::{
 
 impl<T> Typecheck for Variable<T>
 where
-    T: Term + Typecheck<Term = T, Deriv = TypingDerivation<T, <T as Typecheck>::Type>>,
+    T: Term + Typecheck<Term = T>,
     Self: Into<T>,
 {
     type Term = <T as Typecheck>::Term;
     type Type = <T as Typecheck>::Type;
-    type Deriv = TypingDerivation<Self::Term, Self::Type>;
 
-    fn check(&self, env: Environment<<T as Typecheck>::Type>) -> Result<Self::Deriv, CheckError> {
+    fn check(
+        &self,
+        env: Environment<<T as Typecheck>::Type>,
+    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
         let ty = env.get_var(&self.var)?;
         let conc = Conclusion::new(env.clone(), self.clone(), ty);
         let deriv = TypingDerivation::var(conc);
-        Ok(deriv)
+        Ok(deriv.into())
     }
 }

@@ -36,6 +36,7 @@ pub use variants::undefined_label::UndefinedLabel;
 pub use variants::undefined_language::UndefinedLanguage;
 pub use variants::undefined_location::UndefinedLocation;
 pub use variants::undefined_main::UndefinedMain;
+pub use variants::unexpected_derivation::UnexpectedDerivation;
 pub use variants::unexpected_rule::UnexpectedRule;
 pub use variants::unknown_keyword::UnknownKeyword;
 pub use variants::value_mismatch::ValueMismatch;

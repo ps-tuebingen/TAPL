@@ -1,5 +1,5 @@
 use check::Typecheck;
-use derivations::{ProgramDerivation, TypingDerivation};
+use derivations::Derivation;
 use errors::{FileAccess, driver_error::DriverError};
 use eval::{Eval, eval_main};
 use grammar::LanguageDescribe;
@@ -52,7 +52,7 @@ impl Driver {
         L: Language + LanguageDescribe,
         L::Term: GroupParse
             + LatexFmt
-            + Typecheck<Term = L::Term, Type = L::Type, Deriv = TypingDerivation<L::Term, L::Type>>
+            + Typecheck<Term = L::Term, Type = L::Type>
             + Eval<Term = L::Term, Value = L::Value>,
         L::Type: GroupParse + LatexFmt,
         L::Value: LatexFmt,
@@ -127,14 +127,10 @@ impl Driver {
         Ok(method.format(&parsed))
     }
 
-    pub fn check<L>(
-        &self,
-        input: String,
-    ) -> Result<ProgramDerivation<L::Term, L::Type>, DriverError>
+    pub fn check<L>(&self, input: String) -> Result<Derivation<L::Term, L::Type>, DriverError>
     where
         L: Language,
-        L::Term: GroupParse
-            + Typecheck<Term = L::Term, Type = L::Type, Deriv = TypingDerivation<L::Term, L::Type>>,
+        L::Term: GroupParse + Typecheck<Term = L::Term, Type = L::Type>,
         L::Type: GroupParse,
     {
         let parsed = self.parse::<L>(input)?;
@@ -149,9 +145,7 @@ impl Driver {
     ) -> Result<String, DriverError>
     where
         L: Language,
-        L::Term: GroupParse
-            + Typecheck<Term = L::Term, Type = L::Type, Deriv = TypingDerivation<L::Term, L::Type>>
-            + LatexFmt,
+        L::Term: GroupParse + Typecheck<Term = L::Term, Type = L::Type> + LatexFmt,
         L::Type: GroupParse + LatexFmt,
     {
         let checked = self.check::<L>(input)?;

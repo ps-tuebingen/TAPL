@@ -1,5 +1,5 @@
 use crate::{Kindcheck, Normalize, Typecheck};
-use derivations::{Conclusion, TypingDerivation};
+use derivations::{Conclusion, Derivation, TypingDerivation};
 use errors::check_error::CheckError;
 use syntax::{
     env::Environment,
@@ -9,17 +9,19 @@ use syntax::{
 
 impl<T, Ty> Typecheck for Right<T, Ty>
 where
-    T: Term + Typecheck<Type = Ty, Term = T, Deriv = TypingDerivation<T, <T as Typecheck>::Type>>,
+    T: Term + Typecheck<Type = Ty, Term = T>,
     Ty: TypeGroup + Normalize<Ty> + Kindcheck<Ty>,
     Self: Into<T>,
 {
     type Term = <T as Typecheck>::Term;
     type Type = <T as Typecheck>::Type;
-    type Deriv = TypingDerivation<Self::Term, Self::Type>;
 
-    fn check(&self, env: Environment<<T as Typecheck>::Type>) -> Result<Self::Deriv, CheckError> {
+    fn check(
+        &self,
+        env: Environment<<T as Typecheck>::Type>,
+    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
         let right_res = self.right_term.check(env.clone())?;
-        let right_ty = right_res.ty().normalize(env.clone());
+        let right_ty = right_res.ret_ty().normalize(env.clone());
         let right_knd = right_ty.check_kind(env.clone())?;
 
         let sum_ty = self.ty.clone().normalize(env.clone()).into_sum()?;
@@ -31,6 +33,6 @@ where
         let conc = Conclusion::new(env, self.clone(), self.ty.clone());
         let deriv = TypingDerivation::right(conc, right_res);
 
-        Ok(deriv)
+        Ok(deriv.into())
     }
 }

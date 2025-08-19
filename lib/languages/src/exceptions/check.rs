@@ -1,18 +1,18 @@
 use super::{terms::Term, types::Type};
 use check::{Kindcheck, Subtypecheck, Typecheck};
-use derivations::TypingDerivation;
+use derivations::Derivation;
 use errors::check_error::CheckError;
 use syntax::{env::Environment, kinds::Kind};
 
 impl Typecheck for Term {
     type Type = Type;
-    type Deriv = TypingDerivation<Self::Term, Self::Type>;
+
     type Term = Term;
 
     fn check(
         &self,
         env: Environment<Type>,
-    ) -> Result<TypingDerivation<Self::Term, Self::Type>, CheckError> {
+    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
         match self {
             Term::Var(v) => v.check(env),
             Term::Num(num) => num.check(env),

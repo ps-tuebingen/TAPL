@@ -1,12 +1,12 @@
 use super::{test::Test, test_result::TestResult};
 use check::Typecheck;
-use derivations::{ProgramDerivation, TypingDerivation};
+use derivations::ProgramDerivation;
 use std::marker::PhantomData;
 use syntax::{program::Program, terms::Term, types::TypeGroup};
 
 pub struct CheckTest<T, Ty>
 where
-    T: Term + Typecheck<Term = T, Type = Ty, Deriv = TypingDerivation<T, Ty>>,
+    T: Term + Typecheck<Term = T, Type = Ty>,
     Ty: TypeGroup,
 {
     name: String,
@@ -17,7 +17,7 @@ where
 
 impl<T, Ty> CheckTest<T, Ty>
 where
-    T: Term + Typecheck<Term = T, Type = Ty, Deriv = TypingDerivation<T, Ty>>,
+    T: Term + Typecheck<Term = T, Type = Ty>,
     Ty: TypeGroup,
 {
     pub fn new(name: &str, prog: Program<T, Ty>, exp: &str) -> CheckTest<T, Ty> {
@@ -32,7 +32,7 @@ where
 
 impl<T, Ty> Test<ProgramDerivation<T, T::Type>> for CheckTest<T, Ty>
 where
-    T: Term + Typecheck<Term = T, Type = Ty, Deriv = TypingDerivation<T, Ty>>,
+    T: Term + Typecheck<Term = T, Type = Ty>,
     Ty: TypeGroup,
 {
     fn name(&self) -> String {
@@ -44,9 +44,14 @@ where
             Ok(c) => c,
             Err(err) => return TestResult::from_err(err),
         };
-        let checked_str = checked.main_derivation.ty().to_string();
+        let checked_prog = match checked.into_prog() {
+            Ok(prog) => prog,
+            Err(err) => return TestResult::from_err(err),
+        };
+
+        let checked_str = checked_prog.main_derivation.ret_ty().to_string();
         if checked_str == self.expected {
-            TestResult::Success(checked)
+            TestResult::Success(checked_prog)
         } else {
             TestResult::Fail(format!(
                 "Result!=Expected:\n\tresult:   {checked_str}\n\texpected: {}",

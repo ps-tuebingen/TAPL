@@ -1,5 +1,5 @@
 use crate::{Kindcheck, Normalize, Typecheck};
-use derivations::{Conclusion, TypingDerivation};
+use derivations::{Conclusion, Derivation, TypingDerivation};
 use errors::check_error::CheckError;
 use syntax::{
     env::Environment,
@@ -9,17 +9,20 @@ use syntax::{
 
 impl<T, Ty> Typecheck for Ascribe<T, Ty>
 where
-    T: Term + Typecheck<Type = Ty, Term = T, Deriv = TypingDerivation<T, Ty>>,
+    T: Term + Typecheck<Type = Ty, Term = T>,
     Ty: TypeGroup + Normalize<Ty> + Kindcheck<Ty>,
     Self: Into<T>,
 {
     type Type = <T as Typecheck>::Type;
-    type Deriv = TypingDerivation<Self::Term, Self::Type>;
+
     type Term = T;
 
-    fn check(&self, env: Environment<<T as Typecheck>::Type>) -> Result<Self::Deriv, CheckError> {
+    fn check(
+        &self,
+        env: Environment<<T as Typecheck>::Type>,
+    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
         let t_res = self.term.check(env.clone())?;
-        let t_ty = t_res.ty().normalize(env.clone());
+        let t_ty = t_res.ret_ty().normalize(env.clone());
         let asc_norm = self.ty.clone().normalize(env.clone());
         let t_kind = t_ty.check_kind(env.clone())?;
         let ty_kind = self.ty.check_kind(env.clone())?;
@@ -28,6 +31,6 @@ where
 
         let conc = Conclusion::new(env, self.clone(), self.ty.clone());
         let deriv = TypingDerivation::ascribe(conc, t_res);
-        Ok(deriv)
+        Ok(deriv.into())
     }
 }

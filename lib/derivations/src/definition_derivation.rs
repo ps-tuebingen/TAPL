@@ -27,8 +27,8 @@ where
         }
     }
 
-    pub fn ty(&self) -> Ty {
-        self.body_derivation.ty()
+    pub fn ret_ty(&self) -> Ty {
+        self.body_derivation.ret_ty()
     }
 }
 

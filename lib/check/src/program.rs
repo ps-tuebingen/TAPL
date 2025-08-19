@@ -1,5 +1,5 @@
 use crate::Typecheck;
-use derivations::{ProgramDerivation, TypingDerivation};
+use derivations::{Derivation, ProgramDerivation};
 use errors::check_error::CheckError;
 use syntax::{
     env::Environment,
@@ -10,24 +10,26 @@ use syntax::{
 
 impl<T, Ty> Typecheck for Program<T, Ty>
 where
-    T: Term + Typecheck<Term = T, Type = Ty, Deriv = TypingDerivation<T, Ty>>,
+    T: Term + Typecheck<Term = T, Type = Ty>,
     Ty: Type + TypeGroup,
 {
     type Term = T;
     type Type = Ty;
-    type Deriv = ProgramDerivation<T, Ty>;
 
-    fn check(&self, mut env: Environment<Ty>) -> Result<Self::Deriv, CheckError> {
+    fn check(
+        &self,
+        mut env: Environment<Ty>,
+    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
         let mut derivs = vec![];
         for def in self.definitions.iter() {
             env.add_definition(def.name.clone(), def.annot.clone());
         }
         for def in self.definitions.iter() {
             let def_res = def.check(env.clone())?;
-            derivs.push(def_res);
+            derivs.push(def_res.into_def()?);
         }
 
         let main_res = self.main.check(env)?;
-        Ok(ProgramDerivation::new(main_res, derivs))
+        Ok(ProgramDerivation::new(main_res.into_ty()?, derivs).into())
     }
 }

@@ -15,7 +15,7 @@ use super::{
 };
 use check::Typecheck;
 use clap::Parser;
-use derivations::{ProgramDerivation, TypingDerivation};
+use derivations::ProgramDerivation;
 use errors::test_error::TestError;
 use eval::Eval;
 use grammar::LanguageDescribe;
@@ -94,14 +94,8 @@ pub trait TestSuite {
         prog: LangProg<Self::Lang>,
     ) -> TestResult<LangDerivation<Self::Lang>>
     where
-        <Self::Lang as Language>::Term: Typecheck<
-                Term = <Self::Lang as Language>::Term,
-                Type = <Self::Lang as Language>::Type,
-                Deriv = TypingDerivation<
-                    <Self::Lang as Language>::Term,
-                    <Self::Lang as Language>::Type,
-                >,
-            >,
+        <Self::Lang as Language>::Term:
+            Typecheck<Term = <Self::Lang as Language>::Term, Type = <Self::Lang as Language>::Type>,
     {
         let check_test =
             CheckTest::<<Self::Lang as Language>::Term, <Self::Lang as Language>::Type>::new(
@@ -202,14 +196,8 @@ pub trait TestSuite {
     fn run_conf(conf: &Self::Config, inclusions: &TestInclusions) -> usize
     where
         <Self::Lang as Language>::Term: GroupParse
-            + Typecheck<
-                Term = <Self::Lang as Language>::Term,
-                Type = <Self::Lang as Language>::Type,
-                Deriv = TypingDerivation<
-                    <Self::Lang as Language>::Term,
-                    <Self::Lang as Language>::Type,
-                >,
-            > + Eval<Term = <Self::Lang as Language>::Term, Value = <Self::Lang as Language>::Value>
+            + Typecheck<Term = <Self::Lang as Language>::Term, Type = <Self::Lang as Language>::Type>
+            + Eval<Term = <Self::Lang as Language>::Term, Value = <Self::Lang as Language>::Value>
             + LatexFmt,
         <Self::Lang as Language>::Type: GroupParse + LatexFmt,
         <Self::Lang as Language>::Value: LatexFmt,
@@ -286,14 +274,8 @@ pub trait TestSuite {
     fn run_all(&self, inclusions: &TestInclusions) -> Result<usize, TestError>
     where
         <Self::Lang as Language>::Term: GroupParse
-            + Typecheck<
-                Term = <Self::Lang as Language>::Term,
-                Type = <Self::Lang as Language>::Type,
-                Deriv = TypingDerivation<
-                    <Self::Lang as Language>::Term,
-                    <Self::Lang as Language>::Type,
-                >,
-            > + Eval<Term = <Self::Lang as Language>::Term, Value = <Self::Lang as Language>::Value>
+            + Typecheck<Term = <Self::Lang as Language>::Term, Type = <Self::Lang as Language>::Type>
+            + Eval<Term = <Self::Lang as Language>::Term, Value = <Self::Lang as Language>::Value>
             + LatexFmt,
         <Self::Lang as Language>::Type: GroupParse + LatexFmt,
         <Self::Lang as Language>::Value: LatexFmt,
@@ -330,14 +312,8 @@ pub trait TestSuite {
     fn run_report(&self) -> Result<(), TestError>
     where
         <Self::Lang as Language>::Term: GroupParse
-            + Typecheck<
-                Term = <Self::Lang as Language>::Term,
-                Type = <Self::Lang as Language>::Type,
-                Deriv = TypingDerivation<
-                    <Self::Lang as Language>::Term,
-                    <Self::Lang as Language>::Type,
-                >,
-            > + Eval<Term = <Self::Lang as Language>::Term, Value = <Self::Lang as Language>::Value>
+            + Typecheck<Term = <Self::Lang as Language>::Term, Type = <Self::Lang as Language>::Type>
+            + Eval<Term = <Self::Lang as Language>::Term, Value = <Self::Lang as Language>::Value>
             + LatexFmt,
         <Self::Lang as Language>::Type: GroupParse + LatexFmt,
         <Self::Lang as Language>::Value: LatexFmt,

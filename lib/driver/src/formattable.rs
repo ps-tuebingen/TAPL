@@ -1,4 +1,4 @@
-use derivations::ProgramDerivation;
+use derivations::{DefinitionDerivation, Derivation, ProgramDerivation, TypingDerivation};
 use grammar::LanguageGrammar;
 use latex::LatexFmt;
 use std::fmt;
@@ -15,6 +15,27 @@ where
 }
 
 impl<T, Ty> Formattable for ProgramDerivation<T, Ty>
+where
+    T: Term + LatexFmt,
+    Ty: Type + LatexFmt,
+{
+}
+
+impl<T, Ty> Formattable for TypingDerivation<T, Ty>
+where
+    T: Term + LatexFmt,
+    Ty: Type + LatexFmt,
+{
+}
+
+impl<T, Ty> Formattable for DefinitionDerivation<T, Ty>
+where
+    T: Term + LatexFmt,
+    Ty: Type + LatexFmt,
+{
+}
+
+impl<T, Ty> Formattable for Derivation<T, Ty>
 where
     T: Term + LatexFmt,
     Ty: Type + LatexFmt,

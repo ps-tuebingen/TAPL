@@ -27,13 +27,17 @@ where
         }
     }
 
+    pub fn ret_ty(&self) -> Ty {
+        self.main_derivation.ret_ty()
+    }
+
     pub fn tys(&self) -> HashMap<String, Ty> {
         let mut tys = HashMap::new();
         for df_deriv in self.def_derivations.iter() {
-            tys.insert(df_deriv.name.clone(), df_deriv.ty());
+            tys.insert(df_deriv.name.clone(), df_deriv.ret_ty());
         }
 
-        tys.insert("main".to_owned(), self.main_derivation.ty());
+        tys.insert("main".to_owned(), self.main_derivation.ret_ty());
         tys
     }
 }

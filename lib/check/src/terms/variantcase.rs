@@ -1,5 +1,5 @@
 use crate::{Kindcheck, Normalize, Typecheck};
-use derivations::{Conclusion, TypingDerivation};
+use derivations::{Conclusion, Derivation, TypingDerivation};
 use errors::{EmptyCase, check_error::CheckError};
 use errors::{TypeMismatch, UndefinedLabel};
 use syntax::{
@@ -10,18 +10,20 @@ use syntax::{
 
 impl<T> Typecheck for VariantCase<T>
 where
-    T: Term + Typecheck<Term = T, Deriv = TypingDerivation<T, <T as Typecheck>::Type>>,
+    T: Term + Typecheck<Term = T>,
     <T as Typecheck>::Type:
         TypeGroup + Normalize<<T as Typecheck>::Type> + Kindcheck<<T as Typecheck>::Type>,
     Self: Into<T>,
 {
     type Term = <T as Typecheck>::Term;
     type Type = <T as Typecheck>::Type;
-    type Deriv = TypingDerivation<Self::Term, Self::Type>;
 
-    fn check(&self, env: Environment<<T as Typecheck>::Type>) -> Result<Self::Deriv, CheckError> {
+    fn check(
+        &self,
+        env: Environment<<T as Typecheck>::Type>,
+    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
         let bound_res = self.bound_term.check(env.clone())?;
-        let bound_ty = bound_res.ty().normalize(env.clone());
+        let bound_ty = bound_res.ret_ty().normalize(env.clone());
         bound_ty.check_kind(env.clone())?.into_star()?;
         let bound_var = bound_ty.into_variant()?;
 
@@ -41,7 +43,7 @@ where
             let mut rhs_env = env.clone();
             rhs_env.add_var(pt.bound_var.clone(), var_ty);
             let rhs_res = pt.rhs.check(rhs_env.clone())?;
-            let rhs_ty = rhs_res.ty().normalize(rhs_env);
+            let rhs_ty = rhs_res.ret_ty().normalize(rhs_env);
             rhs_ress.push(rhs_res);
             let knd = rhs_ty.check_kind(env.clone())?;
 
@@ -68,6 +70,6 @@ where
         let conc = Conclusion::new(env, self.clone(), rhs_fst);
         let deriv = TypingDerivation::variantcase(conc, bound_res, rhs_ress);
 
-        Ok(deriv)
+        Ok(deriv.into())
     }
 }

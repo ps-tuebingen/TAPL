@@ -1,6 +1,6 @@
 use super::{terms::Term, types::Type};
 use check::{Kindcheck, Subtypecheck, Typecheck};
-use derivations::TypingDerivation;
+use derivations::Derivation;
 use errors::check_error::CheckError;
 use std::collections::HashMap;
 use syntax::{Location, Var, env::Environment, kinds::Kind};
@@ -11,12 +11,11 @@ pub type StoreTy = HashMap<Location, Type>;
 impl Typecheck for Term {
     type Term = Term;
     type Type = Type;
-    type Deriv = TypingDerivation<Self::Term, Self::Type>;
 
     fn check(
         &self,
         env: Environment<Type>,
-    ) -> Result<TypingDerivation<Self::Term, Self::Type>, CheckError> {
+    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
         match self {
             Term::Var(var) => var.check(env),
             Term::Num(c) => c.check(env),

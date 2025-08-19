@@ -11,13 +11,15 @@ pub mod untyped;
 pub trait Typecheck {
     type Type: Type;
     type Term: Term;
-    type Deriv: Derivation<Self::Term, Self::Type>;
 
-    fn check_start(&self) -> Result<Self::Deriv, CheckError> {
+    fn check_start(&self) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
         self.check(Environment::default())
     }
 
-    fn check(&self, env: Environment<Self::Type>) -> Result<Self::Deriv, CheckError>;
+    fn check(
+        &self,
+        env: Environment<Self::Type>,
+    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError>;
 }
 
 pub trait Subtypecheck<Ty>

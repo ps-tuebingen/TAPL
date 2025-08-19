@@ -1,5 +1,5 @@
 use check::Typecheck;
-use derivations::TypingDerivation;
+use derivations::{Derivation, TypingDerivation};
 use errors::check_error::CheckError;
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
@@ -26,10 +26,12 @@ impl syntax::terms::Term for Term {}
 impl Typecheck for Term {
     type Term = Term;
     type Type = Untyped;
-    type Deriv = TypingDerivation<Self::Term, Self::Type>;
 
-    fn check(&self, _: Environment<Untyped>) -> Result<Self::Deriv, CheckError> {
-        Ok(TypingDerivation::empty(self.clone()))
+    fn check(
+        &self,
+        _: Environment<Untyped>,
+    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
+        Ok(TypingDerivation::empty(self.clone()).into())
     }
 }
 
