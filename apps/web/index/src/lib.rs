@@ -18,7 +18,7 @@ impl IndexContext {
     fn new() -> Result<Rc<IndexContext>, WebError> {
         let window = web_sys::window().ok_or(WebError::Window)?;
         let document = window.document().ok_or(WebError::Document)?;
-        let language_select = LanguageSelect::new(&document)?;
+        let language_select = LanguageSelect::new(&document, false)?;
         let grammar_out =
             CollapsableElement::new(&document, "grammar_collapse", "grammar_out").unwrap();
 

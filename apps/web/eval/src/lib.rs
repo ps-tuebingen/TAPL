@@ -25,7 +25,7 @@ impl CheckContext {
     pub fn new() -> Result<Rc<CheckContext>, WebError> {
         let window = web_sys::window().ok_or(WebError::Window)?;
         let document = window.document().ok_or(WebError::Document)?;
-        let language_select = LanguageSelect::new(&document)?;
+        let language_select = LanguageSelect::new(&document, false)?;
         let example_select =
             ExampleSelect::new(&document, &get_lang(language_select.selected()).to_string())?;
         let source_area = SourceArea::new(&document)?;

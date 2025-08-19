@@ -11,7 +11,7 @@ pub struct LanguageSelect {
 }
 
 impl LanguageSelect {
-    pub fn new(doc: &Document) -> Result<LanguageSelect, WebError> {
+    pub fn new(doc: &Document, typed: bool) -> Result<LanguageSelect, WebError> {
         let id = "language_select".to_owned();
         let elem = get_by_id(&id, &doc)?;
         let slf = LanguageSelect {
@@ -19,12 +19,15 @@ impl LanguageSelect {
             document: doc.clone(),
             element: elem,
         };
-        slf.setup_languages()?;
+        slf.setup_languages(typed)?;
         Ok(slf)
     }
 
-    fn setup_languages(&self) -> Result<(), WebError> {
+    fn setup_languages(&self, typed: bool) -> Result<(), WebError> {
         for lang in AllLanguages::all() {
+            if typed && lang.to_string().to_lowercase().contains("untyped") {
+                continue;
+            }
             let child_id = lang.to_string();
             let lang_option = self
                 .document
