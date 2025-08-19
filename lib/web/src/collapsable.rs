@@ -97,7 +97,7 @@ where
     {
         let self_ = self.clone();
         let button_handler = Closure::wrap(Box::new(move || match self_.toggle() {
-            Ok(_) => return,
+            Ok(_) => (),
             Err(err) => log(&format!("{err}")),
         }) as Box<dyn Fn()>);
         self.button

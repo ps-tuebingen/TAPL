@@ -1,11 +1,11 @@
-use crate::{examples::all_examples, get_by_id, log};
+use crate::{examples::all_examples, get_by_id};
 use errors::{
     AddEventHandler, AppendChild, CouldNotCast, CreateElement, GetAttribute, SetAttribute,
-    TriggerEvent, UndefinedExample, UndefinedLanguage, web_error::WebError,
+    UndefinedExample, UndefinedLanguage, web_error::WebError,
 };
 use std::collections::HashMap;
 use wasm_bindgen::{JsCast, closure::Closure};
-use web_sys::{Document, Event, HtmlOptionElement, HtmlSelectElement};
+use web_sys::{Document, HtmlOptionElement, HtmlSelectElement};
 
 #[derive(Clone)]
 pub struct ExampleSelect {
@@ -38,18 +38,18 @@ impl ExampleSelect {
         let options = self
             .examples
             .get(language)
-            .ok_or(UndefinedLanguage::new(&language))?;
+            .ok_or(UndefinedLanguage::new(language))?;
         for (example_name, _) in options {
             let option_elem = self
                 .document
                 .create_element("option")
                 .map_err(|_| CreateElement::new("option"))?
                 .dyn_into::<HtmlOptionElement>()
-                .map_err(|_| CouldNotCast::new(&example_name, "option"))?;
+                .map_err(|_| CouldNotCast::new(example_name, "option"))?;
             option_elem.set_inner_html(example_name);
             self.element
                 .append_child(&option_elem)
-                .map_err(|_| AppendChild::new(&self.id, &example_name))?;
+                .map_err(|_| AppendChild::new(&self.id, example_name))?;
         }
         Ok(())
     }

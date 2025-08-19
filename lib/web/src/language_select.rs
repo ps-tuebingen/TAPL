@@ -13,7 +13,7 @@ pub struct LanguageSelect {
 impl LanguageSelect {
     pub fn new(doc: &Document, typed: bool) -> Result<LanguageSelect, WebError> {
         let id = "language_select".to_owned();
-        let elem = get_by_id(&id, &doc)?;
+        let elem = get_by_id(&id, doc)?;
         let slf = LanguageSelect {
             id,
             document: doc.clone(),

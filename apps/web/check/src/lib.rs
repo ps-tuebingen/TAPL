@@ -59,33 +59,29 @@ impl CheckContext {
                 Ok(_) => (),
                 Err(err) => {
                     log(&format!("{err}"));
-                    return;
                 }
             };
             match self_.set_example() {
                 Ok(_) => (),
                 Err(err) => {
                     log(&format!("{err}"));
-                    return;
                 }
             }
         }) as Box<dyn Fn()>);
 
         let self_ = self.clone();
         let change_handler_example = Closure::wrap(Box::new(move || match self_.set_example() {
-            Ok(_) => return,
+            Ok(_) => (),
             Err(err) => {
                 log(&format!("{err}"));
-                return;
             }
         }) as Box<dyn Fn()>);
 
         let self_ = self.clone();
         let button_handler = Closure::wrap(Box::new(move || match self_.check_source() {
-            Ok(_) => return,
+            Ok(_) => (),
             Err(err) => {
                 log(&format!("{err}"));
-                return;
             }
         }) as Box<dyn Fn()>);
 
@@ -131,7 +127,7 @@ impl CheckContext {
 #[wasm_bindgen(start)]
 pub fn setup() {
     match CheckContext::new() {
-        Ok(_) => return,
+        Ok(_) => (),
         Err(err) => log(&format!("{err}")),
     }
 }

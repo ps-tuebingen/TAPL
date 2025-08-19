@@ -58,7 +58,7 @@ fn write_examples_mod(mod_strs: &[String], hashmap_strs: &[String]) -> Result<()
 }
 
 pub fn generate_examples_mod(example_paths: &[PathBuf]) -> Result<(), BuildError> {
-    let path_stems = get_path_stems(&example_paths)?;
+    let path_stems = get_path_stems(example_paths)?;
     let mod_strs = get_mod_strs(&path_stems);
     let hashmap_strs = get_hashmap_strs(&path_stems);
     write_examples_mod(&mod_strs, &hashmap_strs)

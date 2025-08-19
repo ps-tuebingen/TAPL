@@ -29,7 +29,7 @@ fn fill_template(path: &PathBuf, template_contents: &str) -> Result<String, Buil
     ))?;
 
     let template_fill =
-        read_to_string(&path).map_err(|err| FileAccess::new("Read template contents", err))?;
+        read_to_string(path).map_err(|err| FileAccess::new("Read template contents", err))?;
 
     Ok(template_contents
         .to_owned()

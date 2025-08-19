@@ -31,12 +31,12 @@ fn get_path_stems(paths: &[PathBuf]) -> Result<Vec<&str>, BuildError> {
 
     for path in paths.iter() {
         let path_stem = path.file_stem().ok_or(err_fun(
-            &path,
+            path,
             "get example file stem",
             "Could not get file stem",
         ))?;
         stems.push(path_stem.to_str().ok_or(err_fun(
-            &path,
+            path,
             "get example file stem as str",
             "Could not get file stem as str",
         ))?);

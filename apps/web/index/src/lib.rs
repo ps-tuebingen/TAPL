@@ -49,7 +49,7 @@ impl IndexContext {
             }
             let res = self_.grammar_out.set_contents(&self_.get_grammar());
             match res {
-                Ok(_) => return,
+                Ok(_) => (),
                 Err(err) => log(&format!("{err}")),
             }
         }) as Box<dyn Fn()>);
@@ -61,7 +61,7 @@ impl IndexContext {
 #[wasm_bindgen(start)]
 pub fn setup() {
     match IndexContext::new() {
-        Ok(_) => return,
+        Ok(_) => (),
         Err(err) => log(&format!("{err}")),
     }
 }

@@ -50,7 +50,7 @@ fn get_example_file_name(base_path: &PathBuf) -> Result<String, BuildError> {
 fn get_example_strs(examples: &[PathBuf], example_dir: &str) -> Result<Vec<String>, BuildError> {
     let mut example_strs = vec![];
     for example_path in examples.iter() {
-        let example_file_name = get_example_file_name(&example_path)?;
+        let example_file_name = get_example_file_name(example_path)?;
         let example_name = example_path.file_name().ok_or(FileAccess::new(
             "Read example name",
             "Could not get example name",
@@ -125,10 +125,10 @@ pub fn generate_examples_rs(paths: &[PathBuf]) -> Result<(), BuildError> {
         let examples = load_paths(path)?;
         let example_names = get_path_stems(&examples)?;
 
-        let example_strs = get_example_strs(&examples, &path_stem_str)?;
+        let example_strs = get_example_strs(&examples, path_stem_str)?;
         let vec_strs = get_vec_strs(&example_names);
-        let examples_str = examples_rs(&example_strs, &vec_strs, &path_stem_str);
-        write_example_rs(&path_stem_str, &examples_str)?;
+        let examples_str = examples_rs(&example_strs, &vec_strs, path_stem_str);
+        write_example_rs(path_stem_str, &examples_str)?;
     }
     Ok(())
 }
