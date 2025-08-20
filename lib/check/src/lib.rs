@@ -1,6 +1,6 @@
 use derivations::Derivation;
 use errors::check_error::CheckError;
-use syntax::{env::Environment, kinds::Kind, terms::Term, types::Top, types::Type};
+use syntax::{env::Environment, kinds::Kind, terms::Term, types::Type};
 
 pub mod definition;
 pub mod program;

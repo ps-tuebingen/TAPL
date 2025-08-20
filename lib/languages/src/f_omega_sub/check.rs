@@ -30,8 +30,14 @@ impl Typecheck for Term {
     }
 }
 
-impl Subtypecheck<Type> for Type {
-    fn check_subtype(&self, sup: &Type, env: Environment<Type>) -> Result<(), CheckError> {
+impl Subtypecheck for Type {
+    type Type = Type;
+    type Term = Term;
+    fn check_subtype(
+        &self,
+        sup: &Type,
+        env: Environment<Type>,
+    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
         match self {
             Type::Var(var) => var.check_subtype(sup, env),
             Type::Top(top) => top.check_subtype(sup, env),

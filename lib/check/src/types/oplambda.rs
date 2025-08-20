@@ -33,9 +33,9 @@ where
             &sup_op
                 .body
                 .subst_type(&sup_op.var, &(TypeVariable::new(&self.var).into())),
-            env,
+            env.clone(),
         )?;
-        todo!()
+        Ok(SubtypeDerivation::op_lambda(env, self.clone(), sup.clone(), body_res).into())
     }
 }
 

@@ -14,7 +14,7 @@ pub struct UntypedLambda;
 
 impl Language for UntypedLambda {
     type Term = Term;
-    type Type = Untyped;
+    type Type = Untyped<Term>;
     type Value = Value;
 
     fn describe(&self) -> &str {
@@ -26,7 +26,7 @@ impl LanguageDescribe for UntypedLambda {
     fn grammars() -> LanguageGrammar {
         LanguageGrammar {
             term_grammar: Term::grammar(),
-            type_grammar: Untyped::grammar(),
+            type_grammar: Untyped::<Term>::grammar(),
             value_grammar: Value::grammar(),
             include_kinds: false,
         }

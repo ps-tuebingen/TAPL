@@ -24,6 +24,7 @@ pub use variants::index_out_of_bounds::IndexOutOfBounds;
 pub use variants::kind_mismatch::KindMismatch;
 pub use variants::missing_input::MissingInput;
 pub use variants::name_mismatch::NameMismatch;
+pub use variants::no_subtyping::NoSubtyping;
 pub use variants::not_a_subtype::NotASubtype;
 pub use variants::not_implemented::NotImplemented;
 pub use variants::remaining_input::RemainingInput;

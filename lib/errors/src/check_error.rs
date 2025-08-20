@@ -1,6 +1,7 @@
 use crate::{
     EmptyCase, FreeTypeVariable, FreeVariable, IndexOutOfBounds, KindMismatch, NameMismatch,
-    NotASubtype, TypeMismatch, UndefinedLabel, UndefinedLocation, UnexpectedDerivation,
+    NoSubtyping, NotASubtype, TypeMismatch, UndefinedLabel, UndefinedLocation,
+    UnexpectedDerivation,
 };
 use std::fmt;
 
@@ -17,6 +18,7 @@ pub enum CheckError {
     NameMismatch(NameMismatch),
     FreeVariable(FreeVariable),
     UnexpectedDerivation(UnexpectedDerivation),
+    NoSubtyping(NoSubtyping),
 }
 
 impl fmt::Display for CheckError {
@@ -33,6 +35,7 @@ impl fmt::Display for CheckError {
             CheckError::NameMismatch(nm) => nm.fmt(f),
             CheckError::FreeVariable(fv) => fv.fmt(f),
             CheckError::UnexpectedDerivation(ud) => ud.fmt(f),
+            CheckError::NoSubtyping(ns) => ns.fmt(f),
         }
     }
 }
@@ -102,5 +105,11 @@ impl From<FreeVariable> for CheckError {
 impl From<UnexpectedDerivation> for CheckError {
     fn from(err: UnexpectedDerivation) -> CheckError {
         CheckError::UnexpectedDerivation(err)
+    }
+}
+
+impl From<NoSubtyping> for CheckError {
+    fn from(err: NoSubtyping) -> CheckError {
+        CheckError::NoSubtyping(err)
     }
 }

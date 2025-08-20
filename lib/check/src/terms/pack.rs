@@ -12,7 +12,11 @@ use syntax::{
 impl<T, Ty> Typecheck for Pack<T, Ty>
 where
     T: Term + Typecheck<Type = Ty, Term = T>,
-    Ty: TypeGroup + Normalize<Ty> + Kindcheck<Ty> + Subtypecheck<Ty> + SubstType<Ty, Target = Ty>,
+    Ty: TypeGroup
+        + Normalize<Ty>
+        + Kindcheck<Ty>
+        + Subtypecheck<Type = Ty>
+        + SubstType<Ty, Target = Ty>,
     Self: Into<T>,
 {
     type Term = <T as Typecheck>::Term;

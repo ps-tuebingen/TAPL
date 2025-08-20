@@ -1,7 +1,7 @@
 use super::{terms::Term, types::Type};
 use check::{Kindcheck, Subtypecheck, Typecheck};
 use derivations::Derivation;
-use errors::check_error::CheckError;
+use errors::{NoSubtyping, check_error::CheckError};
 use syntax::{env::Environment, kinds::Kind};
 
 impl Typecheck for Term {
@@ -33,9 +33,15 @@ impl Typecheck for Term {
     }
 }
 
-impl Subtypecheck<Type> for Type {
-    fn check_subtype(&self, _: &Self, _: Environment<Type>) -> Result<(), CheckError> {
-        Ok(())
+impl Subtypecheck for Type {
+    type Term = Term;
+    type Type = Type;
+    fn check_subtype(
+        &self,
+        _: &Self,
+        _: Environment<Type>,
+    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
+        Err(NoSubtyping::new("Exceptions").into())
     }
 }
 
@@ -55,13 +61,13 @@ mod check_tests {
     fn check1() {
         let result = example_term1().check(Default::default()).unwrap();
         let expected = Unit::new().into();
-        assert_eq!(result.ty(), expected)
+        assert_eq!(result.ret_ty(), expected)
     }
 
     #[test]
     fn check2() {
         let result = example_term2().check(Default::default()).unwrap();
         let expected = Unit::new().into();
-        assert_eq!(result.ty(), expected)
+        assert_eq!(result.ret_ty(), expected)
     }
 }

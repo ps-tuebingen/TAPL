@@ -1,54 +1,7 @@
-use super::{LatexConfig, LatexFmt};
-use derivations::{DefinitionDerivation, Derivation, ProgramDerivation, TypingDerivation};
+use crate::{LatexConfig, LatexFmt};
+use derivations::TypingDerivation;
 use syntax::{terms::Term, types::Type};
 
-impl<T, Ty> LatexFmt for ProgramDerivation<T, Ty>
-where
-    T: Term + LatexFmt,
-    Ty: Type + LatexFmt,
-{
-    fn to_latex(&self, conf: &mut LatexConfig) -> String {
-        let mut def_strs = vec![];
-        let old_inc = conf.include_envs;
-        for def in self.def_derivations.iter() {
-            def_strs.push(def.to_latex(conf));
-            conf.include_envs = old_inc;
-        }
-        def_strs.push(self.main_derivation.to_latex(conf));
-        def_strs.join("\n\\quad \\\\ \\quad \\\\\n")
-    }
-}
-
-impl<T, Ty> LatexFmt for DefinitionDerivation<T, Ty>
-where
-    T: Term + LatexFmt,
-    Ty: Type + LatexFmt,
-{
-    fn to_latex(&self, conf: &mut LatexConfig) -> String {
-        let (mut env_start, mut env_end) = conf.mathenv_strs();
-        if !conf.use_frac_array && conf.include_envs {
-            env_start = "\\begin{prooftree}".to_owned();
-            env_end = "\\end{prooftree}".to_owned();
-        };
-
-        conf.include_envs = false;
-        let body_str = self.body_derivation.to_latex(conf);
-        conf.include_envs = false;
-        let ty_str = self.body_derivation.ret_ty().to_latex(conf);
-
-        if conf.use_frac_array {
-            format!(
-                "{env_start}\n\\frac{{ {body_str} }}{{ \\vdash {}:{} }}\n{env_end}",
-                self.name, ty_str
-            )
-        } else {
-            format!(
-                "{env_start}\n{body_str}\n\\UnaryInfC{{$\\vdash {}:{}$}}\n{env_end}",
-                self.name, ty_str
-            )
-        }
-    }
-}
 impl<T, Ty> LatexFmt for TypingDerivation<T, Ty>
 where
     T: Term + LatexFmt,
@@ -142,18 +95,4 @@ where
         "{env_start}\n\\frac{{\n{array_str}}}{{\n{conc_str}
         }}\n{env_end}"
     )
-}
-
-impl<T, Ty> LatexFmt for Derivation<T, Ty>
-where
-    T: Term + LatexFmt,
-    Ty: Type + LatexFmt,
-{
-    fn to_latex(&self, conf: &mut LatexConfig) -> String {
-        match self {
-            Derivation::TypingDerivation(deriv) => deriv.to_latex(conf),
-            Derivation::DefinitionDerivation(deriv) => deriv.to_latex(conf),
-            Derivation::ProgramDerivation(deriv) => deriv.to_latex(conf),
-        }
-    }
 }

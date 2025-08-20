@@ -14,6 +14,7 @@ pub mod index_out_of_bounds;
 pub mod kind_mismatch;
 pub mod missing_input;
 pub mod name_mismatch;
+pub mod no_subtyping;
 pub mod not_a_subtype;
 pub mod not_implemented;
 pub mod remaining_input;

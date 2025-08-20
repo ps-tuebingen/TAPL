@@ -14,7 +14,7 @@ use syntax::{
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Type {
     Top(Top<Type>),
-    Bot(Bot),
+    Bot(Bot<Type>),
     Fun(Fun<Type>),
     Record(Record<Type>),
     Variant(Variant<Type>),
@@ -45,7 +45,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_bot(self) -> Result<Bot, TypeMismatch> {
+    fn into_bot(self) -> Result<Bot<Type>, TypeMismatch> {
         if let Type::Bot(bot) = self {
             Ok(bot)
         } else {
@@ -130,7 +130,7 @@ impl GrammarDescribe for Type {
     fn grammar() -> Grammar {
         Grammar::ty(vec![
             Top::<Type>::rule(),
-            Bot::rule(),
+            Bot::<Type>::rule(),
             Fun::<Type>::rule(),
             Record::<Type>::rule(),
             Variant::<Type>::rule(),
@@ -205,8 +205,8 @@ impl From<Reference<Type>> for Type {
         Type::Ref(reft)
     }
 }
-impl From<Bot> for Type {
-    fn from(b: Bot) -> Type {
+impl From<Bot<Type>> for Type {
+    fn from(b: Bot<Type>) -> Type {
         Type::Bot(b)
     }
 }

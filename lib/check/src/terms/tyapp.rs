@@ -11,7 +11,11 @@ use syntax::{
 impl<T, Ty> Typecheck for TyApp<T, Ty>
 where
     T: Term + Typecheck<Type = Ty, Term = T>,
-    Ty: TypeGroup + SubstType<Ty, Target = Ty> + Normalize<Ty> + Kindcheck<Ty> + Subtypecheck<Ty>,
+    Ty: TypeGroup
+        + SubstType<Ty, Target = Ty>
+        + Normalize<Ty>
+        + Kindcheck<Ty>
+        + Subtypecheck<Type = Ty>,
     Self: Into<T>,
 {
     type Term = <T as Typecheck>::Term;

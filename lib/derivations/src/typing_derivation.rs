@@ -579,16 +579,16 @@ where
     }
 }
 
-impl<T> TypingDerivation<T, Untyped>
+impl<T> TypingDerivation<T, Untyped<T>>
 where
     T: Term,
 {
-    pub fn empty<T1>(t: T1) -> TypingDerivation<T, Untyped>
+    pub fn empty<T1>(t: T1) -> TypingDerivation<T, Untyped<T>>
     where
         T1: Into<T>,
     {
         TypingDerivation {
-            conc: TypingConclusion::new(Environment::default(), t, Untyped),
+            conc: TypingConclusion::new(Environment::default(), t, Untyped::new()),
             label: TypingRule::Empty,
             premises: vec![],
         }

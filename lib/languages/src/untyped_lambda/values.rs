@@ -16,7 +16,7 @@ impl ValueTrait for Value {
 
 impl ValueGroup for Value {
     type Term = Term;
-    type Type = Untyped;
+    type Type = Untyped<Term>;
 }
 
 impl GrammarDescribe for Value {

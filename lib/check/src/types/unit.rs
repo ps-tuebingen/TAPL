@@ -9,7 +9,6 @@ use syntax::{
 impl<Ty> Kindcheck<Ty> for Unit<Ty>
 where
     Ty: TypeGroup + Kindcheck<Ty>,
-    Top<Ty>: Into<Ty>,
 {
     fn check_kind(&self, _: Environment<Ty>) -> Result<Kind, CheckError> {
         Ok(Kind::Star)

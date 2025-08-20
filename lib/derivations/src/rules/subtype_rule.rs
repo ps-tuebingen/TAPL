@@ -19,6 +19,7 @@ pub enum SubtypeRule {
     RefSource,
     RefSink,
     Variant,
+    Empty,
 }
 
 impl fmt::Display for SubtypeRule {
@@ -41,6 +42,7 @@ impl fmt::Display for SubtypeRule {
             SubtypeRule::RefSource => f.write_str("S-RefSource"),
             SubtypeRule::RefSink => f.write_str("S-RefSink"),
             SubtypeRule::Variant => f.write_str("S-Variant"),
+            SubtypeRule::Empty => f.write_str(""),
         }
     }
 }

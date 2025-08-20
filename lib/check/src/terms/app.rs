@@ -13,7 +13,7 @@ where
     <T as Typecheck>::Type: TypeGroup
         + Normalize<<T as Typecheck>::Type>
         + Kindcheck<<T as Typecheck>::Type>
-        + Subtypecheck<<T as Typecheck>::Type>,
+        + Subtypecheck<Type = <T as Typecheck>::Type>,
     Self: Into<T>,
     Fun<<T as Typecheck>::Type>: Into<<T as Typecheck>::Type>,
 {

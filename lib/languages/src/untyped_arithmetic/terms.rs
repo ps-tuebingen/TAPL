@@ -46,20 +46,20 @@ impl SubstTerm<Term> for Term {
     }
 }
 
-impl SubstType<Untyped> for Term {
+impl SubstType<Untyped<Term>> for Term {
     type Target = Self;
-    fn subst_type(self, _: &TypeVar, _: &Untyped) -> Self::Target {
+    fn subst_type(self, _: &TypeVar, _: &Untyped<Term>) -> Self::Target {
         self
     }
 }
 
 impl Typecheck for Term {
     type Term = Term;
-    type Type = Untyped;
+    type Type = Untyped<Term>;
 
     fn check(
         &self,
-        _: Environment<Untyped>,
+        _: Environment<Untyped<Term>>,
     ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
         Ok(TypingDerivation::empty(self.clone()).into())
     }

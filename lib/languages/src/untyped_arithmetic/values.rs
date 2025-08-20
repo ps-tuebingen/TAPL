@@ -19,7 +19,7 @@ impl ValueTrait for Value {
 
 impl ValueGroup for Value {
     type Term = Term;
-    type Type = Untyped;
+    type Type = Untyped<Term>;
 
     fn into_true(self) -> Result<True<Term>, ValueMismatch> {
         if let Value::True(tru) = self {

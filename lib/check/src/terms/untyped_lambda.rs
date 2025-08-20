@@ -13,7 +13,7 @@ where
     T: Term + Typecheck<Term = T>,
     Fun<<T as Typecheck>::Type>: Into<<T as Typecheck>::Type>,
     Self: Into<T>,
-    Untyped: Into<<T as Typecheck>::Type>,
+    Untyped<T>: Into<<T as Typecheck>::Type>,
 {
     type Term = <T as Typecheck>::Term;
     type Type = <T as Typecheck>::Type;
@@ -25,7 +25,7 @@ where
         Ok(TypingDerivation::untyped_lambda(TypingConclusion::new(
             env,
             self.clone(),
-            Untyped.into(),
+            Untyped::new().into(),
         ))
         .into())
     }

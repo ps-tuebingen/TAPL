@@ -5,6 +5,7 @@ use syntax::{
     kinds::Kind,
     terms::Term,
     types::{Bot, OpApp, Top, Type},
+    untyped::Untyped,
 };
 
 #[derive(Debug)]
@@ -16,6 +17,19 @@ where
     pub conc: SubtypeConclusion<Ty>,
     pub label: SubtypeRule,
     pub premises: Vec<Derivation<T, Ty>>,
+}
+
+impl<T> SubtypeDerivation<T, Untyped<T>>
+where
+    T: Term,
+{
+    pub fn empty() -> SubtypeDerivation<T, Untyped<T>> {
+        SubtypeDerivation {
+            conc: SubtypeConclusion::new(Environment::default(), Untyped::new(), Untyped::new()),
+            label: SubtypeRule::Empty,
+            premises: vec![],
+        }
+    }
 }
 
 impl<T, Ty> SubtypeDerivation<T, Ty>
