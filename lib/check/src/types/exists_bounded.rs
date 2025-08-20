@@ -1,19 +1,27 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
-use errors::NameMismatch;
-use errors::check_error::CheckError;
+use derivations::{Derivation, SubtypeDerivation};
+use errors::{NameMismatch, check_error::CheckError};
 use syntax::{
     env::Environment,
     kinds::Kind,
-    types::{ExistsBounded, Type, TypeGroup},
+    types::{ExistsBounded, Top, Type, TypeGroup},
 };
 
-impl<Ty> Subtypecheck<Ty> for ExistsBounded<Ty>
+impl<Ty> Subtypecheck for ExistsBounded<Ty>
 where
-    Ty: TypeGroup + Subtypecheck<Ty> + Normalize<Ty>,
+    Ty: TypeGroup + Subtypecheck<Type = Ty> + Normalize<Ty>,
+    Top<Ty>: Into<Ty>,
+    ExistsBounded<Ty>: Into<Ty>,
 {
-    fn check_subtype(&self, sup: &Ty, mut env: Environment<Ty>) -> Result<(), CheckError> {
-        if sup.clone().into_top().is_ok() {
-            return Ok(());
+    type Type = Ty;
+    type Term = <Ty as Subtypecheck>::Term;
+    fn check_subtype(
+        &self,
+        sup: &Ty,
+        mut env: Environment<Ty>,
+    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
+        if let Ok(top) = sup.clone().into_top() {
+            return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind).into());
         }
 
         let sup_norm = sup.clone().normalize(env.clone());
@@ -23,11 +31,14 @@ where
         if self.var != other_exists.var {
             return Err(NameMismatch::new(&other_exists.var, &self.var).into());
         }
+        let old_env = env.clone();
         env.add_tyvar_super(other_exists.var, *self.sup_ty.clone());
-        self.ty
+        let inner_res = self
+            .ty
             .clone()
             .normalize(env.clone())
-            .check_subtype(&(*other_exists.ty), env)
+            .check_subtype(&(*other_exists.ty), env)?;
+        Ok(SubtypeDerivation::exists_bounded(old_env, self.clone(), sup.clone(), inner_res).into())
     }
 }
 

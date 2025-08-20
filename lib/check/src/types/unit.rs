@@ -1,30 +1,40 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
+use derivations::{Derivation, SubtypeDerivation};
 use errors::check_error::CheckError;
 use syntax::{
     env::Environment,
     kinds::Kind,
-    types::{TypeGroup, Unit},
+    types::{Top, TypeGroup, Unit},
 };
 impl<Ty> Kindcheck<Ty> for Unit<Ty>
 where
     Ty: TypeGroup + Kindcheck<Ty>,
+    Top<Ty>: Into<Ty>,
 {
     fn check_kind(&self, _: Environment<Ty>) -> Result<Kind, CheckError> {
         Ok(Kind::Star)
     }
 }
 
-impl<Ty> Subtypecheck<Ty> for Unit<Ty>
+impl<Ty> Subtypecheck for Unit<Ty>
 where
-    Ty: TypeGroup + Subtypecheck<Ty>,
+    Ty: TypeGroup + Subtypecheck<Type = Ty>,
+    Top<Ty>: Into<Ty>,
+    Unit<Ty>: Into<Ty>,
 {
-    fn check_subtype(&self, sup: &Ty, _: Environment<Ty>) -> Result<(), CheckError> {
-        if sup.clone().into_top().is_ok() {
-            return Ok(());
+    type Type = Ty;
+    type Term = <Ty as Subtypecheck>::Term;
+    fn check_subtype(
+        &self,
+        sup: &Ty,
+        env: Environment<Ty>,
+    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
+        if let Ok(top) = sup.clone().into_top() {
+            return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind).into());
         }
 
         sup.clone().into_unit()?;
-        Ok(())
+        Ok(SubtypeDerivation::refl(env, self.clone()).into())
     }
 }
 

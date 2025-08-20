@@ -1,25 +1,34 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
+use derivations::{Derivation, SubtypeDerivation};
 use errors::KindMismatch;
 use errors::check_error::CheckError;
 use syntax::{
     env::Environment,
     kinds::Kind,
-    types::{Fun, Type, TypeGroup},
+    types::{Fun, Top, Type, TypeGroup},
 };
 
-impl<Ty> Subtypecheck<Ty> for Fun<Ty>
+impl<Ty> Subtypecheck for Fun<Ty>
 where
-    Ty: TypeGroup + Subtypecheck<Ty>,
+    Ty: TypeGroup + Subtypecheck<Type = Ty>,
+    Fun<Ty>: Into<Ty>,
+    Top<Ty>: Into<Ty>,
 {
-    fn check_subtype(&self, sup: &Ty, env: Environment<Ty>) -> Result<(), CheckError> {
-        if sup.clone().into_top().is_ok() {
-            return Ok(());
+    type Type = Ty;
+    type Term = <Ty as Subtypecheck>::Term;
+    fn check_subtype(
+        &self,
+        sup: &Ty,
+        env: Environment<Ty>,
+    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
+        if let Ok(top) = sup.clone().into_top() {
+            return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind).into());
         }
 
         let sup_fun = sup.clone().into_fun()?;
-        sup_fun.from.check_subtype(&(*self.from), env.clone())?;
-        self.to.check_subtype(&(*sup_fun.to), env)?;
-        Ok(())
+        let from_res = sup_fun.from.check_subtype(&(*self.from), env.clone())?;
+        let to_res = self.to.check_subtype(&(*sup_fun.to), env.clone())?;
+        Ok(SubtypeDerivation::fun(env, self.clone(), sup.clone(), from_res, to_res).into())
     }
 }
 

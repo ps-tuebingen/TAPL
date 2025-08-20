@@ -1,6 +1,6 @@
 use derivations::Derivation;
 use errors::check_error::CheckError;
-use syntax::{env::Environment, kinds::Kind, terms::Term, types::Type};
+use syntax::{env::Environment, kinds::Kind, terms::Term, types::Top, types::Type};
 
 pub mod definition;
 pub mod program;
@@ -22,12 +22,18 @@ pub trait Typecheck {
     ) -> Result<Derivation<Self::Term, Self::Type>, CheckError>;
 }
 
-pub trait Subtypecheck<Ty>
+pub trait Subtypecheck
 where
     Self: Type,
-    Ty: Type,
 {
-    fn check_subtype(&self, sup: &Ty, env: Environment<Ty>) -> Result<(), CheckError>;
+    type Type: Type;
+    type Term: Term;
+
+    fn check_subtype(
+        &self,
+        sup: &Self::Type,
+        env: Environment<Self::Type>,
+    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError>;
 }
 
 pub trait Kindcheck<Ty>

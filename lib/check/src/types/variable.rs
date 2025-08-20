@@ -1,29 +1,38 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
+use derivations::{Derivation, SubtypeDerivation};
 use errors::check_error::CheckError;
 use syntax::{
     env::Environment,
     kinds::Kind,
-    types::{TypeGroup, TypeVariable},
+    types::{Top, TypeGroup, TypeVariable},
 };
-impl<Ty> Subtypecheck<Ty> for TypeVariable<Ty>
+impl<Ty> Subtypecheck for TypeVariable<Ty>
 where
-    Ty: TypeGroup + Subtypecheck<Ty> + Normalize<Ty>,
+    Ty: TypeGroup + Subtypecheck<Type = Ty> + Normalize<Ty>,
+    Top<Ty>: Into<Ty>,
+    TypeVariable<Ty>: Into<Ty>,
 {
-    fn check_subtype(&self, sup: &Ty, env: Environment<Ty>) -> Result<(), CheckError> {
+    type Type = Ty;
+    type Term = <Ty as Subtypecheck>::Term;
+    fn check_subtype(
+        &self,
+        sup: &Ty,
+        env: Environment<Ty>,
+    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
         let ty_super = env.get_tyvar_super(&self.v)?;
-        let sup_norm = sup.clone().normalize(env);
+        let sup_norm = sup.clone().normalize(env.clone());
 
-        if sup_norm.clone().into_top().is_ok() {
-            return Ok(());
+        if let Ok(top) = sup_norm.clone().into_top() {
+            return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind).into());
         }
 
         if let Ok(v) = sup_norm.clone().into_variable()
             && v.v == self.v
         {
-            return Ok(());
+            return Ok(SubtypeDerivation::refl(env, self.clone()).into());
         }
         ty_super.check_equal(&sup_norm)?;
-        Ok(())
+        Ok(SubtypeDerivation::refl(env, ty_super).into())
     }
 }
 

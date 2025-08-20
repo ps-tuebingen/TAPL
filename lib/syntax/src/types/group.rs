@@ -115,7 +115,7 @@ pub trait TypeGroup: Type {
         Err(TypeMismatch::new(self.to_string(), "Top".to_owned()))
     }
 
-    fn into_bot(self) -> Result<Bot, TypeMismatch> {
+    fn into_bot(self) -> Result<Bot<Self>, TypeMismatch> {
         Err(TypeMismatch::new(self.to_string(), "Bot".to_owned()))
     }
 }

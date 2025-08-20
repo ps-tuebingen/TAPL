@@ -1,26 +1,42 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
+use derivations::{Derivation, SubtypeDerivation};
 use errors::NameMismatch;
 use errors::check_error::CheckError;
 use syntax::{
     env::Environment,
     kinds::Kind,
-    types::{ForallBounded, Type, TypeGroup},
+    types::{ForallBounded, Top, Type, TypeGroup},
 };
 
-impl<Ty> Subtypecheck<Ty> for ForallBounded<Ty>
+impl<Ty> Subtypecheck for ForallBounded<Ty>
 where
-    Ty: TypeGroup + Subtypecheck<Ty> + Normalize<Ty>,
+    Ty: TypeGroup + Subtypecheck<Type = Ty> + Normalize<Ty>,
+    ForallBounded<Ty>: Into<Ty>,
+    Top<Ty>: Into<Ty>,
 {
-    fn check_subtype(&self, sup: &Ty, env: Environment<Ty>) -> Result<(), CheckError> {
+    type Type = Ty;
+    type Term = <Ty as Subtypecheck>::Term;
+    fn check_subtype(
+        &self,
+        sup: &Ty,
+        env: Environment<Ty>,
+    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
+        if let Ok(top) = sup.clone().into_top() {
+            return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind).into());
+        }
         let other_forall = sup.clone().into_forall_bounded()?;
         let sup_norm = other_forall.sup_ty.normalize(env.clone());
         let self_norm = self.sup_ty.clone().normalize(env.clone());
-        sup_norm.check_equal(&self_norm)?;
+        let sup_res = sup_norm.check_subtype(&self_norm, env.clone())?;
         if self.var != other_forall.var {
             return Err(NameMismatch::new(&other_forall.var, &self.var).into());
         }
         let ty_norm = self.ty.clone().normalize(env.clone());
-        ty_norm.check_subtype(&(*other_forall.ty), env)
+        let inner_res = ty_norm.check_subtype(&(*other_forall.ty), env.clone())?;
+        Ok(
+            SubtypeDerivation::forall_bounded(env, self.clone(), sup.clone(), sup_res, inner_res)
+                .into(),
+        )
     }
 }
 

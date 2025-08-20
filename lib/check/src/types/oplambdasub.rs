@@ -1,29 +1,42 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
+use derivations::{Derivation, SubtypeDerivation};
 use errors::check_error::CheckError;
 use syntax::{
     env::Environment,
     kinds::Kind,
     subst::SubstType,
-    types::{OpLambdaSub, Type, TypeGroup, TypeVariable},
+    types::{OpLambdaSub, Top, Type, TypeGroup, TypeVariable},
 };
-impl<Ty> Subtypecheck<Ty> for OpLambdaSub<Ty>
+impl<Ty> Subtypecheck for OpLambdaSub<Ty>
 where
-    Ty: TypeGroup + Subtypecheck<Ty> + Normalize<Ty> + SubstType<Ty, Target = Ty>,
+    Ty: TypeGroup + Subtypecheck<Type = Ty> + Normalize<Ty> + SubstType<Ty, Target = Ty>,
     TypeVariable<Ty>: Into<Ty>,
+    Top<Ty>: Into<Ty>,
+    OpLambdaSub<Ty>: Into<Ty>,
 {
-    fn check_subtype(&self, sup: &Ty, mut env: Environment<Ty>) -> Result<(), CheckError> {
+    type Type = Ty;
+    type Term = <Ty as Subtypecheck>::Term;
+    fn check_subtype(
+        &self,
+        sup: &Ty,
+        mut env: Environment<Ty>,
+    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
+        if let Ok(top) = sup.clone().into_top() {
+            return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind).into());
+        }
         let sup_norm = sup.clone().normalize(env.clone());
         let self_sup_norm = self.sup.clone().normalize(env.clone());
         let sup_op = sup_norm.into_oplambdasub()?;
         sup_op.sup.check_equal(&self_sup_norm)?;
         env.add_tyvar_super(self.var.clone(), self_sup_norm);
 
-        self.body.check_subtype(
+        let body_res = self.body.check_subtype(
             &sup_op
                 .body
                 .subst_type(&sup_op.var, &(TypeVariable::new(&self.var).into())),
-            env,
-        )
+            env.clone(),
+        )?;
+        Ok(SubtypeDerivation::op_lambda_sub(env, self.clone(), sup.clone(), body_res).into())
     }
 }
 

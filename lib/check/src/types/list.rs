@@ -1,20 +1,30 @@
 use crate::Subtypecheck;
+use derivations::{Derivation, SubtypeDerivation};
 use errors::check_error::CheckError;
 use syntax::{
     env::Environment,
-    types::{List, TypeGroup},
+    types::{List, Top, TypeGroup},
 };
 
-impl<Ty> Subtypecheck<Ty> for List<Ty>
+impl<Ty> Subtypecheck for List<Ty>
 where
-    Ty: TypeGroup + Subtypecheck<Ty>,
+    Ty: TypeGroup + Subtypecheck<Type = Ty>,
+    Top<Ty>: Into<Ty>,
+    List<Ty>: Into<Ty>,
 {
-    fn check_subtype(&self, sup: &Ty, env: Environment<Ty>) -> Result<(), CheckError> {
-        if sup.clone().into_top().is_ok() {
-            return Ok(());
+    type Type = Ty;
+    type Term = <Ty as Subtypecheck>::Term;
+    fn check_subtype(
+        &self,
+        sup: &Ty,
+        env: Environment<Ty>,
+    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
+        if let Ok(top) = sup.clone().into_top() {
+            return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind).into());
         }
 
         let sup_list = sup.clone().into_list()?;
-        self.ty.check_subtype(&(*sup_list.ty), env)
+        let sup_res = self.ty.check_subtype(&(*sup_list.ty), env.clone())?;
+        Ok(SubtypeDerivation::list(env, self.clone(), sup.clone(), sup_res).into())
     }
 }

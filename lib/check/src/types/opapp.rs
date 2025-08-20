@@ -1,25 +1,41 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
+use derivations::{Derivation, SubtypeDerivation};
 use errors::KindMismatch;
 use errors::check_error::CheckError;
 use syntax::{
     env::Environment,
     kinds::Kind,
     subst::SubstType,
-    types::{OpApp, TypeGroup},
+    types::{OpApp, Top, TypeGroup},
 };
 
-impl<Ty> Subtypecheck<Ty> for OpApp<Ty>
+impl<Ty> Subtypecheck for OpApp<Ty>
 where
-    Ty: TypeGroup + Subtypecheck<Ty>,
+    Ty: TypeGroup + Subtypecheck<Type = Ty>,
     Self: Into<Ty>,
+    Top<Ty>: Into<Ty>,
 {
-    fn check_subtype(&self, sup: &Ty, env: Environment<Ty>) -> Result<(), CheckError> {
-        if sup.clone().into_top().is_ok() {
-            return Ok(());
+    type Type = Ty;
+    type Term = <Ty as Subtypecheck>::Term;
+    fn check_subtype(
+        &self,
+        sup: &Ty,
+        env: Environment<Ty>,
+    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
+        if let Ok(top) = sup.clone().into_top() {
+            return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind).into());
         }
         let sup_op = sup.clone().into_opapp()?;
-        self.fun.check_subtype(&sup_op.fun, env.clone())?;
-        self.arg.check_subtype(&sup_op.arg, env)
+        let fun_res = self.fun.check_subtype(&sup_op.fun, env.clone())?;
+        self.arg.check_equal(&sup_op.arg)?;
+        Ok(SubtypeDerivation::op_app(
+            env,
+            *self.fun.clone(),
+            *sup_op.fun,
+            *self.arg.clone(),
+            fun_res,
+        )
+        .into())
     }
 }
 

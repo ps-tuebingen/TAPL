@@ -28,7 +28,7 @@ where
 
     pub fn with_bot(self) -> StringTy<Ty>
     where
-        Bot: Into<Ty>,
+        Bot<Ty>: Into<Ty>,
     {
         StringTy {
             bot: Some(Bot::new().into()),

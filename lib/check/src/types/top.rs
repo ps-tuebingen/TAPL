@@ -1,4 +1,5 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
+use derivations::{Derivation, SubtypeDerivation};
 use errors::{NotASubtype, check_error::CheckError};
 use syntax::{
     env::Environment,
@@ -6,13 +7,20 @@ use syntax::{
     types::{Top, Type, TypeGroup},
 };
 
-impl<Ty> Subtypecheck<Ty> for Top<Ty>
+impl<Ty> Subtypecheck for Top<Ty>
 where
-    Ty: TypeGroup + Subtypecheck<Ty> + From<Self>,
+    Ty: TypeGroup + Subtypecheck<Type = Ty> + From<Self>,
+    Top<Ty>: Into<Ty>,
 {
-    fn check_subtype(&self, sup: &Ty, _: Environment<Ty>) -> Result<(), CheckError> {
-        if sup.clone().into_top().is_ok() {
-            Ok(())
+    type Type = Ty;
+    type Term = <Ty as Subtypecheck>::Term;
+    fn check_subtype(
+        &self,
+        sup: &Ty,
+        env: Environment<Ty>,
+    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
+        if let Ok(top) = sup.clone().into_top() {
+            Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind).into())
         } else {
             Err(NotASubtype::new(self.clone(), sup.clone()).into())
         }

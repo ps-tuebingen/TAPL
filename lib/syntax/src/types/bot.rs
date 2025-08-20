@@ -1,27 +1,39 @@
-use super::Type;
-use crate::{TypeVar, kinds::Kind, subst::SubstType};
-use std::fmt;
+use crate::{TypeVar, kinds::Kind, subst::SubstType, types::Type};
+use std::{fmt, marker::PhantomData};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct Bot {
+pub struct Bot<Ty>
+where
+    Ty: Type,
+{
     pub kind: Kind,
+    phantom: PhantomData<Ty>,
 }
 
-impl Bot {
-    pub fn new() -> Bot {
-        Bot { kind: Kind::Star }
+impl<Ty> Bot<Ty>
+where
+    Ty: Type,
+{
+    pub fn new() -> Bot<Ty> {
+        Bot {
+            kind: Kind::Star,
+            phantom: PhantomData,
+        }
     }
 }
 
-impl Default for Bot {
-    fn default() -> Bot {
+impl<Ty> Default for Bot<Ty>
+where
+    Ty: Type,
+{
+    fn default() -> Bot<Ty> {
         Bot::new()
     }
 }
 
-impl Type for Bot {}
+impl<Ty> Type for Bot<Ty> where Ty: Type {}
 
-impl<Ty> SubstType<Ty> for Bot
+impl<Ty> SubstType<Ty> for Bot<Ty>
 where
     Ty: Type,
     Self: Into<Ty>,
@@ -32,7 +44,10 @@ where
     }
 }
 
-impl fmt::Display for Bot {
+impl<Ty> fmt::Display for Bot<Ty>
+where
+    Ty: Type,
+{
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.write_str("Bot")
     }

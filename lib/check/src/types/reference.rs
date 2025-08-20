@@ -1,26 +1,40 @@
 use crate::Subtypecheck;
+use derivations::{Derivation, SubtypeDerivation};
 use errors::check_error::CheckError;
 use syntax::{
     env::Environment,
-    types::{Reference, TypeGroup},
+    types::{Reference, Sink, Source, Top, TypeGroup},
 };
-impl<Ty> Subtypecheck<Ty> for Reference<Ty>
+impl<Ty> Subtypecheck for Reference<Ty>
 where
-    Ty: TypeGroup + Subtypecheck<Ty>,
+    Ty: TypeGroup + Subtypecheck<Type = Ty>,
+    Top<Ty>: Into<Ty>,
+    Reference<Ty>: Into<Ty>,
+    Source<Ty>: Into<Ty>,
+    Sink<Ty>: Into<Ty>,
 {
-    fn check_subtype(&self, sup: &Ty, env: Environment<Ty>) -> Result<(), CheckError> {
-        if sup.clone().into_top().is_ok() {
-            return Ok(());
+    type Type = Ty;
+    type Term = <Ty as Subtypecheck>::Term;
+    fn check_subtype(
+        &self,
+        sup: &Ty,
+        env: Environment<Ty>,
+    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
+        if let Ok(top) = sup.clone().into_top() {
+            return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind).into());
         }
 
         if let Ok(src) = sup.clone().into_source() {
-            self.ty.check_subtype(&(*src.ty), env)
+            let src_res = self.ty.check_subtype(&(*src.ty), env.clone())?;
+            Ok(SubtypeDerivation::ref_source(env, self.clone(), src.clone(), src_res).into())
         } else if let Ok(sink) = sup.clone().into_sink() {
-            sink.ty.check_subtype(&(*sink.ty), env)
+            let sink_res = sink.ty.check_subtype(&(*sink.ty), env.clone())?;
+            Ok(SubtypeDerivation::ref_sink(env, self.clone(), sink.clone(), sink_res).into())
         } else {
             let sup_ref = sup.clone().into_ref()?;
             sup_ref.ty.check_subtype(&(*self.ty), env.clone())?;
-            self.ty.check_subtype(&(*sup_ref.ty), env)
+            let inner_res = self.ty.check_subtype(&(*sup_ref.ty), env.clone())?;
+            Ok(SubtypeDerivation::ref_ref(env, self.clone(), sup_ref.clone(), inner_res).into())
         }
     }
 }

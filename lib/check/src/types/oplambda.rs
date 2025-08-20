@@ -1,31 +1,41 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
+use derivations::{Derivation, SubtypeDerivation};
 use errors::check_error::CheckError;
 use syntax::{
     env::Environment,
     kinds::Kind,
     subst::SubstType,
-    types::{OpLambda, Type, TypeGroup, TypeVariable},
+    types::{OpLambda, Top, Type, TypeGroup, TypeVariable},
 };
-impl<Ty> Subtypecheck<Ty> for OpLambda<Ty>
+impl<Ty> Subtypecheck for OpLambda<Ty>
 where
-    Ty: TypeGroup + Subtypecheck<Ty> + SubstType<Ty, Target = Ty>,
+    Ty: TypeGroup + Subtypecheck<Type = Ty> + SubstType<Ty, Target = Ty>,
     TypeVariable<Ty>: Into<Ty>,
+    Top<Ty>: Into<Ty>,
+    OpLambda<Ty>: Into<Ty>,
 {
-    fn check_subtype(&self, sup: &Ty, mut env: Environment<Ty>) -> Result<(), CheckError> {
-        if sup.clone().into_top().is_ok() {
-            return Ok(());
+    type Type = Ty;
+    type Term = <Ty as Subtypecheck>::Term;
+    fn check_subtype(
+        &self,
+        sup: &Ty,
+        mut env: Environment<Ty>,
+    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
+        if let Ok(top) = sup.clone().into_top() {
+            return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind).into());
         }
 
         let sup_op = sup.clone().into_oplambda()?;
         sup_op.annot.check_equal(&self.annot)?;
         env.add_tyvar_kind(self.var.clone(), self.annot.clone());
 
-        self.body.check_subtype(
+        let body_res = self.body.check_subtype(
             &sup_op
                 .body
                 .subst_type(&sup_op.var, &(TypeVariable::new(&self.var).into())),
             env,
-        )
+        )?;
+        todo!()
     }
 }
 
