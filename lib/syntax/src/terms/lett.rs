@@ -1,29 +1,29 @@
 use super::Term;
 use crate::{
     TypeVar, Var,
+    language::Language,
     subst::{SubstTerm, SubstType},
-    types::Type,
 };
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Let<T>
+pub struct Let<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     pub var: Var,
-    pub bound_term: Box<T>,
-    pub in_term: Box<T>,
+    pub bound_term: Box<Lang::Term>,
+    pub in_term: Box<Lang::Term>,
 }
 
-impl<T> Let<T>
+impl<Lang> Let<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    pub fn new<T1, T2>(v: &str, bound: T1, int: T2) -> Let<T>
+    pub fn new<T1, T2>(v: &str, bound: T1, int: T2) -> Let<Lang>
     where
-        T1: Into<T>,
-        T2: Into<T>,
+        T1: Into<Lang::Term>,
+        T2: Into<Lang::Term>,
     {
         Let {
             var: v.to_owned(),
@@ -32,15 +32,15 @@ where
         }
     }
 }
-impl<T> Term for Let<T> where T: Term {}
+impl<Lang> Term for Let<Lang> where Lang: Language {}
 
-impl<T> SubstTerm<T> for Let<T>
+impl<Lang> SubstTerm for Let<Lang>
 where
-    T: Term + SubstTerm<T, Target = T>,
-    Self: Into<T>,
+    Lang: Language,
 {
-    type Target = T;
-    fn subst(self, v: &Var, t: &T) -> T {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
         if *v == self.var {
             self.into()
         } else {
@@ -54,14 +54,13 @@ where
     }
 }
 
-impl<T, Ty> SubstType<Ty> for Let<T>
+impl<Lang> SubstType for Let<Lang>
 where
-    T: Term + SubstType<Ty, Target = T>,
-    Ty: Type,
-    Self: Into<T>,
+    Lang: Language,
 {
-    type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         Let {
             var: self.var,
             bound_term: Box::new(self.bound_term.subst_type(v, ty)),
@@ -71,9 +70,9 @@ where
     }
 }
 
-impl<T> fmt::Display for Let<T>
+impl<Lang> fmt::Display for Let<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(

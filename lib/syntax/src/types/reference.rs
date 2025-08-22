@@ -1,22 +1,22 @@
 use super::Type;
-use crate::{TypeVar, subst::SubstType};
+use crate::{TypeVar, language::Language, subst::SubstType};
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Reference<Ty>
+pub struct Reference<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
-    pub ty: Box<Ty>,
+    pub ty: Box<Lang::Type>,
 }
 
-impl<Ty> Reference<Ty>
+impl<Lang> Reference<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
-    pub fn new<Ty1>(ty: Ty1) -> Reference<Ty>
+    pub fn new<Ty1>(ty: Ty1) -> Reference<Lang>
     where
-        Ty1: Into<Ty>,
+        Ty1: Into<Lang::Type>,
     {
         Reference {
             ty: Box::new(ty.into()),
@@ -24,25 +24,25 @@ where
     }
 }
 
-impl<Ty> Type for Reference<Ty> where Ty: Type {}
+impl<Lang> Type for Reference<Lang> where Lang: Language {}
 
-impl<Ty> SubstType<Ty> for Reference<Ty>
+impl<Lang> SubstType for Reference<Lang>
 where
-    Ty: Type + SubstType<Ty, Target = Ty>,
-    Self: Into<Ty>,
+    Lang: Language,
+    Self: Into<Lang::Type>,
 {
-    type Target = Ty;
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         Reference {
             ty: Box::new(self.ty.subst_type(v, ty)),
         }
-        .into()
     }
 }
 
-impl<Ty> fmt::Display for Reference<Ty>
+impl<Lang> fmt::Display for Reference<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "Ref[{}]", self.ty)

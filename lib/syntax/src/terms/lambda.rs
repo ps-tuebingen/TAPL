@@ -1,31 +1,29 @@
 use super::Term;
 use crate::{
     TypeVar, Var,
+    language::Language,
     subst::{SubstTerm, SubstType},
-    types::Type,
 };
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Lambda<T, Ty>
+pub struct Lambda<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
     pub var: Var,
-    pub annot: Ty,
-    pub body: Box<T>,
+    pub annot: Lang::Type,
+    pub body: Box<Lang::Term>,
 }
 
-impl<T, Ty> Lambda<T, Ty>
+impl<Lang> Lambda<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
-    pub fn new<T1, Typ>(v: &str, ty: Typ, t: T1) -> Lambda<T, Ty>
+    pub fn new<T, Ty>(v: &str, ty: Ty, t: T) -> Lambda<Lang>
     where
-        T1: Into<T>,
-        Typ: Into<Ty>,
+        T: Into<Lang::Term>,
+        Ty: Into<Lang::Type>,
     {
         Lambda {
             var: v.to_owned(),
@@ -35,42 +33,36 @@ where
     }
 }
 
-impl<T, Ty> Term for Lambda<T, Ty>
-where
-    T: Term,
-    Ty: Type,
-{
-}
+impl<Lang> Term for Lambda<Lang> where Lang: Language {}
 
-impl<T, Ty> SubstTerm<T> for Lambda<T, Ty>
+impl<Lang> SubstTerm for Lambda<Lang>
 where
-    T: Term + SubstTerm<T, Target = T>,
-    Ty: Type,
-    Self: Into<T>,
+    Lang: Language,
+    Self: Into<Lang::Term>,
 {
-    type Target = T;
-    fn subst(self, v: &Var, t: &T) -> T {
+    type Target = Self;
+    type Lang = Lang;
+
+    fn subst(self, v: &Var, t: &<Self::Lang as Language>::Term) -> Self::Target {
         if *v == self.var {
-            self.into()
+            self
         } else {
             Lambda {
                 var: self.var,
                 annot: self.annot,
                 body: Box::new(self.body.subst(v, t)),
             }
-            .into()
         }
     }
 }
 
-impl<T, Ty> SubstType<Ty> for Lambda<T, Ty>
+impl<Lang> SubstType for Lambda<Lang>
 where
-    T: Term + SubstType<Ty, Target = T>,
-    Ty: Type + SubstType<Ty, Target = Ty>,
-    Self: Into<T>,
+    Lang: Language,
 {
-    type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         Lambda {
             var: self.var,
             annot: self.annot.subst_type(v, ty),
@@ -80,10 +72,9 @@ where
     }
 }
 
-impl<T, Ty> fmt::Display for Lambda<T, Ty>
+impl<Lang> fmt::Display for Lambda<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let ty_str = self.annot.to_string();

@@ -1,29 +1,27 @@
 use super::Term;
 use crate::{
     TypeVar, Var,
+    language::Language,
     subst::{SubstTerm, SubstType},
-    types::Type,
 };
 use std::{fmt, marker::PhantomData};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Exception<T, Ty>
+pub struct Exception<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
-    pub ty: Ty,
-    phantom: PhantomData<T>,
+    pub ty: Lang::Type,
+    phantom: PhantomData<Lang>,
 }
 
-impl<T, Ty> Exception<T, Ty>
+impl<Lang> Exception<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
-    pub fn new<Typ>(ty: Typ) -> Exception<T, Ty>
+    pub fn new<Typ>(ty: Typ) -> Exception<Lang>
     where
-        Typ: Into<Ty>,
+        Typ: Into<Lang::Type>,
     {
         Exception {
             ty: ty.into(),
@@ -32,33 +30,26 @@ where
     }
 }
 
-impl<T, Ty> Term for Exception<T, Ty>
-where
-    T: Term,
-    Ty: Type,
-{
-}
+impl<Lang> Term for Exception<Lang> where Lang: Language {}
 
-impl<T, Ty> SubstTerm<T> for Exception<T, Ty>
+impl<Lang> SubstTerm for Exception<Lang>
 where
-    T: Term,
-    Ty: Type,
-    Self: Into<T>,
+    Lang: Language,
 {
-    type Target = T;
-    fn subst(self, _: &Var, _: &T) -> T {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst(self, _: &Var, _: &Lang::Term) -> Self::Target {
         self.into()
     }
 }
 
-impl<T, Ty> SubstType<Ty> for Exception<T, Ty>
+impl<Lang> SubstType for Exception<Lang>
 where
-    T: Term,
-    Ty: Type + SubstType<Ty, Target = Ty>,
-    Self: Into<T>,
+    Lang: Language,
 {
-    type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         Exception {
             ty: self.ty.subst_type(v, ty),
             phantom: PhantomData,
@@ -67,10 +58,9 @@ where
     }
 }
 
-impl<T, Ty> fmt::Display for Exception<T, Ty>
+impl<Lang> fmt::Display for Exception<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "error[{}]", self.ty)

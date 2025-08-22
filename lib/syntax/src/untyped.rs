@@ -1,49 +1,55 @@
 use crate::{
     TypeVar,
+    language::Language,
     subst::SubstType,
-    terms::Term,
     types::{Type, TypeGroup},
 };
 use std::{fmt, marker::PhantomData};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub struct Untyped<T>
+pub struct Untyped<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    phantom: PhantomData<T>,
+    phantom: PhantomData<Lang::Term>,
 }
 
-impl<T> Untyped<T>
+impl<Lang> Untyped<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    pub fn new() -> Untyped<T> {
+    pub fn new() -> Untyped<Lang> {
         Untyped {
             phantom: PhantomData,
         }
     }
 }
 
-impl<T> Type for Untyped<T> where T: Term {}
+impl<Lang> Type for Untyped<Lang> where Lang: Language {}
 
-impl<T> fmt::Display for Untyped<T>
+impl<Lang> fmt::Display for Untyped<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.write_str("")
     }
 }
 
-impl<T> SubstType<Untyped<T>> for Untyped<T>
+impl<Lang> SubstType for Untyped<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     type Target = Self;
-    fn subst_type(self, _: &TypeVar, _: &Self) -> Self::Target {
+    type Lang = Lang;
+    fn subst_type(self, _: &TypeVar, _: &<Lang as Language>::Type) -> Self::Target {
         self
     }
 }
 
-impl<T> TypeGroup for Untyped<T> where T: Term {}
+impl<Lang> TypeGroup for Untyped<Lang>
+where
+    Lang: Language,
+{
+    type Lang = Lang;
+}

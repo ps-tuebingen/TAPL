@@ -1,22 +1,22 @@
 use super::Value;
-use crate::terms::Something as SomethingT;
+use crate::{language::Language, terms::Something as SomethingT};
 use std::fmt;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct Something<V>
+pub struct Something<Lang>
 where
-    V: Value,
+    Lang: Language,
 {
-    pub val: Box<V>,
+    pub val: Box<Lang::Value>,
 }
 
-impl<V> Something<V>
+impl<Lang> Something<Lang>
 where
-    V: Value,
+    Lang: Language,
 {
-    pub fn new<V1>(v: V1) -> Something<V>
+    pub fn new<V1>(v: V1) -> Something<Lang>
     where
-        V1: Into<V>,
+        V1: Into<Lang::Value>,
     {
         Something {
             val: Box::new(v.into()),
@@ -24,25 +24,27 @@ where
     }
 }
 
-impl<V> Value for Something<V>
+impl<Lang> Value for Something<Lang>
 where
-    V: Value,
+    Lang: Language,
+    SomethingT<Lang>: Into<Lang::Term>,
 {
-    type Term = SomethingT<<V as Value>::Term>;
+    type Lang = Lang;
+    type Term = SomethingT<Lang>;
 }
 
-impl<V> From<Something<V>> for SomethingT<<V as Value>::Term>
+impl<Lang> From<Something<Lang>> for SomethingT<Lang>
 where
-    V: Value,
+    Lang: Language,
 {
-    fn from(something: Something<V>) -> SomethingT<<V as Value>::Term> {
+    fn from(something: Something<Lang>) -> SomethingT<Lang> {
         SomethingT::new(*something.val)
     }
 }
 
-impl<V> fmt::Display for Something<V>
+impl<Lang> fmt::Display for Something<Lang>
 where
-    V: Value,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "something({})", self.val)

@@ -3,6 +3,7 @@ use errors::check_error::CheckError;
 use syntax::{
     env::Environment,
     kinds::Kind,
+    language::Language,
     types::{Sum, Type},
 };
 impl<Ty> Kindcheck<Ty> for Sum<Ty>

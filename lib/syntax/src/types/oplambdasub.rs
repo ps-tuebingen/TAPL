@@ -1,25 +1,25 @@
 use super::{Top, Type};
-use crate::{TypeVar, kinds::Kind, subst::SubstType};
+use crate::{TypeVar, kinds::Kind, language::Language, subst::SubstType};
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct OpLambdaSub<Ty>
+pub struct OpLambdaSub<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
     pub var: TypeVar,
-    pub sup: Box<Ty>,
-    pub body: Box<Ty>,
+    pub sup: Box<Lang::Type>,
+    pub body: Box<Lang::Type>,
 }
 
-impl<Ty> OpLambdaSub<Ty>
+impl<Lang> OpLambdaSub<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
-    pub fn new<Ty1, Ty2>(var: &str, sup: Ty1, ty: Ty2) -> OpLambdaSub<Ty>
+    pub fn new<Ty1, Ty2>(var: &str, sup: Ty1, ty: Ty2) -> OpLambdaSub<Lang>
     where
-        Ty1: Into<Ty>,
-        Ty2: Into<Ty>,
+        Ty1: Into<Lang::Type>,
+        Ty2: Into<Lang::Type>,
     {
         OpLambdaSub {
             var: var.to_owned(),
@@ -28,10 +28,10 @@ where
         }
     }
 
-    pub fn new_unbounded<Ty1>(var: &str, knd: Kind, ty: Ty1) -> OpLambdaSub<Ty>
+    pub fn new_unbounded<Ty1>(var: &str, knd: Kind, ty: Ty1) -> OpLambdaSub<Lang>
     where
-        Ty1: Into<Ty>,
-        Top<Ty>: Into<Ty>,
+        Ty1: Into<Lang::Type>,
+        Top<Lang>: Into<Lang::Type>,
     {
         OpLambdaSub {
             var: var.to_owned(),
@@ -41,15 +41,15 @@ where
     }
 }
 
-impl<Ty> Type for OpLambdaSub<Ty> where Ty: Type {}
+impl<Lang> Type for OpLambdaSub<Lang> where Lang: Language {}
 
-impl<Ty> SubstType<Ty> for OpLambdaSub<Ty>
+impl<Lang> SubstType for OpLambdaSub<Lang>
 where
-    Ty: Type + SubstType<Ty, Target = Ty>,
-    Self: Into<Ty>,
+    Lang: Language,
 {
-    type Target = Ty;
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         let sup_subst = self.sup.subst_type(v, ty);
         if *v == self.var {
             OpLambdaSub {
@@ -69,9 +69,9 @@ where
     }
 }
 
-impl<Ty> fmt::Display for OpLambdaSub<Ty>
+impl<Lang> fmt::Display for OpLambdaSub<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "\\{}<:{}.{}", self.var, self.sup, self.body)

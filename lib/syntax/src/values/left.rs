@@ -1,26 +1,24 @@
 use super::Value;
-use crate::{terms::Left as LeftT, types::Type};
+use crate::{language::Language, terms::Left as LeftT};
 use std::fmt;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct Left<V, Ty>
+pub struct Left<Lang>
 where
-    V: Value,
-    Ty: Type,
+    Lang: Language,
 {
-    pub left_val: Box<V>,
-    pub ty: Ty,
+    pub left_val: Box<Lang::Value>,
+    pub ty: Lang::Type,
 }
 
-impl<V, Ty> Left<V, Ty>
+impl<Lang> Left<Lang>
 where
-    V: Value,
-    Ty: Type,
+    Lang: Language,
 {
-    pub fn new<V1, Ty1>(val: V1, ty: Ty1) -> Left<V, Ty>
+    pub fn new<V1, Ty1>(val: V1, ty: Ty1) -> Left<Lang>
     where
-        V1: Into<V>,
-        Ty1: Into<Ty>,
+        V1: Into<Lang::Value>,
+        Ty1: Into<Lang::Type>,
     {
         Left {
             left_val: Box::new(val.into()),
@@ -29,28 +27,27 @@ where
     }
 }
 
-impl<V, Ty> Value for Left<V, Ty>
+impl<Lang> Value for Left<Lang>
 where
-    V: Value,
-    Ty: Type,
+    Lang: Language,
+    LeftT<Lang>: Into<Lang::Term>,
 {
-    type Term = LeftT<<V as Value>::Term, Ty>;
+    type Lang = Lang;
+    type Term = LeftT<Lang>;
 }
 
-impl<V, Ty> From<Left<V, Ty>> for LeftT<<V as Value>::Term, Ty>
+impl<Lang> From<Left<Lang>> for LeftT<Lang>
 where
-    V: Value,
-    Ty: Type,
+    Lang: Language,
 {
-    fn from(lft: Left<V, Ty>) -> LeftT<<V as Value>::Term, Ty> {
+    fn from(lft: Left<Lang>) -> LeftT<Lang> {
         LeftT::new(*lft.left_val, lft.ty)
     }
 }
 
-impl<V, Ty> fmt::Display for Left<V, Ty>
+impl<Lang> fmt::Display for Left<Lang>
 where
-    V: Value,
-    Ty: Type,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "inl({}) as {}", self.left_val, self.ty)

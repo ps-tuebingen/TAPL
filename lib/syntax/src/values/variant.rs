@@ -1,27 +1,25 @@
 use super::Value;
-use crate::{Label, terms::Variant as VariantT, types::Type};
+use crate::{Label, language::Language, terms::Variant as VariantT};
 use std::fmt;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct Variant<V, Ty>
+pub struct Variant<Lang>
 where
-    V: Value,
-    Ty: Type,
+    Lang: Language,
 {
     pub label: Label,
-    pub val: Box<V>,
-    ty: Ty,
+    pub val: Box<Lang::Value>,
+    ty: Lang::Type,
 }
 
-impl<V, Ty> Variant<V, Ty>
+impl<Lang> Variant<Lang>
 where
-    V: Value,
-    Ty: Type,
+    Lang: Language,
 {
-    pub fn new<V1, Ty1>(lb: &str, val: V1, ty: Ty1) -> Variant<V, Ty>
+    pub fn new<V, Ty>(lb: &str, val: V, ty: Ty) -> Variant<Lang>
     where
-        V1: Into<V>,
-        Ty1: Into<Ty>,
+        V: Into<Lang::Value>,
+        Ty: Into<Lang::Type>,
     {
         Variant {
             label: lb.to_owned(),
@@ -31,28 +29,27 @@ where
     }
 }
 
-impl<V, Ty> Value for Variant<V, Ty>
+impl<Lang> Value for Variant<Lang>
 where
-    V: Value,
-    Ty: Type,
+    Lang: Language,
+    VariantT<Lang>: Into<Lang::Term>,
 {
-    type Term = VariantT<<V as Value>::Term, Ty>;
+    type Lang = Lang;
+    type Term = VariantT<Lang>;
 }
 
-impl<V, Ty> From<Variant<V, Ty>> for VariantT<<V as Value>::Term, Ty>
+impl<Lang> From<Variant<Lang>> for VariantT<Lang>
 where
-    V: Value,
-    Ty: Type,
+    Lang: Language,
 {
-    fn from(var: Variant<V, Ty>) -> VariantT<<V as Value>::Term, Ty> {
+    fn from(var: Variant<Lang>) -> VariantT<Lang> {
         VariantT::new(&var.label, *var.val, var.ty)
     }
 }
 
-impl<V, Ty> fmt::Display for Variant<V, Ty>
+impl<Lang> fmt::Display for Variant<Lang>
 where
-    V: Value,
-    Ty: Type,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "<{}={}> as {}", self.label, self.val, self.ty)

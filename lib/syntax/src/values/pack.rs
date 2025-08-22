@@ -1,28 +1,26 @@
 use super::Value;
-use crate::{terms::Pack as PackT, types::Type};
+use crate::{language::Language, terms::Pack as PackT};
 use std::fmt;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct Pack<V, Ty>
+pub struct Pack<Lang>
 where
-    V: Value,
-    Ty: Type,
+    Lang: Language,
 {
-    pub inner_ty: Ty,
-    pub val: Box<V>,
-    pub outer_ty: Ty,
+    pub inner_ty: Lang::Type,
+    pub val: Box<Lang::Value>,
+    pub outer_ty: Lang::Type,
 }
 
-impl<V, Ty> Pack<V, Ty>
+impl<Lang> Pack<Lang>
 where
-    V: Value,
-    Ty: Type,
+    Lang: Language,
 {
-    pub fn new<Ty1, V1, Ty2>(inner: Ty1, v: V1, outer: Ty2) -> Pack<V, Ty>
+    pub fn new<Ty1, V1, Ty2>(inner: Ty1, v: V1, outer: Ty2) -> Pack<Lang>
     where
-        Ty1: Into<Ty>,
-        Ty2: Into<Ty>,
-        V1: Into<V>,
+        Ty1: Into<Lang::Type>,
+        Ty2: Into<Lang::Type>,
+        V1: Into<Lang::Value>,
     {
         Pack {
             inner_ty: inner.into(),
@@ -32,28 +30,27 @@ where
     }
 }
 
-impl<V, Ty> Value for Pack<V, Ty>
+impl<Lang> Value for Pack<Lang>
 where
-    V: Value,
-    Ty: Type,
+    Lang: Language,
+    PackT<Lang>: Into<Lang::Term>,
 {
-    type Term = PackT<<V as Value>::Term, Ty>;
+    type Lang = Lang;
+    type Term = PackT<Lang>;
 }
 
-impl<V, Ty> From<Pack<V, Ty>> for PackT<<V as Value>::Term, Ty>
+impl<Lang> From<Pack<Lang>> for PackT<Lang>
 where
-    V: Value,
-    Ty: Type,
+    Lang: Language,
 {
-    fn from(pack: Pack<V, Ty>) -> PackT<<V as Value>::Term, Ty> {
+    fn from(pack: Pack<Lang>) -> PackT<Lang> {
         PackT::new(pack.inner_ty, *pack.val, pack.outer_ty)
     }
 }
 
-impl<V, Ty> fmt::Display for Pack<V, Ty>
+impl<Lang> fmt::Display for Pack<Lang>
 where
-    V: Value,
-    Ty: Type,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(

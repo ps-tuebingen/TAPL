@@ -1,27 +1,27 @@
 use super::Term;
 use crate::{
     TypeVar, Var,
+    language::Language,
     subst::{SubstTerm, SubstType},
-    types::Type,
 };
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct UntypedLambda<T>
+pub struct UntypedLambda<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     pub var: Var,
-    pub body: Box<T>,
+    pub body: Box<Lang::Term>,
 }
 
-impl<T> UntypedLambda<T>
+impl<Lang> UntypedLambda<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    pub fn new<T1>(v: &str, t: T1) -> UntypedLambda<T>
+    pub fn new<T1>(v: &str, t: T1) -> UntypedLambda<Lang>
     where
-        T1: Into<T>,
+        T1: Into<Lang::Term>,
     {
         UntypedLambda {
             var: v.to_owned(),
@@ -30,15 +30,15 @@ where
     }
 }
 
-impl<T> Term for UntypedLambda<T> where T: Term {}
+impl<Lang> Term for UntypedLambda<Lang> where Lang: Language {}
 
-impl<T> SubstTerm<T> for UntypedLambda<T>
+impl<Lang> SubstTerm for UntypedLambda<Lang>
 where
-    T: Term + SubstTerm<T, Target = T>,
-    Self: Into<T>,
+    Lang: Language,
 {
-    type Target = T;
-    fn subst(self, v: &Var, t: &T) -> T {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
         if *v == self.var {
             self.into()
         } else {
@@ -51,14 +51,13 @@ where
     }
 }
 
-impl<T, Ty> SubstType<Ty> for UntypedLambda<T>
+impl<Lang> SubstType for UntypedLambda<Lang>
 where
-    T: Term + SubstType<Ty, Target = T>,
-    Ty: Type + SubstType<Ty, Target = Ty>,
-    Self: Into<T>,
+    Lang: Language,
 {
-    type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         UntypedLambda {
             var: self.var,
             body: Box::new(self.body.subst_type(v, ty)),
@@ -67,9 +66,9 @@ where
     }
 }
 
-impl<T> fmt::Display for UntypedLambda<T>
+impl<Lang> fmt::Display for UntypedLambda<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "\\{}.{}", self.var, self.body)

@@ -1,22 +1,22 @@
 use super::Type;
-use crate::{TypeVar, subst::SubstType};
+use crate::{TypeVar, language::Language, subst::SubstType};
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Tuple<Ty>
+pub struct Tuple<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
-    pub tys: Vec<Ty>,
+    pub tys: Vec<Lang::Type>,
 }
 
-impl<Ty> Tuple<Ty>
+impl<Lang> Tuple<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
-    pub fn new<Ty1>(tys: Vec<Ty1>) -> Tuple<Ty>
+    pub fn new<Ty1>(tys: Vec<Ty1>) -> Tuple<Lang>
     where
-        Ty1: Into<Ty>,
+        Ty1: Into<Lang::Type>,
     {
         Tuple {
             tys: tys.into_iter().map(|ty| ty.into()).collect(),
@@ -24,15 +24,16 @@ where
     }
 }
 
-impl<Ty> Type for Tuple<Ty> where Ty: Type {}
+impl<Lang> Type for Tuple<Lang> where Lang: Language {}
 
-impl<Ty> SubstType<Ty> for Tuple<Ty>
+impl<Lang> SubstType for Tuple<Lang>
 where
-    Ty: Type + SubstType<Ty, Target = Ty>,
-    Self: Into<Ty>,
+    Lang: Language,
+    Self: Into<Lang::Type>,
 {
-    type Target = Ty;
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    type Lang = Lang;
+    type Target = Self;
+    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         Tuple {
             tys: self
                 .tys
@@ -40,13 +41,12 @@ where
                 .map(|ty1| ty1.subst_type(v, ty))
                 .collect(),
         }
-        .into()
     }
 }
 
-impl<Ty> fmt::Display for Tuple<Ty>
+impl<Lang> fmt::Display for Tuple<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let mut tys: Vec<String> = self.tys.iter().map(|ty| ty.to_string()).collect();

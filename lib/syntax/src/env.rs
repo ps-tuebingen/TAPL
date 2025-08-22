@@ -1,25 +1,25 @@
-use crate::{Location, Name, TypeVar, Var, kinds::Kind, types::Type};
+use crate::{Location, Name, TypeVar, Var, kinds::Kind, language::Language};
 use errors::{FreeTypeVariable, FreeVariable, UndefinedLocation};
 use std::collections::HashMap;
 use std::fmt;
 
 #[derive(Clone, Debug)]
-pub struct Environment<Ty>
+pub struct Environment<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
-    pub var_bindings: HashMap<Var, Ty>,
-    pub definitions: HashMap<Name, Ty>,
+    pub var_bindings: HashMap<Var, Lang::Type>,
+    pub definitions: HashMap<Name, Lang::Type>,
     pub tyvar_bindings: HashMap<TypeVar, Kind>,
-    pub tyvar_super: HashMap<TypeVar, Ty>,
-    pub location_bindings: HashMap<Location, Ty>,
+    pub tyvar_super: HashMap<TypeVar, Lang::Type>,
+    pub location_bindings: HashMap<Location, Lang::Type>,
 }
 
-impl<Ty> Environment<Ty>
+impl<Lang> Environment<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
-    pub fn new() -> Environment<Ty> {
+    pub fn new() -> Environment<Lang> {
         Environment {
             var_bindings: HashMap::new(),
             definitions: HashMap::new(),
@@ -29,15 +29,15 @@ where
         }
     }
 
-    pub fn add_definition(&mut self, n: Name, ty: Ty) {
+    pub fn add_definition(&mut self, n: Name, ty: Lang::Type) {
         self.definitions.insert(n, ty);
     }
 
-    pub fn add_var(&mut self, var: Var, ty: Ty) {
+    pub fn add_var(&mut self, var: Var, ty: Lang::Type) {
         self.var_bindings.insert(var, ty);
     }
 
-    pub fn get_var(&self, v: &Var) -> Result<Ty, FreeVariable> {
+    pub fn get_var(&self, v: &Var) -> Result<Lang::Type, FreeVariable> {
         let mut res = self.var_bindings.get(v);
         if res.is_none() {
             res = self.definitions.get(v);
@@ -60,22 +60,22 @@ where
             .ok_or(FreeTypeVariable::new(v))
     }
 
-    pub fn add_tyvar_super(&mut self, v: TypeVar, sup: Ty) {
+    pub fn add_tyvar_super(&mut self, v: TypeVar, sup: Lang::Type) {
         self.tyvar_super.insert(v, sup);
     }
 
-    pub fn get_tyvar_super(&self, v: &TypeVar) -> Result<Ty, FreeTypeVariable> {
+    pub fn get_tyvar_super(&self, v: &TypeVar) -> Result<Lang::Type, FreeTypeVariable> {
         self.tyvar_super
             .get(v)
             .cloned()
             .ok_or(FreeTypeVariable::new(v))
     }
 
-    pub fn add_loc(&mut self, l: Location, ty: Ty) {
+    pub fn add_loc(&mut self, l: Location, ty: Lang::Type) {
         self.location_bindings.insert(l, ty);
     }
 
-    pub fn get_loc(&self, l: &Location) -> Result<Ty, UndefinedLocation> {
+    pub fn get_loc(&self, l: &Location) -> Result<Lang::Type, UndefinedLocation> {
         self.location_bindings
             .get(l)
             .cloned()
@@ -83,18 +83,18 @@ where
     }
 }
 
-impl<Ty> Default for Environment<Ty>
+impl<Lang> Default for Environment<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
-    fn default() -> Environment<Ty> {
+    fn default() -> Environment<Lang> {
         Environment::new()
     }
 }
 
-impl<Ty> fmt::Display for Environment<Ty>
+impl<Lang> fmt::Display for Environment<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         for (var, ty) in self.var_bindings.iter() {

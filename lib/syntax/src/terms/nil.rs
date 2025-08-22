@@ -1,28 +1,27 @@
 use super::Term;
 use crate::{
     TypeVar, Var,
+    language::Language,
     subst::{SubstTerm, SubstType},
-    types::Type,
 };
 use std::{fmt, marker::PhantomData};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Nil<T, Ty>
+pub struct Nil<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    pub ty: Ty,
-    phantom: PhantomData<T>,
+    pub ty: Lang::Type,
+    phantom: PhantomData<Lang>,
 }
 
-impl<T, Ty> Nil<T, Ty>
+impl<Lang> Nil<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
-    pub fn new<Typ>(ty: Typ) -> Nil<T, Ty>
+    pub fn new<Typ>(ty: Typ) -> Nil<Lang>
     where
-        Typ: Into<Ty>,
+        Typ: Into<Lang::Type>,
     {
         Nil {
             ty: ty.into(),
@@ -31,32 +30,26 @@ where
     }
 }
 
-impl<T, Ty> Term for Nil<T, Ty>
-where
-    T: Term,
-    Ty: Type,
-{
-}
+impl<Lang> Term for Nil<Lang> where Lang: Language {}
 
-impl<T, Ty> SubstTerm<T> for Nil<T, Ty>
+impl<Lang> SubstTerm for Nil<Lang>
 where
-    T: Term,
-    Self: Into<T>,
+    Lang: Language,
 {
-    type Target = T;
-    fn subst(self, _: &Var, _: &T) -> T {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst(self, _: &Var, _: &<Lang as Language>::Term) -> Self::Target {
         self.into()
     }
 }
 
-impl<T, Ty> SubstType<Ty> for Nil<T, Ty>
+impl<Lang> SubstType for Nil<Lang>
 where
-    T: Term,
-    Ty: Type + SubstType<Ty, Target = Ty>,
-    Self: Into<T>,
+    Lang: Language,
 {
-    type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         Nil {
             ty: self.ty.subst_type(v, ty),
             phantom: PhantomData,
@@ -65,10 +58,9 @@ where
     }
 }
 
-impl<T, Ty> fmt::Display for Nil<T, Ty>
+impl<Lang> fmt::Display for Nil<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "Nil[{}]", self.ty)

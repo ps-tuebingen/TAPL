@@ -5,23 +5,26 @@ use errors::check_error::CheckError;
 use syntax::{
     env::Environment,
     kinds::Kind,
+    language::Language,
     subst::SubstType,
     types::{OpApp, Top, TypeGroup},
 };
 
 impl<Ty> Subtypecheck for OpApp<Ty>
 where
-    Ty: TypeGroup + Subtypecheck<Type = Ty>,
+    Ty: TypeGroup + Subtypecheck,
     Self: Into<Ty>,
     Top<Ty>: Into<Ty>,
 {
-    type Type = Ty;
-    type Term = <Ty as Subtypecheck>::Term;
+    type Lang = <Ty as Subtypecheck>::Lang;
     fn check_subtype(
         &self,
         sup: &Ty,
         env: Environment<Ty>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
+    ) -> Result<
+        Derivation<<Self::Lang as Language>::Term, <Self::Lang as Language>::Type>,
+        CheckError,
+    > {
         if let Ok(top) = sup.clone().into_top() {
             return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind).into());
         }

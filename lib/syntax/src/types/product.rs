@@ -1,24 +1,24 @@
 use super::Type;
-use crate::{TypeVar, subst::SubstType};
+use crate::{TypeVar, language::Language, subst::SubstType};
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Product<Ty>
+pub struct Product<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
-    pub fst: Box<Ty>,
-    pub snd: Box<Ty>,
+    pub fst: Box<Lang::Type>,
+    pub snd: Box<Lang::Type>,
 }
 
-impl<Ty> Product<Ty>
+impl<Lang> Product<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
-    pub fn new<Ty1, Ty2>(fst: Ty1, snd: Ty2) -> Product<Ty>
+    pub fn new<Ty1, Ty2>(fst: Ty1, snd: Ty2) -> Product<Lang>
     where
-        Ty1: Into<Ty>,
-        Ty2: Into<Ty>,
+        Ty1: Into<Lang::Type>,
+        Ty2: Into<Lang::Type>,
     {
         Product {
             fst: Box::new(fst.into()),
@@ -27,27 +27,27 @@ where
     }
 }
 
-impl<Ty> Type for Product<Ty> where Ty: Type {}
+impl<Lang> Type for Product<Lang> where Lang: Language {}
 
-impl<Ty> SubstType<Ty> for Product<Ty>
+impl<Lang> SubstType for Product<Lang>
 where
-    Ty: Type + SubstType<Ty, Target = Ty>,
-    Self: Into<Ty>,
+    Lang: Language,
+    Self: Into<Lang::Type>,
 {
-    type Target = Ty;
+    type Target = Self;
+    type Lang = Lang;
 
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         Product {
             fst: Box::new(self.fst.subst_type(v, ty)),
             snd: Box::new(self.snd.subst_type(v, ty)),
         }
-        .into()
     }
 }
 
-impl<Ty> fmt::Display for Product<Ty>
+impl<Lang> fmt::Display for Product<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "({} x {})", self.fst, self.snd)

@@ -1,54 +1,56 @@
 use super::Value;
-use crate::terms::{Term, Unit as UnitT};
+use crate::{language::Language, terms::Unit as UnitT};
 use std::{fmt, marker::PhantomData};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct Unit<T>
+pub struct Unit<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    phantom: PhantomData<T>,
+    phantom: PhantomData<Lang>,
 }
 
-impl<T> Unit<T>
+impl<Lang> Unit<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    pub fn new() -> Unit<T> {
+    pub fn new() -> Unit<Lang> {
         Unit {
             phantom: PhantomData,
         }
     }
 }
 
-impl<T> Default for Unit<T>
+impl<Lang> Default for Unit<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    fn default() -> Unit<T> {
+    fn default() -> Unit<Lang> {
         Unit::new()
     }
 }
 
-impl<T> Value for Unit<T>
+impl<Lang> Value for Unit<Lang>
 where
-    T: Term,
+    Lang: Language,
+    UnitT<Lang>: Into<Lang::Term>,
 {
-    type Term = UnitT<T>;
+    type Lang = Lang;
+    type Term = UnitT<Lang>;
 }
 
-impl<T> From<Unit<T>> for UnitT<T>
+impl<Lang> From<Unit<Lang>> for UnitT<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    fn from(_: Unit<T>) -> UnitT<T> {
+    fn from(_: Unit<Lang>) -> UnitT<Lang> {
         UnitT::new()
     }
 }
 
-impl<T> fmt::Display for Unit<T>
+impl<Lang> fmt::Display for Unit<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.write_str("unit")

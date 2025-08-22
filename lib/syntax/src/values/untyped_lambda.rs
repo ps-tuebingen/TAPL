@@ -1,26 +1,23 @@
 use super::Value;
-use crate::{
-    Var,
-    terms::{Term, UntypedLambda as UntypedLambdaT},
-};
+use crate::{Var, language::Language, terms::UntypedLambda as UntypedLambdaT};
 use std::fmt;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct UntypedLambda<T>
+pub struct UntypedLambda<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     pub var: Var,
-    pub body: T,
+    pub body: Lang::Term,
 }
 
-impl<T> UntypedLambda<T>
+impl<Lang> UntypedLambda<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    pub fn new<T1>(v: &str, bd: T1) -> UntypedLambda<T>
+    pub fn new<T1>(v: &str, bd: T1) -> UntypedLambda<Lang>
     where
-        T1: Into<T>,
+        T1: Into<Lang::Term>,
     {
         UntypedLambda {
             var: v.to_owned(),
@@ -29,25 +26,27 @@ where
     }
 }
 
-impl<T> Value for UntypedLambda<T>
+impl<Lang> Value for UntypedLambda<Lang>
 where
-    T: Term,
+    Lang: Language,
+    UntypedLambdaT<Lang>: Into<Lang::Term>,
 {
-    type Term = UntypedLambdaT<T>;
+    type Lang = Lang;
+    type Term = UntypedLambdaT<Lang>;
 }
 
-impl<T> From<UntypedLambda<T>> for UntypedLambdaT<T>
+impl<Lang> From<UntypedLambda<Lang>> for UntypedLambdaT<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    fn from(lam: UntypedLambda<T>) -> UntypedLambdaT<T> {
+    fn from(lam: UntypedLambda<Lang>) -> UntypedLambdaT<Lang> {
         UntypedLambdaT::new(&lam.var, lam.body)
     }
 }
 
-impl<T> fmt::Display for UntypedLambda<T>
+impl<Lang> fmt::Display for UntypedLambda<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "\\{}.{}", self.var, self.body)

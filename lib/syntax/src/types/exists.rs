@@ -1,24 +1,24 @@
 use super::{ExistsBounded, Top, Type};
-use crate::{TypeVar, kinds::Kind, subst::SubstType};
+use crate::{TypeVar, kinds::Kind, language::Language, subst::SubstType};
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Exists<Ty>
+pub struct Exists<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
     pub var: TypeVar,
     pub kind: Kind,
-    pub ty: Box<Ty>,
+    pub ty: Box<Lang::Type>,
 }
 
-impl<Ty> Exists<Ty>
+impl<Lang> Exists<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
-    pub fn new<Ty1>(v: &str, knd: Kind, ty: Ty1) -> Exists<Ty>
+    pub fn new<Ty1>(v: &str, knd: Kind, ty: Ty1) -> Exists<Lang>
     where
-        Ty1: Into<Ty>,
+        Ty1: Into<Lang::Type>,
     {
         Exists {
             var: v.to_owned(),
@@ -27,26 +27,26 @@ where
         }
     }
 
-    pub fn to_exists_bounded(self) -> ExistsBounded<Ty>
+    pub fn to_exists_bounded(self) -> ExistsBounded<Lang>
     where
-        Top<Ty>: Into<Ty>,
+        Top<Lang>: Into<Lang::Type>,
     {
         ExistsBounded::new_unbounded(&self.var, self.kind, *self.ty)
     }
 }
 
-impl<Ty> Type for Exists<Ty> where Ty: Type {}
+impl<Lang> Type for Exists<Lang> where Lang: Language {}
 
-impl<Ty> SubstType<Ty> for Exists<Ty>
+impl<Lang> SubstType for Exists<Lang>
 where
-    Ty: Type + SubstType<Ty, Target = Ty>,
-    Self: Into<Ty>,
+    Lang: Language,
 {
-    type Target = Ty;
+    type Target = Self;
+    type Lang = Lang;
 
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         if *v == self.var {
-            self.into()
+            self
         } else {
             Exists {
                 var: self.var,
@@ -58,9 +58,9 @@ where
     }
 }
 
-impl<Ty> fmt::Display for Exists<Ty>
+impl<Lang> fmt::Display for Exists<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{{exists {}::{},{}}}", self.var, self.kind, self.ty)

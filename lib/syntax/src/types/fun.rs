@@ -1,21 +1,25 @@
 use super::Type;
-use crate::{TypeVar, subst::SubstType};
+use crate::{TypeVar, language::Language, subst::SubstType};
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Fun<Ty>
+pub struct Fun<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
-    pub from: Box<Ty>,
-    pub to: Box<Ty>,
+    pub from: Box<Lang::Type>,
+    pub to: Box<Lang::Type>,
 }
 
-impl<Ty> Fun<Ty>
+impl<Lang> Fun<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
-    pub fn new<T: Into<Ty>, U: Into<Ty>>(from: T, to: U) -> Fun<Ty> {
+    pub fn new<Ty1, Ty2>(from: Ty1, to: Ty2) -> Fun<Lang>
+    where
+        Ty1: Into<Lang::Type>,
+        Ty2: Into<Lang::Type>,
+    {
         Fun {
             from: Box::new(from.into()),
             to: Box::new(to.into()),
@@ -23,26 +27,25 @@ where
     }
 }
 
-impl<Ty> Type for Fun<Ty> where Ty: Type {}
+impl<Lang> Type for Fun<Lang> where Lang: Language {}
 
-impl<Ty> SubstType<Ty> for Fun<Ty>
+impl<Lang> SubstType for Fun<Lang>
 where
-    Ty: Type + SubstType<Ty, Target = Ty>,
-    Self: Into<Ty>,
+    Lang: Language,
 {
-    type Target = Ty;
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         Fun {
             from: Box::new(self.from.subst_type(v, ty)),
             to: Box::new(self.to.subst_type(v, ty)),
         }
-        .into()
     }
 }
 
-impl<Ty> fmt::Display for Fun<Ty>
+impl<Lang> fmt::Display for Fun<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "({} -> {})", self.from, self.to)

@@ -1,30 +1,28 @@
 use super::Term;
 use crate::{
     TypeVar, Var,
+    language::Language,
     subst::{SubstTerm, SubstType},
-    types::Type,
 };
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct TyApp<T, Ty>
+pub struct TyApp<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
-    pub fun: Box<T>,
-    pub arg: Ty,
+    pub fun: Box<Lang::Term>,
+    pub arg: Lang::Type,
 }
 
-impl<T, Ty> TyApp<T, Ty>
+impl<Lang> TyApp<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
-    pub fn new<T1, Typ>(t: T1, ty: Typ) -> TyApp<T, Ty>
+    pub fn new<T1, Typ>(t: T1, ty: Typ) -> TyApp<Lang>
     where
-        T1: Into<T>,
-        Typ: Into<Ty>,
+        T1: Into<Lang::Term>,
+        Typ: Into<Lang::Type>,
     {
         TyApp {
             fun: Box::new(t.into()),
@@ -33,21 +31,15 @@ where
     }
 }
 
-impl<T, Ty> Term for TyApp<T, Ty>
-where
-    T: Term,
-    Ty: Type,
-{
-}
+impl<Lang> Term for TyApp<Lang> where Lang: Language {}
 
-impl<T, Ty> SubstTerm<T> for TyApp<T, Ty>
+impl<Lang> SubstTerm for TyApp<Lang>
 where
-    T: Term + SubstTerm<T, Target = T>,
-    Ty: Type,
-    Self: Into<T>,
+    Lang: Language,
 {
-    type Target = T;
-    fn subst(self, v: &Var, t: &T) -> T {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
         TyApp {
             fun: Box::new(self.fun.subst(v, t)),
             arg: self.arg,
@@ -56,14 +48,13 @@ where
     }
 }
 
-impl<T, Ty> SubstType<Ty> for TyApp<T, Ty>
+impl<Lang> SubstType for TyApp<Lang>
 where
-    T: Term + SubstType<Ty, Target = T>,
-    Ty: Type + SubstType<Ty, Target = Ty>,
-    Self: Into<T>,
+    Lang: Language,
 {
-    type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         TyApp {
             fun: Box::new(self.fun.subst_type(v, ty)),
             arg: self.arg.subst_type(v, ty),
@@ -72,10 +63,9 @@ where
     }
 }
 
-impl<T, Ty> fmt::Display for TyApp<T, Ty>
+impl<Lang> fmt::Display for TyApp<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "(({})[{}])", self.fun, self.arg)

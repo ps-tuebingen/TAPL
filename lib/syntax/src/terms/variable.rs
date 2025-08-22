@@ -1,22 +1,25 @@
 use super::Term;
 use crate::{
     TypeVar, Var,
+    language::Language,
     subst::{SubstTerm, SubstType},
-    types::Type,
 };
 use std::{fmt, marker::PhantomData};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Variable<T>
+pub struct Variable<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     pub var: Var,
-    phantom: PhantomData<T>,
+    phantom: PhantomData<Lang>,
 }
 
-impl<T: Term> Variable<T> {
-    pub fn new(v: &str) -> Variable<T> {
+impl<Lang> Variable<Lang>
+where
+    Lang: Language,
+{
+    pub fn new(v: &str) -> Variable<Lang> {
         Variable {
             var: v.to_owned(),
             phantom: PhantomData,
@@ -24,15 +27,16 @@ impl<T: Term> Variable<T> {
     }
 }
 
-impl<T> Term for Variable<T> where T: Term {}
+impl<Lang> Term for Variable<Lang> where Lang: Language {}
 
-impl<T> SubstTerm<T> for Variable<T>
+impl<Lang> SubstTerm for Variable<Lang>
 where
-    T: Term,
-    Self: Into<T>,
+    Lang: Language,
+    Self: Into<Lang::Term>,
 {
-    type Target = T;
-    fn subst(self, v: &Var, t: &T) -> T {
+    type Target = Lang::Term;
+    type Lang = Lang;
+    fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
         if *v == self.var {
             t.clone()
         } else {
@@ -41,21 +45,20 @@ where
     }
 }
 
-impl<T, Ty> SubstType<Ty> for Variable<T>
+impl<Lang> SubstType for Variable<Lang>
 where
-    T: Term,
-    Ty: Type,
-    Self: Into<T>,
+    Lang: Language,
 {
-    type Target = T;
-    fn subst_type(self, _: &TypeVar, _: &Ty) -> Self::Target {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst_type(self, _: &TypeVar, _: &<Lang as Language>::Type) -> Self::Target {
         self.into()
     }
 }
 
-impl<T> fmt::Display for Variable<T>
+impl<Lang> fmt::Display for Variable<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.var)

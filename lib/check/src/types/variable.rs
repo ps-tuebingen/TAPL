@@ -4,21 +4,24 @@ use errors::check_error::CheckError;
 use syntax::{
     env::Environment,
     kinds::Kind,
+    language::Language,
     types::{Top, TypeGroup, TypeVariable},
 };
 impl<Ty> Subtypecheck for TypeVariable<Ty>
 where
-    Ty: TypeGroup + Subtypecheck<Type = Ty> + Normalize<Ty>,
+    Ty: TypeGroup + Subtypecheck + Normalize<Ty>,
     Top<Ty>: Into<Ty>,
     TypeVariable<Ty>: Into<Ty>,
 {
-    type Type = Ty;
-    type Term = <Ty as Subtypecheck>::Term;
+    type Lang = <Ty as Subtypecheck>::Lang;
     fn check_subtype(
         &self,
         sup: &Ty,
         env: Environment<Ty>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
+    ) -> Result<
+        Derivation<<Self::Lang as Language>::Term, <Self::Lang as Language>::Type>,
+        CheckError,
+    > {
         let ty_super = env.get_tyvar_super(&self.v)?;
         let sup_norm = sup.clone().normalize(env.clone());
 

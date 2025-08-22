@@ -1,30 +1,30 @@
 use super::Term;
 use crate::{
     TypeVar, Var,
+    language::Language,
     subst::{SubstTerm, SubstType},
-    types::Type,
 };
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct If<T>
+pub struct If<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    pub if_cond: Box<T>,
-    pub then_term: Box<T>,
-    pub else_term: Box<T>,
+    pub if_cond: Box<Lang::Term>,
+    pub then_term: Box<Lang::Term>,
+    pub else_term: Box<Lang::Term>,
 }
 
-impl<T> If<T>
+impl<Lang> If<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    pub fn new<T1, T2, T3>(cond: T1, th: T2, els: T3) -> If<T>
+    pub fn new<T1, T2, T3>(cond: T1, th: T2, els: T3) -> If<Lang>
     where
-        T1: Into<T>,
-        T2: Into<T>,
-        T3: Into<T>,
+        T1: Into<Lang::Term>,
+        T2: Into<Lang::Term>,
+        T3: Into<Lang::Term>,
     {
         If {
             if_cond: Box::new(cond.into()),
@@ -34,15 +34,15 @@ where
     }
 }
 
-impl<T> Term for If<T> where T: Term {}
+impl<Lang> Term for If<Lang> where Lang: Language {}
 
-impl<T> SubstTerm<T> for If<T>
+impl<Lang> SubstTerm for If<Lang>
 where
-    T: Term + SubstTerm<T, Target = T>,
-    Self: Into<T>,
+    Lang: Language,
 {
-    type Target = T;
-    fn subst(self, v: &Var, t: &T) -> T {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
         If {
             if_cond: Box::new(self.if_cond.subst(v, t)),
             then_term: Box::new(self.then_term.subst(v, t)),
@@ -52,14 +52,13 @@ where
     }
 }
 
-impl<T, Ty> SubstType<Ty> for If<T>
+impl<Lang> SubstType for If<Lang>
 where
-    T: Term + SubstType<Ty, Target = T>,
-    Ty: Type,
-    Self: Into<T>,
+    Lang: Language,
 {
-    type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         If {
             if_cond: Box::new(self.if_cond.subst_type(v, ty)),
             then_term: Box::new(self.then_term.subst_type(v, ty)),
@@ -69,9 +68,9 @@ where
     }
 }
 
-impl<T> fmt::Display for If<T>
+impl<Lang> fmt::Display for If<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(

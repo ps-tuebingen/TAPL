@@ -1,21 +1,21 @@
 use super::Value;
-use crate::terms::{Loc as LocT, Term};
+use crate::{language::Language, terms::Loc as LocT};
 use std::{fmt, marker::PhantomData};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct Loc<T>
+pub struct Loc<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     pub loc: usize,
-    phantom: PhantomData<T>,
+    phantom: PhantomData<Lang>,
 }
 
-impl<T> Loc<T>
+impl<Lang> Loc<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    pub fn new(loc: usize) -> Loc<T> {
+    pub fn new(loc: usize) -> Loc<Lang> {
         Loc {
             loc,
             phantom: PhantomData,
@@ -23,25 +23,27 @@ where
     }
 }
 
-impl<T> Value for Loc<T>
+impl<Lang> Value for Loc<Lang>
 where
-    T: Term,
+    Lang: Language,
+    LocT<Lang>: Into<Lang::Term>,
 {
-    type Term = LocT<T>;
+    type Lang = Lang;
+    type Term = LocT<Lang>;
 }
 
-impl<T> From<Loc<T>> for LocT<T>
+impl<Lang> From<Loc<Lang>> for LocT<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    fn from(loc: Loc<T>) -> LocT<T> {
+    fn from(loc: Loc<Lang>) -> LocT<Lang> {
         LocT::new(loc.loc)
     }
 }
 
-impl<T> fmt::Display for Loc<T>
+impl<Lang> fmt::Display for Loc<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.loc)

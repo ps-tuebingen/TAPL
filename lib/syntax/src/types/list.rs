@@ -1,22 +1,22 @@
 use super::Type;
-use crate::{TypeVar, subst::SubstType};
+use crate::{TypeVar, language::Language, subst::SubstType};
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct List<Ty>
+pub struct List<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
-    pub ty: Box<Ty>,
+    pub ty: Box<Lang::Type>,
 }
 
-impl<Ty> List<Ty>
+impl<Lang> List<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
-    pub fn new<Ty1>(ty: Ty1) -> List<Ty>
+    pub fn new<Ty1>(ty: Ty1) -> List<Lang>
     where
-        Ty1: Into<Ty>,
+        Ty1: Into<Lang::Type>,
     {
         List {
             ty: Box::new(ty.into()),
@@ -24,25 +24,24 @@ where
     }
 }
 
-impl<Ty> Type for List<Ty> where Ty: Type {}
+impl<Lang> Type for List<Lang> where Lang: Language {}
 
-impl<Ty> SubstType<Ty> for List<Ty>
+impl<Lang> SubstType for List<Lang>
 where
-    Ty: Type + SubstType<Ty, Target = Ty>,
-    Self: Into<Ty>,
+    Lang: Language,
 {
-    type Target = Ty;
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         List {
             ty: Box::new(self.ty.subst_type(v, ty)),
         }
-        .into()
     }
 }
 
-impl<Ty> fmt::Display for List<Ty>
+impl<Lang> fmt::Display for List<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "List[{}]", self.ty)

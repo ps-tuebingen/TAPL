@@ -1,51 +1,51 @@
 use super::Type;
-use crate::{TypeVar, subst::SubstType};
+use crate::{TypeVar, language::Language, subst::SubstType};
 use std::{fmt, marker::PhantomData};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Unit<Ty>
+pub struct Unit<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
-    phantom: PhantomData<Ty>,
+    phantom: PhantomData<Lang>,
 }
 
-impl<Ty> Unit<Ty>
+impl<Lang> Unit<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
-    pub fn new() -> Unit<Ty> {
+    pub fn new() -> Unit<Lang> {
         Unit {
             phantom: PhantomData,
         }
     }
 }
 
-impl<Ty> Default for Unit<Ty>
+impl<Lang> Default for Unit<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
-    fn default() -> Unit<Ty> {
+    fn default() -> Unit<Lang> {
         Unit::new()
     }
 }
 
-impl<Ty> Type for Unit<Ty> where Ty: Type {}
+impl<Lang> Type for Unit<Lang> where Lang: Language {}
 
-impl<Ty> SubstType<Ty> for Unit<Ty>
+impl<Lang> SubstType for Unit<Lang>
 where
-    Ty: Type,
-    Self: Into<Ty>,
+    Lang: Language,
 {
-    type Target = Ty;
-    fn subst_type(self, _: &TypeVar, _: &Ty) -> Self::Target {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst_type(self, _: &TypeVar, _: &<Lang as Language>::Type) -> Self::Target {
         self.into()
     }
 }
 
-impl<Ty> fmt::Display for Unit<Ty>
+impl<Lang> fmt::Display for Unit<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.write_str("Unit")

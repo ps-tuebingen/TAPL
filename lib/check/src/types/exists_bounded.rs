@@ -4,22 +4,25 @@ use errors::{NameMismatch, check_error::CheckError};
 use syntax::{
     env::Environment,
     kinds::Kind,
+    language::Language,
     types::{ExistsBounded, Top, Type, TypeGroup},
 };
 
 impl<Ty> Subtypecheck for ExistsBounded<Ty>
 where
-    Ty: TypeGroup + Subtypecheck<Type = Ty> + Normalize<Ty>,
+    Ty: TypeGroup + Subtypecheck + Normalize<Ty>,
     Top<Ty>: Into<Ty>,
     ExistsBounded<Ty>: Into<Ty>,
 {
-    type Type = Ty;
-    type Term = <Ty as Subtypecheck>::Term;
+    type Lang = <Ty as Subtypecheck>::Lang;
     fn check_subtype(
         &self,
         sup: &Ty,
         mut env: Environment<Ty>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
+    ) -> Result<
+        Derivation<<Self::Lang as Language>::Term, <Self::Lang as Language>::Type>,
+        CheckError,
+    > {
         if let Ok(top) = sup.clone().into_top() {
             return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind).into());
         }

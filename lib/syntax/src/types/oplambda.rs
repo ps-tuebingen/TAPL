@@ -1,24 +1,24 @@
 use super::{OpLambdaSub, Top, Type};
-use crate::{TypeVar, kinds::Kind, subst::SubstType};
+use crate::{TypeVar, kinds::Kind, language::Language, subst::SubstType};
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct OpLambda<Ty>
+pub struct OpLambda<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
     pub var: TypeVar,
     pub annot: Kind,
-    pub body: Box<Ty>,
+    pub body: Box<Lang::Type>,
 }
 
-impl<Ty> OpLambda<Ty>
+impl<Lang> OpLambda<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
-    pub fn new<Ty1>(var: &str, knd: Kind, ty: Ty1) -> OpLambda<Ty>
+    pub fn new<Ty1>(var: &str, knd: Kind, ty: Ty1) -> OpLambda<Lang>
     where
-        Ty1: Into<Ty>,
+        Ty1: Into<Lang::Type>,
     {
         OpLambda {
             var: var.to_owned(),
@@ -27,23 +27,23 @@ where
         }
     }
 
-    pub fn to_oplambda_unbounded(self) -> OpLambdaSub<Ty>
+    pub fn to_oplambda_unbounded(self) -> OpLambdaSub<Lang>
     where
-        Top<Ty>: Into<Ty>,
+        Top<Lang>: Into<Lang::Type>,
     {
         OpLambdaSub::new_unbounded(&self.var, self.annot, *self.body)
     }
 }
 
-impl<Ty> Type for OpLambda<Ty> where Ty: Type {}
+impl<Lang> Type for OpLambda<Lang> where Lang: Language {}
 
-impl<Ty> SubstType<Ty> for OpLambda<Ty>
+impl<Lang> SubstType for OpLambda<Lang>
 where
-    Ty: Type + SubstType<Ty, Target = Ty>,
-    Self: Into<Ty>,
+    Lang: Language,
 {
-    type Target = Ty;
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         if *v == self.var {
             self.into()
         } else {
@@ -57,9 +57,9 @@ where
     }
 }
 
-impl<Ty> fmt::Display for OpLambda<Ty>
+impl<Lang> fmt::Display for OpLambda<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "\\{}::{}.{}", self.var, self.annot, self.body)

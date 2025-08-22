@@ -1,26 +1,26 @@
 use super::Term;
 use crate::{
     Label, TypeVar, Var,
+    language::Language,
     subst::{SubstTerm, SubstType},
-    types::Type,
 };
 use std::{collections::HashMap, fmt};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Record<T>
+pub struct Record<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    pub records: HashMap<Label, T>,
+    pub records: HashMap<Label, Lang::Term>,
 }
 
-impl<T> Record<T>
+impl<Lang> Record<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    pub fn new<T1>(recs: HashMap<Label, T1>) -> Record<T>
+    pub fn new<T1>(recs: HashMap<Label, T1>) -> Record<Lang>
     where
-        T1: Into<T>,
+        T1: Into<Lang::Term>,
     {
         Record {
             records: recs.into_iter().map(|(lb, t)| (lb, t.into())).collect(),
@@ -28,15 +28,15 @@ where
     }
 }
 
-impl<T> Term for Record<T> where T: Term {}
+impl<Lang> Term for Record<Lang> where Lang: Language {}
 
-impl<T> SubstTerm<T> for Record<T>
+impl<Lang> SubstTerm for Record<Lang>
 where
-    T: Term + SubstTerm<T, Target = T>,
-    Self: Into<T>,
+    Lang: Language,
 {
-    type Target = T;
-    fn subst(self, v: &Var, t: &T) -> T {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
         Record {
             records: self
                 .records
@@ -48,14 +48,13 @@ where
     }
 }
 
-impl<T, Ty> SubstType<Ty> for Record<T>
+impl<Lang> SubstType for Record<Lang>
 where
-    T: Term + SubstType<Ty, Target = T>,
-    Ty: Type,
-    Self: Into<T>,
+    Lang: Language,
 {
-    type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         Record {
             records: self
                 .records
@@ -67,12 +66,12 @@ where
     }
 }
 
-impl<T> fmt::Display for Record<T>
+impl<Lang> fmt::Display for Record<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let mut recs: Vec<(&Label, &T)> = self.records.iter().collect();
+        let mut recs: Vec<(&Label, &<Lang as Language>::Term)> = self.records.iter().collect();
         recs.sort_by(|(lb1, _), (lb2, _)| lb1.cmp(lb2));
         write!(
             f,

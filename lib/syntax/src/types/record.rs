@@ -1,23 +1,23 @@
 use super::Type;
-use crate::{Label, TypeVar, subst::SubstType};
+use crate::{Label, TypeVar, language::Language, subst::SubstType};
 use std::collections::HashMap;
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Record<Ty>
+pub struct Record<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
-    pub records: HashMap<Label, Ty>,
+    pub records: HashMap<Label, Lang::Type>,
 }
 
-impl<Ty> Record<Ty>
+impl<Lang> Record<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
-    pub fn new<Ty1>(recs: HashMap<Label, Ty1>) -> Record<Ty>
+    pub fn new<Ty1>(recs: HashMap<Label, Ty1>) -> Record<Lang>
     where
-        Ty1: Into<Ty>,
+        Ty1: Into<Lang::Type>,
     {
         Record {
             records: recs.into_iter().map(|(lb, ty)| (lb, ty.into())).collect(),
@@ -25,15 +25,16 @@ where
     }
 }
 
-impl<Ty> Type for Record<Ty> where Ty: Type {}
+impl<Lang> Type for Record<Lang> where Lang: Language {}
 
-impl<Ty> SubstType<Ty> for Record<Ty>
+impl<Lang> SubstType for Record<Lang>
 where
-    Ty: Type + SubstType<Ty, Target = Ty>,
-    Self: Into<Ty>,
+    Lang: Language,
+    Self: Into<Lang::Type>,
 {
-    type Target = Ty;
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         Record {
             records: self
                 .records
@@ -41,16 +42,15 @@ where
                 .map(|(lb, ty1)| (lb, ty1.subst_type(v, ty)))
                 .collect(),
         }
-        .into()
     }
 }
 
-impl<Ty> fmt::Display for Record<Ty>
+impl<Lang> fmt::Display for Record<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let mut recs: Vec<(&String, &Ty)> = self.records.iter().collect();
+        let mut recs: Vec<(&String, &<Lang as Language>::Type)> = self.records.iter().collect();
         recs.sort_by(|(lb1, _), (lb2, _)| lb1.cmp(lb2));
         write!(
             f,

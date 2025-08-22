@@ -1,26 +1,24 @@
 use super::Value;
-use crate::{terms::Right as RightT, types::Type};
+use crate::{language::Language, terms::Right as RightT};
 use std::fmt;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct Right<V, Ty>
+pub struct Right<Lang>
 where
-    V: Value,
-    Ty: Type,
+    Lang: Language,
 {
-    pub right_val: Box<V>,
-    pub ty: Ty,
+    pub right_val: Box<Lang::Value>,
+    pub ty: Lang::Type,
 }
 
-impl<V, Ty> Right<V, Ty>
+impl<Lang> Right<Lang>
 where
-    V: Value,
-    Ty: Type,
+    Lang: Language,
 {
-    pub fn new<V1, Ty1>(val: V1, ty: Ty1) -> Right<V, Ty>
+    pub fn new<V1, Ty1>(val: V1, ty: Ty1) -> Right<Lang>
     where
-        V1: Into<V>,
-        Ty1: Into<Ty>,
+        V1: Into<Lang::Value>,
+        Ty1: Into<Lang::Type>,
     {
         Right {
             right_val: Box::new(val.into()),
@@ -29,28 +27,27 @@ where
     }
 }
 
-impl<V, Ty> Value for Right<V, Ty>
+impl<Lang> Value for Right<Lang>
 where
-    V: Value,
-    Ty: Type,
+    Lang: Language,
+    RightT<Lang>: Into<Lang::Term>,
 {
-    type Term = RightT<<V as Value>::Term, Ty>;
+    type Lang = Lang;
+    type Term = RightT<Lang>;
 }
 
-impl<V, Ty> From<Right<V, Ty>> for RightT<<V as Value>::Term, Ty>
+impl<Lang> From<Right<Lang>> for RightT<Lang>
 where
-    V: Value,
-    Ty: Type,
+    Lang: Language,
 {
-    fn from(right: Right<V, Ty>) -> RightT<<V as Value>::Term, Ty> {
+    fn from(right: Right<Lang>) -> RightT<Lang> {
         RightT::new(*right.right_val, right.ty)
     }
 }
 
-impl<V, Ty> fmt::Display for Right<V, Ty>
+impl<Lang> fmt::Display for Right<Lang>
 where
-    V: Value,
-    Ty: Type,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "inr({}) as {}", self.right_val, self.ty)

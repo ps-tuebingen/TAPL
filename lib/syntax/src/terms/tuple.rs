@@ -1,26 +1,26 @@
 use super::Term;
 use crate::{
     TypeVar, Var,
+    language::Language,
     subst::{SubstTerm, SubstType},
-    types::Type,
 };
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Tuple<T>
+pub struct Tuple<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    pub terms: Vec<T>,
+    pub terms: Vec<Lang::Term>,
 }
 
-impl<T> Tuple<T>
+impl<Lang> Tuple<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    pub fn new<T1>(ts: Vec<T1>) -> Tuple<T>
+    pub fn new<T1>(ts: Vec<T1>) -> Tuple<Lang>
     where
-        T1: Into<T>,
+        T1: Into<Lang::Term>,
     {
         Tuple {
             terms: ts.into_iter().map(|t| t.into()).collect(),
@@ -28,15 +28,15 @@ where
     }
 }
 
-impl<T> Term for Tuple<T> where T: Term {}
+impl<Lang> Term for Tuple<Lang> where Lang: Language {}
 
-impl<T> SubstTerm<T> for Tuple<T>
+impl<Lang> SubstTerm for Tuple<Lang>
 where
-    T: Term + SubstTerm<T, Target = T>,
-    Self: Into<T>,
+    Lang: Language,
 {
-    type Target = T;
-    fn subst(self, v: &Var, t: &T) -> T {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
         Tuple {
             terms: self.terms.into_iter().map(|t1| t1.subst(v, t)).collect(),
         }
@@ -44,14 +44,13 @@ where
     }
 }
 
-impl<T, Ty> SubstType<Ty> for Tuple<T>
+impl<Lang> SubstType for Tuple<Lang>
 where
-    T: Term + SubstType<Ty, Target = T>,
-    Ty: Type,
-    Self: Into<T>,
+    Lang: Language,
 {
-    type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         Tuple {
             terms: self
                 .terms
@@ -63,9 +62,9 @@ where
     }
 }
 
-impl<T> fmt::Display for Tuple<T>
+impl<Lang> fmt::Display for Tuple<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let mut ts: Vec<String> = self.terms.iter().map(|t| t.to_string()).collect();

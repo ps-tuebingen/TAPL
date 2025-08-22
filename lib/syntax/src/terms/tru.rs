@@ -1,67 +1,66 @@
 use super::Term;
 use crate::{
     TypeVar, Var,
+    language::Language,
     subst::{SubstTerm, SubstType},
-    types::Type,
 };
 use std::{fmt, marker::PhantomData};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct True<T>
+pub struct True<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    phantom: PhantomData<T>,
+    phantom: PhantomData<Lang>,
 }
 
-impl<T> True<T>
+impl<Lang> True<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    pub fn new() -> True<T> {
+    pub fn new() -> True<Lang> {
         True {
             phantom: PhantomData,
         }
     }
 }
 
-impl<T> Default for True<T>
+impl<Lang> Default for True<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    fn default() -> True<T> {
+    fn default() -> True<Lang> {
         True::new()
     }
 }
 
-impl<T> Term for True<T> where T: Term {}
+impl<Lang> Term for True<Lang> where Lang: Language {}
 
-impl<T> SubstTerm<T> for True<T>
+impl<Lang> SubstTerm for True<Lang>
 where
-    T: Term,
-    Self: Into<T>,
+    Lang: Language,
 {
-    type Target = T;
-    fn subst(self, _: &Var, _: &T) -> T {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst(self, _: &Var, _: &<Lang as Language>::Term) -> Self::Target {
         self.into()
     }
 }
 
-impl<T, Ty> SubstType<Ty> for True<T>
+impl<Lang> SubstType for True<Lang>
 where
-    T: Term,
-    Ty: Type,
-    Self: Into<T>,
+    Lang: Language,
 {
-    type Target = T;
-    fn subst_type(self, _: &TypeVar, _: &Ty) -> Self::Target {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst_type(self, _: &TypeVar, _: &<Lang as Language>::Type) -> Self::Target {
         self.into()
     }
 }
 
-impl<T> fmt::Display for True<T>
+impl<Lang> fmt::Display for True<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.write_str("true")

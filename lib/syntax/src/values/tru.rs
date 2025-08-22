@@ -1,54 +1,56 @@
 use super::Value;
-use crate::terms::{Term, True as TrueT};
+use crate::{language::Language, terms::True as TrueT};
 use std::{fmt, marker::PhantomData};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct True<T>
+pub struct True<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    phantom: PhantomData<T>,
+    phantom: PhantomData<Lang>,
 }
 
-impl<T> True<T>
+impl<Lang> True<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    pub fn new() -> True<T> {
+    pub fn new() -> True<Lang> {
         True {
             phantom: PhantomData,
         }
     }
 }
 
-impl<T> Default for True<T>
+impl<Lang> Default for True<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    fn default() -> True<T> {
+    fn default() -> True<Lang> {
         True::new()
     }
 }
 
-impl<T> Value for True<T>
+impl<Lang> Value for True<Lang>
 where
-    T: Term,
+    Lang: Language,
+    TrueT<Lang>: Into<Lang::Term>,
 {
-    type Term = TrueT<T>;
+    type Lang = Lang;
+    type Term = TrueT<Lang>;
 }
 
-impl<T> From<True<T>> for TrueT<T>
+impl<Lang> From<True<Lang>> for TrueT<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    fn from(_: True<T>) -> TrueT<T> {
+    fn from(_: True<Lang>) -> TrueT<Lang> {
         TrueT::new()
     }
 }
 
-impl<T> fmt::Display for True<T>
+impl<Lang> fmt::Display for True<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.write_str("true")

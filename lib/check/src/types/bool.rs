@@ -4,22 +4,25 @@ use errors::check_error::CheckError;
 use syntax::{
     env::Environment,
     kinds::Kind,
+    language::Language,
     types::{Bool, Top, Type, TypeGroup},
 };
 
 impl<Ty> Subtypecheck for Bool<Ty>
 where
-    Ty: TypeGroup + Subtypecheck<Type = Ty>,
+    Ty: TypeGroup + Subtypecheck,
     Top<Ty>: Into<Ty>,
     Self: Into<Ty>,
 {
-    type Type = Ty;
-    type Term = <Ty as Subtypecheck>::Term;
+    type Lang = <Ty as Subtypecheck>::Lang;
     fn check_subtype(
         &self,
-        sup: &Ty,
-        env: Environment<Ty>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
+        sup: &<Self::Lang as Language>::Type,
+        env: Environment<<Self::Lang as Language>::Type>,
+    ) -> Result<
+        Derivation<<Self::Lang as Language>::Term, <Self::Lang as Language>::Type>,
+        CheckError,
+    > {
         if let Ok(top) = sup.clone().into_top() {
             return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind).into());
         }

@@ -1,60 +1,59 @@
 use super::Term;
 use crate::{
     TypeVar, Var,
+    language::Language,
     subst::{SubstTerm, SubstType},
-    types::Type,
 };
 use std::{fmt, marker::PhantomData};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct False<T>
+pub struct False<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    phantom: PhantomData<T>,
+    phantom: PhantomData<Lang>,
 }
 
-impl<T> False<T>
+impl<Lang> False<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    pub fn new() -> False<T> {
+    pub fn new() -> False<Lang> {
         False {
             phantom: PhantomData,
         }
     }
 }
 
-impl<T> Default for False<T>
+impl<Lang> Default for False<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    fn default() -> False<T> {
+    fn default() -> False<Lang> {
         False::new()
     }
 }
 
-impl<T> Term for False<T> where T: Term {}
+impl<Lang> Term for False<Lang> where Lang: Language {}
 
-impl<T> SubstTerm<T> for False<T>
+impl<Lang> SubstTerm for False<Lang>
 where
-    T: Term,
-    Self: Into<T>,
+    Lang: Language,
 {
-    type Target = T;
-    fn subst(self, _: &Var, _: &T) -> T {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst(self, _: &Var, _: &<Lang as Language>::Term) -> Self::Target {
         self.into()
     }
 }
 
-impl<T, Ty> SubstType<Ty> for False<T>
+impl<Lang> SubstType for False<Lang>
 where
-    T: Term,
-    Ty: Type,
-    Self: Into<T>,
+    Lang: Language,
 {
-    type Target = T;
-    fn subst_type(self, _: &TypeVar, _: &Ty) -> Self::Target {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst_type(self, _: &TypeVar, _: &<Lang as Language>::Type) -> Self::Target {
         False {
             phantom: PhantomData,
         }
@@ -62,9 +61,9 @@ where
     }
 }
 
-impl<T> fmt::Display for False<T>
+impl<Lang> fmt::Display for False<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.write_str("false")

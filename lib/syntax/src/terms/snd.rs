@@ -1,26 +1,26 @@
 use super::Term;
 use crate::{
     TypeVar, Var,
+    language::Language,
     subst::{SubstTerm, SubstType},
-    types::Type,
 };
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Snd<T>
+pub struct Snd<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    pub term: Box<T>,
+    pub term: Box<Lang::Term>,
 }
 
-impl<T> Snd<T>
+impl<Lang> Snd<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    pub fn new<T1>(t: T1) -> Snd<T>
+    pub fn new<T1>(t: T1) -> Snd<Lang>
     where
-        T1: Into<T>,
+        T1: Into<Lang::Term>,
     {
         Snd {
             term: Box::new(t.into()),
@@ -28,15 +28,15 @@ where
     }
 }
 
-impl<T> Term for Snd<T> where T: Term {}
+impl<Lang> Term for Snd<Lang> where Lang: Language {}
 
-impl<T> SubstTerm<T> for Snd<T>
+impl<Lang> SubstTerm for Snd<Lang>
 where
-    T: Term + SubstTerm<T, Target = T>,
-    Self: Into<T>,
+    Lang: Language,
 {
-    type Target = T;
-    fn subst(self, v: &Var, t: &T) -> T {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
         Snd {
             term: Box::new(self.term.subst(v, t)),
         }
@@ -44,14 +44,13 @@ where
     }
 }
 
-impl<T, Ty> SubstType<Ty> for Snd<T>
+impl<Lang> SubstType for Snd<Lang>
 where
-    T: Term + SubstType<Ty, Target = T>,
-    Ty: Type,
-    Self: Into<T>,
+    Lang: Language,
 {
-    type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         Snd {
             term: Box::new(self.term.subst_type(v, ty)),
         }
@@ -59,9 +58,9 @@ where
     }
 }
 
-impl<T> fmt::Display for Snd<T>
+impl<Lang> fmt::Display for Snd<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "({}).snd", self.term)

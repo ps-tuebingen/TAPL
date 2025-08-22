@@ -1,51 +1,51 @@
 use super::Type;
-use crate::{TypeVar, subst::SubstType};
+use crate::{TypeVar, language::Language, subst::SubstType};
 use std::{fmt, marker::PhantomData};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Bool<Ty>
+pub struct Bool<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
-    phantom: PhantomData<Ty>,
+    phantom: PhantomData<Lang>,
 }
 
-impl<Ty> Bool<Ty>
+impl<Lang> Bool<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
-    pub fn new() -> Bool<Ty> {
+    pub fn new() -> Bool<Lang> {
         Bool {
             phantom: PhantomData,
         }
     }
 }
 
-impl<Ty> Default for Bool<Ty>
+impl<Lang> Default for Bool<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
-    fn default() -> Bool<Ty> {
+    fn default() -> Bool<Lang> {
         Bool::new()
     }
 }
 
-impl<Ty> Type for Bool<Ty> where Ty: Type {}
+impl<Lang> Type for Bool<Lang> where Lang: Language {}
 
-impl<Ty> SubstType<Ty> for Bool<Ty>
+impl<Lang> SubstType for Bool<Lang>
 where
-    Ty: Type,
-    Self: Into<Ty>,
+    Lang: Language,
 {
-    type Target = Ty;
-    fn subst_type(self, _: &TypeVar, _: &Ty) -> Self::Target {
-        self.into()
+    type Target = Self;
+    type Lang = Lang;
+    fn subst_type(self, _: &TypeVar, _: &<Lang as Language>::Type) -> Self::Target {
+        self
     }
 }
 
-impl<Ty> fmt::Display for Bool<Ty>
+impl<Lang> fmt::Display for Bool<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.write_str("Bool")

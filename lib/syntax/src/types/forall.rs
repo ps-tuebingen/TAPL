@@ -1,24 +1,24 @@
 use super::Type;
-use crate::{TypeVar, kinds::Kind, subst::SubstType};
+use crate::{TypeVar, kinds::Kind, language::Language, subst::SubstType};
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Forall<Ty>
+pub struct Forall<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
     pub var: TypeVar,
     pub kind: Kind,
-    pub ty: Box<Ty>,
+    pub ty: Box<Lang::Type>,
 }
 
-impl<Ty> Forall<Ty>
+impl<Lang> Forall<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
-    pub fn new<Ty1>(v: &str, knd: Kind, ty: Ty1) -> Forall<Ty>
+    pub fn new<Ty1>(v: &str, knd: Kind, ty: Ty1) -> Forall<Lang>
     where
-        Ty1: Into<Ty>,
+        Ty1: Into<Lang::Type>,
     {
         Forall {
             var: v.to_owned(),
@@ -28,31 +28,30 @@ where
     }
 }
 
-impl<Ty> Type for Forall<Ty> where Ty: Type {}
+impl<Lang> Type for Forall<Lang> where Lang: Language {}
 
-impl<Ty> SubstType<Ty> for Forall<Ty>
+impl<Lang> SubstType for Forall<Lang>
 where
-    Ty: Type + SubstType<Ty, Target = Ty>,
-    Self: Into<Ty>,
+    Lang: Language,
 {
-    type Target = Ty;
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         if *v == self.var {
-            self.into()
+            self
         } else {
             Forall {
                 var: self.var,
                 kind: self.kind,
                 ty: Box::new(self.ty.subst_type(v, ty)),
             }
-            .into()
         }
     }
 }
 
-impl<Ty> fmt::Display for Forall<Ty>
+impl<Lang> fmt::Display for Forall<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "forall {}::{}.{}", self.var, self.kind, self.ty)

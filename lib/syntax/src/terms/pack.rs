@@ -1,32 +1,30 @@
 use super::Term;
 use crate::{
     TypeVar, Var,
+    language::Language,
     subst::{SubstTerm, SubstType},
-    types::Type,
 };
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Pack<T, Ty>
+pub struct Pack<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
-    pub inner_ty: Ty,
-    pub term: Box<T>,
-    pub outer_ty: Ty,
+    pub inner_ty: Lang::Type,
+    pub term: Box<Lang::Term>,
+    pub outer_ty: Lang::Type,
 }
 
-impl<T, Ty> Pack<T, Ty>
+impl<Lang> Pack<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
-    pub fn new<Ty1, Ty2, T1>(inner: Ty1, t: T1, outer: Ty2) -> Pack<T, Ty>
+    pub fn new<Ty1, Ty2, T1>(inner: Ty1, t: T1, outer: Ty2) -> Pack<Lang>
     where
-        Ty1: Into<Ty>,
-        Ty2: Into<Ty>,
-        T1: Into<T>,
+        Ty1: Into<Lang::Type>,
+        Ty2: Into<Lang::Type>,
+        T1: Into<Lang::Term>,
     {
         Pack {
             inner_ty: inner.into(),
@@ -36,21 +34,15 @@ where
     }
 }
 
-impl<T, Ty> Term for Pack<T, Ty>
-where
-    T: Term,
-    Ty: Type,
-{
-}
+impl<Lang> Term for Pack<Lang> where Lang: Language {}
 
-impl<T, Ty> SubstTerm<T> for Pack<T, Ty>
+impl<Lang> SubstTerm for Pack<Lang>
 where
-    T: Term + SubstTerm<T, Target = T>,
-    Ty: Type,
-    Self: Into<T>,
+    Lang: Language,
 {
-    type Target = T;
-    fn subst(self, v: &Var, t: &T) -> T {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
         Pack {
             inner_ty: self.inner_ty,
             term: Box::new(self.term.subst(v, t)),
@@ -60,14 +52,13 @@ where
     }
 }
 
-impl<T, Ty> SubstType<Ty> for Pack<T, Ty>
+impl<Lang> SubstType for Pack<Lang>
 where
-    T: Term + SubstType<Ty, Target = T>,
-    Ty: Type + SubstType<Ty, Target = Ty>,
-    Self: Into<T>,
+    Lang: Language,
 {
-    type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         Pack {
             inner_ty: self.inner_ty.subst_type(v, ty),
             term: Box::new(self.term.subst_type(v, ty)),
@@ -77,10 +68,9 @@ where
     }
 }
 
-impl<T, Ty> fmt::Display for Pack<T, Ty>
+impl<Lang> fmt::Display for Pack<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(

@@ -81,7 +81,7 @@ mod check_tests {
         .into();
         let result = term.check(Default::default()).unwrap();
         let expected = UnitTy::new().into();
-        assert_eq!(result.ty(), expected)
+        assert_eq!(result.ret_ty(), expected)
     }
 
     #[test]
@@ -97,7 +97,7 @@ mod check_tests {
         .into();
         let result = term.check(Default::default()).unwrap();
         let expected = UnitTy::new().into();
-        assert_eq!(result.ty(), expected)
+        assert_eq!(result.ret_ty(), expected)
     }
 
     #[test]
@@ -134,6 +134,6 @@ mod check_tests {
         env.add_loc(0, UnitTy::new().into());
         let result = term.check(env).unwrap();
         let expected = UnitTy::new().into();
-        assert_eq!(result.ty(), expected)
+        assert_eq!(result.ret_ty(), expected)
     }
 }

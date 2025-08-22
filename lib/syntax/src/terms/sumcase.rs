@@ -1,26 +1,26 @@
 use super::Term;
 use crate::{
     TypeVar, Var,
+    language::Language,
     subst::{SubstTerm, SubstType},
-    types::Type,
 };
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct SumCase<T>
+pub struct SumCase<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    pub bound_term: Box<T>,
+    pub bound_term: Box<Lang::Term>,
     pub left_var: Var,
-    pub left_term: Box<T>,
+    pub left_term: Box<Lang::Term>,
     pub right_var: Var,
-    pub right_term: Box<T>,
+    pub right_term: Box<Lang::Term>,
 }
 
-impl<T> SumCase<T>
+impl<Lang> SumCase<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     pub fn new<T1, T2, T3>(
         bound: T1,
@@ -28,11 +28,11 @@ where
         left_t: T2,
         right_v: &str,
         right_t: T3,
-    ) -> SumCase<T>
+    ) -> SumCase<Lang>
     where
-        T1: Into<T>,
-        T2: Into<T>,
-        T3: Into<T>,
+        T1: Into<Lang::Term>,
+        T2: Into<Lang::Term>,
+        T3: Into<Lang::Term>,
     {
         SumCase {
             bound_term: Box::new(bound.into()),
@@ -44,15 +44,15 @@ where
     }
 }
 
-impl<T> Term for SumCase<T> where T: Term {}
+impl<Lang> Term for SumCase<Lang> where Lang: Language {}
 
-impl<T> SubstTerm<T> for SumCase<T>
+impl<Lang> SubstTerm for SumCase<Lang>
 where
-    T: Term + SubstTerm<T, Target = T>,
-    Self: Into<T>,
+    Lang: Language,
 {
-    type Target = T;
-    fn subst(self, v: &Var, t: &T) -> T {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
         let bound_subst = self.bound_term.subst(v, t);
         let left_term = if *v == self.left_var {
             self.left_term
@@ -75,14 +75,13 @@ where
     }
 }
 
-impl<T, Ty> SubstType<Ty> for SumCase<T>
+impl<Lang> SubstType for SumCase<Lang>
 where
-    T: Term + SubstType<Ty, Target = T>,
-    Ty: Type,
-    Self: Into<T>,
+    Lang: Language,
 {
-    type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         SumCase {
             bound_term: Box::new(self.bound_term.subst_type(v, ty)),
             left_var: self.left_var,
@@ -94,9 +93,9 @@ where
     }
 }
 
-impl<T> fmt::Display for SumCase<T>
+impl<Lang> fmt::Display for SumCase<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(

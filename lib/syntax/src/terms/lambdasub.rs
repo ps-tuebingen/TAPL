@@ -1,32 +1,30 @@
 use super::Term;
 use crate::{
     TypeVar, Var,
+    language::Language,
     subst::{SubstTerm, SubstType},
     types::Top,
-    types::Type,
 };
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct LambdaSub<T, Ty>
+pub struct LambdaSub<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
     pub var: TypeVar,
-    pub sup_ty: Ty,
-    pub body: Box<T>,
+    pub sup_ty: Lang::Type,
+    pub body: Box<Lang::Term>,
 }
 
-impl<T, Ty> LambdaSub<T, Ty>
+impl<Lang> LambdaSub<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
-    pub fn new<Typ, B>(v: &str, sup: Typ, bod: B) -> LambdaSub<T, Ty>
+    pub fn new<Ty, T>(v: &str, sup: Ty, bod: T) -> LambdaSub<Lang>
     where
-        Typ: Into<Ty>,
-        B: Into<T>,
+        Ty: Into<Lang::Type>,
+        T: Into<Lang::Term>,
     {
         LambdaSub {
             var: v.to_owned(),
@@ -35,10 +33,10 @@ where
         }
     }
 
-    pub fn new_unbounded<T1>(v: &str, bod: T1) -> LambdaSub<T, Ty>
+    pub fn new_unbounded<T>(v: &str, bod: T) -> LambdaSub<Lang>
     where
-        T1: Into<T>,
-        Top<Ty>: Into<Ty>,
+        T: Into<Lang::Term>,
+        Top<Lang>: Into<Lang::Type>,
     {
         LambdaSub {
             var: v.to_owned(),
@@ -48,42 +46,34 @@ where
     }
 }
 
-impl<T, Ty> Term for LambdaSub<T, Ty>
-where
-    T: Term,
-    Ty: Type,
-{
-}
+impl<Lang> Term for LambdaSub<Lang> where Lang: Language {}
 
-impl<T, Ty> SubstTerm<T> for LambdaSub<T, Ty>
+impl<Lang> SubstTerm for LambdaSub<Lang>
 where
-    T: Term + SubstTerm<T, Target = T>,
-    Ty: Type,
-    Self: Into<T>,
+    Lang: Language,
 {
-    type Target = T;
-    fn subst(self, v: &Var, t: &T) -> T {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
         if *v == self.var {
-            self.into()
+            self
         } else {
             LambdaSub {
                 var: self.var,
                 sup_ty: self.sup_ty,
                 body: Box::new(self.body.subst(v, t)),
             }
-            .into()
         }
     }
 }
 
-impl<T, Ty> SubstType<Ty> for LambdaSub<T, Ty>
+impl<Lang> SubstType for LambdaSub<Lang>
 where
-    T: Term + SubstType<Ty, Target = T>,
-    Ty: Type + SubstType<Ty, Target = Ty>,
-    Self: Into<T>,
+    Lang: Language,
 {
-    type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         let sup_subst = self.sup_ty.subst_type(v, ty);
         if *v == self.var {
             LambdaSub {
@@ -103,10 +93,9 @@ where
     }
 }
 
-impl<T, Ty> fmt::Display for LambdaSub<T, Ty>
+impl<Lang> fmt::Display for LambdaSub<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "\\{}<:({}).{}", self.var, self.sup_ty, self.body)

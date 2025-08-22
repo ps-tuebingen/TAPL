@@ -2,28 +2,28 @@ use super::Term;
 use crate::{
     TypeVar, Var,
     kinds::Kind,
+    language::Language,
     subst::{SubstTerm, SubstType},
-    types::Type,
 };
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct TyLambda<T>
+pub struct TyLambda<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     pub var: TypeVar,
     pub annot: Kind,
-    pub term: Box<T>,
+    pub term: Box<Lang::Term>,
 }
 
-impl<T> TyLambda<T>
+impl<Lang> TyLambda<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    pub fn new<T1>(v: &str, knd: Kind, t: T1) -> TyLambda<T>
+    pub fn new<T1>(v: &str, knd: Kind, t: T1) -> TyLambda<Lang>
     where
-        T1: Into<T>,
+        T1: Into<Lang::Term>,
     {
         TyLambda {
             var: v.into(),
@@ -33,15 +33,15 @@ where
     }
 }
 
-impl<T> Term for TyLambda<T> where T: Term {}
+impl<Lang> Term for TyLambda<Lang> where Lang: Language {}
 
-impl<T> SubstTerm<T> for TyLambda<T>
+impl<Lang> SubstTerm for TyLambda<Lang>
 where
-    T: Term + SubstTerm<T, Target = T>,
-    Self: Into<T>,
+    Lang: Language,
 {
-    type Target = T;
-    fn subst(self, v: &Var, t: &T) -> T {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
         TyLambda {
             var: self.var,
             annot: self.annot,
@@ -51,14 +51,13 @@ where
     }
 }
 
-impl<T, Ty> SubstType<Ty> for TyLambda<T>
+impl<Lang> SubstType for TyLambda<Lang>
 where
-    T: Term + SubstType<Ty, Target = T>,
-    Ty: Type,
-    Self: Into<T>,
+    Lang: Language,
 {
-    type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         if *v == self.var {
             self.into()
         } else {
@@ -72,9 +71,9 @@ where
     }
 }
 
-impl<T> fmt::Display for TyLambda<T>
+impl<Lang> fmt::Display for TyLambda<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "\\{}::{}.({})", self.var, self.annot, self.term)

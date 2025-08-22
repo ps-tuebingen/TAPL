@@ -1,31 +1,28 @@
 use crate::{
     TypeVar, Var,
     definition::Definition,
+    language::Language,
     subst::{SubstTerm, SubstType},
-    terms::Term,
-    types::Type,
 };
 use errors::DuplicateDefinition;
 use std::fmt;
 
 #[derive(Debug, Clone)]
-pub struct Program<T, Ty>
+pub struct Program<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
-    pub definitions: Vec<Definition<T, Ty>>,
-    pub main: T,
+    pub definitions: Vec<Definition<Lang>>,
+    pub main: Lang::Term,
 }
 
-impl<T, Ty> Program<T, Ty>
+impl<Lang> Program<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
-    pub fn new<T1>(main: T1, definitions: Vec<Definition<T, Ty>>) -> Program<T, Ty>
+    pub fn new<T>(main: T, definitions: Vec<Definition<Lang>>) -> Program<Lang>
     where
-        T1: Into<T>,
+        T: Into<<Lang as Language>::Term>,
     {
         Program {
             definitions,
@@ -33,7 +30,7 @@ where
         }
     }
 
-    pub fn add_definition(&mut self, def: Definition<T, Ty>) -> Result<(), DuplicateDefinition> {
+    pub fn add_definition(&mut self, def: Definition<Lang>) -> Result<(), DuplicateDefinition> {
         if self.definitions.iter().any(|df| df.name == def.name) {
             Err(DuplicateDefinition::new(&def.name))
         } else {
@@ -43,14 +40,14 @@ where
     }
 }
 
-impl<T, Ty> SubstTerm<T> for Program<T, Ty>
+impl<Lang> SubstTerm for Program<Lang>
 where
-    T: Term + SubstTerm<T, Target = T>,
-    Ty: Type,
+    Lang: Language,
 {
-    type Target = Program<T, Ty>;
+    type Target = Program<Lang>;
+    type Lang = Lang;
 
-    fn subst(self, v: &Var, t: &T) -> Self::Target {
+    fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
         Program {
             definitions: self
                 .definitions
@@ -62,14 +59,14 @@ where
     }
 }
 
-impl<T, Ty> SubstTerm<T> for Definition<T, Ty>
+impl<Lang> SubstTerm for Definition<Lang>
 where
-    T: Term + SubstTerm<T, Target = T>,
-    Ty: Type,
+    Lang: Language,
 {
-    type Target = Definition<T, Ty>;
+    type Target = Definition<Lang>;
+    type Lang = Lang;
 
-    fn subst(self, v: &Var, t: &T) -> Self::Target {
+    fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
         Definition {
             name: self.name,
             annot: self.annot,
@@ -78,14 +75,14 @@ where
     }
 }
 
-impl<T, Ty> SubstType<Ty> for Program<T, Ty>
+impl<Lang> SubstType for Program<Lang>
 where
-    T: Term + SubstType<Ty, Target = T>,
-    Ty: Type + SubstType<Ty, Target = Ty>,
+    Lang: Language,
 {
-    type Target = Program<T, Ty>;
+    type Target = Program<Lang>;
+    type Lang = Lang;
 
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         Program {
             definitions: self
                 .definitions
@@ -97,14 +94,14 @@ where
     }
 }
 
-impl<T, Ty> SubstType<Ty> for Definition<T, Ty>
+impl<Lang> SubstType for Definition<Lang>
 where
-    T: Term + SubstType<Ty, Target = T>,
-    Ty: Type + SubstType<Ty, Target = Ty>,
+    Lang: Language,
 {
-    type Target = Definition<T, Ty>;
+    type Target = Definition<Lang>;
+    type Lang = Lang;
 
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         Definition {
             name: self.name,
             annot: self.annot.subst_type(v, ty),
@@ -113,10 +110,9 @@ where
     }
 }
 
-impl<T, Ty> fmt::Display for Program<T, Ty>
+impl<Lang> fmt::Display for Program<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(

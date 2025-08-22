@@ -1,28 +1,24 @@
 use super::Value;
-use crate::{
-    TypeVar,
-    kinds::Kind,
-    terms::{Term, TyLambda as TyLambdaT},
-};
+use crate::{TypeVar, kinds::Kind, language::Language, terms::TyLambda as TyLambdaT};
 use std::fmt;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct TyLambda<T>
+pub struct TyLambda<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     pub var: TypeVar,
     pub annot: Kind,
-    pub term: T,
+    pub term: Lang::Term,
 }
 
-impl<T> TyLambda<T>
+impl<Lang> TyLambda<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    pub fn new<T1>(v: &str, knd: Kind, t: T1) -> TyLambda<T>
+    pub fn new<T1>(v: &str, knd: Kind, t: T1) -> TyLambda<Lang>
     where
-        T1: Into<T>,
+        T1: Into<Lang::Term>,
     {
         TyLambda {
             var: v.to_owned(),
@@ -32,24 +28,26 @@ where
     }
 }
 
-impl<T> Value for TyLambda<T>
+impl<Lang> Value for TyLambda<Lang>
 where
-    T: Term,
+    Lang: Language,
+    TyLambdaT<Lang>: Into<Lang::Term>,
 {
-    type Term = TyLambdaT<T>;
+    type Lang = Lang;
+    type Term = TyLambdaT<Lang>;
 }
-impl<T> From<TyLambda<T>> for TyLambdaT<T>
+impl<Lang> From<TyLambda<Lang>> for TyLambdaT<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    fn from(tylam: TyLambda<T>) -> TyLambdaT<T> {
+    fn from(tylam: TyLambda<Lang>) -> TyLambdaT<Lang> {
         TyLambdaT::new(&tylam.var, tylam.annot, tylam.term)
     }
 }
 
-impl<T> fmt::Display for TyLambda<T>
+impl<Lang> fmt::Display for TyLambda<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "\\{}::{}.{}", self.var, self.annot, self.term)

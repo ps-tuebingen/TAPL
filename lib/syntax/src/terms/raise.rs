@@ -1,32 +1,30 @@
 use super::Term;
 use crate::{
     TypeVar, Var,
+    language::Language,
     subst::{SubstTerm, SubstType},
-    types::Type,
 };
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Raise<T, Ty>
+pub struct Raise<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
-    pub exception: Box<T>,
-    pub exception_ty: Ty,
-    pub cont_ty: Ty,
+    pub exception: Box<Lang::Term>,
+    pub exception_ty: Lang::Type,
+    pub cont_ty: Lang::Type,
 }
 
-impl<T, Ty> Raise<T, Ty>
+impl<Lang> Raise<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
-    pub fn new<E, Ty1, Ty2>(ex: E, ex_ty: Ty1, cont_ty: Ty2) -> Raise<T, Ty>
+    pub fn new<E, Ty1, Ty2>(ex: E, ex_ty: Ty1, cont_ty: Ty2) -> Raise<Lang>
     where
-        E: Into<T>,
-        Ty1: Into<Ty>,
-        Ty2: Into<Ty>,
+        E: Into<Lang::Term>,
+        Ty1: Into<Lang::Type>,
+        Ty2: Into<Lang::Type>,
     {
         Raise {
             exception: Box::new(ex.into()),
@@ -36,21 +34,15 @@ where
     }
 }
 
-impl<T, Ty> Term for Raise<T, Ty>
-where
-    T: Term,
-    Ty: Type,
-{
-}
+impl<Lang> Term for Raise<Lang> where Lang: Language {}
 
-impl<T, Ty> SubstTerm<T> for Raise<T, Ty>
+impl<Lang> SubstTerm for Raise<Lang>
 where
-    T: Term + SubstTerm<T, Target = T>,
-    Ty: Type,
-    Self: Into<T>,
+    Lang: Language,
 {
-    type Target = T;
-    fn subst(self, v: &Var, t: &T) -> T {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
         Raise {
             exception: Box::new(self.exception.subst(v, t)),
             exception_ty: self.exception_ty,
@@ -60,14 +52,13 @@ where
     }
 }
 
-impl<T, Ty> SubstType<Ty> for Raise<T, Ty>
+impl<Lang> SubstType for Raise<Lang>
 where
-    T: Term + SubstType<Ty, Target = T>,
-    Ty: Type + SubstType<Ty, Target = Ty>,
-    Self: Into<T>,
+    Lang: Language,
 {
-    type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         Raise {
             exception: Box::new(self.exception.subst_type(v, ty)),
             exception_ty: self.exception_ty.subst_type(v, ty),
@@ -77,10 +68,9 @@ where
     }
 }
 
-impl<T, Ty> fmt::Display for Raise<T, Ty>
+impl<Lang> fmt::Display for Raise<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(

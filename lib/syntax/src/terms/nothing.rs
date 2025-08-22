@@ -1,76 +1,61 @@
 use super::Term;
 use crate::{
     TypeVar, Var,
+    language::Language,
     subst::{SubstTerm, SubstType},
-    types::Type,
 };
-use std::{fmt, marker::PhantomData};
+use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Nothing<T, Ty>
+pub struct Nothing<Lang>
 where
-    Ty: Type,
-    T: Term,
+    Lang: Language,
 {
-    pub ty: Ty,
-    phantom: PhantomData<T>,
+    pub ty: Lang::Type,
 }
 
-impl<T, Ty> Nothing<T, Ty>
+impl<Lang> Nothing<Lang>
 where
-    Ty: Type,
-    T: Term,
+    Lang: Language,
 {
-    pub fn new<Typ>(ty: Typ) -> Nothing<T, Ty>
+    pub fn new<Typ>(ty: Typ) -> Nothing<Lang>
     where
-        Typ: Into<Ty>,
+        Typ: Into<Lang::Type>,
     {
-        Nothing {
-            ty: ty.into(),
-            phantom: PhantomData,
-        }
+        Nothing { ty: ty.into() }
     }
 }
 
-impl<T, Ty> Term for Nothing<T, Ty>
-where
-    Ty: Type,
-    T: Term,
-{
-}
+impl<Lang> Term for Nothing<Lang> where Lang: Language {}
 
-impl<T, Ty> SubstTerm<T> for Nothing<T, Ty>
+impl<Lang> SubstTerm for Nothing<Lang>
 where
-    Ty: Type,
-    T: Term,
-    Self: Into<T>,
+    Lang: Language,
 {
-    type Target = T;
-    fn subst(self, _: &Var, _: &T) -> T {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst(self, _: &Var, _: &<Lang as Language>::Term) -> Self::Target {
         self.into()
     }
 }
 
-impl<T, Ty> SubstType<Ty> for Nothing<T, Ty>
+impl<Lang> SubstType for Nothing<Lang>
 where
-    T: Term + SubstType<Ty, Target = T>,
-    Ty: Type + SubstType<Ty, Target = Ty>,
-    Self: Into<T>,
+    Lang: Language,
 {
-    type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         Nothing {
             ty: self.ty.subst_type(v, ty),
-            phantom: PhantomData,
         }
         .into()
     }
 }
 
-impl<T, Ty> fmt::Display for Nothing<T, Ty>
+impl<Lang> fmt::Display for Nothing<Lang>
 where
-    Ty: Type,
-    T: Term,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "Nothing[{}]", self.ty)

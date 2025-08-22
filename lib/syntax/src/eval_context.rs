@@ -1,31 +1,29 @@
-use crate::{Location, Name, program::Program, terms::Term, types::Type, values::Value};
+use crate::{Location, Name, language::Language, program::Program};
 use errors::{FreeVariable, UndefinedLocation};
 use std::collections::HashMap;
 
-pub struct EvalContext<T, V>
+pub struct EvalContext<Lang>
 where
-    V: Value,
-    T: Term,
+    Lang: Language,
 {
-    locs: HashMap<Location, V>,
-    defs: HashMap<Name, T>,
+    locs: HashMap<Location, Lang::Value>,
+    defs: HashMap<Name, Lang::Term>,
 }
 
-impl<V, T> EvalContext<T, V>
+impl<Lang> EvalContext<Lang>
 where
-    V: Value,
-    T: Term,
+    Lang: Language,
 {
-    pub fn new() -> EvalContext<T, V> {
+    pub fn new() -> EvalContext<Lang> {
         EvalContext {
             locs: HashMap::new(),
             defs: HashMap::new(),
         }
     }
 
-    pub fn from_prog<Ty>(prog: &Program<T, Ty>) -> EvalContext<T, V>
+    pub fn from_prog(prog: &Program<Lang>) -> EvalContext<Lang>
     where
-        Ty: Type,
+        Lang: Language,
     {
         EvalContext {
             locs: HashMap::new(),
@@ -45,19 +43,19 @@ where
         new_loc
     }
 
-    pub fn save_name(&mut self, n: Name, t: T) {
+    pub fn save_name(&mut self, n: Name, t: Lang::Term) {
         self.defs.insert(n, t);
     }
 
-    pub fn get_name(&self, n: &Name) -> Result<T, FreeVariable> {
+    pub fn get_name(&self, n: &Name) -> Result<Lang::Term, FreeVariable> {
         self.defs.get(n).cloned().ok_or(FreeVariable::new(n))
     }
 
-    pub fn save_location(&mut self, loc: Location, v: V) {
+    pub fn save_location(&mut self, loc: Location, v: Lang::Value) {
         self.locs.insert(loc, v);
     }
 
-    pub fn get_location(&self, loc: Location) -> Result<V, UndefinedLocation> {
+    pub fn get_location(&self, loc: Location) -> Result<Lang::Value, UndefinedLocation> {
         self.locs
             .get(&loc)
             .cloned()
@@ -65,12 +63,11 @@ where
     }
 }
 
-impl<T, V> Default for EvalContext<T, V>
+impl<Lang> Default for EvalContext<Lang>
 where
-    T: Term,
-    V: Value,
+    Lang: Language,
 {
-    fn default() -> EvalContext<T, V> {
+    fn default() -> EvalContext<Lang> {
         EvalContext::new()
     }
 }

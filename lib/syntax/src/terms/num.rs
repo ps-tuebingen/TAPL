@@ -1,25 +1,25 @@
 use super::Term;
 use crate::{
     TypeVar, Var,
+    language::Language,
     subst::{SubstTerm, SubstType},
-    types::Type,
 };
 use std::{fmt, marker::PhantomData};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Num<T>
+pub struct Num<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     pub num: i64,
-    phantom: PhantomData<T>,
+    phantom: PhantomData<Lang>,
 }
 
-impl<T> Num<T>
+impl<Lang> Num<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    pub fn new(num: i64) -> Num<T> {
+    pub fn new(num: i64) -> Num<Lang> {
         Num {
             num,
             phantom: PhantomData,
@@ -27,34 +27,33 @@ where
     }
 }
 
-impl<T> Term for Num<T> where T: Term {}
+impl<Lang> Term for Num<Lang> where Lang: Language {}
 
-impl<T> SubstTerm<T> for Num<T>
+impl<Lang> SubstTerm for Num<Lang>
 where
-    T: Term,
-    Self: Into<T>,
+    Lang: Language,
 {
-    type Target = T;
-    fn subst(self, _: &Var, _: &T) -> T {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst(self, _: &Var, _: &<Lang as Language>::Term) -> Self::Target {
         self.into()
     }
 }
 
-impl<T, Ty> SubstType<Ty> for Num<T>
+impl<Lang> SubstType for Num<Lang>
 where
-    T: Term,
-    Ty: Type,
-    Self: Into<T>,
+    Lang: Language,
 {
-    type Target = T;
-    fn subst_type(self, _: &TypeVar, _: &Ty) -> Self::Target {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst_type(self, _: &TypeVar, _: &<Lang as Language>::Type) -> Self::Target {
         self.into()
     }
 }
 
-impl<T> fmt::Display for Num<T>
+impl<Lang> fmt::Display for Num<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.num)

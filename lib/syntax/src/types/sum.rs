@@ -1,24 +1,24 @@
 use super::Type;
-use crate::{TypeVar, subst::SubstType};
+use crate::{TypeVar, language::Language, subst::SubstType};
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Sum<Ty>
+pub struct Sum<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
-    pub left: Box<Ty>,
-    pub right: Box<Ty>,
+    pub left: Box<Lang::Type>,
+    pub right: Box<Lang::Type>,
 }
 
-impl<Ty> Sum<Ty>
+impl<Lang> Sum<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
-    pub fn new<Ty1, Ty2>(l: Ty1, r: Ty2) -> Sum<Ty>
+    pub fn new<Ty1, Ty2>(l: Ty1, r: Ty2) -> Sum<Lang>
     where
-        Ty1: Into<Ty>,
-        Ty2: Into<Ty>,
+        Ty1: Into<Lang::Type>,
+        Ty2: Into<Lang::Type>,
     {
         Sum {
             left: Box::new(l.into()),
@@ -27,26 +27,26 @@ where
     }
 }
 
-impl<Ty> Type for Sum<Ty> where Ty: Type {}
+impl<Lang> Type for Sum<Lang> where Lang: Language {}
 
-impl<Ty> SubstType<Ty> for Sum<Ty>
+impl<Lang> SubstType for Sum<Lang>
 where
-    Ty: Type + SubstType<Ty, Target = Ty>,
-    Self: Into<Ty>,
+    Lang: Language,
+    Self: Into<Lang::Type>,
 {
-    type Target = Ty;
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    type Lang = Lang;
+    type Target = Self;
+    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         Sum {
             left: Box::new(self.left.subst_type(v, ty)),
             right: Box::new(self.right.subst_type(v, ty)),
         }
-        .into()
     }
 }
 
-impl<Ty> fmt::Display for Sum<Ty>
+impl<Lang> fmt::Display for Sum<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "({}+{})", self.left, self.right)

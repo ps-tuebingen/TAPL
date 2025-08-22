@@ -1,27 +1,25 @@
-use crate::{terms::Cons as ConsT, types::Type, values::Value};
+use crate::{language::Language, terms::Cons as ConsT, values::Value};
 use std::fmt;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct Cons<V, Ty>
+pub struct Cons<Lang>
 where
-    Ty: Type,
-    V: Value,
+    Lang: Language,
 {
-    pub head: Box<V>,
-    pub tail: Box<V>,
-    pub ty: Ty,
+    pub head: Box<Lang::Value>,
+    pub tail: Box<Lang::Value>,
+    pub ty: Lang::Type,
 }
 
-impl<V, Ty> Cons<V, Ty>
+impl<Lang> Cons<Lang>
 where
-    Ty: Type,
-    V: Value,
+    Lang: Language,
 {
-    pub fn new<V1, V2, Typ>(hd: V1, tl: V2, ty: Typ) -> Cons<V, Ty>
+    pub fn new<V1, V2, Typ>(hd: V1, tl: V2, ty: Typ) -> Cons<Lang>
     where
-        V1: Into<V>,
-        V2: Into<V>,
-        Typ: Into<Ty>,
+        V1: Into<Lang::Value>,
+        V2: Into<Lang::Value>,
+        Typ: Into<Lang::Type>,
     {
         Cons {
             head: Box::new(hd.into()),
@@ -31,28 +29,27 @@ where
     }
 }
 
-impl<V, Ty> Value for Cons<V, Ty>
+impl<Lang> Value for Cons<Lang>
 where
-    Ty: Type,
-    V: Value,
+    Lang: Language,
+    ConsT<Lang>: Into<Lang::Term>,
 {
-    type Term = ConsT<<V as Value>::Term, Ty>;
+    type Lang = Lang;
+    type Term = ConsT<Lang>;
 }
 
-impl<V, Ty> From<Cons<V, Ty>> for ConsT<<V as Value>::Term, Ty>
+impl<Lang> From<Cons<Lang>> for ConsT<Lang>
 where
-    Ty: Type,
-    V: Value,
+    Lang: Language,
 {
-    fn from(c: Cons<V, Ty>) -> ConsT<<V as Value>::Term, Ty> {
+    fn from(c: Cons<Lang>) -> ConsT<Lang> {
         ConsT::new(*c.head, *c.tail, c.ty)
     }
 }
 
-impl<V, Ty> fmt::Display for Cons<V, Ty>
+impl<Lang> fmt::Display for Cons<Lang>
 where
-    Ty: Type,
-    V: Value,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "Cons[{}]({},{})", self.ty, self.head, self.tail)

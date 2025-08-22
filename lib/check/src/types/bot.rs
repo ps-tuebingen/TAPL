@@ -4,21 +4,24 @@ use errors::check_error::CheckError;
 use syntax::{
     env::Environment,
     kinds::Kind,
+    language::Language,
     types::{Bot, Type, TypeGroup},
 };
 
 impl<Ty> Subtypecheck for Bot<Ty>
 where
-    Ty: TypeGroup + Subtypecheck<Type = Ty>,
+    Ty: TypeGroup + Subtypecheck,
     Bot<Ty>: Into<Ty>,
 {
-    type Type = Ty;
-    type Term = <Ty as Subtypecheck>::Term;
+    type Lang = <Ty as Subtypecheck>::Lang;
     fn check_subtype(
         &self,
         sup: &Ty,
         env: Environment<Ty>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
+    ) -> Result<
+        Derivation<<Self::Lang as Language>::Term, <Self::Lang as Language>::Type>,
+        CheckError,
+    > {
         Ok(SubtypeDerivation::sup_bot(env, sup.clone()).into())
     }
 }

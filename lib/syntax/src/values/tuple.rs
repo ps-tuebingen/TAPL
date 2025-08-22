@@ -1,22 +1,22 @@
 use super::Value;
-use crate::terms::Tuple as TupleT;
+use crate::{language::Language, terms::Tuple as TupleT};
 use std::fmt;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct Tuple<V>
+pub struct Tuple<Lang>
 where
-    V: Value,
+    Lang: Language,
 {
-    pub vals: Vec<V>,
+    pub vals: Vec<Lang::Value>,
 }
 
-impl<V> Tuple<V>
+impl<Lang> Tuple<Lang>
 where
-    V: Value,
+    Lang: Language,
 {
-    pub fn new<V1>(vals: Vec<V1>) -> Tuple<V>
+    pub fn new<V1>(vals: Vec<V1>) -> Tuple<Lang>
     where
-        V1: Into<V>,
+        V1: Into<Lang::Value>,
     {
         Tuple {
             vals: vals.into_iter().map(|v| v.into()).collect(),
@@ -24,25 +24,27 @@ where
     }
 }
 
-impl<V> Value for Tuple<V>
+impl<Lang> Value for Tuple<Lang>
 where
-    V: Value,
+    Lang: Language,
+    TupleT<Lang>: Into<Lang::Term>,
 {
-    type Term = TupleT<<V as Value>::Term>;
+    type Lang = Lang;
+    type Term = TupleT<Lang>;
 }
 
-impl<V> From<Tuple<V>> for TupleT<<V as Value>::Term>
+impl<Lang> From<Tuple<Lang>> for TupleT<Lang>
 where
-    V: Value,
+    Lang: Language,
 {
-    fn from(tup: Tuple<V>) -> TupleT<<V as Value>::Term> {
+    fn from(tup: Tuple<Lang>) -> TupleT<Lang> {
         TupleT::new(tup.vals)
     }
 }
 
-impl<V> fmt::Display for Tuple<V>
+impl<Lang> fmt::Display for Tuple<Lang>
 where
-    V: Value,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let mut ts: Vec<String> = self.vals.iter().map(|t| t.to_string()).collect();

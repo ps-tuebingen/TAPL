@@ -1,23 +1,23 @@
 use super::Type;
-use crate::{TypeVar, subst::SubstType};
+use crate::{TypeVar, language::Language, subst::SubstType};
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Mu<Ty>
+pub struct Mu<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
     pub var: TypeVar,
-    pub ty: Box<Ty>,
+    pub ty: Box<Lang::Type>,
 }
 
-impl<Ty> Mu<Ty>
+impl<Lang> Mu<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
-    pub fn new<Ty1>(v: &str, ty: Ty1) -> Mu<Ty>
+    pub fn new<Ty1>(v: &str, ty: Ty1) -> Mu<Lang>
     where
-        Ty1: Into<Ty>,
+        Ty1: Into<Lang::Type>,
     {
         Mu {
             var: v.to_owned(),
@@ -26,30 +26,29 @@ where
     }
 }
 
-impl<Ty> Type for Mu<Ty> where Ty: Type {}
+impl<Lang> Type for Mu<Lang> where Lang: Language {}
 
-impl<Ty> SubstType<Ty> for Mu<Ty>
+impl<Lang> SubstType for Mu<Lang>
 where
-    Ty: Type + SubstType<Ty, Target = Ty>,
-    Self: Into<Ty>,
+    Lang: Language,
 {
-    type Target = Ty;
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         if *v == self.var {
-            self.into()
+            self
         } else {
             Mu {
                 var: self.var,
                 ty: Box::new(self.ty.subst_type(v, ty)),
             }
-            .into()
         }
     }
 }
 
-impl<Ty> fmt::Display for Mu<Ty>
+impl<Lang> fmt::Display for Mu<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "mu {}.{}", self.var, self.ty)

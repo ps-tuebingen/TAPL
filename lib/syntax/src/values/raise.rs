@@ -1,28 +1,26 @@
 use super::Value;
-use crate::{terms::Raise as RaiseT, types::Type};
+use crate::{language::Language, terms::Raise as RaiseT};
 use std::fmt;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct Raise<V, Ty>
+pub struct Raise<Lang>
 where
-    V: Value,
-    Ty: Type,
+    Lang: Language,
 {
-    pub val: Box<V>,
-    pub cont_ty: Ty,
-    pub exception_ty: Ty,
+    pub val: Box<Lang::Value>,
+    pub cont_ty: Lang::Type,
+    pub exception_ty: Lang::Type,
 }
 
-impl<V, Ty> Raise<V, Ty>
+impl<Lang> Raise<Lang>
 where
-    V: Value,
-    Ty: Type,
+    Lang: Language,
 {
-    pub fn new<V1, Ty1, Ty2>(v: V1, cont_ty: Ty1, ex_ty: Ty2) -> Raise<V, Ty>
+    pub fn new<V1, Ty1, Ty2>(v: V1, cont_ty: Ty1, ex_ty: Ty2) -> Raise<Lang>
     where
-        V1: Into<V>,
-        Ty1: Into<Ty>,
-        Ty2: Into<Ty>,
+        V1: Into<Lang::Value>,
+        Ty1: Into<Lang::Type>,
+        Ty2: Into<Lang::Type>,
     {
         Raise {
             val: Box::new(v.into()),
@@ -32,28 +30,27 @@ where
     }
 }
 
-impl<V, Ty> Value for Raise<V, Ty>
+impl<Lang> Value for Raise<Lang>
 where
-    V: Value,
-    Ty: Type,
+    Lang: Language,
+    RaiseT<Lang>: Into<Lang::Term>,
 {
-    type Term = RaiseT<<V as Value>::Term, Ty>;
+    type Lang = Lang;
+    type Term = RaiseT<Lang>;
 }
 
-impl<V, Ty> From<Raise<V, Ty>> for RaiseT<<V as Value>::Term, Ty>
+impl<Lang> From<Raise<Lang>> for RaiseT<Lang>
 where
-    V: Value,
-    Ty: Type,
+    Lang: Language,
 {
-    fn from(r: Raise<V, Ty>) -> RaiseT<<V as Value>::Term, Ty> {
+    fn from(r: Raise<Lang>) -> RaiseT<Lang> {
         RaiseT::new(*r.val, r.exception_ty, r.cont_ty)
     }
 }
 
-impl<V, Ty> fmt::Display for Raise<V, Ty>
+impl<Lang> fmt::Display for Raise<Lang>
 where
-    V: Value,
-    Ty: Type,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(

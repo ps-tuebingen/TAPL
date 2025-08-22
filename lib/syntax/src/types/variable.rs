@@ -1,21 +1,21 @@
 use super::Type;
-use crate::{TypeVar, subst::SubstType};
+use crate::{TypeVar, language::Language, subst::SubstType};
 use std::{fmt, marker::PhantomData};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct TypeVariable<Ty>
+pub struct TypeVariable<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
     pub v: TypeVar,
-    phantom: PhantomData<Ty>,
+    phantom: PhantomData<Lang>,
 }
 
-impl<Ty> TypeVariable<Ty>
+impl<Lang> TypeVariable<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
-    pub fn new(v: &str) -> TypeVariable<Ty> {
+    pub fn new(v: &str) -> TypeVariable<Lang> {
         TypeVariable {
             v: v.to_owned(),
             phantom: PhantomData,
@@ -23,15 +23,16 @@ where
     }
 }
 
-impl<Ty> Type for TypeVariable<Ty> where Ty: Type {}
+impl<Lang> Type for TypeVariable<Lang> where Lang: Language {}
 
-impl<Ty> SubstType<Ty> for TypeVariable<Ty>
+impl<Lang> SubstType for TypeVariable<Lang>
 where
-    Ty: Type,
-    Self: Into<Ty>,
+    Lang: Language,
+    Self: Into<Lang::Type>,
 {
-    type Target = Ty;
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    type Target = Lang::Type;
+    type Lang = Lang;
+    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         if *v == self.v {
             ty.clone()
         } else {
@@ -40,9 +41,9 @@ where
     }
 }
 
-impl<Ty> fmt::Display for TypeVariable<Ty>
+impl<Lang> fmt::Display for TypeVariable<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.v)

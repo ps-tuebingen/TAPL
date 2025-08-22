@@ -1,6 +1,6 @@
 use std::fmt;
 
-pub trait Term: fmt::Display + fmt::Debug + Clone + PartialEq + Eq {}
+pub trait Term: fmt::Display + fmt::Debug + Clone {}
 
 pub mod app;
 pub mod ascribe;

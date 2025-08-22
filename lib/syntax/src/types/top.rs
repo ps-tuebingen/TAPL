@@ -1,28 +1,28 @@
 use super::Type;
-use crate::{TypeVar, kinds::Kind, subst::SubstType};
+use crate::{TypeVar, kinds::Kind, language::Language, subst::SubstType};
 use std::{fmt, marker::PhantomData};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Top<Ty>
+pub struct Top<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
     pub kind: Kind,
-    phantom: PhantomData<Ty>,
+    phantom: PhantomData<Lang>,
 }
 
-impl<Ty> Top<Ty>
+impl<Lang> Top<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
-    pub fn new(knd: Kind) -> Top<Ty> {
+    pub fn new(knd: Kind) -> Top<Lang> {
         Top {
             kind: knd,
             phantom: PhantomData,
         }
     }
 
-    pub fn new_star() -> Top<Ty> {
+    pub fn new_star() -> Top<Lang> {
         Top {
             kind: Kind::Star,
             phantom: PhantomData,
@@ -30,22 +30,22 @@ where
     }
 }
 
-impl<Ty> Type for Top<Ty> where Ty: Type {}
+impl<Lang> Type for Top<Lang> where Lang: Language {}
 
-impl<Ty> SubstType<Ty> for Top<Ty>
+impl<Lang> SubstType for Top<Lang>
 where
-    Ty: Type,
-    Self: Into<Ty>,
+    Lang: Language,
 {
-    type Target = Ty;
-    fn subst_type(self, _: &TypeVar, _: &Ty) -> Self::Target {
-        self.into()
+    type Target = Self;
+    type Lang = Lang;
+    fn subst_type(self, _: &TypeVar, _: &<Lang as Language>::Type) -> Self::Target {
+        self
     }
 }
 
-impl<Ty> fmt::Display for Top<Ty>
+impl<Lang> fmt::Display for Top<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "Top[{}]", self.kind)

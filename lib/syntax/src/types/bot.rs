@@ -1,20 +1,20 @@
-use crate::{TypeVar, kinds::Kind, subst::SubstType, types::Type};
+use crate::{TypeVar, kinds::Kind, language::Language, subst::SubstType, types::Type};
 use std::{fmt, marker::PhantomData};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct Bot<Ty>
+pub struct Bot<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
     pub kind: Kind,
-    phantom: PhantomData<Ty>,
+    phantom: PhantomData<Lang>,
 }
 
-impl<Ty> Bot<Ty>
+impl<Lang> Bot<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
-    pub fn new() -> Bot<Ty> {
+    pub fn new() -> Bot<Lang> {
         Bot {
             kind: Kind::Star,
             phantom: PhantomData,
@@ -22,31 +22,31 @@ where
     }
 }
 
-impl<Ty> Default for Bot<Ty>
+impl<Lang> Default for Bot<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
-    fn default() -> Bot<Ty> {
+    fn default() -> Bot<Lang> {
         Bot::new()
     }
 }
 
-impl<Ty> Type for Bot<Ty> where Ty: Type {}
+impl<Lang> Type for Bot<Lang> where Lang: Language {}
 
-impl<Ty> SubstType<Ty> for Bot<Ty>
+impl<Lang> SubstType for Bot<Lang>
 where
-    Ty: Type,
-    Self: Into<Ty>,
+    Lang: Language,
 {
-    type Target = Ty;
-    fn subst_type(self, _: &TypeVar, _: &Ty) -> Self::Target {
-        self.into()
+    type Target = Self;
+    type Lang = Lang;
+    fn subst_type(self, _: &TypeVar, _: &<Lang as Language>::Type) -> Self::Target {
+        self
     }
 }
 
-impl<Ty> fmt::Display for Bot<Ty>
+impl<Lang> fmt::Display for Bot<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.write_str("Bot")

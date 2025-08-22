@@ -1,27 +1,27 @@
 use super::Term;
 use crate::{
     Label, TypeVar, Var,
+    language::Language,
     subst::{SubstTerm, SubstType},
-    types::Type,
 };
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct RecordProj<T>
+pub struct RecordProj<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    pub record: Box<T>,
+    pub record: Box<Lang::Term>,
     pub label: Label,
 }
 
-impl<T> RecordProj<T>
+impl<Lang> RecordProj<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    pub fn new<T1>(t: T1, lb: &str) -> RecordProj<T>
+    pub fn new<T1>(t: T1, lb: &str) -> RecordProj<Lang>
     where
-        T1: Into<T>,
+        T1: Into<Lang::Term>,
     {
         RecordProj {
             record: Box::new(t.into()),
@@ -30,15 +30,15 @@ where
     }
 }
 
-impl<T> Term for RecordProj<T> where T: Term {}
+impl<Lang> Term for RecordProj<Lang> where Lang: Language {}
 
-impl<T> SubstTerm<T> for RecordProj<T>
+impl<Lang> SubstTerm for RecordProj<Lang>
 where
-    T: Term + SubstTerm<T, Target = T>,
-    Self: Into<T>,
+    Lang: Language,
 {
-    type Target = T;
-    fn subst(self, v: &Var, t: &T) -> T {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
         RecordProj {
             record: Box::new(self.record.subst(v, t)),
             label: self.label,
@@ -47,14 +47,13 @@ where
     }
 }
 
-impl<T, Ty> SubstType<Ty> for RecordProj<T>
+impl<Lang> SubstType for RecordProj<Lang>
 where
-    T: Term + SubstType<Ty, Target = T>,
-    Ty: Type,
-    Self: Into<T>,
+    Lang: Language,
 {
-    type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         RecordProj {
             record: Box::new(self.record.subst_type(v, ty)),
             label: self.label,
@@ -63,9 +62,9 @@ where
     }
 }
 
-impl<T> fmt::Display for RecordProj<T>
+impl<Lang> fmt::Display for RecordProj<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "({}).{}", self.record, self.label)

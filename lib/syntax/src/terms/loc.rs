@@ -1,25 +1,25 @@
 use super::Term;
 use crate::{
     TypeVar, Var,
+    language::Language,
     subst::{SubstTerm, SubstType},
-    types::Type,
 };
 use std::{fmt, marker::PhantomData};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Loc<T>
+pub struct Loc<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     pub loc: usize,
-    phantom: PhantomData<T>,
+    phantom: PhantomData<Lang>,
 }
 
-impl<T> Loc<T>
+impl<Lang> Loc<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    pub fn new(loc: usize) -> Loc<T> {
+    pub fn new(loc: usize) -> Loc<Lang> {
         Loc {
             loc,
             phantom: PhantomData,
@@ -27,34 +27,33 @@ where
     }
 }
 
-impl<T> Term for Loc<T> where T: Term {}
+impl<Lang> Term for Loc<Lang> where Lang: Language {}
 
-impl<T> SubstTerm<T> for Loc<T>
+impl<Lang> SubstTerm for Loc<Lang>
 where
-    T: Term,
-    Self: Into<T>,
+    Lang: Language,
 {
-    type Target = T;
-    fn subst(self, _: &Var, _: &T) -> T {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst(self, _: &Var, _: &<Lang as Language>::Term) -> Self::Target {
         self.into()
     }
 }
 
-impl<T, Ty> SubstType<Ty> for Loc<T>
+impl<Lang> SubstType for Loc<Lang>
 where
-    T: Term + SubstType<Ty, Target = T>,
-    Ty: Type,
-    Self: Into<T>,
+    Lang: Language,
 {
-    type Target = T;
-    fn subst_type(self, _: &TypeVar, _: &Ty) -> Self::Target {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst_type(self, _: &TypeVar, _: &<Lang as Language>::Type) -> Self::Target {
         self.into()
     }
 }
 
-impl<T> fmt::Display for Loc<T>
+impl<Lang> fmt::Display for Loc<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.loc)

@@ -1,54 +1,56 @@
 use super::Value;
-use crate::terms::{False as FalseT, Term};
+use crate::{language::Language, terms::False as FalseT};
 use std::{fmt, marker::PhantomData};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct False<T>
+pub struct False<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    phantom: PhantomData<T>,
+    phantom: PhantomData<Lang>,
 }
 
-impl<T> False<T>
+impl<Lang> False<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    pub fn new() -> False<T> {
+    pub fn new() -> False<Lang> {
         False {
             phantom: PhantomData,
         }
     }
 }
 
-impl<T> Default for False<T>
+impl<Lang> Default for False<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    fn default() -> False<T> {
+    fn default() -> False<Lang> {
         False::new()
     }
 }
 
-impl<T> Value for False<T>
+impl<Lang> Value for False<Lang>
 where
-    T: Term,
+    Lang: Language,
+    FalseT<Lang>: Into<Lang::Term>,
 {
-    type Term = FalseT<T>;
+    type Lang = Lang;
+    type Term = FalseT<Lang>;
 }
 
-impl<T> From<False<T>> for FalseT<T>
+impl<Lang> From<False<Lang>> for FalseT<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    fn from(_: False<T>) -> FalseT<T> {
+    fn from(_: False<Lang>) -> FalseT<Lang> {
         FalseT::new()
     }
 }
 
-impl<T> fmt::Display for False<T>
+impl<Lang> fmt::Display for False<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.write_str("false")

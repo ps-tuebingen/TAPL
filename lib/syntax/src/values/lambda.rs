@@ -1,31 +1,26 @@
 use super::Value;
-use crate::{
-    Var,
-    terms::{Lambda as LambdaT, Term},
-    types::Type,
-};
+use crate::{Var, language::Language, terms::Lambda as LambdaT};
 use std::fmt;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct Lambda<T, Ty>
+pub struct Lambda<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
     pub var: Var,
-    pub annot: Ty,
-    pub body: T,
+    pub annot: Lang::Type,
+    pub body: Lang::Term,
 }
 
-impl<T, Ty> Lambda<T, Ty>
+impl<Lang> Lambda<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
-    pub fn new<Ty1, T1>(v: &str, ty: Ty1, bd: T1) -> Lambda<T, Ty>
+    pub fn new<Ty, T>(v: &str, ty: Ty, bd: T) -> Lambda<Lang>
     where
-        T1: Into<T>,
-        Ty1: Into<Ty>,
+        T: Into<Lang::Term>,
+        Ty: Into<Lang::Type>,
+        Lang: Language,
     {
         Lambda {
             var: v.to_owned(),
@@ -35,28 +30,27 @@ where
     }
 }
 
-impl<T, Ty> Value for Lambda<T, Ty>
+impl<Lang> Value for Lambda<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
+    LambdaT<Lang>: Into<Lang::Term>,
 {
-    type Term = LambdaT<T, Ty>;
+    type Lang = Lang;
+    type Term = LambdaT<Lang>;
 }
 
-impl<T, Ty> From<Lambda<T, Ty>> for LambdaT<T, Ty>
+impl<Lang> From<Lambda<Lang>> for LambdaT<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
-    fn from(lam: Lambda<T, Ty>) -> LambdaT<T, Ty> {
+    fn from(lam: Lambda<Lang>) -> LambdaT<Lang> {
         LambdaT::new(&lam.var, lam.annot, lam.body)
     }
 }
 
-impl<T, Ty> fmt::Display for Lambda<T, Ty>
+impl<Lang> fmt::Display for Lambda<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let ty_str = self.annot.to_string();

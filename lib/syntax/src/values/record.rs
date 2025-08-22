@@ -1,22 +1,22 @@
 use super::Value;
-use crate::{Label, terms::Record as RecordT};
+use crate::{Label, language::Language, terms::Record as RecordT};
 use std::{collections::HashMap, fmt};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct Record<V>
+pub struct Record<Lang>
 where
-    V: Value,
+    Lang: Language,
 {
-    pub records: HashMap<Label, V>,
+    pub records: HashMap<Label, Lang::Value>,
 }
 
-impl<V> Record<V>
+impl<Lang> Record<Lang>
 where
-    V: Value,
+    Lang: Language,
 {
-    pub fn new<V1>(recs: HashMap<Label, V1>) -> Record<V>
+    pub fn new<V1>(recs: HashMap<Label, V1>) -> Record<Lang>
     where
-        V1: Into<V>,
+        V1: Into<Lang::Value>,
     {
         Record {
             records: recs.into_iter().map(|(lb, t)| (lb, t.into())).collect(),
@@ -24,28 +24,30 @@ where
     }
 }
 
-impl<V> Value for Record<V>
+impl<Lang> Value for Record<Lang>
 where
-    V: Value,
+    Lang: Language,
+    RecordT<Lang>: Into<Lang::Term>,
 {
-    type Term = RecordT<<V as Value>::Term>;
+    type Lang = Lang;
+    type Term = RecordT<Lang>;
 }
 
-impl<V> From<Record<V>> for RecordT<<V as Value>::Term>
+impl<Lang> From<Record<Lang>> for RecordT<Lang>
 where
-    V: Value,
+    Lang: Language,
 {
-    fn from(rec: Record<V>) -> RecordT<<V as Value>::Term> {
+    fn from(rec: Record<Lang>) -> RecordT<Lang> {
         RecordT::new(rec.records)
     }
 }
 
-impl<V> fmt::Display for Record<V>
+impl<Lang> fmt::Display for Record<Lang>
 where
-    V: Value,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let mut recs: Vec<(&Label, &V)> = self.records.iter().collect();
+        let mut recs: Vec<(&Label, &Lang::Value)> = self.records.iter().collect();
         recs.sort_by(|(lb1, _), (lb2, _)| lb1.cmp(lb2));
         write!(
             f,

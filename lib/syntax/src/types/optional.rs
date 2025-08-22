@@ -1,22 +1,22 @@
 use super::Type;
-use crate::{TypeVar, subst::SubstType};
+use crate::{TypeVar, language::Language, subst::SubstType};
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Optional<Ty>
+pub struct Optional<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
-    pub ty: Box<Ty>,
+    pub ty: Box<Lang::Type>,
 }
 
-impl<Ty> Optional<Ty>
+impl<Lang> Optional<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
-    pub fn new<Ty1>(ty: Ty1) -> Optional<Ty>
+    pub fn new<Ty1>(ty: Ty1) -> Optional<Lang>
     where
-        Ty1: Into<Ty>,
+        Ty1: Into<Lang::Type>,
     {
         Optional {
             ty: Box::new(ty.into()),
@@ -24,15 +24,15 @@ where
     }
 }
 
-impl<Ty> Type for Optional<Ty> where Ty: Type {}
+impl<Lang> Type for Optional<Lang> where Lang: Language {}
 
-impl<Ty> SubstType<Ty> for Optional<Ty>
+impl<Lang> SubstType for Optional<Lang>
 where
-    Ty: Type + SubstType<Ty, Target = Ty>,
-    Self: Into<Ty>,
+    Lang: Language,
 {
-    type Target = Ty;
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         Optional {
             ty: Box::new(self.ty.subst_type(v, ty)),
         }
@@ -40,9 +40,9 @@ where
     }
 }
 
-impl<Ty> fmt::Display for Optional<Ty>
+impl<Lang> fmt::Display for Optional<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "Optional[{}]", self.ty)

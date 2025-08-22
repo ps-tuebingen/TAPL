@@ -1,21 +1,21 @@
 use super::Value;
-use crate::terms::{Num as NumT, Term};
+use crate::{language::Language, terms::Num as NumT};
 use std::{fmt, marker::PhantomData};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct Num<T>
+pub struct Num<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     pub num: i64,
-    phantom: PhantomData<T>,
+    phantom: PhantomData<Lang>,
 }
 
-impl<T> Num<T>
+impl<Lang> Num<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    pub fn new(i: i64) -> Num<T> {
+    pub fn new(i: i64) -> Num<Lang> {
         Num {
             num: i,
             phantom: PhantomData,
@@ -23,25 +23,27 @@ where
     }
 }
 
-impl<T> Value for Num<T>
+impl<Lang> Value for Num<Lang>
 where
-    T: Term,
+    Lang: Language,
+    NumT<Lang>: Into<Lang::Term>,
 {
-    type Term = NumT<T>;
+    type Lang = Lang;
+    type Term = NumT<Lang>;
 }
 
-impl<T> From<Num<T>> for NumT<T>
+impl<Lang> From<Num<Lang>> for NumT<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    fn from(n: Num<T>) -> NumT<T> {
+    fn from(n: Num<Lang>) -> NumT<Lang> {
         NumT::new(n.num)
     }
 }
 
-impl<T> fmt::Display for Num<T>
+impl<Lang> fmt::Display for Num<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.num)

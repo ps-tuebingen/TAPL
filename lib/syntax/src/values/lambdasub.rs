@@ -1,31 +1,25 @@
 use super::Value;
-use crate::{
-    Var,
-    terms::{LambdaSub as LambdaSubT, Term},
-    types::Type,
-};
+use crate::{Var, language::Language, terms::LambdaSub as LambdaSubT};
 use std::fmt;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct LambdaSub<T, Ty>
+pub struct LambdaSub<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
     pub var: Var,
-    pub sup_ty: Ty,
-    pub term: T,
+    pub sup_ty: Lang::Type,
+    pub term: Lang::Term,
 }
 
-impl<T, Ty> LambdaSub<T, Ty>
+impl<Lang> LambdaSub<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
-    pub fn new<Ty1, T1>(v: &str, sup: Ty1, t: T1) -> LambdaSub<T, Ty>
+    pub fn new<Ty, T>(v: &str, sup: Ty, t: T) -> LambdaSub<Lang>
     where
-        Ty1: Into<Ty>,
-        T1: Into<T>,
+        Ty: Into<Lang::Type>,
+        T: Into<Lang::Term>,
     {
         LambdaSub {
             var: v.to_owned(),
@@ -35,28 +29,27 @@ where
     }
 }
 
-impl<T, Ty> Value for LambdaSub<T, Ty>
+impl<Lang> Value for LambdaSub<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
+    LambdaSubT<Lang>: Into<Lang::Term>,
 {
-    type Term = LambdaSubT<T, Ty>;
+    type Lang = Lang;
+    type Term = LambdaSubT<Lang>;
 }
 
-impl<T, Ty> From<LambdaSub<T, Ty>> for LambdaSubT<T, Ty>
+impl<Lang> From<LambdaSub<Lang>> for LambdaSubT<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
-    fn from(lam: LambdaSub<T, Ty>) -> LambdaSubT<T, Ty> {
+    fn from(lam: LambdaSub<Lang>) -> LambdaSubT<Lang> {
         LambdaSubT::new(&lam.var, lam.sup_ty, lam.term)
     }
 }
 
-impl<T, Ty> fmt::Display for LambdaSub<T, Ty>
+impl<Lang> fmt::Display for LambdaSub<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "\\{}<:({}).{}", self.var, self.sup_ty, self.term)

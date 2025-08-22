@@ -1,28 +1,28 @@
 use super::Term;
 use crate::{
     TypeVar, Var,
+    language::Language,
     subst::{SubstTerm, SubstType},
-    types::Type,
 };
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Assign<T>
+pub struct Assign<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    pub lhs: Box<T>,
-    pub rhs: Box<T>,
+    pub lhs: Box<Lang::Term>,
+    pub rhs: Box<Lang::Term>,
 }
 
-impl<T> Assign<T>
+impl<Lang> Assign<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    pub fn new<T1, T2>(lhs: T1, rhs: T2) -> Assign<T>
+    pub fn new<T1, T2>(lhs: T1, rhs: T2) -> Assign<Lang>
     where
-        T1: Into<T>,
-        T2: Into<T>,
+        T1: Into<Lang::Term>,
+        T2: Into<Lang::Term>,
     {
         Assign {
             lhs: Box::new(lhs.into()),
@@ -31,15 +31,15 @@ where
     }
 }
 
-impl<T> Term for Assign<T> where T: Term {}
+impl<Lang> Term for Assign<Lang> where Lang: Language {}
 
-impl<T> SubstTerm<T> for Assign<T>
+impl<Lang> SubstTerm for Assign<Lang>
 where
-    T: Term + SubstTerm<T, Target = T>,
-    Self: Into<T>,
+    Lang: Language,
 {
-    type Target = T;
-    fn subst(self, v: &Var, t: &T) -> T {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
         Assign {
             lhs: Box::new(self.lhs.subst(v, t)),
             rhs: Box::new(self.rhs.subst(v, t)),
@@ -48,14 +48,13 @@ where
     }
 }
 
-impl<T, Ty> SubstType<Ty> for Assign<T>
+impl<Lang> SubstType for Assign<Lang>
 where
-    T: Term + SubstType<Ty, Target = T>,
-    Ty: Type,
-    Self: Into<T>,
+    Lang: Language,
 {
-    type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         Assign {
             lhs: Box::new(self.lhs.subst_type(v, ty)),
             rhs: Box::new(self.rhs.subst_type(v, ty)),
@@ -64,9 +63,9 @@ where
     }
 }
 
-impl<T> fmt::Display for Assign<T>
+impl<Lang> fmt::Display for Assign<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "({}) := {}", self.lhs, self.rhs)

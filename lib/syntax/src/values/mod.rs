@@ -1,14 +1,15 @@
-use crate::terms::Term;
+use crate::{language::Language, terms::Term};
 use std::fmt;
 
 pub trait Value
 where
-    Self: Clone + fmt::Display + fmt::Debug + PartialEq + Eq,
+    Self: Clone + fmt::Display + fmt::Debug,
 {
-    type Term: Term + From<Self>;
+    type Lang: Language;
+    type Term: Term + Into<<Self::Lang as Language>::Term> + From<Self>;
 
-    fn into_term(self) -> Self::Term {
-        self.into()
+    fn into_term(self) -> <Self::Lang as Language>::Term {
+        <Self as Into<Self::Term>>::into(self).into()
     }
 }
 

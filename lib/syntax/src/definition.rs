@@ -1,26 +1,24 @@
-use crate::{Name, terms::Term, types::Type};
+use crate::{Name, language::Language, terms::Term};
 use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct Definition<T, Ty>
+pub struct Definition<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
     pub name: Name,
-    pub annot: Ty,
-    pub body: T,
+    pub annot: Lang::Type,
+    pub body: Lang::Term,
 }
 
-impl<T, Ty> Definition<T, Ty>
+impl<Lang> Definition<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
-    pub fn new<T1, Ty1>(name: &str, annot: Ty1, body: T1) -> Definition<T, Ty>
+    pub fn new<T, Ty>(name: &str, annot: Ty, body: T) -> Definition<Lang>
     where
-        T1: Into<T>,
-        Ty1: Into<Ty>,
+        T: Into<Lang::Term>,
+        Ty: Into<Lang::Type>,
     {
         Definition {
             name: name.to_owned(),
@@ -30,19 +28,13 @@ where
     }
 }
 
-impl<T, Ty> fmt::Display for Definition<T, Ty>
+impl<Lang> fmt::Display for Definition<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "def {}::{}:={};", self.name, self.annot, self.body)
     }
 }
 
-impl<T, Ty> Term for Definition<T, Ty>
-where
-    T: Term,
-    Ty: Type,
-{
-}
+impl<Lang> Term for Definition<Lang> where Lang: Language {}

@@ -1,27 +1,27 @@
 use super::Term;
 use crate::{
     TypeVar, Var,
+    language::Language,
     subst::{SubstTerm, SubstType},
-    types::Type,
 };
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Projection<T>
+pub struct Projection<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    pub term: Box<T>,
+    pub term: Box<Lang::Term>,
     pub index: usize,
 }
 
-impl<T> Projection<T>
+impl<Lang> Projection<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    pub fn new<T1>(t: T1, ind: usize) -> Projection<T>
+    pub fn new<T1>(t: T1, ind: usize) -> Projection<Lang>
     where
-        T1: Into<T>,
+        T1: Into<Lang::Term>,
     {
         Projection {
             term: Box::new(t.into()),
@@ -30,15 +30,15 @@ where
     }
 }
 
-impl<T> Term for Projection<T> where T: Term {}
+impl<Lang> Term for Projection<Lang> where Lang: Language {}
 
-impl<T> SubstTerm<T> for Projection<T>
+impl<Lang> SubstTerm for Projection<Lang>
 where
-    T: Term + SubstTerm<T, Target = T>,
-    Self: Into<T>,
+    Lang: Language,
 {
-    type Target = T;
-    fn subst(self, v: &Var, t: &T) -> T {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
         Projection {
             term: Box::new(self.term.subst(v, t)),
             index: self.index,
@@ -47,14 +47,13 @@ where
     }
 }
 
-impl<T, Ty> SubstType<Ty> for Projection<T>
+impl<Lang> SubstType for Projection<Lang>
 where
-    T: Term + SubstType<Ty, Target = T>,
-    Ty: Type,
-    Self: Into<T>,
+    Lang: Language,
 {
-    type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         Projection {
             term: Box::new(self.term.subst_type(v, ty)),
             index: self.index,
@@ -63,9 +62,9 @@ where
     }
 }
 
-impl<T> fmt::Display for Projection<T>
+impl<Lang> fmt::Display for Projection<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "({}).{}", self.term, self.index)

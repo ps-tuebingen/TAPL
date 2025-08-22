@@ -1,32 +1,32 @@
 use super::Term;
 use crate::{
     TypeVar, Var,
+    language::Language,
     subst::{SubstTerm, SubstType},
-    types::Type,
 };
 use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct ListCase<T>
+pub struct ListCase<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    pub bound_term: Box<T>,
-    pub nil_rhs: Box<T>,
+    pub bound_term: Box<Lang::Term>,
+    pub nil_rhs: Box<Lang::Term>,
     pub cons_fst: Var,
     pub cons_rst: Var,
-    pub cons_rhs: Box<T>,
+    pub cons_rhs: Box<Lang::Term>,
 }
 
-impl<T> ListCase<T>
+impl<Lang> ListCase<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    pub fn new<T1, T2, T3>(bound: T1, nil: T2, hd: &str, tl: &str, cons: T3) -> ListCase<T>
+    pub fn new<T1, T2, T3>(bound: T1, nil: T2, hd: &str, tl: &str, cons: T3) -> ListCase<Lang>
     where
-        T1: Into<T>,
-        T2: Into<T>,
-        T3: Into<T>,
+        T1: Into<Lang::Term>,
+        T2: Into<Lang::Term>,
+        T3: Into<Lang::Term>,
     {
         ListCase {
             bound_term: Box::new(bound.into()),
@@ -38,15 +38,15 @@ where
     }
 }
 
-impl<T> Term for ListCase<T> where T: Term {}
+impl<Lang> Term for ListCase<Lang> where Lang: Language {}
 
-impl<T> SubstTerm<T> for ListCase<T>
+impl<Lang> SubstTerm for ListCase<Lang>
 where
-    T: Term + SubstTerm<T, Target = T>,
-    Self: Into<T>,
+    Lang: Language,
 {
-    type Target = T;
-    fn subst(self, v: &Var, t: &T) -> T {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
         let bound_subst = self.bound_term.subst(v, t);
         let nil_subst = self.nil_rhs.subst(v, t);
         if *v == self.cons_fst || *v == self.cons_rst {
@@ -71,14 +71,13 @@ where
     }
 }
 
-impl<T, Ty> SubstType<Ty> for ListCase<T>
+impl<Lang> SubstType for ListCase<Lang>
 where
-    T: Term + SubstType<Ty, Target = T>,
-    Ty: Type,
-    Self: Into<T>,
+    Lang: Language,
 {
-    type Target = T;
-    fn subst_type(self, v: &TypeVar, ty: &Ty) -> Self::Target {
+    type Target = Self;
+    type Lang = Lang;
+    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         ListCase {
             bound_term: Box::new(self.bound_term.subst_type(v, ty)),
             nil_rhs: Box::new(self.nil_rhs.subst_type(v, ty)),
@@ -90,9 +89,9 @@ where
     }
 }
 
-impl<T> fmt::Display for ListCase<T>
+impl<Lang> fmt::Display for ListCase<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(

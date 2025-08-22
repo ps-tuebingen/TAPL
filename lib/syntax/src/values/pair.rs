@@ -1,24 +1,24 @@
 use super::Value;
-use crate::terms::Pair as PairT;
+use crate::{language::Language, terms::Pair as PairT};
 use std::fmt;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct Pair<V>
+pub struct Pair<Lang>
 where
-    V: Value,
+    Lang: Language,
 {
-    pub fst: Box<V>,
-    pub snd: Box<V>,
+    pub fst: Box<Lang::Value>,
+    pub snd: Box<Lang::Value>,
 }
 
-impl<V> Pair<V>
+impl<Lang> Pair<Lang>
 where
-    V: Value,
+    Lang: Language,
 {
-    pub fn new<V1, V2>(fst: V1, snd: V2) -> Pair<V>
+    pub fn new<V1, V2>(fst: V1, snd: V2) -> Pair<Lang>
     where
-        V1: Into<V>,
-        V2: Into<V>,
+        V1: Into<Lang::Value>,
+        V2: Into<Lang::Value>,
     {
         Pair {
             fst: Box::new(fst.into()),
@@ -27,25 +27,27 @@ where
     }
 }
 
-impl<V> Value for Pair<V>
+impl<Lang> Value for Pair<Lang>
 where
-    V: Value,
+    Lang: Language,
+    PairT<Lang>: Into<Lang::Term>,
 {
-    type Term = PairT<<V as Value>::Term>;
+    type Lang = Lang;
+    type Term = PairT<Lang>;
 }
 
-impl<V> From<Pair<V>> for PairT<<V as Value>::Term>
+impl<Lang> From<Pair<Lang>> for PairT<Lang>
 where
-    V: Value,
+    Lang: Language,
 {
-    fn from(p: Pair<V>) -> PairT<<V as Value>::Term> {
+    fn from(p: Pair<Lang>) -> PairT<Lang> {
         PairT::new(*p.fst, *p.snd)
     }
 }
 
-impl<V> fmt::Display for Pair<V>
+impl<Lang> fmt::Display for Pair<Lang>
 where
-    V: Value,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{{ {}, {} }}", self.fst, self.snd)
