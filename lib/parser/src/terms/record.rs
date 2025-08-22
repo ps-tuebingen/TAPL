@@ -1,18 +1,20 @@
-use crate::{Parse, Rule};
+use crate::{GroupParse, ParsableLanguage, Parse, Rule};
 use errors::{MissingInput, parse_error::ParserError};
 use pest::iterators::Pair;
 use std::collections::HashMap;
-use syntax::terms::{Record, Term};
+use syntax::terms::Record;
 
-impl<T> Parse for Record<T>
+impl<Lang> Parse for Record<Lang>
 where
-    T: Term + Parse<LeftRecArg = ()>,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
     type LeftRecArg = ();
 
     const RULE: Rule = Rule::record_term;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Record<T>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Record<Lang>, ParserError> {
         let mut inner = p.into_inner();
         let mut recs = HashMap::new();
         while let Some(label_rule) = inner.next() {
@@ -22,7 +24,7 @@ where
                 .ok_or(<MissingInput as Into<ParserError>>::into(
                     MissingInput::new("Record Term"),
                 ))?;
-            let term = T::from_pair(term_rule, ())?;
+            let term = Lang::Term::from_pair(term_rule, ())?;
             recs.insert(label, term);
         }
         Ok(Record::new(recs))

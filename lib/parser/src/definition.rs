@@ -1,12 +1,13 @@
-use crate::{Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, ParsableLanguage, Parse, Rule, pair_to_n_inner};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
-use syntax::{definition::Definition, terms::Term, types::Type};
+use syntax::definition::Definition;
 
-impl<T, Ty> Parse for Definition<T, Ty>
+impl<Lang> Parse for Definition<Lang>
 where
-    T: Term + Parse<LeftRecArg = ()>,
-    Ty: Type + Parse<LeftRecArg = ()>,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
     type LeftRecArg = ();
 
@@ -19,9 +20,9 @@ where
         )?;
         let name = inner.remove(0).as_str().trim();
         let annot_rule = inner.remove(0);
-        let annot = Ty::from_pair(annot_rule, ())?;
+        let annot = Lang::Type::from_pair(annot_rule, ())?;
         let body_rule = inner.remove(0);
-        let body = T::from_pair(body_rule, ())?;
+        let body = Lang::Term::from_pair(body_rule, ())?;
         Ok(Definition::new(name, annot, body))
     }
 }

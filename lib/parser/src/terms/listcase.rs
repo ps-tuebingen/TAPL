@@ -1,17 +1,19 @@
-use crate::{Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, ParsableLanguage, Parse, Rule, pair_to_n_inner};
 use errors::{UnexpectedRule, parse_error::ParserError};
 use pest::iterators::Pair;
-use syntax::terms::{ListCase, Term};
+use syntax::terms::ListCase;
 
-impl<T> Parse for ListCase<T>
+impl<Lang> Parse for ListCase<Lang>
 where
-    T: Term + Parse<LeftRecArg = ()>,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
     type LeftRecArg = ();
 
     const RULE: Rule = Rule::listcase_term;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<ListCase<T>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<ListCase<Lang>, ParserError> {
         let mut inner = pair_to_n_inner(
             p,
             vec![
@@ -21,7 +23,7 @@ where
             ],
         )?;
         let bound_rule = inner.remove(0);
-        let bound_term = T::from_pair(bound_rule, ())?;
+        let bound_term = Lang::Term::from_pair(bound_rule, ())?;
         let pt_fst_pair = inner.remove(0);
         let pt_rst_pair = inner.remove(0);
         let (nil_pair, cons_pair) = match (pt_fst_pair.as_rule(), pt_rst_pair.as_rule()) {
@@ -37,7 +39,7 @@ where
         };
 
         let nil_pair = pair_to_n_inner(nil_pair, vec!["Nil Rhs"])?.remove(0);
-        let nil_rhs = T::from_pair(nil_pair, ())?;
+        let nil_rhs = Lang::Term::from_pair(nil_pair, ())?;
 
         let mut cons_inner = pair_to_n_inner(
             cons_pair,
@@ -45,7 +47,7 @@ where
         )?;
         let head_var = cons_inner.remove(0).as_str().trim();
         let tail_var = cons_inner.remove(0).as_str().trim();
-        let cons_rhs = T::from_pair(cons_inner.remove(0), ())?;
+        let cons_rhs = Lang::Term::from_pair(cons_inner.remove(0), ())?;
 
         Ok(ListCase::new(
             bound_term, nil_rhs, head_var, tail_var, cons_rhs,

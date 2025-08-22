@@ -1,39 +1,47 @@
-use crate::{Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, ParsableLanguage, Parse, Rule, pair_to_n_inner};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
 use syntax::{
     kinds::Kind,
-    types::{Exists, ExistsBounded, Top, Type},
+    types::{Exists, ExistsBounded, Top},
 };
 
-pub struct ExistsUnbounded<Ty>
+pub struct ExistsUnbounded<Lang>
 where
-    Ty: Type,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
     var: String,
-    body_ty: Ty,
+    body_ty: Lang::Type,
 }
 
-impl<Ty> ExistsUnbounded<Ty>
+impl<Lang> ExistsUnbounded<Lang>
 where
-    Ty: Type,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
-    pub fn to_exists_bounded(self) -> ExistsBounded<Ty>
+    pub fn to_exists_bounded(self) -> ExistsBounded<Lang>
     where
-        Ty: Type,
-        Top<Ty>: Into<Ty>,
+        Lang: ParsableLanguage,
+        Lang::Term: GroupParse,
+        Lang::Type: GroupParse,
+        Top<Lang>: Into<Lang::Type>,
     {
         self.into()
     }
 
-    pub fn to_exists_kinded(self) -> Exists<Ty> {
+    pub fn to_exists_kinded(self) -> Exists<Lang> {
         self.into()
     }
 }
 
-impl<Ty> Parse for ExistsUnbounded<Ty>
+impl<Lang> Parse for ExistsUnbounded<Lang>
 where
-    Ty: Type + Parse<LeftRecArg = ()>,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
     type LeftRecArg = ();
 
@@ -42,33 +50,37 @@ where
     fn from_pair(
         p: Pair<'_, Rule>,
         _: Self::LeftRecArg,
-    ) -> Result<ExistsUnbounded<Ty>, ParserError> {
+    ) -> Result<ExistsUnbounded<Lang>, ParserError> {
         let mut inner = pair_to_n_inner(p, vec!["Exists Variable", "Exists Type"])?;
         let var_rule = inner.remove(0);
         let mut var_inner = pair_to_n_inner(var_rule, vec!["Exists Variable"])?;
         let var = var_inner.remove(0).as_str().trim().to_owned();
         let body_rule = inner.remove(0);
-        let body_ty = Ty::from_pair(body_rule, ())?;
+        let body_ty = Lang::Type::from_pair(body_rule, ())?;
 
         Ok(ExistsUnbounded { var, body_ty })
     }
 }
 
-impl<Ty> From<ExistsUnbounded<Ty>> for ExistsBounded<Ty>
+impl<Lang> From<ExistsUnbounded<Lang>> for ExistsBounded<Lang>
 where
-    Ty: Type,
-    Top<Ty>: Into<Ty>,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
+    Top<Lang>: Into<Lang::Type>,
 {
-    fn from(eu: ExistsUnbounded<Ty>) -> ExistsBounded<Ty> {
+    fn from(eu: ExistsUnbounded<Lang>) -> ExistsBounded<Lang> {
         ExistsBounded::new_unbounded(&eu.var, Kind::Star, eu.body_ty)
     }
 }
 
-impl<Ty> From<ExistsUnbounded<Ty>> for Exists<Ty>
+impl<Lang> From<ExistsUnbounded<Lang>> for Exists<Lang>
 where
-    Ty: Type,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
-    fn from(eu: ExistsUnbounded<Ty>) -> Exists<Ty> {
+    fn from(eu: ExistsUnbounded<Lang>) -> Exists<Lang> {
         Exists::new(&eu.var, Kind::Star, eu.body_ty)
     }
 }

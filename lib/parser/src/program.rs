@@ -1,12 +1,13 @@
-use crate::{GroupParse, Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, ParsableLanguage, Parse, Rule, pair_to_n_inner};
 use errors::{MissingInput, UndefinedMain, UnexpectedRule, parse_error::ParserError};
 use pest::iterators::Pair;
-use syntax::{definition::Definition, program::Program, terms::Term, types::Type};
+use syntax::{definition::Definition, program::Program};
 
-impl<T, Ty> Parse for Program<T, Ty>
+impl<Lang> Parse for Program<Lang>
 where
-    T: Term + GroupParse,
-    Ty: Type + GroupParse,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
     type LeftRecArg = ();
 
@@ -28,12 +29,12 @@ where
             let def_rule = pair_to_n_inner(n, vec!["Definition"])?.remove(0);
             match def_rule.as_rule() {
                 Rule::top_level_def => {
-                    let def = Definition::<T, Ty>::from_pair(def_rule, ())?;
+                    let def = Definition::<Lang>::from_pair(def_rule, ())?;
                     defs.push(def);
                 }
                 Rule::main_def => {
                     let term_rule = pair_to_n_inner(def_rule, vec!["Main Body"])?.remove(0);
-                    let main_body = T::from_pair(term_rule, ())?;
+                    let main_body = Lang::Term::from_pair(term_rule, ())?;
                     main = Some(main_body);
                 }
 

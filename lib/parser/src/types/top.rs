@@ -1,14 +1,13 @@
-use crate::{Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, ParsableLanguage, Parse, Rule, pair_to_n_inner};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
-use syntax::{
-    kinds::Kind,
-    types::{Top, Type},
-};
+use syntax::{kinds::Kind, types::Top};
 
-impl<Ty> Parse for Top<Ty>
+impl<Lang> Parse for Top<Lang>
 where
-    Ty: Type + Parse,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
     type LeftRecArg = ();
 

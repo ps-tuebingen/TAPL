@@ -1,41 +1,48 @@
-use crate::{Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, ParsableLanguage, Parse, Rule, pair_to_n_inner};
 use errors::{MissingInput, parse_error::ParserError};
 use pest::iterators::Pair;
-use syntax::terms::{Term, VariantCase, variantcase::VariantPattern};
+use syntax::terms::{VariantCase, variantcase::VariantPattern};
 
-impl<T> Parse for VariantCase<T>
+impl<Lang> Parse for VariantCase<Lang>
 where
-    T: Term + Parse<LeftRecArg = ()>,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
     type LeftRecArg = ();
 
     const RULE: Rule = Rule::variantcase_term;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<VariantCase<T>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<VariantCase<Lang>, ParserError> {
         let mut inner = p.into_inner();
         let bound_rule = inner
             .next()
             .ok_or(<MissingInput as Into<ParserError>>::into(
                 MissingInput::new("Case Bound Term"),
             ))?;
-        let bound_term = T::from_pair(bound_rule, ())?;
+        let bound_term = Lang::Term::from_pair(bound_rule, ())?;
         let mut patterns = vec![];
         for pattern_rule in inner {
-            patterns.push(VariantPattern::<T>::from_pair(pattern_rule, ())?);
+            patterns.push(VariantPattern::<Lang>::from_pair(pattern_rule, ())?);
         }
         Ok(VariantCase::new(bound_term, patterns))
     }
 }
 
-impl<T> Parse for VariantPattern<T>
+impl<Lang> Parse for VariantPattern<Lang>
 where
-    T: Term + Parse<LeftRecArg = ()>,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
     type LeftRecArg = ();
 
     const RULE: Rule = Rule::variant_pattern;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<VariantPattern<T>, ParserError> {
+    fn from_pair(
+        p: Pair<'_, Rule>,
+        _: Self::LeftRecArg,
+    ) -> Result<VariantPattern<Lang>, ParserError> {
         let mut inner = pair_to_n_inner(
             p,
             vec![
@@ -47,7 +54,7 @@ where
         let label = inner.remove(0).as_str().trim();
         let var = inner.remove(0).as_str().trim();
         let term_rule = inner.remove(0);
-        let term = T::from_pair(term_rule, ())?;
+        let term = Lang::Term::from_pair(term_rule, ())?;
         Ok(VariantPattern::new(label, var, term))
     }
 }

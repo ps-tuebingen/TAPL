@@ -4,7 +4,7 @@ use crate::{
     language::Language,
     subst::{SubstTerm, SubstType},
 };
-use std::{fmt, marker::PhantomData};
+use std::fmt;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Nil<Lang>
@@ -12,7 +12,6 @@ where
     Lang: Language,
 {
     pub ty: Lang::Type,
-    phantom: PhantomData<Lang>,
 }
 
 impl<Lang> Nil<Lang>
@@ -23,10 +22,7 @@ where
     where
         Typ: Into<Lang::Type>,
     {
-        Nil {
-            ty: ty.into(),
-            phantom: PhantomData,
-        }
+        Nil { ty: ty.into() }
     }
 }
 
@@ -52,7 +48,6 @@ where
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         Nil {
             ty: self.ty.subst_type(v, ty),
-            phantom: PhantomData,
         }
         .into()
     }

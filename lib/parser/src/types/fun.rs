@@ -1,18 +1,20 @@
-use crate::{Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, ParsableLanguage, Parse, Rule, pair_to_n_inner};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
-use syntax::types::{Fun, Type};
+use syntax::types::Fun;
 
-impl<Ty> Parse for Fun<Ty>
+impl<Lang> Parse for Fun<Lang>
 where
-    Ty: Type + Parse<LeftRecArg = ()>,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
-    type LeftRecArg = Ty;
+    type LeftRecArg = Lang::Type;
 
     const RULE: Rule = Rule::fun_type;
-    fn from_pair(p: Pair<'_, Rule>, ty: Self::LeftRecArg) -> Result<Fun<Ty>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, ty: Self::LeftRecArg) -> Result<Fun<Lang>, ParserError> {
         let to_rule = pair_to_n_inner(p, vec!["Function Return Type"])?.remove(0);
-        let to_ty = Ty::from_pair(to_rule, ())?;
+        let to_ty = Lang::Type::from_pair(to_rule, ())?;
         Ok(Fun::new(ty, to_ty))
     }
 }

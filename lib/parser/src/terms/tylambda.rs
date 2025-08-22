@@ -1,20 +1,19 @@
-use crate::{Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, ParsableLanguage, Parse, Rule, pair_to_n_inner};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
-use syntax::{
-    kinds::Kind,
-    terms::{Term, TyLambda},
-};
+use syntax::{kinds::Kind, terms::TyLambda};
 
-impl<T> Parse for TyLambda<T>
+impl<Lang> Parse for TyLambda<Lang>
 where
-    T: Term + Parse<LeftRecArg = ()>,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
     type LeftRecArg = ();
 
     const RULE: Rule = Rule::ty_lambda_kinded_term;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<TyLambda<T>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<TyLambda<Lang>, ParserError> {
         let mut inner = pair_to_n_inner(
             p,
             vec!["TyLambda Variable", "TyLambda Kind", "TyLambda Term"],
@@ -23,7 +22,7 @@ where
         let kind_rule = inner.remove(0);
         let kind = Kind::from_pair(kind_rule, ())?;
         let term_rule = inner.remove(0);
-        let term = T::from_pair(term_rule, ())?;
+        let term = Lang::Term::from_pair(term_rule, ())?;
         Ok(TyLambda::new(var, kind, term))
     }
 }

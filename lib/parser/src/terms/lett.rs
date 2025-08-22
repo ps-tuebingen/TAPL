@@ -1,23 +1,25 @@
-use crate::{Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, ParsableLanguage, Parse, Rule, pair_to_n_inner};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
-use syntax::terms::{Let, Term};
+use syntax::terms::Let;
 
-impl<T> Parse for Let<T>
+impl<Lang> Parse for Let<Lang>
 where
-    T: Term + Parse<LeftRecArg = ()>,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
     type LeftRecArg = ();
 
     const RULE: Rule = Rule::let_term;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Let<T>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Let<Lang>, ParserError> {
         let mut inner = pair_to_n_inner(p, vec!["Let Variable", "Let Bound Term", "Let In Term"])?;
         let var = inner.remove(0).as_str().trim();
         let bound_rule = inner.remove(0);
-        let bound_term = T::from_pair(bound_rule, ())?;
+        let bound_term = Lang::Term::from_pair(bound_rule, ())?;
         let in_rule = inner.remove(0);
-        let in_term = T::from_pair(in_rule, ())?;
+        let in_term = Lang::Term::from_pair(in_rule, ())?;
         Ok(Let::new(var, bound_term, in_term))
     }
 }

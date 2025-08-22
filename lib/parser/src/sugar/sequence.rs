@@ -1,45 +1,50 @@
-use crate::{Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, ParsableLanguage, Parse, Rule, pair_to_n_inner};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
 use syntax::{
-    terms::{App, Lambda, Term},
-    types::{Type, Unit},
+    terms::{App, Lambda},
+    types::Unit,
 };
 
-pub struct Sequence<T>
+pub struct Sequence<Lang>
 where
-    T: Term,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
-    fst: T,
-    snd: T,
+    fst: Lang::Term,
+    snd: Lang::Term,
 }
 
-impl<T> Sequence<T>
+impl<Lang> Sequence<Lang>
 where
-    T: Term,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
-    pub fn to_term<Ty>(self) -> T
+    pub fn to_term(self) -> Lang::Term
     where
-        App<T>: Into<T>,
-        Ty: Type,
-        Lambda<T, Ty>: Into<T>,
-        Unit<Ty>: Into<Ty>,
+        App<Lang>: Into<Lang::Term>,
+        Lambda<Lang>: Into<Lang::Term>,
+        Unit<Lang>: Into<Lang::Type>,
     {
         App::new(Lambda::new("_", Unit::new(), self.snd), self.fst).into()
     }
 }
 
-impl<T> Parse for Sequence<T>
+impl<Lang> Parse for Sequence<Lang>
 where
-    T: Term + Parse<LeftRecArg = ()>,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
-    type LeftRecArg = T;
+    type LeftRecArg = Lang::Term;
 
     const RULE: Rule = Rule::sequence;
 
-    fn from_pair(p: Pair<'_, Rule>, t: Self::LeftRecArg) -> Result<Sequence<T>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, t: Self::LeftRecArg) -> Result<Sequence<Lang>, ParserError> {
         let term_rule = pair_to_n_inner(p, vec!["Sequence Second Term"])?.remove(0);
-        let term = T::from_pair(term_rule, ())?;
+        let term = Lang::Term::from_pair(term_rule, ())?;
         Ok(Sequence { fst: t, snd: term })
     }
 }

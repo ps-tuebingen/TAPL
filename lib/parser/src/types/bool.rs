@@ -1,17 +1,19 @@
-use crate::{Parse, Rule};
+use crate::{GroupParse, ParsableLanguage, Parse, Rule};
 use errors::{UnknownKeyword, parse_error::ParserError};
 use pest::iterators::Pair;
-use syntax::types::{Bool, Type};
+use syntax::types::Bool;
 
-impl<Ty> Parse for Bool<Ty>
+impl<Lang> Parse for Bool<Lang>
 where
-    Ty: Type + Parse<LeftRecArg = ()>,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
     type LeftRecArg = ();
 
     const RULE: Rule = Rule::const_type;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Bool<Ty>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Bool<Lang>, ParserError> {
         let bl = Bool::new();
         let p_str = p.as_str().trim().to_lowercase();
         if p_str == bl.to_string().to_lowercase() {

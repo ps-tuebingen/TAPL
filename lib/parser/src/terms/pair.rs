@@ -1,22 +1,24 @@
-use crate::{Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, ParsableLanguage, Parse, Rule, pair_to_n_inner};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
-use syntax::terms::{Pair as PairT, Term};
+use syntax::terms::Pair as PairT;
 
-impl<T> Parse for PairT<T>
+impl<Lang> Parse for PairT<Lang>
 where
-    T: Term + Parse<LeftRecArg = ()>,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
     type LeftRecArg = ();
 
     const RULE: Rule = Rule::pair_term;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<PairT<T>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<PairT<Lang>, ParserError> {
         let mut inner = pair_to_n_inner(p, vec!["Pair First", "Pair Second"])?;
         let fst_rule = inner.remove(0);
-        let fst = T::from_pair(fst_rule, ())?;
+        let fst = Lang::Term::from_pair(fst_rule, ())?;
         let snd_rule = inner.remove(0);
-        let snd = T::from_pair(snd_rule, ())?;
+        let snd = Lang::Term::from_pair(snd_rule, ())?;
         Ok(PairT::new(fst, snd))
     }
 }

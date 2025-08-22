@@ -1,23 +1,21 @@
-use crate::{Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, ParsableLanguage, Parse, Rule, pair_to_n_inner};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
-use syntax::{
-    terms::{Cast, Term},
-    types::Type,
-};
+use syntax::terms::Cast;
 
-impl<T, Ty> Parse for Cast<T, Ty>
+impl<Lang> Parse for Cast<Lang>
 where
-    T: Term + Parse<LeftRecArg = ()>,
-    Ty: Type + Parse<LeftRecArg = ()>,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
-    type LeftRecArg = T;
+    type LeftRecArg = Lang::Term;
     const RULE: Rule = Rule::cast;
 
-    fn from_pair(p: Pair<'_, Rule>, t: Self::LeftRecArg) -> Result<Cast<T, Ty>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, t: Self::LeftRecArg) -> Result<Cast<Lang>, ParserError> {
         let mut inner = pair_to_n_inner(p, vec!["Cast Type"])?;
         let ty_rule = inner.remove(0);
-        let ty = Ty::from_pair(ty_rule, ())?;
+        let ty = Lang::Type::from_pair(ty_rule, ())?;
         Ok(Cast::new(t, ty))
     }
 }

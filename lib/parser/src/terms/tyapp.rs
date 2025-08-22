@@ -1,23 +1,21 @@
-use crate::{Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, ParsableLanguage, Parse, Rule, pair_to_n_inner};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
-use syntax::{
-    terms::{Term, TyApp},
-    types::Type,
-};
+use syntax::terms::TyApp;
 
-impl<T, Ty> Parse for TyApp<T, Ty>
+impl<Lang> Parse for TyApp<Lang>
 where
-    T: Term + Parse,
-    Ty: Type + Parse<LeftRecArg = ()>,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
-    type LeftRecArg = T;
+    type LeftRecArg = Lang::Term;
 
     const RULE: Rule = Rule::tyapp;
 
-    fn from_pair(p: Pair<'_, Rule>, t: Self::LeftRecArg) -> Result<TyApp<T, Ty>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, t: Self::LeftRecArg) -> Result<TyApp<Lang>, ParserError> {
         let ty_rule = pair_to_n_inner(p, vec!["Type"])?.remove(0);
-        let ty = Ty::from_pair(ty_rule, ())?;
+        let ty = Lang::Type::from_pair(ty_rule, ())?;
         Ok(TyApp::new(t, ty))
     }
 }

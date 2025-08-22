@@ -1,11 +1,13 @@
-use crate::{Parse, Rule};
+use crate::{GroupParse, ParsableLanguage, Parse, Rule};
 use errors::{UnknownKeyword, parse_error::ParserError};
 use pest::iterators::Pair;
-use syntax::terms::{Num, Term};
+use syntax::terms::Num;
 
-impl<T> Parse for Num<T>
+impl<Lang> Parse for Num<Lang>
 where
-    T: Term + Parse,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
     type LeftRecArg = ();
 

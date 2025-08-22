@@ -1,13 +1,15 @@
-use crate::{Parse, Rule};
+use crate::{GroupParse, ParsableLanguage, Parse, Rule};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
-use syntax::terms::{Snd, Term};
+use syntax::terms::Snd;
 
-impl<T> Parse for Snd<T>
+impl<Lang> Parse for Snd<Lang>
 where
-    T: Term + Parse,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
-    type LeftRecArg = T;
+    type LeftRecArg = Lang::Term;
 
     const RULE: Rule = Rule::fst_term;
 

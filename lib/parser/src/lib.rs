@@ -9,10 +9,18 @@ mod untyped;
 use errors::{MissingInput, RemainingInput, parse_error::ParserError};
 use pest::{Parser, iterators::Pair};
 use pest_derive::Parser;
+use syntax::language::Language;
 
 #[derive(Parser)]
 #[grammar = "../../parser/src/grammar.pest"]
 pub struct LangParser;
+
+pub trait ParsableLanguage: Language
+where
+    Self::Term: GroupParse,
+    Self::Type: GroupParse,
+{
+}
 
 pub trait Parse: Sized {
     type LeftRecArg;

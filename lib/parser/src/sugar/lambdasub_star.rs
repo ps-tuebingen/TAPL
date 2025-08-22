@@ -1,35 +1,37 @@
-use crate::{Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, ParsableLanguage, Parse, Rule, pair_to_n_inner};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
-use syntax::{
-    terms::{LambdaSub, Term},
-    types::{Top, Type},
-};
+use syntax::{terms::LambdaSub, types::Top};
 
-pub struct LambdaSubStar<T>
+pub struct LambdaSubStar<Lang>
 where
-    T: Term,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
     var: String,
-    body: T,
+    body: Lang::Term,
 }
 
-impl<T> LambdaSubStar<T>
+impl<Lang> LambdaSubStar<Lang>
 where
-    T: Term,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
-    pub fn to_lambda_sub<Ty>(self) -> LambdaSub<T, Ty>
+    pub fn to_lambda_sub(self) -> LambdaSub<Lang>
     where
-        Ty: Type,
-        Top<Ty>: Into<Ty>,
+        Top<Lang>: Into<Lang::Type>,
     {
         self.into()
     }
 }
 
-impl<T> Parse for LambdaSubStar<T>
+impl<Lang> Parse for LambdaSubStar<Lang>
 where
-    T: Term + Parse<LeftRecArg = ()>,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
     type LeftRecArg = ();
 
@@ -39,18 +41,19 @@ where
         let mut inner = pair_to_n_inner(p, vec!["Type Variable", "Type Abstraction Body"])?;
         let var = inner.remove(0).as_str().trim().to_owned();
         let body_rule = inner.remove(0);
-        let body = T::from_pair(body_rule, ())?;
+        let body = Lang::Term::from_pair(body_rule, ())?;
         Ok(LambdaSubStar { var, body })
     }
 }
 
-impl<T, Ty> From<LambdaSubStar<T>> for LambdaSub<T, Ty>
+impl<Lang> From<LambdaSubStar<Lang>> for LambdaSub<Lang>
 where
-    T: Term,
-    Ty: Type,
-    Top<Ty>: Into<Ty>,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
+    Top<Lang>: Into<Lang::Type>,
 {
-    fn from(ls: LambdaSubStar<T>) -> LambdaSub<T, Ty> {
+    fn from(ls: LambdaSubStar<Lang>) -> LambdaSub<Lang> {
         LambdaSub::new_unbounded(&ls.var, ls.body)
     }
 }

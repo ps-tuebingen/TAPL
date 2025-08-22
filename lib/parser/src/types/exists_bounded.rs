@@ -1,17 +1,22 @@
-use crate::{Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, ParsableLanguage, Parse, Rule, pair_to_n_inner};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
-use syntax::types::{ExistsBounded, Type};
+use syntax::types::ExistsBounded;
 
-impl<Ty> Parse for ExistsBounded<Ty>
+impl<Lang> Parse for ExistsBounded<Lang>
 where
-    Ty: Type + Parse<LeftRecArg = ()>,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
     type LeftRecArg = ();
 
     const RULE: Rule = Rule::exists_bounded_type;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<ExistsBounded<Ty>, ParserError> {
+    fn from_pair(
+        p: Pair<'_, Rule>,
+        _: Self::LeftRecArg,
+    ) -> Result<ExistsBounded<Lang>, ParserError> {
         let mut inner = pair_to_n_inner(
             p,
             vec!["Exists Variable", "Exists Super Type", "Exists Type"],
@@ -21,10 +26,10 @@ where
         let var = var_inner.remove(0).as_str().trim();
 
         let super_rule = inner.remove(0);
-        let sup_ty = Ty::from_pair(super_rule, ())?;
+        let sup_ty = Lang::Type::from_pair(super_rule, ())?;
 
         let ty_rule = inner.remove(0);
-        let ty = Ty::from_pair(ty_rule, ())?;
+        let ty = Lang::Type::from_pair(ty_rule, ())?;
 
         Ok(ExistsBounded::new(var, sup_ty, ty))
     }

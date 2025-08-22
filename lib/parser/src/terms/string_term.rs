@@ -1,23 +1,27 @@
-use crate::Rule;
+use crate::{GroupParse, ParsableLanguage, Rule};
 use errors::{UnknownKeyword, parse_error::ParserError};
 use pest::iterators::Pair;
-use syntax::terms::{False, Num, Term, True, Unit};
+use syntax::terms::{False, Num, True, Unit};
 
-pub struct StringTerm<T>
+pub struct StringTerm<Lang>
 where
-    T: Term,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
-    unit: Option<T>,
-    zero: Option<T>,
-    fls: Option<T>,
-    tru: Option<T>,
+    unit: Option<Lang::Term>,
+    zero: Option<Lang::Term>,
+    fls: Option<Lang::Term>,
+    tru: Option<Lang::Term>,
 }
 
-impl<T> StringTerm<T>
+impl<Lang> StringTerm<Lang>
 where
-    T: Term,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
-    pub fn new() -> StringTerm<T> {
+    pub fn new() -> StringTerm<Lang> {
         StringTerm {
             unit: None,
             zero: None,
@@ -26,9 +30,9 @@ where
         }
     }
 
-    pub fn with_unit(self) -> StringTerm<T>
+    pub fn with_unit(self) -> StringTerm<Lang>
     where
-        Unit<T>: Into<T>,
+        Unit<Lang>: Into<Lang::Term>,
     {
         StringTerm {
             unit: Some(Unit::new().into()),
@@ -38,9 +42,9 @@ where
         }
     }
 
-    pub fn with_zero(self) -> StringTerm<T>
+    pub fn with_zero(self) -> StringTerm<Lang>
     where
-        Num<T>: Into<T>,
+        Num<Lang>: Into<Lang::Term>,
     {
         StringTerm {
             unit: self.unit,
@@ -50,9 +54,9 @@ where
         }
     }
 
-    pub fn with_false(self) -> StringTerm<T>
+    pub fn with_false(self) -> StringTerm<Lang>
     where
-        False<T>: Into<T>,
+        False<Lang>: Into<Lang::Term>,
     {
         StringTerm {
             unit: self.unit,
@@ -62,9 +66,9 @@ where
         }
     }
 
-    pub fn with_true(self) -> StringTerm<T>
+    pub fn with_true(self) -> StringTerm<Lang>
     where
-        True<T>: Into<T>,
+        True<Lang>: Into<Lang::Term>,
     {
         StringTerm {
             unit: self.unit,
@@ -74,7 +78,7 @@ where
         }
     }
 
-    pub fn from_pair(self, p: Pair<'_, Rule>) -> Result<T, ParserError> {
+    pub fn from_pair(self, p: Pair<'_, Rule>) -> Result<Lang::Term, ParserError> {
         let err = UnknownKeyword::new(p.as_str()).into();
         match p.as_str().to_lowercase().trim() {
             "unit" => {
@@ -110,11 +114,13 @@ where
     }
 }
 
-impl<T> Default for StringTerm<T>
+impl<Lang> Default for StringTerm<Lang>
 where
-    T: Term,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
-    fn default() -> StringTerm<T> {
+    fn default() -> StringTerm<Lang> {
         StringTerm::new()
     }
 }

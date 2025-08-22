@@ -1,20 +1,19 @@
-use crate::{Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, ParsableLanguage, Parse, Rule, pair_to_n_inner};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
-use syntax::{
-    kinds::Kind,
-    types::{OpLambda, Type},
-};
+use syntax::{kinds::Kind, types::OpLambda};
 
-impl<Ty> Parse for OpLambda<Ty>
+impl<Lang> Parse for OpLambda<Lang>
 where
-    Ty: Type + Parse<LeftRecArg = ()>,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
     type LeftRecArg = ();
 
     const RULE: Rule = Rule::op_lambda_type;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<OpLambda<Ty>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<OpLambda<Lang>, ParserError> {
         let mut inner = pair_to_n_inner(
             p,
             vec!["Op Lambda Var", "Op Lambda Annot", "Op Lambda Body"],
@@ -23,7 +22,7 @@ where
         let kind_rule = inner.remove(0);
         let kind = Kind::from_pair(kind_rule, ())?;
         let body_rule = inner.remove(0);
-        let body = Ty::from_pair(body_rule, ())?;
+        let body = Lang::Type::from_pair(body_rule, ())?;
         Ok(OpLambda::new(var, kind, body))
     }
 }

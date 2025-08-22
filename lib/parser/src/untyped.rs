@@ -1,11 +1,13 @@
-use crate::{GroupParse, Rule};
+use crate::{GroupParse, ParsableLanguage, Rule};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
-use syntax::{terms::Term, untyped::Untyped};
+use syntax::untyped::Untyped;
 
-impl<T> GroupParse for Untyped<T>
+impl<Lang> GroupParse for Untyped<Lang>
 where
-    T: Term,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
     const RULE: Rule = Rule::r#type;
     fn from_pair_nonrec(_: Pair<'_, Rule>) -> Result<Self, ParserError> {

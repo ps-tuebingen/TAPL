@@ -1,23 +1,25 @@
-use crate::{Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, ParsableLanguage, Parse, Rule, pair_to_n_inner};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
-use syntax::types::{Sum, Type};
+use syntax::types::Sum;
 
-impl<Ty> Parse for Sum<Ty>
+impl<Lang> Parse for Sum<Lang>
 where
-    Ty: Type + Parse<LeftRecArg = ()>,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
     type LeftRecArg = ();
     const RULE: Rule = Rule::sum_type;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Sum<Ty>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Sum<Lang>, ParserError> {
         let mut inner = pair_to_n_inner(p, vec!["First Sum Type", "Second Sum Type"])?;
 
         let fst_pair = inner.remove(0);
-        let fst_ty = Ty::from_pair(fst_pair, ())?;
+        let fst_ty = Lang::Type::from_pair(fst_pair, ())?;
 
         let snd_pair = inner.remove(0);
-        let snd_ty = Ty::from_pair(snd_pair, ())?;
+        let snd_ty = Lang::Type::from_pair(snd_pair, ())?;
 
         Ok(Sum::new(fst_ty, snd_ty))
     }

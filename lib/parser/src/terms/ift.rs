@@ -1,25 +1,27 @@
-use crate::{Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, ParsableLanguage, Parse, Rule, pair_to_n_inner};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
-use syntax::terms::{If, Term};
+use syntax::terms::If;
 
-impl<T> Parse for If<T>
+impl<Lang> Parse for If<Lang>
 where
-    T: Term + Parse<LeftRecArg = ()>,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
     type LeftRecArg = ();
 
     const RULE: Rule = Rule::if_term;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<If<T>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<If<Lang>, ParserError> {
         let mut inner = pair_to_n_inner(p, vec!["If Condition", "Then Term", "Else Term"])?;
 
         let ift_rule = inner.remove(0);
-        let ift = T::from_pair(ift_rule, ())?;
+        let ift = Lang::Term::from_pair(ift_rule, ())?;
         let thent_rule = inner.remove(0);
-        let thent = T::from_pair(thent_rule, ())?;
+        let thent = Lang::Term::from_pair(thent_rule, ())?;
         let elset_rule = inner.remove(0);
-        let elset = T::from_pair(elset_rule, ())?;
+        let elset = Lang::Term::from_pair(elset_rule, ())?;
         Ok(If::new(ift, thent, elset))
     }
 }

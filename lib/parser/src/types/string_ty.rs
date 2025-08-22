@@ -1,23 +1,27 @@
-use crate::Rule;
+use crate::{GroupParse, ParsableLanguage, Rule};
 use errors::{UnknownKeyword, parse_error::ParserError};
 use pest::iterators::Pair;
-use syntax::types::{Bool, Bot, Nat, Type, Unit};
+use syntax::types::{Bool, Bot, Nat, Unit};
 
-pub struct StringTy<Ty>
+pub struct StringTy<Lang>
 where
-    Ty: Type,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
-    nat: Option<Ty>,
-    bool: Option<Ty>,
-    unit: Option<Ty>,
-    bot: Option<Ty>,
+    nat: Option<Lang::Type>,
+    bool: Option<Lang::Type>,
+    unit: Option<Lang::Type>,
+    bot: Option<Lang::Type>,
 }
 
-impl<Ty> StringTy<Ty>
+impl<Lang> StringTy<Lang>
 where
-    Ty: Type,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
-    pub fn new() -> StringTy<Ty> {
+    pub fn new() -> StringTy<Lang> {
         StringTy {
             nat: None,
             bool: None,
@@ -26,9 +30,9 @@ where
         }
     }
 
-    pub fn with_bot(self) -> StringTy<Ty>
+    pub fn with_bot(self) -> StringTy<Lang>
     where
-        Bot<Ty>: Into<Ty>,
+        Bot<Lang>: Into<Lang::Type>,
     {
         StringTy {
             bot: Some(Bot::new().into()),
@@ -38,9 +42,9 @@ where
         }
     }
 
-    pub fn with_nat(self) -> StringTy<Ty>
+    pub fn with_nat(self) -> StringTy<Lang>
     where
-        Nat<Ty>: Into<Ty>,
+        Nat<Lang>: Into<Lang::Type>,
     {
         StringTy {
             bot: self.bot,
@@ -50,9 +54,9 @@ where
         }
     }
 
-    pub fn with_bool(self) -> StringTy<Ty>
+    pub fn with_bool(self) -> StringTy<Lang>
     where
-        Bool<Ty>: Into<Ty>,
+        Bool<Lang>: Into<Lang::Type>,
     {
         StringTy {
             bot: self.bot,
@@ -62,9 +66,9 @@ where
         }
     }
 
-    pub fn with_unit(self) -> StringTy<Ty>
+    pub fn with_unit(self) -> StringTy<Lang>
     where
-        Unit<Ty>: Into<Ty>,
+        Unit<Lang>: Into<Lang::Type>,
     {
         StringTy {
             bot: self.bot,
@@ -74,7 +78,7 @@ where
         }
     }
 
-    pub fn from_pair(self, p: Pair<'_, Rule>) -> Result<Ty, ParserError> {
+    pub fn from_pair(self, p: Pair<'_, Rule>) -> Result<Lang::Type, ParserError> {
         let err = UnknownKeyword::new(p.as_str()).into();
         match p.as_str().to_lowercase().trim() {
             "bot" => {
@@ -110,11 +114,13 @@ where
     }
 }
 
-impl<Ty> Default for StringTy<Ty>
+impl<Lang> Default for StringTy<Lang>
 where
-    Ty: Type,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
-    fn default() -> StringTy<Ty> {
+    fn default() -> StringTy<Lang> {
         StringTy::new()
     }
 }

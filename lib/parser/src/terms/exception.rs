@@ -1,24 +1,22 @@
-use crate::{Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, ParsableLanguage, Parse, Rule, pair_to_n_inner};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
-use syntax::{
-    terms::{Exception, Term},
-    types::Type,
-};
+use syntax::terms::Exception;
 
-impl<T, Ty> Parse for Exception<T, Ty>
+impl<Lang> Parse for Exception<Lang>
 where
-    T: Term + Parse,
-    Ty: Type + Parse<LeftRecArg = ()>,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
     type LeftRecArg = ();
 
     const RULE: Rule = Rule::err_term;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Exception<T, Ty>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Exception<Lang>, ParserError> {
         let mut inner = pair_to_n_inner(p, vec!["Error Type"])?;
         let ty_rule = inner.remove(0);
-        let ty = Ty::from_pair(ty_rule, ())?;
+        let ty = Lang::Type::from_pair(ty_rule, ())?;
         Ok(Exception::new(ty))
     }
 }

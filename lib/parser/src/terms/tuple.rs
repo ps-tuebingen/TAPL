@@ -1,19 +1,21 @@
-use crate::{Parse, Rule};
+use crate::{GroupParse, ParsableLanguage, Parse, Rule};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
-use syntax::terms::{Term, Tuple};
+use syntax::terms::Tuple;
 
-impl<T> Parse for Tuple<T>
+impl<Lang> Parse for Tuple<Lang>
 where
-    T: Term + Parse<LeftRecArg = ()>,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
     type LeftRecArg = ();
     const RULE: Rule = Rule::tuple_term;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Tuple<T>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Tuple<Lang>, ParserError> {
         let mut terms = vec![];
         for p in p.into_inner() {
-            let p_term = T::from_pair(p, ())?;
+            let p_term = Lang::Term::from_pair(p, ())?;
             terms.push(p_term);
         }
         Ok(Tuple::new(terms))

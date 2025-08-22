@@ -1,21 +1,23 @@
-use crate::{Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, ParsableLanguage, Parse, Rule, pair_to_n_inner};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
-use syntax::types::{Product, Type};
+use syntax::types::Product;
 
-impl<Ty> Parse for Product<Ty>
+impl<Lang> Parse for Product<Lang>
 where
-    Ty: Type + Parse<LeftRecArg = ()>,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
     type LeftRecArg = ();
     const RULE: Rule = Rule::prod_type;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Product<Ty>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Product<Lang>, ParserError> {
         let mut inner = pair_to_n_inner(p, vec!["Pair First Type", "Pair Second Type"])?;
         let fst_rule = inner.remove(0);
-        let fst = Ty::from_pair(fst_rule, ())?;
+        let fst = Lang::Type::from_pair(fst_rule, ())?;
         let snd_rule = inner.remove(0);
-        let snd = Ty::from_pair(snd_rule, ())?;
+        let snd = Lang::Type::from_pair(snd_rule, ())?;
         Ok(Product::new(fst, snd))
     }
 }

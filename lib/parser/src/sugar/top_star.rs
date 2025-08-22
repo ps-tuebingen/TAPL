@@ -1,46 +1,54 @@
-use crate::{Parse, Rule};
+use crate::{GroupParse, ParsableLanguage, Parse, Rule};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
 use std::marker::PhantomData;
-use syntax::types::{Top, Type};
+use syntax::types::Top;
 
-pub struct TopStar<Ty>
+pub struct TopStar<Lang>
 where
-    Ty: Type,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
-    phantom: PhantomData<Ty>,
+    phantom: PhantomData<Lang>,
 }
 
-impl<Ty> TopStar<Ty>
+impl<Lang> TopStar<Lang>
 where
-    Ty: Type,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
-    pub fn to_top(self) -> Top<Ty>
+    pub fn to_top(self) -> Top<Lang>
 where {
         self.into()
     }
 }
 
-impl<Ty> Parse for TopStar<Ty>
+impl<Lang> Parse for TopStar<Lang>
 where
-    Ty: Type + Parse<LeftRecArg = ()>,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
     type LeftRecArg = ();
 
     const RULE: Rule = Rule::top_type_star;
 
-    fn from_pair(_: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<TopStar<Ty>, ParserError> {
+    fn from_pair(_: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<TopStar<Lang>, ParserError> {
         Ok(TopStar {
             phantom: PhantomData,
         })
     }
 }
 
-impl<Ty> From<TopStar<Ty>> for Top<Ty>
+impl<Lang> From<TopStar<Lang>> for Top<Lang>
 where
-    Ty: Type,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
-    fn from(_: TopStar<Ty>) -> Top<Ty> {
+    fn from(_: TopStar<Lang>) -> Top<Lang> {
         Top::new_star()
     }
 }

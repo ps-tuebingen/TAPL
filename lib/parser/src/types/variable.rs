@@ -1,11 +1,13 @@
-use crate::{Parse, Rule};
+use crate::{GroupParse, ParsableLanguage, Parse, Rule};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
-use syntax::types::{Type, TypeVariable};
+use syntax::types::TypeVariable;
 
-impl<Ty> Parse for TypeVariable<Ty>
+impl<Lang> Parse for TypeVariable<Lang>
 where
-    Ty: Type + Parse,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
     type LeftRecArg = ();
 

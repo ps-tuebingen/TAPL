@@ -1,18 +1,20 @@
-use crate::{Parse, Rule};
+use crate::{GroupParse, ParsableLanguage, Parse, Rule};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
-use syntax::terms::{App, Term};
+use syntax::terms::App;
 
-impl<T> Parse for App<T>
+impl<Lang> Parse for App<Lang>
 where
-    T: Term + Parse<LeftRecArg = ()>,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
-    type LeftRecArg = T;
+    type LeftRecArg = Lang::Term;
 
     const RULE: Rule = Rule::term;
 
     fn from_pair(p: Pair<'_, Rule>, fun: Self::LeftRecArg) -> Result<Self, ParserError> {
-        let arg = T::from_pair(p, ())?;
+        let arg = Lang::Term::from_pair(p, ())?;
         Ok(App::new(fun, arg))
     }
 }

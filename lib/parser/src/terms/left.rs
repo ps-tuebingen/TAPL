@@ -1,31 +1,29 @@
-use crate::{Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, ParsableLanguage, Parse, Rule, pair_to_n_inner};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
-use syntax::{
-    terms::{Left, Term},
-    types::Type,
-};
+use syntax::terms::Left;
 
-impl<T, Ty> Parse for Left<T, Ty>
+impl<Lang> Parse for Left<Lang>
 where
-    T: Term + Parse<LeftRecArg = ()>,
-    Ty: Type + Parse<LeftRecArg = ()>,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
     type LeftRecArg = ();
 
     const RULE: Rule = Rule::left_term;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Left<T, Ty>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Left<Lang>, ParserError> {
         let mut inner = pair_to_n_inner(p, vec!["Inl Argument", "Inl Type"])?;
 
         let arg_pair = inner.remove(0);
-        let arg_term = T::from_pair(
+        let arg_term = Lang::Term::from_pair(
             pair_to_n_inner(arg_pair, vec!["Paren Term Inner"])?.remove(0),
             (),
         )?;
 
         let ty_pair = inner.remove(0);
-        let ty = Ty::from_pair(ty_pair, ())?;
+        let ty = Lang::Type::from_pair(ty_pair, ())?;
 
         Ok(Left::new(arg_term, ty))
     }

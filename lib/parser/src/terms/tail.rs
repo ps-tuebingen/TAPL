@@ -1,27 +1,25 @@
-use crate::{Parse, Rule};
+use crate::{GroupParse, ParsableLanguage, Parse, Rule};
 use errors::{MissingInput, RemainingInput, parse_error::ParserError};
 use pest::iterators::Pair;
-use syntax::{
-    terms::{Tail, Term},
-    types::Type,
-};
+use syntax::terms::Tail;
 
-impl<T, Ty> Parse for Tail<T, Ty>
+impl<Lang> Parse for Tail<Lang>
 where
-    T: Term + Parse<LeftRecArg = ()>,
-    Ty: Type + Parse<LeftRecArg = ()>,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
     type LeftRecArg = ();
 
     const RULE: Rule = Rule::tail_term;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Tail<T, Ty>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Tail<Lang>, ParserError> {
         let mut inner = p.into_inner();
         let ty_rule = inner.next().ok_or(MissingInput::new("Head Type"))?;
-        let ty = Ty::from_pair(ty_rule, ())?;
+        let ty = Lang::Type::from_pair(ty_rule, ())?;
 
         let term_pair = inner.next().ok_or(MissingInput::new("Head Argument"))?;
-        let term = T::from_pair(term_pair, ())?;
+        let term = Lang::Term::from_pair(term_pair, ())?;
 
         if let Some(next) = inner.next() {
             return Err(RemainingInput::new(&format!("{:?}", next.as_rule())).into());

@@ -1,18 +1,20 @@
-use crate::{Parse, Rule};
+use crate::{GroupParse, ParsableLanguage, Parse, Rule};
 
 use errors::{MissingInput, parse_error::ParserError};
 use pest::iterators::Pair;
 use std::collections::HashMap;
-use syntax::types::{Type, Variant};
+use syntax::types::Variant;
 
-impl<Ty> Parse for Variant<Ty>
+impl<Lang> Parse for Variant<Lang>
 where
-    Ty: Type + Parse<LeftRecArg = ()>,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
     type LeftRecArg = ();
     const RULE: Rule = Rule::variant_type;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Variant<Ty>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Variant<Lang>, ParserError> {
         let mut inner = p.into_inner();
         let mut variants = HashMap::new();
         while let Some(label_rule) = inner.next() {
@@ -22,7 +24,7 @@ where
                 .ok_or(<MissingInput as Into<ParserError>>::into(
                     MissingInput::new("Variant Type"),
                 ))?;
-            let ty = Ty::from_pair(ty_rule, ())?;
+            let ty = Lang::Type::from_pair(ty_rule, ())?;
             variants.insert(label, ty);
         }
         Ok(Variant::new(variants))

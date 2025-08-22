@@ -1,38 +1,44 @@
-use crate::{Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, ParsableLanguage, Parse, Rule, pair_to_n_inner};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
 use syntax::{
     kinds::Kind,
-    types::{OpLambda, OpLambdaSub, Top, Type},
+    types::{OpLambda, OpLambdaSub, Top},
 };
 
-pub struct OpLambdaUnbounded<Ty>
+pub struct OpLambdaUnbounded<Lang>
 where
-    Ty: Type,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
     var: String,
-    body: Ty,
+    body: Lang::Type,
 }
 
-impl<Ty> OpLambdaUnbounded<Ty>
+impl<Lang> OpLambdaUnbounded<Lang>
 where
-    Ty: Type,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
-    pub fn to_oplambda_kinded(self) -> OpLambda<Ty> {
+    pub fn to_oplambda_kinded(self) -> OpLambda<Lang> {
         self.into()
     }
 
-    pub fn to_oplambda_sub(self) -> OpLambdaSub<Ty>
+    pub fn to_oplambda_sub(self) -> OpLambdaSub<Lang>
     where
-        Top<Ty>: Into<Ty>,
+        Top<Lang>: Into<Lang::Type>,
     {
         self.into()
     }
 }
 
-impl<Ty> Parse for OpLambdaUnbounded<Ty>
+impl<Lang> Parse for OpLambdaUnbounded<Lang>
 where
-    Ty: Type + Parse<LeftRecArg = ()>,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
     type LeftRecArg = ();
 
@@ -42,26 +48,30 @@ where
         let mut inner = pair_to_n_inner(p, vec!["Type Variable", "Type Abstraction Body"])?;
         let var = inner.remove(0).as_str().trim().to_owned();
         let ty_rule = inner.remove(0);
-        let body = Ty::from_pair(ty_rule, ())?;
+        let body = Lang::Type::from_pair(ty_rule, ())?;
         Ok(OpLambdaUnbounded { var, body })
     }
 }
 
-impl<Ty> From<OpLambdaUnbounded<Ty>> for OpLambda<Ty>
+impl<Lang> From<OpLambdaUnbounded<Lang>> for OpLambda<Lang>
 where
-    Ty: Type,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
-    fn from(ou: OpLambdaUnbounded<Ty>) -> OpLambda<Ty> {
+    fn from(ou: OpLambdaUnbounded<Lang>) -> OpLambda<Lang> {
         OpLambda::new(&ou.var, Kind::Star, ou.body)
     }
 }
 
-impl<Ty> From<OpLambdaUnbounded<Ty>> for OpLambdaSub<Ty>
+impl<Lang> From<OpLambdaUnbounded<Lang>> for OpLambdaSub<Lang>
 where
-    Ty: Type,
-    Top<Ty>: Into<Ty>,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
+    Top<Lang>: Into<Lang::Type>,
 {
-    fn from(ou: OpLambdaUnbounded<Ty>) -> OpLambdaSub<Ty> {
+    fn from(ou: OpLambdaUnbounded<Lang>) -> OpLambdaSub<Lang> {
         OpLambdaSub::new(&ou.var, Top::new_star(), ou.body)
     }
 }

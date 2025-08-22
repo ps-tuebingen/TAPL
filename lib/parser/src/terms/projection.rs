@@ -1,17 +1,19 @@
-use crate::{Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, ParsableLanguage, Parse, Rule, pair_to_n_inner};
 use errors::{UnknownKeyword, parse_error::ParserError};
 use pest::iterators::Pair;
-use syntax::terms::{Projection, Term};
+use syntax::terms::Projection;
 
-impl<T> Parse for Projection<T>
+impl<Lang> Parse for Projection<Lang>
 where
-    T: Term + Parse<LeftRecArg = ()>,
+    Lang: ParsableLanguage,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
-    type LeftRecArg = T;
+    type LeftRecArg = Lang::Term;
 
     const RULE: Rule = Rule::projection;
 
-    fn from_pair(p: Pair<'_, Rule>, t: Self::LeftRecArg) -> Result<Projection<T>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, t: Self::LeftRecArg) -> Result<Projection<Lang>, ParserError> {
         let num_rule = pair_to_n_inner(p, vec!["Projection Index"])?.remove(0);
         let num = num_rule.as_str().trim().parse::<usize>().map_err(|_| {
             <UnknownKeyword as Into<ParserError>>::into(UnknownKeyword::new(num_rule.as_str()))
