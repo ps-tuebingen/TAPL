@@ -3,48 +3,32 @@ use std::fmt;
 use syntax::{
     env::Environment,
     kinds::Kind,
-    terms::Term,
-    types::{Bot, OpApp, Top, Type},
-    untyped::Untyped,
+    language::Language,
+    types::{Bot, OpApp, Top},
 };
 
 #[derive(Debug)]
-pub struct SubtypeDerivation<T, Ty>
+pub struct SubtypeDerivation<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
-    pub conc: SubtypeConclusion<Ty>,
+    pub conc: SubtypeConclusion<Lang>,
     pub label: SubtypeRule,
-    pub premises: Vec<Derivation<T, Ty>>,
+    pub premises: Vec<Derivation<Lang>>,
 }
 
-impl<T> SubtypeDerivation<T, Untyped<T>>
+impl<Lang> SubtypeDerivation<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    pub fn empty() -> SubtypeDerivation<T, Untyped<T>> {
-        SubtypeDerivation {
-            conc: SubtypeConclusion::new(Environment::default(), Untyped::new(), Untyped::new()),
-            label: SubtypeRule::Empty,
-            premises: vec![],
-        }
-    }
-}
-
-impl<T, Ty> SubtypeDerivation<T, Ty>
-where
-    T: Term,
-    Ty: Type,
-{
-    pub fn ret_ty(&self) -> Ty {
+    pub fn ret_ty(&self) -> Lang::Type {
         self.conc.sup.clone()
     }
 
-    pub fn sub_top<Ty1>(env: Environment<Ty>, sub: Ty1, top_knd: Kind) -> SubtypeDerivation<T, Ty>
+    pub fn sub_top<Ty1>(env: Environment<Lang>, sub: Ty1, top_knd: Kind) -> SubtypeDerivation<Lang>
     where
-        Ty1: Into<Ty>,
-        Top<Ty>: Into<Ty>,
+        Ty1: Into<Lang::Type>,
+        Top<Lang>: Into<Lang::Type>,
     {
         SubtypeDerivation {
             conc: SubtypeConclusion::new(env, sub, Top::new(top_knd)),
@@ -53,9 +37,9 @@ where
         }
     }
 
-    pub fn refl<Ty1>(env: Environment<Ty>, ty: Ty1) -> SubtypeDerivation<T, Ty>
+    pub fn refl<Ty1>(env: Environment<Lang>, ty: Ty1) -> SubtypeDerivation<Lang>
     where
-        Ty1: Into<Ty> + Clone,
+        Ty1: Into<Lang::Type> + Clone,
     {
         SubtypeDerivation {
             conc: SubtypeConclusion::new(env, ty.clone(), ty),
@@ -64,10 +48,10 @@ where
         }
     }
 
-    pub fn sup_bot<Ty1>(env: Environment<Ty>, sup: Ty1) -> SubtypeDerivation<T, Ty>
+    pub fn sup_bot<Ty1>(env: Environment<Lang>, sup: Ty1) -> SubtypeDerivation<Lang>
     where
-        Ty1: Into<Ty>,
-        Bot<Ty>: Into<Ty>,
+        Ty1: Into<Lang::Type>,
+        Bot<Lang>: Into<Lang::Type>,
     {
         SubtypeDerivation {
             conc: SubtypeConclusion::new(env, sup, Bot::new()),
@@ -77,14 +61,14 @@ where
     }
 
     pub fn exists_bounded<Ty1, Ty2>(
-        env: Environment<Ty>,
+        env: Environment<Lang>,
         sub: Ty1,
         sup: Ty2,
-        prem: Derivation<T, Ty>,
-    ) -> SubtypeDerivation<T, Ty>
+        prem: Derivation<Lang>,
+    ) -> SubtypeDerivation<Lang>
     where
-        Ty1: Into<Ty>,
-        Ty2: Into<Ty>,
+        Ty1: Into<Lang::Type>,
+        Ty2: Into<Lang::Type>,
     {
         SubtypeDerivation {
             conc: SubtypeConclusion::new(env, sub, sup),
@@ -94,15 +78,15 @@ where
     }
 
     pub fn forall_bounded<Ty1, Ty2>(
-        env: Environment<Ty>,
+        env: Environment<Lang>,
         sub: Ty1,
         sup: Ty2,
-        bound_deriv: Derivation<T, Ty>,
-        inner_deriv: Derivation<T, Ty>,
-    ) -> SubtypeDerivation<T, Ty>
+        bound_deriv: Derivation<Lang>,
+        inner_deriv: Derivation<Lang>,
+    ) -> SubtypeDerivation<Lang>
     where
-        Ty1: Into<Ty>,
-        Ty2: Into<Ty>,
+        Ty1: Into<Lang::Type>,
+        Ty2: Into<Lang::Type>,
     {
         SubtypeDerivation {
             conc: SubtypeConclusion::new(env, sub, sup),
@@ -112,15 +96,15 @@ where
     }
 
     pub fn fun<Ty1, Ty2>(
-        env: Environment<Ty>,
+        env: Environment<Lang>,
         sub: Ty1,
         sup: Ty2,
-        from_deriv: Derivation<T, Ty>,
-        to_deriv: Derivation<T, Ty>,
-    ) -> SubtypeDerivation<T, Ty>
+        from_deriv: Derivation<Lang>,
+        to_deriv: Derivation<Lang>,
+    ) -> SubtypeDerivation<Lang>
     where
-        Ty1: Into<Ty>,
-        Ty2: Into<Ty>,
+        Ty1: Into<Lang::Type>,
+        Ty2: Into<Lang::Type>,
     {
         SubtypeDerivation {
             conc: SubtypeConclusion::new(env, sub, sup),
@@ -130,14 +114,14 @@ where
     }
 
     pub fn list<Ty1, Ty2>(
-        env: Environment<Ty>,
+        env: Environment<Lang>,
         sub: Ty1,
         sup: Ty2,
-        inner_deriv: Derivation<T, Ty>,
-    ) -> SubtypeDerivation<T, Ty>
+        inner_deriv: Derivation<Lang>,
+    ) -> SubtypeDerivation<Lang>
     where
-        Ty1: Into<Ty>,
-        Ty2: Into<Ty>,
+        Ty1: Into<Lang::Type>,
+        Ty2: Into<Lang::Type>,
     {
         SubtypeDerivation {
             conc: SubtypeConclusion::new(env, sub, sup),
@@ -147,17 +131,17 @@ where
     }
 
     pub fn op_app<Ty1, Ty2, Ty3>(
-        env: Environment<Ty>,
+        env: Environment<Lang>,
         sub_fun: Ty1,
         sup_fun: Ty2,
         arg: Ty3,
-        fun_deriv: Derivation<T, Ty>,
-    ) -> SubtypeDerivation<T, Ty>
+        fun_deriv: Derivation<Lang>,
+    ) -> SubtypeDerivation<Lang>
     where
-        Ty1: Into<Ty>,
-        Ty2: Into<Ty>,
-        Ty3: Into<Ty> + Clone,
-        OpApp<Ty>: Into<Ty>,
+        Ty1: Into<Lang::Type>,
+        Ty2: Into<Lang::Type>,
+        Ty3: Into<Lang::Type> + Clone,
+        OpApp<Lang>: Into<Lang::Type>,
     {
         SubtypeDerivation {
             conc: SubtypeConclusion::new(
@@ -171,14 +155,14 @@ where
     }
 
     pub fn op_lambda<Ty1, Ty2>(
-        env: Environment<Ty>,
+        env: Environment<Lang>,
         sub: Ty1,
         sup: Ty2,
-        inner_deriv: Derivation<T, Ty>,
-    ) -> SubtypeDerivation<T, Ty>
+        inner_deriv: Derivation<Lang>,
+    ) -> SubtypeDerivation<Lang>
     where
-        Ty1: Into<Ty>,
-        Ty2: Into<Ty>,
+        Ty1: Into<Lang::Type>,
+        Ty2: Into<Lang::Type>,
     {
         SubtypeDerivation {
             conc: SubtypeConclusion::new(env, sub, sup),
@@ -188,14 +172,14 @@ where
     }
 
     pub fn op_lambda_sub<Ty1, Ty2>(
-        env: Environment<Ty>,
+        env: Environment<Lang>,
         sub: Ty1,
         sup: Ty2,
-        body_deriv: Derivation<T, Ty>,
-    ) -> SubtypeDerivation<T, Ty>
+        body_deriv: Derivation<Lang>,
+    ) -> SubtypeDerivation<Lang>
     where
-        Ty1: Into<Ty>,
-        Ty2: Into<Ty>,
+        Ty1: Into<Lang::Type>,
+        Ty2: Into<Lang::Type>,
     {
         SubtypeDerivation {
             conc: SubtypeConclusion::new(env, sub, sup),
@@ -205,14 +189,14 @@ where
     }
 
     pub fn record<Ty1, Ty2>(
-        env: Environment<Ty>,
+        env: Environment<Lang>,
         sub: Ty1,
         sup: Ty2,
-        inner_derivs: Vec<Derivation<T, Ty>>,
-    ) -> SubtypeDerivation<T, Ty>
+        inner_derivs: Vec<Derivation<Lang>>,
+    ) -> SubtypeDerivation<Lang>
     where
-        Ty1: Into<Ty>,
-        Ty2: Into<Ty>,
+        Ty1: Into<Lang::Type>,
+        Ty2: Into<Lang::Type>,
     {
         SubtypeDerivation {
             conc: SubtypeConclusion::new(env, sub, sup),
@@ -222,14 +206,14 @@ where
     }
 
     pub fn ref_source<Ty1, Ty2>(
-        env: Environment<Ty>,
+        env: Environment<Lang>,
         sub: Ty1,
         sup: Ty2,
-        inner_deriv: Derivation<T, Ty>,
-    ) -> SubtypeDerivation<T, Ty>
+        inner_deriv: Derivation<Lang>,
+    ) -> SubtypeDerivation<Lang>
     where
-        Ty1: Into<Ty>,
-        Ty2: Into<Ty>,
+        Ty1: Into<Lang::Type>,
+        Ty2: Into<Lang::Type>,
     {
         SubtypeDerivation {
             conc: SubtypeConclusion::new(env, sub, sup),
@@ -239,14 +223,14 @@ where
     }
 
     pub fn ref_sink<Ty1, Ty2>(
-        env: Environment<Ty>,
+        env: Environment<Lang>,
         sub: Ty1,
         sup: Ty2,
-        inner_deriv: Derivation<T, Ty>,
-    ) -> SubtypeDerivation<T, Ty>
+        inner_deriv: Derivation<Lang>,
+    ) -> SubtypeDerivation<Lang>
     where
-        Ty1: Into<Ty>,
-        Ty2: Into<Ty>,
+        Ty1: Into<Lang::Type>,
+        Ty2: Into<Lang::Type>,
     {
         SubtypeDerivation {
             conc: SubtypeConclusion::new(env, sub, sup),
@@ -256,14 +240,14 @@ where
     }
 
     pub fn ref_ref<Ty1, Ty2>(
-        env: Environment<Ty>,
+        env: Environment<Lang>,
         sub: Ty1,
         sup: Ty2,
-        inner_deriv: Derivation<T, Ty>,
-    ) -> SubtypeDerivation<T, Ty>
+        inner_deriv: Derivation<Lang>,
+    ) -> SubtypeDerivation<Lang>
     where
-        Ty1: Into<Ty>,
-        Ty2: Into<Ty>,
+        Ty1: Into<Lang::Type>,
+        Ty2: Into<Lang::Type>,
     {
         SubtypeDerivation {
             conc: SubtypeConclusion::new(env, sub, sup),
@@ -273,14 +257,14 @@ where
     }
 
     pub fn sink<Ty1, Ty2>(
-        env: Environment<Ty>,
+        env: Environment<Lang>,
         sub: Ty1,
         sup: Ty2,
-        inner_deriv: Derivation<T, Ty>,
-    ) -> SubtypeDerivation<T, Ty>
+        inner_deriv: Derivation<Lang>,
+    ) -> SubtypeDerivation<Lang>
     where
-        Ty1: Into<Ty>,
-        Ty2: Into<Ty>,
+        Ty1: Into<Lang::Type>,
+        Ty2: Into<Lang::Type>,
     {
         SubtypeDerivation {
             conc: SubtypeConclusion::new(env, sub, sup),
@@ -290,14 +274,14 @@ where
     }
 
     pub fn source<Ty1, Ty2>(
-        env: Environment<Ty>,
+        env: Environment<Lang>,
         sub: Ty1,
         sup: Ty2,
-        inner_deriv: Derivation<T, Ty>,
-    ) -> SubtypeDerivation<T, Ty>
+        inner_deriv: Derivation<Lang>,
+    ) -> SubtypeDerivation<Lang>
     where
-        Ty1: Into<Ty>,
-        Ty2: Into<Ty>,
+        Ty1: Into<Lang::Type>,
+        Ty2: Into<Lang::Type>,
     {
         SubtypeDerivation {
             conc: SubtypeConclusion::new(env, sub, sup),
@@ -307,14 +291,14 @@ where
     }
 
     pub fn variant<Ty1, Ty2>(
-        env: Environment<Ty>,
+        env: Environment<Lang>,
         sub: Ty1,
         sup: Ty2,
-        inner_derivs: Vec<Derivation<T, Ty>>,
-    ) -> SubtypeDerivation<T, Ty>
+        inner_derivs: Vec<Derivation<Lang>>,
+    ) -> SubtypeDerivation<Lang>
     where
-        Ty1: Into<Ty>,
-        Ty2: Into<Ty>,
+        Ty1: Into<Lang::Type>,
+        Ty2: Into<Lang::Type>,
     {
         SubtypeDerivation {
             conc: SubtypeConclusion::new(env, sub, sup),
@@ -324,20 +308,18 @@ where
     }
 }
 
-impl<T, Ty> From<SubtypeDerivation<T, Ty>> for Derivation<T, Ty>
+impl<Lang> From<SubtypeDerivation<Lang>> for Derivation<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
-    fn from(deriv: SubtypeDerivation<T, Ty>) -> Derivation<T, Ty> {
+    fn from(deriv: SubtypeDerivation<Lang>) -> Derivation<Lang> {
         Derivation::SubtypeDerivation(deriv)
     }
 }
 
-impl<T, Ty> fmt::Display for SubtypeDerivation<T, Ty>
+impl<Lang> fmt::Display for SubtypeDerivation<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         for prem in self.premises.iter() {

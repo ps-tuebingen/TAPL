@@ -1,6 +1,6 @@
 use errors::UnexpectedDerivation;
 use std::fmt;
-use syntax::{terms::Term, types::Type};
+use syntax::language::Language;
 
 pub mod conclusion;
 pub mod definition_derivation;
@@ -17,23 +17,21 @@ pub use subtype_derivation::SubtypeDerivation;
 pub use typing_derivation::TypingDerivation;
 
 #[derive(Debug)]
-pub enum Derivation<T, Ty>
+pub enum Derivation<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
-    TypingDerivation(TypingDerivation<T, Ty>),
-    ProgramDerivation(ProgramDerivation<T, Ty>),
-    DefinitionDerivation(DefinitionDerivation<T, Ty>),
-    SubtypeDerivation(SubtypeDerivation<T, Ty>),
+    TypingDerivation(TypingDerivation<Lang>),
+    ProgramDerivation(ProgramDerivation<Lang>),
+    DefinitionDerivation(DefinitionDerivation<Lang>),
+    SubtypeDerivation(SubtypeDerivation<Lang>),
 }
 
-impl<T, Ty> Derivation<T, Ty>
+impl<Lang> Derivation<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
-    pub fn ret_ty(&self) -> Ty {
+    pub fn ret_ty(&self) -> Lang::Type {
         match self {
             Derivation::TypingDerivation(deriv) => deriv.ret_ty(),
             Derivation::ProgramDerivation(deriv) => deriv.ret_ty(),
@@ -42,7 +40,7 @@ where
         }
     }
 
-    pub fn into_def(self) -> Result<DefinitionDerivation<T, Ty>, UnexpectedDerivation> {
+    pub fn into_def(self) -> Result<DefinitionDerivation<Lang>, UnexpectedDerivation> {
         let exp = "Definition Derivation";
         match self {
             Derivation::DefinitionDerivation(deriv) => Ok(deriv),
@@ -58,7 +56,7 @@ where
         }
     }
 
-    pub fn into_ty(self) -> Result<TypingDerivation<T, Ty>, UnexpectedDerivation> {
+    pub fn into_ty(self) -> Result<TypingDerivation<Lang>, UnexpectedDerivation> {
         let exp = "Typing Derivation";
         match self {
             Derivation::TypingDerivation(deriv) => Ok(deriv),
@@ -74,7 +72,7 @@ where
         }
     }
 
-    pub fn into_prog(self) -> Result<ProgramDerivation<T, Ty>, UnexpectedDerivation> {
+    pub fn into_prog(self) -> Result<ProgramDerivation<Lang>, UnexpectedDerivation> {
         let exp = "Program Derivation";
         match self {
             Derivation::ProgramDerivation(deriv) => Ok(deriv),
@@ -91,40 +89,36 @@ where
     }
 }
 
-impl<T, Ty> From<TypingDerivation<T, Ty>> for Derivation<T, Ty>
+impl<Lang> From<TypingDerivation<Lang>> for Derivation<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
-    fn from(deriv: TypingDerivation<T, Ty>) -> Derivation<T, Ty> {
+    fn from(deriv: TypingDerivation<Lang>) -> Derivation<Lang> {
         Derivation::TypingDerivation(deriv)
     }
 }
 
-impl<T, Ty> From<ProgramDerivation<T, Ty>> for Derivation<T, Ty>
+impl<Lang> From<ProgramDerivation<Lang>> for Derivation<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
-    fn from(deriv: ProgramDerivation<T, Ty>) -> Derivation<T, Ty> {
+    fn from(deriv: ProgramDerivation<Lang>) -> Derivation<Lang> {
         Derivation::ProgramDerivation(deriv)
     }
 }
 
-impl<T, Ty> From<DefinitionDerivation<T, Ty>> for Derivation<T, Ty>
+impl<Lang> From<DefinitionDerivation<Lang>> for Derivation<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
-    fn from(deriv: DefinitionDerivation<T, Ty>) -> Derivation<T, Ty> {
+    fn from(deriv: DefinitionDerivation<Lang>) -> Derivation<Lang> {
         Derivation::DefinitionDerivation(deriv)
     }
 }
 
-impl<T, Ty> fmt::Display for Derivation<T, Ty>
+impl<Lang> fmt::Display for Derivation<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {

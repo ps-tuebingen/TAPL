@@ -1,27 +1,25 @@
 use super::Conclusion;
 use std::fmt;
-use syntax::{env::Environment, terms::Term, types::Type};
+use syntax::{env::Environment, language::Language};
 
 #[derive(Debug)]
-pub struct TypingConclusion<T, Ty>
+pub struct TypingConclusion<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
-    pub env: Environment<Ty>,
-    pub term: T,
-    pub ty: Ty,
+    pub env: Environment<Lang>,
+    pub term: Lang::Term,
+    pub ty: Lang::Type,
 }
 
-impl<T, Ty> TypingConclusion<T, Ty>
+impl<Lang> TypingConclusion<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
-    pub fn new<T1, Ty1>(env: Environment<Ty>, term: T1, ty: Ty1) -> TypingConclusion<T, Ty>
+    pub fn new<T1, Ty1>(env: Environment<Lang>, term: T1, ty: Ty1) -> TypingConclusion<Lang>
     where
-        T1: Into<T>,
-        Ty1: Into<Ty>,
+        T1: Into<Lang::Term>,
+        Ty1: Into<Lang::Type>,
     {
         TypingConclusion {
             env,
@@ -30,25 +28,23 @@ where
         }
     }
 
-    pub fn ty(&self) -> Ty {
+    pub fn ty(&self) -> Lang::Type {
         self.ty.clone()
     }
 }
 
-impl<T, Ty> From<TypingConclusion<T, Ty>> for Conclusion<T, Ty>
+impl<Lang> From<TypingConclusion<Lang>> for Conclusion<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
-    fn from(conc: TypingConclusion<T, Ty>) -> Conclusion<T, Ty> {
+    fn from(conc: TypingConclusion<Lang>) -> Conclusion<Lang> {
         Conclusion::Typing(conc)
     }
 }
 
-impl<T, Ty> fmt::Display for TypingConclusion<T, Ty>
+impl<Lang> fmt::Display for TypingConclusion<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{} |-> {} : {}", self.env, self.term, self.ty)

@@ -1,41 +1,35 @@
 use super::TypingDerivation;
 use std::fmt;
-use syntax::{terms::Term, types::Type};
+use syntax::language::Language;
 
 #[derive(Debug)]
-pub struct DefinitionDerivation<T, Ty>
+pub struct DefinitionDerivation<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
     pub name: String,
-    pub body_derivation: TypingDerivation<T, Ty>,
+    pub body_derivation: TypingDerivation<Lang>,
 }
 
-impl<T, Ty> DefinitionDerivation<T, Ty>
+impl<Lang> DefinitionDerivation<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
-    pub fn new(
-        name: &str,
-        body_derivation: TypingDerivation<T, Ty>,
-    ) -> DefinitionDerivation<T, Ty> {
+    pub fn new(name: &str, body_derivation: TypingDerivation<Lang>) -> DefinitionDerivation<Lang> {
         DefinitionDerivation {
             name: name.to_owned(),
             body_derivation,
         }
     }
 
-    pub fn ret_ty(&self) -> Ty {
+    pub fn ret_ty(&self) -> Lang::Type {
         self.body_derivation.ret_ty()
     }
 }
 
-impl<T, Ty> fmt::Display for DefinitionDerivation<T, Ty>
+impl<Lang> fmt::Display for DefinitionDerivation<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}: {}", self.name, self.body_derivation)

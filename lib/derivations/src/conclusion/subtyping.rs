@@ -1,24 +1,25 @@
 use super::Conclusion;
 use std::fmt;
-use syntax::{env::Environment, terms::Term, types::Type};
+use syntax::{env::Environment, language::Language};
+
 #[derive(Debug)]
-pub struct SubtypeConclusion<Ty>
+pub struct SubtypeConclusion<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
-    pub env: Environment<Ty>,
-    pub sub: Ty,
-    pub sup: Ty,
+    pub env: Environment<Lang>,
+    pub sub: Lang::Type,
+    pub sup: Lang::Type,
 }
 
-impl<Ty> SubtypeConclusion<Ty>
+impl<Lang> SubtypeConclusion<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
-    pub fn new<Ty1, Ty2>(env: Environment<Ty>, sub: Ty1, sup: Ty2) -> SubtypeConclusion<Ty>
+    pub fn new<Ty1, Ty2>(env: Environment<Lang>, sub: Ty1, sup: Ty2) -> SubtypeConclusion<Lang>
     where
-        Ty1: Into<Ty>,
-        Ty2: Into<Ty>,
+        Ty1: Into<Lang::Type>,
+        Ty2: Into<Lang::Type>,
     {
         SubtypeConclusion {
             env,
@@ -28,19 +29,18 @@ where
     }
 }
 
-impl<T, Ty> From<SubtypeConclusion<Ty>> for Conclusion<T, Ty>
+impl<Lang> From<SubtypeConclusion<Lang>> for Conclusion<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
-    fn from(conc: SubtypeConclusion<Ty>) -> Conclusion<T, Ty> {
+    fn from(conc: SubtypeConclusion<Lang>) -> Conclusion<Lang> {
         Conclusion::Subtyping(conc)
     }
 }
 
-impl<Ty> fmt::Display for SubtypeConclusion<Ty>
+impl<Lang> fmt::Display for SubtypeConclusion<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{} |-> {} <: {}", self.env, self.sub, self.sup)

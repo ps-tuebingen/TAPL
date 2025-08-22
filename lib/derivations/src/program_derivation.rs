@@ -1,37 +1,35 @@
 use crate::{definition_derivation::DefinitionDerivation, typing_derivation::TypingDerivation};
 use std::{collections::HashMap, fmt};
-use syntax::{terms::Term, types::Type};
+use syntax::language::Language;
 
 #[derive(Debug)]
-pub struct ProgramDerivation<T, Ty>
+pub struct ProgramDerivation<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
-    pub def_derivations: Vec<DefinitionDerivation<T, Ty>>,
-    pub main_derivation: TypingDerivation<T, Ty>,
+    pub def_derivations: Vec<DefinitionDerivation<Lang>>,
+    pub main_derivation: TypingDerivation<Lang>,
 }
 
-impl<T, Ty> ProgramDerivation<T, Ty>
+impl<Lang> ProgramDerivation<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
     pub fn new(
-        main_derivation: TypingDerivation<T, Ty>,
-        def_derivations: Vec<DefinitionDerivation<T, Ty>>,
-    ) -> ProgramDerivation<T, Ty> {
+        main_derivation: TypingDerivation<Lang>,
+        def_derivations: Vec<DefinitionDerivation<Lang>>,
+    ) -> ProgramDerivation<Lang> {
         ProgramDerivation {
             def_derivations,
             main_derivation,
         }
     }
 
-    pub fn ret_ty(&self) -> Ty {
+    pub fn ret_ty(&self) -> Lang::Type {
         self.main_derivation.ret_ty()
     }
 
-    pub fn tys(&self) -> HashMap<String, Ty> {
+    pub fn tys(&self) -> HashMap<String, Lang::Type> {
         let mut tys = HashMap::new();
         for df_deriv in self.def_derivations.iter() {
             tys.insert(df_deriv.name.clone(), df_deriv.ret_ty());
@@ -42,10 +40,9 @@ where
     }
 }
 
-impl<T, Ty> fmt::Display for ProgramDerivation<T, Ty>
+impl<Lang> fmt::Display for ProgramDerivation<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         for def_deriv in self.def_derivations.iter() {

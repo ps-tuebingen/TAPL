@@ -1,5 +1,5 @@
 use std::fmt;
-use syntax::{terms::Term, types::Type};
+use syntax::language::Language;
 
 mod subtyping;
 mod typing;
@@ -8,26 +8,19 @@ pub use subtyping::SubtypeConclusion;
 pub use typing::TypingConclusion;
 
 #[derive(Debug)]
-pub enum Conclusion<T, Ty>
+pub enum Conclusion<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
-    Typing(TypingConclusion<T, Ty>),
-    Subtyping(SubtypeConclusion<Ty>),
+    Typing(TypingConclusion<Lang>),
+    Subtyping(SubtypeConclusion<Lang>),
 }
 
-impl<T, Ty> Conclusion<T, Ty>
-where
-    T: Term,
-    Ty: Type,
-{
-}
+impl<Lang> Conclusion<Lang> where Lang: Language {}
 
-impl<T, Ty> fmt::Display for Conclusion<T, Ty>
+impl<Lang> fmt::Display for Conclusion<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {

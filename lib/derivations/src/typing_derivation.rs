@@ -1,32 +1,30 @@
 use crate::{Derivation, TypingConclusion, TypingRule};
 use std::fmt;
-use syntax::{env::Environment, terms::Term, types::Type, untyped::Untyped};
+use syntax::language::Language;
 
 #[derive(Debug)]
-pub struct TypingDerivation<T, Ty>
+pub struct TypingDerivation<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
-    pub conc: TypingConclusion<T, Ty>,
+    pub conc: TypingConclusion<Lang>,
     pub label: TypingRule,
-    pub premises: Vec<Derivation<T, Ty>>,
+    pub premises: Vec<Derivation<Lang>>,
 }
 
-impl<T, Ty> TypingDerivation<T, Ty>
+impl<Lang> TypingDerivation<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
-    pub fn ret_ty(&self) -> Ty {
+    pub fn ret_ty(&self) -> Lang::Type {
         self.conc.ty().clone()
     }
 
     pub fn app(
-        conc: TypingConclusion<T, Ty>,
-        left: Derivation<T, Ty>,
-        right: Derivation<T, Ty>,
-    ) -> TypingDerivation<T, Ty> {
+        conc: TypingConclusion<Lang>,
+        left: Derivation<Lang>,
+        right: Derivation<Lang>,
+    ) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::App,
@@ -34,10 +32,7 @@ where
         }
     }
 
-    pub fn ascribe(
-        conc: TypingConclusion<T, Ty>,
-        prem: Derivation<T, Ty>,
-    ) -> TypingDerivation<T, Ty> {
+    pub fn ascribe(conc: TypingConclusion<Lang>, prem: Derivation<Lang>) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::Ascribe,
@@ -46,10 +41,10 @@ where
     }
 
     pub fn assign(
-        conc: TypingConclusion<T, Ty>,
-        left: Derivation<T, Ty>,
-        right: Derivation<T, Ty>,
-    ) -> TypingDerivation<T, Ty> {
+        conc: TypingConclusion<Lang>,
+        left: Derivation<Lang>,
+        right: Derivation<Lang>,
+    ) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::Assign,
@@ -57,7 +52,7 @@ where
         }
     }
 
-    pub fn cast(conc: TypingConclusion<T, Ty>, prem: Derivation<T, Ty>) -> TypingDerivation<T, Ty> {
+    pub fn cast(conc: TypingConclusion<Lang>, prem: Derivation<Lang>) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::Cast,
@@ -66,10 +61,10 @@ where
     }
 
     pub fn cons(
-        conc: TypingConclusion<T, Ty>,
-        head: Derivation<T, Ty>,
-        tail: Derivation<T, Ty>,
-    ) -> TypingDerivation<T, Ty> {
+        conc: TypingConclusion<Lang>,
+        head: Derivation<Lang>,
+        tail: Derivation<Lang>,
+    ) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::Cons,
@@ -77,10 +72,7 @@ where
         }
     }
 
-    pub fn deref(
-        conc: TypingConclusion<T, Ty>,
-        prem: Derivation<T, Ty>,
-    ) -> TypingDerivation<T, Ty> {
+    pub fn deref(conc: TypingConclusion<Lang>, prem: Derivation<Lang>) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::Deref,
@@ -88,7 +80,7 @@ where
         }
     }
 
-    pub fn exception(conc: TypingConclusion<T, Ty>) -> TypingDerivation<T, Ty> {
+    pub fn exception(conc: TypingConclusion<Lang>) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::Exception,
@@ -96,7 +88,7 @@ where
         }
     }
 
-    pub fn fix(conc: TypingConclusion<T, Ty>, prem: Derivation<T, Ty>) -> TypingDerivation<T, Ty> {
+    pub fn fix(conc: TypingConclusion<Lang>, prem: Derivation<Lang>) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::Fix,
@@ -104,7 +96,7 @@ where
         }
     }
 
-    pub fn fls(conc: TypingConclusion<T, Ty>) -> TypingDerivation<T, Ty> {
+    pub fn fls(conc: TypingConclusion<Lang>) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::False,
@@ -112,7 +104,7 @@ where
         }
     }
 
-    pub fn fold(conc: TypingConclusion<T, Ty>, prem: Derivation<T, Ty>) -> TypingDerivation<T, Ty> {
+    pub fn fold(conc: TypingConclusion<Lang>, prem: Derivation<Lang>) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::Fold,
@@ -120,7 +112,7 @@ where
         }
     }
 
-    pub fn fst(conc: TypingConclusion<T, Ty>, prem: Derivation<T, Ty>) -> TypingDerivation<T, Ty> {
+    pub fn fst(conc: TypingConclusion<Lang>, prem: Derivation<Lang>) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::Fst,
@@ -128,7 +120,7 @@ where
         }
     }
 
-    pub fn head(conc: TypingConclusion<T, Ty>, prem: Derivation<T, Ty>) -> TypingDerivation<T, Ty> {
+    pub fn head(conc: TypingConclusion<Lang>, prem: Derivation<Lang>) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::Head,
@@ -137,11 +129,11 @@ where
     }
 
     pub fn ift(
-        conc: TypingConclusion<T, Ty>,
-        if_deriv: Derivation<T, Ty>,
-        then_deriv: Derivation<T, Ty>,
-        else_deriv: Derivation<T, Ty>,
-    ) -> TypingDerivation<T, Ty> {
+        conc: TypingConclusion<Lang>,
+        if_deriv: Derivation<Lang>,
+        then_deriv: Derivation<Lang>,
+        else_deriv: Derivation<Lang>,
+    ) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::If,
@@ -149,10 +141,7 @@ where
         }
     }
 
-    pub fn isnil(
-        conc: TypingConclusion<T, Ty>,
-        prem: Derivation<T, Ty>,
-    ) -> TypingDerivation<T, Ty> {
+    pub fn isnil(conc: TypingConclusion<Lang>, prem: Derivation<Lang>) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::IsNil,
@@ -160,10 +149,7 @@ where
         }
     }
 
-    pub fn iszero(
-        conc: TypingConclusion<T, Ty>,
-        prem: Derivation<T, Ty>,
-    ) -> TypingDerivation<T, Ty> {
+    pub fn iszero(conc: TypingConclusion<Lang>, prem: Derivation<Lang>) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::IsZero,
@@ -171,10 +157,7 @@ where
         }
     }
 
-    pub fn lambda(
-        conc: TypingConclusion<T, Ty>,
-        prem: Derivation<T, Ty>,
-    ) -> TypingDerivation<T, Ty> {
+    pub fn lambda(conc: TypingConclusion<Lang>, prem: Derivation<Lang>) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::Lambda,
@@ -183,9 +166,9 @@ where
     }
 
     pub fn lambdasub(
-        conc: TypingConclusion<T, Ty>,
-        prem: Derivation<T, Ty>,
-    ) -> TypingDerivation<T, Ty> {
+        conc: TypingConclusion<Lang>,
+        prem: Derivation<Lang>,
+    ) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::LambdaSub,
@@ -193,7 +176,7 @@ where
         }
     }
 
-    pub fn left(conc: TypingConclusion<T, Ty>, prem: Derivation<T, Ty>) -> TypingDerivation<T, Ty> {
+    pub fn left(conc: TypingConclusion<Lang>, prem: Derivation<Lang>) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::Left,
@@ -202,10 +185,10 @@ where
     }
 
     pub fn lett(
-        conc: TypingConclusion<T, Ty>,
-        bound_deriv: Derivation<T, Ty>,
-        in_deriv: Derivation<T, Ty>,
-    ) -> TypingDerivation<T, Ty> {
+        conc: TypingConclusion<Lang>,
+        bound_deriv: Derivation<Lang>,
+        in_deriv: Derivation<Lang>,
+    ) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::Let,
@@ -214,10 +197,10 @@ where
     }
 
     pub fn listcase(
-        conc: TypingConclusion<T, Ty>,
-        nil_deriv: Derivation<T, Ty>,
-        cons_deriv: Derivation<T, Ty>,
-    ) -> TypingDerivation<T, Ty> {
+        conc: TypingConclusion<Lang>,
+        nil_deriv: Derivation<Lang>,
+        cons_deriv: Derivation<Lang>,
+    ) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::ListCase,
@@ -225,7 +208,7 @@ where
         }
     }
 
-    pub fn loc(conc: TypingConclusion<T, Ty>) -> TypingDerivation<T, Ty> {
+    pub fn loc(conc: TypingConclusion<Lang>) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::Loc,
@@ -233,7 +216,7 @@ where
         }
     }
 
-    pub fn nil(conc: TypingConclusion<T, Ty>) -> TypingDerivation<T, Ty> {
+    pub fn nil(conc: TypingConclusion<Lang>) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::Nil,
@@ -241,7 +224,7 @@ where
         }
     }
 
-    pub fn nothing(conc: TypingConclusion<T, Ty>) -> TypingDerivation<T, Ty> {
+    pub fn nothing(conc: TypingConclusion<Lang>) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::Nothing,
@@ -249,7 +232,7 @@ where
         }
     }
 
-    pub fn num(conc: TypingConclusion<T, Ty>) -> TypingDerivation<T, Ty> {
+    pub fn num(conc: TypingConclusion<Lang>) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::Num,
@@ -257,7 +240,7 @@ where
         }
     }
 
-    pub fn pack(conc: TypingConclusion<T, Ty>, prem: Derivation<T, Ty>) -> TypingDerivation<T, Ty> {
+    pub fn pack(conc: TypingConclusion<Lang>, prem: Derivation<Lang>) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::Pack,
@@ -266,9 +249,9 @@ where
     }
 
     pub fn pack_bound(
-        conc: TypingConclusion<T, Ty>,
-        prem: Derivation<T, Ty>,
-    ) -> TypingDerivation<T, Ty> {
+        conc: TypingConclusion<Lang>,
+        prem: Derivation<Lang>,
+    ) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::PackBound,
@@ -277,10 +260,10 @@ where
     }
 
     pub fn pair(
-        conc: TypingConclusion<T, Ty>,
-        fst_deriv: Derivation<T, Ty>,
-        snd_deriv: Derivation<T, Ty>,
-    ) -> TypingDerivation<T, Ty> {
+        conc: TypingConclusion<Lang>,
+        fst_deriv: Derivation<Lang>,
+        snd_deriv: Derivation<Lang>,
+    ) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::Pair,
@@ -288,7 +271,7 @@ where
         }
     }
 
-    pub fn pred(conc: TypingConclusion<T, Ty>, prem: Derivation<T, Ty>) -> TypingDerivation<T, Ty> {
+    pub fn pred(conc: TypingConclusion<Lang>, prem: Derivation<Lang>) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::Pred,
@@ -297,9 +280,9 @@ where
     }
 
     pub fn projection(
-        conc: TypingConclusion<T, Ty>,
-        prem: Derivation<T, Ty>,
-    ) -> TypingDerivation<T, Ty> {
+        conc: TypingConclusion<Lang>,
+        prem: Derivation<Lang>,
+    ) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::Projection,
@@ -307,10 +290,7 @@ where
         }
     }
 
-    pub fn raise(
-        conc: TypingConclusion<T, Ty>,
-        prem: Derivation<T, Ty>,
-    ) -> TypingDerivation<T, Ty> {
+    pub fn raise(conc: TypingConclusion<Lang>, prem: Derivation<Lang>) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::Raise,
@@ -318,9 +298,9 @@ where
         }
     }
     pub fn record(
-        conc: TypingConclusion<T, Ty>,
-        prems: Vec<Derivation<T, Ty>>,
-    ) -> TypingDerivation<T, Ty> {
+        conc: TypingConclusion<Lang>,
+        prems: Vec<Derivation<Lang>>,
+    ) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::Record,
@@ -329,9 +309,9 @@ where
     }
 
     pub fn recordproj(
-        conc: TypingConclusion<T, Ty>,
-        prem: Derivation<T, Ty>,
-    ) -> TypingDerivation<T, Ty> {
+        conc: TypingConclusion<Lang>,
+        prem: Derivation<Lang>,
+    ) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::RecordProj,
@@ -339,7 +319,7 @@ where
         }
     }
 
-    pub fn reft(conc: TypingConclusion<T, Ty>, prem: Derivation<T, Ty>) -> TypingDerivation<T, Ty> {
+    pub fn reft(conc: TypingConclusion<Lang>, prem: Derivation<Lang>) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::Ref,
@@ -347,10 +327,7 @@ where
         }
     }
 
-    pub fn right(
-        conc: TypingConclusion<T, Ty>,
-        prem: Derivation<T, Ty>,
-    ) -> TypingDerivation<T, Ty> {
+    pub fn right(conc: TypingConclusion<Lang>, prem: Derivation<Lang>) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::Right,
@@ -358,7 +335,7 @@ where
         }
     }
 
-    pub fn snd(conc: TypingConclusion<T, Ty>, prem: Derivation<T, Ty>) -> TypingDerivation<T, Ty> {
+    pub fn snd(conc: TypingConclusion<Lang>, prem: Derivation<Lang>) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::Snd,
@@ -367,11 +344,11 @@ where
     }
 
     pub fn somecase(
-        conc: TypingConclusion<T, Ty>,
-        bound_deriv: Derivation<T, Ty>,
-        some_deriv: Derivation<T, Ty>,
-        none_deriv: Derivation<T, Ty>,
-    ) -> TypingDerivation<T, Ty> {
+        conc: TypingConclusion<Lang>,
+        bound_deriv: Derivation<Lang>,
+        some_deriv: Derivation<Lang>,
+        none_deriv: Derivation<Lang>,
+    ) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::SomeCase,
@@ -380,9 +357,9 @@ where
     }
 
     pub fn something(
-        conc: TypingConclusion<T, Ty>,
-        prem: Derivation<T, Ty>,
-    ) -> TypingDerivation<T, Ty> {
+        conc: TypingConclusion<Lang>,
+        prem: Derivation<Lang>,
+    ) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::Something,
@@ -390,7 +367,7 @@ where
         }
     }
 
-    pub fn succ(conc: TypingConclusion<T, Ty>, prem: Derivation<T, Ty>) -> TypingDerivation<T, Ty> {
+    pub fn succ(conc: TypingConclusion<Lang>, prem: Derivation<Lang>) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::Succ,
@@ -399,11 +376,11 @@ where
     }
 
     pub fn sumcase(
-        conc: TypingConclusion<T, Ty>,
-        bound_deriv: Derivation<T, Ty>,
-        left_deriv: Derivation<T, Ty>,
-        right_deriv: Derivation<T, Ty>,
-    ) -> TypingDerivation<T, Ty> {
+        conc: TypingConclusion<Lang>,
+        bound_deriv: Derivation<Lang>,
+        left_deriv: Derivation<Lang>,
+        right_deriv: Derivation<Lang>,
+    ) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::SumCase,
@@ -411,7 +388,7 @@ where
         }
     }
 
-    pub fn tail(conc: TypingConclusion<T, Ty>, prem: Derivation<T, Ty>) -> TypingDerivation<T, Ty> {
+    pub fn tail(conc: TypingConclusion<Lang>, prem: Derivation<Lang>) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::Tail,
@@ -419,7 +396,7 @@ where
         }
     }
 
-    pub fn tru(conc: TypingConclusion<T, Ty>) -> TypingDerivation<T, Ty> {
+    pub fn tru(conc: TypingConclusion<Lang>) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::True,
@@ -428,10 +405,10 @@ where
     }
 
     pub fn tryt(
-        conc: TypingConclusion<T, Ty>,
-        term_deriv: Derivation<T, Ty>,
-        handler_deriv: Derivation<T, Ty>,
-    ) -> TypingDerivation<T, Ty> {
+        conc: TypingConclusion<Lang>,
+        term_deriv: Derivation<Lang>,
+        handler_deriv: Derivation<Lang>,
+    ) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::Try,
@@ -440,10 +417,10 @@ where
     }
 
     pub fn try_val(
-        conc: TypingConclusion<T, Ty>,
-        term_deriv: Derivation<T, Ty>,
-        handler_deriv: Derivation<T, Ty>,
-    ) -> TypingDerivation<T, Ty> {
+        conc: TypingConclusion<Lang>,
+        term_deriv: Derivation<Lang>,
+        handler_deriv: Derivation<Lang>,
+    ) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::TryVal,
@@ -452,9 +429,9 @@ where
     }
 
     pub fn tuple(
-        conc: TypingConclusion<T, Ty>,
-        term_derivs: Vec<Derivation<T, Ty>>,
-    ) -> TypingDerivation<T, Ty> {
+        conc: TypingConclusion<Lang>,
+        term_derivs: Vec<Derivation<Lang>>,
+    ) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::Tuple,
@@ -462,10 +439,7 @@ where
         }
     }
 
-    pub fn tyapp(
-        conc: TypingConclusion<T, Ty>,
-        prem: Derivation<T, Ty>,
-    ) -> TypingDerivation<T, Ty> {
+    pub fn tyapp(conc: TypingConclusion<Lang>, prem: Derivation<Lang>) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::TyApp,
@@ -474,9 +448,9 @@ where
     }
 
     pub fn tyapp_bounded(
-        conc: TypingConclusion<T, Ty>,
-        prem: Derivation<T, Ty>,
-    ) -> TypingDerivation<T, Ty> {
+        conc: TypingConclusion<Lang>,
+        prem: Derivation<Lang>,
+    ) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::TyAppBounded,
@@ -485,9 +459,9 @@ where
     }
 
     pub fn tylambda(
-        conc: TypingConclusion<T, Ty>,
-        prem: Derivation<T, Ty>,
-    ) -> TypingDerivation<T, Ty> {
+        conc: TypingConclusion<Lang>,
+        prem: Derivation<Lang>,
+    ) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::TyLambda,
@@ -495,10 +469,7 @@ where
         }
     }
 
-    pub fn unfold(
-        conc: TypingConclusion<T, Ty>,
-        prem: Derivation<T, Ty>,
-    ) -> TypingDerivation<T, Ty> {
+    pub fn unfold(conc: TypingConclusion<Lang>, prem: Derivation<Lang>) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::Unfold,
@@ -506,7 +477,7 @@ where
         }
     }
 
-    pub fn unit(conc: TypingConclusion<T, Ty>) -> TypingDerivation<T, Ty> {
+    pub fn unit(conc: TypingConclusion<Lang>) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::Unit,
@@ -515,10 +486,10 @@ where
     }
 
     pub fn unpack(
-        conc: TypingConclusion<T, Ty>,
-        bound_deriv: Derivation<T, Ty>,
-        in_deriv: Derivation<T, Ty>,
-    ) -> TypingDerivation<T, Ty> {
+        conc: TypingConclusion<Lang>,
+        bound_deriv: Derivation<Lang>,
+        in_deriv: Derivation<Lang>,
+    ) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::Unpack,
@@ -527,10 +498,10 @@ where
     }
 
     pub fn unpack_bounded(
-        conc: TypingConclusion<T, Ty>,
-        bound_deriv: Derivation<T, Ty>,
-        in_deriv: Derivation<T, Ty>,
-    ) -> TypingDerivation<T, Ty> {
+        conc: TypingConclusion<Lang>,
+        bound_deriv: Derivation<Lang>,
+        in_deriv: Derivation<Lang>,
+    ) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::UnpackBounded,
@@ -538,7 +509,7 @@ where
         }
     }
 
-    pub fn var(conc: TypingConclusion<T, Ty>) -> TypingDerivation<T, Ty> {
+    pub fn var(conc: TypingConclusion<Lang>) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::Variable,
@@ -546,10 +517,7 @@ where
         }
     }
 
-    pub fn variant(
-        conc: TypingConclusion<T, Ty>,
-        prem: Derivation<T, Ty>,
-    ) -> TypingDerivation<T, Ty> {
+    pub fn variant(conc: TypingConclusion<Lang>, prem: Derivation<Lang>) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::Variant,
@@ -558,10 +526,10 @@ where
     }
 
     pub fn variantcase(
-        conc: TypingConclusion<T, Ty>,
-        bound_deriv: Derivation<T, Ty>,
-        mut rhs_derivs: Vec<Derivation<T, Ty>>,
-    ) -> TypingDerivation<T, Ty> {
+        conc: TypingConclusion<Lang>,
+        bound_deriv: Derivation<Lang>,
+        mut rhs_derivs: Vec<Derivation<Lang>>,
+    ) -> TypingDerivation<Lang> {
         rhs_derivs.insert(0, bound_deriv);
         TypingDerivation {
             conc,
@@ -570,7 +538,7 @@ where
         }
     }
 
-    pub fn untyped_lambda(conc: TypingConclusion<T, Ty>) -> TypingDerivation<T, Ty> {
+    pub fn untyped_lambda(conc: TypingConclusion<Lang>) -> TypingDerivation<Lang> {
         TypingDerivation {
             conc,
             label: TypingRule::Empty,
@@ -579,26 +547,9 @@ where
     }
 }
 
-impl<T> TypingDerivation<T, Untyped<T>>
+impl<Lang> fmt::Display for TypingDerivation<Lang>
 where
-    T: Term,
-{
-    pub fn empty<T1>(t: T1) -> TypingDerivation<T, Untyped<T>>
-    where
-        T1: Into<T>,
-    {
-        TypingDerivation {
-            conc: TypingConclusion::new(Environment::default(), t, Untyped::new()),
-            label: TypingRule::Empty,
-            premises: vec![],
-        }
-    }
-}
-
-impl<T, Ty> fmt::Display for TypingDerivation<T, Ty>
-where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         for prem in self.premises.iter() {
