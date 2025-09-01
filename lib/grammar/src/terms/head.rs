@@ -1,13 +1,9 @@
 use crate::{Rule, RuleDescribe, Symbol, symbols::Keyword};
-use syntax::{
-    language::Language,
-    {terms::Head, },
-};
+use syntax::{language::Language, terms::Head};
 
 impl<Lang> RuleDescribe for Head<Lang>
 where
     Lang: Language,
-    ,
 {
     fn rule() -> Rule {
         Rule::new(

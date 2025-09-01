@@ -1,8 +1,5 @@
 use crate::{Rule, RuleDescribe, Symbol};
-use syntax::{
-    language::Language,
-    {language::Language, terms::TryWithVal},
-};
+use syntax::{language::Language, terms::TryWithVal};
 
 impl<Lang> RuleDescribe for TryWithVal<Lang>
 where

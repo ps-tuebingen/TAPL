@@ -1,13 +1,9 @@
 use crate::{Rule, RuleDescribe, Symbol, symbols::Keyword};
-use syntax::{
-    language::Language,
-    {terms::Exception, },
-};
+use syntax::{language::Language, terms::Exception};
 
 impl<Lang> RuleDescribe for Exception<Lang>
 where
     Lang: Language,
-    ,
 {
     fn rule() -> Rule {
         Rule::new(

@@ -1,8 +1,5 @@
 use crate::{Rule, RuleDescribe, Symbol};
-use syntax::{
-    language::Language,
-    {language::Language, terms::Try},
-};
+use syntax::{language::Language, terms::Try};
 
 impl<Lang> RuleDescribe for Try<Lang>
 where

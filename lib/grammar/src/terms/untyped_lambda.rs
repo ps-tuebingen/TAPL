@@ -1,8 +1,5 @@
 use crate::{Rule, RuleDescribe, Symbol};
-use syntax::{
-    language::Language,
-    {language::Language, terms::UntypedLambda},
-};
+use syntax::{language::Language, terms::UntypedLambda};
 
 impl<Lang> RuleDescribe for UntypedLambda<Lang>
 where

@@ -1,8 +1,5 @@
 use crate::{Rule, RuleDescribe, Symbol};
-use syntax::{
-    language::Language,
-    {language::Language, terms::Tuple},
-};
+use syntax::{language::Language, terms::Tuple};
 
 impl<Lang> RuleDescribe for Tuple<Lang>
 where
