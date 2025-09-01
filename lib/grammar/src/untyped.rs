@@ -1,18 +1,18 @@
 use crate::{Grammar, GrammarDescribe, Rule, RuleDescribe, symbols::SpecialChar};
-use syntax::{terms::Term, untyped::Untyped};
+use syntax::{language::Language, untyped::Untyped};
 
-impl<T> GrammarDescribe for Untyped<T>
+impl<Lang> GrammarDescribe for Untyped<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn grammar() -> Grammar {
         Grammar::ty(vec![])
     }
 }
 
-impl<T> RuleDescribe for Untyped<T>
+impl<Lang> RuleDescribe for Untyped<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn rule() -> Rule {
         Rule::new(SpecialChar::Empty.into(), "Untyped")

@@ -3,24 +3,22 @@ use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
 use syntax::{
     env::Environment,
-    terms::{Cons, Term},
+    language::Language,
+    terms::Cons,
     types::{List, TypeGroup},
 };
 
-impl<T, Ty> Typecheck for Cons<T, Ty>
+impl<Lang> Typecheck for Cons<Lang>
 where
-    T: Term + Typecheck<Type = Ty, Term = T>,
-    Ty: TypeGroup + Normalize<Ty> + Kindcheck<Ty>,
-    List<Ty>: Into<Ty>,
-    Self: Into<T>,
+    Lang: Language,
+    Lang::Term: Typecheck<Lang = Lang>,
+    Lang::Type: TypeGroup<Lang = Lang> + Normalize<Lang = Lang> + Kindcheck<Lang = Lang>,
+    List<Lang>: Into<Lang::Type>,
+    Self: Into<Lang::Term>,
 {
-    type Term = <T as Typecheck>::Term;
-    type Type = <T as Typecheck>::Type;
+    type Lang = Lang;
 
-    fn check(
-        &self,
-        env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
+    fn check(&self, env: Environment<Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
         let ty_norm = self.ty.clone().normalize(env.clone());
         let hd_res = self.head.check(env.clone())?;
         let hd_ty = hd_res.ret_ty().normalize(env.clone());
@@ -30,7 +28,7 @@ where
         let tl_res = self.tail.check(env.clone())?;
         let tl_ty = tl_res.ret_ty().normalize(env.clone());
         tl_ty.check_kind(env.clone())?.into_star()?;
-        let list_ty: Self::Type = List::new(ty_norm).into();
+        let list_ty: Lang::Type = List::new(ty_norm).into();
         tl_ty.check_equal(&list_ty)?;
 
         let conc = TypingConclusion::new(env, self.clone(), list_ty.clone());

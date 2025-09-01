@@ -1,9 +1,9 @@
 use crate::{Rule, RuleDescribe, symbols::SpecialChar};
-use syntax::types::{Bot, Type};
+use syntax::{language::Language, types::Bot};
 
-impl<Ty> RuleDescribe for Bot<Ty>
+impl<Lang> RuleDescribe for Bot<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
     fn rule() -> Rule {
         Rule::new(SpecialChar::Bot.into(), "Bottom Type")

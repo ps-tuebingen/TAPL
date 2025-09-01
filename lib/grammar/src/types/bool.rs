@@ -1,9 +1,9 @@
 use crate::{Rule, RuleDescribe, symbols::Keyword};
-use syntax::types::{Bool, Type};
+use syntax::{language::Language, types::Bool};
 
-impl<Ty> RuleDescribe for Bool<Ty>
+impl<Lang> RuleDescribe for Bool<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
     fn rule() -> Rule {
         Rule::new(Keyword::Bool.into(), "Bool")

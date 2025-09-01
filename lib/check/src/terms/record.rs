@@ -2,26 +2,19 @@ use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
 use std::collections::HashMap;
-use syntax::{
-    env::Environment,
-    terms::{Record, Term},
-    types::Record as RecordTy,
-};
+use syntax::{env::Environment, language::Language, terms::Record, types::Record as RecordTy};
 
-impl<T> Typecheck for Record<T>
+impl<Lang> Typecheck for Record<Lang>
 where
-    T: Term + Typecheck<Term = T>,
-    <T as Typecheck>::Type: Normalize<<T as Typecheck>::Type> + Kindcheck<<T as Typecheck>::Type>,
-    RecordTy<<T as Typecheck>::Type>: Into<<T as Typecheck>::Type>,
-    Self: Into<T>,
+    Lang: Language,
+    Lang::Term: Typecheck<Lang = Lang>,
+    <Lang as Language>::Type: Normalize<Lang = Lang> + Kindcheck<Lang = Lang>,
+    RecordTy<Lang>: Into<Lang::Type>,
+    Self: Into<Lang::Term>,
 {
-    type Term = <T as Typecheck>::Term;
-    type Type = <T as Typecheck>::Type;
+    type Lang = Lang;
 
-    fn check(
-        &self,
-        env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
+    fn check(&self, env: Environment<Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
         let mut recs = HashMap::new();
         let mut ress = Vec::new();
         let mut rec_knd = None;
@@ -42,7 +35,7 @@ where
             }
         }
 
-        let conc = TypingConclusion::new(env, self.clone(), RecordTy::new(recs));
+        let conc = TypingConclusion::new(env, self.clone(), RecordTy::<Lang>::new(recs));
         let deriv = TypingDerivation::record(conc, ress);
         Ok(deriv.into())
     }

@@ -1,9 +1,12 @@
 use crate::{Rule, RuleDescribe, Symbol};
-use syntax::terms::{Term, Tuple};
+use syntax::{
+    language::Language,
+    {language::Language, terms::Tuple},
+};
 
-impl<T> RuleDescribe for Tuple<T>
+impl<Lang> RuleDescribe for Tuple<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn rule() -> Rule {
         Rule::new(Symbol::tuple(Symbol::Term), "Tuple")

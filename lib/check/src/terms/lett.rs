@@ -1,24 +1,18 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
-use syntax::{
-    env::Environment,
-    terms::{Let, Term},
-};
+use syntax::{env::Environment, language::Language, terms::Let};
 
-impl<T> Typecheck for Let<T>
+impl<Lang> Typecheck for Let<Lang>
 where
-    T: Term + Typecheck<Term = T>,
-    <T as Typecheck>::Type: Normalize<<T as Typecheck>::Type> + Kindcheck<<T as Typecheck>::Type>,
-    Self: Into<T>,
+    Lang: Language,
+    Lang::Term: Typecheck<Lang = Lang>,
+    <Lang as Language>::Type: Normalize<Lang = Lang> + Kindcheck<Lang = Lang>,
+    Self: Into<Lang::Term>,
 {
-    type Term = <T as Typecheck>::Term;
-    type Type = <T as Typecheck>::Type;
+    type Lang = Lang;
 
-    fn check(
-        &self,
-        mut env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
+    fn check(&self, mut env: Environment<Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
         let bound_res = self.bound_term.check(env.clone())?;
         let bound_ty = bound_res.ret_ty().normalize(env.clone());
         bound_ty.check_kind(env.clone())?;

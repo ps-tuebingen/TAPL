@@ -1,9 +1,9 @@
 use crate::{Rule, RuleDescribe, Symbol};
-use syntax::types::{Tuple, Type};
+use syntax::{language::Language, types::Tuple};
 
-impl<Ty> RuleDescribe for Tuple<Ty>
+impl<Lang> RuleDescribe for Tuple<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
     fn rule() -> Rule {
         Rule::new(Symbol::tuple(Symbol::Type), "Tuple Type")

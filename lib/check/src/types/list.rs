@@ -7,21 +7,19 @@ use syntax::{
     types::{List, Top, TypeGroup},
 };
 
-impl<Ty> Subtypecheck for List<Ty>
+impl<Lang> Subtypecheck for List<Lang>
 where
-    Ty: TypeGroup + Subtypecheck,
-    Top<Ty>: Into<Ty>,
-    List<Ty>: Into<Ty>,
+    Lang: Language,
+    Top<Lang>: Into<Lang::Type>,
+    List<Lang>: Into<Lang::Type>,
+    Lang::Type: Subtypecheck<Lang = Lang> + TypeGroup<Lang = Lang>,
 {
-    type Lang = <Ty as Subtypecheck>::Lang;
+    type Lang = Lang;
     fn check_subtype(
         &self,
-        sup: &Ty,
-        env: Environment<Ty>,
-    ) -> Result<
-        Derivation<<Self::Lang as Language>::Term, <Self::Lang as Language>::Type>,
-        CheckError,
-    > {
+        sup: &<Lang as Language>::Type,
+        env: Environment<Self::Lang>,
+    ) -> Result<Derivation<Self::Lang>, CheckError> {
         if let Ok(top) = sup.clone().into_top() {
             return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind).into());
         }

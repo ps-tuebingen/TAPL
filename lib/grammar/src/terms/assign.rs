@@ -1,9 +1,9 @@
 use crate::{Rule, RuleDescribe, Symbol};
-use syntax::terms::{Assign, Term};
+use syntax::{language::Language, terms::Assign};
 
-impl<T> RuleDescribe for Assign<T>
+impl<Lang> RuleDescribe for Assign<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn rule() -> Rule {
         Rule::new(Symbol::assign(), "Assignment")

@@ -1,9 +1,9 @@
 use crate::{Rule, RuleDescribe, symbols::Keyword};
-use syntax::types::{Type, Unit};
+use syntax::{language::Language, types::Unit};
 
-impl<Ty> RuleDescribe for Unit<Ty>
+impl<Lang> RuleDescribe for Unit<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
     fn rule() -> Rule {
         Rule::new(Keyword::UnitTy.into(), "Unit Type")

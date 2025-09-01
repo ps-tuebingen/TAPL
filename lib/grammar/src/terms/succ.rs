@@ -1,9 +1,9 @@
 use crate::{Rule, RuleDescribe, Symbol, symbols::Keyword};
-use syntax::terms::{Succ, Term};
+use syntax::{language::Language, terms::Succ};
 
-impl<T> RuleDescribe for Succ<T>
+impl<Lang> RuleDescribe for Succ<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn rule() -> Rule {
         Rule::new(

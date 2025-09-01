@@ -1,9 +1,9 @@
 use crate::{Rule, RuleDescribe, Symbol};
-use syntax::terms::{RecordProj, Term};
+use syntax::{language::Language, terms::RecordProj};
 
-impl<T> RuleDescribe for RecordProj<T>
+impl<Lang> RuleDescribe for RecordProj<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn rule() -> Rule {
         Rule::new(Symbol::dot(Symbol::Label), "Record Projection")

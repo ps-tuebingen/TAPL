@@ -1,9 +1,9 @@
 use crate::{Rule, RuleDescribe, Symbol};
-use syntax::types::{Fun, Type};
+use syntax::{language::Language, types::Fun};
 
-impl<Ty> RuleDescribe for Fun<Ty>
+impl<Lang> RuleDescribe for Fun<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
     fn rule() -> Rule {
         Rule::new(Symbol::fun_ty(), "Function Type")

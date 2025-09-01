@@ -1,9 +1,12 @@
 use crate::{Rule, RuleDescribe, Symbol};
-use syntax::terms::{Term, TryWithVal};
+use syntax::{
+    language::Language,
+    {language::Language, terms::TryWithVal},
+};
 
-impl<T> RuleDescribe for TryWithVal<T>
+impl<Lang> RuleDescribe for TryWithVal<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn rule() -> Rule {
         Rule::new(Symbol::try_catch(), "Try-Catch")

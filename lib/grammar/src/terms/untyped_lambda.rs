@@ -1,9 +1,12 @@
 use crate::{Rule, RuleDescribe, Symbol};
-use syntax::terms::{Term, UntypedLambda};
+use syntax::{
+    language::Language,
+    {language::Language, terms::UntypedLambda},
+};
 
-impl<T> RuleDescribe for UntypedLambda<T>
+impl<Lang> RuleDescribe for UntypedLambda<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn rule() -> Rule {
         Rule::new(Symbol::lam_untyped(Symbol::Term), "Lambda Abstraction")

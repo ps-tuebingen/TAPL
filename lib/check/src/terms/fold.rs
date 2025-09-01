@@ -4,25 +4,23 @@ use errors::check_error::CheckError;
 use syntax::{
     env::Environment,
     kinds::Kind,
+    language::Language,
     subst::SubstType,
-    terms::{Fold, Term},
+    terms::Fold,
     types::{Mu, TypeGroup},
 };
 
-impl<T, Ty> Typecheck for Fold<T, Ty>
+impl<Lang> Typecheck for Fold<Lang>
 where
-    T: Term + Typecheck<Type = Ty, Term = T>,
-    Ty: TypeGroup + Normalize<Ty> + Kindcheck<Ty> + SubstType<Ty, Target = Ty>,
-    Mu<Ty>: Into<Ty>,
-    Self: Into<T>,
+    Lang: Language,
+    Lang::Term: Typecheck<Lang = Lang>,
+    Lang::Type: TypeGroup<Lang = Lang> + Normalize<Lang = Lang> + Kindcheck<Lang = Lang>,
+    Mu<Lang>: Into<Lang::Type>,
+    Self: Into<Lang::Term>,
 {
-    type Term = <T as Typecheck>::Term;
-    type Type = <T as Typecheck>::Type;
+    type Lang = Lang;
 
-    fn check(
-        &self,
-        mut env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
+    fn check(&self, mut env: Environment<Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
         let mu_ty = self.ty.clone().normalize(env.clone()).into_mu()?;
         env.add_tyvar_kind(mu_ty.var.clone(), Kind::Star);
         mu_ty.ty.check_kind(env.clone())?.into_star()?;

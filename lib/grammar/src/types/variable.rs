@@ -1,9 +1,9 @@
 use crate::{Rule, RuleDescribe, Symbol};
-use syntax::types::{Type, TypeVariable};
+use syntax::{language::Language, types::TypeVariable};
 
-impl<Ty> RuleDescribe for TypeVariable<Ty>
+impl<Lang> RuleDescribe for TypeVariable<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
     fn rule() -> Rule {
         Rule::new(Symbol::Variable, "Type Variable")

@@ -10,21 +10,19 @@ use syntax::{
     types::{OpApp, Top, TypeGroup},
 };
 
-impl<Ty> Subtypecheck for OpApp<Ty>
+impl<Lang> Subtypecheck for OpApp<Lang>
 where
-    Ty: TypeGroup + Subtypecheck,
-    Self: Into<Ty>,
-    Top<Ty>: Into<Ty>,
+    Lang: Language,
+    Self: Into<Lang::Type>,
+    Top<Lang>: Into<Lang::Type>,
+    Lang::Type: Subtypecheck<Lang = Lang> + TypeGroup<Lang = Lang>,
 {
-    type Lang = <Ty as Subtypecheck>::Lang;
+    type Lang = Lang;
     fn check_subtype(
         &self,
-        sup: &Ty,
-        env: Environment<Ty>,
-    ) -> Result<
-        Derivation<<Self::Lang as Language>::Term, <Self::Lang as Language>::Type>,
-        CheckError,
-    > {
+        sup: &<Lang as Language>::Type,
+        env: Environment<Self::Lang>,
+    ) -> Result<Derivation<Self::Lang>, CheckError> {
         if let Ok(top) = sup.clone().into_top() {
             return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind).into());
         }
@@ -42,11 +40,13 @@ where
     }
 }
 
-impl<Ty> Kindcheck<Ty> for OpApp<Ty>
+impl<Lang> Kindcheck for OpApp<Lang>
 where
-    Ty: TypeGroup + Kindcheck<Ty>,
+    Lang: Language,
+    Lang::Type: Kindcheck<Lang = Lang>,
 {
-    fn check_kind(&self, env: Environment<Ty>) -> Result<Kind, CheckError> {
+    type Lang = Lang;
+    fn check_kind(&self, env: Environment<Self::Lang>) -> Result<Kind, CheckError> {
         let fun_kind = self.fun.check_kind(env.clone())?;
         let (fun_from, fun_to) = fun_kind.into_arrow()?;
         let arg_kind = self.arg.check_kind(env)?;
@@ -58,12 +58,14 @@ where
     }
 }
 
-impl<Ty> Normalize<Ty> for OpApp<Ty>
+impl<Lang> Normalize for OpApp<Lang>
 where
-    Ty: TypeGroup + Normalize<Ty> + SubstType<Ty, Target = Ty>,
-    Self: Into<Ty>,
+    Lang: Language,
+    Self: Into<Lang::Type>,
+    Lang::Type: Normalize<Lang = Lang> + TypeGroup<Lang = Lang>,
 {
-    fn normalize(self, env: Environment<Ty>) -> Ty {
+    type Lang = Lang;
+    fn normalize(self, env: Environment<Self::Lang>) -> <Self::Lang as Language>::Type {
         let fun_norm = self.fun.normalize(env.clone());
         if let Ok(oplam) = fun_norm.clone().into_oplambda() {
             oplam

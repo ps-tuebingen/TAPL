@@ -1,9 +1,9 @@
 use crate::{Rule, RuleDescribe, Symbol, symbols::Keyword};
-use syntax::terms::{ListCase, Term};
+use syntax::{language::Language, terms::ListCase};
 
-impl<T> RuleDescribe for ListCase<T>
+impl<Lang> RuleDescribe for ListCase<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn rule() -> Rule {
         Rule::new(

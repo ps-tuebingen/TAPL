@@ -1,9 +1,9 @@
 use crate::{Rule, RuleDescribe, Symbol};
-use syntax::terms::{App, Term};
+use syntax::{language::Language, terms::App};
 
-impl<T> RuleDescribe for App<T>
+impl<Lang> RuleDescribe for App<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn rule() -> Rule {
         Rule::new(Symbol::app(Symbol::Term, Symbol::Term), "Application")

@@ -1,9 +1,9 @@
 use crate::{Rule, RuleDescribe, Symbol};
-use syntax::terms::{Loc, Term};
+use syntax::{language::Language, terms::Loc};
 
-impl<T> RuleDescribe for Loc<T>
+impl<Lang> RuleDescribe for Loc<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn rule() -> Rule {
         Rule::new(Symbol::Location, "Location")

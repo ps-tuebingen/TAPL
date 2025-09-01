@@ -1,13 +1,9 @@
 use crate::{Rule, RuleDescribe, Symbol};
-use syntax::{
-    terms::{Term, Variant},
-    types::Type,
-};
+use syntax::{language::Language, terms::Variant};
 
-impl<T, Ty> RuleDescribe for Variant<T, Ty>
+impl<Lang> RuleDescribe for Variant<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
 {
     fn rule() -> Rule {
         Rule::new(Symbol::variant(Symbol::Term), "Variant")

@@ -1,13 +1,13 @@
 use crate::{Rule, RuleDescribe, Symbol, symbols::Keyword};
 use syntax::{
-    terms::{Fold, Term},
-    types::Type,
+    language::Language,
+    {terms::Fold, },
 };
 
-impl<T, Ty> RuleDescribe for Fold<T, Ty>
+impl<Lang> RuleDescribe for Fold<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
+    ,
 {
     fn rule() -> Rule {
         Rule::new(

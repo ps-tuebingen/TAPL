@@ -1,9 +1,9 @@
 use crate::{Rule, RuleDescribe, Symbol};
-use syntax::terms::{Let, Term};
+use syntax::{language::Language, terms::Let};
 
-impl<T> RuleDescribe for Let<T>
+impl<Lang> RuleDescribe for Let<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn rule() -> Rule {
         Rule::new(Symbol::lett(), "Let Binding")

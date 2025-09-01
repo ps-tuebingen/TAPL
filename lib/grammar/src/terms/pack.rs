@@ -1,13 +1,13 @@
 use crate::{Rule, RuleDescribe, Symbol};
 use syntax::{
-    terms::{Pack, Term},
-    types::Type,
+    language::Language,
+    {terms::Pack, },
 };
 
-impl<T, Ty> RuleDescribe for Pack<T, Ty>
+impl<Lang> RuleDescribe for Pack<Lang>
 where
-    T: Term,
-    Ty: Type,
+    Lang: Language,
+    ,
 {
     fn rule() -> Rule {
         Rule::new(Symbol::pack(Symbol::Term), "Package")

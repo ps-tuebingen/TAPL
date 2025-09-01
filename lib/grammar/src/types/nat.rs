@@ -1,9 +1,9 @@
 use crate::{Rule, RuleDescribe, symbols::Keyword};
-use syntax::types::{Nat, Type};
+use syntax::{language::Language, types::Nat};
 
-impl<Ty> RuleDescribe for Nat<Ty>
+impl<Lang> RuleDescribe for Nat<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
     fn rule() -> Rule {
         Rule::new(Keyword::Nat.into(), "Natural Numbers")

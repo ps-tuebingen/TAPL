@@ -7,21 +7,19 @@ use syntax::{
     language::Language,
     types::{Top, TypeGroup, TypeVariable},
 };
-impl<Ty> Subtypecheck for TypeVariable<Ty>
+impl<Lang> Subtypecheck for TypeVariable<Lang>
 where
-    Ty: TypeGroup + Subtypecheck + Normalize<Ty>,
-    Top<Ty>: Into<Ty>,
-    TypeVariable<Ty>: Into<Ty>,
+    Lang: Language,
+    Top<Lang>: Into<Lang::Type>,
+    TypeVariable<Lang>: Into<Lang::Type>,
+    Lang::Type: Normalize<Lang = Lang>,
 {
-    type Lang = <Ty as Subtypecheck>::Lang;
+    type Lang = Lang;
     fn check_subtype(
         &self,
-        sup: &Ty,
-        env: Environment<Ty>,
-    ) -> Result<
-        Derivation<<Self::Lang as Language>::Term, <Self::Lang as Language>::Type>,
-        CheckError,
-    > {
+        sup: &<Lang as Language>::Type,
+        env: Environment<Self::Lang>,
+    ) -> Result<Derivation<Self::Lang>, CheckError> {
         let ty_super = env.get_tyvar_super(&self.v)?;
         let sup_norm = sup.clone().normalize(env.clone());
 
@@ -39,21 +37,23 @@ where
     }
 }
 
-impl<Ty> Kindcheck<Ty> for TypeVariable<Ty>
+impl<Lang> Kindcheck for TypeVariable<Lang>
 where
-    Ty: TypeGroup + Kindcheck<Ty>,
+    Lang: Language,
 {
-    fn check_kind(&self, env: Environment<Ty>) -> Result<Kind, CheckError> {
+    type Lang = Lang;
+    fn check_kind(&self, env: Environment<Self::Lang>) -> Result<Kind, CheckError> {
         env.get_tyvar_kind(&self.v).map_err(|err| err.into())
     }
 }
 
-impl<Ty> Normalize<Ty> for TypeVariable<Ty>
+impl<Lang> Normalize for TypeVariable<Lang>
 where
-    Ty: TypeGroup + Normalize<Ty>,
-    Self: Into<Ty>,
+    Lang: Language,
+    Self: Into<Lang::Type>,
 {
-    fn normalize(self, env: Environment<Ty>) -> Ty {
+    type Lang = Lang;
+    fn normalize(self, env: Environment<Self::Lang>) -> <Self::Lang as Language>::Type {
         env.get_tyvar_super(&self.v).unwrap_or(self.into())
     }
 }

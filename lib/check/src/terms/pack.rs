@@ -3,29 +3,22 @@ use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::TypeMismatch;
 use errors::check_error::CheckError;
 use syntax::{
-    env::Environment,
-    subst::SubstType,
-    terms::{Pack, Term},
-    types::TypeGroup,
+    env::Environment, language::Language, subst::SubstType, terms::Pack, types::TypeGroup,
 };
 
-impl<T, Ty> Typecheck for Pack<T, Ty>
+impl<Lang> Typecheck for Pack<Lang>
 where
-    T: Term + Typecheck<Type = Ty, Term = T>,
-    Ty: TypeGroup
-        + Normalize<Ty>
-        + Kindcheck<Ty>
-        + Subtypecheck<Type = Ty>
-        + SubstType<Ty, Target = Ty>,
-    Self: Into<T>,
+    Lang: Language,
+    Lang::Term: Typecheck<Lang = Lang>,
+    Lang::Type: TypeGroup<Lang = Lang>
+        + Normalize<Lang = Lang>
+        + Kindcheck<Lang = Lang>
+        + Subtypecheck<Lang = Lang>,
+    Self: Into<Lang::Term>,
 {
-    type Term = <T as Typecheck>::Term;
-    type Type = <T as Typecheck>::Type;
+    type Lang = Lang;
 
-    fn check(
-        &self,
-        mut env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
+    fn check(&self, mut env: Environment<Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
         let outer_norm = self.outer_ty.clone().normalize(env.clone());
         let inner_kind = self.inner_ty.check_kind(env.clone())?;
         let outer_knd = outer_norm.check_kind(env.clone())?;

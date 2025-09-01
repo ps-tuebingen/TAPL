@@ -1,9 +1,9 @@
 use crate::{Rule, RuleDescribe, Symbol};
-use syntax::{terms::Term, values::TyLambda};
+use syntax::{language::Language, values::TyLambda};
 
-impl<T> RuleDescribe for TyLambda<T>
+impl<Lang> RuleDescribe for TyLambda<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn rule() -> Rule {
         Rule::new(

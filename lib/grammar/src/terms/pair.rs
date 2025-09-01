@@ -1,9 +1,9 @@
 use crate::{Rule, RuleDescribe, Symbol};
-use syntax::terms::{Pair, Term};
+use syntax::{language::Language, terms::Pair};
 
-impl<T> RuleDescribe for Pair<T>
+impl<Lang> RuleDescribe for Pair<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn rule() -> Rule {
         Rule::new(Symbol::pair(Symbol::Term), "Pair")

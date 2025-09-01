@@ -5,24 +5,21 @@ use syntax::{
     env::Environment,
     kinds::Kind,
     language::Language,
-    types::{Bool, Top, Type, TypeGroup},
+    types::{Bool, Top, TypeGroup},
 };
 
-impl<Ty> Subtypecheck for Bool<Ty>
+impl<Lang> Subtypecheck for Bool<Lang>
 where
-    Ty: TypeGroup + Subtypecheck,
-    Top<Ty>: Into<Ty>,
-    Self: Into<Ty>,
+    Lang: Language,
+    Top<Lang>: Into<Lang::Type>,
+    Self: Into<Lang::Type>,
 {
-    type Lang = <Ty as Subtypecheck>::Lang;
+    type Lang = Lang;
     fn check_subtype(
         &self,
         sup: &<Self::Lang as Language>::Type,
-        env: Environment<<Self::Lang as Language>::Type>,
-    ) -> Result<
-        Derivation<<Self::Lang as Language>::Term, <Self::Lang as Language>::Type>,
-        CheckError,
-    > {
+        env: Environment<Self::Lang>,
+    ) -> Result<Derivation<Self::Lang>, CheckError> {
         if let Ok(top) = sup.clone().into_top() {
             return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind).into());
         }
@@ -32,21 +29,23 @@ where
     }
 }
 
-impl<Ty> Kindcheck<Ty> for Bool<Ty>
+impl<Lang> Kindcheck for Bool<Lang>
 where
-    Ty: Type + Kindcheck<Ty>,
+    Lang: Language,
 {
-    fn check_kind(&self, _: Environment<Ty>) -> Result<Kind, CheckError> {
+    type Lang = Lang;
+    fn check_kind(&self, _: Environment<Self::Lang>) -> Result<Kind, CheckError> {
         Ok(Kind::Star)
     }
 }
 
-impl<Ty> Normalize<Ty> for Bool<Ty>
+impl<Lang> Normalize for Bool<Lang>
 where
-    Ty: Type + Normalize<Ty>,
-    Self: Into<Ty>,
+    Lang: Language,
+    Self: Into<Lang::Type>,
 {
-    fn normalize(self, _: Environment<Ty>) -> Ty {
+    type Lang = Lang;
+    fn normalize(self, _: Environment<Self::Lang>) -> <Lang as Language>::Type {
         self.into()
     }
 }

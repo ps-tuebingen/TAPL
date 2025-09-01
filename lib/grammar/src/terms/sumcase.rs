@@ -1,9 +1,9 @@
 use crate::{Rule, RuleDescribe, Symbol, symbols::Keyword};
-use syntax::terms::{SumCase, Term};
+use syntax::{language::Language, terms::SumCase};
 
-impl<T> RuleDescribe for SumCase<T>
+impl<Lang> RuleDescribe for SumCase<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn rule() -> Rule {
         Rule::new(

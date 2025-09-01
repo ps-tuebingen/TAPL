@@ -6,24 +6,22 @@ use syntax::{
     env::Environment,
     kinds::Kind,
     language::Language,
-    types::{ForallBounded, Top, Type, TypeGroup},
+    types::{ForallBounded, Top, TypeGroup},
 };
 
-impl<Ty> Subtypecheck for ForallBounded<Ty>
+impl<Lang> Subtypecheck for ForallBounded<Lang>
 where
-    Ty: TypeGroup + Subtypecheck + Normalize<Ty>,
-    ForallBounded<Ty>: Into<Ty>,
-    Top<Ty>: Into<Ty>,
+    Lang: Language,
+    ForallBounded<Lang>: Into<Lang::Type>,
+    Top<Lang>: Into<Lang::Type>,
+    Lang::Type: Normalize<Lang = Lang> + TypeGroup<Lang = Lang> + Subtypecheck<Lang = Lang>,
 {
-    type Lang = <Ty as Subtypecheck>::Lang;
+    type Lang = Lang;
     fn check_subtype(
         &self,
-        sup: &Ty,
-        env: Environment<Ty>,
-    ) -> Result<
-        Derivation<<Self::Lang as Language>::Term, <Self::Lang as Language>::Type>,
-        CheckError,
-    > {
+        sup: &<Lang as Language>::Type,
+        env: Environment<Self::Lang>,
+    ) -> Result<Derivation<Self::Lang>, CheckError> {
         if let Ok(top) = sup.clone().into_top() {
             return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind).into());
         }
@@ -43,23 +41,27 @@ where
     }
 }
 
-impl<Ty> Kindcheck<Ty> for ForallBounded<Ty>
+impl<Lang> Kindcheck for ForallBounded<Lang>
 where
-    Ty: Type + Kindcheck<Ty>,
+    Lang: Language,
+    Lang::Type: Kindcheck<Lang = Lang>,
 {
-    fn check_kind(&self, mut env: Environment<Ty>) -> Result<Kind, CheckError> {
+    type Lang = Lang;
+    fn check_kind(&self, mut env: Environment<Self::Lang>) -> Result<Kind, CheckError> {
         let sup_kind = self.sup_ty.check_kind(env.clone())?;
         env.add_tyvar_kind(self.var.clone(), sup_kind);
         self.ty.check_kind(env)
     }
 }
 
-impl<Ty> Normalize<Ty> for ForallBounded<Ty>
+impl<Lang> Normalize for ForallBounded<Lang>
 where
-    Ty: Type + Normalize<Ty>,
-    Self: Into<Ty>,
+    Lang: Language,
+    Self: Into<Lang::Type>,
+    Lang::Type: Normalize<Lang = Lang>,
 {
-    fn normalize(self, mut env: Environment<Ty>) -> Ty {
+    type Lang = Lang;
+    fn normalize(self, mut env: Environment<Self::Lang>) -> <Self::Lang as Language>::Type {
         env.add_tyvar_super(self.var.clone(), *self.ty.clone());
         let ty_norm = self.ty.normalize(env);
         ForallBounded {

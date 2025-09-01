@@ -1,10 +1,9 @@
 use crate::{Rule, RuleDescribe, Symbol, symbols::Keyword};
-use syntax::{types::Type, values::Cons, values::Value};
+use syntax::{language::Language, values::Cons};
 
-impl<V, Ty> RuleDescribe for Cons<V, Ty>
+impl<Lang> RuleDescribe for Cons<Lang>
 where
-    V: Value,
-    Ty: Type,
+    Lang: Language,
 {
     fn rule() -> Rule {
         Rule::new(

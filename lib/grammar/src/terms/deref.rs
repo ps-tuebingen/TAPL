@@ -1,9 +1,9 @@
 use crate::{Rule, RuleDescribe, Symbol};
-use syntax::terms::{Deref, Term};
+use syntax::{language::Language, terms::Deref};
 
-impl<T> RuleDescribe for Deref<T>
+impl<Lang> RuleDescribe for Deref<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn rule() -> Rule {
         Rule::new(Symbol::dereft(), "Dereference")

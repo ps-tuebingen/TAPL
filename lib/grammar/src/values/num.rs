@@ -1,9 +1,9 @@
 use crate::{Rule, RuleDescribe, symbols::SpecialChar};
-use syntax::{terms::Term, values::Num};
+use syntax::{language::Language, values::Num};
 
-impl<T> RuleDescribe for Num<T>
+impl<Lang> RuleDescribe for Num<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn rule() -> Rule {
         Rule::new(SpecialChar::Number.into(), "Number")

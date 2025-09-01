@@ -6,24 +6,22 @@ use syntax::{
     kinds::Kind,
     language::Language,
     subst::SubstType,
-    types::{OpLambda, Top, Type, TypeGroup, TypeVariable},
+    types::{OpLambda, Top, TypeGroup, TypeVariable},
 };
-impl<Ty> Subtypecheck for OpLambda<Ty>
+impl<Lang> Subtypecheck for OpLambda<Lang>
 where
-    Ty: TypeGroup + Subtypecheck + SubstType<Ty, Target = Ty>,
-    TypeVariable<Ty>: Into<Ty>,
-    Top<Ty>: Into<Ty>,
-    OpLambda<Ty>: Into<Ty>,
+    Lang: Language,
+    TypeVariable<Lang>: Into<Lang::Type>,
+    Top<Lang>: Into<Lang::Type>,
+    OpLambda<Lang>: Into<Lang::Type>,
+    Lang::Type: Subtypecheck<Lang = Lang> + TypeGroup<Lang = Lang>,
 {
-    type Lang = <Ty as Subtypecheck>::Lang;
+    type Lang = Lang;
     fn check_subtype(
         &self,
-        sup: &Ty,
-        mut env: Environment<Ty>,
-    ) -> Result<
-        Derivation<<Self::Lang as Language>::Term, <Self::Lang as Language>::Type>,
-        CheckError,
-    > {
+        sup: &<Lang as Language>::Type,
+        mut env: Environment<Self::Lang>,
+    ) -> Result<Derivation<Self::Lang>, CheckError> {
         if let Ok(top) = sup.clone().into_top() {
             return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind).into());
         }
@@ -42,11 +40,13 @@ where
     }
 }
 
-impl<Ty> Kindcheck<Ty> for OpLambda<Ty>
+impl<Lang> Kindcheck for OpLambda<Lang>
 where
-    Ty: Type + Kindcheck<Ty>,
+    Lang: Language,
+    Lang::Type: Kindcheck<Lang = Lang>,
 {
-    fn check_kind(&self, mut env: Environment<Ty>) -> Result<Kind, CheckError> {
+    type Lang = Lang;
+    fn check_kind(&self, mut env: Environment<Self::Lang>) -> Result<Kind, CheckError> {
         env.add_tyvar_kind(self.var.clone(), self.annot.clone());
         let body_kind = self.body.check_kind(env)?;
         Ok(Kind::Arrow(
@@ -56,12 +56,14 @@ where
     }
 }
 
-impl<Ty> Normalize<Ty> for OpLambda<Ty>
+impl<Lang> Normalize for OpLambda<Lang>
 where
-    Ty: Type + Normalize<Ty>,
-    Self: Into<Ty>,
+    Lang: Language,
+    Self: Into<Lang::Type>,
+    Lang::Type: Normalize<Lang = Lang>,
 {
-    fn normalize(self, env: Environment<Ty>) -> Ty {
+    type Lang = Lang;
+    fn normalize(self, env: Environment<Self::Lang>) -> <Self::Lang as Language>::Type {
         let body_norm = self.body.normalize(env);
         OpLambda {
             var: self.var,

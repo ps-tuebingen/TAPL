@@ -1,28 +1,26 @@
 use crate::{Kindcheck, Normalize};
 use errors::check_error::CheckError;
-use syntax::{
-    env::Environment,
-    kinds::Kind,
-    language::Language,
-    types::{Exists, Type},
-};
+use syntax::{env::Environment, kinds::Kind, language::Language, types::Exists};
 
-impl<Ty> Kindcheck<Ty> for Exists<Ty>
+impl<Lang> Kindcheck for Exists<Lang>
 where
-    Ty: Type + Kindcheck<Ty>,
+    Lang: Language,
+    Lang::Type: Kindcheck<Lang = Lang>,
 {
-    fn check_kind(&self, mut env: Environment<Ty>) -> Result<Kind, CheckError> {
+    type Lang = Lang;
+    fn check_kind(&self, mut env: Environment<Self::Lang>) -> Result<Kind, CheckError> {
         env.add_tyvar_kind(self.var.clone(), self.kind.clone());
         self.ty.check_kind(env)
     }
 }
 
-impl<Ty> Normalize<Ty> for Exists<Ty>
+impl<Lang> Normalize for Exists<Lang>
 where
-    Ty: Type + Normalize<Ty>,
-    Self: Into<Ty>,
+    Lang: Language,
+    Self: Into<Lang::Type>,
 {
-    fn normalize(self, mut env: Environment<Ty>) -> Ty {
+    type Lang = Lang;
+    fn normalize(self, mut env: Environment<Self::Lang>) -> <Self::Lang as Language>::Type {
         env.add_tyvar_kind(self.var.clone(), self.kind.clone());
         self.into()
     }

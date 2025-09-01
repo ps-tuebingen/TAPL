@@ -3,24 +3,22 @@ use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
 use syntax::{
     env::Environment,
-    terms::{Lambda, Term},
+    language::Language,
+    terms::Lambda,
     types::{Fun, Type},
 };
 
-impl<T, Ty> Typecheck for Lambda<T, Ty>
+impl<Lang> Typecheck for Lambda<Lang>
 where
-    T: Term + Typecheck<Type = Ty, Term = T>,
-    Ty: Type + Normalize<Ty> + Kindcheck<Ty>,
-    Fun<<T as Typecheck>::Type>: Into<<T as Typecheck>::Type>,
-    Self: Into<T>,
+    Lang: Language,
+    Lang::Term: Typecheck<Lang = Lang>,
+    Lang::Type: Type + Normalize<Lang = Lang> + Kindcheck<Lang = Lang>,
+    Fun<Lang>: Into<Lang::Type>,
+    Self: Into<Lang::Term>,
 {
-    type Term = <T as Typecheck>::Term;
-    type Type = <T as Typecheck>::Type;
+    type Lang = Lang;
 
-    fn check(
-        &self,
-        mut env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
+    fn check(&self, mut env: Environment<Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
         self.annot.check_kind(env.clone())?;
         env.add_var(self.var.clone(), self.annot.clone());
         let body_res = self.body.check(env.clone())?;

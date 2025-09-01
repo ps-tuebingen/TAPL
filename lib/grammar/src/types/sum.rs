@@ -1,9 +1,9 @@
 use crate::{Rule, RuleDescribe, Symbol};
-use syntax::types::{Sum, Type};
+use syntax::{language::Language, types::Sum};
 
-impl<Ty> RuleDescribe for Sum<Ty>
+impl<Lang> RuleDescribe for Sum<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
     fn rule() -> Rule {
         Rule::new(Symbol::sum_ty(), "Sum Type")

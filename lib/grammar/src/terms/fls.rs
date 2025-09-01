@@ -1,9 +1,9 @@
 use crate::{Rule, RuleDescribe, symbols::Keyword};
-use syntax::terms::{False, Term};
+use syntax::{language::Language, terms::False};
 
-impl<T> RuleDescribe for False<T>
+impl<Lang> RuleDescribe for False<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn rule() -> Rule {
         Rule::new(Keyword::False.into(), "False")

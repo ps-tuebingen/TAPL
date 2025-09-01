@@ -1,9 +1,9 @@
 use crate::{Rule, RuleDescribe, Symbol};
-use syntax::terms::{Record, Term};
+use syntax::{language::Language, terms::Record};
 
-impl<T> RuleDescribe for Record<T>
+impl<Lang> RuleDescribe for Record<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn rule() -> Rule {
         Rule::new(Symbol::record(Symbol::Term), "Record")

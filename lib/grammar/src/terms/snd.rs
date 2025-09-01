@@ -1,9 +1,9 @@
 use crate::{Rule, RuleDescribe, Symbol, symbols::Keyword};
-use syntax::terms::{Snd, Term};
+use syntax::{language::Language, terms::Snd};
 
-impl<T> RuleDescribe for Snd<T>
+impl<Lang> RuleDescribe for Snd<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn rule() -> Rule {
         Rule::new(Symbol::dot(Keyword::Snd.into()), "Second Projection")

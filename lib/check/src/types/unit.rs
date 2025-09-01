@@ -7,30 +7,28 @@ use syntax::{
     language::Language,
     types::{Top, TypeGroup, Unit},
 };
-impl<Ty> Kindcheck<Ty> for Unit<Ty>
+impl<Lang> Kindcheck for Unit<Lang>
 where
-    Ty: TypeGroup + Kindcheck<Ty>,
+    Lang: Language,
 {
-    fn check_kind(&self, _: Environment<Ty>) -> Result<Kind, CheckError> {
+    type Lang = Lang;
+    fn check_kind(&self, _: Environment<Self::Lang>) -> Result<Kind, CheckError> {
         Ok(Kind::Star)
     }
 }
 
-impl<Ty> Subtypecheck for Unit<Ty>
+impl<Lang> Subtypecheck for Unit<Lang>
 where
-    Ty: TypeGroup + Subtypecheck,
-    Top<Ty>: Into<Ty>,
-    Unit<Ty>: Into<Ty>,
+    Lang: Language,
+    Top<Lang>: Into<Lang::Type>,
+    Unit<Lang>: Into<Lang::Type>,
 {
-    type Lang = <Ty as Subtypecheck>::Lang;
+    type Lang = Lang;
     fn check_subtype(
         &self,
-        sup: &Ty,
-        env: Environment<Ty>,
-    ) -> Result<
-        Derivation<<Self::Lang as Language>::Term, <Self::Lang as Language>::Type>,
-        CheckError,
-    > {
+        sup: &<Lang as Language>::Type,
+        env: Environment<Self::Lang>,
+    ) -> Result<Derivation<Self::Lang>, CheckError> {
         if let Ok(top) = sup.clone().into_top() {
             return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind).into());
         }
@@ -40,12 +38,13 @@ where
     }
 }
 
-impl<Ty> Normalize<Ty> for Unit<Ty>
+impl<Lang> Normalize for Unit<Lang>
 where
-    Ty: TypeGroup + Normalize<Ty>,
-    Self: Into<Ty>,
+    Lang: Language,
+    Self: Into<Lang::Type>,
 {
-    fn normalize(self, _: Environment<Ty>) -> Ty {
+    type Lang = Lang;
+    fn normalize(self, _: Environment<Self::Lang>) -> <Self::Lang as Language>::Type {
         self.into()
     }
 }

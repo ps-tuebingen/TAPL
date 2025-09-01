@@ -1,23 +1,17 @@
 use crate::Typecheck;
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
-use syntax::{
-    env::Environment,
-    terms::{Term, Variable},
-};
+use syntax::{env::Environment, language::Language, terms::Variable};
 
-impl<T> Typecheck for Variable<T>
+impl<Lang> Typecheck for Variable<Lang>
 where
-    T: Term + Typecheck<Term = T>,
-    Self: Into<T>,
+    Lang: Language,
+    Lang::Term: Typecheck<Lang = Lang>,
+    Self: Into<Lang::Term>,
 {
-    type Term = <T as Typecheck>::Term;
-    type Type = <T as Typecheck>::Type;
+    type Lang = Lang;
 
-    fn check(
-        &self,
-        env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
+    fn check(&self, env: Environment<Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
         let ty = env.get_var(&self.var)?;
         let conc = TypingConclusion::new(env.clone(), self.clone(), ty);
         let deriv = TypingDerivation::var(conc);

@@ -1,29 +1,28 @@
 use crate::{Kindcheck, Normalize};
 use errors::check_error::CheckError;
-use syntax::{
-    env::Environment,
-    kinds::Kind,
-    language::Language,
-    types::{Forall, Type},
-};
+use syntax::{env::Environment, kinds::Kind, language::Language, types::Forall};
 
-impl<Ty> Kindcheck<Ty> for Forall<Ty>
+impl<Lang> Kindcheck for Forall<Lang>
 where
-    Ty: Type + Kindcheck<Ty>,
+    Lang: Language,
+    Lang::Type: Kindcheck<Lang = Lang>,
 {
-    fn check_kind(&self, mut env: Environment<Ty>) -> Result<Kind, CheckError> {
+    type Lang = Lang;
+    fn check_kind(&self, mut env: Environment<Self::Lang>) -> Result<Kind, CheckError> {
         env.add_tyvar_kind(self.var.clone(), self.kind.clone());
         let ty_kind = self.ty.check_kind(env)?;
         Ok(ty_kind)
     }
 }
 
-impl<Ty> Normalize<Ty> for Forall<Ty>
+impl<Lang> Normalize for Forall<Lang>
 where
-    Ty: Type + Normalize<Ty>,
-    Self: Into<Ty>,
+    Lang: Language,
+    Self: Into<Lang::Type>,
+    Lang::Type: Normalize<Lang = Lang>,
 {
-    fn normalize(self, mut env: Environment<Ty>) -> Ty {
+    type Lang = Lang;
+    fn normalize(self, mut env: Environment<Self::Lang>) -> <Self::Lang as Language>::Type {
         env.add_tyvar_kind(self.var.clone(), self.kind.clone());
         let ty_norm = self.ty.normalize(env);
         Forall {

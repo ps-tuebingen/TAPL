@@ -1,26 +1,18 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
-use syntax::{
-    env::Environment,
-    terms::{Ascribe, Term},
-    types::TypeGroup,
-};
+use syntax::{env::Environment, language::Language, terms::Ascribe, types::TypeGroup};
 
-impl<T, Ty> Typecheck for Ascribe<T, Ty>
+impl<Lang> Typecheck for Ascribe<Lang>
 where
-    T: Term + Typecheck<Type = Ty, Term = T>,
-    Ty: TypeGroup + Normalize<Ty> + Kindcheck<Ty>,
-    Self: Into<T>,
+    Lang: Language,
+    Lang::Term: Typecheck<Lang = Lang>,
+    Lang::Type: TypeGroup<Lang = Lang> + Normalize<Lang = Lang> + Kindcheck<Lang = Lang>,
+    Self: Into<Lang::Term>,
 {
-    type Type = <T as Typecheck>::Type;
+    type Lang = Lang;
 
-    type Term = T;
-
-    fn check(
-        &self,
-        env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
+    fn check(&self, env: Environment<Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
         let t_res = self.term.check(env.clone())?;
         let t_ty = t_res.ret_ty().normalize(env.clone());
         let asc_norm = self.ty.clone().normalize(env.clone());

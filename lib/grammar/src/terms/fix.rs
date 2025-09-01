@@ -1,9 +1,9 @@
 use crate::{Rule, RuleDescribe, Symbol, symbols::Keyword};
-use syntax::terms::{Fix, Term};
+use syntax::{language::Language, terms::Fix};
 
-impl<T> RuleDescribe for Fix<T>
+impl<Lang> RuleDescribe for Fix<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn rule() -> Rule {
         Rule::new(

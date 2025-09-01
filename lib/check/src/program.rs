@@ -1,25 +1,16 @@
 use crate::Typecheck;
 use derivations::{Derivation, ProgramDerivation};
 use errors::check_error::CheckError;
-use syntax::{
-    env::Environment,
-    program::Program,
-    terms::Term,
-    types::{Type, TypeGroup},
-};
+use syntax::{env::Environment, language::Language, program::Program};
 
-impl<T, Ty> Typecheck for Program<T, Ty>
+impl<Lang> Typecheck for Program<Lang>
 where
-    T: Term + Typecheck<Term = T, Type = Ty>,
-    Ty: Type + TypeGroup,
+    Lang: Language,
+    Lang::Term: Typecheck<Lang = Lang>,
 {
-    type Term = T;
-    type Type = Ty;
+    type Lang = Lang;
 
-    fn check(
-        &self,
-        mut env: Environment<Ty>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
+    fn check(&self, mut env: Environment<Lang>) -> Result<Derivation<Lang>, CheckError> {
         let mut derivs = vec![];
         for def in self.definitions.iter() {
             env.add_definition(def.name.clone(), def.annot.clone());

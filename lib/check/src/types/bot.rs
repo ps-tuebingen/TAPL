@@ -1,36 +1,29 @@
 use crate::{Kindcheck, Subtypecheck};
 use derivations::{Derivation, SubtypeDerivation};
 use errors::check_error::CheckError;
-use syntax::{
-    env::Environment,
-    kinds::Kind,
-    language::Language,
-    types::{Bot, Type, TypeGroup},
-};
+use syntax::{env::Environment, kinds::Kind, language::Language, types::Bot};
 
-impl<Ty> Subtypecheck for Bot<Ty>
+impl<Lang> Subtypecheck for Bot<Lang>
 where
-    Ty: TypeGroup + Subtypecheck,
-    Bot<Ty>: Into<Ty>,
+    Lang: Language,
+    Bot<Lang>: Into<Lang::Type>,
 {
-    type Lang = <Ty as Subtypecheck>::Lang;
+    type Lang = Lang;
     fn check_subtype(
         &self,
-        sup: &Ty,
-        env: Environment<Ty>,
-    ) -> Result<
-        Derivation<<Self::Lang as Language>::Term, <Self::Lang as Language>::Type>,
-        CheckError,
-    > {
+        sup: &<Lang as Language>::Type,
+        env: Environment<Self::Lang>,
+    ) -> Result<Derivation<Self::Lang>, CheckError> {
         Ok(SubtypeDerivation::sup_bot(env, sup.clone()).into())
     }
 }
 
-impl<Ty> Kindcheck<Ty> for Bot<Ty>
+impl<Lang> Kindcheck for Bot<Lang>
 where
-    Ty: Type + Kindcheck<Ty>,
+    Lang: Language,
 {
-    fn check_kind(&self, _: Environment<Ty>) -> Result<Kind, CheckError> {
+    type Lang = Lang;
+    fn check_kind(&self, _: Environment<Self::Lang>) -> Result<Kind, CheckError> {
         Ok(self.kind.clone())
     }
 }

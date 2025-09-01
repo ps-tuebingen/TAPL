@@ -2,25 +2,18 @@ use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
 use errors::{NameMismatch, TypeMismatch};
-use syntax::{
-    env::Environment,
-    terms::{Term, Unpack},
-    types::TypeGroup,
-};
+use syntax::{env::Environment, language::Language, terms::Unpack, types::TypeGroup};
 
-impl<T, Ty> Typecheck for Unpack<T, Ty>
+impl<Lang> Typecheck for Unpack<Lang>
 where
-    T: Term + Typecheck<Type = Ty, Term = T>,
-    Ty: TypeGroup + Normalize<<T as Typecheck>::Type> + Kindcheck<Ty>,
-    Self: Into<T>,
+    Lang: Language,
+    Lang::Term: Typecheck<Lang = Lang>,
+    Lang::Type: TypeGroup<Lang = Lang> + Normalize<Lang = Lang> + Kindcheck<Lang = Lang>,
+    Self: Into<Lang::Term>,
 {
-    type Term = <T as Typecheck>::Term;
-    type Type = <T as Typecheck>::Type;
+    type Lang = Lang;
 
-    fn check(
-        &self,
-        mut env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
+    fn check(&self, mut env: Environment<Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
         let bound_res = self.bound_term.check(env.clone())?;
         let bound_ty = bound_res.ret_ty().normalize(env.clone());
         if let Ok(bound_exists) = bound_ty.clone().into_exists() {

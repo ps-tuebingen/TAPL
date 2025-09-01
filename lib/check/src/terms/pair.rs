@@ -1,26 +1,19 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
-use syntax::{
-    env::Environment,
-    terms::{Pair, Term},
-    types::Product,
-};
+use syntax::{env::Environment, language::Language, terms::Pair, types::Product};
 
-impl<T> Typecheck for Pair<T>
+impl<Lang> Typecheck for Pair<Lang>
 where
-    T: Term + Typecheck<Term = T>,
-    <T as Typecheck>::Type: Normalize<<T as Typecheck>::Type> + Kindcheck<<T as Typecheck>::Type>,
-    Product<<T as Typecheck>::Type>: Into<<T as Typecheck>::Type>,
-    Self: Into<T>,
+    Lang: Language,
+    Lang::Term: Typecheck<Lang = Lang>,
+    <Lang as Language>::Type: Normalize<Lang = Lang> + Kindcheck<Lang = Lang>,
+    Product<Lang>: Into<Lang::Type>,
+    Self: Into<Lang::Term>,
 {
-    type Term = <T as Typecheck>::Term;
-    type Type = <T as Typecheck>::Type;
+    type Lang = Lang;
 
-    fn check(
-        &self,
-        env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
+    fn check(&self, env: Environment<Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
         let fst_res = self.fst.check(env.clone())?;
         let fst_ty = fst_res.ret_ty().normalize(env.clone());
 

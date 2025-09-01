@@ -3,24 +3,22 @@ use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
 use syntax::{
     env::Environment,
-    terms::{Nil, Term},
+    language::Language,
+    terms::Nil,
     types::{List, Type},
 };
 
-impl<T, Ty> Typecheck for Nil<T, Ty>
+impl<Lang> Typecheck for Nil<Lang>
 where
-    T: Term + Typecheck<Type = Ty, Term = T>,
-    Ty: Type + Normalize<Ty> + Kindcheck<Ty>,
-    List<<T as Typecheck>::Type>: Into<<T as Typecheck>::Type>,
-    Self: Into<T>,
+    Lang: Language,
+    Lang::Term: Typecheck<Lang = Lang>,
+    Lang::Type: Type + Normalize<Lang = Lang> + Kindcheck<Lang = Lang>,
+    List<Lang>: Into<Lang::Type>,
+    Self: Into<Lang::Term>,
 {
-    type Term = <T as Typecheck>::Term;
-    type Type = <T as Typecheck>::Type;
+    type Lang = Lang;
 
-    fn check(
-        &self,
-        env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
+    fn check(&self, env: Environment<Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
         let ty_norm = self.ty.clone().normalize(env.clone());
         ty_norm.check_kind(env.clone())?.into_star()?;
 

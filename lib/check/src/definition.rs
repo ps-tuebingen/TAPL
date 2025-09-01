@@ -1,21 +1,15 @@
 use crate::Typecheck;
 use derivations::{DefinitionDerivation, Derivation};
 use errors::check_error::CheckError;
-use syntax::{
-    definition::Definition,
-    env::Environment,
-    terms::Term,
-    types::{Type, TypeGroup},
-};
+use syntax::{definition::Definition, env::Environment, language::Language, types::TypeGroup};
 
-impl<T, Ty> Typecheck for Definition<T, Ty>
+impl<Lang> Typecheck for Definition<Lang>
 where
-    T: Term + Typecheck<Term = T, Type = Ty>,
-    Ty: Type + TypeGroup,
+    Lang: Language,
+    Lang::Term: Typecheck<Lang = Lang>,
 {
-    type Term = T;
-    type Type = Ty;
-    fn check(&self, env: Environment<Ty>) -> Result<Derivation<T, Ty>, CheckError> {
+    type Lang = Lang;
+    fn check(&self, env: Environment<Lang>) -> Result<Derivation<Lang>, CheckError> {
         let body_res = self.body.check(env)?;
         let body_ty = body_res.ret_ty();
         self.annot.check_equal(&body_ty)?;

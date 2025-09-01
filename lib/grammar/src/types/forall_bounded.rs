@@ -1,9 +1,9 @@
 use crate::{Rule, RuleDescribe, Symbol};
-use syntax::types::{ForallBounded, Type};
+use syntax::{language::Language, types::ForallBounded};
 
-impl<Ty> RuleDescribe for ForallBounded<Ty>
+impl<Lang> RuleDescribe for ForallBounded<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
     fn rule() -> Rule {
         Rule::new(

@@ -1,9 +1,9 @@
 use crate::{Rule, RuleDescribe, Symbol};
-use syntax::types::{Mu, Type};
+use syntax::{language::Language, types::Mu};
 
-impl<Ty> RuleDescribe for Mu<Ty>
+impl<Lang> RuleDescribe for Mu<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
     fn rule() -> Rule {
         Rule::new(Symbol::mu(), "Mu Type")

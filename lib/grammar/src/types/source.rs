@@ -1,9 +1,9 @@
 use crate::{Rule, RuleDescribe, Symbol, symbols::Keyword};
-use syntax::types::{Source, Type};
+use syntax::{language::Language, types::Source};
 
-impl<Ty> RuleDescribe for Source<Ty>
+impl<Lang> RuleDescribe for Source<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
     fn rule() -> Rule {
         Rule::new(

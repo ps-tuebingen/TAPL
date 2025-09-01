@@ -1,9 +1,9 @@
 use crate::{Rule, RuleDescribe, Symbol, symbols::SpecialChar};
-use syntax::terms::{Projection, Term};
+use syntax::{language::Language, terms::Projection};
 
-impl<T> RuleDescribe for Projection<T>
+impl<Lang> RuleDescribe for Projection<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn rule() -> Rule {
         Rule::new(Symbol::dot(SpecialChar::Number.into()), "Projection")

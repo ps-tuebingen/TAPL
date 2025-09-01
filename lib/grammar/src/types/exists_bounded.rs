@@ -1,9 +1,9 @@
 use crate::{Rule, RuleDescribe, Symbol};
-use syntax::types::{ExistsBounded, Type};
+use syntax::{language::Language, types::ExistsBounded};
 
-impl<Ty> RuleDescribe for ExistsBounded<Ty>
+impl<Lang> RuleDescribe for ExistsBounded<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
     fn rule() -> Rule {
         Rule::new(

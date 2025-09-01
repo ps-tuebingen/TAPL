@@ -1,9 +1,9 @@
 use crate::{Rule, RuleDescribe, Symbol};
-use syntax::terms::{If, Term};
+use syntax::{language::Language, terms::If};
 
-impl<T> RuleDescribe for If<T>
+impl<Lang> RuleDescribe for If<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn rule() -> Rule {
         Rule::new(Symbol::ift(), "If")

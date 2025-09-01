@@ -2,25 +2,19 @@ use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
 use syntax::{
-    env::Environment,
-    subst::SubstType,
-    terms::{Term, Unfold},
-    types::TypeGroup,
+    env::Environment, language::Language, subst::SubstType, terms::Unfold, types::TypeGroup,
 };
 
-impl<T, Ty> Typecheck for Unfold<T, Ty>
+impl<Lang> Typecheck for Unfold<Lang>
 where
-    Ty: TypeGroup + Normalize<Ty> + Kindcheck<Ty> + SubstType<Ty, Target = Ty>,
-    T: Term + Typecheck<Type = Ty, Term = T>,
-    Self: Into<T>,
+    Lang: Language,
+    Lang::Type: TypeGroup<Lang = Lang> + Normalize<Lang = Lang> + Kindcheck<Lang = Lang>,
+    Lang::Term: Typecheck<Lang = Lang>,
+    Self: Into<Lang::Term>,
 {
-    type Term = <T as Typecheck>::Term;
-    type Type = <T as Typecheck>::Type;
+    type Lang = Lang;
 
-    fn check(
-        &self,
-        env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
+    fn check(&self, env: Environment<Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
         let ty_norm = self.ty.clone().normalize(env.clone());
         let ty_kind = ty_norm.check_kind(env.clone())?;
 

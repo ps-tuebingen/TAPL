@@ -1,25 +1,18 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
-use syntax::{
-    env::Environment,
-    terms::{Right, Term},
-    types::TypeGroup,
-};
+use syntax::{env::Environment, language::Language, terms::Right, types::TypeGroup};
 
-impl<T, Ty> Typecheck for Right<T, Ty>
+impl<Lang> Typecheck for Right<Lang>
 where
-    T: Term + Typecheck<Type = Ty, Term = T>,
-    Ty: TypeGroup + Normalize<Ty> + Kindcheck<Ty>,
-    Self: Into<T>,
+    Lang: Language,
+    Lang::Term: Typecheck<Lang = Lang>,
+    Lang::Type: TypeGroup<Lang = Lang> + Normalize<Lang = Lang> + Kindcheck<Lang = Lang>,
+    Self: Into<Lang::Term>,
 {
-    type Term = <T as Typecheck>::Term;
-    type Type = <T as Typecheck>::Type;
+    type Lang = Lang;
 
-    fn check(
-        &self,
-        env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
+    fn check(&self, env: Environment<Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
         let right_res = self.right_term.check(env.clone())?;
         let right_ty = right_res.ret_ty().normalize(env.clone());
         let right_knd = right_ty.check_kind(env.clone())?;

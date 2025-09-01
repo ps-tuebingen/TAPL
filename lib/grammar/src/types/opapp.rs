@@ -1,9 +1,9 @@
 use crate::{Rule, RuleDescribe, Symbol};
-use syntax::types::{OpApp, Type};
+use syntax::{language::Language, types::OpApp};
 
-impl<Ty> RuleDescribe for OpApp<Ty>
+impl<Lang> RuleDescribe for OpApp<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
     fn rule() -> Rule {
         Rule::new(

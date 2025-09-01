@@ -1,27 +1,20 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
-use syntax::{
-    env::Environment,
-    terms::{Term, Tuple},
-    types::Tuple as TupleTy,
-};
+use syntax::{env::Environment, language::Language, terms::Tuple, types::Tuple as TupleTy};
 
-impl<T> Typecheck for Tuple<T>
+impl<Lang> Typecheck for Tuple<Lang>
 where
-    T: Term + Typecheck<Term = T>,
-    <T as Typecheck>::Type: Normalize<<T as Typecheck>::Type> + Kindcheck<<T as Typecheck>::Type>,
-    TupleTy<<T as Typecheck>::Type>: Into<<T as Typecheck>::Type>,
-    Self: Into<T>,
+    Lang: Language,
+    Lang::Term: Typecheck<Lang = Lang>,
+    <Lang as Language>::Type: Normalize<Lang = Lang> + Kindcheck<Lang = Lang>,
+    TupleTy<Lang>: Into<Lang::Type>,
+    Self: Into<Lang::Term>,
 {
-    type Term = <T as Typecheck>::Term;
-    type Type = <T as Typecheck>::Type;
+    type Lang = Lang;
 
-    fn check(
-        &self,
-        env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
-        let mut tys: Vec<Self::Type> = vec![];
+    fn check(&self, env: Environment<Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
+        let mut tys: Vec<<Self::Lang as Language>::Type> = vec![];
         let mut ress = vec![];
         let mut knd = None;
         for t in self.terms.iter() {
@@ -41,7 +34,7 @@ where
             }
         }
 
-        let conc = TypingConclusion::new(env, self.clone(), TupleTy::new::<Self::Type>(tys));
+        let conc = TypingConclusion::new(env, self.clone(), TupleTy::<Lang>::new(tys));
         let deriv = TypingDerivation::tuple(conc, ress);
         Ok(deriv.into())
     }

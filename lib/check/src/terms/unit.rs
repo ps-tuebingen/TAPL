@@ -1,26 +1,19 @@
 use crate::Typecheck;
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
-use syntax::{
-    env::Environment,
-    terms::{Term, Unit},
-    types::Unit as UnitTy,
-};
+use syntax::{env::Environment, language::Language, terms::Unit, types::Unit as UnitTy};
 
-impl<T> Typecheck for Unit<T>
+impl<Lang> Typecheck for Unit<Lang>
 where
-    T: Term + Typecheck<Term = T>,
-    UnitTy<<T as Typecheck>::Type>: Into<<T as Typecheck>::Type>,
-    Self: Into<T>,
+    Lang: Language,
+    Lang::Term: Typecheck<Lang = Lang>,
+    UnitTy<Lang>: Into<Lang::Type>,
+    Self: Into<Lang::Term>,
 {
-    type Term = <T as Typecheck>::Term;
-    type Type = <T as Typecheck>::Type;
+    type Lang = Lang;
 
-    fn check(
-        &self,
-        env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
-        let conc = TypingConclusion::new(env.clone(), self.clone(), UnitTy::new());
+    fn check(&self, env: Environment<Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
+        let conc = TypingConclusion::new(env.clone(), self.clone(), UnitTy::<Lang>::new());
         let deriv = TypingDerivation::unit(conc);
         Ok(deriv.into())
     }

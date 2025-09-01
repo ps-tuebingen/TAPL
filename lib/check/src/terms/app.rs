@@ -3,31 +3,29 @@ use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
 use syntax::{
     env::Environment,
-    terms::{App, Term},
+    language::Language,
+    terms::App,
     types::{Fun, TypeGroup},
 };
 
-impl<T> Typecheck for App<T>
+impl<Lang> Typecheck for App<Lang>
 where
-    T: Term + Typecheck<Term = T>,
-    <T as Typecheck>::Type: TypeGroup
-        + Normalize<<T as Typecheck>::Type>
-        + Kindcheck<<T as Typecheck>::Type>
-        + Subtypecheck<Type = <T as Typecheck>::Type>,
-    Self: Into<T>,
-    Fun<<T as Typecheck>::Type>: Into<<T as Typecheck>::Type>,
+    Lang: Language,
+    Lang::Term: Typecheck<Lang = Lang>,
+    Lang::Type: TypeGroup<Lang = Lang>
+        + Normalize<Lang = Lang>
+        + Kindcheck<Lang = Lang>
+        + Subtypecheck<Lang = Lang>,
+    Self: Into<Lang::Term>,
+    Fun<Lang>: Into<Lang::Type>,
 {
-    type Type = <T as Typecheck>::Type;
-    type Term = T;
+    type Lang = Lang;
 
-    fn check(
-        &self,
-        env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
+    fn check(&self, env: Environment<Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
         let fun_res = self.fun.check(env.clone())?;
         let fun_ty = fun_res.ret_ty().normalize(env.clone());
         fun_ty.check_kind(env.clone())?.into_star()?;
-        let fun: Fun<<T as Typecheck>::Type> = fun_ty.into_fun()?;
+        let fun: Fun<Lang> = fun_ty.into_fun()?;
 
         let arg_res = self.arg.check(env.clone())?;
         let arg_ty = arg_res.ret_ty().normalize(env.clone());

@@ -3,26 +3,23 @@ use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
 use syntax::{
     env::Environment,
-    terms::{Assign, Term},
+    language::Language,
+    terms::Assign,
     types::{TypeGroup, Unit as UnitTy},
 };
 
-impl<T> Typecheck for Assign<T>
+impl<Lang> Typecheck for Assign<Lang>
 where
-    T: Term + Typecheck<Term = T>,
-    <T as Typecheck>::Type:
-        TypeGroup + Normalize<<T as Typecheck>::Type> + Kindcheck<<T as Typecheck>::Type>,
-    UnitTy<<T as Typecheck>::Type>: Into<<T as Typecheck>::Type>,
-    Self: Into<T>,
+    Lang: Language,
+    Lang::Term: Typecheck<Lang = Lang>,
+    <Lang as Language>::Type:
+        TypeGroup<Lang = Lang> + Normalize<Lang = Lang> + Kindcheck<Lang = Lang>,
+    UnitTy<Lang>: Into<Lang::Type>,
+    Self: Into<Lang::Term>,
 {
-    type Type = <T as Typecheck>::Type;
+    type Lang = Lang;
 
-    type Term = T;
-
-    fn check(
-        &self,
-        env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
+    fn check(&self, env: Environment<Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
         let lhs_res = self.lhs.check(env.clone())?;
         let lhs_ty = lhs_res.ret_ty().normalize(env.clone());
         lhs_ty.check_kind(env.clone())?.into_star()?;
@@ -33,7 +30,7 @@ where
         rhs_ty.check_kind(env.clone())?.into_star()?;
         lhs_ref.ty.check_equal(&rhs_ty)?;
 
-        let conc = TypingConclusion::new(env.clone(), self.clone(), UnitTy::new());
+        let conc = TypingConclusion::new(env.clone(), self.clone(), UnitTy::<Lang>::new());
         let deriv = TypingDerivation::assign(conc, lhs_res, rhs_res);
 
         Ok(deriv.into())

@@ -1,9 +1,9 @@
 use crate::{Rule, RuleDescribe, Symbol, symbols::Keyword};
-use syntax::types::{Sink, Type};
+use syntax::{language::Language, types::Sink};
 
-impl<Ty> RuleDescribe for Sink<Ty>
+impl<Lang> RuleDescribe for Sink<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
     fn rule() -> Rule {
         Rule::new(

@@ -1,9 +1,9 @@
 use crate::{Rule, RuleDescribe, Symbol};
-use syntax::types::{Product, Type};
+use syntax::{language::Language, types::Product};
 
-impl<Ty> RuleDescribe for Product<Ty>
+impl<Lang> RuleDescribe for Product<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
     fn rule() -> Rule {
         Rule::new(Symbol::product_ty(), "Product Type")

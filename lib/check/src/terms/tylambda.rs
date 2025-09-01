@@ -1,26 +1,19 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
-use syntax::{
-    env::Environment,
-    terms::{Term, TyLambda},
-    types::Forall,
-};
+use syntax::{env::Environment, language::Language, terms::TyLambda, types::Forall};
 
-impl<T> Typecheck for TyLambda<T>
+impl<Lang> Typecheck for TyLambda<Lang>
 where
-    T: Term + Typecheck<Term = T>,
-    <T as Typecheck>::Type: Normalize<<T as Typecheck>::Type> + Kindcheck<<T as Typecheck>::Type>,
-    Forall<<T as Typecheck>::Type>: Into<<T as Typecheck>::Type>,
-    Self: Into<T>,
+    Lang: Language,
+    Lang::Term: Typecheck<Lang = Lang>,
+    <Lang as Language>::Type: Normalize<Lang = Lang> + Kindcheck<Lang = Lang>,
+    Forall<Lang>: Into<Lang::Type>,
+    Self: Into<Lang::Term>,
 {
-    type Term = <T as Typecheck>::Term;
-    type Type = <T as Typecheck>::Type;
+    type Lang = Lang;
 
-    fn check(
-        &self,
-        mut env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
+    fn check(&self, mut env: Environment<Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
         env.add_tyvar_kind(self.var.clone(), self.annot.clone());
         let term_res = self.term.check(env.clone())?;
         let term_ty = term_res.ret_ty().normalize(env.clone());

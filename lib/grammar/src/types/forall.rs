@@ -1,9 +1,9 @@
 use crate::{Rule, RuleDescribe, Symbol};
-use syntax::types::{Forall, Type};
+use syntax::{language::Language, types::Forall};
 
-impl<Ty> RuleDescribe for Forall<Ty>
+impl<Lang> RuleDescribe for Forall<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
     fn rule() -> Rule {
         Rule::new(

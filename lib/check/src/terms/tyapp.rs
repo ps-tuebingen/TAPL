@@ -2,29 +2,22 @@ use crate::{Kindcheck, Normalize, Subtypecheck, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::{TypeMismatch, check_error::CheckError};
 use syntax::{
-    env::Environment,
-    subst::SubstType,
-    terms::{Term, TyApp},
-    types::TypeGroup,
+    env::Environment, language::Language, subst::SubstType, terms::TyApp, types::TypeGroup,
 };
 
-impl<T, Ty> Typecheck for TyApp<T, Ty>
+impl<Lang> Typecheck for TyApp<Lang>
 where
-    T: Term + Typecheck<Type = Ty, Term = T>,
-    Ty: TypeGroup
-        + SubstType<Ty, Target = Ty>
-        + Normalize<Ty>
-        + Kindcheck<Ty>
-        + Subtypecheck<Type = Ty>,
-    Self: Into<T>,
+    Lang: Language,
+    Lang::Term: Typecheck<Lang = Lang>,
+    Lang::Type: TypeGroup<Lang = Lang>
+        + Normalize<Lang = Lang>
+        + Kindcheck<Lang = Lang>
+        + Subtypecheck<Lang = Lang>,
+    Self: Into<Lang::Term>,
 {
-    type Term = <T as Typecheck>::Term;
-    type Type = <T as Typecheck>::Type;
+    type Lang = Lang;
 
-    fn check(
-        &self,
-        env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
+    fn check(&self, env: Environment<Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
         let fun_res = self.fun.check(env.clone())?;
         let fun_ty = fun_res.ret_ty().normalize(env.clone());
         let arg_norm = self.arg.clone().normalize(env.clone());

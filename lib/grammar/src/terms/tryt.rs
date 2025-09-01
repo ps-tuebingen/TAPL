@@ -1,9 +1,12 @@
 use crate::{Rule, RuleDescribe, Symbol};
-use syntax::terms::{Term, Try};
+use syntax::{
+    language::Language,
+    {language::Language, terms::Try},
+};
 
-impl<T> RuleDescribe for Try<T>
+impl<Lang> RuleDescribe for Try<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn rule() -> Rule {
         Rule::new(Symbol::tryt(), "Variant Case")

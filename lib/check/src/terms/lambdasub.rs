@@ -3,24 +3,22 @@ use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
 use syntax::{
     env::Environment,
-    terms::{LambdaSub, Term},
+    language::Language,
+    terms::LambdaSub,
     types::{ForallBounded, Type},
 };
 
-impl<T, Ty> Typecheck for LambdaSub<T, Ty>
+impl<Lang> Typecheck for LambdaSub<Lang>
 where
-    T: Term + Typecheck<Type = Ty, Term = T>,
-    Ty: Type + Kindcheck<Ty> + Normalize<Ty>,
-    ForallBounded<<T as Typecheck>::Type>: Into<<T as Typecheck>::Type>,
-    Self: Into<T>,
+    Lang: Language,
+    Lang::Term: Typecheck<Lang = Lang>,
+    Lang::Type: Type + Kindcheck<Lang = Lang> + Normalize<Lang = Lang>,
+    ForallBounded<Lang>: Into<Lang::Type>,
+    Self: Into<Lang::Term>,
 {
-    type Term = <T as Typecheck>::Term;
-    type Type = <T as Typecheck>::Type;
+    type Lang = Lang;
 
-    fn check(
-        &self,
-        mut env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
+    fn check(&self, mut env: Environment<Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
         let sup_norm = self.sup_ty.clone().normalize(env.clone());
         let sup_kind = sup_norm.check_kind(env.clone())?;
         env.add_tyvar_super(self.var.clone(), sup_norm.clone());

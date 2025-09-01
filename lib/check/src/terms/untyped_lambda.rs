@@ -3,25 +3,23 @@ use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
 use syntax::{
     env::Environment,
+    language::Language,
     terms::{Term, UntypedLambda},
     types::Fun,
     untyped::Untyped,
 };
 
-impl<T> Typecheck for UntypedLambda<T>
+impl<Lang> Typecheck for UntypedLambda<Lang>
 where
-    T: Term + Typecheck<Term = T>,
-    Fun<<T as Typecheck>::Type>: Into<<T as Typecheck>::Type>,
-    Self: Into<T>,
-    Untyped<T>: Into<<T as Typecheck>::Type>,
+    Lang: Language,
+    Lang::Term: Typecheck<Lang = Lang>,
+    Fun<Lang>: Into<Lang::Type>,
+    Self: Into<Lang::Term>,
+    Untyped<Lang>: Into<Lang::Type>,
 {
-    type Term = <T as Typecheck>::Term;
-    type Type = <T as Typecheck>::Type;
+    type Lang = Lang;
 
-    fn check(
-        &self,
-        env: Environment<<T as Typecheck>::Type>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
+    fn check(&self, env: Environment<Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
         Ok(TypingDerivation::untyped_lambda(TypingConclusion::new(
             env,
             self.clone(),
