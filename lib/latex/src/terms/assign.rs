@@ -1,9 +1,10 @@
 use super::super::{LatexConfig, LatexFmt};
-use syntax::terms::{Assign, Term};
+use syntax::{language::Language, terms::Assign};
 
-impl<T> LatexFmt for Assign<T>
+impl<Lang> LatexFmt for Assign<Lang>
 where
-    T: Term + LatexFmt,
+    Lang: Language,
+    Lang::Term: LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!("{} := {}", self.lhs.to_latex(conf), self.rhs.to_latex(conf))

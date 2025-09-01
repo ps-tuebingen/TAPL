@@ -1,9 +1,9 @@
 use super::super::{LatexConfig, LatexFmt};
-use syntax::types::{Nat, Type};
+use syntax::{language::Language, types::Nat};
 
-impl<Ty> LatexFmt for Nat<Ty>
+impl<Lang> LatexFmt for Nat<Lang>
 where
-    Ty: Type + LatexFmt,
+    Lang: Language,
 {
     fn to_latex(&self, _: &mut LatexConfig) -> String {
         "\\text{Nat}".to_owned()

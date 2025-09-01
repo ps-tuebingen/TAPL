@@ -1,9 +1,9 @@
 use super::super::{LatexConfig, LatexFmt};
-use syntax::{terms::Term, values::Loc};
+use syntax::{language::Language, values::Loc};
 
-impl<T> LatexFmt for Loc<T>
+impl<Lang> LatexFmt for Loc<Lang>
 where
-    T: Term + LatexFmt,
+    Lang: Language,
 {
     fn to_latex(&self, _: &mut LatexConfig) -> String {
         format!("{}", self.loc)

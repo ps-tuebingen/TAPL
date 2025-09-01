@@ -1,9 +1,10 @@
 use super::super::{LatexConfig, LatexFmt};
-use syntax::terms::{ListCase, Term};
+use syntax::{language::Language, terms::ListCase};
 
-impl<T> LatexFmt for ListCase<T>
+impl<Lang> LatexFmt for ListCase<Lang>
 where
-    T: Term + LatexFmt,
+    Lang: Language,
+    Lang::Term: LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!(

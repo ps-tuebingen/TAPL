@@ -1,9 +1,10 @@
 use super::super::{LatexConfig, LatexFmt};
-use syntax::values::{Pair, Value};
+use syntax::{language::Language, values::Pair};
 
-impl<V> LatexFmt for Pair<V>
+impl<Lang> LatexFmt for Pair<Lang>
 where
-    V: Value + LatexFmt,
+    Lang: Language,
+    Lang::Value: LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!(

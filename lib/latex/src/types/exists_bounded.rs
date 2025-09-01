@@ -1,9 +1,10 @@
 use super::super::{LatexConfig, LatexFmt};
-use syntax::types::{ExistsBounded, Type};
+use syntax::{language::Language, types::ExistsBounded};
 
-impl<Ty> LatexFmt for ExistsBounded<Ty>
+impl<Lang> LatexFmt for ExistsBounded<Lang>
 where
-    Ty: Type + LatexFmt,
+    Lang: Language,
+    Lang::Type: LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!(

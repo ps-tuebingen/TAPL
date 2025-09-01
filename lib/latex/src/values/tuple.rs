@@ -1,16 +1,17 @@
 use super::super::{LatexConfig, LatexFmt};
-use syntax::values::{Tuple, Value};
+use syntax::{language::Language, values::Tuple};
 
-impl<V> LatexFmt for Tuple<V>
+impl<Lang> LatexFmt for Tuple<Lang>
 where
-    V: Value + LatexFmt,
+    Lang: Language,
+    Lang::Value: LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!(
             "( {} )",
             self.vals
                 .iter()
-                .map(|ty| ty.to_latex(conf))
+                .map(|v| v.to_latex(conf))
                 .collect::<Vec<String>>()
                 .join(", ")
         )

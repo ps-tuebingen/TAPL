@@ -1,9 +1,10 @@
 use super::super::{LatexConfig, LatexFmt};
-use syntax::terms::{Ref, Term};
+use syntax::{language::Language, terms::Ref};
 
-impl<T> LatexFmt for Ref<T>
+impl<Lang> LatexFmt for Ref<Lang>
 where
-    T: Term + LatexFmt,
+    Lang: Language,
+    Lang::Term: LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!("\\text{{ref}}({})", self.term.to_latex(conf))

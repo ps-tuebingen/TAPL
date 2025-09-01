@@ -1,9 +1,10 @@
 use super::super::{LatexConfig, LatexFmt};
-use syntax::types::{Forall, Type};
+use syntax::{language::Language, types::Forall};
 
-impl<Ty> LatexFmt for Forall<Ty>
+impl<Lang> LatexFmt for Forall<Lang>
 where
-    Ty: Type + LatexFmt,
+    Lang: Language,
+    Lang::Type: LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!(

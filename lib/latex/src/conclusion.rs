@@ -1,11 +1,12 @@
 use crate::{LatexConfig, LatexFmt};
 use derivations::{Conclusion, SubtypeConclusion, TypingConclusion};
-use syntax::{terms::Term, types::Type};
+use syntax::language::Language;
 
-impl<T, Ty> LatexFmt for Conclusion<T, Ty>
+impl<Lang> LatexFmt for Conclusion<Lang>
 where
-    T: Term + LatexFmt,
-    Ty: Type + LatexFmt,
+    Lang: Language,
+    Lang::Term: LatexFmt,
+    Lang::Type: LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         match self {
@@ -15,10 +16,11 @@ where
     }
 }
 
-impl<T, Ty> LatexFmt for TypingConclusion<T, Ty>
+impl<Lang> LatexFmt for TypingConclusion<Lang>
 where
-    T: Term + LatexFmt,
-    Ty: Type + LatexFmt,
+    Lang: Language,
+    Lang::Type: LatexFmt,
+    Lang::Term: LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         let (env_start, env_end) = conf.mathenv_strs();
@@ -34,9 +36,11 @@ where
     }
 }
 
-impl<Ty> LatexFmt for SubtypeConclusion<Ty>
+impl<Lang> LatexFmt for SubtypeConclusion<Lang>
 where
-    Ty: Type + LatexFmt,
+    Lang: Language,
+    Lang::Term: LatexFmt,
+    Lang::Type: LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         let (env_start, env_end) = conf.mathenv_strs();

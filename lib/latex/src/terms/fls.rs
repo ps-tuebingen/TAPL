@@ -1,9 +1,10 @@
 use super::super::{LatexConfig, LatexFmt};
-use syntax::terms::{False, Term};
+use syntax::{language::Language, terms::False};
 
-impl<T> LatexFmt for False<T>
+impl<Lang> LatexFmt for False<Lang>
 where
-    T: Term + LatexFmt,
+    Lang: Language,
+    Lang::Term: LatexFmt,
 {
     fn to_latex(&self, _: &mut LatexConfig) -> String {
         "\\text{ false }".to_owned()

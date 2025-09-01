@@ -1,9 +1,10 @@
 use super::super::{LatexConfig, LatexFmt};
-use syntax::terms::{Term, TryWithVal};
+use syntax::{language::Language, terms::TryWithVal};
 
-impl<T> LatexFmt for TryWithVal<T>
+impl<Lang> LatexFmt for TryWithVal<Lang>
 where
-    T: Term + LatexFmt,
+    Lang: Language,
+    Lang::Term: LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!(

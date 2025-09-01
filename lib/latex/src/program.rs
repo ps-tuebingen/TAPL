@@ -1,10 +1,11 @@
 use crate::{LatexConfig, LatexFmt};
-use syntax::{program::Program, terms::Term, types::Type};
+use syntax::{language::Language, program::Program};
 
-impl<T, Ty> LatexFmt for Program<T, Ty>
+impl<Lang> LatexFmt for Program<Lang>
 where
-    T: Term + LatexFmt,
-    Ty: Type + LatexFmt,
+    Lang: Language,
+    Lang::Term: LatexFmt,
+    Lang::Type: LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         let (env_start, env_end) = conf.mathenv_strs();

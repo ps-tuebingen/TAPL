@@ -1,9 +1,10 @@
 use super::super::{LatexConfig, LatexFmt};
-use syntax::terms::{Succ, Term};
+use syntax::{language::Language, terms::Succ};
 
-impl<T> LatexFmt for Succ<T>
+impl<Lang> LatexFmt for Succ<Lang>
 where
-    T: Term + LatexFmt,
+    Lang: Language,
+    Lang::Term: LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!("\\text{{succ}}({})", self.term.to_latex(conf))

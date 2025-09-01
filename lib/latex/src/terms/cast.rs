@@ -1,13 +1,11 @@
 use super::super::{LatexConfig, LatexFmt};
-use syntax::{
-    terms::{Cast, Term},
-    types::Type,
-};
+use syntax::{language::Language, terms::Cast};
 
-impl<T, Ty> LatexFmt for Cast<T, Ty>
+impl<Lang> LatexFmt for Cast<Lang>
 where
-    T: Term + LatexFmt,
-    Ty: Type + LatexFmt,
+    Lang: Language,
+    Lang::Term: LatexFmt,
+    Lang::Type: LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!("{}:{}", self.term.to_latex(conf), self.ty.to_latex(conf))

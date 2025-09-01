@@ -1,9 +1,10 @@
 use super::super::{LatexConfig, LatexFmt};
-use syntax::terms::{Deref, Term};
+use syntax::{language::Language, terms::Deref};
 
-impl<T> LatexFmt for Deref<T>
+impl<Lang> LatexFmt for Deref<Lang>
 where
-    T: Term + LatexFmt,
+    Lang: Language,
+    Lang::Term: LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!("!{}", self.term.to_latex(conf))

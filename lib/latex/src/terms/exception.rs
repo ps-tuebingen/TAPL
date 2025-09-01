@@ -1,13 +1,10 @@
 use super::super::{LatexConfig, LatexFmt};
-use syntax::{
-    terms::{Exception, Term},
-    types::Type,
-};
+use syntax::{language::Language, terms::Exception};
 
-impl<T, Ty> LatexFmt for Exception<T, Ty>
+impl<Lang> LatexFmt for Exception<Lang>
 where
-    T: Term + LatexFmt,
-    Ty: Type + LatexFmt,
+    Lang: Language,
+    Lang::Type: LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!("\\text{{error}}[{}]", self.ty.to_latex(conf))

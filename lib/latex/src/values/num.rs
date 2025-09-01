@@ -1,9 +1,9 @@
 use super::super::{LatexConfig, LatexFmt};
-use syntax::{terms::Term, values::Num};
+use syntax::{language::Language, values::Num};
 
-impl<T> LatexFmt for Num<T>
+impl<Lang> LatexFmt for Num<Lang>
 where
-    T: Term + LatexFmt,
+    Lang: Language,
 {
     fn to_latex(&self, _: &mut LatexConfig) -> String {
         format!("{}", self.num)

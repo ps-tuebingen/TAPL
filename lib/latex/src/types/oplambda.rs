@@ -1,9 +1,10 @@
 use super::super::{LatexConfig, LatexFmt};
-use syntax::types::{OpLambda, Type};
+use syntax::{language::Language, types::OpLambda};
 
-impl<Ty> LatexFmt for OpLambda<Ty>
+impl<Lang> LatexFmt for OpLambda<Lang>
 where
-    Ty: Type + LatexFmt,
+    Lang: Language,
+    Lang::Type: LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!(

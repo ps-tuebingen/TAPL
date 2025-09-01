@@ -1,9 +1,10 @@
 use super::super::{LatexConfig, LatexFmt};
-use syntax::types::{List, Type};
+use syntax::{language::Language, types::List};
 
-impl<Ty> LatexFmt for List<Ty>
+impl<Lang> LatexFmt for List<Lang>
 where
-    Ty: Type + LatexFmt,
+    Lang: Language,
+    Lang::Type: LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!("\\text{{List}}[{}]", self.ty.to_latex(conf))

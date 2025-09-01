@@ -1,13 +1,11 @@
 use super::super::{LatexConfig, LatexFmt};
-use syntax::{
-    types::Type,
-    values::{Fold, Value},
-};
+use syntax::{language::Language, values::Fold};
 
-impl<V, Ty> LatexFmt for Fold<V, Ty>
+impl<Lang> LatexFmt for Fold<Lang>
 where
-    V: Value + LatexFmt,
-    Ty: Type + LatexFmt,
+    Lang: Language,
+    Lang::Type: LatexFmt,
+    Lang::Value: LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!(

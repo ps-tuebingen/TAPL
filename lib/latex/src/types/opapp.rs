@@ -1,9 +1,10 @@
 use super::super::{LatexConfig, LatexFmt};
-use syntax::types::{OpApp, Type};
+use syntax::{language::Language, types::OpApp};
 
-impl<Ty> LatexFmt for OpApp<Ty>
+impl<Lang> LatexFmt for OpApp<Lang>
 where
-    Ty: Type + LatexFmt,
+    Lang: Language,
+    Lang::Type: LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!("({}[{}])", self.fun.to_latex(conf), self.arg.to_latex(conf))

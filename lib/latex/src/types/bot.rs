@@ -1,9 +1,9 @@
 use super::super::{LatexConfig, LatexFmt};
-use syntax::types::{Bot, Type};
+use syntax::{language::Language, types::Bot};
 
-impl<Ty> LatexFmt for Bot<Ty>
+impl<Lang> LatexFmt for Bot<Lang>
 where
-    Ty: Type,
+    Lang: Language,
 {
     fn to_latex(&self, _: &mut LatexConfig) -> String {
         "\\text{Bot}".to_owned()

@@ -1,13 +1,11 @@
 use super::super::{LatexConfig, LatexFmt};
-use syntax::{
-    types::Type,
-    values::{Raise, Value},
-};
+use syntax::{language::Language, values::Raise};
 
-impl<V, Ty> LatexFmt for Raise<V, Ty>
+impl<Lang> LatexFmt for Raise<Lang>
 where
-    V: Value + LatexFmt,
-    Ty: Type + LatexFmt,
+    Lang: Language,
+    Lang::Type: LatexFmt,
+    Lang::Value: LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!(

@@ -1,9 +1,13 @@
 use super::super::{LatexConfig, LatexFmt};
-use syntax::terms::{Term, VariantCase, variantcase::VariantPattern};
+use syntax::{
+    language::Language,
+    terms::{VariantCase, variantcase::VariantPattern},
+};
 
-impl<T> LatexFmt for VariantCase<T>
+impl<Lang> LatexFmt for VariantCase<Lang>
 where
-    T: Term + LatexFmt,
+    Lang: Language,
+    Lang::Term: LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!(
@@ -18,9 +22,10 @@ where
     }
 }
 
-impl<T> LatexFmt for VariantPattern<T>
+impl<Lang> LatexFmt for VariantPattern<Lang>
 where
-    T: Term + LatexFmt,
+    Lang: Language,
+    Lang::Term: LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!(

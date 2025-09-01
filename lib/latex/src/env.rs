@@ -1,9 +1,10 @@
 use super::{LatexConfig, LatexFmt};
-use syntax::{env::Environment, types::Type};
+use syntax::{env::Environment, language::Language};
 
-impl<Ty> LatexFmt for Environment<Ty>
+impl<Lang> LatexFmt for Environment<Lang>
 where
-    Ty: Type + LatexFmt,
+    Lang: Language,
+    Lang::Type: LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         let (env_start, env_end) = conf.mathenv_strs();

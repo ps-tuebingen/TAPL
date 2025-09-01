@@ -1,9 +1,9 @@
 use super::super::{LatexConfig, LatexFmt};
-use syntax::types::{Top, Type};
+use syntax::{language::Language, types::Top};
 
-impl<Ty> LatexFmt for Top<Ty>
+impl<Lang> LatexFmt for Top<Lang>
 where
-    Ty: Type + LatexFmt,
+    Lang: Language,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!("\\text{{Top}}[{}]", self.kind.to_latex(conf))

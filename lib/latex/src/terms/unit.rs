@@ -1,9 +1,10 @@
 use super::super::{LatexConfig, LatexFmt};
-use syntax::terms::{Term, Unit};
+use syntax::{language::Language, terms::Unit};
 
-impl<T> LatexFmt for Unit<T>
+impl<Lang> LatexFmt for Unit<Lang>
 where
-    T: Term + LatexFmt,
+    Lang: Language,
+    Lang::Term: LatexFmt,
 {
     fn to_latex(&self, _: &mut LatexConfig) -> String {
         "\\text{unit}".to_owned()

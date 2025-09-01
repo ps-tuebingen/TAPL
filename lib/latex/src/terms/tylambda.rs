@@ -1,9 +1,10 @@
 use super::super::{LatexConfig, LatexFmt};
-use syntax::terms::{Term, TyLambda};
+use syntax::{language::Language, terms::TyLambda};
 
-impl<T> LatexFmt for TyLambda<T>
+impl<Lang> LatexFmt for TyLambda<Lang>
 where
-    T: Term + LatexFmt,
+    Lang: Language,
+    Lang::Term: LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!(

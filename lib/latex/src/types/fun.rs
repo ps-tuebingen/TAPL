@@ -1,9 +1,10 @@
 use super::super::{LatexConfig, LatexFmt};
-use syntax::types::{Fun, Type};
+use syntax::{language::Language, types::Fun};
 
-impl<Ty> LatexFmt for Fun<Ty>
+impl<Lang> LatexFmt for Fun<Lang>
 where
-    Ty: Type + LatexFmt,
+    Lang: Language,
+    Lang::Type: LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!(

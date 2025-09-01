@@ -1,10 +1,10 @@
 use super::super::{LatexConfig, LatexFmt};
-use syntax::{terms::Term, types::Type, values::Nothing};
+use syntax::{language::Language, values::Nothing};
 
-impl<T, Ty> LatexFmt for Nothing<T, Ty>
+impl<Lang> LatexFmt for Nothing<Lang>
 where
-    T: Term + LatexFmt,
-    Ty: Type + LatexFmt,
+    Lang: Language,
+    Lang::Type: LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!("Nothing[{}]", self.ty.to_latex(conf))

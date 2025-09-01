@@ -1,9 +1,10 @@
 use super::super::{LatexConfig, LatexFmt};
-use syntax::terms::{SumCase, Term};
+use syntax::{language::Language, terms::SumCase};
 
-impl<T> LatexFmt for SumCase<T>
+impl<Lang> LatexFmt for SumCase<Lang>
 where
-    T: Term + LatexFmt,
+    Lang: Language,
+    Lang::Term: LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!(

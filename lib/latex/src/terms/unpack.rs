@@ -1,13 +1,10 @@
 use super::super::{LatexConfig, LatexFmt};
-use syntax::{
-    terms::{Term, Unpack},
-    types::Type,
-};
+use syntax::{language::Language, terms::Unpack};
 
-impl<T, Ty> LatexFmt for Unpack<T, Ty>
+impl<Lang> LatexFmt for Unpack<Lang>
 where
-    T: Term + LatexFmt,
-    Ty: Type + LatexFmt,
+    Lang: Language,
+    Lang::Term: LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!(

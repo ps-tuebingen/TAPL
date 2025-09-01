@@ -1,9 +1,9 @@
 use super::super::{LatexConfig, LatexFmt};
-use syntax::types::{Bool, Type};
+use syntax::{language::Language, types::Bool};
 
-impl<Ty> LatexFmt for Bool<Ty>
+impl<Lang> LatexFmt for Bool<Lang>
 where
-    Ty: Type + LatexFmt,
+    Lang: Language,
 {
     fn to_latex(&self, _: &mut LatexConfig) -> String {
         "\\text{Bool}".to_owned()

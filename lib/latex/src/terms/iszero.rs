@@ -1,9 +1,10 @@
 use super::super::{LatexConfig, LatexFmt};
-use syntax::terms::{IsZero, Term};
+use syntax::{language::Language, terms::IsZero};
 
-impl<T> LatexFmt for IsZero<T>
+impl<Lang> LatexFmt for IsZero<Lang>
 where
-    T: Term + LatexFmt,
+    Lang: Language,
+    Lang::Term: LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!("\\text{{iszero}}({})", self.term.to_latex(conf))

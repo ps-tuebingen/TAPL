@@ -1,10 +1,11 @@
 use super::{LatexConfig, LatexFmt};
-use syntax::{terms::Term, values::Value};
+use syntax::language::Language;
 use trace::{EvalStep, EvalTrace};
 
-impl<T> LatexFmt for EvalStep<T>
+impl<Lang> LatexFmt for EvalStep<Lang>
 where
-    T: Term + LatexFmt,
+    Lang: Language,
+    Lang::Term: LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         let source_str = self.source.to_latex(conf);
@@ -16,10 +17,11 @@ where
     }
 }
 
-impl<T, V> LatexFmt for EvalTrace<T, V>
+impl<Lang> LatexFmt for EvalTrace<Lang>
 where
-    T: Term + LatexFmt,
-    V: Value + LatexFmt,
+    Lang: Language,
+    Lang::Term: LatexFmt,
+    Lang::Value: LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         let math_env = if conf.include_envs {

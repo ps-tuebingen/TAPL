@@ -1,16 +1,17 @@
 use super::{LatexConfig, LatexFmt};
 use derivations::Derivation;
-use syntax::{terms::Term, types::Type};
+use syntax::language::Language;
 
 mod definition;
 mod program;
 mod subtyping;
 mod typing;
 
-impl<T, Ty> LatexFmt for Derivation<T, Ty>
+impl<Lang> LatexFmt for Derivation<Lang>
 where
-    T: Term + LatexFmt,
-    Ty: Type + LatexFmt,
+    Lang: Language,
+    Lang::Type: LatexFmt,
+    Lang::Term: LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         match self {

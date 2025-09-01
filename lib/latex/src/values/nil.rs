@@ -1,10 +1,10 @@
 use super::super::{LatexConfig, LatexFmt};
-use syntax::{terms::Term, types::Type, values::Nil};
+use syntax::{language::Language, values::Nil};
 
-impl<T, Ty> LatexFmt for Nil<T, Ty>
+impl<Lang> LatexFmt for Nil<Lang>
 where
-    T: Term + LatexFmt,
-    Ty: Type + LatexFmt,
+    Lang: Language,
+    Lang::Type: LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!("Nil[{}]", self.ty.to_latex(conf))

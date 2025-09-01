@@ -1,11 +1,12 @@
 use crate::{LatexConfig, LatexFmt};
 use derivations::TypingDerivation;
-use syntax::{terms::Term, types::Type};
+use syntax::language::Language;
 
-impl<T, Ty> LatexFmt for TypingDerivation<T, Ty>
+impl<Lang> LatexFmt for TypingDerivation<Lang>
 where
-    T: Term + LatexFmt,
-    Ty: Type + LatexFmt,
+    Lang: Language,
+    Lang::Type: LatexFmt,
+    Lang::Term: LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         if conf.use_frac_array {
@@ -16,13 +17,11 @@ where
     }
 }
 
-fn derivation_to_bussproofs<T, Ty>(
-    deriv: &TypingDerivation<T, Ty>,
-    conf: &mut LatexConfig,
-) -> String
+fn derivation_to_bussproofs<Lang>(deriv: &TypingDerivation<Lang>, conf: &mut LatexConfig) -> String
 where
-    T: Term + LatexFmt,
-    Ty: Type + LatexFmt,
+    Lang: Language,
+    Lang::Type: LatexFmt,
+    Lang::Term: LatexFmt,
 {
     let (env_start, env_end) = if conf.include_envs {
         ("\\begin{prooftree}", "\\end{prooftree}")
@@ -62,13 +61,11 @@ where
     )
 }
 
-fn derivation_to_frac_array<T, Ty>(
-    deriv: &TypingDerivation<T, Ty>,
-    conf: &mut LatexConfig,
-) -> String
+fn derivation_to_frac_array<Lang>(deriv: &TypingDerivation<Lang>, conf: &mut LatexConfig) -> String
 where
-    T: Term + LatexFmt,
-    Ty: Type + LatexFmt,
+    Lang: Language,
+    Lang::Type: LatexFmt,
+    Lang::Term: LatexFmt,
 {
     let (env_start, env_end) = conf.mathenv_strs();
     let mut prem_strs = vec![];

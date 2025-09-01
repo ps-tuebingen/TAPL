@@ -1,11 +1,12 @@
 use crate::{LatexConfig, LatexFmt};
 use derivations::ProgramDerivation;
-use syntax::{terms::Term, types::Type};
+use syntax::language::Language;
 
-impl<T, Ty> LatexFmt for ProgramDerivation<T, Ty>
+impl<Lang> LatexFmt for ProgramDerivation<Lang>
 where
-    T: Term + LatexFmt,
-    Ty: Type + LatexFmt,
+    Lang: Language,
+    Lang::Type: LatexFmt,
+    Lang::Term: LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         let mut def_strs = vec![];

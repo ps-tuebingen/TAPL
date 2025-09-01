@@ -1,9 +1,10 @@
 use super::super::{LatexConfig, LatexFmt};
-use syntax::types::{Optional, Type};
+use syntax::{language::Language, types::Optional};
 
-impl<Ty> LatexFmt for Optional<Ty>
+impl<Lang> LatexFmt for Optional<Lang>
 where
-    Ty: Type + LatexFmt,
+    Lang: Language,
+    Lang::Type: LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!("\\text{{Optional}}[{}]", self.ty.to_latex(conf))

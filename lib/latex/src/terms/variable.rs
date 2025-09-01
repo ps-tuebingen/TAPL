@@ -1,9 +1,10 @@
 use super::super::{LatexConfig, LatexFmt};
-use syntax::terms::{Term, Variable};
+use syntax::{language::Language, terms::Variable};
 
-impl<T> LatexFmt for Variable<T>
+impl<Lang> LatexFmt for Variable<Lang>
 where
-    T: Term,
+    Lang: Language,
+    Lang::Term: LatexFmt,
 {
     fn to_latex(&self, _conf: &mut LatexConfig) -> String {
         format!("\\text{{ {} }}", self.var.to_latex(_conf))

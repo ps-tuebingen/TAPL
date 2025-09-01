@@ -1,13 +1,11 @@
 use super::super::{LatexConfig, LatexFmt};
-use syntax::{
-    terms::{LambdaSub, Term},
-    types::Type,
-};
+use syntax::{language::Language, terms::LambdaSub};
 
-impl<T, Ty> LatexFmt for LambdaSub<T, Ty>
+impl<Lang> LatexFmt for LambdaSub<Lang>
 where
-    T: Term + LatexFmt,
-    Ty: Type + LatexFmt,
+    Lang: Language,
+    Lang::Term: LatexFmt,
+    Lang::Type: LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!(

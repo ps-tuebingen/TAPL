@@ -1,9 +1,10 @@
 use super::super::{LatexConfig, LatexFmt};
-use syntax::types::{Tuple, Type};
+use syntax::{language::Language, types::Tuple};
 
-impl<Ty> LatexFmt for Tuple<Ty>
+impl<Lang> LatexFmt for Tuple<Lang>
 where
-    Ty: Type + LatexFmt,
+    Lang: Language,
+    Lang::Type: LatexFmt,
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         format!(

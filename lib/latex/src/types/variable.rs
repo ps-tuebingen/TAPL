@@ -1,9 +1,9 @@
 use super::super::{LatexConfig, LatexFmt};
-use syntax::types::{Type, TypeVariable};
+use syntax::{language::Language, types::TypeVariable};
 
-impl<Ty> LatexFmt for TypeVariable<Ty>
+impl<Lang> LatexFmt for TypeVariable<Lang>
 where
-    Ty: Type + LatexFmt,
+    Lang: Language,
 {
     fn to_latex(&self, _conf: &mut LatexConfig) -> String {
         format!("\\text{{{}}}", self.v.to_latex(_conf))
