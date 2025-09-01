@@ -2,28 +2,22 @@ use crate::Eval;
 use errors::eval_error::EvalError;
 use std::collections::HashMap;
 use syntax::{
-    Label,
-    eval_context::EvalContext,
-    terms::{Record, Term},
+    Label, eval_context::EvalContext, language::Language, terms::Record,
     values::Record as RecordVal,
 };
 use trace::EvalTrace;
 
-impl<T> Eval for Record<T>
+impl<Lang> Eval for Record<Lang>
 where
-    T: Term + Eval<Term = T>,
-    Record<T>: Into<T>,
-    <T as Eval>::Value: Into<T>,
-    RecordVal<<T as Eval>::Value>: Into<<T as Eval>::Value>,
+    Lang: Language,
+    Lang::Term: Eval<Lang = Lang>,
+    Record<Lang>: Into<Lang::Term>,
+    RecordVal<Lang>: Into<Lang::Value>,
 {
-    type Value = <T as Eval>::Value;
+    type Lang = Lang;
 
-    type Term = T;
-    fn eval(
-        self,
-        env: &mut EvalContext<T, Self::Value>,
-    ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
-        let mut recs: HashMap<Label, Self::Value> = HashMap::new();
+    fn eval(self, env: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
+        let mut recs: HashMap<Label, <Self::Lang as Language>::Value> = HashMap::new();
         let mut old_recs = self.records.clone();
         let mut steps = vec![];
         for (lb, t) in self.records.into_iter() {
@@ -43,7 +37,7 @@ where
             );
             old_recs.insert(lb, val.into());
         }
-        let val = RecordVal::<<T as Eval>::Value>::new::<Self::Value>(recs);
+        let val = RecordVal::<Lang>::new::<<Self::Lang as Language>::Value>(recs);
         Ok(EvalTrace::new(steps, val))
     }
 }

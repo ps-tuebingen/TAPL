@@ -1,30 +1,24 @@
 pub mod terms;
 
 use errors::eval_error::EvalError;
-use syntax::{
-    eval_context::EvalContext, program::Program, terms::Term, types::Type, values::ValueGroup,
-};
+use syntax::{eval_context::EvalContext, language::Language, program::Program};
 use trace::EvalTrace;
 
 pub trait Eval: Sized {
-    type Value: ValueGroup + Into<Self::Term>;
-    type Term: Term;
+    type Lang: Language;
 
-    fn eval_start(self) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
+    fn eval_start(self) -> Result<EvalTrace<Self::Lang>, EvalError> {
         self.eval(&mut Default::default())
     }
 
-    fn eval(
-        self,
-        env: &mut EvalContext<Self::Term, Self::Value>,
-    ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError>;
+    fn eval(self, env: &mut EvalContext<Self::Lang>) -> Result<EvalTrace<Self::Lang>, EvalError>;
 }
 
-pub fn eval_main<T, Ty>(prog: Program<T, Ty>) -> Result<EvalTrace<T, <T as Eval>::Value>, EvalError>
+pub fn eval_main<Lang>(prog: Program<Lang>) -> Result<EvalTrace<Lang>, EvalError>
 where
-    T: Term + Eval<Term = T>,
-    Ty: Type,
+    Lang: Language,
+    Lang::Term: Eval<Lang = Lang>,
 {
-    let mut ctx = EvalContext::<T, <T as Eval>::Value>::from_prog(&prog);
+    let mut ctx = EvalContext::<Lang>::from_prog(&prog);
     prog.main.eval(&mut ctx)
 }

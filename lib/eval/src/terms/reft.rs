@@ -2,26 +2,23 @@ use crate::Eval;
 use errors::eval_error::EvalError;
 use syntax::{
     eval_context::EvalContext,
+    language::Language,
     terms::{Loc as LocT, Ref, Term},
     values::Loc,
 };
 use trace::{EvalStep, EvalTrace};
 
-impl<T> Eval for Ref<T>
+impl<Lang> Eval for Ref<Lang>
 where
-    T: Term + Eval<Term = T>,
-    <T as Eval>::Value: Into<T>,
-    LocT<T>: Into<T>,
-    Ref<T>: Into<T>,
-    Loc<T>: Into<<T as Eval>::Value>,
+    Lang: Language,
+    Lang::Term: Term + Eval<Lang = Lang>,
+    LocT<Lang>: Into<Lang::Term>,
+    Ref<Lang>: Into<Lang::Term>,
+    Loc<Lang>: Into<Lang::Value>,
 {
-    type Value = <T as Eval>::Value;
+    type Lang = Lang;
 
-    type Term = T;
-    fn eval(
-        self,
-        env: &mut EvalContext<T, Self::Value>,
-    ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
+    fn eval(self, env: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         let term_res = self.term.clone().eval(env)?;
         let term_val = term_res.val();
         let fresh_loc = env.fresh_location();

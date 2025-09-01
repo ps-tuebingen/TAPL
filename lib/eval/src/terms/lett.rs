@@ -2,23 +2,21 @@ use crate::Eval;
 use errors::eval_error::EvalError;
 use syntax::{
     eval_context::EvalContext,
+    language::Language,
     subst::SubstTerm,
     terms::{Let, Term},
 };
 use trace::{EvalStep, EvalTrace};
 
-impl<T> Eval for Let<T>
+impl<Lang> Eval for Let<Lang>
 where
-    T: Term + Eval<Term = T> + SubstTerm<T, Target = T> + From<<T as Eval>::Value>,
-    Let<T>: Into<T>,
+    Lang: Language,
+    Lang::Term: Term + Eval<Lang = Lang> + From<Lang::Value>,
+    Let<Lang>: Into<Lang::Term>,
 {
-    type Value = <T as Eval>::Value;
+    type Lang = Lang;
 
-    type Term = T;
-    fn eval(
-        self,
-        env: &mut EvalContext<T, Self::Value>,
-    ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
+    fn eval(self, env: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         let bound_res = self.bound_term.eval(env)?;
         let bound_val = bound_res.val();
 
@@ -37,6 +35,6 @@ where
         let term_res = term_subst.eval(env)?;
         let val = term_res.val();
         steps.extend(term_res.steps);
-        Ok(EvalTrace::<T, <T as Eval>::Value>::new(steps, val))
+        Ok(EvalTrace::<Lang>::new(steps, val))
     }
 }

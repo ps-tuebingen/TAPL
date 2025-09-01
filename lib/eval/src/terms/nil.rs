@@ -2,29 +2,21 @@ use crate::Eval;
 use errors::eval_error::EvalError;
 use syntax::{
     eval_context::EvalContext,
+    language::Language,
     terms::{Nil, Term},
-    types::Type,
     values::Nil as NilVal,
 };
 use trace::EvalTrace;
 
-impl<T, Ty> Eval for Nil<T, Ty>
+impl<Lang> Eval for Nil<Lang>
 where
-    T: Term + Eval<Term = T>,
-    <T as Eval>::Value: Into<T>,
-    Ty: Type,
-    NilVal<T, Ty>: Into<<T as Eval>::Value>,
+    Lang: Language,
+    Lang::Term: Term + Eval<Lang = Lang>,
+    NilVal<Lang>: Into<Lang::Value>,
 {
-    type Value = <T as Eval>::Value;
+    type Lang = Lang;
 
-    type Term = T;
-    fn eval(
-        self,
-        _: &mut EvalContext<T, Self::Value>,
-    ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
-        Ok(EvalTrace::<T, <T as Eval>::Value>::new(
-            vec![],
-            NilVal::<T, Ty>::new(self.ty),
-        ))
+    fn eval(self, _: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
+        Ok(EvalTrace::<Lang>::new(vec![], NilVal::<Lang>::new(self.ty)))
     }
 }

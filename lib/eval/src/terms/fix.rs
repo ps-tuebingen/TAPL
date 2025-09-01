@@ -3,25 +3,22 @@ use errors::eval_error::EvalError;
 
 use syntax::{
     eval_context::EvalContext,
+    language::Language,
     subst::SubstTerm,
     terms::{Fix, Term},
     values::ValueGroup,
 };
 use trace::EvalTrace;
 
-impl<T> Eval for Fix<T>
+impl<Lang> Eval for Fix<Lang>
 where
-    T: Term + Eval<Term = T> + SubstTerm<T, Target = T>,
-    <T as Eval>::Value: ValueGroup<Term = T>,
-    Self: Into<T>,
+    Lang: Language,
+    Lang::Term: Term + Eval<Lang = Lang>,
+    Self: Into<Lang::Term>,
 {
-    type Value = <T as Eval>::Value;
+    type Lang = Lang;
 
-    type Term = T;
-    fn eval(
-        self,
-        env: &mut EvalContext<T, Self::Value>,
-    ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
+    fn eval(self, env: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         let term_res = self.term.clone().eval(env)?;
         let term_val = term_res.val();
         let lam_val = term_val.into_lambda()?;
@@ -32,6 +29,6 @@ where
         let body_res = body_subst.eval(env)?;
         let body_val = body_res.val();
         steps.extend(body_res.steps);
-        Ok(EvalTrace::<T, <T as Eval>::Value>::new(steps, body_val))
+        Ok(EvalTrace::<Lang>::new(steps, body_val))
     }
 }

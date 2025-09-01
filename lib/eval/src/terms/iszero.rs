@@ -2,27 +2,25 @@ use crate::Eval;
 use errors::eval_error::EvalError;
 use syntax::{
     eval_context::EvalContext,
+    language::Language,
     terms::{False as FalseT, IsZero, Term, True as TrueT},
     values::{False, True, ValueGroup},
 };
 use trace::{EvalStep, EvalTrace};
 
-impl<T> Eval for IsZero<T>
+impl<Lang> Eval for IsZero<Lang>
 where
-    T: Term + Eval<Term = T>,
-    IsZero<T>: Into<T>,
-    True<T>: Into<<T as Eval>::Value>,
-    TrueT<T>: Into<T>,
-    False<T>: Into<<T as Eval>::Value>,
-    FalseT<T>: Into<T>,
+    Lang: Language,
+    Lang::Term: Term + Eval<Lang = Lang>,
+    IsZero<Lang>: Into<Lang::Term>,
+    True<Lang>: Into<Lang::Value>,
+    TrueT<Lang>: Into<Lang::Term>,
+    False<Lang>: Into<Lang::Value>,
+    FalseT<Lang>: Into<Lang::Term>,
 {
-    type Value = <T as Eval>::Value;
+    type Lang = Lang;
 
-    type Term = T;
-    fn eval(
-        self,
-        env: &mut EvalContext<T, Self::Value>,
-    ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
+    fn eval(self, env: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         let inner_res = self.term.eval(env)?;
         let val = inner_res.val();
         let num = val.clone().into_num()?;

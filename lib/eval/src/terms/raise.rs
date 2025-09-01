@@ -2,34 +2,26 @@ use crate::Eval;
 use errors::eval_error::EvalError;
 use syntax::{
     eval_context::EvalContext,
+    language::Language,
     terms::{Raise, Term},
-    types::Type,
     values::Raise as RaiseVal,
 };
 use trace::EvalTrace;
 
-impl<T, Ty> Eval for Raise<T, Ty>
+impl<Lang> Eval for Raise<Lang>
 where
-    T: Term + Eval<Term = T>,
-    <T as Eval>::Value: Into<T>,
-    Raise<T, Ty>: Into<T>,
-    Ty: Type,
-    RaiseVal<<T as Eval>::Value, Ty>: Into<<T as Eval>::Value>,
+    Lang: Language,
+    Lang::Term: Term + Eval<Lang = Lang>,
+    Raise<Lang>: Into<Lang::Term>,
+    RaiseVal<Lang>: Into<Lang::Value>,
 {
-    type Value = <T as Eval>::Value;
+    type Lang = Lang;
 
-    type Term = T;
-    fn eval(
-        self,
-        env: &mut EvalContext<T, Self::Value>,
-    ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
+    fn eval(self, env: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         let exc_res = self.exception.eval(env)?;
         let exc_val = exc_res.val();
-        let raise_val = RaiseVal::<<T as Eval>::Value, Ty>::new(
-            exc_val,
-            self.cont_ty.clone(),
-            self.exception_ty.clone(),
-        );
+        let raise_val =
+            RaiseVal::<Lang>::new(exc_val, self.cont_ty.clone(), self.exception_ty.clone());
 
         let steps = exc_res.congruence(&move |t| {
             Raise::new(t, self.cont_ty.clone(), self.exception_ty.clone()).into()

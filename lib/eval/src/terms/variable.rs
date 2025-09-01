@@ -2,22 +2,20 @@ use crate::Eval;
 use errors::eval_error::EvalError;
 use syntax::{
     eval_context::EvalContext,
+    language::Language,
     terms::{Term, Variable},
 };
 use trace::{EvalStep, EvalTrace};
 
-impl<T> Eval for Variable<T>
+impl<Lang> Eval for Variable<Lang>
 where
-    T: Term + Eval<Term = T>,
-    Variable<T>: Into<T>,
+    Lang: Language,
+    Lang::Term: Term + Eval<Lang = Lang>,
+    Variable<Lang>: Into<Lang::Term>,
 {
-    type Value = <T as Eval>::Value;
-    type Term = T;
+    type Lang = Lang;
 
-    fn eval(
-        self,
-        ctx: &mut EvalContext<Self::Term, Self::Value>,
-    ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
+    fn eval(self, ctx: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         let body = ctx.get_name(&self.var)?;
         let mut term_res = body.clone().eval(ctx)?;
         term_res

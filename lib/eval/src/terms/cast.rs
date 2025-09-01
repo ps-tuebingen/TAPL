@@ -1,30 +1,22 @@
 use crate::Eval;
 use errors::eval_error::EvalError;
-use syntax::{
-    eval_context::EvalContext,
-    terms::{Cast, Term},
-    types::Type,
-};
+use syntax::{eval_context::EvalContext, language::Language, terms::Cast};
 use trace::{EvalStep, EvalTrace};
 
-impl<T, Ty> Eval for Cast<T, Ty>
+impl<Lang> Eval for Cast<Lang>
 where
-    T: Term + Eval<Term = T>,
-    Cast<T, Ty>: Into<T>,
-    Ty: Type,
+    Lang: Language,
+    Lang::Term: Eval<Lang = Lang>,
+    Cast<Lang>: Into<Lang::Term>,
 {
-    type Value = <T as Eval>::Value;
+    type Lang = Lang;
 
-    type Term = T;
-    fn eval(
-        self,
-        env: &mut EvalContext<T, Self::Value>,
-    ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
+    fn eval(self, env: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         let inner_res = self.term.eval(env)?;
         let inner_val = inner_res.val();
         let last_step = EvalStep::cast(self.ty.clone(), inner_val.clone());
         let mut steps = inner_res.congruence(&move |t| Cast::new(t, self.ty.clone()).into());
         steps.push(last_step);
-        Ok(EvalTrace::<T, <T as Eval>::Value>::new(steps, inner_val))
+        Ok(EvalTrace::<Lang>::new(steps, inner_val))
     }
 }

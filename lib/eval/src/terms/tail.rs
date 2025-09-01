@@ -1,28 +1,22 @@
 use crate::Eval;
 use errors::eval_error::EvalError;
-
 use syntax::{
     eval_context::EvalContext,
+    language::Language,
     terms::{Tail, Term},
-    types::Type,
     values::ValueGroup,
 };
 use trace::{EvalStep, EvalTrace};
 
-impl<T, Ty> Eval for Tail<T, Ty>
+impl<Lang> Eval for Tail<Lang>
 where
-    T: Term + Eval<Term = T>,
-    Tail<T, Ty>: Into<T>,
-    <T as Eval>::Value: Into<T>,
-    Ty: Type,
+    Lang: Language,
+    Lang::Term: Term + Eval<Lang = Lang>,
+    Tail<Lang>: Into<Lang::Term>,
 {
-    type Value = <T as Eval>::Value;
+    type Lang = Lang;
 
-    type Term = T;
-    fn eval(
-        self,
-        env: &mut EvalContext<T, Self::Value>,
-    ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
+    fn eval(self, env: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         let term_res = self.term.eval(env)?;
         let term_val = term_res.val();
         let cons_val = term_val.clone().into_cons()?;
@@ -31,6 +25,6 @@ where
         let last_step = EvalStep::tail(Tail::new(term_val, self.ty.clone()), val.clone());
         let mut steps = term_res.congruence(&move |t| Tail::new(t, self.ty.clone()).into());
         steps.push(last_step);
-        Ok(EvalTrace::<T, <T as Eval>::Value>::new(steps, val))
+        Ok(EvalTrace::<Lang>::new(steps, val))
     }
 }

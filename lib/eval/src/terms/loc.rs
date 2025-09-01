@@ -2,27 +2,21 @@ use crate::Eval;
 use errors::eval_error::EvalError;
 use syntax::{
     eval_context::EvalContext,
+    language::Language,
     terms::{Loc, Term},
     values::Loc as LocVal,
 };
 use trace::EvalTrace;
 
-impl<T> Eval for Loc<T>
+impl<Lang> Eval for Loc<Lang>
 where
-    T: Term + Eval<Term = T>,
-    <T as Eval>::Value: Into<T>,
-    LocVal<T>: Into<<T as Eval>::Value>,
+    Lang: Language,
+    Lang::Term: Term + Eval<Lang = Lang>,
+    LocVal<Lang>: Into<Lang::Value>,
 {
-    type Value = <T as Eval>::Value;
+    type Lang = Lang;
 
-    type Term = T;
-    fn eval(
-        self,
-        _: &mut EvalContext<T, Self::Value>,
-    ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
-        Ok(EvalTrace::<T, <T as Eval>::Value>::new(
-            vec![],
-            LocVal::new(self.loc).into(),
-        ))
+    fn eval(self, _: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
+        Ok(EvalTrace::<Lang>::new(vec![], LocVal::new(self.loc).into()))
     }
 }

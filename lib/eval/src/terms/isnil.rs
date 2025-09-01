@@ -3,30 +3,25 @@ use errors::ValueMismatch;
 use errors::eval_error::EvalError;
 use syntax::{
     eval_context::EvalContext,
+    language::Language,
     terms::{False as FalseT, IsNil, Term, True as TrueT},
-    types::Type,
     values::{False, True, ValueGroup},
 };
 use trace::{EvalStep, EvalTrace};
 
-impl<T, Ty> Eval for IsNil<T, Ty>
+impl<Lang> Eval for IsNil<Lang>
 where
-    T: Term + Eval<Term = T>,
-    Ty: Type,
-    IsNil<T, Ty>: Into<T>,
-    True<T>: Into<<T as Eval>::Value>,
-    TrueT<T>: Into<T>,
-    False<T>: Into<<T as Eval>::Value>,
-    FalseT<T>: Into<T>,
-    <T as Eval>::Value: Into<T>,
+    Lang: Language,
+    Lang::Term: Term + Eval<Lang = Lang>,
+    IsNil<Lang>: Into<Lang::Term>,
+    True<Lang>: Into<Lang::Value>,
+    TrueT<Lang>: Into<Lang::Term>,
+    False<Lang>: Into<Lang::Value>,
+    FalseT<Lang>: Into<Lang::Term>,
 {
-    type Value = <T as Eval>::Value;
+    type Lang = Lang;
 
-    type Term = T;
-    fn eval(
-        self,
-        env: &mut EvalContext<T, Self::Value>,
-    ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
+    fn eval(self, env: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         let term_res = self.term.eval(env)?;
         let term_val = term_res.val();
         let (step, val) = if term_val.clone().into_nil().is_ok() {
@@ -40,6 +35,6 @@ where
         };
         let mut steps = term_res.congruence(&move |t| IsNil::new(t, self.ty.clone()).into());
         steps.push(step);
-        Ok(EvalTrace::<T, <T as Eval>::Value>::new(steps, val))
+        Ok(EvalTrace::<Lang>::new(steps, val))
     }
 }

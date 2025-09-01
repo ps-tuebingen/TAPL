@@ -1,26 +1,18 @@
 use crate::Eval;
 use errors::ValueMismatch;
 use errors::eval_error::EvalError;
-use syntax::{
-    eval_context::EvalContext,
-    terms::{If, Term},
-    values::ValueGroup,
-};
+use syntax::{eval_context::EvalContext, language::Language, terms::If, values::ValueGroup};
 use trace::{EvalStep, EvalTrace};
 
-impl<T> Eval for If<T>
+impl<Lang> Eval for If<Lang>
 where
-    T: Term + Eval<Term = T>,
-    If<T>: Into<T>,
-    <T as Eval>::Value: Into<T>,
+    Lang: Language,
+    Lang::Term: Eval<Lang = Lang>,
+    If<Lang>: Into<Lang::Term>,
 {
-    type Value = <T as Eval>::Value;
+    type Lang = Lang;
 
-    type Term = T;
-    fn eval(
-        self,
-        env: &mut EvalContext<T, Self::Value>,
-    ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
+    fn eval(self, env: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         let cond_res = self.if_cond.eval(env)?;
         let cond_val = cond_res.val();
         let (next_step, branch_res) = if cond_val.clone().into_true().is_ok() {
@@ -52,6 +44,6 @@ where
         steps.push(next_step);
         steps.extend(branch_res.steps);
 
-        Ok(EvalTrace::<T, <T as Eval>::Value>::new(steps, branch_val))
+        Ok(EvalTrace::<Lang>::new(steps, branch_val))
     }
 }

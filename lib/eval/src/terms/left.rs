@@ -2,30 +2,25 @@ use crate::Eval;
 use errors::eval_error::EvalError;
 use syntax::{
     eval_context::EvalContext,
+    language::Language,
     terms::{Left, Term},
-    types::Type,
     values::Left as LeftVal,
 };
 use trace::EvalTrace;
 
-impl<T, Ty> Eval for Left<T, Ty>
+impl<Lang> Eval for Left<Lang>
 where
-    T: Term + Eval<Term = T>,
-    <T as Eval>::Value: Into<T>,
-    Left<T, Ty>: Into<T>,
-    Ty: Type,
-    LeftVal<<T as Eval>::Value, Ty>: Into<<T as Eval>::Value>,
+    Lang: Language,
+    Lang::Term: Term + Eval<Lang = Lang>,
+    Left<Lang>: Into<Lang::Term>,
+    LeftVal<Lang>: Into<Lang::Value>,
 {
-    type Value = <T as Eval>::Value;
+    type Lang = Lang;
 
-    type Term = T;
-    fn eval(
-        self,
-        env: &mut EvalContext<T, Self::Value>,
-    ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
+    fn eval(self, env: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         let left_res = self.left_term.eval(env)?;
         let left_val = left_res.val();
-        let val = LeftVal::<<T as Eval>::Value, Ty>::new(left_val, self.ty.clone());
+        let val = LeftVal::<Lang>::new(left_val, self.ty.clone());
         let steps = left_res.congruence(&move |t| Left::new(t, self.ty.clone()).into());
         Ok(EvalTrace::new(steps, val))
     }

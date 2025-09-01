@@ -3,24 +3,21 @@ use errors::IndexOutOfBounds;
 use errors::eval_error::EvalError;
 use syntax::{
     eval_context::EvalContext,
+    language::Language,
     terms::{Projection, Term},
     values::ValueGroup,
 };
 use trace::{EvalStep, EvalTrace};
 
-impl<T> Eval for Projection<T>
+impl<Lang> Eval for Projection<Lang>
 where
-    T: Term + Eval<Term = T>,
-    <T as Eval>::Value: Into<T>,
-    Projection<T>: Into<T>,
+    Lang: Language,
+    Lang::Term: Term + Eval<Lang = Lang>,
+    Projection<Lang>: Into<Lang::Term>,
 {
-    type Value = <T as Eval>::Value;
+    type Lang = Lang;
 
-    type Term = T;
-    fn eval(
-        self,
-        env: &mut EvalContext<T, Self::Value>,
-    ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
+    fn eval(self, env: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         let term_res = self.term.eval(env)?;
         let term_val = term_res.val();
         let tup_val = term_val.clone().into_tuple()?;
@@ -34,6 +31,6 @@ where
         let last_step = EvalStep::projection(Projection::new(term_val, self.index), val.clone());
         steps.push(last_step);
 
-        Ok(EvalTrace::<T, <T as Eval>::Value>::new(steps, val))
+        Ok(EvalTrace::<Lang>::new(steps, val))
     }
 }

@@ -2,25 +2,22 @@ use crate::Eval;
 use errors::eval_error::EvalError;
 use syntax::{
     eval_context::EvalContext,
+    language::Language,
     terms::{Term, Tuple},
     values::Tuple as TupleVal,
 };
 use trace::EvalTrace;
 
-impl<T> Eval for Tuple<T>
+impl<Lang> Eval for Tuple<Lang>
 where
-    T: Term + Eval<Term = T>,
-    <T as Eval>::Value: Into<T>,
-    Tuple<T>: Into<T>,
-    TupleVal<<T as Eval>::Value>: Into<<T as Eval>::Value>,
+    Lang: Language,
+    Lang::Term: Term + Eval<Lang = Lang>,
+    Tuple<Lang>: Into<Lang::Term>,
+    TupleVal<Lang>: Into<Lang::Value>,
 {
-    type Value = <T as Eval>::Value;
+    type Lang = Lang;
 
-    type Term = T;
-    fn eval(
-        self,
-        env: &mut EvalContext<T, Self::Value>,
-    ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
+    fn eval(self, env: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         let mut vals = vec![];
         let mut old_terms = self.terms.clone();
         let mut steps = vec![];
@@ -38,7 +35,7 @@ where
 
             old_terms[ind] = val.into();
         }
-        let val = TupleVal::<<T as Eval>::Value>::new(vals);
+        let val = TupleVal::<Lang>::new(vals);
         Ok(EvalTrace::new(steps, val))
     }
 }

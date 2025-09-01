@@ -2,34 +2,29 @@ use crate::Eval;
 use errors::eval_error::EvalError;
 use syntax::{
     eval_context::EvalContext,
+    language::Language,
     terms::{Cons, Term},
-    types::Type,
-    values::{Cons as ConsVal, ValueGroup},
+    values::Cons as ConsVal,
 };
 use trace::EvalTrace;
 
-impl<T, V, Ty> Eval for Cons<T, Ty>
+impl<Lang> Eval for Cons<Lang>
 where
-    T: Term + Eval<Term = T, Value = V>,
-    Ty: Type,
-    V: ValueGroup + Into<T>,
-    Cons<T, Ty>: Into<T>,
-    ConsVal<V, Ty>: Into<<T as Eval>::Value>,
+    Lang: Language,
+    Lang::Term: Term + Eval<Lang = Lang>,
+    Cons<Lang>: Into<Lang::Term>,
+    ConsVal<Lang>: Into<Lang::Value>,
 {
-    type Value = <T as Eval>::Value;
+    type Lang = Lang;
 
-    type Term = T;
-    fn eval(
-        self,
-        env: &mut EvalContext<T, Self::Value>,
-    ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
+    fn eval(self, env: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         let hd_res = self.head.clone().eval(env)?;
         let hd_val = hd_res.val();
 
         let tail_res = self.tail.clone().eval(env)?;
         let tail_val = tail_res.val();
 
-        let val = ConsVal::<V, Ty>::new(hd_val, tail_val, self.ty.clone()).into();
+        let val = ConsVal::<Lang>::new(hd_val, tail_val, self.ty.clone()).into();
 
         let ty_ = self.ty.clone();
         let mut steps =
@@ -38,6 +33,6 @@ where
         steps.extend(
             tail_res.congruence(&move |t| Cons::new(*self.head.clone(), t, self.ty.clone()).into()),
         );
-        Ok(EvalTrace::<T, <T as Eval>::Value>::new(steps, val))
+        Ok(EvalTrace::<Lang>::new(steps, val))
     }
 }

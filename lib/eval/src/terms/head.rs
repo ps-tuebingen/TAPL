@@ -3,26 +3,21 @@ use errors::eval_error::EvalError;
 
 use syntax::{
     eval_context::EvalContext,
+    language::Language,
     terms::{Head, Term},
-    types::Type,
     values::ValueGroup,
 };
 use trace::{EvalStep, EvalTrace};
 
-impl<T, Ty> Eval for Head<T, Ty>
+impl<Lang> Eval for Head<Lang>
 where
-    T: Term + Eval<Term = T>,
-    Ty: Type,
-    Head<T, Ty>: Into<T>,
-    <T as Eval>::Value: Into<T>,
+    Lang: Language,
+    Lang::Term: Term + Eval<Lang = Lang>,
+    Head<Lang>: Into<Lang::Term>,
 {
-    type Value = <T as Eval>::Value;
+    type Lang = Lang;
 
-    type Term = T;
-    fn eval(
-        self,
-        env: &mut EvalContext<T, Self::Value>,
-    ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
+    fn eval(self, env: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         let term_res = self.term.eval(env)?;
         let term_val = term_res.val();
         let cons_val = term_val.clone().into_cons()?;
@@ -32,9 +27,6 @@ where
         let mut steps = term_res.congruence(&move |t| Head::new(t, self.ty.clone()).into());
         steps.push(last_step);
 
-        Ok(EvalTrace::<T, <T as Eval>::Value>::new(
-            steps,
-            *cons_val.head,
-        ))
+        Ok(EvalTrace::<Lang>::new(steps, *cons_val.head))
     }
 }

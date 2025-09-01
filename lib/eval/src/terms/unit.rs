@@ -2,23 +2,21 @@ use crate::Eval;
 use errors::eval_error::EvalError;
 use syntax::{
     eval_context::EvalContext,
+    language::Language,
     terms::{Term, Unit},
     values::Unit as UnitVal,
 };
 use trace::EvalTrace;
 
-impl<T> Eval for Unit<T>
+impl<Lang> Eval for Unit<Lang>
 where
-    T: Term + Eval<Term = T>,
-    UnitVal<T>: Into<<T as Eval>::Value>,
+    Lang: Language,
+    Lang::Term: Term + Eval<Lang = Lang>,
+    UnitVal<Lang>: Into<Lang::Value>,
 {
-    type Value = <T as Eval>::Value;
+    type Lang = Lang;
 
-    type Term = T;
-    fn eval(
-        self,
-        _: &mut EvalContext<T, Self::Value>,
-    ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
+    fn eval(self, _: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         Ok(EvalTrace::new(vec![], UnitVal::new()))
     }
 }

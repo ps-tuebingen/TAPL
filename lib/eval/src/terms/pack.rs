@@ -2,35 +2,26 @@ use crate::Eval;
 use errors::eval_error::EvalError;
 use syntax::{
     eval_context::EvalContext,
+    language::Language,
     terms::{Pack, Term},
-    types::Type,
     values::Pack as PackVal,
 };
 use trace::EvalTrace;
 
-impl<T, Ty> Eval for Pack<T, Ty>
+impl<Lang> Eval for Pack<Lang>
 where
-    T: Term + Eval<Term = T>,
-    <T as Eval>::Value: Into<T>,
-    Ty: Type,
-    Pack<T, Ty>: Into<T>,
-    PackVal<<T as Eval>::Value, Ty>: Into<<T as Eval>::Value>,
+    Lang: Language,
+    Lang::Term: Term + Eval<Lang = Lang>,
+    Pack<Lang>: Into<Lang::Term>,
+    PackVal<Lang>: Into<Lang::Value>,
 {
-    type Value = <T as Eval>::Value;
+    type Lang = Lang;
 
-    type Term = T;
-    fn eval(
-        self,
-        env: &mut EvalContext<T, Self::Value>,
-    ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
+    fn eval(self, env: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         let term_res = self.term.eval(env)?;
         let term_val = term_res.val();
 
-        let val = PackVal::<<T as Eval>::Value, Ty>::new(
-            self.inner_ty.clone(),
-            term_val,
-            self.outer_ty.clone(),
-        );
+        let val = PackVal::<Lang>::new(self.inner_ty.clone(), term_val, self.outer_ty.clone());
 
         let steps = term_res.congruence(&move |t| {
             Pack::new(self.inner_ty.clone(), t, self.outer_ty.clone()).into()

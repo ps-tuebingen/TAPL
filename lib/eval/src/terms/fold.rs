@@ -1,34 +1,25 @@
 use crate::Eval;
 use errors::eval_error::EvalError;
-use syntax::{
-    eval_context::EvalContext,
-    terms::{Fold, Term},
-    types::Type,
-    values::Fold as FoldVal,
-};
+use syntax::{eval_context::EvalContext, language::Language, terms::Fold, values::Fold as FoldVal};
 use trace::{EvalStep, EvalTrace};
 
-impl<T, Ty> Eval for Fold<T, Ty>
+impl<Lang> Eval for Fold<Lang>
 where
-    T: Term + Eval<Term = T>,
-    Fold<T, Ty>: Into<T>,
-    Ty: Type,
-    FoldVal<<T as Eval>::Value, Ty>: Into<<T as Eval>::Value>,
+    Lang: Language,
+    Lang::Term: Eval<Lang = Lang>,
+    Fold<Lang>: Into<Lang::Term>,
+    FoldVal<Lang>: Into<Lang::Value>,
 {
-    type Value = <T as Eval>::Value;
+    type Lang = Lang;
 
-    type Term = T;
-    fn eval(
-        self,
-        env: &mut EvalContext<T, Self::Value>,
-    ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
+    fn eval(self, env: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         let term_res = self.term.eval(env)?;
         let term_val = term_res.val();
-        let val: <T as Eval>::Value =
-            FoldVal::<<T as Eval>::Value, Ty>::new(self.ty.clone(), term_val.clone()).into();
+        let val: <Lang as Language>::Value =
+            FoldVal::<Lang>::new(self.ty.clone(), term_val.clone()).into();
         let last_step = EvalStep::fold(Fold::new(term_val, self.ty.clone()), val.clone());
         let mut steps = term_res.congruence(&move |t| Fold::new(t, self.ty.clone()).into());
         steps.push(last_step);
-        Ok(EvalTrace::<T, <T as Eval>::Value>::new(steps, val))
+        Ok(EvalTrace::<Lang>::new(steps, val))
     }
 }

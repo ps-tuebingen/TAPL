@@ -2,30 +2,25 @@ use crate::Eval;
 use errors::eval_error::EvalError;
 use syntax::{
     eval_context::EvalContext,
+    language::Language,
     terms::{Right, Term},
-    types::Type,
     values::Right as RightVal,
 };
 use trace::EvalTrace;
 
-impl<T, Ty> Eval for Right<T, Ty>
+impl<Lang> Eval for Right<Lang>
 where
-    T: Term + Eval<Term = T>,
-    <T as Eval>::Value: Into<T>,
-    Right<T, Ty>: Into<T>,
-    Ty: Type,
-    RightVal<<T as Eval>::Value, Ty>: Into<<T as Eval>::Value>,
+    Lang: Language,
+    Lang::Term: Term + Eval<Lang = Lang>,
+    Right<Lang>: Into<Lang::Term>,
+    RightVal<Lang>: Into<Lang::Value>,
 {
-    type Value = <T as Eval>::Value;
+    type Lang = Lang;
 
-    type Term = T;
-    fn eval(
-        self,
-        env: &mut EvalContext<T, Self::Value>,
-    ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
+    fn eval(self, env: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         let right_res = self.right_term.eval(env)?;
         let right_val = right_res.val();
-        let val = RightVal::<<T as Eval>::Value, Ty>::new(right_val, self.ty.clone());
+        let val = RightVal::<Lang>::new(right_val, self.ty.clone());
         let steps = right_res.congruence(&move |t| Right::new(t, self.ty.clone()).into());
         Ok(EvalTrace::new(steps, val))
     }

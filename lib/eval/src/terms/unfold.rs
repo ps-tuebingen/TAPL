@@ -1,27 +1,22 @@
 use crate::Eval;
 use errors::eval_error::EvalError;
-
 use syntax::{
     eval_context::EvalContext,
+    language::Language,
     terms::{Term, Unfold},
-    types::Type,
     values::ValueGroup,
 };
 use trace::{EvalStep, EvalTrace};
 
-impl<T, Ty> Eval for Unfold<T, Ty>
+impl<Lang> Eval for Unfold<Lang>
 where
-    T: Term + Eval<Term = T>,
-    Unfold<T, Ty>: Into<T>,
-    Ty: Type,
+    Lang: Language,
+    Lang::Term: Term + Eval<Lang = Lang>,
+    Unfold<Lang>: Into<Lang::Term>,
 {
-    type Value = <T as Eval>::Value;
+    type Lang = Lang;
 
-    type Term = T;
-    fn eval(
-        self,
-        env: &mut EvalContext<T, Self::Value>,
-    ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
+    fn eval(self, env: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         let term_res = self.term.eval(env)?;
         let term_val = term_res.val();
         let term_fold = term_val.clone().into_fold()?;
@@ -32,9 +27,6 @@ where
         );
         let mut steps = term_res.congruence(&move |t| Unfold::new(self.ty.clone(), t).into());
         steps.push(last_step);
-        Ok(EvalTrace::<T, <T as Eval>::Value>::new(
-            steps,
-            *term_fold.val,
-        ))
+        Ok(EvalTrace::<Lang>::new(steps, *term_fold.val))
     }
 }

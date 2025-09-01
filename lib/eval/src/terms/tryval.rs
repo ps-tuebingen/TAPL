@@ -2,30 +2,28 @@ use crate::Eval;
 use errors::eval_error::EvalError;
 use syntax::{
     eval_context::EvalContext,
+    language::Language,
     terms::{App, Term, TryWithVal},
     values::{Raise, ValueGroup},
 };
 use trace::{EvalStep, EvalTrace};
 
-impl<T> Eval for TryWithVal<T>
+impl<Lang> Eval for TryWithVal<Lang>
 where
-    T: Term + Eval<Term = T> + From<<T as Eval>::Value>,
-    <T as Eval>::Value: Into<T>,
-    TryWithVal<T>: Into<T>,
-    Raise<<T as Eval>::Value, <<T as Eval>::Value as ValueGroup>::Type>: Into<<T as Eval>::Value>,
-    App<T>: Into<T>,
+    Lang: Language,
+    Lang::Term: Term + Eval<Lang = Lang> + From<Lang::Value>,
+    Lang::Value: Into<Lang::Term>,
+    TryWithVal<Lang>: Into<Lang::Term>,
+    Raise<Lang>: Into<Lang::Value>,
+    App<Lang>: Into<Lang::Term>,
 {
-    type Value = <T as Eval>::Value;
+    type Lang = Lang;
 
-    type Term = T;
-    fn eval(
-        self,
-        env: &mut EvalContext<T, Self::Value>,
-    ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
+    fn eval(self, env: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         let term_res = self.term.eval(env)?;
         let term_val = term_res.val();
         let (res_steps, res_val) = if let Ok(raise) = term_val.clone().into_raise() {
-            let raise_term: T = (*raise.val).into();
+            let raise_term: Lang::Term = (*raise.val).into();
             let next_term = App::new(*self.handler.clone(), raise_term).into();
             let next_step = EvalStep::tryval_catch(
                 TryWithVal::new(term_val, *self.handler.clone()),
@@ -47,6 +45,6 @@ where
         let mut steps =
             term_res.congruence(&move |t| TryWithVal::new(t, *self.handler.clone()).into());
         steps.extend(res_steps);
-        Ok(EvalTrace::<T, <T as Eval>::Value>::new(steps, res_val))
+        Ok(EvalTrace::<Lang>::new(steps, res_val))
     }
 }

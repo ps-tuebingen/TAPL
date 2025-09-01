@@ -2,27 +2,21 @@ use crate::Eval;
 use errors::eval_error::EvalError;
 use syntax::{
     eval_context::EvalContext,
+    language::Language,
     terms::{Lambda, Term},
-    types::Type,
     values::Lambda as LambdaVal,
 };
 use trace::EvalTrace;
 
-impl<T, Ty> Eval for Lambda<T, Ty>
+impl<Lang> Eval for Lambda<Lang>
 where
-    T: Term + Eval<Term = T>,
-    <T as Eval>::Value: Into<T>,
-    Ty: Type,
-    LambdaVal<T, Ty>: Into<<T as Eval>::Value>,
+    Lang: Language,
+    Lang::Term: Term + Eval<Lang = Lang>,
+    LambdaVal<Lang>: Into<Lang::Value>,
 {
-    type Value = <T as Eval>::Value;
+    type Lang = Lang;
 
-    type Term = T;
-
-    fn eval(
-        self,
-        _: &mut EvalContext<T, Self::Value>,
-    ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
+    fn eval(self, _: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         Ok(EvalTrace::new(
             vec![],
             LambdaVal::new(&self.var, self.annot, *self.body),

@@ -3,31 +3,28 @@ use errors::eval_error::EvalError;
 
 use syntax::{
     eval_context::EvalContext,
+    language::Language,
     subst::SubstTerm,
     terms::{App, Term},
     values::ValueGroup,
 };
 use trace::{EvalStep, EvalTrace};
 
-impl<T> Eval for App<T>
+impl<Lang> Eval for App<Lang>
 where
-    T: Term + Eval<Term = T> + SubstTerm<T, Target = T> + From<<T as Eval>::Value>,
-    <T as Eval>::Value: ValueGroup<Term = T>,
-    Self: Into<T>,
+    Lang: Language,
+    Lang::Term: Term + Eval<Lang = Lang> + From<Lang::Value>,
+    Self: Into<Lang::Term>,
 {
-    type Value = <T as Eval>::Value;
+    type Lang = Lang;
 
-    type Term = T;
-    fn eval(
-        self,
-        env: &mut EvalContext<T, Self::Value>,
-    ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
+    fn eval(self, env: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         let fun_res = self.fun.clone().eval(env)?;
         let fun_val = fun_res.val();
         let lam = fun_val.clone().into_lambda()?;
 
         let arg_res = self.arg.clone().eval(env)?;
-        let arg_val: <T as Eval>::Value = arg_res.val();
+        let arg_val: Lang::Value = arg_res.val();
 
         let body_subst = lam.body.subst(&lam.var, &arg_val.clone().into());
         let next_step = EvalStep::app_abs(App::new(fun_val, arg_val), body_subst.clone());
@@ -40,6 +37,6 @@ where
         let body_val = body_res.val();
         steps.extend(body_res.steps);
 
-        Ok(EvalTrace::<T, <T as Eval>::Value>::new(steps, body_val))
+        Ok(EvalTrace::<Lang>::new(steps, body_val))
     }
 }

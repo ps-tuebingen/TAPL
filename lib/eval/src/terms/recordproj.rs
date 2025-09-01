@@ -3,24 +3,21 @@ use errors::UndefinedLabel;
 use errors::eval_error::EvalError;
 use syntax::{
     eval_context::EvalContext,
+    language::Language,
     terms::{RecordProj, Term},
     values::ValueGroup,
 };
 use trace::{EvalStep, EvalTrace};
 
-impl<T> Eval for RecordProj<T>
+impl<Lang> Eval for RecordProj<Lang>
 where
-    T: Term + Eval<Term = T>,
-    RecordProj<T>: Into<T>,
-    <T as Eval>::Value: Into<T>,
+    Lang: Language,
+    Lang::Term: Term + Eval<Lang = Lang>,
+    RecordProj<Lang>: Into<Lang::Term>,
 {
-    type Value = <T as Eval>::Value;
+    type Lang = Lang;
 
-    type Term = T;
-    fn eval(
-        self,
-        env: &mut EvalContext<T, Self::Value>,
-    ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
+    fn eval(self, env: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         let term_res = self.record.eval(env)?;
         let term_val = term_res.val();
         let rec_val = term_val.into_record()?;
@@ -35,6 +32,6 @@ where
 
         let mut steps = term_res.congruence(&move |t| RecordProj::new(t, &self.label).into());
         steps.push(last_step);
-        Ok(EvalTrace::<T, <T as Eval>::Value>::new(steps, val))
+        Ok(EvalTrace::<Lang>::new(steps, val))
     }
 }

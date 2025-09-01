@@ -3,30 +3,27 @@ use errors::eval_error::EvalError;
 
 use syntax::{
     eval_context::EvalContext,
+    language::Language,
     terms::{Num as NumT, Pred, Term},
     values::{Num, ValueGroup},
 };
 use trace::{EvalStep, EvalTrace};
 
-impl<T> Eval for Pred<T>
+impl<Lang> Eval for Pred<Lang>
 where
-    T: Term + Eval<Term = T>,
-    Pred<T>: Into<T>,
-    NumT<T>: Into<T>,
-    <T as Eval>::Value: Into<T>,
-    Num<T>: Into<<T as Eval>::Value>,
+    Lang: Language,
+    Lang::Term: Term + Eval<Lang = Lang>,
+    Pred<Lang>: Into<Lang::Term>,
+    NumT<Lang>: Into<Lang::Term>,
+    Num<Lang>: Into<Lang::Value>,
 {
-    type Value = <T as Eval>::Value;
+    type Lang = Lang;
 
-    type Term = T;
-    fn eval(
-        self,
-        env: &mut EvalContext<T, Self::Value>,
-    ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
+    fn eval(self, env: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         let term_res = self.term.eval(env)?;
         let term_val = term_res.val();
         let num = term_val.into_num()?;
-        let val = Num::<T>::new(num.num - 1);
+        let val = Num::<Lang>::new(num.num - 1);
         let mut steps = term_res.congruence(&move |t| Pred::new(t).into());
         let last_step = EvalStep::pred(num.num);
         steps.push(last_step);

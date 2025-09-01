@@ -2,29 +2,20 @@ use crate::Eval;
 use errors::ValueMismatch;
 use errors::eval_error::EvalError;
 use syntax::{
-    eval_context::EvalContext,
-    subst::SubstType,
-    terms::{Term, TyApp},
-    types::Type,
+    eval_context::EvalContext, language::Language, subst::SubstType, terms::TyApp,
     values::ValueGroup,
 };
 use trace::{EvalStep, EvalTrace};
 
-impl<T, Ty> Eval for TyApp<T, Ty>
+impl<Lang> Eval for TyApp<Lang>
 where
-    T: Term + Eval<Term = T> + SubstType<Ty, Target = T>,
-    <T as Eval>::Value: Into<T>,
-    <T as Eval>::Value: ValueGroup<Term = T>,
-    TyApp<T, Ty>: Into<T>,
-    Ty: Type,
+    Lang: Language,
+    Lang::Term: Eval<Lang = Lang>,
+    TyApp<Lang>: Into<Lang::Term>,
 {
-    type Value = <T as Eval>::Value;
+    type Lang = Lang;
 
-    type Term = T;
-    fn eval(
-        self,
-        env: &mut EvalContext<T, Self::Value>,
-    ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
+    fn eval(self, env: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         let fun_res = self.fun.eval(env)?;
         let fun_val = fun_res.val();
         let (res_steps, res_val) = if let Ok(tylam) = fun_val.clone().into_tylambda() {
@@ -53,6 +44,6 @@ where
 
         let mut steps = fun_res.congruence(&move |t| TyApp::new(t, self.arg.clone()).into());
         steps.extend(res_steps);
-        Ok(EvalTrace::<T, <T as Eval>::Value>::new(steps, res_val))
+        Ok(EvalTrace::<Lang>::new(steps, res_val))
     }
 }

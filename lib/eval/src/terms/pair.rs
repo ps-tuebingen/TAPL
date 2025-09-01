@@ -2,25 +2,22 @@ use crate::Eval;
 use errors::eval_error::EvalError;
 use syntax::{
     eval_context::EvalContext,
+    language::Language,
     terms::{Pair, Term},
     values::Pair as PairVal,
 };
 use trace::EvalTrace;
 
-impl<T> Eval for Pair<T>
+impl<Lang> Eval for Pair<Lang>
 where
-    T: Term + Eval<Term = T>,
-    Pair<T>: Into<T>,
-    <T as Eval>::Value: Into<T>,
-    PairVal<<T as Eval>::Value>: Into<<T as Eval>::Value>,
+    Lang: Language,
+    Lang::Term: Term + Eval<Lang = Lang>,
+    Pair<Lang>: Into<Lang::Term>,
+    PairVal<Lang>: Into<Lang::Value>,
 {
-    type Value = <T as Eval>::Value;
+    type Lang = Lang;
 
-    type Term = T;
-    fn eval(
-        self,
-        env: &mut EvalContext<T, Self::Value>,
-    ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
+    fn eval(self, env: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         let fst_res = self.fst.clone().eval(env)?;
         let fst_val = fst_res.val();
         let snd_res = self.snd.clone().eval(env)?;
@@ -30,7 +27,7 @@ where
         let snd_steps = snd_res.congruence(&move |t| Pair::new(*self.fst.clone(), t).into());
         let mut steps = fst_steps;
         steps.extend(snd_steps);
-        let val = PairVal::<<T as Eval>::Value>::new(fst_val, snd_val);
+        let val = PairVal::<Lang>::new(fst_val, snd_val);
         Ok(EvalTrace::new(steps, val))
     }
 }

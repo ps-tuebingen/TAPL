@@ -2,25 +2,20 @@ use crate::Eval;
 use errors::UndefinedLabel;
 use errors::eval_error::EvalError;
 use syntax::{
-    eval_context::EvalContext,
-    subst::SubstTerm,
-    terms::{Term, VariantCase},
+    eval_context::EvalContext, language::Language, subst::SubstTerm, terms::VariantCase,
     values::ValueGroup,
 };
 use trace::{EvalStep, EvalTrace};
 
-impl<T> Eval for VariantCase<T>
+impl<Lang> Eval for VariantCase<Lang>
 where
-    T: Term + Eval<Term = T> + SubstTerm<T, Target = T> + From<<T as Eval>::Value>,
-    VariantCase<T>: Into<T>,
+    Lang: Language,
+    Lang::Term: Eval<Lang = Lang> + From<Lang::Value>,
+    VariantCase<Lang>: Into<Lang::Term>,
 {
-    type Value = <T as Eval>::Value;
+    type Lang = Lang;
 
-    type Term = T;
-    fn eval(
-        self,
-        env: &mut EvalContext<T, Self::Value>,
-    ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
+    fn eval(self, env: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         let bound_res = self.bound_term.eval(env)?;
         let bound_val = bound_res.val();
 
@@ -45,6 +40,6 @@ where
             bound_res.congruence(&move |t| VariantCase::new(t, self.patterns.clone()).into());
         steps.push(next_step);
         steps.extend(rhs_res.steps);
-        Ok(EvalTrace::<T, <T as Eval>::Value>::new(steps, val))
+        Ok(EvalTrace::<Lang>::new(steps, val))
     }
 }

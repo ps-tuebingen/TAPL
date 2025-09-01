@@ -2,24 +2,21 @@ use crate::Eval;
 use errors::eval_error::EvalError;
 use syntax::{
     eval_context::EvalContext,
+    language::Language,
     terms::{Term, Try},
     values::ValueGroup,
 };
 use trace::{EvalStep, EvalTrace};
 
-impl<T> Eval for Try<T>
+impl<Lang> Eval for Try<Lang>
 where
-    T: Term + Eval<Term = T>,
-    <T as Eval>::Value: Into<T>,
-    Try<T>: Into<T>,
+    Lang: Language,
+    Lang::Term: Term + Eval<Lang = Lang>,
+    Try<Lang>: Into<Lang::Term>,
 {
-    type Value = <T as Eval>::Value;
+    type Lang = Lang;
 
-    type Term = T;
-    fn eval(
-        self,
-        env: &mut EvalContext<T, Self::Value>,
-    ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
+    fn eval(self, env: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         let term_res = self.term.eval(env)?;
         let term_val = term_res.val();
         let (res_steps, res_val) = if term_val.clone().into_exception().is_ok() {
@@ -42,6 +39,6 @@ where
 
         let mut steps = term_res.congruence(&move |t| Try::new(t, *self.handler.clone()).into());
         steps.extend(res_steps);
-        Ok(EvalTrace::<T, <T as Eval>::Value>::new(steps, res_val))
+        Ok(EvalTrace::<Lang>::new(steps, res_val))
     }
 }
