@@ -1,5 +1,5 @@
 use std::fmt;
-use syntax::{terms::Term, values::Value};
+use syntax::language::Language;
 
 pub mod rules;
 pub mod step;
@@ -7,23 +7,21 @@ pub mod step;
 pub use step::EvalStep;
 
 #[derive(Debug)]
-pub struct EvalTrace<T, V>
+pub struct EvalTrace<Lang>
 where
-    T: Term,
-    V: Value,
+    Lang: Language,
 {
-    pub steps: Vec<EvalStep<T>>,
-    val: V,
+    pub steps: Vec<EvalStep<Lang>>,
+    val: Lang::Value,
 }
 
-impl<T, V> EvalTrace<T, V>
+impl<Lang> EvalTrace<Lang>
 where
-    T: Term,
-    V: Value,
+    Lang: Language,
 {
-    pub fn new<V1>(steps: Vec<EvalStep<T>>, val: V1) -> EvalTrace<T, V>
+    pub fn new<V1>(steps: Vec<EvalStep<Lang>>, val: V1) -> EvalTrace<Lang>
     where
-        V1: Into<V>,
+        V1: Into<Lang::Value>,
     {
         EvalTrace {
             steps,
@@ -31,11 +29,11 @@ where
         }
     }
 
-    pub fn val(&self) -> V {
+    pub fn val(&self) -> Lang::Value {
         self.val.clone()
     }
 
-    pub fn congruence(self, into_fun: &impl Fn(T) -> T) -> Vec<EvalStep<T>> {
+    pub fn congruence(self, into_fun: &impl Fn(Lang::Term) -> Lang::Term) -> Vec<EvalStep<Lang>> {
         self.steps
             .into_iter()
             .map(|step| step.congruence(into_fun))
@@ -43,10 +41,9 @@ where
     }
 }
 
-impl<T, V> fmt::Display for EvalTrace<T, V>
+impl<Lang> fmt::Display for EvalTrace<Lang>
 where
-    T: Term,
-    V: Value,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         for step in self.steps.iter() {

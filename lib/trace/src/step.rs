@@ -2,28 +2,27 @@ use super::rules::EvaluationRule;
 use std::fmt;
 use syntax::{
     Location, Var,
-    terms::{
-        Assign, Cast, Deref, False, IsNil, Loc, Num, Pair, Pred, Succ, Term, True, Unit, Variable,
-    },
+    language::Language,
+    terms::{Assign, Cast, Deref, False, IsNil, Loc, Num, Pair, Pred, Succ, True, Unit, Variable},
     types::Type,
     values::Value,
 };
 
 #[derive(Debug)]
-pub struct EvalStep<T>
+pub struct EvalStep<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    pub source: T,
+    pub source: Lang::Term,
     pub rule: EvaluationRule,
-    pub target: T,
+    pub target: Lang::Term,
 }
 
-impl<T> EvalStep<T>
+impl<Lang> EvalStep<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
-    pub fn congruence(self, into_fun: &impl Fn(T) -> T) -> EvalStep<T> {
+    pub fn congruence(self, into_fun: &impl Fn(Lang::Term) -> Lang::Term) -> EvalStep<Lang> {
         EvalStep {
             source: into_fun(self.source),
             rule: self.rule,
@@ -31,10 +30,10 @@ where
         }
     }
 
-    pub fn app_abs<T1, T2>(source: T1, target: T2) -> EvalStep<T>
+    pub fn app_abs<T1, T2>(source: T1, target: T2) -> EvalStep<Lang>
     where
-        T1: Into<T>,
-        T2: Into<T>,
+        T1: Into<Lang::Term>,
+        T2: Into<Lang::Term>,
     {
         EvalStep {
             source: source.into(),
@@ -43,10 +42,10 @@ where
         }
     }
 
-    pub fn ascribe<T1, T2>(source: T1, target: T2) -> EvalStep<T>
+    pub fn ascribe<T1, T2>(source: T1, target: T2) -> EvalStep<Lang>
     where
-        T1: Into<T>,
-        T2: Into<T>,
+        T1: Into<Lang::Term>,
+        T2: Into<Lang::Term>,
     {
         EvalStep {
             source: source.into(),
@@ -55,12 +54,12 @@ where
         }
     }
 
-    pub fn assign<V1, V2>(lhs: V1, rhs: V2) -> EvalStep<T>
+    pub fn assign<V1, V2>(lhs: V1, rhs: V2) -> EvalStep<Lang>
     where
-        V1: Into<T>,
-        V2: Into<T>,
-        Unit<T>: Into<T>,
-        Assign<T>: Into<T>,
+        V1: Into<Lang::Term>,
+        V2: Into<Lang::Term>,
+        Unit<Lang>: Into<Lang::Term>,
+        Assign<Lang>: Into<Lang::Term>,
     {
         EvalStep {
             source: Assign::new(lhs, rhs).into(),
@@ -69,11 +68,11 @@ where
         }
     }
 
-    pub fn cast<Ty, V>(ty: Ty, val: V) -> EvalStep<T>
+    pub fn cast<Ty, V>(ty: Ty, val: V) -> EvalStep<Lang>
     where
-        Ty: Type,
-        V: Value + Into<T>,
-        Cast<T, Ty>: Into<T>,
+        Ty: Type + Into<Lang::Type>,
+        V: Value + Into<Lang::Term>,
+        Cast<Lang>: Into<Lang::Term>,
     {
         EvalStep {
             source: Cast::new(val.clone(), ty).into(),
@@ -82,11 +81,11 @@ where
         }
     }
 
-    pub fn deref<V1, V2>(loc_val: V1, env_val: V2) -> EvalStep<T>
+    pub fn deref<V1, V2>(loc_val: V1, env_val: V2) -> EvalStep<Lang>
     where
-        V2: Into<T>,
-        V1: Into<T>,
-        Deref<T>: Into<T>,
+        V2: Into<Lang::Term>,
+        V1: Into<Lang::Term>,
+        Deref<Lang>: Into<Lang::Term>,
     {
         EvalStep {
             source: Deref::new(loc_val).into(),
@@ -95,10 +94,10 @@ where
         }
     }
 
-    pub fn fold<T1, T2>(source: T1, target: T2) -> EvalStep<T>
+    pub fn fold<T1, T2>(source: T1, target: T2) -> EvalStep<Lang>
     where
-        T1: Into<T>,
-        T2: Into<T>,
+        T1: Into<Lang::Term>,
+        T2: Into<Lang::Term>,
     {
         EvalStep {
             source: source.into(),
@@ -107,11 +106,11 @@ where
         }
     }
 
-    pub fn fst<T1, T2>(f: T1, s: T2) -> EvalStep<T>
+    pub fn fst<T1, T2>(f: T1, s: T2) -> EvalStep<Lang>
     where
-        T1: Into<T> + Clone,
-        T2: Into<T>,
-        Pair<T>: Into<T>,
+        T1: Into<Lang::Term> + Clone,
+        T2: Into<Lang::Term>,
+        Pair<Lang>: Into<Lang::Term>,
     {
         EvalStep {
             source: Pair::new(f.clone(), s).into(),
@@ -120,10 +119,10 @@ where
         }
     }
 
-    pub fn head<T1, T2>(source: T1, target: T2) -> EvalStep<T>
+    pub fn head<T1, T2>(source: T1, target: T2) -> EvalStep<Lang>
     where
-        T1: Into<T>,
-        T2: Into<T>,
+        T1: Into<Lang::Term>,
+        T2: Into<Lang::Term>,
     {
         EvalStep {
             source: source.into(),
@@ -132,10 +131,10 @@ where
         }
     }
 
-    pub fn if_true<T1, T2>(source: T1, target: T2) -> EvalStep<T>
+    pub fn if_true<T1, T2>(source: T1, target: T2) -> EvalStep<Lang>
     where
-        T1: Into<T>,
-        T2: Into<T>,
+        T1: Into<Lang::Term>,
+        T2: Into<Lang::Term>,
     {
         EvalStep {
             source: source.into(),
@@ -144,10 +143,10 @@ where
         }
     }
 
-    pub fn if_false<T1, T2>(source: T1, target: T2) -> EvalStep<T>
+    pub fn if_false<T1, T2>(source: T1, target: T2) -> EvalStep<Lang>
     where
-        T1: Into<T>,
-        T2: Into<T>,
+        T1: Into<Lang::Term>,
+        T2: Into<Lang::Term>,
     {
         EvalStep {
             source: source.into(),
@@ -156,11 +155,11 @@ where
         }
     }
 
-    pub fn isnil_true<Ty>(ty: Ty) -> EvalStep<T>
+    pub fn isnil_true<Ty>(ty: Ty) -> EvalStep<Lang>
     where
-        Ty: Type,
-        True<T>: Into<T>,
-        IsNil<T, Ty>: Into<T>,
+        Ty: Type + Into<Lang::Type>,
+        True<Lang>: Into<Lang::Term>,
+        IsNil<Lang>: Into<Lang::Term>,
     {
         EvalStep {
             source: IsNil::new(True::new(), ty).into(),
@@ -169,11 +168,11 @@ where
         }
     }
 
-    pub fn isnil_false<Ty>(ty: Ty) -> EvalStep<T>
+    pub fn isnil_false<Ty>(ty: Ty) -> EvalStep<Lang>
     where
-        Ty: Type,
-        IsNil<T, Ty>: Into<T>,
-        False<T>: Into<T>,
+        Ty: Type + Into<Lang::Type>,
+        IsNil<Lang>: Into<Lang::Term>,
+        False<Lang>: Into<Lang::Term>,
     {
         EvalStep {
             source: IsNil::new(False::new(), ty).into(),
@@ -182,10 +181,10 @@ where
         }
     }
 
-    pub fn iszero_true<T1>(source: T1) -> EvalStep<T>
+    pub fn iszero_true<T1>(source: T1) -> EvalStep<Lang>
     where
-        T1: Into<T>,
-        True<T>: Into<T>,
+        T1: Into<Lang::Term>,
+        True<Lang>: Into<Lang::Term>,
     {
         EvalStep {
             source: source.into(),
@@ -194,10 +193,10 @@ where
         }
     }
 
-    pub fn iszero_false<T1>(source: T1) -> EvalStep<T>
+    pub fn iszero_false<T1>(source: T1) -> EvalStep<Lang>
     where
-        T1: Into<T>,
-        False<T>: Into<T>,
+        T1: Into<Lang::Term>,
+        False<Lang>: Into<Lang::Term>,
     {
         EvalStep {
             source: source.into(),
@@ -206,10 +205,10 @@ where
         }
     }
 
-    pub fn lett<T1, T2>(source: T1, target: T2) -> EvalStep<T>
+    pub fn lett<T1, T2>(source: T1, target: T2) -> EvalStep<Lang>
     where
-        T1: Into<T>,
-        T2: Into<T>,
+        T1: Into<Lang::Term>,
+        T2: Into<Lang::Term>,
     {
         EvalStep {
             source: source.into(),
@@ -218,10 +217,10 @@ where
         }
     }
 
-    pub fn listcase_nil<T1, T2>(source: T1, target: T2) -> EvalStep<T>
+    pub fn listcase_nil<T1, T2>(source: T1, target: T2) -> EvalStep<Lang>
     where
-        T1: Into<T>,
-        T2: Into<T>,
+        T1: Into<Lang::Term>,
+        T2: Into<Lang::Term>,
     {
         EvalStep {
             source: source.into(),
@@ -230,10 +229,10 @@ where
         }
     }
 
-    pub fn listcase_cons<T1, T2>(source: T1, target: T2) -> EvalStep<T>
+    pub fn listcase_cons<T1, T2>(source: T1, target: T2) -> EvalStep<Lang>
     where
-        T1: Into<T>,
-        T2: Into<T>,
+        T1: Into<Lang::Term>,
+        T2: Into<Lang::Term>,
     {
         EvalStep {
             source: source.into(),
@@ -242,10 +241,10 @@ where
         }
     }
 
-    pub fn pred(num: i64) -> EvalStep<T>
+    pub fn pred(num: i64) -> EvalStep<Lang>
     where
-        Pred<T>: Into<T>,
-        Num<T>: Into<T>,
+        Pred<Lang>: Into<Lang::Term>,
+        Num<Lang>: Into<Lang::Term>,
     {
         EvalStep {
             source: Pred::new(Num::new(num)).into(),
@@ -254,10 +253,10 @@ where
         }
     }
 
-    pub fn projection<T1, T2>(source: T1, target: T2) -> EvalStep<T>
+    pub fn projection<T1, T2>(source: T1, target: T2) -> EvalStep<Lang>
     where
-        T1: Into<T>,
-        T2: Into<T>,
+        T1: Into<Lang::Term>,
+        T2: Into<Lang::Term>,
     {
         EvalStep {
             source: source.into(),
@@ -266,10 +265,10 @@ where
         }
     }
 
-    pub fn recordproj<T1, T2>(source: T1, target: T2) -> EvalStep<T>
+    pub fn recordproj<T1, T2>(source: T1, target: T2) -> EvalStep<Lang>
     where
-        T1: Into<T>,
-        T2: Into<T>,
+        T1: Into<Lang::Term>,
+        T2: Into<Lang::Term>,
     {
         EvalStep {
             source: source.into(),
@@ -278,10 +277,10 @@ where
         }
     }
 
-    pub fn reft<T1>(source: T1, loc: Location) -> EvalStep<T>
+    pub fn reft<T1>(source: T1, loc: Location) -> EvalStep<Lang>
     where
-        Loc<T>: Into<T>,
-        T1: Into<T>,
+        Loc<Lang>: Into<Lang::Term>,
+        T1: Into<Lang::Term>,
     {
         EvalStep {
             source: source.into(),
@@ -290,10 +289,10 @@ where
         }
     }
 
-    pub fn snd<T1, T2>(source: T1, target: T2) -> EvalStep<T>
+    pub fn snd<T1, T2>(source: T1, target: T2) -> EvalStep<Lang>
     where
-        T1: Into<T>,
-        T2: Into<T>,
+        T1: Into<Lang::Term>,
+        T2: Into<Lang::Term>,
     {
         EvalStep {
             source: source.into(),
@@ -302,10 +301,10 @@ where
         }
     }
 
-    pub fn somecase_some<T1, T2>(source: T1, target: T2) -> EvalStep<T>
+    pub fn somecase_some<T1, T2>(source: T1, target: T2) -> EvalStep<Lang>
     where
-        T1: Into<T>,
-        T2: Into<T>,
+        T1: Into<Lang::Term>,
+        T2: Into<Lang::Term>,
     {
         EvalStep {
             source: source.into(),
@@ -314,10 +313,10 @@ where
         }
     }
 
-    pub fn somecase_none<T1, T2>(source: T1, target: T2) -> EvalStep<T>
+    pub fn somecase_none<T1, T2>(source: T1, target: T2) -> EvalStep<Lang>
     where
-        T1: Into<T>,
-        T2: Into<T>,
+        T1: Into<Lang::Term>,
+        T2: Into<Lang::Term>,
     {
         EvalStep {
             source: source.into(),
@@ -326,10 +325,10 @@ where
         }
     }
 
-    pub fn succ(num: i64) -> EvalStep<T>
+    pub fn succ(num: i64) -> EvalStep<Lang>
     where
-        Succ<T>: Into<T>,
-        Num<T>: Into<T>,
+        Succ<Lang>: Into<Lang::Term>,
+        Num<Lang>: Into<Lang::Term>,
     {
         EvalStep {
             source: Succ::new(Num::new(num)).into(),
@@ -338,10 +337,10 @@ where
         }
     }
 
-    pub fn sumcase_left<T1, T2>(source: T1, target: T2) -> EvalStep<T>
+    pub fn sumcase_left<T1, T2>(source: T1, target: T2) -> EvalStep<Lang>
     where
-        T1: Into<T>,
-        T2: Into<T>,
+        T1: Into<Lang::Term>,
+        T2: Into<Lang::Term>,
     {
         EvalStep {
             source: source.into(),
@@ -350,10 +349,10 @@ where
         }
     }
 
-    pub fn sumcase_right<T1, T2>(source: T1, target: T2) -> EvalStep<T>
+    pub fn sumcase_right<T1, T2>(source: T1, target: T2) -> EvalStep<Lang>
     where
-        T1: Into<T>,
-        T2: Into<T>,
+        T1: Into<Lang::Term>,
+        T2: Into<Lang::Term>,
     {
         EvalStep {
             source: source.into(),
@@ -362,10 +361,10 @@ where
         }
     }
 
-    pub fn tail<T1, T2>(source: T1, target: T2) -> EvalStep<T>
+    pub fn tail<T1, T2>(source: T1, target: T2) -> EvalStep<Lang>
     where
-        T1: Into<T>,
-        T2: Into<T>,
+        T1: Into<Lang::Term>,
+        T2: Into<Lang::Term>,
     {
         EvalStep {
             source: source.into(),
@@ -374,10 +373,10 @@ where
         }
     }
 
-    pub fn try_catch<T1, T2>(source: T1, target: T2) -> EvalStep<T>
+    pub fn try_catch<T1, T2>(source: T1, target: T2) -> EvalStep<Lang>
     where
-        T1: Into<T>,
-        T2: Into<T>,
+        T1: Into<Lang::Term>,
+        T2: Into<Lang::Term>,
     {
         EvalStep {
             source: source.into(),
@@ -386,10 +385,10 @@ where
         }
     }
 
-    pub fn try_succ<T1, T2>(source: T1, target: T2) -> EvalStep<T>
+    pub fn try_succ<T1, T2>(source: T1, target: T2) -> EvalStep<Lang>
     where
-        T1: Into<T>,
-        T2: Into<T>,
+        T1: Into<Lang::Term>,
+        T2: Into<Lang::Term>,
     {
         EvalStep {
             source: source.into(),
@@ -398,10 +397,10 @@ where
         }
     }
 
-    pub fn tryval_catch<T1, T2>(source: T1, target: T2) -> EvalStep<T>
+    pub fn tryval_catch<T1, T2>(source: T1, target: T2) -> EvalStep<Lang>
     where
-        T1: Into<T>,
-        T2: Into<T>,
+        T1: Into<Lang::Term>,
+        T2: Into<Lang::Term>,
     {
         EvalStep {
             source: source.into(),
@@ -410,10 +409,10 @@ where
         }
     }
 
-    pub fn tryval_succ<T1, T2>(source: T1, target: T2) -> EvalStep<T>
+    pub fn tryval_succ<T1, T2>(source: T1, target: T2) -> EvalStep<Lang>
     where
-        T1: Into<T>,
-        T2: Into<T>,
+        T1: Into<Lang::Term>,
+        T2: Into<Lang::Term>,
     {
         EvalStep {
             source: source.into(),
@@ -422,10 +421,10 @@ where
         }
     }
 
-    pub fn tyappabs<T1, T2>(source: T1, target: T2) -> EvalStep<T>
+    pub fn tyappabs<T1, T2>(source: T1, target: T2) -> EvalStep<Lang>
     where
-        T1: Into<T>,
-        T2: Into<T>,
+        T1: Into<Lang::Term>,
+        T2: Into<Lang::Term>,
     {
         EvalStep {
             source: source.into(),
@@ -434,10 +433,10 @@ where
         }
     }
 
-    pub fn tyappabs_sub<T1, T2>(source: T1, target: T2) -> EvalStep<T>
+    pub fn tyappabs_sub<T1, T2>(source: T1, target: T2) -> EvalStep<Lang>
     where
-        T1: Into<T>,
-        T2: Into<T>,
+        T1: Into<Lang::Term>,
+        T2: Into<Lang::Term>,
     {
         EvalStep {
             source: source.into(),
@@ -446,10 +445,10 @@ where
         }
     }
 
-    pub fn unfoldfold<T1, T2>(source: T1, target: T2) -> EvalStep<T>
+    pub fn unfoldfold<T1, T2>(source: T1, target: T2) -> EvalStep<Lang>
     where
-        T1: Into<T>,
-        T2: Into<T>,
+        T1: Into<Lang::Term>,
+        T2: Into<Lang::Term>,
     {
         EvalStep {
             source: source.into(),
@@ -458,10 +457,10 @@ where
         }
     }
 
-    pub fn unpackpack<T1, T2>(source: T1, target: T2) -> EvalStep<T>
+    pub fn unpackpack<T1, T2>(source: T1, target: T2) -> EvalStep<Lang>
     where
-        T1: Into<T>,
-        T2: Into<T>,
+        T1: Into<Lang::Term>,
+        T2: Into<Lang::Term>,
     {
         EvalStep {
             source: source.into(),
@@ -470,10 +469,10 @@ where
         }
     }
 
-    pub fn variantcase<T1, T2>(source: T1, target: T2) -> EvalStep<T>
+    pub fn variantcase<T1, T2>(source: T1, target: T2) -> EvalStep<Lang>
     where
-        T1: Into<T>,
-        T2: Into<T>,
+        T1: Into<Lang::Term>,
+        T2: Into<Lang::Term>,
     {
         EvalStep {
             source: source.into(),
@@ -482,21 +481,22 @@ where
         }
     }
 
-    pub fn subst_var(var: &Var, body: T) -> EvalStep<T>
+    pub fn subst_var<T>(var: &Var, body: T) -> EvalStep<Lang>
     where
-        Variable<T>: Into<T>,
+        T: Into<Lang::Term>,
+        Variable<Lang>: Into<Lang::Term>,
     {
         EvalStep {
             source: Variable::new(var).into(),
             rule: EvaluationRule::SubstName,
-            target: body,
+            target: body.into(),
         }
     }
 }
 
-impl<T> fmt::Display for EvalStep<T>
+impl<Lang> fmt::Display for EvalStep<Lang>
 where
-    T: Term,
+    Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{} -- {} --> {}", self.source, self.rule, self.target)
