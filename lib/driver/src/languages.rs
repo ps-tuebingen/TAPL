@@ -1,5 +1,5 @@
 use crate::{Driver, cli::Command, format::FormatMethod};
-use errors::{UndefinedLanguage, driver_error::DriverError};
+use errors::{NoTyping, UndefinedLanguage, driver_error::DriverError};
 use grammar::{LanguageDescribe, LanguageGrammar};
 use languages::{
     BoundedQuantification, Exceptions, Existential, FOmega, FOmegaSub, LambdaOmega, Recursive,
@@ -54,10 +54,6 @@ impl AllLanguages {
         input: String,
     ) -> Result<String, DriverError> {
         match self {
-            AllLanguages::UntypedArithmetic => {
-                driver.run_format::<UntypedArithmetic>(method, cmd, input)
-            }
-            AllLanguages::UntypedLambda => driver.run_format::<UntypedLambda>(method, cmd, input),
             AllLanguages::TypedArithmetic => {
                 driver.run_format::<TypedArithmetic>(method, cmd, input)
             }
@@ -74,6 +70,7 @@ impl AllLanguages {
             AllLanguages::LambdaOmega => driver.run_format::<LambdaOmega>(method, cmd, input),
             AllLanguages::FOmega => driver.run_format::<FOmega>(method, cmd, input),
             AllLanguages::FOmegaSub => driver.run_format::<FOmegaSub>(method, cmd, input),
+            _ => Err(NoTyping::new(&self.to_string()).into()),
         }
     }
 

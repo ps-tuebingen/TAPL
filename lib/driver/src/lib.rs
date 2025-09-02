@@ -50,10 +50,7 @@ impl Driver {
     ) -> Result<String, DriverError>
     where
         L: Language + LanguageDescribe,
-        L::Term: GroupParse
-            + LatexFmt
-            + Typecheck<Term = L::Term, Type = L::Type>
-            + Eval<Term = L::Term, Value = L::Value>,
+        L::Term: GroupParse + LatexFmt + Typecheck<Lang = L> + Eval<Lang = L>,
         L::Type: GroupParse + LatexFmt,
         L::Value: LatexFmt,
     {
@@ -103,13 +100,13 @@ impl Driver {
         (Some(parse_res), Some(check_res), Some(eval_res), None)
     }
 
-    pub fn parse<L>(&self, input: String) -> Result<Program<L::Term, L::Type>, DriverError>
+    pub fn parse<L>(&self, input: String) -> Result<Program<L>, DriverError>
     where
         L: Language,
         L::Term: GroupParse,
         L::Type: GroupParse,
     {
-        let parsed = <Program<L::Term, L::Type>>::parse(input)?;
+        let parsed = <Program<L>>::parse(input)?;
         Ok(parsed)
     }
 
@@ -127,10 +124,10 @@ impl Driver {
         Ok(method.format(&parsed))
     }
 
-    pub fn check<L>(&self, input: String) -> Result<Derivation<L::Term, L::Type>, DriverError>
+    pub fn check<L>(&self, input: String) -> Result<Derivation<L>, DriverError>
     where
         L: Language,
-        L::Term: GroupParse + Typecheck<Term = L::Term, Type = L::Type>,
+        L::Term: GroupParse + Typecheck<Lang = L>,
         L::Type: GroupParse,
     {
         let parsed = self.parse::<L>(input)?;
@@ -145,17 +142,17 @@ impl Driver {
     ) -> Result<String, DriverError>
     where
         L: Language,
-        L::Term: GroupParse + Typecheck<Term = L::Term, Type = L::Type> + LatexFmt,
+        L::Term: GroupParse + Typecheck<Lang = L> + LatexFmt,
         L::Type: GroupParse + LatexFmt,
     {
         let checked = self.check::<L>(input)?;
         Ok(method.format(&checked))
     }
 
-    pub fn eval<L>(&self, input: String) -> Result<EvalTrace<L::Term, L::Value>, DriverError>
+    pub fn eval<L>(&self, input: String) -> Result<EvalTrace<L>, DriverError>
     where
         L: Language,
-        L::Term: GroupParse + Eval<Term = L::Term, Value = L::Value>,
+        L::Term: GroupParse + Eval<Lang = L>,
         L::Type: GroupParse,
     {
         let parsed = self.parse::<L>(input)?;
@@ -170,7 +167,7 @@ impl Driver {
     ) -> Result<String, DriverError>
     where
         L: Language,
-        L::Term: GroupParse + Eval<Term = L::Term, Value = L::Value> + LatexFmt,
+        L::Term: GroupParse + Eval<Lang = L> + LatexFmt,
         L::Type: GroupParse,
         L::Value: LatexFmt,
     {
