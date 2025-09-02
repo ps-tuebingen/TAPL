@@ -7,23 +7,25 @@ use std::{
     path::PathBuf,
     process::{Command, Stdio},
 };
-use syntax::{terms::Term, types::Type};
+use syntax::language::Language;
 
-pub struct LatexTestFrac<'a, T, Ty>
+pub struct LatexTestFrac<'a, Lang>
 where
-    T: Term + LatexFmt,
-    Ty: Type + LatexFmt,
+    Lang: Language,
+    Lang::Term: LatexFmt,
+    Lang::Type: LatexFmt,
 {
     name: String,
-    deriv: &'a ProgramDerivation<T, Ty>,
+    deriv: &'a ProgramDerivation<Lang>,
 }
 
-impl<'a, T, Ty> LatexTestFrac<'a, T, Ty>
+impl<'a, Lang> LatexTestFrac<'a, Lang>
 where
-    T: Term + LatexFmt,
-    Ty: Type + LatexFmt,
+    Lang: Language,
+    Lang::Term: LatexFmt,
+    Lang::Type: LatexFmt,
 {
-    pub fn new(name: &str, deriv: &'a ProgramDerivation<T, Ty>) -> LatexTestFrac<'a, T, Ty> {
+    pub fn new(name: &str, deriv: &'a ProgramDerivation<Lang>) -> LatexTestFrac<'a, Lang> {
         LatexTestFrac {
             name: name.to_owned(),
             deriv,
@@ -31,10 +33,11 @@ where
     }
 }
 
-impl<'a, T, Ty> Test<()> for LatexTestFrac<'a, T, Ty>
+impl<'a, Lang> Test<()> for LatexTestFrac<'a, Lang>
 where
-    T: Term + LatexFmt,
-    Ty: Type + LatexFmt,
+    Lang: Language,
+    Lang::Term: LatexFmt,
+    Lang::Type: LatexFmt,
 {
     fn name(&self) -> String {
         format!(

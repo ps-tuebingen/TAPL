@@ -39,7 +39,7 @@ impl Normalize for Type {
 
 #[cfg(test)]
 mod check_tests {
-    use super::{Eval, Term};
+    use super::{Eval, References, Term};
     use syntax::{
         terms::{App, Assign, Deref, Lambda, Loc, Ref, Unit, Variable},
         types::{Reference, Unit as UnitTy},
@@ -83,7 +83,7 @@ mod check_tests {
 
     #[test]
     fn eval_store() {
-        let term: Term = App::seq(
+        let term: Term = App::<References>::seq(
             Assign::new(
                 Ref::new(Unit::new()),
                 App::new(

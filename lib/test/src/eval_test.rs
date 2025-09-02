@@ -1,24 +1,24 @@
 use super::{test::Test, test_result::TestResult};
 use eval::{Eval, eval_main};
-use syntax::{program::Program, terms::Term, types::Type};
+use syntax::{language::Language, program::Program, terms::Term, types::Type};
 use trace::EvalTrace;
 
-pub struct EvalTest<T, Ty>
+pub struct EvalTest<Lang>
 where
-    T: Term + Eval<Term = T>,
-    Ty: Type,
+    Lang: Language,
+    Lang::Term: Eval<Lang = Lang>,
 {
     name: String,
     expected: String,
-    prog: Program<T, Ty>,
+    prog: Program<Lang>,
 }
 
-impl<T, Ty> EvalTest<T, Ty>
+impl<Lang> EvalTest<Lang>
 where
-    T: Term + Eval<Term = T>,
-    Ty: Type,
+    Lang: Language,
+    Lang::Term: Eval<Lang = Lang>,
 {
-    pub fn new(name: &str, prog: Program<T, Ty>, exp: &str) -> EvalTest<T, Ty> {
+    pub fn new(name: &str, prog: Program<Lang>, exp: &str) -> EvalTest<Lang> {
         EvalTest {
             name: name.to_owned(),
             prog,
@@ -27,16 +27,16 @@ where
     }
 }
 
-impl<T, Ty> Test<EvalTrace<T, T::Value>> for EvalTest<T, Ty>
+impl<Lang> Test<EvalTrace<Lang>> for EvalTest<Lang>
 where
-    T: Term + Eval<Term = T>,
-    Ty: Type,
+    Lang: Language,
+    Lang::Term: Eval<Lang = Lang>,
 {
     fn name(&self) -> String {
         format!("Evaluating {}", self.name)
     }
 
-    fn run(&self) -> TestResult<EvalTrace<T, T::Value>> {
+    fn run(&self) -> TestResult<EvalTrace<Lang>> {
         let evaled = match eval_main(self.prog.clone()) {
             Ok(v) => v,
             Err(err) => return TestResult::from_err(err),

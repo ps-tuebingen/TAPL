@@ -1,24 +1,26 @@
 use super::{test::Test, test_result::TestResult};
 use parser::{GroupParse, Parse};
 use std::marker::PhantomData;
-use syntax::{program::Program, terms::Term, types::Type};
+use syntax::{language::Language, program::Program};
 
-pub struct ReparseTest<T, Ty>
+pub struct ReparseTest<Lang>
 where
-    T: Term + Parse<LeftRecArg = ()>,
-    Ty: Type + Parse<LeftRecArg = ()>,
+    Lang: Language,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
     name: String,
     content: String,
-    phantom: PhantomData<Program<T, Ty>>,
+    phantom: PhantomData<Program<Lang>>,
 }
 
-impl<T, Ty> ReparseTest<T, Ty>
+impl<Lang> ReparseTest<Lang>
 where
-    T: Term + Parse<LeftRecArg = ()>,
-    Ty: Type + Parse<LeftRecArg = ()>,
+    Lang: Language,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
-    pub fn new(name: &str, prog: &Program<T, Ty>) -> ReparseTest<T, Ty> {
+    pub fn new(name: &str, prog: &Program<Lang>) -> ReparseTest<Lang> {
         ReparseTest {
             name: name.to_owned(),
             content: prog.to_string(),
@@ -27,17 +29,18 @@ where
     }
 }
 
-impl<T, Ty> Test<()> for ReparseTest<T, Ty>
+impl<Lang> Test<()> for ReparseTest<Lang>
 where
-    T: Term + GroupParse,
-    Ty: Type + GroupParse,
+    Lang: Language,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
     fn name(&self) -> String {
         format!("Reparsing {}", self.name)
     }
 
     fn run(&self) -> TestResult<()> {
-        match Program::<T, Ty>::parse(self.content.clone()) {
+        match Program::<Lang>::parse(self.content.clone()) {
             Ok(_) => TestResult::Success(()),
             Err(err) => TestResult::from_err(err),
         }

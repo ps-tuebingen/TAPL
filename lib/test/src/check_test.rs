@@ -2,44 +2,42 @@ use super::{test::Test, test_result::TestResult};
 use check::Typecheck;
 use derivations::ProgramDerivation;
 use std::marker::PhantomData;
-use syntax::{program::Program, terms::Term, types::TypeGroup};
+use syntax::{language::Language, program::Program, terms::Term, types::TypeGroup};
 
-pub struct CheckTest<T, Ty>
+pub struct CheckTest<Lang>
 where
-    T: Term + Typecheck<Term = T, Type = Ty>,
-    Ty: TypeGroup,
+    Lang: Language,
+    Lang::Term: Typecheck<Lang = Lang>,
 {
     name: String,
-    prog: Program<T, Ty>,
+    prog: Program<Lang>,
     expected: String,
-    phantom: PhantomData<T>,
 }
 
-impl<T, Ty> CheckTest<T, Ty>
+impl<Lang> CheckTest<Lang>
 where
-    T: Term + Typecheck<Term = T, Type = Ty>,
-    Ty: TypeGroup,
+    Lang: Language,
+    Lang::Term: Typecheck<Lang = Lang>,
 {
-    pub fn new(name: &str, prog: Program<T, Ty>, exp: &str) -> CheckTest<T, Ty> {
+    pub fn new(name: &str, prog: Program<Lang>, exp: &str) -> CheckTest<Lang> {
         CheckTest {
             name: name.to_owned(),
             prog,
             expected: exp.to_owned(),
-            phantom: PhantomData,
         }
     }
 }
 
-impl<T, Ty> Test<ProgramDerivation<T, T::Type>> for CheckTest<T, Ty>
+impl<Lang> Test<ProgramDerivation<Lang>> for CheckTest<Lang>
 where
-    T: Term + Typecheck<Term = T, Type = Ty>,
-    Ty: TypeGroup,
+    Lang: Language,
+    Lang::Term: Typecheck<Lang = Lang>,
 {
     fn name(&self) -> String {
         format!("Checking {}", self.name)
     }
 
-    fn run(&self) -> TestResult<ProgramDerivation<T, Ty>> {
+    fn run(&self) -> TestResult<ProgramDerivation<Lang>> {
         let checked = match self.prog.check_start() {
             Ok(c) => c,
             Err(err) => return TestResult::from_err(err),

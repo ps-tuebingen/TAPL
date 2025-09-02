@@ -7,23 +7,25 @@ use std::{
     path::PathBuf,
     process::{Command, Stdio},
 };
-use syntax::{terms::Term, types::Type};
+use syntax::{language::Language, terms::Term, types::Type};
 
-pub struct LatexTestBuss<'a, T, Ty>
+pub struct LatexTestBuss<'a, Lang>
 where
-    T: Term + LatexFmt,
-    Ty: Type + LatexFmt,
+    Lang: Language,
+    Lang::Term: LatexFmt,
+    Lang::Type: LatexFmt,
 {
     name: String,
-    deriv: &'a ProgramDerivation<T, Ty>,
+    deriv: &'a ProgramDerivation<Lang>,
 }
 
-impl<'a, T, Ty> LatexTestBuss<'a, T, Ty>
+impl<'a, Lang> LatexTestBuss<'a, Lang>
 where
-    T: Term + LatexFmt,
-    Ty: Type + LatexFmt,
+    Lang: Language,
+    Lang::Term: LatexFmt,
+    Lang::Type: LatexFmt,
 {
-    pub fn new(name: &str, deriv: &'a ProgramDerivation<T, Ty>) -> LatexTestBuss<'a, T, Ty> {
+    pub fn new(name: &str, deriv: &'a ProgramDerivation<Lang>) -> LatexTestBuss<'a, Lang> {
         LatexTestBuss {
             name: name.to_owned(),
             deriv,
@@ -31,10 +33,11 @@ where
     }
 }
 
-impl<'a, T, Ty> Test<()> for LatexTestBuss<'a, T, Ty>
+impl<'a, Lang> Test<()> for LatexTestBuss<'a, Lang>
 where
-    T: Term + LatexFmt,
-    Ty: Type + LatexFmt,
+    Lang: Language,
+    Lang::Term: LatexFmt,
+    Lang::Type: LatexFmt,
 {
     fn name(&self) -> String {
         format!(

@@ -1,24 +1,26 @@
 use super::{test::Test, test_result::TestResult};
 use parser::{GroupParse, Parse};
 use std::marker::PhantomData;
-use syntax::{program::Program, terms::Term, types::Type};
+use syntax::{language::Language, program::Program, terms::Term, types::Type};
 
-pub struct ParseTest<T, Ty>
+pub struct ParseTest<Lang>
 where
-    T: Term + Parse<LeftRecArg = ()>,
-    Ty: Type + Parse<LeftRecArg = ()>,
+    Lang: Language,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
     name: String,
     contents: String,
-    phantom: PhantomData<Program<T, Ty>>,
+    phantom: PhantomData<Program<Lang>>,
 }
 
-impl<T, Ty> ParseTest<T, Ty>
+impl<Lang> ParseTest<Lang>
 where
-    T: Term + Parse<LeftRecArg = ()>,
-    Ty: Type + Parse<LeftRecArg = ()>,
+    Lang: Language,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
-    pub fn new(name: &str, contents: &str) -> ParseTest<T, Ty> {
+    pub fn new(name: &str, contents: &str) -> ParseTest<Lang> {
         ParseTest {
             name: name.to_owned(),
             contents: contents.to_owned(),
@@ -27,17 +29,18 @@ where
     }
 }
 
-impl<T, Ty> Test<Program<T, Ty>> for ParseTest<T, Ty>
+impl<Lang> Test<Program<Lang>> for ParseTest<Lang>
 where
-    T: Term + GroupParse,
-    Ty: Type + GroupParse,
+    Lang: Language,
+    Lang::Term: GroupParse,
+    Lang::Type: GroupParse,
 {
     fn name(&self) -> String {
         format!("Parsing {}", self.name)
     }
 
-    fn run(&self) -> TestResult<Program<T, Ty>> {
-        match Program::<T, Ty>::parse(self.contents.clone()) {
+    fn run(&self) -> TestResult<Program<Lang>> {
+        match Program::<Lang>::parse(self.contents.clone()) {
             Ok(t) => TestResult::Success(t),
             Err(err) => TestResult::from_err(err),
         }

@@ -3,5 +3,5 @@ use languages::untyped_lambda::UntypedLambda;
 use test_utils::testsuite::TestSuite;
 
 fn main() -> Result<(), TestError> {
-    UntypedLambda.run_report()
+    UntypedLambda.run_untyped()
 }

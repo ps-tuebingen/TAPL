@@ -27,7 +27,7 @@ where
         }
     }
 
-    pub fn seq<T1, T2, Ty>(t1: T1, t2: T2) -> App<Lang>
+    pub fn seq<T1, T2>(t1: T1, t2: T2) -> App<Lang>
     where
         T1: Into<Lang::Term>,
         T2: Into<Lang::Term>,

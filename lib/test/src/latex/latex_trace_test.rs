@@ -6,24 +6,26 @@ use std::{
     path::PathBuf,
     process::{Command, Stdio},
 };
-use syntax::{terms::Term, values::Value};
+use syntax::language::Language;
 use trace::EvalTrace;
 
-pub struct LatexTestTrace<'a, T, V>
+pub struct LatexTestTrace<'a, Lang>
 where
-    T: Term + LatexFmt,
-    V: Value + LatexFmt,
+    Lang: Language,
+    Lang::Term: LatexFmt,
+    Lang::Value: LatexFmt,
 {
     name: String,
-    trace: &'a EvalTrace<T, V>,
+    trace: &'a EvalTrace<Lang>,
 }
 
-impl<'a, T, V> LatexTestTrace<'a, T, V>
+impl<'a, Lang> LatexTestTrace<'a, Lang>
 where
-    T: Term + LatexFmt,
-    V: Value + LatexFmt,
+    Lang: Language,
+    Lang::Term: LatexFmt,
+    Lang::Value: LatexFmt,
 {
-    pub fn new(name: &str, tr: &'a EvalTrace<T, V>) -> LatexTestTrace<'a, T, V> {
+    pub fn new(name: &str, tr: &'a EvalTrace<Lang>) -> LatexTestTrace<'a, Lang> {
         LatexTestTrace {
             name: name.to_owned(),
             trace: tr,
@@ -31,10 +33,11 @@ where
     }
 }
 
-impl<'a, T, V> Test<()> for LatexTestTrace<'a, T, V>
+impl<'a, Lang> Test<()> for LatexTestTrace<'a, Lang>
 where
-    T: Term + LatexFmt,
-    V: Value + LatexFmt,
+    Lang: Language,
+    Lang::Term: LatexFmt,
+    Lang::Value: LatexFmt,
 {
     fn name(&self) -> String {
         format!("Generating Latex for Evaluation Trace of {}", self.name)
