@@ -1,4 +1,4 @@
-use super::{terms::Term, types::Type};
+use super::{BoundedQuantification, terms::Term, types::Type};
 use errors::{UnexpectedRule, parse_error::ParserError};
 use parser::{
     GroupParse, Parse, Rule, pair_to_n_inner,
@@ -49,7 +49,9 @@ impl GroupParse for Type {
 
     fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Self, ParserError> {
         match p.as_rule() {
-            Rule::const_type => Ok(StringTy::new().with_nat().from_pair(p)?),
+            Rule::const_type => Ok(StringTy::<BoundedQuantification>::new()
+                .with_nat()
+                .from_pair(p)?),
             Rule::top_type_star | Rule::top_type => Ok(Top::new_star().into()),
             Rule::forall_bounded_type => Ok(ForallBounded::from_pair(p, ())?.into()),
             Rule::forall_unbounded_type => Ok(ForallUnbounded::from_pair(p, ())?

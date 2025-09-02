@@ -1,11 +1,14 @@
-use crate::{GroupParse, ParsableLanguage, Rule};
+use crate::{GroupParse, Rule};
 use errors::{UnknownKeyword, parse_error::ParserError};
 use pest::iterators::Pair;
-use syntax::terms::{False, Num, True, Unit};
+use syntax::{
+    language::Language,
+    terms::{False, Num, True, Unit},
+};
 
 pub struct StringTerm<Lang>
 where
-    Lang: ParsableLanguage,
+    Lang: Language,
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
 {
@@ -17,7 +20,7 @@ where
 
 impl<Lang> StringTerm<Lang>
 where
-    Lang: ParsableLanguage,
+    Lang: Language,
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
 {
@@ -116,7 +119,7 @@ where
 
 impl<Lang> Default for StringTerm<Lang>
 where
-    Lang: ParsableLanguage,
+    Lang: Language,
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
 {

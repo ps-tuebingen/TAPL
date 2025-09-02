@@ -1,14 +1,15 @@
-use crate::{GroupParse, ParsableLanguage, Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, Parse, Rule, pair_to_n_inner};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
 use syntax::{
     kinds::Kind,
+    language::Language,
     types::{OpLambda, OpLambdaSub, Top},
 };
 
 pub struct OpLambdaUnbounded<Lang>
 where
-    Lang: ParsableLanguage,
+    Lang: Language,
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
 {
@@ -18,7 +19,7 @@ where
 
 impl<Lang> OpLambdaUnbounded<Lang>
 where
-    Lang: ParsableLanguage,
+    Lang: Language,
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
 {
@@ -36,7 +37,7 @@ where
 
 impl<Lang> Parse for OpLambdaUnbounded<Lang>
 where
-    Lang: ParsableLanguage,
+    Lang: Language,
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
 {
@@ -55,7 +56,7 @@ where
 
 impl<Lang> From<OpLambdaUnbounded<Lang>> for OpLambda<Lang>
 where
-    Lang: ParsableLanguage,
+    Lang: Language,
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
 {
@@ -66,7 +67,7 @@ where
 
 impl<Lang> From<OpLambdaUnbounded<Lang>> for OpLambdaSub<Lang>
 where
-    Lang: ParsableLanguage,
+    Lang: Language,
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
     Top<Lang>: Into<Lang::Type>,

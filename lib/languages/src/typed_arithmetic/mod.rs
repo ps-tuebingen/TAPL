@@ -7,6 +7,7 @@ pub mod values;
 
 use crate::Language;
 use grammar::{GrammarDescribe, LanguageDescribe, LanguageGrammar};
+use std::fmt;
 use terms::Term;
 use types::Type;
 use values::Value;
@@ -31,5 +32,11 @@ impl LanguageDescribe for TypedArithmetic {
             value_grammar: Value::grammar(),
             include_kinds: false,
         }
+    }
+}
+
+impl fmt::Display for TypedArithmetic {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        f.write_str("typed-arithmetic")
     }
 }

@@ -1,12 +1,12 @@
-use crate::{GroupParse, ParsableLanguage, Parse, Rule};
+use crate::{GroupParse, Parse, Rule};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
 use std::marker::PhantomData;
-use syntax::types::Top;
+use syntax::{language::Language, types::Top};
 
 pub struct TopStar<Lang>
 where
-    Lang: ParsableLanguage,
+    Lang: Language,
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
 {
@@ -15,7 +15,7 @@ where
 
 impl<Lang> TopStar<Lang>
 where
-    Lang: ParsableLanguage,
+    Lang: Language,
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
 {
@@ -27,7 +27,7 @@ where {
 
 impl<Lang> Parse for TopStar<Lang>
 where
-    Lang: ParsableLanguage,
+    Lang: Language,
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
 {
@@ -44,7 +44,7 @@ where
 
 impl<Lang> From<TopStar<Lang>> for Top<Lang>
 where
-    Lang: ParsableLanguage,
+    Lang: Language,
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
 {

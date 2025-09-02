@@ -1,4 +1,4 @@
-use super::{terms::Term, types::Type};
+use super::{SystemF, terms::Term};
 use errors::ValueMismatch;
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
@@ -7,19 +7,17 @@ use syntax::values::{Lambda, TyLambda, Value as ValueTrait, ValueGroup};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum Value {
-    Lambda(Lambda<Term, Type>),
-    TyLambda(TyLambda<Term>),
+    Lambda(Lambda<SystemF>),
+    TyLambda(TyLambda<SystemF>),
 }
 
 impl ValueTrait for Value {
+    type Lang = SystemF;
     type Term = Term;
 }
 
 impl ValueGroup for Value {
-    type Term = Term;
-    type Type = Type;
-
-    fn into_lambda(self) -> Result<Lambda<Term, Type>, ValueMismatch> {
+    fn into_lambda(self) -> Result<Lambda<SystemF>, ValueMismatch> {
         if let Value::Lambda(lam) = self {
             Ok(lam)
         } else {
@@ -27,7 +25,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_tylambda(self) -> Result<TyLambda<Term>, ValueMismatch> {
+    fn into_tylambda(self) -> Result<TyLambda<SystemF>, ValueMismatch> {
         if let Value::TyLambda(lam) = self {
             Ok(lam)
         } else {
@@ -47,7 +45,7 @@ impl From<Value> for Term {
 
 impl GrammarDescribe for Value {
     fn grammar() -> Grammar {
-        Grammar::value(vec![Lambda::<Term, Type>::rule(), TyLambda::<Term>::rule()])
+        Grammar::value(vec![Lambda::<SystemF>::rule(), TyLambda::<SystemF>::rule()])
     }
 }
 
@@ -69,14 +67,14 @@ impl LatexFmt for Value {
     }
 }
 
-impl From<Lambda<Term, Type>> for Value {
-    fn from(lam: Lambda<Term, Type>) -> Value {
+impl From<Lambda<SystemF>> for Value {
+    fn from(lam: Lambda<SystemF>) -> Value {
         Value::Lambda(lam)
     }
 }
 
-impl From<TyLambda<Term>> for Value {
-    fn from(tylam: TyLambda<Term>) -> Value {
+impl From<TyLambda<SystemF>> for Value {
+    fn from(tylam: TyLambda<SystemF>) -> Value {
         Value::TyLambda(tylam)
     }
 }

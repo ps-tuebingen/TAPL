@@ -1,4 +1,4 @@
-use super::{terms::Term, types::Type};
+use super::{BoundedQuantification, terms::Term};
 use errors::ValueMismatch;
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
@@ -7,22 +7,20 @@ use syntax::values::{Lambda, LambdaSub, Num, Pack, Record, Value as ValueTrait, 
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Value {
-    Lambda(Lambda<Term, Type>),
-    LambdaSub(LambdaSub<Term, Type>),
-    Pack(Pack<Value, Type>),
-    Num(Num<Term>),
-    Record(Record<Value>),
+    Lambda(Lambda<BoundedQuantification>),
+    LambdaSub(LambdaSub<BoundedQuantification>),
+    Pack(Pack<BoundedQuantification>),
+    Num(Num<BoundedQuantification>),
+    Record(Record<BoundedQuantification>),
 }
 
 impl ValueTrait for Value {
+    type Lang = BoundedQuantification;
     type Term = Term;
 }
 
 impl ValueGroup for Value {
-    type Term = Term;
-    type Type = Type;
-
-    fn into_lambda(self) -> Result<Lambda<Term, Type>, ValueMismatch> {
+    fn into_lambda(self) -> Result<Lambda<BoundedQuantification>, ValueMismatch> {
         if let Value::Lambda(lam) = self {
             Ok(lam)
         } else {
@@ -30,7 +28,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_lambdasub(self) -> Result<LambdaSub<Term, Type>, ValueMismatch> {
+    fn into_lambdasub(self) -> Result<LambdaSub<BoundedQuantification>, ValueMismatch> {
         if let Value::LambdaSub(lam) = self {
             Ok(lam)
         } else {
@@ -38,7 +36,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_pack(self) -> Result<Pack<Value, Type>, ValueMismatch> {
+    fn into_pack(self) -> Result<Pack<BoundedQuantification>, ValueMismatch> {
         if let Value::Pack(pack) = self {
             Ok(pack)
         } else {
@@ -46,7 +44,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_num(self) -> Result<Num<Term>, ValueMismatch> {
+    fn into_num(self) -> Result<Num<BoundedQuantification>, ValueMismatch> {
         if let Value::Num(num) = self {
             Ok(num)
         } else {
@@ -54,7 +52,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_record(self) -> Result<Record<Value>, ValueMismatch> {
+    fn into_record(self) -> Result<Record<BoundedQuantification>, ValueMismatch> {
         if let Value::Record(rec) = self {
             Ok(rec)
         } else {
@@ -66,11 +64,11 @@ impl ValueGroup for Value {
 impl GrammarDescribe for Value {
     fn grammar() -> Grammar {
         Grammar::value(vec![
-            Lambda::<Term, Type>::rule(),
-            LambdaSub::<Term, Type>::rule(),
-            Pack::<Value, Type>::rule(),
-            Num::<Term>::rule(),
-            Record::<Value>::rule(),
+            Lambda::<BoundedQuantification>::rule(),
+            LambdaSub::<BoundedQuantification>::rule(),
+            Pack::<BoundedQuantification>::rule(),
+            Num::<BoundedQuantification>::rule(),
+            Record::<BoundedQuantification>::rule(),
         ])
     }
 }
@@ -111,32 +109,32 @@ impl LatexFmt for Value {
     }
 }
 
-impl From<Lambda<Term, Type>> for Value {
-    fn from(lam: Lambda<Term, Type>) -> Value {
+impl From<Lambda<BoundedQuantification>> for Value {
+    fn from(lam: Lambda<BoundedQuantification>) -> Value {
         Value::Lambda(lam)
     }
 }
 
-impl From<Num<Term>> for Value {
-    fn from(num: Num<Term>) -> Value {
+impl From<Num<BoundedQuantification>> for Value {
+    fn from(num: Num<BoundedQuantification>) -> Value {
         Value::Num(num)
     }
 }
 
-impl From<LambdaSub<Term, Type>> for Value {
-    fn from(lam: LambdaSub<Term, Type>) -> Value {
+impl From<LambdaSub<BoundedQuantification>> for Value {
+    fn from(lam: LambdaSub<BoundedQuantification>) -> Value {
         Value::LambdaSub(lam)
     }
 }
 
-impl From<Pack<Value, Type>> for Value {
-    fn from(pack: Pack<Value, Type>) -> Value {
+impl From<Pack<BoundedQuantification>> for Value {
+    fn from(pack: Pack<BoundedQuantification>) -> Value {
         Value::Pack(pack)
     }
 }
 
-impl From<Record<Value>> for Value {
-    fn from(rec: Record<Value>) -> Value {
+impl From<Record<BoundedQuantification>> for Value {
+    fn from(rec: Record<BoundedQuantification>) -> Value {
         Value::Record(rec)
     }
 }

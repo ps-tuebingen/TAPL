@@ -7,6 +7,7 @@ pub mod values;
 
 use crate::Language;
 use grammar::{GrammarDescribe, LanguageDescribe, LanguageGrammar};
+use std::fmt;
 use terms::Term;
 use types::Type;
 use values::Value;
@@ -32,5 +33,11 @@ impl LanguageDescribe for LambdaOmega {
             value_grammar: Value::grammar(),
             include_kinds: true,
         }
+    }
+}
+
+impl fmt::Display for LambdaOmega {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        f.write_str("lambda-omega")
     }
 }

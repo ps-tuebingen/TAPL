@@ -1,12 +1,9 @@
-use check::Typecheck;
-use derivations::{Derivation, TypingDerivation};
-use errors::check_error::CheckError;
+use super::UntypedArithmetic;
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
 use syntax::{
     TypeVar, Var,
-    env::Environment,
     subst::{SubstTerm, SubstType},
     terms::{False, If, IsZero, Num, Pred, Succ, True},
     untyped::Untyped,
@@ -14,13 +11,13 @@ use syntax::{
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Term {
-    True(True<Term>),
-    False(False<Term>),
-    If(If<Term>),
-    Num(Num<Term>),
-    Succ(Succ<Term>),
-    Pred(Pred<Term>),
-    IsZero(IsZero<Term>),
+    True(True<UntypedArithmetic>),
+    False(False<UntypedArithmetic>),
+    If(If<UntypedArithmetic>),
+    Num(Num<UntypedArithmetic>),
+    Succ(Succ<UntypedArithmetic>),
+    Pred(Pred<UntypedArithmetic>),
+    IsZero(IsZero<UntypedArithmetic>),
 }
 
 impl syntax::terms::Term for Term {}
@@ -28,40 +25,30 @@ impl syntax::terms::Term for Term {}
 impl GrammarDescribe for Term {
     fn grammar() -> Grammar {
         Grammar::term(vec![
-            True::<Term>::rule(),
-            False::<Term>::rule(),
-            If::<Term>::rule(),
-            Num::<Term>::rule(),
-            Succ::<Term>::rule(),
-            Pred::<Term>::rule(),
-            IsZero::<Term>::rule(),
+            True::<UntypedArithmetic>::rule(),
+            False::<UntypedArithmetic>::rule(),
+            If::<UntypedArithmetic>::rule(),
+            Num::<UntypedArithmetic>::rule(),
+            Succ::<UntypedArithmetic>::rule(),
+            Pred::<UntypedArithmetic>::rule(),
+            IsZero::<UntypedArithmetic>::rule(),
         ])
     }
 }
 
-impl SubstTerm<Term> for Term {
+impl SubstTerm for Term {
+    type Lang = UntypedArithmetic;
     type Target = Term;
     fn subst(self, _: &Var, _: &Term) -> Self::Target {
         self
     }
 }
 
-impl SubstType<Untyped<Term>> for Term {
+impl SubstType for Term {
     type Target = Self;
-    fn subst_type(self, _: &TypeVar, _: &Untyped<Term>) -> Self::Target {
+    type Lang = UntypedArithmetic;
+    fn subst_type(self, _: &TypeVar, _: &Untyped<UntypedArithmetic>) -> Self::Target {
         self
-    }
-}
-
-impl Typecheck for Term {
-    type Term = Term;
-    type Type = Untyped<Term>;
-
-    fn check(
-        &self,
-        _: Environment<Untyped<Term>>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
-        Ok(TypingDerivation::empty(self.clone()).into())
     }
 }
 
@@ -93,44 +80,44 @@ impl LatexFmt for Term {
     }
 }
 
-impl From<True<Term>> for Term {
-    fn from(tru: True<Term>) -> Term {
+impl From<True<UntypedArithmetic>> for Term {
+    fn from(tru: True<UntypedArithmetic>) -> Term {
         Term::True(tru)
     }
 }
 
-impl From<False<Term>> for Term {
-    fn from(fls: False<Term>) -> Term {
+impl From<False<UntypedArithmetic>> for Term {
+    fn from(fls: False<UntypedArithmetic>) -> Term {
         Term::False(fls)
     }
 }
 
-impl From<If<Term>> for Term {
-    fn from(ift: If<Term>) -> Term {
+impl From<If<UntypedArithmetic>> for Term {
+    fn from(ift: If<UntypedArithmetic>) -> Term {
         Term::If(ift)
     }
 }
 
-impl From<Num<Term>> for Term {
-    fn from(num: Num<Term>) -> Term {
+impl From<Num<UntypedArithmetic>> for Term {
+    fn from(num: Num<UntypedArithmetic>) -> Term {
         Term::Num(num)
     }
 }
 
-impl From<Succ<Term>> for Term {
-    fn from(succ: Succ<Term>) -> Term {
+impl From<Succ<UntypedArithmetic>> for Term {
+    fn from(succ: Succ<UntypedArithmetic>) -> Term {
         Term::Succ(succ)
     }
 }
 
-impl From<Pred<Term>> for Term {
-    fn from(pred: Pred<Term>) -> Term {
+impl From<Pred<UntypedArithmetic>> for Term {
+    fn from(pred: Pred<UntypedArithmetic>) -> Term {
         Term::Pred(pred)
     }
 }
 
-impl From<IsZero<Term>> for Term {
-    fn from(isz: IsZero<Term>) -> Term {
+impl From<IsZero<UntypedArithmetic>> for Term {
+    fn from(isz: IsZero<UntypedArithmetic>) -> Term {
         Term::IsZero(isz)
     }
 }

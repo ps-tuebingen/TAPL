@@ -1,4 +1,4 @@
-use super::{terms::Term, types::Type};
+use super::{Existential, terms::Term};
 use errors::ValueMismatch;
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
@@ -9,24 +9,22 @@ use syntax::values::{
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Value {
-    Unit(Unit<Term>),
-    Lambda(Lambda<Term, Type>),
-    Pack(Pack<Value, Type>),
-    Num(Num<Term>),
-    Record(Record<Value>),
-    True(True<Term>),
-    False(False<Term>),
+    Unit(Unit<Existential>),
+    Lambda(Lambda<Existential>),
+    Pack(Pack<Existential>),
+    Num(Num<Existential>),
+    Record(Record<Existential>),
+    True(True<Existential>),
+    False(False<Existential>),
 }
 
 impl ValueTrait for Value {
+    type Lang = Existential;
     type Term = Term;
 }
 
 impl ValueGroup for Value {
-    type Term = Term;
-    type Type = Type;
-
-    fn into_lambda(self) -> Result<Lambda<Term, Type>, ValueMismatch> {
+    fn into_lambda(self) -> Result<Lambda<Existential>, ValueMismatch> {
         if let Value::Lambda(lam) = self {
             Ok(lam)
         } else {
@@ -34,7 +32,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_pack(self) -> Result<Pack<Value, Type>, ValueMismatch> {
+    fn into_pack(self) -> Result<Pack<Existential>, ValueMismatch> {
         if let Value::Pack(pack) = self {
             Ok(pack)
         } else {
@@ -42,7 +40,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_num(self) -> Result<Num<Term>, ValueMismatch> {
+    fn into_num(self) -> Result<Num<Existential>, ValueMismatch> {
         if let Value::Num(num) = self {
             Ok(num)
         } else {
@@ -50,7 +48,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_record(self) -> Result<Record<Value>, ValueMismatch> {
+    fn into_record(self) -> Result<Record<Existential>, ValueMismatch> {
         if let Value::Record(rec) = self {
             Ok(rec)
         } else {
@@ -58,7 +56,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_true(self) -> Result<True<Term>, ValueMismatch> {
+    fn into_true(self) -> Result<True<Existential>, ValueMismatch> {
         if let Value::True(tru) = self {
             Ok(tru)
         } else {
@@ -66,7 +64,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_false(self) -> Result<False<Term>, ValueMismatch> {
+    fn into_false(self) -> Result<False<Existential>, ValueMismatch> {
         if let Value::False(fls) = self {
             Ok(fls)
         } else {
@@ -78,13 +76,13 @@ impl ValueGroup for Value {
 impl GrammarDescribe for Value {
     fn grammar() -> Grammar {
         Grammar::value(vec![
-            Unit::<Term>::rule(),
-            Lambda::<Term, Type>::rule(),
-            Pack::<Value, Type>::rule(),
-            Num::<Term>::rule(),
-            Record::<Value>::rule(),
-            True::<Term>::rule(),
-            False::<Term>::rule(),
+            Unit::<Existential>::rule(),
+            Lambda::<Existential>::rule(),
+            Pack::<Existential>::rule(),
+            Num::<Existential>::rule(),
+            Record::<Existential>::rule(),
+            True::<Existential>::rule(),
+            False::<Existential>::rule(),
         ])
     }
 }
@@ -131,39 +129,39 @@ impl LatexFmt for Value {
     }
 }
 
-impl From<Lambda<Term, Type>> for Value {
-    fn from(lam: Lambda<Term, Type>) -> Value {
+impl From<Lambda<Existential>> for Value {
+    fn from(lam: Lambda<Existential>) -> Value {
         Value::Lambda(lam)
     }
 }
-impl From<Unit<Term>> for Value {
-    fn from(u: Unit<Term>) -> Value {
+impl From<Unit<Existential>> for Value {
+    fn from(u: Unit<Existential>) -> Value {
         Value::Unit(u)
     }
 }
-impl From<True<Term>> for Value {
-    fn from(tru: True<Term>) -> Value {
+impl From<True<Existential>> for Value {
+    fn from(tru: True<Existential>) -> Value {
         Value::True(tru)
     }
 }
-impl From<False<Term>> for Value {
-    fn from(fls: False<Term>) -> Value {
+impl From<False<Existential>> for Value {
+    fn from(fls: False<Existential>) -> Value {
         Value::False(fls)
     }
 }
-impl From<Num<Term>> for Value {
-    fn from(num: Num<Term>) -> Value {
+impl From<Num<Existential>> for Value {
+    fn from(num: Num<Existential>) -> Value {
         Value::Num(num)
     }
 }
-impl From<Record<Value>> for Value {
-    fn from(rec: Record<Value>) -> Value {
+impl From<Record<Existential>> for Value {
+    fn from(rec: Record<Existential>) -> Value {
         Value::Record(rec)
     }
 }
 
-impl From<Pack<Value, Type>> for Value {
-    fn from(pack: Pack<Value, Type>) -> Value {
+impl From<Pack<Existential>> for Value {
+    fn from(pack: Pack<Existential>) -> Value {
         Value::Pack(pack)
     }
 }

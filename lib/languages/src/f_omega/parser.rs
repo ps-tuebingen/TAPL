@@ -1,4 +1,4 @@
-use super::{terms::Term, types::Type};
+use super::{FOmega, terms::Term, types::Type};
 use errors::{UnexpectedRule, parse_error::ParserError};
 use parser::{
     GroupParse, Parse, Rule, pair_to_n_inner,
@@ -20,7 +20,7 @@ impl GroupParse for Term {
 
     fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Self, ParserError> {
         match p.as_rule() {
-            Rule::const_term => Ok(StringTerm::new()
+            Rule::const_term => Ok(StringTerm::<FOmega>::new()
                 .with_true()
                 .with_false()
                 .with_unit()
@@ -64,7 +64,7 @@ impl GroupParse for Type {
     const RULE: Rule = Rule::r#type;
     fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Type, ParserError> {
         match p.as_rule() {
-            Rule::const_type => Ok(StringTy::new()
+            Rule::const_type => Ok(StringTy::<FOmega>::new()
                 .with_bool()
                 .with_unit()
                 .with_nat()

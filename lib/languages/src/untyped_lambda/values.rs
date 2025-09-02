@@ -1,27 +1,24 @@
-use super::terms::Term;
+use super::{UntypedLambda, terms::Term};
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
-use syntax::untyped::Untyped;
-use syntax::values::{UntypedLambda, Value as ValueTrait, ValueGroup};
+use syntax::values::{UntypedLambda as UntypedLambdaVal, Value as ValueTrait, ValueGroup};
 
 use std::fmt;
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Value {
-    Lambda(UntypedLambda<Term>),
+    Lambda(UntypedLambdaVal<UntypedLambda>),
 }
 
 impl ValueTrait for Value {
+    type Lang = UntypedLambda;
     type Term = Term;
 }
 
-impl ValueGroup for Value {
-    type Term = Term;
-    type Type = Untyped<Term>;
-}
+impl ValueGroup for Value {}
 
 impl GrammarDescribe for Value {
     fn grammar() -> Grammar {
-        Grammar::value(vec![UntypedLambda::<Term>::rule()])
+        Grammar::value(vec![UntypedLambdaVal::<UntypedLambda>::rule()])
     }
 }
 
@@ -49,8 +46,8 @@ impl From<Value> for Term {
     }
 }
 
-impl From<UntypedLambda<Term>> for Value {
-    fn from(lam: UntypedLambda<Term>) -> Value {
+impl From<UntypedLambdaVal<UntypedLambda>> for Value {
+    fn from(lam: UntypedLambdaVal<UntypedLambda>) -> Value {
         Value::Lambda(lam)
     }
 }

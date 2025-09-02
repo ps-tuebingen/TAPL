@@ -1,17 +1,13 @@
-use super::{terms::Term, types::Type};
+use super::{Subtypes, terms::Term, types::Type};
 use check::{Kindcheck, Normalize, Subtypecheck, Typecheck};
 use derivations::Derivation;
 use errors::check_error::CheckError;
 use syntax::{env::Environment, kinds::Kind};
 
 impl Typecheck for Term {
-    type Term = Term;
-    type Type = Type;
+    type Lang = Subtypes;
 
-    fn check(
-        &self,
-        env: Environment<Type>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
+    fn check(&self, env: Environment<Self::Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
         match self {
             Term::Var(var) => var.check(env),
             Term::Lambda(lam) => lam.check(env),
@@ -42,13 +38,13 @@ impl Typecheck for Term {
 }
 
 impl Subtypecheck for Type {
-    type Term = Term;
-    type Type = Type;
+    type Lang = Subtypes;
+
     fn check_subtype(
         &self,
         sup: &Self,
-        env: Environment<Type>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
+        env: Environment<Self::Lang>,
+    ) -> Result<Derivation<Self::Lang>, CheckError> {
         match self {
             Type::Top(top) => top.check_subtype(sup, env),
             Type::Bot(bot) => bot.check_subtype(sup, env),
@@ -66,14 +62,16 @@ impl Subtypecheck for Type {
     }
 }
 
-impl Kindcheck<Type> for Type {
-    fn check_kind(&self, _: Environment<Type>) -> Result<Kind, CheckError> {
+impl Kindcheck for Type {
+    type Lang = Subtypes;
+    fn check_kind(&self, _: Environment<Self::Lang>) -> Result<Kind, CheckError> {
         Ok(Kind::Star)
     }
 }
 
-impl Normalize<Type> for Type {
-    fn normalize(self, _: Environment<Type>) -> Type {
+impl Normalize for Type {
+    type Lang = Subtypes;
+    fn normalize(self, _: Environment<Self::Lang>) -> Type {
         self
     }
 }

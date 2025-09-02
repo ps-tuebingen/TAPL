@@ -1,3 +1,4 @@
+use super::Exceptions;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
@@ -10,23 +11,24 @@ use syntax::{
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Type {
-    Unit(Unit<Type>),
-    Nat(Nat<Type>),
-    Bool(Bool<Type>),
-    Fun(Fun<Type>),
+    Unit(Unit<Exceptions>),
+    Nat(Nat<Exceptions>),
+    Bool(Bool<Exceptions>),
+    Fun(Fun<Exceptions>),
 }
 
 impl TypeTrait for Type {}
 
 impl TypeGroup for Type {
-    fn into_unit(self) -> Result<Unit<Type>, TypeMismatch> {
+    type Lang = Exceptions;
+    fn into_unit(self) -> Result<Unit<Exceptions>, TypeMismatch> {
         if let Type::Unit(u) = self {
             Ok(u)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Unit".to_owned()))
         }
     }
-    fn into_nat(self) -> Result<Nat<Type>, TypeMismatch> {
+    fn into_nat(self) -> Result<Nat<Exceptions>, TypeMismatch> {
         if let Type::Nat(n) = self {
             Ok(n)
         } else {
@@ -34,7 +36,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_bool(self) -> Result<Bool<Type>, TypeMismatch> {
+    fn into_bool(self) -> Result<Bool<Exceptions>, TypeMismatch> {
         if let Type::Bool(b) = self {
             Ok(b)
         } else {
@@ -42,7 +44,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_fun(self) -> Result<Fun<Type>, TypeMismatch> {
+    fn into_fun(self) -> Result<Fun<Exceptions>, TypeMismatch> {
         if let Type::Fun(fun) = self {
             Ok(fun)
         } else {
@@ -54,46 +56,47 @@ impl TypeGroup for Type {
 impl GrammarDescribe for Type {
     fn grammar() -> Grammar {
         Grammar::ty(vec![
-            Unit::<Type>::rule(),
-            Nat::<Type>::rule(),
-            Bool::<Type>::rule(),
-            Fun::<Type>::rule(),
+            Unit::<Exceptions>::rule(),
+            Nat::<Exceptions>::rule(),
+            Bool::<Exceptions>::rule(),
+            Fun::<Exceptions>::rule(),
         ])
     }
 }
 
-impl From<Unit<Type>> for Type {
-    fn from(u: Unit<Type>) -> Type {
+impl From<Unit<Exceptions>> for Type {
+    fn from(u: Unit<Exceptions>) -> Type {
         Type::Unit(u)
     }
 }
 
-impl From<Nat<Type>> for Type {
-    fn from(nat: Nat<Type>) -> Type {
+impl From<Nat<Exceptions>> for Type {
+    fn from(nat: Nat<Exceptions>) -> Type {
         Type::Nat(nat)
     }
 }
 
-impl From<Bool<Type>> for Type {
-    fn from(b: Bool<Type>) -> Type {
+impl From<Bool<Exceptions>> for Type {
+    fn from(b: Bool<Exceptions>) -> Type {
         Type::Bool(b)
     }
 }
 
-impl From<Fun<Type>> for Type {
-    fn from(fun: Fun<Type>) -> Type {
+impl From<Fun<Exceptions>> for Type {
+    fn from(fun: Fun<Exceptions>) -> Type {
         Type::Fun(fun)
     }
 }
 
-impl SubstType<Self> for Type {
+impl SubstType for Type {
+    type Lang = Exceptions;
     type Target = Self;
     fn subst_type(self, v: &TypeVar, ty: &Self) -> Self::Target {
         match self {
-            Type::Unit(u) => u.subst_type(v, ty),
-            Type::Nat(n) => n.subst_type(v, ty),
-            Type::Bool(b) => b.subst_type(v, ty),
-            Type::Fun(f) => f.subst_type(v, ty),
+            Type::Unit(u) => u.subst_type(v, ty).into(),
+            Type::Nat(n) => n.subst_type(v, ty).into(),
+            Type::Bool(b) => b.subst_type(v, ty).into(),
+            Type::Fun(f) => f.subst_type(v, ty).into(),
         }
     }
 }

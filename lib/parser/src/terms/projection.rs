@@ -1,11 +1,11 @@
-use crate::{GroupParse, ParsableLanguage, Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, Parse, Rule, pair_to_n_inner};
 use errors::{UnknownKeyword, parse_error::ParserError};
 use pest::iterators::Pair;
-use syntax::terms::Projection;
+use syntax::{language::Language, terms::Projection};
 
 impl<Lang> Parse for Projection<Lang>
 where
-    Lang: ParsableLanguage,
+    Lang: Language,
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
 {

@@ -1,4 +1,4 @@
-use super::{terms::Term, types::Type};
+use super::{Subtypes, terms::Term};
 use errors::ValueMismatch;
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
@@ -10,27 +10,25 @@ use syntax::values::{
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum Value {
-    Lambda(Lambda<Term, Type>),
-    Unit(Unit<Term>),
-    Record(Record<Value>),
-    Variant(Variant<Value, Type>),
-    Nil(Nil<Term, Type>),
-    Cons(Cons<Value, Type>),
-    Loc(Loc<Term>),
-    Num(Num<Term>),
-    True(True<Term>),
-    False(False<Term>),
+    Lambda(Lambda<Subtypes>),
+    Unit(Unit<Subtypes>),
+    Record(Record<Subtypes>),
+    Variant(Variant<Subtypes>),
+    Nil(Nil<Subtypes>),
+    Cons(Cons<Subtypes>),
+    Loc(Loc<Subtypes>),
+    Num(Num<Subtypes>),
+    True(True<Subtypes>),
+    False(False<Subtypes>),
 }
 
 impl ValueTrait for Value {
+    type Lang = Subtypes;
     type Term = Term;
 }
 
 impl ValueGroup for Value {
-    type Term = Term;
-    type Type = Type;
-
-    fn into_lambda(self) -> Result<Lambda<Term, Type>, ValueMismatch> {
+    fn into_lambda(self) -> Result<Lambda<Subtypes>, ValueMismatch> {
         if let Value::Lambda(lam) = self {
             Ok(lam)
         } else {
@@ -38,7 +36,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_record(self) -> Result<Record<Value>, ValueMismatch> {
+    fn into_record(self) -> Result<Record<Subtypes>, ValueMismatch> {
         if let Value::Record(rec) = self {
             Ok(rec)
         } else {
@@ -46,7 +44,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_variant(self) -> Result<Variant<Value, Type>, ValueMismatch> {
+    fn into_variant(self) -> Result<Variant<Subtypes>, ValueMismatch> {
         if let Value::Variant(var) = self {
             Ok(var)
         } else {
@@ -54,7 +52,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_nil(self) -> Result<Nil<Term, Type>, ValueMismatch> {
+    fn into_nil(self) -> Result<Nil<Subtypes>, ValueMismatch> {
         if let Value::Nil(nil) = self {
             Ok(nil)
         } else {
@@ -62,7 +60,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_cons(self) -> Result<Cons<Value, Type>, ValueMismatch> {
+    fn into_cons(self) -> Result<Cons<Subtypes>, ValueMismatch> {
         if let Value::Cons(cons) = self {
             Ok(cons)
         } else {
@@ -70,7 +68,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_loc(self) -> Result<Loc<Term>, ValueMismatch> {
+    fn into_loc(self) -> Result<Loc<Subtypes>, ValueMismatch> {
         if let Value::Loc(loc) = self {
             Ok(loc)
         } else {
@@ -78,7 +76,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_num(self) -> Result<Num<Term>, ValueMismatch> {
+    fn into_num(self) -> Result<Num<Subtypes>, ValueMismatch> {
         if let Value::Num(num) = self {
             Ok(num)
         } else {
@@ -86,7 +84,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_true(self) -> Result<True<Term>, ValueMismatch> {
+    fn into_true(self) -> Result<True<Subtypes>, ValueMismatch> {
         if let Value::True(tru) = self {
             Ok(tru)
         } else {
@@ -94,7 +92,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_false(self) -> Result<False<Term>, ValueMismatch> {
+    fn into_false(self) -> Result<False<Subtypes>, ValueMismatch> {
         if let Value::False(fls) = self {
             Ok(fls)
         } else {
@@ -123,16 +121,16 @@ impl From<Value> for Term {
 impl GrammarDescribe for Value {
     fn grammar() -> Grammar {
         Grammar::value(vec![
-            Lambda::<Term, Type>::rule(),
-            Unit::<Term>::rule(),
-            Record::<Value>::rule(),
-            Variant::<Value, Type>::rule(),
-            Nil::<Term, Type>::rule(),
-            Cons::<Value, Type>::rule(),
-            Loc::<Term>::rule(),
-            Num::<Term>::rule(),
-            True::<Term>::rule(),
-            False::<Term>::rule(),
+            Lambda::<Subtypes>::rule(),
+            Unit::<Subtypes>::rule(),
+            Record::<Subtypes>::rule(),
+            Variant::<Subtypes>::rule(),
+            Nil::<Subtypes>::rule(),
+            Cons::<Subtypes>::rule(),
+            Loc::<Subtypes>::rule(),
+            Num::<Subtypes>::rule(),
+            True::<Subtypes>::rule(),
+            False::<Subtypes>::rule(),
         ])
     }
 }
@@ -171,56 +169,56 @@ impl LatexFmt for Value {
     }
 }
 
-impl From<Loc<Term>> for Value {
-    fn from(loc: Loc<Term>) -> Value {
+impl From<Loc<Subtypes>> for Value {
+    fn from(loc: Loc<Subtypes>) -> Value {
         Value::Loc(loc)
     }
 }
-impl From<Lambda<Term, Type>> for Value {
-    fn from(lam: Lambda<Term, Type>) -> Value {
+impl From<Lambda<Subtypes>> for Value {
+    fn from(lam: Lambda<Subtypes>) -> Value {
         Value::Lambda(lam)
     }
 }
-impl From<Unit<Term>> for Value {
-    fn from(u: Unit<Term>) -> Value {
+impl From<Unit<Subtypes>> for Value {
+    fn from(u: Unit<Subtypes>) -> Value {
         Value::Unit(u)
     }
 }
-impl From<True<Term>> for Value {
-    fn from(tru: True<Term>) -> Value {
+impl From<True<Subtypes>> for Value {
+    fn from(tru: True<Subtypes>) -> Value {
         Value::True(tru)
     }
 }
-impl From<False<Term>> for Value {
-    fn from(fls: False<Term>) -> Value {
+impl From<False<Subtypes>> for Value {
+    fn from(fls: False<Subtypes>) -> Value {
         Value::False(fls)
     }
 }
-impl From<Num<Term>> for Value {
-    fn from(num: Num<Term>) -> Value {
+impl From<Num<Subtypes>> for Value {
+    fn from(num: Num<Subtypes>) -> Value {
         Value::Num(num)
     }
 }
 
-impl From<Record<Value>> for Value {
-    fn from(rec: Record<Value>) -> Value {
+impl From<Record<Subtypes>> for Value {
+    fn from(rec: Record<Subtypes>) -> Value {
         Value::Record(rec)
     }
 }
 
-impl From<Variant<Value, Type>> for Value {
-    fn from(var: Variant<Value, Type>) -> Value {
+impl From<Variant<Subtypes>> for Value {
+    fn from(var: Variant<Subtypes>) -> Value {
         Value::Variant(var)
     }
 }
 
-impl From<Nil<Term, Type>> for Value {
-    fn from(nil: Nil<Term, Type>) -> Value {
+impl From<Nil<Subtypes>> for Value {
+    fn from(nil: Nil<Subtypes>) -> Value {
         Value::Nil(nil)
     }
 }
-impl From<Cons<Value, Type>> for Value {
-    fn from(cons: Cons<Value, Type>) -> Value {
+impl From<Cons<Subtypes>> for Value {
+    fn from(cons: Cons<Subtypes>) -> Value {
         Value::Cons(cons)
     }
 }

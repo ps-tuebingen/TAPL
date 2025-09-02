@@ -1,4 +1,4 @@
-use super::{terms::Term, types::Type};
+use super::{Exceptions, terms::Term};
 use errors::ValueMismatch;
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
@@ -9,24 +9,22 @@ use syntax::values::{
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Value {
-    Lambda(Lambda<Term, Type>),
-    Num(Num<Term>),
-    Unit(Unit<Term>),
-    True(True<Term>),
-    False(False<Term>),
-    Exception(Exception<Term, Type>),
-    Raise(Raise<Value, Type>),
+    Lambda(Lambda<Exceptions>),
+    Num(Num<Exceptions>),
+    Unit(Unit<Exceptions>),
+    True(True<Exceptions>),
+    False(False<Exceptions>),
+    Exception(Exception<Exceptions>),
+    Raise(Raise<Exceptions>),
 }
 
 impl ValueTrait for Value {
+    type Lang = Exceptions;
     type Term = Term;
 }
 
 impl ValueGroup for Value {
-    type Term = Term;
-    type Type = Type;
-
-    fn into_true(self) -> Result<True<Term>, ValueMismatch> {
+    fn into_true(self) -> Result<True<Exceptions>, ValueMismatch> {
         if let Value::True(tru) = self {
             Ok(tru)
         } else {
@@ -34,7 +32,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_false(self) -> Result<False<Term>, ValueMismatch> {
+    fn into_false(self) -> Result<False<Exceptions>, ValueMismatch> {
         if let Value::False(fls) = self {
             Ok(fls)
         } else {
@@ -42,7 +40,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_exception(self) -> Result<Exception<Term, Type>, ValueMismatch> {
+    fn into_exception(self) -> Result<Exception<Exceptions>, ValueMismatch> {
         if let Value::Exception(ex) = self {
             Ok(ex)
         } else {
@@ -50,7 +48,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_lambda(self) -> Result<Lambda<Term, Type>, ValueMismatch> {
+    fn into_lambda(self) -> Result<Lambda<Exceptions>, ValueMismatch> {
         if let Value::Lambda(lam) = self {
             Ok(lam)
         } else {
@@ -58,7 +56,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_raise(self) -> Result<Raise<Value, Type>, ValueMismatch> {
+    fn into_raise(self) -> Result<Raise<Exceptions>, ValueMismatch> {
         if let Value::Raise(raise) = self {
             Ok(raise)
         } else {
@@ -66,7 +64,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_num(self) -> Result<Num<Term>, ValueMismatch> {
+    fn into_num(self) -> Result<Num<Exceptions>, ValueMismatch> {
         if let Value::Num(num) = self {
             Ok(num)
         } else {
@@ -78,13 +76,13 @@ impl ValueGroup for Value {
 impl GrammarDescribe for Value {
     fn grammar() -> Grammar {
         Grammar::value(vec![
-            Lambda::<Term, Type>::rule(),
-            Unit::<Term>::rule(),
-            True::<Term>::rule(),
-            False::<Term>::rule(),
-            Num::<Term>::rule(),
-            Exception::<Term, Type>::rule(),
-            Raise::<Value, Type>::rule(),
+            Lambda::<Exceptions>::rule(),
+            Unit::<Exceptions>::rule(),
+            True::<Exceptions>::rule(),
+            False::<Exceptions>::rule(),
+            Num::<Exceptions>::rule(),
+            Exception::<Exceptions>::rule(),
+            Raise::<Exceptions>::rule(),
         ])
     }
 }
@@ -131,44 +129,44 @@ impl LatexFmt for Value {
     }
 }
 
-impl From<Lambda<Term, Type>> for Value {
-    fn from(lam: Lambda<Term, Type>) -> Value {
+impl From<Lambda<Exceptions>> for Value {
+    fn from(lam: Lambda<Exceptions>) -> Value {
         Value::Lambda(lam)
     }
 }
 
-impl From<Num<Term>> for Value {
-    fn from(num: Num<Term>) -> Value {
+impl From<Num<Exceptions>> for Value {
+    fn from(num: Num<Exceptions>) -> Value {
         Value::Num(num)
     }
 }
 
-impl From<Unit<Term>> for Value {
-    fn from(unit: Unit<Term>) -> Value {
+impl From<Unit<Exceptions>> for Value {
+    fn from(unit: Unit<Exceptions>) -> Value {
         Value::Unit(unit)
     }
 }
 
-impl From<True<Term>> for Value {
-    fn from(tru: True<Term>) -> Value {
+impl From<True<Exceptions>> for Value {
+    fn from(tru: True<Exceptions>) -> Value {
         Value::True(tru)
     }
 }
 
-impl From<False<Term>> for Value {
-    fn from(fls: False<Term>) -> Value {
+impl From<False<Exceptions>> for Value {
+    fn from(fls: False<Exceptions>) -> Value {
         Value::False(fls)
     }
 }
 
-impl From<Exception<Term, Type>> for Value {
-    fn from(exc: Exception<Term, Type>) -> Value {
+impl From<Exception<Exceptions>> for Value {
+    fn from(exc: Exception<Exceptions>) -> Value {
         Value::Exception(exc)
     }
 }
 
-impl From<Raise<Value, Type>> for Value {
-    fn from(raise: Raise<Value, Type>) -> Value {
+impl From<Raise<Exceptions>> for Value {
+    fn from(raise: Raise<Exceptions>) -> Value {
         Value::Raise(raise)
     }
 }

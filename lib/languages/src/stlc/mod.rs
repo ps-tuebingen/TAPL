@@ -6,6 +6,7 @@ pub mod types;
 pub mod values;
 
 use crate::Language;
+use std::fmt;
 use grammar::{GrammarDescribe, LanguageDescribe, LanguageGrammar};
 use terms::Term;
 use types::Type;
@@ -32,5 +33,11 @@ impl LanguageDescribe for Stlc {
             value_grammar: Value::grammar(),
             include_kinds: false,
         }
+    }
+}
+
+impl fmt::Display for Stlc{
+    fn fmt(&self,f:&mut fmt::Formatter) -> fmt::Result{
+        f.write_str("stlc")
     }
 }

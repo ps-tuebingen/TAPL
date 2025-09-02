@@ -1,11 +1,11 @@
-use crate::{GroupParse, ParsableLanguage, Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, Parse, Rule, pair_to_n_inner};
 use errors::{UnexpectedRule, parse_error::ParserError};
 use pest::iterators::Pair;
-use syntax::terms::ListCase;
+use syntax::{language::Language, terms::ListCase};
 
 impl<Lang> Parse for ListCase<Lang>
 where
-    Lang: ParsableLanguage,
+    Lang: Language,
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
 {

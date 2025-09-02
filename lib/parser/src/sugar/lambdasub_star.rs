@@ -1,11 +1,11 @@
-use crate::{GroupParse, ParsableLanguage, Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, Parse, Rule, pair_to_n_inner};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
-use syntax::{terms::LambdaSub, types::Top};
+use syntax::{language::Language, terms::LambdaSub, types::Top};
 
 pub struct LambdaSubStar<Lang>
 where
-    Lang: ParsableLanguage,
+    Lang: Language,
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
 {
@@ -15,7 +15,7 @@ where
 
 impl<Lang> LambdaSubStar<Lang>
 where
-    Lang: ParsableLanguage,
+    Lang: Language,
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
 {
@@ -29,7 +29,7 @@ where
 
 impl<Lang> Parse for LambdaSubStar<Lang>
 where
-    Lang: ParsableLanguage,
+    Lang: Language,
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
 {
@@ -48,7 +48,7 @@ where
 
 impl<Lang> From<LambdaSubStar<Lang>> for LambdaSub<Lang>
 where
-    Lang: ParsableLanguage,
+    Lang: Language,
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
     Top<Lang>: Into<Lang::Type>,

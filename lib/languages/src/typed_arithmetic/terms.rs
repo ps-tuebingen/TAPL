@@ -1,4 +1,4 @@
-use super::types::Type;
+use super::{TypedArithmetic, types::Type};
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
@@ -10,13 +10,13 @@ use syntax::{
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Term {
-    True(True<Term>),
-    False(False<Term>),
-    If(If<Term>),
-    Num(Num<Term>),
-    Succ(Succ<Term>),
-    Pred(Pred<Term>),
-    IsZero(IsZero<Term>),
+    True(True<TypedArithmetic>),
+    False(False<TypedArithmetic>),
+    If(If<TypedArithmetic>),
+    Num(Num<TypedArithmetic>),
+    Succ(Succ<TypedArithmetic>),
+    Pred(Pred<TypedArithmetic>),
+    IsZero(IsZero<TypedArithmetic>),
 }
 
 impl syntax::terms::Term for Term {}
@@ -24,25 +24,27 @@ impl syntax::terms::Term for Term {}
 impl GrammarDescribe for Term {
     fn grammar() -> Grammar {
         Grammar::term(vec![
-            True::<Term>::rule(),
-            False::<Term>::rule(),
-            If::<Term>::rule(),
-            Num::<Term>::rule(),
-            Succ::<Term>::rule(),
-            Pred::<Term>::rule(),
-            IsZero::<Term>::rule(),
+            True::<TypedArithmetic>::rule(),
+            False::<TypedArithmetic>::rule(),
+            If::<TypedArithmetic>::rule(),
+            Num::<TypedArithmetic>::rule(),
+            Succ::<TypedArithmetic>::rule(),
+            Pred::<TypedArithmetic>::rule(),
+            IsZero::<TypedArithmetic>::rule(),
         ])
     }
 }
 
-impl SubstType<Type> for Term {
+impl SubstType for Term {
+    type Lang = TypedArithmetic;
     type Target = Term;
     fn subst_type(self, _: &TypeVar, _: &Type) -> Self::Target {
         self
     }
 }
 
-impl SubstTerm<Term> for Term {
+impl SubstTerm for Term {
+    type Lang = TypedArithmetic;
     type Target = Term;
     fn subst(self, _: &Var, _: &Term) -> Self::Target {
         self
@@ -77,38 +79,38 @@ impl LatexFmt for Term {
     }
 }
 
-impl From<True<Term>> for Term {
-    fn from(tru: True<Term>) -> Term {
+impl From<True<TypedArithmetic>> for Term {
+    fn from(tru: True<TypedArithmetic>) -> Term {
         Term::True(tru)
     }
 }
-impl From<False<Term>> for Term {
-    fn from(fls: False<Term>) -> Term {
+impl From<False<TypedArithmetic>> for Term {
+    fn from(fls: False<TypedArithmetic>) -> Term {
         Term::False(fls)
     }
 }
-impl From<If<Term>> for Term {
-    fn from(ift: If<Term>) -> Term {
+impl From<If<TypedArithmetic>> for Term {
+    fn from(ift: If<TypedArithmetic>) -> Term {
         Term::If(ift)
     }
 }
-impl From<Num<Term>> for Term {
-    fn from(num: Num<Term>) -> Term {
+impl From<Num<TypedArithmetic>> for Term {
+    fn from(num: Num<TypedArithmetic>) -> Term {
         Term::Num(num)
     }
 }
-impl From<Succ<Term>> for Term {
-    fn from(succ: Succ<Term>) -> Term {
+impl From<Succ<TypedArithmetic>> for Term {
+    fn from(succ: Succ<TypedArithmetic>) -> Term {
         Term::Succ(succ)
     }
 }
-impl From<Pred<Term>> for Term {
-    fn from(pred: Pred<Term>) -> Term {
+impl From<Pred<TypedArithmetic>> for Term {
+    fn from(pred: Pred<TypedArithmetic>) -> Term {
         Term::Pred(pred)
     }
 }
-impl From<IsZero<Term>> for Term {
-    fn from(isz: IsZero<Term>) -> Term {
+impl From<IsZero<TypedArithmetic>> for Term {
+    fn from(isz: IsZero<TypedArithmetic>) -> Term {
         Term::IsZero(isz)
     }
 }

@@ -1,4 +1,4 @@
-use super::types::Type;
+use super::{SystemF, types::Type};
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
@@ -10,24 +10,25 @@ use syntax::{
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Term {
-    Var(Variable<Term>),
-    Lambda(Lambda<Term, Type>),
-    App(App<Term>),
-    TyLambda(TyLambda<Term>),
-    TyApp(TyApp<Term, Type>),
+    Var(Variable<SystemF>),
+    Lambda(Lambda<SystemF>),
+    App(App<SystemF>),
+    TyLambda(TyLambda<SystemF>),
+    TyApp(TyApp<SystemF>),
 }
 
 impl syntax::terms::Term for Term {}
 
-impl SubstType<Type> for Term {
+impl SubstType for Term {
+    type Lang = SystemF;
     type Target = Self;
     fn subst_type(self, v: &TypeVar, ty: &Type) -> Self::Target {
         match self {
-            Term::Var(var) => var.subst_type(v, ty),
-            Term::Lambda(lam) => lam.subst_type(v, ty),
-            Term::App(app) => app.subst_type(v, ty),
-            Term::TyLambda(lam) => lam.subst_type(v, ty),
-            Term::TyApp(app) => app.subst_type(v, ty),
+            Term::Var(var) => var.subst_type(v, ty).into(),
+            Term::Lambda(lam) => lam.subst_type(v, ty).into(),
+            Term::App(app) => app.subst_type(v, ty).into(),
+            Term::TyLambda(lam) => lam.subst_type(v, ty).into(),
+            Term::TyApp(app) => app.subst_type(v, ty).into(),
         }
     }
 }
@@ -35,24 +36,25 @@ impl SubstType<Type> for Term {
 impl GrammarDescribe for Term {
     fn grammar() -> Grammar {
         Grammar::term(vec![
-            Variable::<Term>::rule(),
-            Lambda::<Term, Type>::rule(),
-            App::<Term>::rule(),
-            TyLambda::<Term>::rule(),
-            TyApp::<Term, Type>::rule(),
+            Variable::<SystemF>::rule(),
+            Lambda::<SystemF>::rule(),
+            App::<SystemF>::rule(),
+            TyLambda::<SystemF>::rule(),
+            TyApp::<SystemF>::rule(),
         ])
     }
 }
 
-impl SubstTerm<Term> for Term {
+impl SubstTerm for Term {
+    type Lang = SystemF;
     type Target = Self;
     fn subst(self, v: &Var, t: &Term) -> Self::Target {
         match self {
-            Term::Var(var) => var.subst(v, t),
-            Term::Lambda(lam) => lam.subst(v, t),
-            Term::App(app) => app.subst(v, t),
-            Term::TyLambda(lam) => lam.subst(v, t),
-            Term::TyApp(app) => app.subst(v, t),
+            Term::Var(var) => var.subst(v, t).into(),
+            Term::Lambda(lam) => lam.subst(v, t).into(),
+            Term::App(app) => app.subst(v, t).into(),
+            Term::TyLambda(lam) => lam.subst(v, t).into(),
+            Term::TyApp(app) => app.subst(v, t).into(),
         }
     }
 }
@@ -81,28 +83,28 @@ impl LatexFmt for Term {
     }
 }
 
-impl From<Variable<Term>> for Term {
-    fn from(var: Variable<Term>) -> Term {
+impl From<Variable<SystemF>> for Term {
+    fn from(var: Variable<SystemF>) -> Term {
         Term::Var(var)
     }
 }
-impl From<Lambda<Term, Type>> for Term {
-    fn from(lam: Lambda<Term, Type>) -> Term {
+impl From<Lambda<SystemF>> for Term {
+    fn from(lam: Lambda<SystemF>) -> Term {
         Term::Lambda(lam)
     }
 }
-impl From<App<Term>> for Term {
-    fn from(app: App<Term>) -> Term {
+impl From<App<SystemF>> for Term {
+    fn from(app: App<SystemF>) -> Term {
         Term::App(app)
     }
 }
-impl From<TyLambda<Term>> for Term {
-    fn from(tylam: TyLambda<Term>) -> Term {
+impl From<TyLambda<SystemF>> for Term {
+    fn from(tylam: TyLambda<SystemF>) -> Term {
         Term::TyLambda(tylam)
     }
 }
-impl From<TyApp<Term, Type>> for Term {
-    fn from(tyapp: TyApp<Term, Type>) -> Term {
+impl From<TyApp<SystemF>> for Term {
+    fn from(tyapp: TyApp<SystemF>) -> Term {
         Term::TyApp(tyapp)
     }
 }

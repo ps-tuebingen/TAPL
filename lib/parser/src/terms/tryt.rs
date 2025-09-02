@@ -1,11 +1,11 @@
-use crate::{GroupParse, ParsableLanguage, Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, Parse, Rule, pair_to_n_inner};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
-use syntax::terms::Try;
+use syntax::{language::Language, terms::Try};
 
 impl<Lang> Parse for Try<Lang>
 where
-    Lang: ParsableLanguage,
+    Lang: Language,
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
 {

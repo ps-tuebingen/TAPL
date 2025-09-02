@@ -1,3 +1,4 @@
+use super::Subtypes;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
@@ -13,31 +14,32 @@ use syntax::{
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Type {
-    Top(Top<Type>),
-    Bot(Bot<Type>),
-    Fun(Fun<Type>),
-    Record(Record<Type>),
-    Variant(Variant<Type>),
-    List(List<Type>),
-    Ref(Reference<Type>),
-    Source(Source<Type>),
-    Sink(Sink<Type>),
-    Nat(Nat<Type>),
-    Unit(Unit<Type>),
-    Bool(Bool<Type>),
+    Top(Top<Subtypes>),
+    Bot(Bot<Subtypes>),
+    Fun(Fun<Subtypes>),
+    Record(Record<Subtypes>),
+    Variant(Variant<Subtypes>),
+    List(List<Subtypes>),
+    Ref(Reference<Subtypes>),
+    Source(Source<Subtypes>),
+    Sink(Sink<Subtypes>),
+    Nat(Nat<Subtypes>),
+    Unit(Unit<Subtypes>),
+    Bool(Bool<Subtypes>),
 }
 
 impl TypeTrait for Type {}
 
 impl TypeGroup for Type {
-    fn into_unit(self) -> Result<Unit<Type>, TypeMismatch> {
+    type Lang = Subtypes;
+    fn into_unit(self) -> Result<Unit<Subtypes>, TypeMismatch> {
         if let Type::Unit(u) = self {
             Ok(u)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Unit".to_owned()))
         }
     }
-    fn into_top(self) -> Result<Top<Type>, TypeMismatch> {
+    fn into_top(self) -> Result<Top<Subtypes>, TypeMismatch> {
         if let Type::Top(top) = self {
             Ok(top)
         } else {
@@ -45,7 +47,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_bot(self) -> Result<Bot<Type>, TypeMismatch> {
+    fn into_bot(self) -> Result<Bot<Subtypes>, TypeMismatch> {
         if let Type::Bot(bot) = self {
             Ok(bot)
         } else {
@@ -53,7 +55,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_fun(self) -> Result<Fun<Type>, TypeMismatch> {
+    fn into_fun(self) -> Result<Fun<Subtypes>, TypeMismatch> {
         if let Type::Fun(fun) = self {
             Ok(fun)
         } else {
@@ -61,7 +63,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_record(self) -> Result<Record<Type>, TypeMismatch> {
+    fn into_record(self) -> Result<Record<Subtypes>, TypeMismatch> {
         if let Type::Record(rec) = self {
             Ok(rec)
         } else {
@@ -69,7 +71,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_variant(self) -> Result<Variant<Type>, TypeMismatch> {
+    fn into_variant(self) -> Result<Variant<Subtypes>, TypeMismatch> {
         if let Type::Variant(var) = self {
             Ok(var)
         } else {
@@ -77,7 +79,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_list(self) -> Result<List<Type>, TypeMismatch> {
+    fn into_list(self) -> Result<List<Subtypes>, TypeMismatch> {
         if let Type::List(list) = self {
             Ok(list)
         } else {
@@ -85,7 +87,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_ref(self) -> Result<Reference<Type>, TypeMismatch> {
+    fn into_ref(self) -> Result<Reference<Subtypes>, TypeMismatch> {
         if let Type::Ref(reft) = self {
             Ok(reft)
         } else {
@@ -93,7 +95,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_source(self) -> Result<Source<Type>, TypeMismatch> {
+    fn into_source(self) -> Result<Source<Subtypes>, TypeMismatch> {
         if let Type::Source(src) = self {
             Ok(src)
         } else {
@@ -101,7 +103,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_sink(self) -> Result<Sink<Type>, TypeMismatch> {
+    fn into_sink(self) -> Result<Sink<Subtypes>, TypeMismatch> {
         if let Type::Sink(sink) = self {
             Ok(sink)
         } else {
@@ -109,7 +111,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_nat(self) -> Result<Nat<Type>, TypeMismatch> {
+    fn into_nat(self) -> Result<Nat<Subtypes>, TypeMismatch> {
         if let Type::Nat(nat) = self {
             Ok(nat)
         } else {
@@ -117,7 +119,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_bool(self) -> Result<Bool<Type>, TypeMismatch> {
+    fn into_bool(self) -> Result<Bool<Subtypes>, TypeMismatch> {
         if let Type::Bool(b) = self {
             Ok(b)
         } else {
@@ -129,23 +131,24 @@ impl TypeGroup for Type {
 impl GrammarDescribe for Type {
     fn grammar() -> Grammar {
         Grammar::ty(vec![
-            Top::<Type>::rule(),
-            Bot::<Type>::rule(),
-            Fun::<Type>::rule(),
-            Record::<Type>::rule(),
-            Variant::<Type>::rule(),
-            List::<Type>::rule(),
-            Reference::<Type>::rule(),
-            Source::<Type>::rule(),
-            Sink::<Type>::rule(),
-            Nat::<Type>::rule(),
-            Unit::<Type>::rule(),
-            Bool::<Type>::rule(),
+            Top::<Subtypes>::rule(),
+            Bot::<Subtypes>::rule(),
+            Fun::<Subtypes>::rule(),
+            Record::<Subtypes>::rule(),
+            Variant::<Subtypes>::rule(),
+            List::<Subtypes>::rule(),
+            Reference::<Subtypes>::rule(),
+            Source::<Subtypes>::rule(),
+            Sink::<Subtypes>::rule(),
+            Nat::<Subtypes>::rule(),
+            Unit::<Subtypes>::rule(),
+            Bool::<Subtypes>::rule(),
         ])
     }
 }
 
-impl SubstType<Type> for Type {
+impl SubstType for Type {
+    type Lang = Subtypes;
     type Target = Self;
     fn subst_type(self, _: &TypeVar, _: &Type) -> Self::Target {
         self
@@ -189,71 +192,71 @@ impl LatexFmt for Type {
         }
     }
 }
-impl From<Source<Type>> for Type {
-    fn from(src: Source<Type>) -> Type {
+impl From<Source<Subtypes>> for Type {
+    fn from(src: Source<Subtypes>) -> Type {
         Type::Source(src)
     }
 }
-impl From<Sink<Type>> for Type {
-    fn from(sink: Sink<Type>) -> Type {
+impl From<Sink<Subtypes>> for Type {
+    fn from(sink: Sink<Subtypes>) -> Type {
         Type::Sink(sink)
     }
 }
 
-impl From<Reference<Type>> for Type {
-    fn from(reft: Reference<Type>) -> Type {
+impl From<Reference<Subtypes>> for Type {
+    fn from(reft: Reference<Subtypes>) -> Type {
         Type::Ref(reft)
     }
 }
-impl From<Bot<Type>> for Type {
-    fn from(b: Bot<Type>) -> Type {
+impl From<Bot<Subtypes>> for Type {
+    fn from(b: Bot<Subtypes>) -> Type {
         Type::Bot(b)
     }
 }
-impl From<Top<Type>> for Type {
-    fn from(t: Top<Type>) -> Type {
+impl From<Top<Subtypes>> for Type {
+    fn from(t: Top<Subtypes>) -> Type {
         Type::Top(t)
     }
 }
 
-impl From<Unit<Type>> for Type {
-    fn from(u: Unit<Type>) -> Type {
+impl From<Unit<Subtypes>> for Type {
+    fn from(u: Unit<Subtypes>) -> Type {
         Type::Unit(u)
     }
 }
 
-impl From<Fun<Type>> for Type {
-    fn from(fun: Fun<Type>) -> Type {
+impl From<Fun<Subtypes>> for Type {
+    fn from(fun: Fun<Subtypes>) -> Type {
         Type::Fun(fun)
     }
 }
 
-impl From<Bool<Type>> for Type {
-    fn from(b: Bool<Type>) -> Type {
+impl From<Bool<Subtypes>> for Type {
+    fn from(b: Bool<Subtypes>) -> Type {
         Type::Bool(b)
     }
 }
 
-impl From<Nat<Type>> for Type {
-    fn from(n: Nat<Type>) -> Type {
+impl From<Nat<Subtypes>> for Type {
+    fn from(n: Nat<Subtypes>) -> Type {
         Type::Nat(n)
     }
 }
 
-impl From<Record<Type>> for Type {
-    fn from(rec: Record<Type>) -> Type {
+impl From<Record<Subtypes>> for Type {
+    fn from(rec: Record<Subtypes>) -> Type {
         Type::Record(rec)
     }
 }
 
-impl From<Variant<Type>> for Type {
-    fn from(var: Variant<Type>) -> Type {
+impl From<Variant<Subtypes>> for Type {
+    fn from(var: Variant<Subtypes>) -> Type {
         Type::Variant(var)
     }
 }
 
-impl From<List<Type>> for Type {
-    fn from(ls: List<Type>) -> Type {
+impl From<List<Subtypes>> for Type {
+    fn from(ls: List<Subtypes>) -> Type {
         Type::List(ls)
     }
 }

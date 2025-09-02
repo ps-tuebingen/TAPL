@@ -1,4 +1,4 @@
-use super::types::Type;
+use super::{Subtypes, types::Type};
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
@@ -13,30 +13,30 @@ use syntax::{
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum Term {
-    Var(Variable<Term>),
-    Lambda(Lambda<Term, Type>),
-    App(App<Term>),
-    Unit(Unit<Term>),
-    Cast(Cast<Term, Type>),
-    Record(Record<Term>),
-    RecordProj(RecordProj<Term>),
-    Variant(Variant<Term, Type>),
-    VariantCase(VariantCase<Term>),
-    Nil(Nil<Term, Type>),
-    Cons(Cons<Term, Type>),
-    ListCase(ListCase<Term>),
-    Ref(Ref<Term>),
-    Deref(Deref<Term>),
-    Assign(Assign<Term>),
-    Loc(Loc<Term>),
-    Num(Num<Term>),
-    Succ(Succ<Term>),
-    Pred(Pred<Term>),
-    True(True<Term>),
-    False(False<Term>),
-    If(If<Term>),
-    Let(Let<Term>),
-    Fix(Fix<Term>),
+    Var(Variable<Subtypes>),
+    Lambda(Lambda<Subtypes>),
+    App(App<Subtypes>),
+    Unit(Unit<Subtypes>),
+    Cast(Cast<Subtypes>),
+    Record(Record<Subtypes>),
+    RecordProj(RecordProj<Subtypes>),
+    Variant(Variant<Subtypes>),
+    VariantCase(VariantCase<Subtypes>),
+    Nil(Nil<Subtypes>),
+    Cons(Cons<Subtypes>),
+    ListCase(ListCase<Subtypes>),
+    Ref(Ref<Subtypes>),
+    Deref(Deref<Subtypes>),
+    Assign(Assign<Subtypes>),
+    Loc(Loc<Subtypes>),
+    Num(Num<Subtypes>),
+    Succ(Succ<Subtypes>),
+    Pred(Pred<Subtypes>),
+    True(True<Subtypes>),
+    False(False<Subtypes>),
+    If(If<Subtypes>),
+    Let(Let<Subtypes>),
+    Fix(Fix<Subtypes>),
 }
 
 impl syntax::terms::Term for Term {}
@@ -44,69 +44,71 @@ impl syntax::terms::Term for Term {}
 impl GrammarDescribe for Term {
     fn grammar() -> Grammar {
         Grammar::term(vec![
-            Variable::<Term>::rule(),
-            Lambda::<Term, Type>::rule(),
-            App::<Term>::rule(),
-            Unit::<Term>::rule(),
-            Record::<Term>::rule(),
-            RecordProj::<Term>::rule(),
-            Variant::<Term, Type>::rule(),
-            VariantCase::<Term>::rule(),
-            Cast::<Term, Type>::rule(),
-            Nil::<Term, Type>::rule(),
-            Cons::<Term, Type>::rule(),
-            ListCase::<Term>::rule(),
-            Ref::<Term>::rule(),
-            Deref::<Term>::rule(),
-            Assign::<Term>::rule(),
-            Loc::<Term>::rule(),
-            Num::<Term>::rule(),
-            Succ::<Term>::rule(),
-            Pred::<Term>::rule(),
-            True::<Term>::rule(),
-            False::<Term>::rule(),
-            If::<Term>::rule(),
-            Let::<Term>::rule(),
-            Fix::<Term>::rule(),
+            Variable::<Subtypes>::rule(),
+            Lambda::<Subtypes>::rule(),
+            App::<Subtypes>::rule(),
+            Unit::<Subtypes>::rule(),
+            Record::<Subtypes>::rule(),
+            RecordProj::<Subtypes>::rule(),
+            Variant::<Subtypes>::rule(),
+            VariantCase::<Subtypes>::rule(),
+            Cast::<Subtypes>::rule(),
+            Nil::<Subtypes>::rule(),
+            Cons::<Subtypes>::rule(),
+            ListCase::<Subtypes>::rule(),
+            Ref::<Subtypes>::rule(),
+            Deref::<Subtypes>::rule(),
+            Assign::<Subtypes>::rule(),
+            Loc::<Subtypes>::rule(),
+            Num::<Subtypes>::rule(),
+            Succ::<Subtypes>::rule(),
+            Pred::<Subtypes>::rule(),
+            True::<Subtypes>::rule(),
+            False::<Subtypes>::rule(),
+            If::<Subtypes>::rule(),
+            Let::<Subtypes>::rule(),
+            Fix::<Subtypes>::rule(),
         ])
     }
 }
 
-impl SubstType<Type> for Term {
+impl SubstType for Term {
+    type Lang = Subtypes;
     type Target = Term;
     fn subst_type(self, _: &TypeVar, _: &Type) -> Self::Target {
         self
     }
 }
 
-impl SubstTerm<Term> for Term {
+impl SubstTerm for Term {
+    type Lang = Subtypes;
     type Target = Self;
     fn subst(self, v: &Var, t: &Term) -> Self::Target {
         match self {
-            Term::Var(var) => var.subst(v, t),
-            Term::Lambda(lam) => lam.subst(v, t),
-            Term::App(app) => app.subst(v, t),
-            Term::Unit(unit) => unit.subst(v, t),
-            Term::Record(rec) => rec.subst(v, t),
-            Term::RecordProj(proj) => proj.subst(v, t),
-            Term::Variant(var) => var.subst(v, t),
-            Term::VariantCase(case) => case.subst(v, t),
-            Term::Cast(cast) => cast.subst(v, t),
-            Term::Nil(nil) => nil.subst(v, t),
-            Term::Cons(cons) => cons.subst(v, t),
-            Term::ListCase(case) => case.subst(v, t),
-            Term::Ref(rf) => rf.subst(v, t),
-            Term::Deref(deref) => deref.subst(v, t),
-            Term::Assign(assign) => assign.subst(v, t),
-            Term::Loc(loc) => loc.subst(v, t),
-            Term::Num(num) => num.subst(v, t),
-            Term::Succ(succ) => succ.subst(v, t),
-            Term::Pred(pred) => pred.subst(v, t),
-            Term::True(tru) => tru.subst(v, t),
-            Term::False(fls) => fls.subst(v, t),
-            Term::If(ift) => ift.subst(v, t),
-            Term::Let(lt) => lt.subst(v, t),
-            Term::Fix(fix) => fix.subst(v, t),
+            Term::Var(var) => var.subst(v, t).into(),
+            Term::Lambda(lam) => lam.subst(v, t).into(),
+            Term::App(app) => app.subst(v, t).into(),
+            Term::Unit(unit) => unit.subst(v, t).into(),
+            Term::Record(rec) => rec.subst(v, t).into(),
+            Term::RecordProj(proj) => proj.subst(v, t).into(),
+            Term::Variant(var) => var.subst(v, t).into(),
+            Term::VariantCase(case) => case.subst(v, t).into(),
+            Term::Cast(cast) => cast.subst(v, t).into(),
+            Term::Nil(nil) => nil.subst(v, t).into(),
+            Term::Cons(cons) => cons.subst(v, t).into(),
+            Term::ListCase(case) => case.subst(v, t).into(),
+            Term::Ref(rf) => rf.subst(v, t).into(),
+            Term::Deref(deref) => deref.subst(v, t).into(),
+            Term::Assign(assign) => assign.subst(v, t).into(),
+            Term::Loc(loc) => loc.subst(v, t).into(),
+            Term::Num(num) => num.subst(v, t).into(),
+            Term::Succ(succ) => succ.subst(v, t).into(),
+            Term::Pred(pred) => pred.subst(v, t).into(),
+            Term::True(tru) => tru.subst(v, t).into(),
+            Term::False(fls) => fls.subst(v, t).into(),
+            Term::If(ift) => ift.subst(v, t).into(),
+            Term::Let(lt) => lt.subst(v, t).into(),
+            Term::Fix(fix) => fix.subst(v, t).into(),
         }
     }
 }
@@ -173,142 +175,142 @@ impl fmt::Display for Term {
     }
 }
 
-impl From<Loc<Term>> for Term {
-    fn from(loc: Loc<Term>) -> Term {
+impl From<Loc<Subtypes>> for Term {
+    fn from(loc: Loc<Subtypes>) -> Term {
         Term::Loc(loc)
     }
 }
-impl From<Assign<Term>> for Term {
-    fn from(assign: Assign<Term>) -> Term {
+impl From<Assign<Subtypes>> for Term {
+    fn from(assign: Assign<Subtypes>) -> Term {
         Term::Assign(assign)
     }
 }
-impl From<Deref<Term>> for Term {
-    fn from(deref: Deref<Term>) -> Term {
+impl From<Deref<Subtypes>> for Term {
+    fn from(deref: Deref<Subtypes>) -> Term {
         Term::Deref(deref)
     }
 }
-impl From<Ref<Term>> for Term {
-    fn from(reft: Ref<Term>) -> Term {
+impl From<Ref<Subtypes>> for Term {
+    fn from(reft: Ref<Subtypes>) -> Term {
         Term::Ref(reft)
     }
 }
-impl From<ListCase<Term>> for Term {
-    fn from(case: ListCase<Term>) -> Term {
+impl From<ListCase<Subtypes>> for Term {
+    fn from(case: ListCase<Subtypes>) -> Term {
         Term::ListCase(case)
     }
 }
 
-impl From<Cast<Term, Type>> for Term {
-    fn from(cast: Cast<Term, Type>) -> Term {
+impl From<Cast<Subtypes>> for Term {
+    fn from(cast: Cast<Subtypes>) -> Term {
         Term::Cast(cast)
     }
 }
 
-impl From<Lambda<Term, Type>> for Term {
-    fn from(lam: Lambda<Term, Type>) -> Term {
+impl From<Lambda<Subtypes>> for Term {
+    fn from(lam: Lambda<Subtypes>) -> Term {
         Term::Lambda(lam)
     }
 }
 
-impl From<Unit<Term>> for Term {
-    fn from(u: Unit<Term>) -> Term {
+impl From<Unit<Subtypes>> for Term {
+    fn from(u: Unit<Subtypes>) -> Term {
         Term::Unit(u)
     }
 }
 
-impl From<True<Term>> for Term {
-    fn from(tru: True<Term>) -> Term {
+impl From<True<Subtypes>> for Term {
+    fn from(tru: True<Subtypes>) -> Term {
         Term::True(tru)
     }
 }
 
-impl From<False<Term>> for Term {
-    fn from(fls: False<Term>) -> Term {
+impl From<False<Subtypes>> for Term {
+    fn from(fls: False<Subtypes>) -> Term {
         Term::False(fls)
     }
 }
 
-impl From<Num<Term>> for Term {
-    fn from(num: Num<Term>) -> Term {
+impl From<Num<Subtypes>> for Term {
+    fn from(num: Num<Subtypes>) -> Term {
         Term::Num(num)
     }
 }
 
-impl From<Record<Term>> for Term {
-    fn from(rec: Record<Term>) -> Term {
+impl From<Record<Subtypes>> for Term {
+    fn from(rec: Record<Subtypes>) -> Term {
         Term::Record(rec)
     }
 }
 
-impl From<Variant<Term, Type>> for Term {
-    fn from(var: Variant<Term, Type>) -> Term {
+impl From<Variant<Subtypes>> for Term {
+    fn from(var: Variant<Subtypes>) -> Term {
         Term::Variant(var)
     }
 }
 
-impl From<Nil<Term, Type>> for Term {
-    fn from(nil: Nil<Term, Type>) -> Term {
+impl From<Nil<Subtypes>> for Term {
+    fn from(nil: Nil<Subtypes>) -> Term {
         Term::Nil(nil)
     }
 }
 
-impl From<Cons<Term, Type>> for Term {
-    fn from(cons: Cons<Term, Type>) -> Term {
+impl From<Cons<Subtypes>> for Term {
+    fn from(cons: Cons<Subtypes>) -> Term {
         Term::Cons(cons)
     }
 }
 
-impl From<Variable<Term>> for Term {
-    fn from(var: Variable<Term>) -> Term {
+impl From<Variable<Subtypes>> for Term {
+    fn from(var: Variable<Subtypes>) -> Term {
         Term::Var(var)
     }
 }
 
-impl From<App<Term>> for Term {
-    fn from(app: App<Term>) -> Term {
+impl From<App<Subtypes>> for Term {
+    fn from(app: App<Subtypes>) -> Term {
         Term::App(app)
     }
 }
 
-impl From<If<Term>> for Term {
-    fn from(ift: If<Term>) -> Term {
+impl From<If<Subtypes>> for Term {
+    fn from(ift: If<Subtypes>) -> Term {
         Term::If(ift)
     }
 }
 
-impl From<Pred<Term>> for Term {
-    fn from(pred: Pred<Term>) -> Term {
+impl From<Pred<Subtypes>> for Term {
+    fn from(pred: Pred<Subtypes>) -> Term {
         Term::Pred(pred)
     }
 }
 
-impl From<Succ<Term>> for Term {
-    fn from(succ: Succ<Term>) -> Term {
+impl From<Succ<Subtypes>> for Term {
+    fn from(succ: Succ<Subtypes>) -> Term {
         Term::Succ(succ)
     }
 }
 
-impl From<Let<Term>> for Term {
-    fn from(lt: Let<Term>) -> Term {
+impl From<Let<Subtypes>> for Term {
+    fn from(lt: Let<Subtypes>) -> Term {
         Term::Let(lt)
     }
 }
 
-impl From<RecordProj<Term>> for Term {
-    fn from(proj: RecordProj<Term>) -> Term {
+impl From<RecordProj<Subtypes>> for Term {
+    fn from(proj: RecordProj<Subtypes>) -> Term {
         Term::RecordProj(proj)
     }
 }
 
-impl From<VariantCase<Term>> for Term {
-    fn from(case: VariantCase<Term>) -> Term {
+impl From<VariantCase<Subtypes>> for Term {
+    fn from(case: VariantCase<Subtypes>) -> Term {
         Term::VariantCase(case)
     }
 }
 
-impl From<Fix<Term>> for Term {
-    fn from(fix: Fix<Term>) -> Term {
+impl From<Fix<Subtypes>> for Term {
+    fn from(fix: Fix<Subtypes>) -> Term {
         Term::Fix(fix)
     }
 }

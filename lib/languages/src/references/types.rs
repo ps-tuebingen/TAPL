@@ -1,3 +1,4 @@
+use super::References;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
@@ -10,24 +11,25 @@ use syntax::{
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Type {
-    Unit(Unit<Type>),
-    Nat(Nat<Type>),
-    Bool(Bool<Type>),
-    Fun(Fun<Type>),
-    Ref(Reference<Type>),
+    Unit(Unit<References>),
+    Nat(Nat<References>),
+    Bool(Bool<References>),
+    Fun(Fun<References>),
+    Ref(Reference<References>),
 }
 
 impl TypeTrait for Type {}
 
 impl TypeGroup for Type {
-    fn into_unit(self) -> Result<Unit<Type>, TypeMismatch> {
+    type Lang = References;
+    fn into_unit(self) -> Result<Unit<References>, TypeMismatch> {
         if let Type::Unit(u) = self {
             Ok(u)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Unit".to_owned()))
         }
     }
-    fn into_nat(self) -> Result<Nat<Type>, TypeMismatch> {
+    fn into_nat(self) -> Result<Nat<References>, TypeMismatch> {
         if let Type::Nat(nat) = self {
             Ok(nat)
         } else {
@@ -35,7 +37,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_fun(self) -> Result<Fun<Self>, TypeMismatch> {
+    fn into_fun(self) -> Result<Fun<References>, TypeMismatch> {
         if let Type::Fun(fun) = self {
             Ok(fun)
         } else {
@@ -43,7 +45,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_bool(self) -> Result<Bool<Self>, TypeMismatch> {
+    fn into_bool(self) -> Result<Bool<References>, TypeMismatch> {
         if let Type::Bool(b) = self {
             Ok(b)
         } else {
@@ -51,7 +53,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_ref(self) -> Result<Reference<Self>, TypeMismatch> {
+    fn into_ref(self) -> Result<Reference<References>, TypeMismatch> {
         if let Type::Ref(reft) = self {
             Ok(reft)
         } else {
@@ -63,16 +65,17 @@ impl TypeGroup for Type {
 impl GrammarDescribe for Type {
     fn grammar() -> Grammar {
         Grammar::ty(vec![
-            Unit::<Type>::rule(),
-            Nat::<Type>::rule(),
-            Bool::<Type>::rule(),
-            Fun::<Type>::rule(),
-            Reference::<Type>::rule(),
+            Unit::<References>::rule(),
+            Nat::<References>::rule(),
+            Bool::<References>::rule(),
+            Fun::<References>::rule(),
+            Reference::<References>::rule(),
         ])
     }
 }
 
-impl SubstType<Type> for Type {
+impl SubstType for Type {
+    type Lang = References;
     type Target = Self;
     fn subst_type(self, _: &TypeVar, _: &Self) -> Self::Target {
         self
@@ -103,32 +106,32 @@ impl LatexFmt for Type {
     }
 }
 
-impl From<Unit<Type>> for Type {
-    fn from(u: Unit<Type>) -> Type {
+impl From<Unit<References>> for Type {
+    fn from(u: Unit<References>) -> Type {
         Type::Unit(u)
     }
 }
 
-impl From<Nat<Type>> for Type {
-    fn from(n: Nat<Type>) -> Type {
+impl From<Nat<References>> for Type {
+    fn from(n: Nat<References>) -> Type {
         Type::Nat(n)
     }
 }
 
-impl From<Fun<Type>> for Type {
-    fn from(fun: Fun<Type>) -> Type {
+impl From<Fun<References>> for Type {
+    fn from(fun: Fun<References>) -> Type {
         Type::Fun(fun)
     }
 }
 
-impl From<Reference<Type>> for Type {
-    fn from(rf: Reference<Type>) -> Type {
+impl From<Reference<References>> for Type {
+    fn from(rf: Reference<References>) -> Type {
         Type::Ref(rf)
     }
 }
 
-impl From<Bool<Type>> for Type {
-    fn from(b: Bool<Type>) -> Type {
+impl From<Bool<References>> for Type {
+    fn from(b: Bool<References>) -> Type {
         Type::Bool(b)
     }
 }

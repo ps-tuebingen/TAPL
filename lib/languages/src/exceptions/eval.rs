@@ -1,4 +1,4 @@
-use super::{terms::Term, types::Type, values::Value};
+use super::{Exceptions, terms::Term, types::Type};
 use check::Normalize;
 use errors::eval_error::EvalError;
 use eval::Eval;
@@ -10,25 +10,20 @@ use syntax::{
 use trace::EvalTrace;
 
 impl Eval for Term {
-    type Value = Value;
-    type Term = Term;
-
-    fn eval(
-        self,
-        env: &mut EvalContext<Term, Self::Value>,
-    ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
+    type Lang = Exceptions;
+    fn eval(self, env: &mut EvalContext<Self::Lang>) -> Result<EvalTrace<Self::Lang>, EvalError> {
         match self {
-            Term::Var(v) => <Variable<Term> as Eval>::eval(v, env),
+            Term::Var(v) => <Variable<Exceptions> as Eval>::eval(v, env),
             Term::Lambda(lam) => lam.eval(env),
             Term::App(app) => app.eval(env),
-            Term::Unit(u) => <Unit<Term> as Eval>::eval(u, env),
-            Term::True(tru) => <True<Term> as Eval>::eval(tru, env),
-            Term::False(fls) => <False<Term> as Eval>::eval(fls, env),
+            Term::Unit(u) => <Unit<Exceptions> as Eval>::eval(u, env),
+            Term::True(tru) => <True<Exceptions> as Eval>::eval(tru, env),
+            Term::False(fls) => <False<Exceptions> as Eval>::eval(fls, env),
             Term::Succ(s) => s.eval(env),
             Term::Pred(p) => p.eval(env),
             Term::If(ift) => ift.eval(env),
             Term::IsZero(isz) => isz.eval(env),
-            Term::Num(num) => <Num<Term> as Eval>::eval(num, env),
+            Term::Num(num) => <Num<Exceptions> as Eval>::eval(num, env),
             Term::Exception(exc) => exc.eval(env),
             Term::Try(tr) => tr.eval(env),
             Term::TryWithVal(tr) => tr.eval(env),
@@ -37,8 +32,9 @@ impl Eval for Term {
     }
 }
 
-impl Normalize<Type> for Type {
-    fn normalize(self, _: Environment<Type>) -> Type {
+impl Normalize for Type {
+    type Lang = Exceptions;
+    fn normalize(self, _: Environment<Self::Lang>) -> Type {
         self
     }
 }

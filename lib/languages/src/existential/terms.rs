@@ -1,4 +1,4 @@
-use super::types::Type;
+use super::{Existential, types::Type};
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
@@ -13,22 +13,22 @@ use syntax::{
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Term {
-    Var(Variable<Term>),
-    Unit(Unit<Term>),
-    Lambda(Lambda<Term, Type>),
-    App(App<Term>),
-    Pack(Pack<Term, Type>),
-    Unpack(Unpack<Term, Type>),
-    Num(Num<Term>),
-    Succ(Succ<Term>),
-    Pred(Pred<Term>),
-    IsZero(IsZero<Term>),
-    Record(Record<Term>),
-    RecordProj(RecordProj<Term>),
-    True(True<Term>),
-    False(False<Term>),
-    If(If<Term>),
-    Fix(Fix<Term>),
+    Var(Variable<Existential>),
+    Unit(Unit<Existential>),
+    Lambda(Lambda<Existential>),
+    App(App<Existential>),
+    Pack(Pack<Existential>),
+    Unpack(Unpack<Existential>),
+    Num(Num<Existential>),
+    Succ(Succ<Existential>),
+    Pred(Pred<Existential>),
+    IsZero(IsZero<Existential>),
+    Record(Record<Existential>),
+    RecordProj(RecordProj<Existential>),
+    True(True<Existential>),
+    False(False<Existential>),
+    If(If<Existential>),
+    Fix(Fix<Existential>),
 }
 
 impl syntax::terms::Term for Term {}
@@ -36,70 +36,72 @@ impl syntax::terms::Term for Term {}
 impl GrammarDescribe for Term {
     fn grammar() -> Grammar {
         Grammar::term(vec![
-            Variable::<Term>::rule(),
-            Unit::<Term>::rule(),
-            Lambda::<Term, Type>::rule(),
-            App::<Term>::rule(),
-            Pack::<Term, Type>::rule(),
-            Unpack::<Term, Type>::rule(),
-            Num::<Term>::rule(),
-            Succ::<Term>::rule(),
-            Pred::<Term>::rule(),
-            IsZero::<Term>::rule(),
-            Record::<Term>::rule(),
-            RecordProj::<Term>::rule(),
-            True::<Term>::rule(),
-            False::<Term>::rule(),
-            If::<Term>::rule(),
-            Fix::<Term>::rule(),
+            Variable::<Existential>::rule(),
+            Unit::<Existential>::rule(),
+            Lambda::<Existential>::rule(),
+            App::<Existential>::rule(),
+            Pack::<Existential>::rule(),
+            Unpack::<Existential>::rule(),
+            Num::<Existential>::rule(),
+            Succ::<Existential>::rule(),
+            Pred::<Existential>::rule(),
+            IsZero::<Existential>::rule(),
+            Record::<Existential>::rule(),
+            RecordProj::<Existential>::rule(),
+            True::<Existential>::rule(),
+            False::<Existential>::rule(),
+            If::<Existential>::rule(),
+            Fix::<Existential>::rule(),
         ])
     }
 }
 
-impl SubstTerm<Term> for Term {
+impl SubstTerm for Term {
+    type Lang = Existential;
     type Target = Self;
     fn subst(self, v: &Var, t: &Term) -> Self::Target {
         match self {
-            Term::Var(var) => var.subst(v, t),
-            Term::Unit(u) => u.subst(v, t),
-            Term::Lambda(lam) => lam.subst(v, t),
-            Term::App(app) => app.subst(v, t),
-            Term::Pack(pack) => pack.subst(v, t),
-            Term::Unpack(unpack) => unpack.subst(v, t),
-            Term::Num(num) => num.subst(v, t),
-            Term::Succ(succ) => succ.subst(v, t),
-            Term::Pred(pred) => pred.subst(v, t),
-            Term::IsZero(isz) => isz.subst(v, t),
-            Term::Record(rec) => rec.subst(v, t),
-            Term::RecordProj(proj) => proj.subst(v, t),
-            Term::True(tru) => tru.subst(v, t),
-            Term::False(fls) => fls.subst(v, t),
-            Term::If(ift) => ift.subst(v, t),
-            Term::Fix(fix) => fix.subst(v, t),
+            Term::Var(var) => var.subst(v, t).into(),
+            Term::Unit(u) => u.subst(v, t).into(),
+            Term::Lambda(lam) => lam.subst(v, t).into(),
+            Term::App(app) => app.subst(v, t).into(),
+            Term::Pack(pack) => pack.subst(v, t).into(),
+            Term::Unpack(unpack) => unpack.subst(v, t).into(),
+            Term::Num(num) => num.subst(v, t).into(),
+            Term::Succ(succ) => succ.subst(v, t).into(),
+            Term::Pred(pred) => pred.subst(v, t).into(),
+            Term::IsZero(isz) => isz.subst(v, t).into(),
+            Term::Record(rec) => rec.subst(v, t).into(),
+            Term::RecordProj(proj) => proj.subst(v, t).into(),
+            Term::True(tru) => tru.subst(v, t).into(),
+            Term::False(fls) => fls.subst(v, t).into(),
+            Term::If(ift) => ift.subst(v, t).into(),
+            Term::Fix(fix) => fix.subst(v, t).into(),
         }
     }
 }
 
-impl SubstType<Type> for Term {
+impl SubstType for Term {
+    type Lang = Existential;
     type Target = Self;
     fn subst_type(self, v: &TypeVar, ty: &Type) -> Self::Target {
         match self {
-            Term::Var(var) => var.subst_type(v, ty),
-            Term::Unit(u) => u.subst_type(v, ty),
-            Term::Lambda(lam) => lam.subst_type(v, ty),
-            Term::App(app) => app.subst_type(v, ty),
-            Term::Pack(pack) => pack.subst_type(v, ty),
-            Term::Unpack(unpack) => unpack.subst_type(v, ty),
-            Term::Num(num) => num.subst_type(v, ty),
-            Term::Succ(succ) => succ.subst_type(v, ty),
-            Term::Pred(pred) => pred.subst_type(v, ty),
-            Term::IsZero(isz) => isz.subst_type(v, ty),
-            Term::Record(rec) => rec.subst_type(v, ty),
-            Term::RecordProj(proj) => proj.subst_type(v, ty),
-            Term::True(tru) => tru.subst_type(v, ty),
-            Term::False(fls) => fls.subst_type(v, ty),
-            Term::If(ift) => ift.subst_type(v, ty),
-            Term::Fix(fix) => fix.subst_type(v, ty),
+            Term::Var(var) => var.subst_type(v, ty).into(),
+            Term::Unit(u) => u.subst_type(v, ty).into(),
+            Term::Lambda(lam) => lam.subst_type(v, ty).into(),
+            Term::App(app) => app.subst_type(v, ty).into(),
+            Term::Pack(pack) => pack.subst_type(v, ty).into(),
+            Term::Unpack(unpack) => unpack.subst_type(v, ty).into(),
+            Term::Num(num) => num.subst_type(v, ty).into(),
+            Term::Succ(succ) => succ.subst_type(v, ty).into(),
+            Term::Pred(pred) => pred.subst_type(v, ty).into(),
+            Term::IsZero(isz) => isz.subst_type(v, ty).into(),
+            Term::Record(rec) => rec.subst_type(v, ty).into(),
+            Term::RecordProj(proj) => proj.subst_type(v, ty).into(),
+            Term::True(tru) => tru.subst_type(v, ty).into(),
+            Term::False(fls) => fls.subst_type(v, ty).into(),
+            Term::If(ift) => ift.subst_type(v, ty).into(),
+            Term::Fix(fix) => fix.subst_type(v, ty).into(),
         }
     }
 }
@@ -149,97 +151,97 @@ impl LatexFmt for Term {
         }
     }
 }
-impl From<Pack<Term, Type>> for Term {
-    fn from(pack: Pack<Term, Type>) -> Term {
+impl From<Pack<Existential>> for Term {
+    fn from(pack: Pack<Existential>) -> Term {
         Term::Pack(pack)
     }
 }
 
-impl From<Unpack<Term, Type>> for Term {
-    fn from(unp: Unpack<Term, Type>) -> Term {
+impl From<Unpack<Existential>> for Term {
+    fn from(unp: Unpack<Existential>) -> Term {
         Term::Unpack(unp)
     }
 }
-impl From<Lambda<Term, Type>> for Term {
-    fn from(lam: Lambda<Term, Type>) -> Term {
+impl From<Lambda<Existential>> for Term {
+    fn from(lam: Lambda<Existential>) -> Term {
         Term::Lambda(lam)
     }
 }
 
-impl From<Unit<Term>> for Term {
-    fn from(u: Unit<Term>) -> Term {
+impl From<Unit<Existential>> for Term {
+    fn from(u: Unit<Existential>) -> Term {
         Term::Unit(u)
     }
 }
 
-impl From<True<Term>> for Term {
-    fn from(tru: True<Term>) -> Term {
+impl From<True<Existential>> for Term {
+    fn from(tru: True<Existential>) -> Term {
         Term::True(tru)
     }
 }
 
-impl From<False<Term>> for Term {
-    fn from(fls: False<Term>) -> Term {
+impl From<False<Existential>> for Term {
+    fn from(fls: False<Existential>) -> Term {
         Term::False(fls)
     }
 }
 
-impl From<Num<Term>> for Term {
-    fn from(num: Num<Term>) -> Term {
+impl From<Num<Existential>> for Term {
+    fn from(num: Num<Existential>) -> Term {
         Term::Num(num)
     }
 }
 
-impl From<Record<Term>> for Term {
-    fn from(rec: Record<Term>) -> Term {
+impl From<Record<Existential>> for Term {
+    fn from(rec: Record<Existential>) -> Term {
         Term::Record(rec)
     }
 }
 
-impl From<Variable<Term>> for Term {
-    fn from(var: Variable<Term>) -> Term {
+impl From<Variable<Existential>> for Term {
+    fn from(var: Variable<Existential>) -> Term {
         Term::Var(var)
     }
 }
 
-impl From<App<Term>> for Term {
-    fn from(app: App<Term>) -> Term {
+impl From<App<Existential>> for Term {
+    fn from(app: App<Existential>) -> Term {
         Term::App(app)
     }
 }
 
-impl From<If<Term>> for Term {
-    fn from(ift: If<Term>) -> Term {
+impl From<If<Existential>> for Term {
+    fn from(ift: If<Existential>) -> Term {
         Term::If(ift)
     }
 }
 
-impl From<Pred<Term>> for Term {
-    fn from(pred: Pred<Term>) -> Term {
+impl From<Pred<Existential>> for Term {
+    fn from(pred: Pred<Existential>) -> Term {
         Term::Pred(pred)
     }
 }
 
-impl From<Succ<Term>> for Term {
-    fn from(succ: Succ<Term>) -> Term {
+impl From<Succ<Existential>> for Term {
+    fn from(succ: Succ<Existential>) -> Term {
         Term::Succ(succ)
     }
 }
 
-impl From<IsZero<Term>> for Term {
-    fn from(isz: IsZero<Term>) -> Term {
+impl From<IsZero<Existential>> for Term {
+    fn from(isz: IsZero<Existential>) -> Term {
         Term::IsZero(isz)
     }
 }
 
-impl From<RecordProj<Term>> for Term {
-    fn from(proj: RecordProj<Term>) -> Term {
+impl From<RecordProj<Existential>> for Term {
+    fn from(proj: RecordProj<Existential>) -> Term {
         Term::RecordProj(proj)
     }
 }
 
-impl From<Fix<Term>> for Term {
-    fn from(fix: Fix<Term>) -> Term {
+impl From<Fix<Existential>> for Term {
+    fn from(fix: Fix<Existential>) -> Term {
         Term::Fix(fix)
     }
 }

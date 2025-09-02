@@ -1,3 +1,4 @@
+use super::LambdaOmega;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
@@ -13,20 +14,21 @@ pub type TypeVar = String;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Type {
-    Var(TypeVariable<Type>),
-    Unit(Unit<Type>),
-    Nat(Nat<Type>),
-    Bool(Bool<Type>),
-    OpLambda(OpLambda<Type>),
-    OpApp(OpApp<Type>),
-    Fun(Fun<Type>),
-    Forall(Forall<Type>),
+    Var(TypeVariable<LambdaOmega>),
+    Unit(Unit<LambdaOmega>),
+    Nat(Nat<LambdaOmega>),
+    Bool(Bool<LambdaOmega>),
+    OpLambda(OpLambda<LambdaOmega>),
+    OpApp(OpApp<LambdaOmega>),
+    Fun(Fun<LambdaOmega>),
+    Forall(Forall<LambdaOmega>),
 }
 
 impl TypeTrait for Type {}
 
 impl TypeGroup for Type {
-    fn into_variable(self) -> Result<TypeVariable<Type>, TypeMismatch> {
+    type Lang = LambdaOmega;
+    fn into_variable(self) -> Result<TypeVariable<LambdaOmega>, TypeMismatch> {
         if let Type::Var(v) = self {
             Ok(v)
         } else {
@@ -34,7 +36,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_unit(self) -> Result<Unit<Type>, TypeMismatch> {
+    fn into_unit(self) -> Result<Unit<LambdaOmega>, TypeMismatch> {
         if let Type::Unit(u) = self {
             Ok(u)
         } else {
@@ -42,7 +44,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_nat(self) -> Result<Nat<Type>, TypeMismatch> {
+    fn into_nat(self) -> Result<Nat<LambdaOmega>, TypeMismatch> {
         if let Type::Nat(nat) = self {
             Ok(nat)
         } else {
@@ -50,7 +52,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_bool(self) -> Result<Bool<Type>, TypeMismatch> {
+    fn into_bool(self) -> Result<Bool<LambdaOmega>, TypeMismatch> {
         if let Type::Bool(b) = self {
             Ok(b)
         } else {
@@ -58,7 +60,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_oplambda(self) -> Result<OpLambda<Type>, TypeMismatch> {
+    fn into_oplambda(self) -> Result<OpLambda<LambdaOmega>, TypeMismatch> {
         if let Type::OpLambda(lam) = self {
             Ok(lam)
         } else {
@@ -66,7 +68,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_opapp(self) -> Result<OpApp<Type>, TypeMismatch> {
+    fn into_opapp(self) -> Result<OpApp<LambdaOmega>, TypeMismatch> {
         if let Type::OpApp(app) = self {
             Ok(app)
         } else {
@@ -74,7 +76,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_fun(self) -> Result<Fun<Type>, TypeMismatch> {
+    fn into_fun(self) -> Result<Fun<LambdaOmega>, TypeMismatch> {
         if let Type::Fun(fun) = self {
             Ok(fun)
         } else {
@@ -82,7 +84,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_forall(self) -> Result<Forall<Type>, TypeMismatch> {
+    fn into_forall(self) -> Result<Forall<LambdaOmega>, TypeMismatch> {
         if let Type::Forall(forall) = self {
             Ok(forall)
         } else {
@@ -94,14 +96,14 @@ impl TypeGroup for Type {
 impl GrammarDescribe for Type {
     fn grammar() -> Grammar {
         Grammar::ty(vec![
-            TypeVariable::<Type>::rule(),
-            Unit::<Type>::rule(),
-            Bool::<Type>::rule(),
-            Nat::<Type>::rule(),
-            OpLambda::<Type>::rule(),
-            OpApp::<Type>::rule(),
-            Fun::<Type>::rule(),
-            Forall::<Type>::rule(),
+            TypeVariable::<LambdaOmega>::rule(),
+            Unit::<LambdaOmega>::rule(),
+            Bool::<LambdaOmega>::rule(),
+            Nat::<LambdaOmega>::rule(),
+            OpLambda::<LambdaOmega>::rule(),
+            OpApp::<LambdaOmega>::rule(),
+            Fun::<LambdaOmega>::rule(),
+            Forall::<LambdaOmega>::rule(),
         ])
     }
 }
@@ -136,59 +138,60 @@ impl LatexFmt for Type {
     }
 }
 
-impl SubstType<Type> for Type {
+impl SubstType for Type {
+    type Lang = LambdaOmega;
     type Target = Self;
     fn subst_type(self, v: &TypeVar, ty: &Type) -> Self::Target {
         match self {
-            Type::Var(var) => var.subst_type(v, ty),
-            Type::Unit(u) => u.subst_type(v, ty),
-            Type::Bool(b) => b.subst_type(v, ty),
-            Type::Nat(n) => n.subst_type(v, ty),
-            Type::OpLambda(oplam) => oplam.subst_type(v, ty),
-            Type::OpApp(opapp) => opapp.subst_type(v, ty),
-            Type::Fun(fun) => fun.subst_type(v, ty),
-            Type::Forall(forall) => forall.subst_type(v, ty),
+            Type::Var(var) => var.subst_type(v, ty).into(),
+            Type::Unit(u) => u.subst_type(v, ty).into(),
+            Type::Bool(b) => b.subst_type(v, ty).into(),
+            Type::Nat(n) => n.subst_type(v, ty).into(),
+            Type::OpLambda(oplam) => oplam.subst_type(v, ty).into(),
+            Type::OpApp(opapp) => opapp.subst_type(v, ty).into(),
+            Type::Fun(fun) => fun.subst_type(v, ty).into(),
+            Type::Forall(forall) => forall.subst_type(v, ty).into(),
         }
     }
 }
 
-impl From<TypeVariable<Type>> for Type {
-    fn from(var: TypeVariable<Type>) -> Type {
+impl From<TypeVariable<LambdaOmega>> for Type {
+    fn from(var: TypeVariable<LambdaOmega>) -> Type {
         Type::Var(var)
     }
 }
-impl From<Unit<Type>> for Type {
-    fn from(u: Unit<Type>) -> Type {
+impl From<Unit<LambdaOmega>> for Type {
+    fn from(u: Unit<LambdaOmega>) -> Type {
         Type::Unit(u)
     }
 }
-impl From<Nat<Type>> for Type {
-    fn from(n: Nat<Type>) -> Type {
+impl From<Nat<LambdaOmega>> for Type {
+    fn from(n: Nat<LambdaOmega>) -> Type {
         Type::Nat(n)
     }
 }
-impl From<Bool<Type>> for Type {
-    fn from(b: Bool<Type>) -> Type {
+impl From<Bool<LambdaOmega>> for Type {
+    fn from(b: Bool<LambdaOmega>) -> Type {
         Type::Bool(b)
     }
 }
-impl From<OpLambda<Type>> for Type {
-    fn from(lam: OpLambda<Type>) -> Type {
+impl From<OpLambda<LambdaOmega>> for Type {
+    fn from(lam: OpLambda<LambdaOmega>) -> Type {
         Type::OpLambda(lam)
     }
 }
-impl From<OpApp<Type>> for Type {
-    fn from(app: OpApp<Type>) -> Type {
+impl From<OpApp<LambdaOmega>> for Type {
+    fn from(app: OpApp<LambdaOmega>) -> Type {
         Type::OpApp(app)
     }
 }
-impl From<Fun<Type>> for Type {
-    fn from(fun: Fun<Type>) -> Type {
+impl From<Fun<LambdaOmega>> for Type {
+    fn from(fun: Fun<LambdaOmega>) -> Type {
         Type::Fun(fun)
     }
 }
-impl From<Forall<Type>> for Type {
-    fn from(forall: Forall<Type>) -> Type {
+impl From<Forall<LambdaOmega>> for Type {
+    fn from(forall: Forall<LambdaOmega>) -> Type {
         Type::Forall(forall)
     }
 }

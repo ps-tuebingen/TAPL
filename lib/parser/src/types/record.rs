@@ -1,12 +1,12 @@
-use crate::{GroupParse, ParsableLanguage, Parse, Rule};
+use crate::{GroupParse, Parse, Rule};
 use errors::{MissingInput, parse_error::ParserError};
 use pest::iterators::Pair;
 use std::collections::HashMap;
-use syntax::types::Record;
+use syntax::{language::Language, types::Record};
 
 impl<Lang> Parse for Record<Lang>
 where
-    Lang: ParsableLanguage,
+    Lang: Language,
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
 {

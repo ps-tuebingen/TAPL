@@ -1,16 +1,15 @@
-use super::{terms::Term, types::Type};
+use super::{BoundedQuantification, terms::Term, types::Type};
 use check::{Kindcheck, Subtypecheck, Typecheck};
 use derivations::Derivation;
 use errors::check_error::CheckError;
 use syntax::{env::Environment, kinds::Kind};
 impl Typecheck for Term {
-    type Term = Term;
-    type Type = Type;
+    type Lang = BoundedQuantification;
 
     fn check(
         &self,
-        env: Environment<Type>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
+        env: Environment<BoundedQuantification>,
+    ) -> Result<Derivation<BoundedQuantification>, CheckError> {
         match self {
             Term::Var(var) => var.check(env),
             Term::Num(num) => num.check(env),
@@ -29,13 +28,12 @@ impl Typecheck for Term {
 }
 
 impl Subtypecheck for Type {
-    type Type = Type;
-    type Term = Term;
+    type Lang = BoundedQuantification;
     fn check_subtype(
         &self,
         sup: &Self,
-        env: Environment<Type>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
+        env: Environment<Self::Lang>,
+    ) -> Result<Derivation<Self::Lang>, CheckError> {
         match self {
             Type::Var(var) => var.check_subtype(sup, env),
             Type::Top(t) => t.check_subtype(sup, env),
@@ -48,8 +46,9 @@ impl Subtypecheck for Type {
     }
 }
 
-impl Kindcheck<Type> for Type {
-    fn check_kind(&self, _: Environment<Type>) -> Result<Kind, CheckError> {
+impl Kindcheck for Type {
+    type Lang = BoundedQuantification;
+    fn check_kind(&self, _: Environment<Self::Lang>) -> Result<Kind, CheckError> {
         Ok(Kind::Star)
     }
 }

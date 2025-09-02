@@ -1,4 +1,4 @@
-use super::{terms::Term, types::Type};
+use super::{References, terms::Term};
 use errors::ValueMismatch;
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
@@ -7,23 +7,21 @@ use syntax::values::{False, Lambda, Loc, Num, True, Unit, Value as ValueTrait, V
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Value {
-    Lambda(Lambda<Term, Type>),
-    Unit(Unit<Term>),
-    Num(Num<Term>),
-    Loc(Loc<Term>),
-    True(True<Term>),
-    False(False<Term>),
+    Lambda(Lambda<References>),
+    Unit(Unit<References>),
+    Num(Num<References>),
+    Loc(Loc<References>),
+    True(True<References>),
+    False(False<References>),
 }
 
 impl ValueTrait for Value {
+    type Lang = References;
     type Term = Term;
 }
 
 impl ValueGroup for Value {
-    type Term = Term;
-    type Type = Type;
-
-    fn into_lambda(self) -> Result<Lambda<Term, Type>, ValueMismatch> {
+    fn into_lambda(self) -> Result<Lambda<References>, ValueMismatch> {
         if let Value::Lambda(lam) = self {
             Ok(lam)
         } else {
@@ -31,7 +29,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_num(self) -> Result<Num<Term>, ValueMismatch> {
+    fn into_num(self) -> Result<Num<References>, ValueMismatch> {
         if let Value::Num(num) = self {
             Ok(num)
         } else {
@@ -39,7 +37,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_loc(self) -> Result<Loc<Term>, ValueMismatch> {
+    fn into_loc(self) -> Result<Loc<References>, ValueMismatch> {
         if let Value::Loc(loc) = self {
             Ok(loc)
         } else {
@@ -47,7 +45,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_true(self) -> Result<True<Term>, ValueMismatch> {
+    fn into_true(self) -> Result<True<References>, ValueMismatch> {
         if let Value::True(tru) = self {
             Ok(tru)
         } else {
@@ -55,7 +53,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_false(self) -> Result<False<Term>, ValueMismatch> {
+    fn into_false(self) -> Result<False<References>, ValueMismatch> {
         if let Value::False(fls) = self {
             Ok(fls)
         } else {
@@ -80,12 +78,12 @@ impl From<Value> for Term {
 impl GrammarDescribe for Value {
     fn grammar() -> Grammar {
         Grammar::value(vec![
-            Lambda::<Term, Type>::rule(),
-            Num::<Term>::rule(),
-            Unit::<Term>::rule(),
-            Loc::<Term>::rule(),
-            True::<Term>::rule(),
-            False::<Term>::rule(),
+            Lambda::<References>::rule(),
+            Num::<References>::rule(),
+            Unit::<References>::rule(),
+            Loc::<References>::rule(),
+            True::<References>::rule(),
+            False::<References>::rule(),
         ])
     }
 }
@@ -116,35 +114,35 @@ impl LatexFmt for Value {
     }
 }
 
-impl From<Lambda<Term, Type>> for Value {
-    fn from(lam: Lambda<Term, Type>) -> Value {
+impl From<Lambda<References>> for Value {
+    fn from(lam: Lambda<References>) -> Value {
         Value::Lambda(lam)
     }
 }
-impl From<Unit<Term>> for Value {
-    fn from(u: Unit<Term>) -> Value {
+impl From<Unit<References>> for Value {
+    fn from(u: Unit<References>) -> Value {
         Value::Unit(u)
     }
 }
-impl From<Num<Term>> for Value {
-    fn from(n: Num<Term>) -> Value {
+impl From<Num<References>> for Value {
+    fn from(n: Num<References>) -> Value {
         Value::Num(n)
     }
 }
-impl From<Loc<Term>> for Value {
-    fn from(loc: Loc<Term>) -> Value {
+impl From<Loc<References>> for Value {
+    fn from(loc: Loc<References>) -> Value {
         Value::Loc(loc)
     }
 }
 
-impl From<True<Term>> for Value {
-    fn from(tru: True<Term>) -> Value {
+impl From<True<References>> for Value {
+    fn from(tru: True<References>) -> Value {
         Value::True(tru)
     }
 }
 
-impl From<False<Term>> for Value {
-    fn from(fls: False<Term>) -> Value {
+impl From<False<References>> for Value {
+    fn from(fls: False<References>) -> Value {
         Value::False(fls)
     }
 }

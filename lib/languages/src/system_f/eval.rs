@@ -1,4 +1,4 @@
-use super::{terms::Term, types::Type, values::Value};
+use super::{SystemF, terms::Term, types::Type};
 use check::Normalize;
 use errors::eval_error::EvalError;
 use eval::Eval;
@@ -7,13 +7,8 @@ use syntax::eval_context::EvalContext;
 use trace::EvalTrace;
 
 impl Eval for Term {
-    type Term = Term;
-    type Value = Value;
-
-    fn eval(
-        self,
-        env: &mut EvalContext<Term, Self::Value>,
-    ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
+    type Lang = SystemF;
+    fn eval(self, env: &mut EvalContext<Self::Lang>) -> Result<EvalTrace<Self::Lang>, EvalError> {
         match self {
             Term::Var(var) => var.eval(env),
             Term::Lambda(lam) => lam.eval(env),
@@ -24,8 +19,9 @@ impl Eval for Term {
     }
 }
 
-impl Normalize<Type> for Type {
-    fn normalize(self, _: Environment<Type>) -> Type {
+impl Normalize for Type {
+    type Lang = SystemF;
+    fn normalize(self, _: Environment<Self::Lang>) -> Type {
         self
     }
 }

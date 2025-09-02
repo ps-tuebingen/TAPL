@@ -1,4 +1,4 @@
-use super::types::Type;
+use super::{FOmega, types::Type};
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
@@ -14,24 +14,24 @@ pub type Var = String;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Term {
-    Var(Variable<Term>),
-    Lambda(Lambda<Term, Type>),
-    App(App<Term>),
-    TyLambda(TyLambda<Term>),
-    TyApp(TyApp<Term, Type>),
-    Pack(Pack<Term, Type>),
-    Unpack(Unpack<Term, Type>),
-    Record(Record<Term>),
-    RecordProj(RecordProj<Term>),
-    True(True<Term>),
-    False(False<Term>),
-    If(If<Term>),
-    Unit(Unit<Term>),
-    Fix(Fix<Term>),
-    Num(Num<Term>),
-    Succ(Succ<Term>),
-    Pred(Pred<Term>),
-    IsZero(IsZero<Term>),
+    Var(Variable<FOmega>),
+    Lambda(Lambda<FOmega>),
+    App(App<FOmega>),
+    TyLambda(TyLambda<FOmega>),
+    TyApp(TyApp<FOmega>),
+    Pack(Pack<FOmega>),
+    Unpack(Unpack<FOmega>),
+    Record(Record<FOmega>),
+    RecordProj(RecordProj<FOmega>),
+    True(True<FOmega>),
+    False(False<FOmega>),
+    If(If<FOmega>),
+    Unit(Unit<FOmega>),
+    Fix(Fix<FOmega>),
+    Num(Num<FOmega>),
+    Succ(Succ<FOmega>),
+    Pred(Pred<FOmega>),
+    IsZero(IsZero<FOmega>),
 }
 
 impl syntax::terms::Term for Term {}
@@ -39,76 +39,78 @@ impl syntax::terms::Term for Term {}
 impl GrammarDescribe for Term {
     fn grammar() -> Grammar {
         Grammar::term(vec![
-            Variable::<Term>::rule(),
-            Lambda::<Term, Type>::rule(),
-            App::<Term>::rule(),
-            TyLambda::<Term>::rule(),
-            TyApp::<Term, Type>::rule(),
-            Pack::<Term, Type>::rule(),
-            Unpack::<Term, Type>::rule(),
-            Record::<Term>::rule(),
-            RecordProj::<Term>::rule(),
-            True::<Term>::rule(),
-            False::<Term>::rule(),
-            If::<Term>::rule(),
-            Unit::<Term>::rule(),
-            Fix::<Term>::rule(),
-            Num::<Term>::rule(),
-            Succ::<Term>::rule(),
-            Pred::<Term>::rule(),
-            IsZero::<Term>::rule(),
+            Variable::<FOmega>::rule(),
+            Lambda::<FOmega>::rule(),
+            App::<FOmega>::rule(),
+            TyLambda::<FOmega>::rule(),
+            TyApp::<FOmega>::rule(),
+            Pack::<FOmega>::rule(),
+            Unpack::<FOmega>::rule(),
+            Record::<FOmega>::rule(),
+            RecordProj::<FOmega>::rule(),
+            True::<FOmega>::rule(),
+            False::<FOmega>::rule(),
+            If::<FOmega>::rule(),
+            Unit::<FOmega>::rule(),
+            Fix::<FOmega>::rule(),
+            Num::<FOmega>::rule(),
+            Succ::<FOmega>::rule(),
+            Pred::<FOmega>::rule(),
+            IsZero::<FOmega>::rule(),
         ])
     }
 }
 
-impl SubstTerm<Term> for Term {
+impl SubstTerm for Term {
+    type Lang = FOmega;
     type Target = Self;
     fn subst(self, v: &Var, t: &Term) -> Term {
         match self {
-            Term::Var(var) => var.subst(v, t),
-            Term::Lambda(lam) => lam.subst(v, t),
-            Term::App(app) => app.subst(v, t),
-            Term::TyLambda(lam) => lam.subst(v, t),
-            Term::TyApp(app) => app.subst(v, t),
-            Term::Pack(pack) => pack.subst(v, t),
-            Term::Unpack(unpack) => unpack.subst(v, t),
-            Term::Record(rec) => rec.subst(v, t),
-            Term::RecordProj(proj) => proj.subst(v, t),
-            Term::True(tru) => tru.subst(v, t),
-            Term::False(fls) => fls.subst(v, t),
-            Term::If(ift) => ift.subst(v, t),
-            Term::Unit(u) => u.subst(v, t),
-            Term::Fix(fix) => fix.subst(v, t),
-            Term::Num(num) => num.subst(v, t),
-            Term::Succ(s) => s.subst(v, t),
-            Term::Pred(p) => p.subst(v, t),
-            Term::IsZero(isz) => isz.subst(v, t),
+            Term::Var(var) => var.subst(v, t).into(),
+            Term::Lambda(lam) => lam.subst(v, t).into(),
+            Term::App(app) => app.subst(v, t).into(),
+            Term::TyLambda(lam) => lam.subst(v, t).into(),
+            Term::TyApp(app) => app.subst(v, t).into(),
+            Term::Pack(pack) => pack.subst(v, t).into(),
+            Term::Unpack(unpack) => unpack.subst(v, t).into(),
+            Term::Record(rec) => rec.subst(v, t).into(),
+            Term::RecordProj(proj) => proj.subst(v, t).into(),
+            Term::True(tru) => tru.subst(v, t).into(),
+            Term::False(fls) => fls.subst(v, t).into(),
+            Term::If(ift) => ift.subst(v, t).into(),
+            Term::Unit(u) => u.subst(v, t).into(),
+            Term::Fix(fix) => fix.subst(v, t).into(),
+            Term::Num(num) => num.subst(v, t).into(),
+            Term::Succ(s) => s.subst(v, t).into(),
+            Term::Pred(p) => p.subst(v, t).into(),
+            Term::IsZero(isz) => isz.subst(v, t).into(),
         }
     }
 }
 
-impl SubstType<Type> for Term {
+impl SubstType for Term {
+    type Lang = FOmega;
     type Target = Self;
     fn subst_type(self, v: &TypeVar, ty: &Type) -> Self {
         match self {
-            Term::Var(var) => var.subst_type(v, ty),
-            Term::Lambda(lam) => lam.subst_type(v, ty),
-            Term::App(app) => app.subst_type(v, ty),
-            Term::TyLambda(lam) => lam.subst_type(v, ty),
-            Term::TyApp(app) => app.subst_type(v, ty),
-            Term::Pack(pack) => pack.subst_type(v, ty),
-            Term::Unpack(unpack) => unpack.subst_type(v, ty),
-            Term::Record(rec) => rec.subst_type(v, ty),
-            Term::RecordProj(proj) => proj.subst_type(v, ty),
-            Term::True(tru) => tru.subst_type(v, ty),
-            Term::False(fls) => fls.subst_type(v, ty),
-            Term::If(ift) => ift.subst_type(v, ty),
-            Term::Unit(u) => u.subst_type(v, ty),
-            Term::Fix(fix) => fix.subst_type(v, ty),
-            Term::Num(num) => num.subst_type(v, ty),
-            Term::Succ(s) => s.subst_type(v, ty),
-            Term::Pred(p) => p.subst_type(v, ty),
-            Term::IsZero(isz) => isz.subst_type(v, ty),
+            Term::Var(var) => var.subst_type(v, ty).into(),
+            Term::Lambda(lam) => lam.subst_type(v, ty).into(),
+            Term::App(app) => app.subst_type(v, ty).into(),
+            Term::TyLambda(lam) => lam.subst_type(v, ty).into(),
+            Term::TyApp(app) => app.subst_type(v, ty).into(),
+            Term::Pack(pack) => pack.subst_type(v, ty).into(),
+            Term::Unpack(unpack) => unpack.subst_type(v, ty).into(),
+            Term::Record(rec) => rec.subst_type(v, ty).into(),
+            Term::RecordProj(proj) => proj.subst_type(v, ty).into(),
+            Term::True(tru) => tru.subst_type(v, ty).into(),
+            Term::False(fls) => fls.subst_type(v, ty).into(),
+            Term::If(ift) => ift.subst_type(v, ty).into(),
+            Term::Unit(u) => u.subst_type(v, ty).into(),
+            Term::Fix(fix) => fix.subst_type(v, ty).into(),
+            Term::Num(num) => num.subst_type(v, ty).into(),
+            Term::Succ(s) => s.subst_type(v, ty).into(),
+            Term::Pred(p) => p.subst_type(v, ty).into(),
+            Term::IsZero(isz) => isz.subst_type(v, ty).into(),
         }
     }
 }
@@ -163,107 +165,107 @@ impl LatexFmt for Term {
     }
 }
 
-impl From<Pack<Term, Type>> for Term {
-    fn from(pack: Pack<Term, Type>) -> Term {
+impl From<Pack<FOmega>> for Term {
+    fn from(pack: Pack<FOmega>) -> Term {
         Term::Pack(pack)
     }
 }
-impl From<Unpack<Term, Type>> for Term {
-    fn from(unpack: Unpack<Term, Type>) -> Term {
+impl From<Unpack<FOmega>> for Term {
+    fn from(unpack: Unpack<FOmega>) -> Term {
         Term::Unpack(unpack)
     }
 }
-impl From<TyApp<Term, Type>> for Term {
-    fn from(tyapp: TyApp<Term, Type>) -> Term {
+impl From<TyApp<FOmega>> for Term {
+    fn from(tyapp: TyApp<FOmega>) -> Term {
         Term::TyApp(tyapp)
     }
 }
 
-impl From<TyLambda<Term>> for Term {
-    fn from(tylam: TyLambda<Term>) -> Term {
+impl From<TyLambda<FOmega>> for Term {
+    fn from(tylam: TyLambda<FOmega>) -> Term {
         Term::TyLambda(tylam)
     }
 }
-impl From<Lambda<Term, Type>> for Term {
-    fn from(lam: Lambda<Term, Type>) -> Term {
+impl From<Lambda<FOmega>> for Term {
+    fn from(lam: Lambda<FOmega>) -> Term {
         Term::Lambda(lam)
     }
 }
 
-impl From<Unit<Term>> for Term {
-    fn from(u: Unit<Term>) -> Term {
+impl From<Unit<FOmega>> for Term {
+    fn from(u: Unit<FOmega>) -> Term {
         Term::Unit(u)
     }
 }
 
-impl From<True<Term>> for Term {
-    fn from(tru: True<Term>) -> Term {
+impl From<True<FOmega>> for Term {
+    fn from(tru: True<FOmega>) -> Term {
         Term::True(tru)
     }
 }
 
-impl From<False<Term>> for Term {
-    fn from(fls: False<Term>) -> Term {
+impl From<False<FOmega>> for Term {
+    fn from(fls: False<FOmega>) -> Term {
         Term::False(fls)
     }
 }
 
-impl From<Num<Term>> for Term {
-    fn from(num: Num<Term>) -> Term {
+impl From<Num<FOmega>> for Term {
+    fn from(num: Num<FOmega>) -> Term {
         Term::Num(num)
     }
 }
 
-impl From<Record<Term>> for Term {
-    fn from(rec: Record<Term>) -> Term {
+impl From<Record<FOmega>> for Term {
+    fn from(rec: Record<FOmega>) -> Term {
         Term::Record(rec)
     }
 }
 
-impl From<Variable<Term>> for Term {
-    fn from(var: Variable<Term>) -> Term {
+impl From<Variable<FOmega>> for Term {
+    fn from(var: Variable<FOmega>) -> Term {
         Term::Var(var)
     }
 }
 
-impl From<App<Term>> for Term {
-    fn from(app: App<Term>) -> Term {
+impl From<App<FOmega>> for Term {
+    fn from(app: App<FOmega>) -> Term {
         Term::App(app)
     }
 }
 
-impl From<If<Term>> for Term {
-    fn from(ift: If<Term>) -> Term {
+impl From<If<FOmega>> for Term {
+    fn from(ift: If<FOmega>) -> Term {
         Term::If(ift)
     }
 }
 
-impl From<Pred<Term>> for Term {
-    fn from(pred: Pred<Term>) -> Term {
+impl From<Pred<FOmega>> for Term {
+    fn from(pred: Pred<FOmega>) -> Term {
         Term::Pred(pred)
     }
 }
 
-impl From<Succ<Term>> for Term {
-    fn from(succ: Succ<Term>) -> Term {
+impl From<Succ<FOmega>> for Term {
+    fn from(succ: Succ<FOmega>) -> Term {
         Term::Succ(succ)
     }
 }
 
-impl From<IsZero<Term>> for Term {
-    fn from(isz: IsZero<Term>) -> Term {
+impl From<IsZero<FOmega>> for Term {
+    fn from(isz: IsZero<FOmega>) -> Term {
         Term::IsZero(isz)
     }
 }
 
-impl From<RecordProj<Term>> for Term {
-    fn from(proj: RecordProj<Term>) -> Term {
+impl From<RecordProj<FOmega>> for Term {
+    fn from(proj: RecordProj<FOmega>) -> Term {
         Term::RecordProj(proj)
     }
 }
 
-impl From<Fix<Term>> for Term {
-    fn from(fix: Fix<Term>) -> Term {
+impl From<Fix<FOmega>> for Term {
+    fn from(fix: Fix<FOmega>) -> Term {
         Term::Fix(fix)
     }
 }

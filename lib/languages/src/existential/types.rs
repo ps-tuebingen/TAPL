@@ -1,3 +1,4 @@
+use super::Existential;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
@@ -10,19 +11,20 @@ use syntax::{
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Type {
-    Var(TypeVariable<Type>),
-    Unit(Unit<Type>),
-    Nat(Nat<Type>),
-    Bool(Bool<Type>),
-    Fun(Fun<Type>),
-    Exists(Exists<Type>),
-    Record(Record<Type>),
+    Var(TypeVariable<Existential>),
+    Unit(Unit<Existential>),
+    Nat(Nat<Existential>),
+    Bool(Bool<Existential>),
+    Fun(Fun<Existential>),
+    Exists(Exists<Existential>),
+    Record(Record<Existential>),
 }
 
 impl TypeTrait for Type {}
 
 impl TypeGroup for Type {
-    fn into_unit(self) -> Result<Unit<Type>, TypeMismatch> {
+    type Lang = Existential;
+    fn into_unit(self) -> Result<Unit<Existential>, TypeMismatch> {
         if let Type::Unit(u) = self {
             Ok(u)
         } else {
@@ -30,7 +32,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_nat(self) -> Result<Nat<Type>, TypeMismatch> {
+    fn into_nat(self) -> Result<Nat<Existential>, TypeMismatch> {
         if let Type::Nat(nat) = self {
             Ok(nat)
         } else {
@@ -38,7 +40,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_bool(self) -> Result<Bool<Type>, TypeMismatch> {
+    fn into_bool(self) -> Result<Bool<Existential>, TypeMismatch> {
         if let Type::Bool(b) = self {
             Ok(b)
         } else {
@@ -46,7 +48,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_fun(self) -> Result<Fun<Type>, TypeMismatch> {
+    fn into_fun(self) -> Result<Fun<Existential>, TypeMismatch> {
         if let Type::Fun(fun) = self {
             Ok(fun)
         } else {
@@ -54,7 +56,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_exists(self) -> Result<Exists<Type>, TypeMismatch> {
+    fn into_exists(self) -> Result<Exists<Existential>, TypeMismatch> {
         if let Type::Exists(ex) = self {
             Ok(ex)
         } else {
@@ -65,7 +67,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_record(self) -> Result<Record<Type>, TypeMismatch> {
+    fn into_record(self) -> Result<Record<Existential>, TypeMismatch> {
         if let Type::Record(rec) = self {
             Ok(rec)
         } else {
@@ -74,17 +76,18 @@ impl TypeGroup for Type {
     }
 }
 
-impl SubstType<Type> for Type {
+impl SubstType for Type {
+    type Lang = Existential;
     type Target = Self;
     fn subst_type(self, v: &TypeVar, ty: &Type) -> Self::Target {
         match self {
-            Type::Var(var) => var.subst_type(v, ty),
-            Type::Unit(u) => u.subst_type(v, ty),
-            Type::Nat(nat) => nat.subst_type(v, ty),
-            Type::Bool(b) => b.subst_type(v, ty),
-            Type::Fun(fun) => fun.subst_type(v, ty),
-            Type::Exists(exists) => exists.subst_type(v, ty),
-            Type::Record(rec) => rec.subst_type(v, ty),
+            Type::Var(var) => var.subst_type(v, ty).into(),
+            Type::Unit(u) => u.subst_type(v, ty).into(),
+            Type::Nat(nat) => nat.subst_type(v, ty).into(),
+            Type::Bool(b) => b.subst_type(v, ty).into(),
+            Type::Fun(fun) => fun.subst_type(v, ty).into(),
+            Type::Exists(exists) => exists.subst_type(v, ty).into(),
+            Type::Record(rec) => rec.subst_type(v, ty).into(),
         }
     }
 }
@@ -92,13 +95,13 @@ impl SubstType<Type> for Type {
 impl GrammarDescribe for Type {
     fn grammar() -> Grammar {
         Grammar::ty(vec![
-            TypeVariable::<Type>::rule(),
-            Unit::<Type>::rule(),
-            Nat::<Type>::rule(),
-            Bool::<Type>::rule(),
-            Fun::<Type>::rule(),
-            Exists::<Type>::rule(),
-            Record::<Type>::rule(),
+            TypeVariable::<Existential>::rule(),
+            Unit::<Existential>::rule(),
+            Nat::<Existential>::rule(),
+            Bool::<Existential>::rule(),
+            Fun::<Existential>::rule(),
+            Exists::<Existential>::rule(),
+            Record::<Existential>::rule(),
         ])
     }
 }
@@ -131,43 +134,43 @@ impl LatexFmt for Type {
     }
 }
 
-impl From<Exists<Type>> for Type {
-    fn from(ex: Exists<Type>) -> Type {
+impl From<Exists<Existential>> for Type {
+    fn from(ex: Exists<Existential>) -> Type {
         Type::Exists(ex)
     }
 }
 
-impl From<TypeVariable<Type>> for Type {
-    fn from(v: TypeVariable<Type>) -> Type {
+impl From<TypeVariable<Existential>> for Type {
+    fn from(v: TypeVariable<Existential>) -> Type {
         Type::Var(v)
     }
 }
-impl From<Unit<Type>> for Type {
-    fn from(u: Unit<Type>) -> Type {
+impl From<Unit<Existential>> for Type {
+    fn from(u: Unit<Existential>) -> Type {
         Type::Unit(u)
     }
 }
 
-impl From<Fun<Type>> for Type {
-    fn from(fun: Fun<Type>) -> Type {
+impl From<Fun<Existential>> for Type {
+    fn from(fun: Fun<Existential>) -> Type {
         Type::Fun(fun)
     }
 }
 
-impl From<Bool<Type>> for Type {
-    fn from(b: Bool<Type>) -> Type {
+impl From<Bool<Existential>> for Type {
+    fn from(b: Bool<Existential>) -> Type {
         Type::Bool(b)
     }
 }
 
-impl From<Nat<Type>> for Type {
-    fn from(n: Nat<Type>) -> Type {
+impl From<Nat<Existential>> for Type {
+    fn from(n: Nat<Existential>) -> Type {
         Type::Nat(n)
     }
 }
 
-impl From<Record<Type>> for Type {
-    fn from(rec: Record<Type>) -> Type {
+impl From<Record<Existential>> for Type {
+    fn from(rec: Record<Existential>) -> Type {
         Type::Record(rec)
     }
 }

@@ -1,4 +1,4 @@
-use super::types::Type;
+use super::{BoundedQuantification, types::Type};
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
@@ -12,18 +12,18 @@ use syntax::{
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Term {
-    Var(Variable<Term>),
-    Num(Num<Term>),
-    Succ(Succ<Term>),
-    Pred(Pred<Term>),
-    Lambda(Lambda<Term, Type>),
-    App(App<Term>),
-    LambdaSub(LambdaSub<Term, Type>),
-    TyApp(TyApp<Term, Type>),
-    Pack(Pack<Term, Type>),
-    Unpack(Unpack<Term, Type>),
-    Record(Record<Term>),
-    Projection(RecordProj<Term>),
+    Var(Variable<BoundedQuantification>),
+    Num(Num<BoundedQuantification>),
+    Succ(Succ<BoundedQuantification>),
+    Pred(Pred<BoundedQuantification>),
+    Lambda(Lambda<BoundedQuantification>),
+    App(App<BoundedQuantification>),
+    LambdaSub(LambdaSub<BoundedQuantification>),
+    TyApp(TyApp<BoundedQuantification>),
+    Pack(Pack<BoundedQuantification>),
+    Unpack(Unpack<BoundedQuantification>),
+    Record(Record<BoundedQuantification>),
+    Projection(RecordProj<BoundedQuantification>),
 }
 
 impl syntax::terms::Term for Term {}
@@ -31,18 +31,18 @@ impl syntax::terms::Term for Term {}
 impl GrammarDescribe for Term {
     fn grammar() -> Grammar {
         Grammar::term(vec![
-            Variable::<Term>::rule(),
-            Num::<Term>::rule(),
-            Succ::<Term>::rule(),
-            Pred::<Term>::rule(),
-            Lambda::<Term, Type>::rule(),
-            App::<Term>::rule(),
-            LambdaSub::<Term, Type>::rule(),
-            TyApp::<Term, Type>::rule(),
-            Pack::<Term, Type>::rule(),
-            Unpack::<Term, Type>::rule(),
-            Record::<Term>::rule(),
-            RecordProj::<Term>::rule(),
+            Variable::<BoundedQuantification>::rule(),
+            Num::<BoundedQuantification>::rule(),
+            Succ::<BoundedQuantification>::rule(),
+            Pred::<BoundedQuantification>::rule(),
+            Lambda::<BoundedQuantification>::rule(),
+            App::<BoundedQuantification>::rule(),
+            LambdaSub::<BoundedQuantification>::rule(),
+            TyApp::<BoundedQuantification>::rule(),
+            Pack::<BoundedQuantification>::rule(),
+            Unpack::<BoundedQuantification>::rule(),
+            Record::<BoundedQuantification>::rule(),
+            RecordProj::<BoundedQuantification>::rule(),
         ])
     }
 }
@@ -85,114 +85,116 @@ impl LatexFmt for Term {
     }
 }
 
-impl SubstTerm<Term> for Term {
+impl SubstTerm for Term {
+    type Lang = BoundedQuantification;
     type Target = Term;
     fn subst(self, v: &Var, t: &Term) -> Self::Target {
         match self {
-            Term::Var(var) => var.subst(v, t),
-            Term::Num(num) => num.subst(v, t),
-            Term::Succ(succ) => succ.subst(v, t),
-            Term::Pred(pred) => pred.subst(v, t),
-            Term::Lambda(lam) => lam.subst(v, t),
-            Term::App(app) => app.subst(v, t),
-            Term::LambdaSub(lam) => lam.subst(v, t),
-            Term::TyApp(app) => app.subst(v, t),
-            Term::Pack(pack) => pack.subst(v, t),
-            Term::Unpack(unpack) => unpack.subst(v, t),
-            Term::Record(rec) => rec.subst(v, t),
-            Term::Projection(proj) => proj.subst(v, t),
+            Term::Var(var) => var.subst(v, t).into(),
+            Term::Num(num) => num.subst(v, t).into(),
+            Term::Succ(succ) => succ.subst(v, t).into(),
+            Term::Pred(pred) => pred.subst(v, t).into(),
+            Term::Lambda(lam) => lam.subst(v, t).into(),
+            Term::App(app) => app.subst(v, t).into(),
+            Term::LambdaSub(lam) => lam.subst(v, t).into(),
+            Term::TyApp(app) => app.subst(v, t).into(),
+            Term::Pack(pack) => pack.subst(v, t).into(),
+            Term::Unpack(unpack) => unpack.subst(v, t).into(),
+            Term::Record(rec) => rec.subst(v, t).into(),
+            Term::Projection(proj) => proj.subst(v, t).into(),
         }
     }
 }
 
-impl SubstType<Type> for Term {
+impl SubstType for Term {
+    type Lang = BoundedQuantification;
     type Target = Term;
     fn subst_type(self, v: &TypeVar, t: &Type) -> Self::Target {
         match self {
-            Term::Var(var) => var.subst_type(v, t),
-            Term::Num(num) => num.subst_type(v, t),
-            Term::Succ(succ) => succ.subst_type(v, t),
-            Term::Pred(pred) => pred.subst_type(v, t),
-            Term::Lambda(lam) => lam.subst_type(v, t),
-            Term::App(app) => app.subst_type(v, t),
-            Term::LambdaSub(lam) => lam.subst_type(v, t),
-            Term::TyApp(app) => app.subst_type(v, t),
-            Term::Pack(pack) => pack.subst_type(v, t),
-            Term::Unpack(unpack) => unpack.subst_type(v, t),
-            Term::Record(rec) => rec.subst_type(v, t),
-            Term::Projection(proj) => proj.subst_type(v, t),
+            Term::Var(var) => var.subst_type(v, t).into(),
+            Term::Num(num) => num.subst_type(v, t).into(),
+            Term::Succ(succ) => succ.subst_type(v, t).into(),
+            Term::Pred(pred) => pred.subst_type(v, t).into(),
+            Term::Lambda(lam) => lam.subst_type(v, t).into(),
+            Term::App(app) => app.subst_type(v, t).into(),
+            Term::LambdaSub(lam) => lam.subst_type(v, t).into(),
+            Term::TyApp(app) => app.subst_type(v, t).into(),
+            Term::Pack(pack) => pack.subst_type(v, t).into(),
+            Term::Unpack(unpack) => unpack.subst_type(v, t).into(),
+            Term::Record(rec) => rec.subst_type(v, t).into(),
+            Term::Projection(proj) => proj.subst_type(v, t).into(),
         }
     }
 }
 
-impl From<Variable<Term>> for Term {
-    fn from(var: Variable<Term>) -> Term {
+impl From<Variable<BoundedQuantification>> for Term {
+    fn from(var: Variable<BoundedQuantification>) -> Term {
         Term::Var(var)
     }
 }
 
-impl From<Num<Term>> for Term {
-    fn from(num: Num<Term>) -> Term {
+impl From<Num<BoundedQuantification>> for Term {
+    fn from(num: Num<BoundedQuantification>) -> Term {
         Term::Num(num)
     }
 }
 
-impl From<Succ<Term>> for Term {
-    fn from(succ: Succ<Term>) -> Term {
+impl From<Succ<BoundedQuantification>> for Term {
+    fn from(succ: Succ<BoundedQuantification>) -> Term {
         Term::Succ(succ)
     }
 }
 
-impl From<Pred<Term>> for Term {
-    fn from(pred: Pred<Term>) -> Term {
+impl From<Pred<BoundedQuantification>> for Term {
+    fn from(pred: Pred<BoundedQuantification>) -> Term {
         Term::Pred(pred)
     }
 }
 
-impl From<Lambda<Term, Type>> for Term {
-    fn from(lam: Lambda<Term, Type>) -> Term {
+impl From<Lambda<BoundedQuantification>> for Term {
+    fn from(lam: Lambda<BoundedQuantification>) -> Term {
         Term::Lambda(lam)
     }
 }
 
-impl From<App<Term>> for Term {
-    fn from(app: App<Term>) -> Term {
+impl From<App<BoundedQuantification>> for Term {
+    fn from(app: App<BoundedQuantification>) -> Term {
         Term::App(app)
     }
 }
 
-impl From<LambdaSub<Term, Type>> for Term {
-    fn from(lam: LambdaSub<Term, Type>) -> Term {
+impl From<LambdaSub<BoundedQuantification>> for Term {
+    fn from(lam: LambdaSub<BoundedQuantification>) -> Term {
         Term::LambdaSub(lam)
     }
 }
 
-impl From<TyApp<Term, Type>> for Term {
-    fn from(app: TyApp<Term, Type>) -> Term {
+impl From<TyApp<BoundedQuantification>> for Term {
+    fn from(app: TyApp<BoundedQuantification>) -> Term {
         Term::TyApp(app)
     }
 }
 
-impl From<Pack<Term, Type>> for Term {
-    fn from(pack: Pack<Term, Type>) -> Term {
+impl From<Pack<BoundedQuantification>> for Term {
+    fn from(pack: Pack<BoundedQuantification>) -> Term {
         Term::Pack(pack)
     }
 }
 
-impl From<Unpack<Term, Type>> for Term {
-    fn from(unpack: Unpack<Term, Type>) -> Term {
+impl From<Unpack<BoundedQuantification>> for Term {
+    fn from(unpack: Unpack<BoundedQuantification>) -> Term {
         Term::Unpack(unpack)
     }
 }
 
-impl From<Record<Term>> for Term {
-    fn from(rec: Record<Term>) -> Term {
+impl From<Record<BoundedQuantification>> for Term {
+    fn from(rec: Record<BoundedQuantification>) -> Term {
         Term::Record(rec)
     }
 }
 
-impl From<RecordProj<Term>> for Term {
-    fn from(proj: RecordProj<Term>) -> Term {
+impl From<RecordProj<BoundedQuantification>> for Term {
+    fn from(proj: RecordProj<BoundedQuantification>) -> Term {
         Term::Projection(proj)
     }
 }

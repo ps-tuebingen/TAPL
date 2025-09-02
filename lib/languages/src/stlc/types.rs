@@ -1,3 +1,4 @@
+use super::Stlc;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
@@ -13,23 +14,24 @@ use syntax::{
 
 #[derive(PartialEq, Eq, Clone, Debug)]
 pub enum Type {
-    Unit(Unit<Type>),
-    Fun(Fun<Type>),
-    Bool(Bool<Type>),
-    Nat(Nat<Type>),
-    Prod(Product<Type>),
-    Tup(Tuple<Type>),
-    Record(Record<Type>),
-    Sum(Sum<Type>),
-    Variant(Variant<Type>),
-    Optional(Optional<Type>),
-    List(List<Type>),
+    Unit(Unit<Stlc>),
+    Fun(Fun<Stlc>),
+    Bool(Bool<Stlc>),
+    Nat(Nat<Stlc>),
+    Prod(Product<Stlc>),
+    Tup(Tuple<Stlc>),
+    Record(Record<Stlc>),
+    Sum(Sum<Stlc>),
+    Variant(Variant<Stlc>),
+    Optional(Optional<Stlc>),
+    List(List<Stlc>),
 }
 
 impl TypeTrait for Type {}
 
 impl TypeGroup for Type {
-    fn into_unit(self) -> Result<Unit<Type>, TypeMismatch> {
+    type Lang = Stlc;
+    fn into_unit(self) -> Result<Unit<Stlc>, TypeMismatch> {
         if let Type::Unit(u) = self {
             Ok(u)
         } else {
@@ -37,7 +39,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_fun(self) -> Result<Fun<Type>, TypeMismatch> {
+    fn into_fun(self) -> Result<Fun<Stlc>, TypeMismatch> {
         if let Type::Fun(fun) = self {
             Ok(fun)
         } else {
@@ -45,7 +47,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_bool(self) -> Result<Bool<Type>, TypeMismatch> {
+    fn into_bool(self) -> Result<Bool<Stlc>, TypeMismatch> {
         if let Type::Bool(b) = self {
             Ok(b)
         } else {
@@ -53,7 +55,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_nat(self) -> Result<Nat<Type>, TypeMismatch> {
+    fn into_nat(self) -> Result<Nat<Stlc>, TypeMismatch> {
         if let Type::Nat(n) = self {
             Ok(n)
         } else {
@@ -61,7 +63,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_product(self) -> Result<Product<Type>, TypeMismatch> {
+    fn into_product(self) -> Result<Product<Stlc>, TypeMismatch> {
         if let Type::Prod(prod) = self {
             Ok(prod)
         } else {
@@ -69,7 +71,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_tuple(self) -> Result<Tuple<Type>, TypeMismatch> {
+    fn into_tuple(self) -> Result<Tuple<Stlc>, TypeMismatch> {
         if let Type::Tup(tup) = self {
             Ok(tup)
         } else {
@@ -77,7 +79,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_record(self) -> Result<Record<Type>, TypeMismatch> {
+    fn into_record(self) -> Result<Record<Stlc>, TypeMismatch> {
         if let Type::Record(rec) = self {
             Ok(rec)
         } else {
@@ -85,7 +87,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_sum(self) -> Result<Sum<Type>, TypeMismatch> {
+    fn into_sum(self) -> Result<Sum<Stlc>, TypeMismatch> {
         if let Type::Sum(sum) = self {
             Ok(sum)
         } else {
@@ -93,7 +95,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_variant(self) -> Result<Variant<Type>, TypeMismatch> {
+    fn into_variant(self) -> Result<Variant<Stlc>, TypeMismatch> {
         if let Type::Variant(var) = self {
             Ok(var)
         } else {
@@ -101,7 +103,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_optional(self) -> Result<Optional<Type>, TypeMismatch> {
+    fn into_optional(self) -> Result<Optional<Stlc>, TypeMismatch> {
         if let Type::Optional(opt) = self {
             Ok(opt)
         } else {
@@ -109,7 +111,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_list(self) -> Result<List<Type>, TypeMismatch> {
+    fn into_list(self) -> Result<List<Stlc>, TypeMismatch> {
         if let Type::List(list) = self {
             Ok(list)
         } else {
@@ -121,17 +123,17 @@ impl TypeGroup for Type {
 impl GrammarDescribe for Type {
     fn grammar() -> Grammar {
         Grammar::ty(vec![
-            Unit::<Type>::rule(),
-            Fun::<Type>::rule(),
-            Bool::<Type>::rule(),
-            Nat::<Type>::rule(),
-            Product::<Type>::rule(),
-            Tuple::<Type>::rule(),
-            Record::<Type>::rule(),
-            Sum::<Type>::rule(),
-            Variant::<Type>::rule(),
-            Optional::<Type>::rule(),
-            List::<Type>::rule(),
+            Unit::<Stlc>::rule(),
+            Fun::<Stlc>::rule(),
+            Bool::<Stlc>::rule(),
+            Nat::<Stlc>::rule(),
+            Product::<Stlc>::rule(),
+            Tuple::<Stlc>::rule(),
+            Record::<Stlc>::rule(),
+            Sum::<Stlc>::rule(),
+            Variant::<Stlc>::rule(),
+            Optional::<Stlc>::rule(),
+            List::<Stlc>::rule(),
         ])
     }
 }
@@ -172,75 +174,76 @@ impl LatexFmt for Type {
     }
 }
 
-impl SubstType<Type> for Type {
+impl SubstType for Type {
+    type Lang = Stlc;
     type Target = Type;
     fn subst_type(self, _: &TypeVar, _: &Type) -> Self::Target {
         self
     }
 }
 
-impl From<Unit<Type>> for Type {
-    fn from(u: Unit<Type>) -> Type {
+impl From<Unit<Stlc>> for Type {
+    fn from(u: Unit<Stlc>) -> Type {
         Type::Unit(u)
     }
 }
 
-impl From<Fun<Type>> for Type {
-    fn from(fun: Fun<Type>) -> Type {
+impl From<Fun<Stlc>> for Type {
+    fn from(fun: Fun<Stlc>) -> Type {
         Type::Fun(fun)
     }
 }
 
-impl From<Bool<Type>> for Type {
-    fn from(b: Bool<Type>) -> Type {
+impl From<Bool<Stlc>> for Type {
+    fn from(b: Bool<Stlc>) -> Type {
         Type::Bool(b)
     }
 }
 
-impl From<Nat<Type>> for Type {
-    fn from(n: Nat<Type>) -> Type {
+impl From<Nat<Stlc>> for Type {
+    fn from(n: Nat<Stlc>) -> Type {
         Type::Nat(n)
     }
 }
 
-impl From<Product<Type>> for Type {
-    fn from(prod: Product<Type>) -> Type {
+impl From<Product<Stlc>> for Type {
+    fn from(prod: Product<Stlc>) -> Type {
         Type::Prod(prod)
     }
 }
 
-impl From<Tuple<Type>> for Type {
-    fn from(tup: Tuple<Type>) -> Type {
+impl From<Tuple<Stlc>> for Type {
+    fn from(tup: Tuple<Stlc>) -> Type {
         Type::Tup(tup)
     }
 }
 
-impl From<Record<Type>> for Type {
-    fn from(rec: Record<Type>) -> Type {
+impl From<Record<Stlc>> for Type {
+    fn from(rec: Record<Stlc>) -> Type {
         Type::Record(rec)
     }
 }
 
-impl From<Sum<Type>> for Type {
-    fn from(sum: Sum<Type>) -> Type {
+impl From<Sum<Stlc>> for Type {
+    fn from(sum: Sum<Stlc>) -> Type {
         Type::Sum(sum)
     }
 }
 
-impl From<Variant<Type>> for Type {
-    fn from(var: Variant<Type>) -> Type {
+impl From<Variant<Stlc>> for Type {
+    fn from(var: Variant<Stlc>) -> Type {
         Type::Variant(var)
     }
 }
 
-impl From<Optional<Type>> for Type {
-    fn from(opt: Optional<Type>) -> Type {
+impl From<Optional<Stlc>> for Type {
+    fn from(opt: Optional<Stlc>) -> Type {
         Type::Optional(opt)
     }
 }
 
-impl From<List<Type>> for Type {
-    fn from(ls: List<Type>) -> Type {
+impl From<List<Stlc>> for Type {
+    fn from(ls: List<Stlc>) -> Type {
         Type::List(ls)
     }
 }

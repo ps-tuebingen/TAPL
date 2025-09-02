@@ -1,11 +1,11 @@
-use crate::{GroupParse, ParsableLanguage, Parse, Rule};
+use crate::{GroupParse, Parse, Rule};
 use errors::{MissingInput, RemainingInput, parse_error::ParserError};
 use pest::iterators::Pair;
-use syntax::terms::Tail;
+use syntax::{language::Language, terms::Tail};
 
 impl<Lang> Parse for Tail<Lang>
 where
-    Lang: ParsableLanguage,
+    Lang: Language,
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
 {

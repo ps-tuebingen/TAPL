@@ -1,11 +1,11 @@
-use crate::{GroupParse, ParsableLanguage, Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, Parse, Rule, pair_to_n_inner};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
-use syntax::terms::SumCase;
+use syntax::{language::Language, terms::SumCase};
 
 impl<Lang> Parse for SumCase<Lang>
 where
-    Lang: ParsableLanguage,
+    Lang: Language,
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
 {
@@ -38,7 +38,7 @@ fn pairs_to_sum_patterns<Lang>(
     p2: Pair<'_, Rule>,
 ) -> Result<(String, String, Lang::Term, Lang::Term), ParserError>
 where
-    Lang: ParsableLanguage,
+    Lang: Language,
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
 {

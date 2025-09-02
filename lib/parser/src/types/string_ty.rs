@@ -1,11 +1,14 @@
-use crate::{GroupParse, ParsableLanguage, Rule};
+use crate::{GroupParse, Rule};
 use errors::{UnknownKeyword, parse_error::ParserError};
 use pest::iterators::Pair;
-use syntax::types::{Bool, Bot, Nat, Unit};
+use syntax::{
+    language::Language,
+    types::{Bool, Bot, Nat, Unit},
+};
 
 pub struct StringTy<Lang>
 where
-    Lang: ParsableLanguage,
+    Lang: Language,
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
 {
@@ -17,7 +20,7 @@ where
 
 impl<Lang> StringTy<Lang>
 where
-    Lang: ParsableLanguage,
+    Lang: Language,
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
 {
@@ -116,7 +119,7 @@ where
 
 impl<Lang> Default for StringTy<Lang>
 where
-    Lang: ParsableLanguage,
+    Lang: Language,
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
 {

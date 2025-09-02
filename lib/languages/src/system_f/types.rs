@@ -1,3 +1,4 @@
+use super::SystemF;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
@@ -10,15 +11,16 @@ use syntax::{
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Type {
-    Var(TypeVariable<Type>),
-    Fun(Fun<Type>),
-    Forall(Forall<Type>),
+    Var(TypeVariable<SystemF>),
+    Fun(Fun<SystemF>),
+    Forall(Forall<SystemF>),
 }
 
 impl TypeTrait for Type {}
 
 impl TypeGroup for Type {
-    fn into_fun(self) -> Result<Fun<Self>, TypeMismatch> {
+    type Lang = SystemF;
+    fn into_fun(self) -> Result<Fun<Self::Lang>, TypeMismatch> {
         if let Type::Fun(fun) = self {
             Ok(fun)
         } else {
@@ -26,7 +28,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_forall(self) -> Result<Forall<Self>, TypeMismatch> {
+    fn into_forall(self) -> Result<Forall<Self::Lang>, TypeMismatch> {
         if let Type::Forall(forall) = self {
             Ok(forall)
         } else {
@@ -38,9 +40,9 @@ impl TypeGroup for Type {
 impl GrammarDescribe for Type {
     fn grammar() -> Grammar {
         Grammar::ty(vec![
-            TypeVariable::<Type>::rule(),
-            Fun::<Type>::rule(),
-            Forall::<Type>::rule(),
+            TypeVariable::<SystemF>::rule(),
+            Fun::<SystemF>::rule(),
+            Forall::<SystemF>::rule(),
         ])
     }
 }
@@ -65,32 +67,33 @@ impl LatexFmt for Type {
     }
 }
 
-impl SubstType<Type> for Type {
+impl SubstType for Type {
+    type Lang = SystemF;
     type Target = Self;
 
     fn subst_type(self, v: &TypeVar, ty: &Type) -> Self::Target {
         match self {
-            Type::Var(var) => var.subst_type(v, ty),
-            Type::Fun(fun) => fun.subst_type(v, ty),
-            Type::Forall(forall) => forall.subst_type(v, ty),
+            Type::Var(var) => var.subst_type(v, ty).into(),
+            Type::Fun(fun) => fun.subst_type(v, ty).into(),
+            Type::Forall(forall) => forall.subst_type(v, ty).into(),
         }
     }
 }
 
-impl From<TypeVariable<Type>> for Type {
-    fn from(v: TypeVariable<Type>) -> Type {
+impl From<TypeVariable<SystemF>> for Type {
+    fn from(v: TypeVariable<SystemF>) -> Type {
         Type::Var(v)
     }
 }
 
-impl From<Fun<Type>> for Type {
-    fn from(fun: Fun<Type>) -> Type {
+impl From<Fun<SystemF>> for Type {
+    fn from(fun: Fun<SystemF>) -> Type {
         Type::Fun(fun)
     }
 }
 
-impl From<Forall<Type>> for Type {
-    fn from(forall: Forall<Type>) -> Type {
+impl From<Forall<SystemF>> for Type {
+    fn from(forall: Forall<SystemF>) -> Type {
         Type::Forall(forall)
     }
 }

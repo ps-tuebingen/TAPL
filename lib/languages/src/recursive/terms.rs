@@ -1,4 +1,4 @@
-use super::types::Type;
+use super::{Recursive, types::Type};
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
@@ -13,28 +13,28 @@ use syntax::{
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Term {
-    Var(Variable<Term>),
-    Lambda(Lambda<Term, Type>),
-    App(App<Term>),
-    Unit(Unit<Term>),
-    Fold(Fold<Term, Type>),
-    Unfold(Unfold<Term, Type>),
-    Variant(Variant<Term, Type>),
-    VariantCase(VariantCase<Term>),
-    Pair(Pair<Term>),
-    Fst(Fst<Term>),
-    Snd(Snd<Term>),
-    Num(Num<Term>),
-    Succ(Succ<Term>),
-    Pred(Pred<Term>),
-    IsZero(IsZero<Term>),
-    True(True<Term>),
-    False(False<Term>),
-    If(If<Term>),
-    Fix(Fix<Term>),
-    Let(Let<Term>),
-    Record(Record<Term>),
-    RecordProj(RecordProj<Term>),
+    Var(Variable<Recursive>),
+    Lambda(Lambda<Recursive>),
+    App(App<Recursive>),
+    Unit(Unit<Recursive>),
+    Fold(Fold<Recursive>),
+    Unfold(Unfold<Recursive>),
+    Variant(Variant<Recursive>),
+    VariantCase(VariantCase<Recursive>),
+    Pair(Pair<Recursive>),
+    Fst(Fst<Recursive>),
+    Snd(Snd<Recursive>),
+    Num(Num<Recursive>),
+    Succ(Succ<Recursive>),
+    Pred(Pred<Recursive>),
+    IsZero(IsZero<Recursive>),
+    True(True<Recursive>),
+    False(False<Recursive>),
+    If(If<Recursive>),
+    Fix(Fix<Recursive>),
+    Let(Let<Recursive>),
+    Record(Record<Recursive>),
+    RecordProj(RecordProj<Recursive>),
 }
 
 impl syntax::terms::Term for Term {}
@@ -42,88 +42,90 @@ impl syntax::terms::Term for Term {}
 impl GrammarDescribe for Term {
     fn grammar() -> Grammar {
         Grammar::term(vec![
-            Variable::<Term>::rule(),
-            Lambda::<Term, Type>::rule(),
-            App::<Term>::rule(),
-            Unit::<Term>::rule(),
-            Fold::<Term, Type>::rule(),
-            Unfold::<Term, Type>::rule(),
-            Variant::<Term, Type>::rule(),
-            VariantCase::<Term>::rule(),
-            Pair::<Term>::rule(),
-            Fst::<Term>::rule(),
-            Snd::<Term>::rule(),
-            Num::<Term>::rule(),
-            Succ::<Term>::rule(),
-            Pred::<Term>::rule(),
-            IsZero::<Term>::rule(),
-            True::<Term>::rule(),
-            False::<Term>::rule(),
-            If::<Term>::rule(),
-            Fix::<Term>::rule(),
-            Let::<Term>::rule(),
-            Record::<Term>::rule(),
-            RecordProj::<Term>::rule(),
+            Variable::<Recursive>::rule(),
+            Lambda::<Recursive>::rule(),
+            App::<Recursive>::rule(),
+            Unit::<Recursive>::rule(),
+            Fold::<Recursive>::rule(),
+            Unfold::<Recursive>::rule(),
+            Variant::<Recursive>::rule(),
+            VariantCase::<Recursive>::rule(),
+            Pair::<Recursive>::rule(),
+            Fst::<Recursive>::rule(),
+            Snd::<Recursive>::rule(),
+            Num::<Recursive>::rule(),
+            Succ::<Recursive>::rule(),
+            Pred::<Recursive>::rule(),
+            IsZero::<Recursive>::rule(),
+            True::<Recursive>::rule(),
+            False::<Recursive>::rule(),
+            If::<Recursive>::rule(),
+            Fix::<Recursive>::rule(),
+            Let::<Recursive>::rule(),
+            Record::<Recursive>::rule(),
+            RecordProj::<Recursive>::rule(),
         ])
     }
 }
 
-impl SubstType<Type> for Term {
+impl SubstType for Term {
+    type Lang = Recursive;
     type Target = Self;
     fn subst_type(self, v: &TypeVar, ty: &Type) -> Self::Target {
         match self {
-            Term::Var(var) => var.subst_type(v, ty),
-            Term::Lambda(lam) => lam.subst_type(v, ty),
-            Term::App(app) => app.subst_type(v, ty),
-            Term::Unit(u) => u.subst_type(v, ty),
-            Term::Fold(fold) => fold.subst_type(v, ty),
-            Term::Unfold(unfold) => unfold.subst_type(v, ty),
-            Term::Variant(var) => var.subst_type(v, ty),
-            Term::VariantCase(case) => case.subst_type(v, ty),
-            Term::Pair(p) => p.subst_type(v, ty),
-            Term::Fst(fst) => fst.subst_type(v, ty),
-            Term::Snd(snd) => snd.subst_type(v, ty),
-            Term::Num(num) => num.subst_type(v, ty),
-            Term::Succ(succ) => succ.subst_type(v, ty),
-            Term::Pred(pred) => pred.subst_type(v, ty),
-            Term::IsZero(isz) => isz.subst_type(v, ty),
-            Term::True(tru) => tru.subst_type(v, ty),
-            Term::False(fls) => fls.subst_type(v, ty),
-            Term::If(ift) => ift.subst_type(v, ty),
-            Term::Fix(fix) => fix.subst_type(v, ty),
-            Term::Let(lt) => lt.subst_type(v, ty),
-            Term::Record(rec) => rec.subst_type(v, ty),
-            Term::RecordProj(proj) => proj.subst_type(v, ty),
+            Term::Var(var) => var.subst_type(v, ty).into(),
+            Term::Lambda(lam) => lam.subst_type(v, ty).into(),
+            Term::App(app) => app.subst_type(v, ty).into(),
+            Term::Unit(u) => u.subst_type(v, ty).into(),
+            Term::Fold(fold) => fold.subst_type(v, ty).into(),
+            Term::Unfold(unfold) => unfold.subst_type(v, ty).into(),
+            Term::Variant(var) => var.subst_type(v, ty).into(),
+            Term::VariantCase(case) => case.subst_type(v, ty).into(),
+            Term::Pair(p) => p.subst_type(v, ty).into(),
+            Term::Fst(fst) => fst.subst_type(v, ty).into(),
+            Term::Snd(snd) => snd.subst_type(v, ty).into(),
+            Term::Num(num) => num.subst_type(v, ty).into(),
+            Term::Succ(succ) => succ.subst_type(v, ty).into(),
+            Term::Pred(pred) => pred.subst_type(v, ty).into(),
+            Term::IsZero(isz) => isz.subst_type(v, ty).into(),
+            Term::True(tru) => tru.subst_type(v, ty).into(),
+            Term::False(fls) => fls.subst_type(v, ty).into(),
+            Term::If(ift) => ift.subst_type(v, ty).into(),
+            Term::Fix(fix) => fix.subst_type(v, ty).into(),
+            Term::Let(lt) => lt.subst_type(v, ty).into(),
+            Term::Record(rec) => rec.subst_type(v, ty).into(),
+            Term::RecordProj(proj) => proj.subst_type(v, ty).into(),
         }
     }
 }
 
-impl SubstTerm<Term> for Term {
+impl SubstTerm for Term {
+    type Lang = Recursive;
     type Target = Self;
     fn subst(self, v: &Var, t: &Term) -> Self::Target {
         match self {
-            Term::Var(var) => var.subst(v, t),
-            Term::Lambda(lam) => lam.subst(v, t),
-            Term::App(app) => app.subst(v, t),
-            Term::Unit(u) => u.subst(v, t),
-            Term::Fold(fold) => fold.subst(v, t),
-            Term::Unfold(unfold) => unfold.subst(v, t),
-            Term::Variant(var) => var.subst(v, t),
-            Term::VariantCase(case) => case.subst(v, t),
-            Term::Pair(p) => p.subst(v, t),
-            Term::Fst(fst) => fst.subst(v, t),
-            Term::Snd(snd) => snd.subst(v, t),
-            Term::Num(num) => num.subst(v, t),
-            Term::Succ(succ) => succ.subst(v, t),
-            Term::Pred(pred) => pred.subst(v, t),
-            Term::IsZero(isz) => isz.subst(v, t),
-            Term::True(tru) => tru.subst(v, t),
-            Term::False(fls) => fls.subst(v, t),
-            Term::If(ift) => ift.subst(v, t),
-            Term::Fix(fix) => fix.subst(v, t),
-            Term::Let(lt) => lt.subst(v, t),
-            Term::Record(rec) => rec.subst(v, t),
-            Term::RecordProj(proj) => proj.subst(v, t),
+            Term::Var(var) => var.subst(v, t).into(),
+            Term::Lambda(lam) => lam.subst(v, t).into(),
+            Term::App(app) => app.subst(v, t).into(),
+            Term::Unit(u) => u.subst(v, t).into(),
+            Term::Fold(fold) => fold.subst(v, t).into(),
+            Term::Unfold(unfold) => unfold.subst(v, t).into(),
+            Term::Variant(var) => var.subst(v, t).into(),
+            Term::VariantCase(case) => case.subst(v, t).into(),
+            Term::Pair(p) => p.subst(v, t).into(),
+            Term::Fst(fst) => fst.subst(v, t).into(),
+            Term::Snd(snd) => snd.subst(v, t).into(),
+            Term::Num(num) => num.subst(v, t).into(),
+            Term::Succ(succ) => succ.subst(v, t).into(),
+            Term::Pred(pred) => pred.subst(v, t).into(),
+            Term::IsZero(isz) => isz.subst(v, t).into(),
+            Term::True(tru) => tru.subst(v, t).into(),
+            Term::False(fls) => fls.subst(v, t).into(),
+            Term::If(ift) => ift.subst(v, t).into(),
+            Term::Fix(fix) => fix.subst(v, t).into(),
+            Term::Let(lt) => lt.subst(v, t).into(),
+            Term::Record(rec) => rec.subst(v, t).into(),
+            Term::RecordProj(proj) => proj.subst(v, t).into(),
         }
     }
 }
@@ -186,132 +188,132 @@ impl LatexFmt for Term {
     }
 }
 
-impl From<Fold<Term, Type>> for Term {
-    fn from(fld: Fold<Term, Type>) -> Term {
+impl From<Fold<Recursive>> for Term {
+    fn from(fld: Fold<Recursive>) -> Term {
         Term::Fold(fld)
     }
 }
 
-impl From<Unfold<Term, Type>> for Term {
-    fn from(unfld: Unfold<Term, Type>) -> Term {
+impl From<Unfold<Recursive>> for Term {
+    fn from(unfld: Unfold<Recursive>) -> Term {
         Term::Unfold(unfld)
     }
 }
-impl From<Lambda<Term, Type>> for Term {
-    fn from(lam: Lambda<Term, Type>) -> Term {
+impl From<Lambda<Recursive>> for Term {
+    fn from(lam: Lambda<Recursive>) -> Term {
         Term::Lambda(lam)
     }
 }
 
-impl From<Unit<Term>> for Term {
-    fn from(u: Unit<Term>) -> Term {
+impl From<Unit<Recursive>> for Term {
+    fn from(u: Unit<Recursive>) -> Term {
         Term::Unit(u)
     }
 }
 
-impl From<True<Term>> for Term {
-    fn from(tru: True<Term>) -> Term {
+impl From<True<Recursive>> for Term {
+    fn from(tru: True<Recursive>) -> Term {
         Term::True(tru)
     }
 }
 
-impl From<False<Term>> for Term {
-    fn from(fls: False<Term>) -> Term {
+impl From<False<Recursive>> for Term {
+    fn from(fls: False<Recursive>) -> Term {
         Term::False(fls)
     }
 }
 
-impl From<Num<Term>> for Term {
-    fn from(num: Num<Term>) -> Term {
+impl From<Num<Recursive>> for Term {
+    fn from(num: Num<Recursive>) -> Term {
         Term::Num(num)
     }
 }
 
-impl From<Pair<Term>> for Term {
-    fn from(pair: Pair<Term>) -> Term {
+impl From<Pair<Recursive>> for Term {
+    fn from(pair: Pair<Recursive>) -> Term {
         Term::Pair(pair)
     }
 }
 
-impl From<Record<Term>> for Term {
-    fn from(rec: Record<Term>) -> Term {
+impl From<Record<Recursive>> for Term {
+    fn from(rec: Record<Recursive>) -> Term {
         Term::Record(rec)
     }
 }
 
-impl From<Variant<Term, Type>> for Term {
-    fn from(var: Variant<Term, Type>) -> Term {
+impl From<Variant<Recursive>> for Term {
+    fn from(var: Variant<Recursive>) -> Term {
         Term::Variant(var)
     }
 }
-impl From<Variable<Term>> for Term {
-    fn from(var: Variable<Term>) -> Term {
+impl From<Variable<Recursive>> for Term {
+    fn from(var: Variable<Recursive>) -> Term {
         Term::Var(var)
     }
 }
 
-impl From<App<Term>> for Term {
-    fn from(app: App<Term>) -> Term {
+impl From<App<Recursive>> for Term {
+    fn from(app: App<Recursive>) -> Term {
         Term::App(app)
     }
 }
 
-impl From<If<Term>> for Term {
-    fn from(ift: If<Term>) -> Term {
+impl From<If<Recursive>> for Term {
+    fn from(ift: If<Recursive>) -> Term {
         Term::If(ift)
     }
 }
 
-impl From<Pred<Term>> for Term {
-    fn from(pred: Pred<Term>) -> Term {
+impl From<Pred<Recursive>> for Term {
+    fn from(pred: Pred<Recursive>) -> Term {
         Term::Pred(pred)
     }
 }
 
-impl From<Succ<Term>> for Term {
-    fn from(succ: Succ<Term>) -> Term {
+impl From<Succ<Recursive>> for Term {
+    fn from(succ: Succ<Recursive>) -> Term {
         Term::Succ(succ)
     }
 }
 
-impl From<IsZero<Term>> for Term {
-    fn from(isz: IsZero<Term>) -> Term {
+impl From<IsZero<Recursive>> for Term {
+    fn from(isz: IsZero<Recursive>) -> Term {
         Term::IsZero(isz)
     }
 }
 
-impl From<Let<Term>> for Term {
-    fn from(lt: Let<Term>) -> Term {
+impl From<Let<Recursive>> for Term {
+    fn from(lt: Let<Recursive>) -> Term {
         Term::Let(lt)
     }
 }
 
-impl From<Fst<Term>> for Term {
-    fn from(fst: Fst<Term>) -> Term {
+impl From<Fst<Recursive>> for Term {
+    fn from(fst: Fst<Recursive>) -> Term {
         Term::Fst(fst)
     }
 }
 
-impl From<Snd<Term>> for Term {
-    fn from(snd: Snd<Term>) -> Term {
+impl From<Snd<Recursive>> for Term {
+    fn from(snd: Snd<Recursive>) -> Term {
         Term::Snd(snd)
     }
 }
 
-impl From<RecordProj<Term>> for Term {
-    fn from(proj: RecordProj<Term>) -> Term {
+impl From<RecordProj<Recursive>> for Term {
+    fn from(proj: RecordProj<Recursive>) -> Term {
         Term::RecordProj(proj)
     }
 }
 
-impl From<VariantCase<Term>> for Term {
-    fn from(case: VariantCase<Term>) -> Term {
+impl From<VariantCase<Recursive>> for Term {
+    fn from(case: VariantCase<Recursive>) -> Term {
         Term::VariantCase(case)
     }
 }
 
-impl From<Fix<Term>> for Term {
-    fn from(fix: Fix<Term>) -> Term {
+impl From<Fix<Recursive>> for Term {
+    fn from(fix: Fix<Recursive>) -> Term {
         Term::Fix(fix)
     }
 }

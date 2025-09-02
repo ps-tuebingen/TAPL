@@ -1,4 +1,4 @@
-use super::{terms::Term, types::Type};
+use super::{References, terms::Term, types::Type};
 use errors::{UnexpectedRule, parse_error::ParserError};
 use parser::{
     GroupParse, Parse, Rule, pair_to_n_inner, sugar::Sequence, terms::StringTerm, types::StringTy,
@@ -13,7 +13,7 @@ impl GroupParse for Term {
     const RULE: Rule = Rule::term;
     fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Term, ParserError> {
         match p.as_rule() {
-            Rule::const_term => Ok(StringTerm::new()
+            Rule::const_term => Ok(StringTerm::<References>::new()
                 .with_unit()
                 .with_true()
                 .with_false()
@@ -37,7 +37,7 @@ impl GroupParse for Term {
     fn from_pair_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, ParserError> {
         match p.as_rule() {
             Rule::assign => Ok(Assign::from_pair(p, t)?.into()),
-            Rule::sequence => Ok(Sequence::from_pair(p, t)?.to_term()),
+            Rule::sequence => Ok(Sequence::<References>::from_pair(p, t)?.to_term()),
             Rule::term => Ok(App::from_pair(p, t)?.into()),
             r => Err(UnexpectedRule::new(&format!("{r:?}"), "Assign or Application").into()),
         }
@@ -48,7 +48,7 @@ impl GroupParse for Type {
     const RULE: Rule = Rule::r#type;
     fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Type, ParserError> {
         match p.as_rule() {
-            Rule::const_type => Ok(StringTy::new()
+            Rule::const_type => Ok(StringTy::<References>::new()
                 .with_unit()
                 .with_nat()
                 .with_bool()

@@ -1,4 +1,4 @@
-use super::types::Type;
+use super::{Stlc, types::Type};
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
@@ -14,40 +14,40 @@ use syntax::{
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Term {
-    Var(Variable<Term>),
-    Lambda(Lambda<Term, Type>),
-    App(App<Term>),
-    Unit(Unit<Term>),
-    True(True<Term>),
-    False(False<Term>),
-    If(If<Term>),
-    Num(Num<Term>),
-    Pred(Pred<Term>),
-    Succ(Succ<Term>),
-    IsZero(IsZero<Term>),
-    Ascribe(Ascribe<Term, Type>),
-    Let(Let<Term>),
-    Pair(Pair<Term>),
-    Fst(Fst<Term>),
-    Snd(Snd<Term>),
-    Tuple(Tuple<Term>),
-    Projection(Projection<Term>),
-    Record(Record<Term>),
-    RecordProj(RecordProj<Term>),
-    Left(Left<Term, Type>),
-    Right(Right<Term, Type>),
-    SumCase(SumCase<Term>),
-    Variant(Variant<Term, Type>),
-    VariantCase(VariantCase<Term>),
-    Nothing(Nothing<Term, Type>),
-    Something(Something<Term>),
-    SomeCase(SomeCase<Term>),
-    Fix(Fix<Term>),
-    Nil(Nil<Term, Type>),
-    Cons(Cons<Term, Type>),
-    IsNil(IsNil<Term, Type>),
-    Head(Head<Term, Type>),
-    Tail(Tail<Term, Type>),
+    Var(Variable<Stlc>),
+    Lambda(Lambda<Stlc>),
+    App(App<Stlc>),
+    Unit(Unit<Stlc>),
+    True(True<Stlc>),
+    False(False<Stlc>),
+    If(If<Stlc>),
+    Num(Num<Stlc>),
+    Pred(Pred<Stlc>),
+    Succ(Succ<Stlc>),
+    IsZero(IsZero<Stlc>),
+    Ascribe(Ascribe<Stlc>),
+    Let(Let<Stlc>),
+    Pair(Pair<Stlc>),
+    Fst(Fst<Stlc>),
+    Snd(Snd<Stlc>),
+    Tuple(Tuple<Stlc>),
+    Projection(Projection<Stlc>),
+    Record(Record<Stlc>),
+    RecordProj(RecordProj<Stlc>),
+    Left(Left<Stlc>),
+    Right(Right<Stlc>),
+    SumCase(SumCase<Stlc>),
+    Variant(Variant<Stlc>),
+    VariantCase(VariantCase<Stlc>),
+    Nothing(Nothing<Stlc>),
+    Something(Something<Stlc>),
+    SomeCase(SomeCase<Stlc>),
+    Fix(Fix<Stlc>),
+    Nil(Nil<Stlc>),
+    Cons(Cons<Stlc>),
+    IsNil(IsNil<Stlc>),
+    Head(Head<Stlc>),
+    Tail(Tail<Stlc>),
 }
 
 impl syntax::terms::Term for Term {}
@@ -55,89 +55,91 @@ impl syntax::terms::Term for Term {}
 impl GrammarDescribe for Term {
     fn grammar() -> Grammar {
         Grammar::term(vec![
-            Variable::<Term>::rule(),
-            Lambda::<Term, Type>::rule(),
-            App::<Term>::rule(),
-            Unit::<Term>::rule(),
-            True::<Term>::rule(),
-            False::<Term>::rule(),
-            If::<Term>::rule(),
-            Num::<Term>::rule(),
-            Pred::<Term>::rule(),
-            Succ::<Term>::rule(),
-            IsZero::<Term>::rule(),
-            Ascribe::<Term, Type>::rule(),
-            Let::<Term>::rule(),
-            Pair::<Term>::rule(),
-            Fst::<Term>::rule(),
-            Snd::<Term>::rule(),
-            Tuple::<Term>::rule(),
-            Projection::<Term>::rule(),
-            Record::<Term>::rule(),
-            RecordProj::<Term>::rule(),
-            Left::<Term, Type>::rule(),
-            Right::<Term, Type>::rule(),
-            SumCase::<Term>::rule(),
-            Variant::<Term, Type>::rule(),
-            VariantCase::<Term>::rule(),
-            Nothing::<Term, Type>::rule(),
-            Something::<Term>::rule(),
-            SomeCase::<Term>::rule(),
-            Fix::<Term>::rule(),
-            Nil::<Term, Type>::rule(),
-            Cons::<Term, Type>::rule(),
-            IsNil::<Term, Type>::rule(),
-            Head::<Term, Type>::rule(),
-            Tail::<Term, Type>::rule(),
+            Variable::<Stlc>::rule(),
+            Lambda::<Stlc>::rule(),
+            App::<Stlc>::rule(),
+            Unit::<Stlc>::rule(),
+            True::<Stlc>::rule(),
+            False::<Stlc>::rule(),
+            If::<Stlc>::rule(),
+            Num::<Stlc>::rule(),
+            Pred::<Stlc>::rule(),
+            Succ::<Stlc>::rule(),
+            IsZero::<Stlc>::rule(),
+            Ascribe::<Stlc>::rule(),
+            Let::<Stlc>::rule(),
+            Pair::<Stlc>::rule(),
+            Fst::<Stlc>::rule(),
+            Snd::<Stlc>::rule(),
+            Tuple::<Stlc>::rule(),
+            Projection::<Stlc>::rule(),
+            Record::<Stlc>::rule(),
+            RecordProj::<Stlc>::rule(),
+            Left::<Stlc>::rule(),
+            Right::<Stlc>::rule(),
+            SumCase::<Stlc>::rule(),
+            Variant::<Stlc>::rule(),
+            VariantCase::<Stlc>::rule(),
+            Nothing::<Stlc>::rule(),
+            Something::<Stlc>::rule(),
+            SomeCase::<Stlc>::rule(),
+            Fix::<Stlc>::rule(),
+            Nil::<Stlc>::rule(),
+            Cons::<Stlc>::rule(),
+            IsNil::<Stlc>::rule(),
+            Head::<Stlc>::rule(),
+            Tail::<Stlc>::rule(),
         ])
     }
 }
 
-impl SubstType<Type> for Term {
+impl SubstType for Term {
+    type Lang = Stlc;
     type Target = Term;
     fn subst_type(self, _: &TypeVar, _: &Type) -> Self::Target {
         self
     }
 }
 
-impl SubstTerm<Term> for Term {
+impl SubstTerm for Term {
+    type Lang = Stlc;
     type Target = Term;
     fn subst(self, v: &Var, t: &Term) -> Self::Target {
         match self {
-            Term::Var(var) => var.subst(v, t),
-            Term::Lambda(lam) => lam.subst(v, t),
-            Term::App(app) => app.subst(v, t),
-            Term::True(tru) => tru.subst(v, t),
-            Term::False(fls) => fls.subst(v, t),
-            Term::Unit(u) => u.subst(v, t),
-            Term::If(ift) => ift.subst(v, t),
-            Term::Num(num) => num.subst(v, t),
-            Term::Pred(p) => p.subst(v, t),
-            Term::Succ(s) => s.subst(v, t),
-            Term::IsZero(isz) => isz.subst(v, t),
-            Term::Ascribe(asc) => asc.subst(v, t),
-            Term::Let(lt) => lt.subst(v, t),
-            Term::Pair(pr) => pr.subst(v, t),
-            Term::Tuple(tup) => tup.subst(v, t),
-            Term::Projection(proj) => proj.subst(v, t),
-            Term::Fst(proj) => proj.subst(v, t),
-            Term::Snd(proj) => proj.subst(v, t),
-            Term::Record(rec) => rec.subst(v, t),
-            Term::RecordProj(proj) => proj.subst(v, t),
-            Term::Left(lf) => lf.subst(v, t),
-            Term::Right(rt) => rt.subst(v, t),
-            Term::SumCase(case) => case.subst(v, t),
-            Term::Variant(var) => var.subst(v, t),
-            Term::VariantCase(case) => case.subst(v, t),
-            Term::Nothing(not) => not.subst(v, t),
-            Term::Something(some) => some.subst(v, t),
-            Term::SomeCase(case) => case.subst(v, t),
-            Term::Fix(fix) => fix.subst(v, t),
-            Term::Nil(nil) => nil.subst(v, t),
-            Term::Cons(cons) => cons.subst(v, t),
-            Term::IsNil(isnil) => isnil.subst(v, t),
-            Term::Head(hd) => hd.subst(v, t),
-            Term::Tail(tl) => tl.subst(v, t),
+            Term::Var(var) => var.subst(v, t).into(),
+            Term::Lambda(lam) => lam.subst(v, t).into(),
+            Term::App(app) => app.subst(v, t).into(),
+            Term::True(tru) => tru.subst(v, t).into(),
+            Term::False(fls) => fls.subst(v, t).into(),
+            Term::Unit(u) => u.subst(v, t).into(),
+            Term::If(ift) => ift.subst(v, t).into(),
+            Term::Num(num) => num.subst(v, t).into(),
+            Term::Pred(p) => p.subst(v, t).into(),
+            Term::Succ(s) => s.subst(v, t).into(),
+            Term::IsZero(isz) => isz.subst(v, t).into(),
+            Term::Ascribe(asc) => asc.subst(v, t).into(),
+            Term::Let(lt) => lt.subst(v, t).into(),
+            Term::Pair(pr) => pr.subst(v, t).into(),
+            Term::Tuple(tup) => tup.subst(v, t).into(),
+            Term::Projection(proj) => proj.subst(v, t).into(),
+            Term::Fst(proj) => proj.subst(v, t).into(),
+            Term::Snd(proj) => proj.subst(v, t).into(),
+            Term::Record(rec) => rec.subst(v, t).into(),
+            Term::RecordProj(proj) => proj.subst(v, t).into(),
+            Term::Left(lf) => lf.subst(v, t).into(),
+            Term::Right(rt) => rt.subst(v, t).into(),
+            Term::SumCase(case) => case.subst(v, t).into(),
+            Term::Variant(var) => var.subst(v, t).into(),
+            Term::VariantCase(case) => case.subst(v, t).into(),
+            Term::Nothing(not) => not.subst(v, t).into(),
+            Term::Something(some) => some.subst(v, t).into(),
+            Term::SomeCase(case) => case.subst(v, t).into(),
+            Term::Fix(fix) => fix.subst(v, t).into(),
+            Term::Nil(nil) => nil.subst(v, t).into(),
+            Term::Cons(cons) => cons.subst(v, t).into(),
+            Term::IsNil(isnil) => isnil.subst(v, t).into(),
+            Term::Head(hd) => hd.subst(v, t).into(),
+            Term::Tail(tl) => tl.subst(v, t).into(),
         }
     }
 }
@@ -224,206 +226,206 @@ impl LatexFmt for Term {
     }
 }
 
-impl From<Lambda<Term, Type>> for Term {
-    fn from(lam: Lambda<Term, Type>) -> Term {
+impl From<Lambda<Stlc>> for Term {
+    fn from(lam: Lambda<Stlc>) -> Term {
         Term::Lambda(lam)
     }
 }
 
-impl From<Unit<Term>> for Term {
-    fn from(u: Unit<Term>) -> Term {
+impl From<Unit<Stlc>> for Term {
+    fn from(u: Unit<Stlc>) -> Term {
         Term::Unit(u)
     }
 }
 
-impl From<True<Term>> for Term {
-    fn from(tru: True<Term>) -> Term {
+impl From<True<Stlc>> for Term {
+    fn from(tru: True<Stlc>) -> Term {
         Term::True(tru)
     }
 }
 
-impl From<False<Term>> for Term {
-    fn from(fls: False<Term>) -> Term {
+impl From<False<Stlc>> for Term {
+    fn from(fls: False<Stlc>) -> Term {
         Term::False(fls)
     }
 }
 
-impl From<Num<Term>> for Term {
-    fn from(num: Num<Term>) -> Term {
+impl From<Num<Stlc>> for Term {
+    fn from(num: Num<Stlc>) -> Term {
         Term::Num(num)
     }
 }
 
-impl From<Pair<Term>> for Term {
-    fn from(pair: Pair<Term>) -> Term {
+impl From<Pair<Stlc>> for Term {
+    fn from(pair: Pair<Stlc>) -> Term {
         Term::Pair(pair)
     }
 }
 
-impl From<Tuple<Term>> for Term {
-    fn from(tup: Tuple<Term>) -> Term {
+impl From<Tuple<Stlc>> for Term {
+    fn from(tup: Tuple<Stlc>) -> Term {
         Term::Tuple(tup)
     }
 }
 
-impl From<Record<Term>> for Term {
-    fn from(rec: Record<Term>) -> Term {
+impl From<Record<Stlc>> for Term {
+    fn from(rec: Record<Stlc>) -> Term {
         Term::Record(rec)
     }
 }
 
-impl From<Left<Term, Type>> for Term {
-    fn from(lft: Left<Term, Type>) -> Term {
+impl From<Left<Stlc>> for Term {
+    fn from(lft: Left<Stlc>) -> Term {
         Term::Left(lft)
     }
 }
 
-impl From<Right<Term, Type>> for Term {
-    fn from(right: Right<Term, Type>) -> Term {
+impl From<Right<Stlc>> for Term {
+    fn from(right: Right<Stlc>) -> Term {
         Term::Right(right)
     }
 }
 
-impl From<Variant<Term, Type>> for Term {
-    fn from(var: Variant<Term, Type>) -> Term {
+impl From<Variant<Stlc>> for Term {
+    fn from(var: Variant<Stlc>) -> Term {
         Term::Variant(var)
     }
 }
 
-impl From<Nothing<Term, Type>> for Term {
-    fn from(not: Nothing<Term, Type>) -> Term {
+impl From<Nothing<Stlc>> for Term {
+    fn from(not: Nothing<Stlc>) -> Term {
         Term::Nothing(not)
     }
 }
 
-impl From<Something<Term>> for Term {
-    fn from(some: Something<Term>) -> Term {
+impl From<Something<Stlc>> for Term {
+    fn from(some: Something<Stlc>) -> Term {
         Term::Something(some)
     }
 }
 
-impl From<Nil<Term, Type>> for Term {
-    fn from(nil: Nil<Term, Type>) -> Term {
+impl From<Nil<Stlc>> for Term {
+    fn from(nil: Nil<Stlc>) -> Term {
         Term::Nil(nil)
     }
 }
 
-impl From<Cons<Term, Type>> for Term {
-    fn from(cons: Cons<Term, Type>) -> Term {
+impl From<Cons<Stlc>> for Term {
+    fn from(cons: Cons<Stlc>) -> Term {
         Term::Cons(cons)
     }
 }
 
-impl From<Variable<Term>> for Term {
-    fn from(var: Variable<Term>) -> Term {
+impl From<Variable<Stlc>> for Term {
+    fn from(var: Variable<Stlc>) -> Term {
         Term::Var(var)
     }
 }
 
-impl From<App<Term>> for Term {
-    fn from(app: App<Term>) -> Term {
+impl From<App<Stlc>> for Term {
+    fn from(app: App<Stlc>) -> Term {
         Term::App(app)
     }
 }
 
-impl From<If<Term>> for Term {
-    fn from(ift: If<Term>) -> Term {
+impl From<If<Stlc>> for Term {
+    fn from(ift: If<Stlc>) -> Term {
         Term::If(ift)
     }
 }
 
-impl From<Pred<Term>> for Term {
-    fn from(pred: Pred<Term>) -> Term {
+impl From<Pred<Stlc>> for Term {
+    fn from(pred: Pred<Stlc>) -> Term {
         Term::Pred(pred)
     }
 }
 
-impl From<Succ<Term>> for Term {
-    fn from(succ: Succ<Term>) -> Term {
+impl From<Succ<Stlc>> for Term {
+    fn from(succ: Succ<Stlc>) -> Term {
         Term::Succ(succ)
     }
 }
 
-impl From<IsZero<Term>> for Term {
-    fn from(isz: IsZero<Term>) -> Term {
+impl From<IsZero<Stlc>> for Term {
+    fn from(isz: IsZero<Stlc>) -> Term {
         Term::IsZero(isz)
     }
 }
 
-impl From<Ascribe<Term, Type>> for Term {
-    fn from(asc: Ascribe<Term, Type>) -> Term {
+impl From<Ascribe<Stlc>> for Term {
+    fn from(asc: Ascribe<Stlc>) -> Term {
         Term::Ascribe(asc)
     }
 }
 
-impl From<Let<Term>> for Term {
-    fn from(lt: Let<Term>) -> Term {
+impl From<Let<Stlc>> for Term {
+    fn from(lt: Let<Stlc>) -> Term {
         Term::Let(lt)
     }
 }
 
-impl From<Projection<Term>> for Term {
-    fn from(proj: Projection<Term>) -> Term {
+impl From<Projection<Stlc>> for Term {
+    fn from(proj: Projection<Stlc>) -> Term {
         Term::Projection(proj)
     }
 }
 
-impl From<Fst<Term>> for Term {
-    fn from(fst: Fst<Term>) -> Term {
+impl From<Fst<Stlc>> for Term {
+    fn from(fst: Fst<Stlc>) -> Term {
         Term::Fst(fst)
     }
 }
 
-impl From<Snd<Term>> for Term {
-    fn from(snd: Snd<Term>) -> Term {
+impl From<Snd<Stlc>> for Term {
+    fn from(snd: Snd<Stlc>) -> Term {
         Term::Snd(snd)
     }
 }
 
-impl From<RecordProj<Term>> for Term {
-    fn from(proj: RecordProj<Term>) -> Term {
+impl From<RecordProj<Stlc>> for Term {
+    fn from(proj: RecordProj<Stlc>) -> Term {
         Term::RecordProj(proj)
     }
 }
 
-impl From<SumCase<Term>> for Term {
-    fn from(case: SumCase<Term>) -> Term {
+impl From<SumCase<Stlc>> for Term {
+    fn from(case: SumCase<Stlc>) -> Term {
         Term::SumCase(case)
     }
 }
 
-impl From<VariantCase<Term>> for Term {
-    fn from(case: VariantCase<Term>) -> Term {
+impl From<VariantCase<Stlc>> for Term {
+    fn from(case: VariantCase<Stlc>) -> Term {
         Term::VariantCase(case)
     }
 }
 
-impl From<SomeCase<Term>> for Term {
-    fn from(case: SomeCase<Term>) -> Term {
+impl From<SomeCase<Stlc>> for Term {
+    fn from(case: SomeCase<Stlc>) -> Term {
         Term::SomeCase(case)
     }
 }
 
-impl From<Fix<Term>> for Term {
-    fn from(fix: Fix<Term>) -> Term {
+impl From<Fix<Stlc>> for Term {
+    fn from(fix: Fix<Stlc>) -> Term {
         Term::Fix(fix)
     }
 }
 
-impl From<IsNil<Term, Type>> for Term {
-    fn from(isn: IsNil<Term, Type>) -> Term {
+impl From<IsNil<Stlc>> for Term {
+    fn from(isn: IsNil<Stlc>) -> Term {
         Term::IsNil(isn)
     }
 }
 
-impl From<Head<Term, Type>> for Term {
-    fn from(hd: Head<Term, Type>) -> Term {
+impl From<Head<Stlc>> for Term {
+    fn from(hd: Head<Stlc>) -> Term {
         Term::Head(hd)
     }
 }
 
-impl From<Tail<Term, Type>> for Term {
-    fn from(tl: Tail<Term, Type>) -> Term {
+impl From<Tail<Stlc>> for Term {
+    fn from(tl: Tail<Stlc>) -> Term {
         Term::Tail(tl)
     }
 }

@@ -1,27 +1,24 @@
-use super::terms::Term;
+use super::{UntypedArithmetic, terms::Term};
 use errors::ValueMismatch;
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
-use syntax::untyped::Untyped;
 use syntax::values::{False, Num, True, Value as ValueTrait, ValueGroup};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Value {
-    True(True<Term>),
-    False(False<Term>),
-    Num(Num<Term>),
+    True(True<UntypedArithmetic>),
+    False(False<UntypedArithmetic>),
+    Num(Num<UntypedArithmetic>),
 }
 
 impl ValueTrait for Value {
+    type Lang = UntypedArithmetic;
     type Term = Term;
 }
 
 impl ValueGroup for Value {
-    type Term = Term;
-    type Type = Untyped<Term>;
-
-    fn into_true(self) -> Result<True<Term>, ValueMismatch> {
+    fn into_true(self) -> Result<True<UntypedArithmetic>, ValueMismatch> {
         if let Value::True(tru) = self {
             Ok(tru)
         } else {
@@ -29,7 +26,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_false(self) -> Result<False<Term>, ValueMismatch> {
+    fn into_false(self) -> Result<False<UntypedArithmetic>, ValueMismatch> {
         if let Value::False(fls) = self {
             Ok(fls)
         } else {
@@ -37,7 +34,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_num(self) -> Result<Num<Term>, ValueMismatch> {
+    fn into_num(self) -> Result<Num<UntypedArithmetic>, ValueMismatch> {
         if let Value::Num(num) = self {
             Ok(num)
         } else {
@@ -49,9 +46,9 @@ impl ValueGroup for Value {
 impl GrammarDescribe for Value {
     fn grammar() -> Grammar {
         Grammar::value(vec![
-            True::<Term>::rule(),
-            False::<Term>::rule(),
-            Num::<Term>::rule(),
+            True::<UntypedArithmetic>::rule(),
+            False::<UntypedArithmetic>::rule(),
+            Num::<UntypedArithmetic>::rule(),
         ])
     }
 }
@@ -86,20 +83,20 @@ impl From<Value> for Term {
     }
 }
 
-impl From<True<Term>> for Value {
-    fn from(tru: True<Term>) -> Value {
+impl From<True<UntypedArithmetic>> for Value {
+    fn from(tru: True<UntypedArithmetic>) -> Value {
         Value::True(tru)
     }
 }
 
-impl From<False<Term>> for Value {
-    fn from(fls: False<Term>) -> Value {
+impl From<False<UntypedArithmetic>> for Value {
+    fn from(fls: False<UntypedArithmetic>) -> Value {
         Value::False(fls)
     }
 }
 
-impl From<Num<Term>> for Value {
-    fn from(num: Num<Term>) -> Value {
+impl From<Num<UntypedArithmetic>> for Value {
+    fn from(num: Num<UntypedArithmetic>) -> Value {
         Value::Num(num)
     }
 }

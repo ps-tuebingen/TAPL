@@ -1,11 +1,11 @@
-use crate::{GroupParse, ParsableLanguage, Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, Parse, Rule, pair_to_n_inner};
 use errors::{MissingInput, UndefinedMain, UnexpectedRule, parse_error::ParserError};
 use pest::iterators::Pair;
-use syntax::{definition::Definition, program::Program};
+use syntax::{definition::Definition, language::Language, program::Program};
 
 impl<Lang> Parse for Program<Lang>
 where
-    Lang: ParsableLanguage,
+    Lang: Language,
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
 {

@@ -1,11 +1,14 @@
-use crate::{GroupParse, ParsableLanguage, Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, Parse, Rule, pair_to_n_inner};
 use errors::{MissingInput, parse_error::ParserError};
 use pest::iterators::Pair;
-use syntax::terms::{VariantCase, variantcase::VariantPattern};
+use syntax::{
+    language::Language,
+    terms::{VariantCase, variantcase::VariantPattern},
+};
 
 impl<Lang> Parse for VariantCase<Lang>
 where
-    Lang: ParsableLanguage,
+    Lang: Language,
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
 {
@@ -31,7 +34,7 @@ where
 
 impl<Lang> Parse for VariantPattern<Lang>
 where
-    Lang: ParsableLanguage,
+    Lang: Language,
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
 {

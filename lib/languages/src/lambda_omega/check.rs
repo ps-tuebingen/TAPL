@@ -1,17 +1,13 @@
-use super::{terms::Term, types::Type};
+use super::{LambdaOmega, terms::Term, types::Type};
 use check::{Kindcheck, Subtypecheck, Typecheck};
 use derivations::Derivation;
 use errors::{NoSubtyping, check_error::CheckError};
 use syntax::{env::Environment, kinds::Kind};
 
 impl Typecheck for Term {
-    type Term = Term;
-    type Type = Type;
+    type Lang = LambdaOmega;
 
-    fn check(
-        &self,
-        env: Environment<Type>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
+    fn check(&self, env: Environment<Self::Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
         match self {
             Term::Var(var) => var.check(env),
             Term::Num(num) => num.check(env),
@@ -27,19 +23,19 @@ impl Typecheck for Term {
 }
 
 impl Subtypecheck for Type {
-    type Type = Type;
-    type Term = Term;
+    type Lang = LambdaOmega;
     fn check_subtype(
         &self,
         _: &Type,
-        _: Environment<Type>,
-    ) -> Result<Derivation<Self::Term, Self::Type>, CheckError> {
+        _: Environment<Self::Lang>,
+    ) -> Result<Derivation<Self::Lang>, CheckError> {
         Err(NoSubtyping::new("Lambda Omega").into())
     }
 }
 
-impl Kindcheck<Type> for Type {
-    fn check_kind(&self, env: Environment<Type>) -> Result<Kind, CheckError> {
+impl Kindcheck for Type {
+    type Lang = LambdaOmega;
+    fn check_kind(&self, env: Environment<Self::Lang>) -> Result<Kind, CheckError> {
         match self {
             Type::Var(var) => var.check_kind(env),
             Type::Unit(u) => u.check_kind(env),

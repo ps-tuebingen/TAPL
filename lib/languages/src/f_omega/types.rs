@@ -1,3 +1,4 @@
+use super::FOmega;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
@@ -13,16 +14,16 @@ use syntax::{
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Type {
-    Var(TypeVariable<Type>),
-    Fun(Fun<Type>),
-    Forall(Forall<Type>),
-    OpLambda(OpLambda<Type>),
-    OpApp(OpApp<Type>),
-    Exists(Exists<Type>),
-    Record(Record<Type>),
-    Bool(Bool<Type>),
-    Unit(Unit<Type>),
-    Nat(Nat<Type>),
+    Var(TypeVariable<FOmega>),
+    Fun(Fun<FOmega>),
+    Forall(Forall<FOmega>),
+    OpLambda(OpLambda<FOmega>),
+    OpApp(OpApp<FOmega>),
+    Exists(Exists<FOmega>),
+    Record(Record<FOmega>),
+    Bool(Bool<FOmega>),
+    Unit(Unit<FOmega>),
+    Nat(Nat<FOmega>),
 }
 
 impl TypeTrait for Type {}
@@ -30,22 +31,23 @@ impl TypeTrait for Type {}
 impl GrammarDescribe for Type {
     fn grammar() -> Grammar {
         Grammar::ty(vec![
-            TypeVariable::<Type>::rule(),
-            Fun::<Type>::rule(),
-            Forall::<Type>::rule(),
-            OpLambda::<Type>::rule(),
-            OpApp::<Type>::rule(),
-            Exists::<Type>::rule(),
-            Record::<Type>::rule(),
-            Bool::<Type>::rule(),
-            Unit::<Type>::rule(),
-            Nat::<Type>::rule(),
+            TypeVariable::<FOmega>::rule(),
+            Fun::<FOmega>::rule(),
+            Forall::<FOmega>::rule(),
+            OpLambda::<FOmega>::rule(),
+            OpApp::<FOmega>::rule(),
+            Exists::<FOmega>::rule(),
+            Record::<FOmega>::rule(),
+            Bool::<FOmega>::rule(),
+            Unit::<FOmega>::rule(),
+            Nat::<FOmega>::rule(),
         ])
     }
 }
 
 impl TypeGroup for Type {
-    fn into_fun(self) -> Result<Fun<Type>, TypeMismatch> {
+    type Lang = FOmega;
+    fn into_fun(self) -> Result<Fun<FOmega>, TypeMismatch> {
         if let Type::Fun(fun) = self {
             Ok(fun)
         } else {
@@ -53,7 +55,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_forall(self) -> Result<Forall<Type>, TypeMismatch> {
+    fn into_forall(self) -> Result<Forall<FOmega>, TypeMismatch> {
         if let Type::Forall(forall) = self {
             Ok(forall)
         } else {
@@ -61,7 +63,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_oplambda(self) -> Result<OpLambda<Type>, TypeMismatch> {
+    fn into_oplambda(self) -> Result<OpLambda<FOmega>, TypeMismatch> {
         if let Type::OpLambda(lam) = self {
             Ok(lam)
         } else {
@@ -69,7 +71,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_opapp(self) -> Result<OpApp<Type>, TypeMismatch> {
+    fn into_opapp(self) -> Result<OpApp<FOmega>, TypeMismatch> {
         if let Type::OpApp(app) = self {
             Ok(app)
         } else {
@@ -77,7 +79,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_exists(self) -> Result<Exists<Type>, TypeMismatch> {
+    fn into_exists(self) -> Result<Exists<FOmega>, TypeMismatch> {
         if let Type::Exists(ex) = self {
             Ok(ex)
         } else {
@@ -88,7 +90,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_record(self) -> Result<Record<Type>, TypeMismatch> {
+    fn into_record(self) -> Result<Record<FOmega>, TypeMismatch> {
         if let Type::Record(rec) = self {
             Ok(rec)
         } else {
@@ -96,7 +98,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_bool(self) -> Result<Bool<Type>, TypeMismatch> {
+    fn into_bool(self) -> Result<Bool<FOmega>, TypeMismatch> {
         if let Type::Bool(b) = self {
             Ok(b)
         } else {
@@ -104,7 +106,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_unit(self) -> Result<Unit<Type>, TypeMismatch> {
+    fn into_unit(self) -> Result<Unit<FOmega>, TypeMismatch> {
         if let Type::Unit(u) = self {
             Ok(u)
         } else {
@@ -112,7 +114,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_nat(self) -> Result<Nat<Type>, TypeMismatch> {
+    fn into_nat(self) -> Result<Nat<FOmega>, TypeMismatch> {
         if let Type::Nat(nat) = self {
             Ok(nat)
         } else {
@@ -121,20 +123,21 @@ impl TypeGroup for Type {
     }
 }
 
-impl SubstType<Type> for Type {
+impl SubstType for Type {
+    type Lang = FOmega;
     type Target = Self;
     fn subst_type(self, v: &TypeVar, ty: &Type) -> Self::Target {
         match self {
-            Type::Var(var) => var.subst_type(v, ty),
-            Type::Fun(fun) => fun.subst_type(v, ty),
-            Type::Forall(forall) => forall.subst_type(v, ty),
-            Type::OpLambda(lam) => lam.subst_type(v, ty),
-            Type::OpApp(app) => app.subst_type(v, ty),
-            Type::Exists(ex) => ex.subst_type(v, ty),
-            Type::Record(rec) => rec.subst_type(v, ty),
-            Type::Bool(b) => b.subst_type(v, ty),
-            Type::Unit(u) => u.subst_type(v, ty),
-            Type::Nat(nat) => nat.subst_type(v, ty),
+            Type::Var(var) => var.subst_type(v, ty).into(),
+            Type::Fun(fun) => fun.subst_type(v, ty).into(),
+            Type::Forall(forall) => forall.subst_type(v, ty).into(),
+            Type::OpLambda(lam) => lam.subst_type(v, ty).into(),
+            Type::OpApp(app) => app.subst_type(v, ty).into(),
+            Type::Exists(ex) => ex.subst_type(v, ty).into(),
+            Type::Record(rec) => rec.subst_type(v, ty).into(),
+            Type::Bool(b) => b.subst_type(v, ty).into(),
+            Type::Unit(u) => u.subst_type(v, ty).into(),
+            Type::Nat(nat) => nat.subst_type(v, ty).into(),
         }
     }
 }
@@ -173,53 +176,53 @@ impl LatexFmt for Type {
     }
 }
 
-impl From<TypeVariable<Type>> for Type {
-    fn from(var: TypeVariable<Type>) -> Type {
+impl From<TypeVariable<FOmega>> for Type {
+    fn from(var: TypeVariable<FOmega>) -> Type {
         Type::Var(var)
     }
 }
-impl From<OpLambda<Type>> for Type {
-    fn from(oplam: OpLambda<Type>) -> Type {
+impl From<OpLambda<FOmega>> for Type {
+    fn from(oplam: OpLambda<FOmega>) -> Type {
         Type::OpLambda(oplam)
     }
 }
-impl From<Fun<Type>> for Type {
-    fn from(fun: Fun<Type>) -> Type {
+impl From<Fun<FOmega>> for Type {
+    fn from(fun: Fun<FOmega>) -> Type {
         Type::Fun(fun)
     }
 }
-impl From<OpApp<Type>> for Type {
-    fn from(opapp: OpApp<Type>) -> Type {
+impl From<OpApp<FOmega>> for Type {
+    fn from(opapp: OpApp<FOmega>) -> Type {
         Type::OpApp(opapp)
     }
 }
-impl From<Forall<Type>> for Type {
-    fn from(forall: Forall<Type>) -> Type {
+impl From<Forall<FOmega>> for Type {
+    fn from(forall: Forall<FOmega>) -> Type {
         Type::Forall(forall)
     }
 }
-impl From<Exists<Type>> for Type {
-    fn from(exists: Exists<Type>) -> Type {
+impl From<Exists<FOmega>> for Type {
+    fn from(exists: Exists<FOmega>) -> Type {
         Type::Exists(exists)
     }
 }
-impl From<Record<Type>> for Type {
-    fn from(rec: Record<Type>) -> Type {
+impl From<Record<FOmega>> for Type {
+    fn from(rec: Record<FOmega>) -> Type {
         Type::Record(rec)
     }
 }
-impl From<Bool<Type>> for Type {
-    fn from(b: Bool<Type>) -> Type {
+impl From<Bool<FOmega>> for Type {
+    fn from(b: Bool<FOmega>) -> Type {
         Type::Bool(b)
     }
 }
-impl From<Unit<Type>> for Type {
-    fn from(u: Unit<Type>) -> Type {
+impl From<Unit<FOmega>> for Type {
+    fn from(u: Unit<FOmega>) -> Type {
         Type::Unit(u)
     }
 }
-impl From<Nat<Type>> for Type {
-    fn from(n: Nat<Type>) -> Type {
+impl From<Nat<FOmega>> for Type {
+    fn from(n: Nat<FOmega>) -> Type {
         Type::Nat(n)
     }
 }

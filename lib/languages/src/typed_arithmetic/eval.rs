@@ -1,4 +1,4 @@
-use super::{terms::Term, types::Type, values::Value};
+use super::{TypedArithmetic, terms::Term, types::Type};
 use check::Normalize;
 use errors::eval_error::EvalError;
 use eval::Eval;
@@ -6,13 +6,8 @@ use syntax::{env::Environment, eval_context::EvalContext};
 use trace::EvalTrace;
 
 impl Eval for Term {
-    type Value = Value;
-    type Term = Term;
-
-    fn eval(
-        self,
-        env: &mut EvalContext<Term, Self::Value>,
-    ) -> Result<EvalTrace<Self::Term, Self::Value>, EvalError> {
+    type Lang = TypedArithmetic;
+    fn eval(self, env: &mut EvalContext<Self::Lang>) -> Result<EvalTrace<Self::Lang>, EvalError> {
         match self {
             Term::True(tru) => tru.eval(env),
             Term::False(fls) => fls.eval(env),
@@ -25,8 +20,9 @@ impl Eval for Term {
     }
 }
 
-impl Normalize<Type> for Type {
-    fn normalize(self, _: Environment<Type>) -> Type {
+impl Normalize for Type {
+    type Lang = TypedArithmetic;
+    fn normalize(self, _: Environment<Self::Lang>) -> Type {
         self
     }
 }

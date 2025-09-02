@@ -1,3 +1,4 @@
+use super::Recursive;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
@@ -14,28 +15,29 @@ pub type TypeVar = String;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Type {
-    TypeVar(TypeVariable<Type>),
-    Unit(Unit<Type>),
-    Fun(Fun<Type>),
-    Mu(Mu<Type>),
-    Variant(Variant<Type>),
-    Product(Product<Type>),
-    Nat(Nat<Type>),
-    Bool(Bool<Type>),
-    Record(Record<Type>),
+    TypeVar(TypeVariable<Recursive>),
+    Unit(Unit<Recursive>),
+    Fun(Fun<Recursive>),
+    Mu(Mu<Recursive>),
+    Variant(Variant<Recursive>),
+    Product(Product<Recursive>),
+    Nat(Nat<Recursive>),
+    Bool(Bool<Recursive>),
+    Record(Record<Recursive>),
 }
 
 impl TypeTrait for Type {}
 
 impl TypeGroup for Type {
-    fn into_unit(self) -> Result<Unit<Self>, TypeMismatch> {
+    type Lang = Recursive;
+    fn into_unit(self) -> Result<Unit<Recursive>, TypeMismatch> {
         if let Type::Unit(u) = self {
             Ok(u)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Unit".to_owned()))
         }
     }
-    fn into_fun(self) -> Result<Fun<Self>, TypeMismatch> {
+    fn into_fun(self) -> Result<Fun<Recursive>, TypeMismatch> {
         if let Type::Fun(fun) = self {
             Ok(fun)
         } else {
@@ -43,7 +45,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_mu(self) -> Result<Mu<Self>, TypeMismatch> {
+    fn into_mu(self) -> Result<Mu<Recursive>, TypeMismatch> {
         if let Type::Mu(mu) = self {
             Ok(mu)
         } else {
@@ -51,7 +53,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_variant(self) -> Result<Variant<Self>, TypeMismatch> {
+    fn into_variant(self) -> Result<Variant<Recursive>, TypeMismatch> {
         if let Type::Variant(var) = self {
             Ok(var)
         } else {
@@ -59,7 +61,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_product(self) -> Result<Product<Self>, TypeMismatch> {
+    fn into_product(self) -> Result<Product<Recursive>, TypeMismatch> {
         if let Type::Product(prod) = self {
             Ok(prod)
         } else {
@@ -67,7 +69,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_nat(self) -> Result<Nat<Self>, TypeMismatch> {
+    fn into_nat(self) -> Result<Nat<Recursive>, TypeMismatch> {
         if let Type::Nat(nat) = self {
             Ok(nat)
         } else {
@@ -75,7 +77,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_bool(self) -> Result<Bool<Self>, TypeMismatch> {
+    fn into_bool(self) -> Result<Bool<Recursive>, TypeMismatch> {
         if let Type::Bool(b) = self {
             Ok(b)
         } else {
@@ -83,7 +85,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_record(self) -> Result<Record<Self>, TypeMismatch> {
+    fn into_record(self) -> Result<Record<Recursive>, TypeMismatch> {
         if let Type::Record(rec) = self {
             Ok(rec)
         } else {
@@ -95,15 +97,15 @@ impl TypeGroup for Type {
 impl GrammarDescribe for Type {
     fn grammar() -> Grammar {
         Grammar::ty(vec![
-            TypeVariable::<Type>::rule(),
-            Unit::<Type>::rule(),
-            Fun::<Type>::rule(),
-            Mu::<Type>::rule(),
-            Variant::<Type>::rule(),
-            Product::<Type>::rule(),
-            Nat::<Type>::rule(),
-            Bool::<Type>::rule(),
-            Record::<Type>::rule(),
+            TypeVariable::<Recursive>::rule(),
+            Unit::<Recursive>::rule(),
+            Fun::<Recursive>::rule(),
+            Mu::<Recursive>::rule(),
+            Variant::<Recursive>::rule(),
+            Product::<Recursive>::rule(),
+            Nat::<Recursive>::rule(),
+            Bool::<Recursive>::rule(),
+            Record::<Recursive>::rule(),
         ])
     }
 }
@@ -140,72 +142,73 @@ impl LatexFmt for Type {
     }
 }
 
-impl SubstType<Type> for Type {
+impl SubstType for Type {
+    type Lang = Recursive;
     type Target = Self;
     fn subst_type(self, v: &TypeVar, t: &Self) -> Self::Target {
         match self {
-            Type::TypeVar(var) => var.subst_type(v, t),
-            Type::Unit(u) => u.subst_type(v, t),
-            Type::Fun(fun) => fun.subst_type(v, t),
-            Type::Mu(mu) => mu.subst_type(v, t),
-            Type::Variant(var) => var.subst_type(v, t),
-            Type::Product(prod) => prod.subst_type(v, t),
-            Type::Nat(n) => n.subst_type(v, t),
-            Type::Bool(b) => b.subst_type(v, t),
-            Type::Record(rec) => rec.subst_type(v, t),
+            Type::TypeVar(var) => var.subst_type(v, t).into(),
+            Type::Unit(u) => u.subst_type(v, t).into(),
+            Type::Fun(fun) => fun.subst_type(v, t).into(),
+            Type::Mu(mu) => mu.subst_type(v, t).into(),
+            Type::Variant(var) => var.subst_type(v, t).into(),
+            Type::Product(prod) => prod.subst_type(v, t).into(),
+            Type::Nat(n) => n.subst_type(v, t).into(),
+            Type::Bool(b) => b.subst_type(v, t).into(),
+            Type::Record(rec) => rec.subst_type(v, t).into(),
         }
     }
 }
 
-impl From<Mu<Type>> for Type {
-    fn from(mu: Mu<Type>) -> Type {
+impl From<Mu<Recursive>> for Type {
+    fn from(mu: Mu<Recursive>) -> Type {
         Type::Mu(mu)
     }
 }
-impl From<TypeVariable<Type>> for Type {
-    fn from(v: TypeVariable<Type>) -> Type {
+impl From<TypeVariable<Recursive>> for Type {
+    fn from(v: TypeVariable<Recursive>) -> Type {
         Type::TypeVar(v)
     }
 }
 
-impl From<Unit<Type>> for Type {
-    fn from(u: Unit<Type>) -> Type {
+impl From<Unit<Recursive>> for Type {
+    fn from(u: Unit<Recursive>) -> Type {
         Type::Unit(u)
     }
 }
 
-impl From<Fun<Type>> for Type {
-    fn from(fun: Fun<Type>) -> Type {
+impl From<Fun<Recursive>> for Type {
+    fn from(fun: Fun<Recursive>) -> Type {
         Type::Fun(fun)
     }
 }
 
-impl From<Bool<Type>> for Type {
-    fn from(b: Bool<Type>) -> Type {
+impl From<Bool<Recursive>> for Type {
+    fn from(b: Bool<Recursive>) -> Type {
         Type::Bool(b)
     }
 }
 
-impl From<Nat<Type>> for Type {
-    fn from(n: Nat<Type>) -> Type {
+impl From<Nat<Recursive>> for Type {
+    fn from(n: Nat<Recursive>) -> Type {
         Type::Nat(n)
     }
 }
 
-impl From<Product<Type>> for Type {
-    fn from(prod: Product<Type>) -> Type {
+impl From<Product<Recursive>> for Type {
+    fn from(prod: Product<Recursive>) -> Type {
         Type::Product(prod)
     }
 }
 
-impl From<Record<Type>> for Type {
-    fn from(rec: Record<Type>) -> Type {
+impl From<Record<Recursive>> for Type {
+    fn from(rec: Record<Recursive>) -> Type {
         Type::Record(rec)
     }
 }
 
-impl From<Variant<Type>> for Type {
-    fn from(var: Variant<Type>) -> Type {
+impl From<Variant<Recursive>> for Type {
+    fn from(var: Variant<Recursive>) -> Type {
         Type::Variant(var)
     }
 }

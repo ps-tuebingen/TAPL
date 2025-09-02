@@ -1,4 +1,4 @@
-use super::{terms::Term, types::Type};
+use super::{FOmega, terms::Term};
 use errors::ValueMismatch;
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
@@ -9,40 +9,38 @@ use syntax::values::{
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Value {
-    Lambda(Lambda<Term, Type>),
-    TyLambda(TyLambda<Term>),
-    Pack(Pack<Value, Type>),
-    Record(Record<Value>),
-    True(True<Term>),
-    False(False<Term>),
-    Unit(Unit<Term>),
-    Num(Num<Term>),
+    Lambda(Lambda<FOmega>),
+    TyLambda(TyLambda<FOmega>),
+    Pack(Pack<FOmega>),
+    Record(Record<FOmega>),
+    True(True<FOmega>),
+    False(False<FOmega>),
+    Unit(Unit<FOmega>),
+    Num(Num<FOmega>),
 }
 
 impl ValueTrait for Value {
+    type Lang = FOmega;
     type Term = Term;
 }
 
 impl GrammarDescribe for Value {
     fn grammar() -> Grammar {
         Grammar::value(vec![
-            Lambda::<Term, Type>::rule(),
-            TyLambda::<Term>::rule(),
-            Pack::<Value, Type>::rule(),
-            Record::<Value>::rule(),
-            True::<Term>::rule(),
-            False::<Term>::rule(),
-            Unit::<Term>::rule(),
-            Num::<Term>::rule(),
+            Lambda::<FOmega>::rule(),
+            TyLambda::<FOmega>::rule(),
+            Pack::<FOmega>::rule(),
+            Record::<FOmega>::rule(),
+            True::<FOmega>::rule(),
+            False::<FOmega>::rule(),
+            Unit::<FOmega>::rule(),
+            Num::<FOmega>::rule(),
         ])
     }
 }
 
 impl ValueGroup for Value {
-    type Term = Term;
-    type Type = Type;
-
-    fn into_lambda(self) -> Result<Lambda<Term, Type>, ValueMismatch> {
+    fn into_lambda(self) -> Result<Lambda<FOmega>, ValueMismatch> {
         if let Value::Lambda(lam) = self {
             Ok(lam)
         } else {
@@ -50,7 +48,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_tylambda(self) -> Result<TyLambda<Term>, ValueMismatch> {
+    fn into_tylambda(self) -> Result<TyLambda<FOmega>, ValueMismatch> {
         if let Value::TyLambda(lam) = self {
             Ok(lam)
         } else {
@@ -58,14 +56,14 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_pack(self) -> Result<Pack<Value, Type>, ValueMismatch> {
+    fn into_pack(self) -> Result<Pack<FOmega>, ValueMismatch> {
         if let Value::Pack(pack) = self {
             Ok(pack)
         } else {
             Err(ValueMismatch::new(self.to_string(), "Package".to_owned()))
         }
     }
-    fn into_record(self) -> Result<Record<Value>, ValueMismatch> {
+    fn into_record(self) -> Result<Record<FOmega>, ValueMismatch> {
         if let Value::Record(rec) = self {
             Ok(rec)
         } else {
@@ -73,21 +71,21 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_true(self) -> Result<True<Term>, ValueMismatch> {
+    fn into_true(self) -> Result<True<FOmega>, ValueMismatch> {
         if let Value::True(tru) = self {
             Ok(tru)
         } else {
             Err(ValueMismatch::new(self.to_string(), "True".to_owned()))
         }
     }
-    fn into_false(self) -> Result<False<Term>, ValueMismatch> {
+    fn into_false(self) -> Result<False<FOmega>, ValueMismatch> {
         if let Value::False(fls) = self {
             Ok(fls)
         } else {
             Err(ValueMismatch::new(self.to_string(), "False".to_owned()))
         }
     }
-    fn into_num(self) -> Result<Num<Term>, ValueMismatch> {
+    fn into_num(self) -> Result<Num<FOmega>, ValueMismatch> {
         if let Value::Num(num) = self {
             Ok(num)
         } else {
@@ -141,44 +139,44 @@ impl LatexFmt for Value {
     }
 }
 
-impl From<Pack<Value, Type>> for Value {
-    fn from(pack: Pack<Value, Type>) -> Value {
+impl From<Pack<FOmega>> for Value {
+    fn from(pack: Pack<FOmega>) -> Value {
         Value::Pack(pack)
     }
 }
-impl From<TyLambda<Term>> for Value {
-    fn from(lam: TyLambda<Term>) -> Value {
+impl From<TyLambda<FOmega>> for Value {
+    fn from(lam: TyLambda<FOmega>) -> Value {
         Value::TyLambda(lam)
     }
 }
-impl From<Lambda<Term, Type>> for Value {
-    fn from(lam: Lambda<Term, Type>) -> Value {
+impl From<Lambda<FOmega>> for Value {
+    fn from(lam: Lambda<FOmega>) -> Value {
         Value::Lambda(lam)
     }
 }
-impl From<Unit<Term>> for Value {
-    fn from(u: Unit<Term>) -> Value {
+impl From<Unit<FOmega>> for Value {
+    fn from(u: Unit<FOmega>) -> Value {
         Value::Unit(u)
     }
 }
-impl From<True<Term>> for Value {
-    fn from(tru: True<Term>) -> Value {
+impl From<True<FOmega>> for Value {
+    fn from(tru: True<FOmega>) -> Value {
         Value::True(tru)
     }
 }
-impl From<False<Term>> for Value {
-    fn from(fls: False<Term>) -> Value {
+impl From<False<FOmega>> for Value {
+    fn from(fls: False<FOmega>) -> Value {
         Value::False(fls)
     }
 }
-impl From<Num<Term>> for Value {
-    fn from(num: Num<Term>) -> Value {
+impl From<Num<FOmega>> for Value {
+    fn from(num: Num<FOmega>) -> Value {
         Value::Num(num)
     }
 }
 
-impl From<Record<Value>> for Value {
-    fn from(rec: Record<Value>) -> Value {
+impl From<Record<FOmega>> for Value {
+    fn from(rec: Record<FOmega>) -> Value {
         Value::Record(rec)
     }
 }

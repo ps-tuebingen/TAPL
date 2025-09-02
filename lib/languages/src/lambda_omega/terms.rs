@@ -1,4 +1,4 @@
-use super::types::Type;
+use super::{LambdaOmega, types::Type};
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
@@ -10,15 +10,15 @@ use syntax::{
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Term {
-    Var(Variable<Term>),
-    Num(Num<Term>),
-    True(True<Term>),
-    False(False<Term>),
-    Unit(Unit<Term>),
-    Lambda(Lambda<Term, Type>),
-    TyLambda(TyLambda<Term>),
-    App(App<Term>),
-    TyApp(TyApp<Term, Type>),
+    Var(Variable<LambdaOmega>),
+    Num(Num<LambdaOmega>),
+    True(True<LambdaOmega>),
+    False(False<LambdaOmega>),
+    Unit(Unit<LambdaOmega>),
+    Lambda(Lambda<LambdaOmega>),
+    TyLambda(TyLambda<LambdaOmega>),
+    App(App<LambdaOmega>),
+    TyApp(TyApp<LambdaOmega>),
 }
 
 impl syntax::terms::Term for Term {}
@@ -26,49 +26,51 @@ impl syntax::terms::Term for Term {}
 impl GrammarDescribe for Term {
     fn grammar() -> Grammar {
         Grammar::term(vec![
-            Variable::<Term>::rule(),
-            Num::<Term>::rule(),
-            True::<Term>::rule(),
-            False::<Term>::rule(),
-            Lambda::<Term, Type>::rule(),
-            App::<Term>::rule(),
-            Unit::<Term>::rule(),
-            TyLambda::<Term>::rule(),
-            TyApp::<Term, Type>::rule(),
+            Variable::<LambdaOmega>::rule(),
+            Num::<LambdaOmega>::rule(),
+            True::<LambdaOmega>::rule(),
+            False::<LambdaOmega>::rule(),
+            Lambda::<LambdaOmega>::rule(),
+            App::<LambdaOmega>::rule(),
+            Unit::<LambdaOmega>::rule(),
+            TyLambda::<LambdaOmega>::rule(),
+            TyApp::<LambdaOmega>::rule(),
         ])
     }
 }
 
-impl SubstType<Type> for Term {
+impl SubstType for Term {
+    type Lang = LambdaOmega;
     type Target = Self;
     fn subst_type(self, v: &TypeVar, ty: &Type) -> Self::Target {
         match self {
-            Term::Var(var) => var.subst_type(v, ty),
-            Term::Num(num) => num.subst_type(v, ty),
-            Term::True(tru) => tru.subst_type(v, ty),
-            Term::False(fls) => fls.subst_type(v, ty),
-            Term::Lambda(lam) => lam.subst_type(v, ty),
-            Term::App(app) => app.subst_type(v, ty),
-            Term::Unit(u) => u.subst_type(v, ty),
-            Term::TyLambda(tylam) => tylam.subst_type(v, ty),
-            Term::TyApp(tyapp) => tyapp.subst_type(v, ty),
+            Term::Var(var) => var.subst_type(v, ty).into(),
+            Term::Num(num) => num.subst_type(v, ty).into(),
+            Term::True(tru) => tru.subst_type(v, ty).into(),
+            Term::False(fls) => fls.subst_type(v, ty).into(),
+            Term::Lambda(lam) => lam.subst_type(v, ty).into(),
+            Term::App(app) => app.subst_type(v, ty).into(),
+            Term::Unit(u) => u.subst_type(v, ty).into(),
+            Term::TyLambda(tylam) => tylam.subst_type(v, ty).into(),
+            Term::TyApp(tyapp) => tyapp.subst_type(v, ty).into(),
         }
     }
 }
 
-impl SubstTerm<Term> for Term {
+impl SubstTerm for Term {
+    type Lang = LambdaOmega;
     type Target = Self;
     fn subst(self, v: &Var, t: &Term) -> Self::Target {
         match self {
-            Term::Var(var) => var.subst(v, t),
-            Term::Num(num) => num.subst(v, t),
-            Term::True(tru) => tru.subst(v, t),
-            Term::False(fls) => fls.subst(v, t),
-            Term::Lambda(lam) => lam.subst(v, t),
-            Term::App(app) => app.subst(v, t),
-            Term::Unit(u) => u.subst(v, t),
-            Term::TyLambda(tylam) => tylam.subst(v, t),
-            Term::TyApp(tyapp) => tyapp.subst(v, t),
+            Term::Var(var) => var.subst(v, t).into(),
+            Term::Num(num) => num.subst(v, t).into(),
+            Term::True(tru) => tru.subst(v, t).into(),
+            Term::False(fls) => fls.subst(v, t).into(),
+            Term::Lambda(lam) => lam.subst(v, t).into(),
+            Term::App(app) => app.subst(v, t).into(),
+            Term::Unit(u) => u.subst(v, t).into(),
+            Term::TyLambda(tylam) => tylam.subst(v, t).into(),
+            Term::TyApp(tyapp) => tyapp.subst(v, t).into(),
         }
     }
 }
@@ -105,56 +107,56 @@ impl LatexFmt for Term {
     }
 }
 
-impl From<Variable<Term>> for Term {
-    fn from(var: Variable<Term>) -> Term {
+impl From<Variable<LambdaOmega>> for Term {
+    fn from(var: Variable<LambdaOmega>) -> Term {
         Term::Var(var)
     }
 }
 
-impl From<Num<Term>> for Term {
-    fn from(num: Num<Term>) -> Term {
+impl From<Num<LambdaOmega>> for Term {
+    fn from(num: Num<LambdaOmega>) -> Term {
         Term::Num(num)
     }
 }
 
-impl From<True<Term>> for Term {
-    fn from(tru: True<Term>) -> Term {
+impl From<True<LambdaOmega>> for Term {
+    fn from(tru: True<LambdaOmega>) -> Term {
         Term::True(tru)
     }
 }
 
-impl From<False<Term>> for Term {
-    fn from(fls: False<Term>) -> Term {
+impl From<False<LambdaOmega>> for Term {
+    fn from(fls: False<LambdaOmega>) -> Term {
         Term::False(fls)
     }
 }
 
-impl From<Lambda<Term, Type>> for Term {
-    fn from(lam: Lambda<Term, Type>) -> Term {
+impl From<Lambda<LambdaOmega>> for Term {
+    fn from(lam: Lambda<LambdaOmega>) -> Term {
         Term::Lambda(lam)
     }
 }
 
-impl From<App<Term>> for Term {
-    fn from(app: App<Term>) -> Term {
+impl From<App<LambdaOmega>> for Term {
+    fn from(app: App<LambdaOmega>) -> Term {
         Term::App(app)
     }
 }
 
-impl From<Unit<Term>> for Term {
-    fn from(u: Unit<Term>) -> Term {
+impl From<Unit<LambdaOmega>> for Term {
+    fn from(u: Unit<LambdaOmega>) -> Term {
         Term::Unit(u)
     }
 }
 
-impl From<TyLambda<Term>> for Term {
-    fn from(tylam: TyLambda<Term>) -> Term {
+impl From<TyLambda<LambdaOmega>> for Term {
+    fn from(tylam: TyLambda<LambdaOmega>) -> Term {
         Term::TyLambda(tylam)
     }
 }
 
-impl From<TyApp<Term, Type>> for Term {
-    fn from(tyapp: TyApp<Term, Type>) -> Term {
+impl From<TyApp<LambdaOmega>> for Term {
+    fn from(tyapp: TyApp<LambdaOmega>) -> Term {
         Term::TyApp(tyapp)
     }
 }

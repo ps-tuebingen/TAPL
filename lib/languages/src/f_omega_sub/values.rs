@@ -1,4 +1,4 @@
-use super::{terms::Term, types::Type};
+use super::{FOmegaSub, terms::Term};
 use errors::ValueMismatch;
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
@@ -7,34 +7,32 @@ use syntax::values::{Lambda, LambdaSub, Num, Pack, Record, Value as ValueTrait, 
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Value {
-    Lambda(Lambda<Term, Type>),
-    LambdaSub(LambdaSub<Term, Type>),
-    Pack(Pack<Value, Type>),
-    Record(Record<Value>),
-    Num(Num<Term>),
+    Lambda(Lambda<FOmegaSub>),
+    LambdaSub(LambdaSub<FOmegaSub>),
+    Pack(Pack<FOmegaSub>),
+    Record(Record<FOmegaSub>),
+    Num(Num<FOmegaSub>),
 }
 
 impl ValueTrait for Value {
+    type Lang = FOmegaSub;
     type Term = Term;
 }
 
 impl GrammarDescribe for Value {
     fn grammar() -> Grammar {
         Grammar::value(vec![
-            Lambda::<Term, Type>::rule(),
-            LambdaSub::<Term, Type>::rule(),
-            Pack::<Value, Type>::rule(),
-            Record::<Value>::rule(),
-            Num::<Term>::rule(),
+            Lambda::<FOmegaSub>::rule(),
+            LambdaSub::<FOmegaSub>::rule(),
+            Pack::<FOmegaSub>::rule(),
+            Record::<FOmegaSub>::rule(),
+            Num::<FOmegaSub>::rule(),
         ])
     }
 }
 
 impl ValueGroup for Value {
-    type Term = Term;
-    type Type = Type;
-
-    fn into_lambda(self) -> Result<Lambda<Term, Type>, ValueMismatch> {
+    fn into_lambda(self) -> Result<Lambda<FOmegaSub>, ValueMismatch> {
         if let Value::Lambda(lam) = self {
             Ok(lam)
         } else {
@@ -42,7 +40,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_lambdasub(self) -> Result<LambdaSub<Term, Type>, ValueMismatch> {
+    fn into_lambdasub(self) -> Result<LambdaSub<FOmegaSub>, ValueMismatch> {
         if let Value::LambdaSub(lam) = self {
             Ok(lam)
         } else {
@@ -50,7 +48,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_pack(self) -> Result<Pack<Value, Type>, ValueMismatch> {
+    fn into_pack(self) -> Result<Pack<FOmegaSub>, ValueMismatch> {
         if let Value::Pack(pack) = self {
             Ok(pack)
         } else {
@@ -58,7 +56,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_record(self) -> Result<Record<Value>, ValueMismatch> {
+    fn into_record(self) -> Result<Record<FOmegaSub>, ValueMismatch> {
         if let Value::Record(rec) = self {
             Ok(rec)
         } else {
@@ -66,7 +64,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_num(self) -> Result<Num<Term>, ValueMismatch> {
+    fn into_num(self) -> Result<Num<FOmegaSub>, ValueMismatch> {
         if let Value::Num(num) = self {
             Ok(num)
         } else {
@@ -111,30 +109,30 @@ impl LatexFmt for Value {
     }
 }
 
-impl From<Pack<Value, Type>> for Value {
-    fn from(pack: Pack<Value, Type>) -> Value {
+impl From<Pack<FOmegaSub>> for Value {
+    fn from(pack: Pack<FOmegaSub>) -> Value {
         Value::Pack(pack)
     }
 }
-impl From<LambdaSub<Term, Type>> for Value {
-    fn from(lam: LambdaSub<Term, Type>) -> Value {
+impl From<LambdaSub<FOmegaSub>> for Value {
+    fn from(lam: LambdaSub<FOmegaSub>) -> Value {
         Value::LambdaSub(lam)
     }
 }
 
-impl From<Lambda<Term, Type>> for Value {
-    fn from(lam: Lambda<Term, Type>) -> Value {
+impl From<Lambda<FOmegaSub>> for Value {
+    fn from(lam: Lambda<FOmegaSub>) -> Value {
         Value::Lambda(lam)
     }
 }
-impl From<Num<Term>> for Value {
-    fn from(num: Num<Term>) -> Value {
+impl From<Num<FOmegaSub>> for Value {
+    fn from(num: Num<FOmegaSub>) -> Value {
         Value::Num(num)
     }
 }
 
-impl From<Record<Value>> for Value {
-    fn from(rec: Record<Value>) -> Value {
+impl From<Record<FOmegaSub>> for Value {
+    fn from(rec: Record<FOmegaSub>) -> Value {
         Value::Record(rec)
     }
 }

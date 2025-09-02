@@ -1,3 +1,4 @@
+use super::TypedArithmetic;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
@@ -10,14 +11,15 @@ use syntax::{
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum Type {
-    Nat(Nat<Type>),
-    Bool(Bool<Type>),
+    Nat(Nat<TypedArithmetic>),
+    Bool(Bool<TypedArithmetic>),
 }
 
 impl TypeTrait for Type {}
 
 impl TypeGroup for Type {
-    fn into_nat(self) -> Result<Nat<Type>, TypeMismatch> {
+    type Lang = TypedArithmetic;
+    fn into_nat(self) -> Result<Nat<TypedArithmetic>, TypeMismatch> {
         if let Type::Nat(nat) = self {
             Ok(nat)
         } else {
@@ -25,7 +27,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_bool(self) -> Result<Bool<Type>, TypeMismatch> {
+    fn into_bool(self) -> Result<Bool<TypedArithmetic>, TypeMismatch> {
         if let Type::Bool(b) = self {
             Ok(b)
         } else {
@@ -36,11 +38,15 @@ impl TypeGroup for Type {
 
 impl GrammarDescribe for Type {
     fn grammar() -> Grammar {
-        Grammar::ty(vec![Nat::<Type>::rule(), Bool::<Type>::rule()])
+        Grammar::ty(vec![
+            Nat::<TypedArithmetic>::rule(),
+            Bool::<TypedArithmetic>::rule(),
+        ])
     }
 }
 
-impl SubstType<Type> for Type {
+impl SubstType for Type {
+    type Lang = TypedArithmetic;
     type Target = Type;
     fn subst_type(self, _: &TypeVar, _: &Type) -> Self::Target {
         self
@@ -65,14 +71,14 @@ impl LatexFmt for Type {
     }
 }
 
-impl From<Nat<Type>> for Type {
-    fn from(n: Nat<Type>) -> Type {
+impl From<Nat<TypedArithmetic>> for Type {
+    fn from(n: Nat<TypedArithmetic>) -> Type {
         Type::Nat(n)
     }
 }
 
-impl From<Bool<Type>> for Type {
-    fn from(b: Bool<Type>) -> Type {
+impl From<Bool<TypedArithmetic>> for Type {
+    fn from(b: Bool<TypedArithmetic>) -> Type {
         Type::Bool(b)
     }
 }

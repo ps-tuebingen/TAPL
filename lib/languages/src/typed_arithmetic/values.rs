@@ -1,4 +1,4 @@
-use super::{terms::Term, types::Type};
+use super::{TypedArithmetic, terms::Term};
 use errors::ValueMismatch;
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
@@ -7,34 +7,32 @@ use syntax::values::{False, Num, True, Value as ValueTrait, ValueGroup};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Value {
-    True(True<Term>),
-    False(False<Term>),
-    Num(Num<Term>),
+    True(True<TypedArithmetic>),
+    False(False<TypedArithmetic>),
+    Num(Num<TypedArithmetic>),
 }
 
 impl ValueTrait for Value {
+    type Lang = TypedArithmetic;
     type Term = Term;
 }
 
 impl ValueGroup for Value {
-    type Term = Term;
-    type Type = Type;
-
-    fn into_true(self) -> Result<True<Term>, ValueMismatch> {
+    fn into_true(self) -> Result<True<TypedArithmetic>, ValueMismatch> {
         if let Value::True(tru) = self {
             Ok(tru)
         } else {
             Err(ValueMismatch::new(self.to_string(), "True".to_owned()))
         }
     }
-    fn into_false(self) -> Result<False<Term>, ValueMismatch> {
+    fn into_false(self) -> Result<False<TypedArithmetic>, ValueMismatch> {
         if let Value::False(fls) = self {
             Ok(fls)
         } else {
             Err(ValueMismatch::new(self.to_string(), "False".to_owned()))
         }
     }
-    fn into_num(self) -> Result<Num<Term>, ValueMismatch> {
+    fn into_num(self) -> Result<Num<TypedArithmetic>, ValueMismatch> {
         if let Value::Num(num) = self {
             Ok(num)
         } else {
@@ -46,9 +44,9 @@ impl ValueGroup for Value {
 impl GrammarDescribe for Value {
     fn grammar() -> Grammar {
         Grammar::value(vec![
-            True::<Term>::rule(),
-            False::<Term>::rule(),
-            Num::<Term>::rule(),
+            True::<TypedArithmetic>::rule(),
+            False::<TypedArithmetic>::rule(),
+            Num::<TypedArithmetic>::rule(),
         ])
     }
 }
@@ -83,18 +81,18 @@ impl LatexFmt for Value {
     }
 }
 
-impl From<True<Term>> for Value {
-    fn from(tru: True<Term>) -> Value {
+impl From<True<TypedArithmetic>> for Value {
+    fn from(tru: True<TypedArithmetic>) -> Value {
         Value::True(tru)
     }
 }
-impl From<False<Term>> for Value {
-    fn from(fls: False<Term>) -> Value {
+impl From<False<TypedArithmetic>> for Value {
+    fn from(fls: False<TypedArithmetic>) -> Value {
         Value::False(fls)
     }
 }
-impl From<Num<Term>> for Value {
-    fn from(num: Num<Term>) -> Value {
+impl From<Num<TypedArithmetic>> for Value {
+    fn from(num: Num<TypedArithmetic>) -> Value {
         Value::Num(num)
     }
 }

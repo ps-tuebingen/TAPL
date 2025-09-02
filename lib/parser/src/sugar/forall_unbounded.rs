@@ -1,14 +1,15 @@
-use crate::{GroupParse, ParsableLanguage, Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, Parse, Rule, pair_to_n_inner};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
 use syntax::{
     kinds::Kind,
+    language::Language,
     types::{Forall, ForallBounded, Top},
 };
 
 pub struct ForallUnbounded<Lang>
 where
-    Lang: ParsableLanguage,
+    Lang: Language,
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
 {
@@ -18,7 +19,7 @@ where
 
 impl<Lang> ForallUnbounded<Lang>
 where
-    Lang: ParsableLanguage,
+    Lang: Language,
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
 {
@@ -36,7 +37,7 @@ where
 
 impl<Lang> Parse for ForallUnbounded<Lang>
 where
-    Lang: ParsableLanguage,
+    Lang: Language,
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
 {
@@ -60,7 +61,7 @@ where
 
 impl<Lang> From<ForallUnbounded<Lang>> for ForallBounded<Lang>
 where
-    Lang: ParsableLanguage,
+    Lang: Language,
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
     Top<Lang>: Into<Lang::Type>,
@@ -72,7 +73,7 @@ where
 
 impl<Lang> From<ForallUnbounded<Lang>> for Forall<Lang>
 where
-    Lang: ParsableLanguage,
+    Lang: Language,
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
 {

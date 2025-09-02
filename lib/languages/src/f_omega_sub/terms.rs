@@ -1,4 +1,4 @@
-use super::types::Type;
+use super::{FOmegaSub, types::Type};
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
@@ -13,19 +13,19 @@ use syntax::{
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Term {
-    Var(Variable<Term>),
-    Lambda(Lambda<Term, Type>),
-    App(App<Term>),
-    LambdaSub(LambdaSub<Term, Type>),
-    TyApp(TyApp<Term, Type>),
-    Pack(Pack<Term, Type>),
-    Unpack(Unpack<Term, Type>),
-    Record(Record<Term>),
-    RecordProj(RecordProj<Term>),
-    Num(Num<Term>),
-    Succ(Succ<Term>),
-    Pred(Pred<Term>),
-    Let(Let<Term>),
+    Var(Variable<FOmegaSub>),
+    Lambda(Lambda<FOmegaSub>),
+    App(App<FOmegaSub>),
+    LambdaSub(LambdaSub<FOmegaSub>),
+    TyApp(TyApp<FOmegaSub>),
+    Pack(Pack<FOmegaSub>),
+    Unpack(Unpack<FOmegaSub>),
+    Record(Record<FOmegaSub>),
+    RecordProj(RecordProj<FOmegaSub>),
+    Num(Num<FOmegaSub>),
+    Succ(Succ<FOmegaSub>),
+    Pred(Pred<FOmegaSub>),
+    Let(Let<FOmegaSub>),
 }
 
 impl syntax::terms::Term for Term {}
@@ -33,63 +33,65 @@ impl syntax::terms::Term for Term {}
 impl GrammarDescribe for Term {
     fn grammar() -> Grammar {
         Grammar::term(vec![
-            Variable::<Term>::rule(),
-            Lambda::<Term, Type>::rule(),
-            App::<Term>::rule(),
-            LambdaSub::<Term, Type>::rule(),
-            TyApp::<Term, Type>::rule(),
-            Pack::<Term, Type>::rule(),
-            Unpack::<Term, Type>::rule(),
-            Record::<Term>::rule(),
-            RecordProj::<Term>::rule(),
-            Num::<Term>::rule(),
-            Succ::<Term>::rule(),
-            Pred::<Term>::rule(),
-            Let::<Term>::rule(),
+            Variable::<FOmegaSub>::rule(),
+            Lambda::<FOmegaSub>::rule(),
+            App::<FOmegaSub>::rule(),
+            LambdaSub::<FOmegaSub>::rule(),
+            TyApp::<FOmegaSub>::rule(),
+            Pack::<FOmegaSub>::rule(),
+            Unpack::<FOmegaSub>::rule(),
+            Record::<FOmegaSub>::rule(),
+            RecordProj::<FOmegaSub>::rule(),
+            Num::<FOmegaSub>::rule(),
+            Succ::<FOmegaSub>::rule(),
+            Pred::<FOmegaSub>::rule(),
+            Let::<FOmegaSub>::rule(),
         ])
     }
 }
 
-impl SubstTerm<Term> for Term {
+impl SubstTerm for Term {
+    type Lang = FOmegaSub;
     type Target = Self;
 
     fn subst(self, v: &Var, t: &Term) -> Term {
         match self {
-            Term::Var(var) => var.subst(v, t),
-            Term::Lambda(lam) => lam.subst(v, t),
-            Term::App(app) => app.subst(v, t),
-            Term::LambdaSub(lam) => lam.subst(v, t),
-            Term::TyApp(app) => app.subst(v, t),
-            Term::Pack(pack) => pack.subst(v, t),
-            Term::Unpack(unpack) => unpack.subst(v, t),
-            Term::Record(rec) => rec.subst(v, t),
-            Term::RecordProj(proj) => proj.subst(v, t),
-            Term::Num(num) => num.subst(v, t),
-            Term::Succ(succ) => succ.subst(v, t),
-            Term::Pred(pred) => pred.subst(v, t),
-            Term::Let(lt) => lt.subst(v, t),
+            Term::Var(var) => var.subst(v, t).into(),
+            Term::Lambda(lam) => lam.subst(v, t).into(),
+            Term::App(app) => app.subst(v, t).into(),
+            Term::LambdaSub(lam) => lam.subst(v, t).into(),
+            Term::TyApp(app) => app.subst(v, t).into(),
+            Term::Pack(pack) => pack.subst(v, t).into(),
+            Term::Unpack(unpack) => unpack.subst(v, t).into(),
+            Term::Record(rec) => rec.subst(v, t).into(),
+            Term::RecordProj(proj) => proj.subst(v, t).into(),
+            Term::Num(num) => num.subst(v, t).into(),
+            Term::Succ(succ) => succ.subst(v, t).into(),
+            Term::Pred(pred) => pred.subst(v, t).into(),
+            Term::Let(lt) => lt.subst(v, t).into(),
         }
     }
 }
 
-impl SubstType<Type> for Term {
+impl SubstType for Term {
+    type Lang = FOmegaSub;
     type Target = Self;
 
     fn subst_type(self, v: &TypeVar, ty: &Type) -> Self {
         match self {
-            Term::Var(var) => var.subst_type(v, ty),
-            Term::Lambda(lam) => lam.subst_type(v, ty),
-            Term::App(app) => app.subst_type(v, ty),
-            Term::LambdaSub(lam) => lam.subst_type(v, ty),
-            Term::TyApp(app) => app.subst_type(v, ty),
-            Term::Pack(pack) => pack.subst_type(v, ty),
-            Term::Unpack(unpack) => unpack.subst_type(v, ty),
-            Term::Record(rec) => rec.subst_type(v, ty),
-            Term::RecordProj(proj) => proj.subst_type(v, ty),
-            Term::Num(num) => num.subst_type(v, ty),
-            Term::Succ(succ) => succ.subst_type(v, ty),
-            Term::Pred(pred) => pred.subst_type(v, ty),
-            Term::Let(lt) => lt.subst_type(v, ty),
+            Term::Var(var) => var.subst_type(v, ty).into(),
+            Term::Lambda(lam) => lam.subst_type(v, ty).into(),
+            Term::App(app) => app.subst_type(v, ty).into(),
+            Term::LambdaSub(lam) => lam.subst_type(v, ty).into(),
+            Term::TyApp(app) => app.subst_type(v, ty).into(),
+            Term::Pack(pack) => pack.subst_type(v, ty).into(),
+            Term::Unpack(unpack) => unpack.subst_type(v, ty).into(),
+            Term::Record(rec) => rec.subst_type(v, ty).into(),
+            Term::RecordProj(proj) => proj.subst_type(v, ty).into(),
+            Term::Num(num) => num.subst_type(v, ty).into(),
+            Term::Succ(succ) => succ.subst_type(v, ty).into(),
+            Term::Pred(pred) => pred.subst_type(v, ty).into(),
+            Term::Let(lt) => lt.subst_type(v, ty).into(),
         }
     }
 }
@@ -134,75 +136,75 @@ impl LatexFmt for Term {
     }
 }
 
-impl From<Let<Term>> for Term {
-    fn from(lt: Let<Term>) -> Term {
+impl From<Let<FOmegaSub>> for Term {
+    fn from(lt: Let<FOmegaSub>) -> Term {
         Term::Let(lt)
     }
 }
-impl From<Pack<Term, Type>> for Term {
-    fn from(pack: Pack<Term, Type>) -> Term {
+impl From<Pack<FOmegaSub>> for Term {
+    fn from(pack: Pack<FOmegaSub>) -> Term {
         Term::Pack(pack)
     }
 }
-impl From<Unpack<Term, Type>> for Term {
-    fn from(unpack: Unpack<Term, Type>) -> Term {
+impl From<Unpack<FOmegaSub>> for Term {
+    fn from(unpack: Unpack<FOmegaSub>) -> Term {
         Term::Unpack(unpack)
     }
 }
-impl From<TyApp<Term, Type>> for Term {
-    fn from(tyapp: TyApp<Term, Type>) -> Term {
+impl From<TyApp<FOmegaSub>> for Term {
+    fn from(tyapp: TyApp<FOmegaSub>) -> Term {
         Term::TyApp(tyapp)
     }
 }
 
-impl From<Lambda<Term, Type>> for Term {
-    fn from(lam: Lambda<Term, Type>) -> Term {
+impl From<Lambda<FOmegaSub>> for Term {
+    fn from(lam: Lambda<FOmegaSub>) -> Term {
         Term::Lambda(lam)
     }
 }
 
-impl From<Num<Term>> for Term {
-    fn from(num: Num<Term>) -> Term {
+impl From<Num<FOmegaSub>> for Term {
+    fn from(num: Num<FOmegaSub>) -> Term {
         Term::Num(num)
     }
 }
 
-impl From<Record<Term>> for Term {
-    fn from(rec: Record<Term>) -> Term {
+impl From<Record<FOmegaSub>> for Term {
+    fn from(rec: Record<FOmegaSub>) -> Term {
         Term::Record(rec)
     }
 }
 
-impl From<Variable<Term>> for Term {
-    fn from(var: Variable<Term>) -> Term {
+impl From<Variable<FOmegaSub>> for Term {
+    fn from(var: Variable<FOmegaSub>) -> Term {
         Term::Var(var)
     }
 }
 
-impl From<App<Term>> for Term {
-    fn from(app: App<Term>) -> Term {
+impl From<App<FOmegaSub>> for Term {
+    fn from(app: App<FOmegaSub>) -> Term {
         Term::App(app)
     }
 }
 
-impl From<Pred<Term>> for Term {
-    fn from(pred: Pred<Term>) -> Term {
+impl From<Pred<FOmegaSub>> for Term {
+    fn from(pred: Pred<FOmegaSub>) -> Term {
         Term::Pred(pred)
     }
 }
 
-impl From<Succ<Term>> for Term {
-    fn from(succ: Succ<Term>) -> Term {
+impl From<Succ<FOmegaSub>> for Term {
+    fn from(succ: Succ<FOmegaSub>) -> Term {
         Term::Succ(succ)
     }
 }
-impl From<LambdaSub<Term, Type>> for Term {
-    fn from(lam: LambdaSub<Term, Type>) -> Term {
+impl From<LambdaSub<FOmegaSub>> for Term {
+    fn from(lam: LambdaSub<FOmegaSub>) -> Term {
         Term::LambdaSub(lam)
     }
 }
-impl From<RecordProj<Term>> for Term {
-    fn from(proj: RecordProj<Term>) -> Term {
+impl From<RecordProj<FOmegaSub>> for Term {
+    fn from(proj: RecordProj<FOmegaSub>) -> Term {
         Term::RecordProj(proj)
     }
 }

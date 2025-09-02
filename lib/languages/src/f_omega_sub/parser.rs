@@ -1,4 +1,4 @@
-use super::{terms::Term, types::Type};
+use super::{FOmegaSub, terms::Term, types::Type};
 use errors::{UnexpectedRule, parse_error::ParserError};
 use parser::{
     GroupParse, Parse, Rule, pair_to_n_inner,
@@ -38,7 +38,7 @@ impl GroupParse for Term {
             Rule::unpack_term => Ok(Unpack::from_pair(p, ())?.into()),
             Rule::record_term => Ok(Record::from_pair(p, ())?.into()),
             Rule::variable => Ok(Variable::from_pair(p, ())?.into()),
-            Rule::const_term => Ok(StringTerm::new().with_zero().from_pair(p)?),
+            Rule::const_term => Ok(StringTerm::<FOmegaSub>::new().with_zero().from_pair(p)?),
             Rule::number => Ok(Num::from_pair(p, ())?.into()),
             _ => Err(
                 UnexpectedRule::new(&format!("{:?}", p.as_rule()), "Non Left-Recursive Term")
@@ -63,7 +63,7 @@ impl GroupParse for Type {
     fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Type, ParserError> {
         match p.as_rule() {
             Rule::paren_type => Self::from_pair(pair_to_n_inner(p, vec!["Type"])?.remove(0), ()),
-            Rule::const_type => Ok(StringTy::new().with_nat().from_pair(p)?),
+            Rule::const_type => Ok(StringTy::<FOmegaSub>::new().with_nat().from_pair(p)?),
             Rule::top_type => Ok(Top::from_pair(p, ())?.into()),
             Rule::forall_bounded_type => Ok(ForallBounded::from_pair(p, ())?.into()),
             Rule::forall_unbounded_type => Ok(ForallUnbounded::from_pair(p, ())?

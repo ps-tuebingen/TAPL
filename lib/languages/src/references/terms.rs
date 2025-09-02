@@ -1,4 +1,4 @@
-use super::types::Type;
+use super::{References, types::Type};
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
@@ -13,23 +13,23 @@ use syntax::{
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Term {
-    Var(Variable<Term>),
-    Num(Num<Term>),
-    Succ(Succ<Term>),
-    Pred(Pred<Term>),
-    IsZero(IsZero<Term>),
-    Lambda(Lambda<Term, Type>),
-    App(App<Term>),
-    Unit(Unit<Term>),
-    Ref(Ref<Term>),
-    Deref(Deref<Term>),
-    Assign(Assign<Term>),
-    Loc(Loc<Term>),
-    Let(Let<Term>),
-    If(If<Term>),
-    True(True<Term>),
-    False(False<Term>),
-    Fix(Fix<Term>),
+    Var(Variable<References>),
+    Num(Num<References>),
+    Succ(Succ<References>),
+    Pred(Pred<References>),
+    IsZero(IsZero<References>),
+    Lambda(Lambda<References>),
+    App(App<References>),
+    Unit(Unit<References>),
+    Ref(Ref<References>),
+    Deref(Deref<References>),
+    Assign(Assign<References>),
+    Loc(Loc<References>),
+    Let(Let<References>),
+    If(If<References>),
+    True(True<References>),
+    False(False<References>),
+    Fix(Fix<References>),
 }
 
 impl syntax::terms::Term for Term {}
@@ -37,55 +37,57 @@ impl syntax::terms::Term for Term {}
 impl GrammarDescribe for Term {
     fn grammar() -> Grammar {
         Grammar::term(vec![
-            Variable::<Term>::rule(),
-            Num::<Term>::rule(),
-            Succ::<Term>::rule(),
-            Pred::<Term>::rule(),
-            Lambda::<Term, Type>::rule(),
-            App::<Term>::rule(),
-            Unit::<Term>::rule(),
-            Ref::<Term>::rule(),
-            Deref::<Term>::rule(),
-            Assign::<Term>::rule(),
-            Loc::<Term>::rule(),
-            Let::<Term>::rule(),
-            If::<Term>::rule(),
-            True::<Term>::rule(),
-            False::<Term>::rule(),
-            Fix::<Term>::rule(),
-            IsZero::<Term>::rule(),
+            Variable::<References>::rule(),
+            Num::<References>::rule(),
+            Succ::<References>::rule(),
+            Pred::<References>::rule(),
+            Lambda::<References>::rule(),
+            App::<References>::rule(),
+            Unit::<References>::rule(),
+            Ref::<References>::rule(),
+            Deref::<References>::rule(),
+            Assign::<References>::rule(),
+            Loc::<References>::rule(),
+            Let::<References>::rule(),
+            If::<References>::rule(),
+            True::<References>::rule(),
+            False::<References>::rule(),
+            Fix::<References>::rule(),
+            IsZero::<References>::rule(),
         ])
     }
 }
 
-impl SubstType<Type> for Term {
+impl SubstType for Term {
+    type Lang = References;
     type Target = Self;
     fn subst_type(self, _: &TypeVar, _: &Type) -> Self::Target {
         self
     }
 }
 
-impl SubstTerm<Term> for Term {
+impl SubstTerm for Term {
+    type Lang = References;
     type Target = Self;
     fn subst(self, v: &Var, t: &Term) -> Self::Target {
         match self {
-            Term::Var(var) => var.subst(v, t),
-            Term::Num(c) => c.subst(v, t),
-            Term::Succ(s) => s.subst(v, t),
-            Term::Pred(p) => p.subst(v, t),
-            Term::Lambda(lam) => lam.subst(v, t),
-            Term::App(app) => app.subst(v, t),
-            Term::Unit(u) => u.subst(v, t),
-            Term::Ref(reft) => reft.subst(v, t),
-            Term::Deref(dereft) => dereft.subst(v, t),
-            Term::Assign(ass) => ass.subst(v, t),
-            Term::Loc(loc) => loc.subst(v, t),
-            Term::Let(lett) => lett.subst(v, t),
-            Term::If(ift) => ift.subst(v, t),
-            Term::True(tru) => tru.subst(v, t),
-            Term::False(fls) => fls.subst(v, t),
-            Term::Fix(fix) => fix.subst(v, t),
-            Term::IsZero(isz) => isz.subst(v, t),
+            Term::Var(var) => var.subst(v, t).into(),
+            Term::Num(c) => c.subst(v, t).into(),
+            Term::Succ(s) => s.subst(v, t).into(),
+            Term::Pred(p) => p.subst(v, t).into(),
+            Term::Lambda(lam) => lam.subst(v, t).into(),
+            Term::App(app) => app.subst(v, t).into(),
+            Term::Unit(u) => u.subst(v, t).into(),
+            Term::Ref(reft) => reft.subst(v, t).into(),
+            Term::Deref(dereft) => dereft.subst(v, t).into(),
+            Term::Assign(ass) => ass.subst(v, t).into(),
+            Term::Loc(loc) => loc.subst(v, t).into(),
+            Term::Let(lett) => lett.subst(v, t).into(),
+            Term::If(ift) => ift.subst(v, t).into(),
+            Term::True(tru) => tru.subst(v, t).into(),
+            Term::False(fls) => fls.subst(v, t).into(),
+            Term::Fix(fix) => fix.subst(v, t).into(),
+            Term::IsZero(isz) => isz.subst(v, t).into(),
         }
     }
 }
@@ -138,100 +140,100 @@ impl LatexFmt for Term {
     }
 }
 
-impl From<Variable<Term>> for Term {
-    fn from(v: Variable<Term>) -> Term {
+impl From<Variable<References>> for Term {
+    fn from(v: Variable<References>) -> Term {
         Term::Var(v)
     }
 }
-impl From<Num<Term>> for Term {
-    fn from(n: Num<Term>) -> Term {
+impl From<Num<References>> for Term {
+    fn from(n: Num<References>) -> Term {
         Term::Num(n)
     }
 }
-impl From<Succ<Term>> for Term {
-    fn from(s: Succ<Term>) -> Term {
+impl From<Succ<References>> for Term {
+    fn from(s: Succ<References>) -> Term {
         Term::Succ(s)
     }
 }
 
-impl From<Pred<Term>> for Term {
-    fn from(p: Pred<Term>) -> Term {
+impl From<Pred<References>> for Term {
+    fn from(p: Pred<References>) -> Term {
         Term::Pred(p)
     }
 }
-impl From<Lambda<Term, Type>> for Term {
-    fn from(lam: Lambda<Term, Type>) -> Term {
+impl From<Lambda<References>> for Term {
+    fn from(lam: Lambda<References>) -> Term {
         Term::Lambda(lam)
     }
 }
 
-impl From<App<Term>> for Term {
-    fn from(app: App<Term>) -> Term {
+impl From<App<References>> for Term {
+    fn from(app: App<References>) -> Term {
         Term::App(app)
     }
 }
 
-impl From<Unit<Term>> for Term {
-    fn from(u: Unit<Term>) -> Term {
+impl From<Unit<References>> for Term {
+    fn from(u: Unit<References>) -> Term {
         Term::Unit(u)
     }
 }
 
-impl From<Ref<Term>> for Term {
-    fn from(reft: Ref<Term>) -> Term {
+impl From<Ref<References>> for Term {
+    fn from(reft: Ref<References>) -> Term {
         Term::Ref(reft)
     }
 }
 
-impl From<Deref<Term>> for Term {
-    fn from(dereft: Deref<Term>) -> Term {
+impl From<Deref<References>> for Term {
+    fn from(dereft: Deref<References>) -> Term {
         Term::Deref(dereft)
     }
 }
 
-impl From<Assign<Term>> for Term {
-    fn from(ass: Assign<Term>) -> Term {
+impl From<Assign<References>> for Term {
+    fn from(ass: Assign<References>) -> Term {
         Term::Assign(ass)
     }
 }
 
-impl From<Loc<Term>> for Term {
-    fn from(loc: Loc<Term>) -> Term {
+impl From<Loc<References>> for Term {
+    fn from(loc: Loc<References>) -> Term {
         Term::Loc(loc)
     }
 }
 
-impl From<If<Term>> for Term {
-    fn from(ift: If<Term>) -> Term {
+impl From<If<References>> for Term {
+    fn from(ift: If<References>) -> Term {
         Term::If(ift)
     }
 }
 
-impl From<True<Term>> for Term {
-    fn from(tru: True<Term>) -> Term {
+impl From<True<References>> for Term {
+    fn from(tru: True<References>) -> Term {
         Term::True(tru)
     }
 }
 
-impl From<False<Term>> for Term {
-    fn from(fls: False<Term>) -> Term {
+impl From<False<References>> for Term {
+    fn from(fls: False<References>) -> Term {
         Term::False(fls)
     }
 }
 
-impl From<Let<Term>> for Term {
-    fn from(lt: Let<Term>) -> Term {
+impl From<Let<References>> for Term {
+    fn from(lt: Let<References>) -> Term {
         Term::Let(lt)
     }
 }
-impl From<Fix<Term>> for Term {
-    fn from(fix: Fix<Term>) -> Term {
+impl From<Fix<References>> for Term {
+    fn from(fix: Fix<References>) -> Term {
         Term::Fix(fix)
     }
 }
 
-impl From<IsZero<Term>> for Term {
-    fn from(isz: IsZero<Term>) -> Term {
+impl From<IsZero<References>> for Term {
+    fn from(isz: IsZero<References>) -> Term {
         Term::IsZero(isz)
     }
 }

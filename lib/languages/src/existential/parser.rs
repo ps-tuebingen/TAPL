@@ -1,4 +1,4 @@
-use super::{terms::Term, types::Type};
+use super::{Existential, terms::Term, types::Type};
 use errors::{UnexpectedRule, UnknownKeyword, parse_error::ParserError};
 use parser::{
     GroupParse, Parse, Rule, pair_to_n_inner, sugar::ExistsUnbounded, terms::StringTerm,
@@ -17,7 +17,7 @@ impl GroupParse for Term {
 
     fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Self, ParserError> {
         match p.as_rule() {
-            Rule::const_term => Ok(StringTerm::new()
+            Rule::const_term => Ok(StringTerm::<Existential>::new()
                 .with_unit()
                 .with_zero()
                 .with_true()
@@ -64,7 +64,7 @@ impl GroupParse for Type {
     const RULE: Rule = Rule::r#type;
     fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Type, ParserError> {
         match p.as_rule() {
-            Rule::const_type => Ok(StringTy::new()
+            Rule::const_type => Ok(StringTy::<Existential>::new()
                 .with_nat()
                 .with_unit()
                 .with_bool()

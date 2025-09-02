@@ -1,4 +1,4 @@
-use super::{terms::Term, types::Type};
+use super::{TypedArithmetic, terms::Term, types::Type};
 use errors::{UnexpectedRule, parse_error::ParserError};
 use parser::{GroupParse, Parse, Rule, terms::StringTerm, types::StringTy};
 use pest::iterators::Pair;
@@ -9,7 +9,7 @@ impl GroupParse for Term {
 
     fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Self, ParserError> {
         match p.as_rule() {
-            Rule::const_term => Ok(StringTerm::new()
+            Rule::const_term => Ok(StringTerm::<TypedArithmetic>::new()
                 .with_true()
                 .with_false()
                 .with_zero()
@@ -36,7 +36,10 @@ impl GroupParse for Type {
 
     fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Self, ParserError> {
         match p.as_rule() {
-            Rule::const_type => Ok(StringTy::new().with_nat().with_bool().from_pair(p)?),
+            Rule::const_type => Ok(StringTy::<TypedArithmetic>::new()
+                .with_nat()
+                .with_bool()
+                .from_pair(p)?),
             _ => Err(
                 UnexpectedRule::new(&format!("{:?}", p.as_rule()), "Non Left-Recursive Type")
                     .into(),

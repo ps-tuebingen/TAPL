@@ -1,11 +1,11 @@
-use crate::{GroupParse, ParsableLanguage, Parse, Rule};
+use crate::{GroupParse, Parse, Rule};
 use errors::{UnknownKeyword, parse_error::ParserError};
 use pest::iterators::Pair;
-use syntax::terms::Num;
+use syntax::{language::Language, terms::Num};
 
 impl<Lang> Parse for Num<Lang>
 where
-    Lang: ParsableLanguage,
+    Lang: Language,
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
 {

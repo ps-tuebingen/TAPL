@@ -1,4 +1,4 @@
-use super::{terms::Term, types::Type};
+use super::{Recursive, terms::Term};
 use errors::ValueMismatch;
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
@@ -9,26 +9,24 @@ use syntax::values::{
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Value {
-    True(True<Term>),
-    False(False<Term>),
-    Unit(Unit<Term>),
-    Num(Num<Term>),
-    Lambda(Lambda<Term, Type>),
-    Fold(Fold<Value, Type>),
-    Pair(Pair<Value>),
-    Record(Record<Value>),
-    Variant(Variant<Value, Type>),
+    True(True<Recursive>),
+    False(False<Recursive>),
+    Unit(Unit<Recursive>),
+    Num(Num<Recursive>),
+    Lambda(Lambda<Recursive>),
+    Fold(Fold<Recursive>),
+    Pair(Pair<Recursive>),
+    Record(Record<Recursive>),
+    Variant(Variant<Recursive>),
 }
 
 impl ValueTrait for Value {
+    type Lang = Recursive;
     type Term = Term;
 }
 
 impl ValueGroup for Value {
-    type Term = Term;
-    type Type = Type;
-
-    fn into_true(self) -> Result<True<Term>, ValueMismatch> {
+    fn into_true(self) -> Result<True<Recursive>, ValueMismatch> {
         if let Value::True(tru) = self {
             Ok(tru)
         } else {
@@ -36,7 +34,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_false(self) -> Result<False<Term>, ValueMismatch> {
+    fn into_false(self) -> Result<False<Recursive>, ValueMismatch> {
         if let Value::False(fls) = self {
             Ok(fls)
         } else {
@@ -44,7 +42,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_num(self) -> Result<Num<Term>, ValueMismatch> {
+    fn into_num(self) -> Result<Num<Recursive>, ValueMismatch> {
         if let Value::Num(num) = self {
             Ok(num)
         } else {
@@ -52,7 +50,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_lambda(self) -> Result<Lambda<Term, Type>, ValueMismatch> {
+    fn into_lambda(self) -> Result<Lambda<Recursive>, ValueMismatch> {
         if let Value::Lambda(lam) = self {
             Ok(lam)
         } else {
@@ -60,7 +58,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_fold(self) -> Result<Fold<Value, Type>, ValueMismatch> {
+    fn into_fold(self) -> Result<Fold<Recursive>, ValueMismatch> {
         if let Value::Fold(fld) = self {
             Ok(fld)
         } else {
@@ -68,7 +66,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_pair(self) -> Result<Pair<Value>, ValueMismatch> {
+    fn into_pair(self) -> Result<Pair<Recursive>, ValueMismatch> {
         if let Value::Pair(pair) = self {
             Ok(pair)
         } else {
@@ -76,7 +74,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_record(self) -> Result<Record<Value>, ValueMismatch> {
+    fn into_record(self) -> Result<Record<Recursive>, ValueMismatch> {
         if let Value::Record(rec) = self {
             Ok(rec)
         } else {
@@ -84,7 +82,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_variant(self) -> Result<Variant<Value, Type>, ValueMismatch> {
+    fn into_variant(self) -> Result<Variant<Recursive>, ValueMismatch> {
         if let Value::Variant(var) = self {
             Ok(var)
         } else {
@@ -112,15 +110,15 @@ impl From<Value> for Term {
 impl GrammarDescribe for Value {
     fn grammar() -> Grammar {
         Grammar::value(vec![
-            Unit::<Term>::rule(),
-            True::<Term>::rule(),
-            False::<Term>::rule(),
-            Num::<Term>::rule(),
-            Lambda::<Term, Type>::rule(),
-            Fold::<Value, Type>::rule(),
-            Pair::<Value>::rule(),
-            Record::<Value>::rule(),
-            Variant::<Value, Type>::rule(),
+            Unit::<Recursive>::rule(),
+            True::<Recursive>::rule(),
+            False::<Recursive>::rule(),
+            Num::<Recursive>::rule(),
+            Lambda::<Recursive>::rule(),
+            Fold::<Recursive>::rule(),
+            Pair::<Recursive>::rule(),
+            Record::<Recursive>::rule(),
+            Variant::<Recursive>::rule(),
         ])
     }
 }
@@ -157,51 +155,51 @@ impl LatexFmt for Value {
     }
 }
 
-impl From<Fold<Value, Type>> for Value {
-    fn from(fld: Fold<Value, Type>) -> Value {
+impl From<Fold<Recursive>> for Value {
+    fn from(fld: Fold<Recursive>) -> Value {
         Value::Fold(fld)
     }
 }
 
-impl From<Lambda<Term, Type>> for Value {
-    fn from(lam: Lambda<Term, Type>) -> Value {
+impl From<Lambda<Recursive>> for Value {
+    fn from(lam: Lambda<Recursive>) -> Value {
         Value::Lambda(lam)
     }
 }
-impl From<Unit<Term>> for Value {
-    fn from(u: Unit<Term>) -> Value {
+impl From<Unit<Recursive>> for Value {
+    fn from(u: Unit<Recursive>) -> Value {
         Value::Unit(u)
     }
 }
-impl From<True<Term>> for Value {
-    fn from(tru: True<Term>) -> Value {
+impl From<True<Recursive>> for Value {
+    fn from(tru: True<Recursive>) -> Value {
         Value::True(tru)
     }
 }
-impl From<False<Term>> for Value {
-    fn from(fls: False<Term>) -> Value {
+impl From<False<Recursive>> for Value {
+    fn from(fls: False<Recursive>) -> Value {
         Value::False(fls)
     }
 }
-impl From<Num<Term>> for Value {
-    fn from(num: Num<Term>) -> Value {
+impl From<Num<Recursive>> for Value {
+    fn from(num: Num<Recursive>) -> Value {
         Value::Num(num)
     }
 }
-impl From<Pair<Value>> for Value {
-    fn from(pair: Pair<Value>) -> Value {
+impl From<Pair<Recursive>> for Value {
+    fn from(pair: Pair<Recursive>) -> Value {
         Value::Pair(pair)
     }
 }
 
-impl From<Record<Value>> for Value {
-    fn from(rec: Record<Value>) -> Value {
+impl From<Record<Recursive>> for Value {
+    fn from(rec: Record<Recursive>) -> Value {
         Value::Record(rec)
     }
 }
 
-impl From<Variant<Value, Type>> for Value {
-    fn from(var: Variant<Value, Type>) -> Value {
+impl From<Variant<Recursive>> for Value {
+    fn from(var: Variant<Recursive>) -> Value {
         Value::Variant(var)
     }
 }

@@ -1,4 +1,4 @@
-use super::types::Type;
+use super::{Exceptions, types::Type};
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
@@ -13,21 +13,21 @@ use syntax::{
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Term {
-    Var(Variable<Term>),
-    Num(Num<Term>),
-    True(True<Term>),
-    False(False<Term>),
-    Succ(Succ<Term>),
-    Pred(Pred<Term>),
-    IsZero(IsZero<Term>),
-    If(If<Term>),
-    Lambda(Lambda<Term, Type>),
-    App(App<Term>),
-    Unit(Unit<Term>),
-    Exception(Exception<Term, Type>),
-    Try(Try<Term>),
-    Raise(Raise<Term, Type>),
-    TryWithVal(TryWithVal<Term>),
+    Var(Variable<Exceptions>),
+    Num(Num<Exceptions>),
+    True(True<Exceptions>),
+    False(False<Exceptions>),
+    Succ(Succ<Exceptions>),
+    Pred(Pred<Exceptions>),
+    IsZero(IsZero<Exceptions>),
+    If(If<Exceptions>),
+    Lambda(Lambda<Exceptions>),
+    App(App<Exceptions>),
+    Unit(Unit<Exceptions>),
+    Exception(Exception<Exceptions>),
+    Try(Try<Exceptions>),
+    Raise(Raise<Exceptions>),
+    TryWithVal(TryWithVal<Exceptions>),
 }
 
 impl syntax::terms::Term for Term {}
@@ -35,21 +35,21 @@ impl syntax::terms::Term for Term {}
 impl GrammarDescribe for Term {
     fn grammar() -> Grammar {
         Grammar::term(vec![
-            Variable::<Term>::rule(),
-            Num::<Term>::rule(),
-            True::<Term>::rule(),
-            False::<Term>::rule(),
-            Succ::<Term>::rule(),
-            Pred::<Term>::rule(),
-            IsZero::<Term>::rule(),
-            If::<Term>::rule(),
-            Lambda::<Term, Type>::rule(),
-            App::<Term>::rule(),
-            Unit::<Term>::rule(),
-            Exception::<Term, Type>::rule(),
-            Try::<Term>::rule(),
-            Raise::<Term, Type>::rule(),
-            TryWithVal::<Term>::rule(),
+            Variable::<Exceptions>::rule(),
+            Num::<Exceptions>::rule(),
+            True::<Exceptions>::rule(),
+            False::<Exceptions>::rule(),
+            Succ::<Exceptions>::rule(),
+            Pred::<Exceptions>::rule(),
+            IsZero::<Exceptions>::rule(),
+            If::<Exceptions>::rule(),
+            Lambda::<Exceptions>::rule(),
+            App::<Exceptions>::rule(),
+            Unit::<Exceptions>::rule(),
+            Exception::<Exceptions>::rule(),
+            Try::<Exceptions>::rule(),
+            Raise::<Exceptions>::rule(),
+            TryWithVal::<Exceptions>::rule(),
         ])
     }
 }
@@ -98,162 +98,164 @@ impl LatexFmt for Term {
     }
 }
 
-impl SubstTerm<Term> for Term {
+impl SubstTerm for Term {
+    type Lang = Exceptions;
     type Target = Term;
     fn subst(self, v: &Var, t: &Term) -> Self::Target {
         match self {
-            Term::Var(var) => var.subst(v, t),
-            Term::Num(num) => num.subst(v, t),
-            Term::True(tru) => tru.subst(v, t),
-            Term::False(fls) => fls.subst(v, t),
-            Term::Succ(succ) => succ.subst(v, t),
-            Term::Pred(pred) => pred.subst(v, t),
-            Term::IsZero(isz) => isz.subst(v, t),
-            Term::If(ift) => ift.subst(v, t),
-            Term::Lambda(lam) => lam.subst(v, t),
-            Term::App(app) => app.subst(v, t),
-            Term::Unit(u) => u.subst(v, t),
-            Term::Exception(exc) => exc.subst(v, t),
-            Term::Try(tryt) => tryt.subst(v, t),
-            Term::Raise(raise) => raise.subst(v, t),
-            Term::TryWithVal(tryval) => tryval.subst(v, t),
+            Term::Var(var) => var.subst(v, t).into(),
+            Term::Num(num) => num.subst(v, t).into(),
+            Term::True(tru) => tru.subst(v, t).into(),
+            Term::False(fls) => fls.subst(v, t).into(),
+            Term::Succ(succ) => succ.subst(v, t).into(),
+            Term::Pred(pred) => pred.subst(v, t).into(),
+            Term::IsZero(isz) => isz.subst(v, t).into(),
+            Term::If(ift) => ift.subst(v, t).into(),
+            Term::Lambda(lam) => lam.subst(v, t).into(),
+            Term::App(app) => app.subst(v, t).into(),
+            Term::Unit(u) => u.subst(v, t).into(),
+            Term::Exception(exc) => exc.subst(v, t).into(),
+            Term::Try(tryt) => tryt.subst(v, t).into(),
+            Term::Raise(raise) => raise.subst(v, t).into(),
+            Term::TryWithVal(tryval) => tryval.subst(v, t).into(),
         }
     }
 }
 
-impl SubstType<Type> for Term {
+impl SubstType for Term {
+    type Lang = Exceptions;
     type Target = Term;
     fn subst_type(self, v: &TypeVar, t: &Type) -> Self::Target {
         match self {
-            Term::Var(var) => var.subst_type(v, t),
-            Term::Num(num) => num.subst_type(v, t),
-            Term::True(tru) => tru.subst_type(v, t),
-            Term::False(fls) => fls.subst_type(v, t),
-            Term::Succ(succ) => succ.subst_type(v, t),
-            Term::Pred(pred) => pred.subst_type(v, t),
-            Term::IsZero(isz) => isz.subst_type(v, t),
-            Term::If(ift) => ift.subst_type(v, t),
-            Term::Lambda(lam) => lam.subst_type(v, t),
-            Term::App(app) => app.subst_type(v, t),
-            Term::Unit(u) => u.subst_type(v, t),
-            Term::Exception(exc) => exc.subst_type(v, t),
-            Term::Try(tryt) => tryt.subst_type(v, t),
-            Term::Raise(raise) => raise.subst_type(v, t),
-            Term::TryWithVal(tryval) => tryval.subst_type(v, t),
+            Term::Var(var) => var.subst_type(v, t).into(),
+            Term::Num(num) => num.subst_type(v, t).into(),
+            Term::True(tru) => tru.subst_type(v, t).into(),
+            Term::False(fls) => fls.subst_type(v, t).into(),
+            Term::Succ(succ) => succ.subst_type(v, t).into(),
+            Term::Pred(pred) => pred.subst_type(v, t).into(),
+            Term::IsZero(isz) => isz.subst_type(v, t).into(),
+            Term::If(ift) => ift.subst_type(v, t).into(),
+            Term::Lambda(lam) => lam.subst_type(v, t).into(),
+            Term::App(app) => app.subst_type(v, t).into(),
+            Term::Unit(u) => u.subst_type(v, t).into(),
+            Term::Exception(exc) => exc.subst_type(v, t).into(),
+            Term::Try(tryt) => tryt.subst_type(v, t).into(),
+            Term::Raise(raise) => raise.subst_type(v, t).into(),
+            Term::TryWithVal(tryval) => tryval.subst_type(v, t).into(),
         }
     }
 }
 
-impl From<Variable<Term>> for Term {
-    fn from(var: Variable<Term>) -> Term {
+impl From<Variable<Exceptions>> for Term {
+    fn from(var: Variable<Exceptions>) -> Term {
         Term::Var(var)
     }
 }
 
-impl From<Num<Term>> for Term {
-    fn from(num: Num<Term>) -> Term {
+impl From<Num<Exceptions>> for Term {
+    fn from(num: Num<Exceptions>) -> Term {
         Term::Num(num)
     }
 }
 
-impl From<True<Term>> for Term {
-    fn from(tru: True<Term>) -> Term {
+impl From<True<Exceptions>> for Term {
+    fn from(tru: True<Exceptions>) -> Term {
         Term::True(tru)
     }
 }
 
-impl From<False<Term>> for Term {
-    fn from(fls: False<Term>) -> Term {
+impl From<False<Exceptions>> for Term {
+    fn from(fls: False<Exceptions>) -> Term {
         Term::False(fls)
     }
 }
 
-impl From<Succ<Term>> for Term {
-    fn from(succ: Succ<Term>) -> Term {
+impl From<Succ<Exceptions>> for Term {
+    fn from(succ: Succ<Exceptions>) -> Term {
         Term::Succ(succ)
     }
 }
 
-impl From<Pred<Term>> for Term {
-    fn from(pred: Pred<Term>) -> Term {
+impl From<Pred<Exceptions>> for Term {
+    fn from(pred: Pred<Exceptions>) -> Term {
         Term::Pred(pred)
     }
 }
 
-impl From<IsZero<Term>> for Term {
-    fn from(isz: IsZero<Term>) -> Term {
+impl From<IsZero<Exceptions>> for Term {
+    fn from(isz: IsZero<Exceptions>) -> Term {
         Term::IsZero(isz)
     }
 }
 
-impl From<If<Term>> for Term {
-    fn from(ift: If<Term>) -> Term {
+impl From<If<Exceptions>> for Term {
+    fn from(ift: If<Exceptions>) -> Term {
         Term::If(ift)
     }
 }
 
-impl From<Lambda<Term, Type>> for Term {
-    fn from(lam: Lambda<Term, Type>) -> Term {
+impl From<Lambda<Exceptions>> for Term {
+    fn from(lam: Lambda<Exceptions>) -> Term {
         Term::Lambda(lam)
     }
 }
 
-impl From<App<Term>> for Term {
-    fn from(app: App<Term>) -> Term {
+impl From<App<Exceptions>> for Term {
+    fn from(app: App<Exceptions>) -> Term {
         Term::App(app)
     }
 }
 
-impl From<Unit<Term>> for Term {
-    fn from(unit: Unit<Term>) -> Term {
+impl From<Unit<Exceptions>> for Term {
+    fn from(unit: Unit<Exceptions>) -> Term {
         Term::Unit(unit)
     }
 }
 
-impl From<Exception<Term, Type>> for Term {
-    fn from(exc: Exception<Term, Type>) -> Term {
+impl From<Exception<Exceptions>> for Term {
+    fn from(exc: Exception<Exceptions>) -> Term {
         Term::Exception(exc)
     }
 }
 
-impl From<Try<Term>> for Term {
-    fn from(tryt: Try<Term>) -> Term {
+impl From<Try<Exceptions>> for Term {
+    fn from(tryt: Try<Exceptions>) -> Term {
         Term::Try(tryt)
     }
 }
 
-impl From<Raise<Term, Type>> for Term {
-    fn from(raise: Raise<Term, Type>) -> Term {
+impl From<Raise<Exceptions>> for Term {
+    fn from(raise: Raise<Exceptions>) -> Term {
         Term::Raise(raise)
     }
 }
 
-impl From<TryWithVal<Term>> for Term {
-    fn from(tryval: TryWithVal<Term>) -> Term {
+impl From<TryWithVal<Exceptions>> for Term {
+    fn from(tryval: TryWithVal<Exceptions>) -> Term {
         Term::TryWithVal(tryval)
     }
 }
 
 #[cfg(test)]
 pub mod term_tests {
-    use super::{App, Lambda, Raise, Term, Try, TryWithVal, Type, Unit, Variable};
+    use super::{App, Exceptions, Lambda, Raise, Term, Try, TryWithVal, Unit, Variable};
     use syntax::types::Unit as UnitTy;
 
     pub fn example_term1() -> Term {
-        Try::<Term>::new(
-            App::<Term>::new(
-                Lambda::<Term, Type>::new("x", UnitTy::new(), Variable::<Term>::new("x")),
-                Unit::<Term>::new(),
+        Try::<Exceptions>::new(
+            App::<Exceptions>::new(
+                Lambda::<Exceptions>::new("x", UnitTy::new(), Variable::<Exceptions>::new("x")),
+                Unit::<Exceptions>::new(),
             ),
-            Unit::<Term>::new(),
+            Unit::<Exceptions>::new(),
         )
         .into()
     }
 
     pub fn example_term2() -> Term {
-        TryWithVal::<Term>::new(
-            Raise::<Term, Type>::new(Unit::<Term>::new(), UnitTy::new(), UnitTy::new()),
-            Lambda::<Term, Type>::new("x", UnitTy::new(), Unit::new()),
+        TryWithVal::<Exceptions>::new(
+            Raise::<Exceptions>::new(Unit::<Exceptions>::new(), UnitTy::new(), UnitTy::new()),
+            Lambda::<Exceptions>::new("x", UnitTy::new(), Unit::new()),
         )
         .into()
     }

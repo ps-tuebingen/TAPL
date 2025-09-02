@@ -1,4 +1,4 @@
-use super::{terms::Term, types::Type};
+use super::{LambdaOmega, terms::Term};
 use errors::ValueMismatch;
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
@@ -7,23 +7,21 @@ use syntax::values::{False, Lambda, Num, True, TyLambda, Unit, Value as ValueTra
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Value {
-    Unit(Unit<Term>),
-    True(True<Term>),
-    False(False<Term>),
-    Num(Num<Term>),
-    Lambda(Lambda<Term, Type>),
-    TyLambda(TyLambda<Term>),
+    Unit(Unit<LambdaOmega>),
+    True(True<LambdaOmega>),
+    False(False<LambdaOmega>),
+    Num(Num<LambdaOmega>),
+    Lambda(Lambda<LambdaOmega>),
+    TyLambda(TyLambda<LambdaOmega>),
 }
 
 impl ValueTrait for Value {
+    type Lang = LambdaOmega;
     type Term = Term;
 }
 
 impl ValueGroup for Value {
-    type Term = Term;
-    type Type = Type;
-
-    fn into_true(self) -> Result<True<Term>, ValueMismatch> {
+    fn into_true(self) -> Result<True<LambdaOmega>, ValueMismatch> {
         if let Value::True(tru) = self {
             Ok(tru)
         } else {
@@ -31,7 +29,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_false(self) -> Result<False<Term>, ValueMismatch> {
+    fn into_false(self) -> Result<False<LambdaOmega>, ValueMismatch> {
         if let Value::False(fls) = self {
             Ok(fls)
         } else {
@@ -39,7 +37,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_num(self) -> Result<Num<Term>, ValueMismatch> {
+    fn into_num(self) -> Result<Num<LambdaOmega>, ValueMismatch> {
         if let Value::Num(num) = self {
             Ok(num)
         } else {
@@ -47,7 +45,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_lambda(self) -> Result<Lambda<Term, Type>, ValueMismatch> {
+    fn into_lambda(self) -> Result<Lambda<LambdaOmega>, ValueMismatch> {
         if let Value::Lambda(lam) = self {
             Ok(lam)
         } else {
@@ -55,7 +53,7 @@ impl ValueGroup for Value {
         }
     }
 
-    fn into_tylambda(self) -> Result<TyLambda<Term>, ValueMismatch> {
+    fn into_tylambda(self) -> Result<TyLambda<LambdaOmega>, ValueMismatch> {
         if let Value::TyLambda(lam) = self {
             Ok(lam)
         } else {
@@ -67,12 +65,12 @@ impl ValueGroup for Value {
 impl GrammarDescribe for Value {
     fn grammar() -> Grammar {
         Grammar::value(vec![
-            Lambda::<Term, Type>::rule(),
-            TyLambda::<Term>::rule(),
-            Unit::<Term>::rule(),
-            True::<Term>::rule(),
-            False::<Term>::rule(),
-            Num::<Term>::rule(),
+            Lambda::<LambdaOmega>::rule(),
+            TyLambda::<LambdaOmega>::rule(),
+            Unit::<LambdaOmega>::rule(),
+            True::<LambdaOmega>::rule(),
+            False::<LambdaOmega>::rule(),
+            Num::<LambdaOmega>::rule(),
         ])
     }
 }
@@ -116,33 +114,33 @@ impl LatexFmt for Value {
     }
 }
 
-impl From<Unit<Term>> for Value {
-    fn from(u: Unit<Term>) -> Value {
+impl From<Unit<LambdaOmega>> for Value {
+    fn from(u: Unit<LambdaOmega>) -> Value {
         Value::Unit(u)
     }
 }
-impl From<True<Term>> for Value {
-    fn from(tru: True<Term>) -> Value {
+impl From<True<LambdaOmega>> for Value {
+    fn from(tru: True<LambdaOmega>) -> Value {
         Value::True(tru)
     }
 }
-impl From<False<Term>> for Value {
-    fn from(fls: False<Term>) -> Value {
+impl From<False<LambdaOmega>> for Value {
+    fn from(fls: False<LambdaOmega>) -> Value {
         Value::False(fls)
     }
 }
-impl From<Num<Term>> for Value {
-    fn from(num: Num<Term>) -> Value {
+impl From<Num<LambdaOmega>> for Value {
+    fn from(num: Num<LambdaOmega>) -> Value {
         Value::Num(num)
     }
 }
-impl From<Lambda<Term, Type>> for Value {
-    fn from(lam: Lambda<Term, Type>) -> Value {
+impl From<Lambda<LambdaOmega>> for Value {
+    fn from(lam: Lambda<LambdaOmega>) -> Value {
         Value::Lambda(lam)
     }
 }
-impl From<TyLambda<Term>> for Value {
-    fn from(tylam: TyLambda<Term>) -> Value {
+impl From<TyLambda<LambdaOmega>> for Value {
+    fn from(tylam: TyLambda<LambdaOmega>) -> Value {
         Value::TyLambda(tylam)
     }
 }

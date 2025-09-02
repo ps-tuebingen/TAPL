@@ -1,4 +1,4 @@
-use super::{terms::Term, types::Type};
+use super::{Stlc, terms::Term, types::Type};
 use errors::{UnexpectedRule, parse_error::ParserError};
 use parser::{GroupParse, Parse, Rule, pair_to_n_inner, terms::StringTerm, types::StringTy};
 use pest::iterators::Pair;
@@ -15,7 +15,7 @@ impl GroupParse for Term {
     const RULE: Rule = Rule::term;
     fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Term, ParserError> {
         match p.as_rule() {
-            Rule::const_term => Ok(StringTerm::new()
+            Rule::const_term => Ok(StringTerm::<Stlc>::new()
                 .with_true()
                 .with_false()
                 .with_zero()
@@ -71,7 +71,7 @@ impl GroupParse for Type {
     const RULE: Rule = Rule::r#type;
     fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Type, ParserError> {
         match p.as_rule() {
-            Rule::const_type => Ok(StringTy::new()
+            Rule::const_type => Ok(StringTy::<Stlc>::new()
                 .with_bool()
                 .with_nat()
                 .with_unit()

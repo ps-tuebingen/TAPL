@@ -1,4 +1,4 @@
-use super::{terms::Term, types::Type};
+use super::{Subtypes, terms::Term, types::Type};
 use errors::{UnexpectedRule, parse_error::ParserError};
 use parser::{
     GroupParse, Parse, Rule, pair_to_n_inner,
@@ -19,7 +19,7 @@ impl GroupParse for Term {
     const RULE: Rule = Rule::term;
     fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Self, ParserError> {
         match p.as_rule() {
-            Rule::const_term => Ok(StringTerm::new()
+            Rule::const_term => Ok(StringTerm::<Subtypes>::new()
                 .with_unit()
                 .with_true()
                 .with_false()
@@ -49,7 +49,7 @@ impl GroupParse for Term {
         match p.as_rule() {
             Rule::record_proj => Ok(RecordProj::from_pair(p, t)?.into()),
             Rule::assign => Ok(Assign::from_pair(p, t)?.into()),
-            Rule::sequence => Ok(Sequence::from_pair(p, t)?.to_term()),
+            Rule::sequence => Ok(Sequence::<Subtypes>::from_pair(p, t)?.to_term()),
             Rule::cast => Ok(Cast::from_pair(p, t)?.into()),
             Rule::term => Ok(App::from_pair(p, t)?.into()),
             r => Err(UnexpectedRule::new(&format!("{r:?}"), "Left Recursive Term").into()),
@@ -60,7 +60,7 @@ impl GroupParse for Type {
     const RULE: Rule = Rule::r#type;
     fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Type, ParserError> {
         match p.as_rule() {
-            Rule::const_type => Ok(StringTy::new()
+            Rule::const_type => Ok(StringTy::<Subtypes>::new()
                 .with_bot()
                 .with_nat()
                 .with_unit()

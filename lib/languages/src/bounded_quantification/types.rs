@@ -1,3 +1,4 @@
+use super::BoundedQuantification;
 use check::Normalize;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
@@ -12,26 +13,27 @@ use syntax::{
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Type {
-    Var(TypeVariable<Type>),
-    Top(Top<Type>),
-    Nat(Nat<Type>),
-    Fun(Fun<Type>),
-    Forall(ForallBounded<Type>),
-    Exists(ExistsBounded<Type>),
-    Record(Record<Type>),
+    Var(TypeVariable<BoundedQuantification>),
+    Top(Top<BoundedQuantification>),
+    Nat(Nat<BoundedQuantification>),
+    Fun(Fun<BoundedQuantification>),
+    Forall(ForallBounded<BoundedQuantification>),
+    Exists(ExistsBounded<BoundedQuantification>),
+    Record(Record<BoundedQuantification>),
 }
 
 impl syntax::types::Type for Type {}
 
 impl TypeGroup for Type {
-    fn into_variable(self) -> Result<TypeVariable<Type>, TypeMismatch> {
+    type Lang = BoundedQuantification;
+    fn into_variable(self) -> Result<TypeVariable<BoundedQuantification>, TypeMismatch> {
         if let Type::Var(var) = self {
             Ok(var)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Variable".to_owned()))
         }
     }
-    fn into_top(self) -> Result<Top<Type>, TypeMismatch> {
+    fn into_top(self) -> Result<Top<BoundedQuantification>, TypeMismatch> {
         if let Type::Top(top) = self {
             Ok(top)
         } else {
@@ -39,7 +41,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_nat(self) -> Result<Nat<Type>, TypeMismatch> {
+    fn into_nat(self) -> Result<Nat<BoundedQuantification>, TypeMismatch> {
         if let Type::Nat(n) = self {
             Ok(n)
         } else {
@@ -47,7 +49,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_fun(self) -> Result<Fun<Type>, TypeMismatch> {
+    fn into_fun(self) -> Result<Fun<BoundedQuantification>, TypeMismatch> {
         if let Type::Fun(fun) = self {
             Ok(fun)
         } else {
@@ -55,7 +57,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_forall_bounded(self) -> Result<ForallBounded<Type>, TypeMismatch> {
+    fn into_forall_bounded(self) -> Result<ForallBounded<BoundedQuantification>, TypeMismatch> {
         if let Type::Forall(forall) = self {
             Ok(forall)
         } else {
@@ -63,7 +65,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_exists_bounded(self) -> Result<ExistsBounded<Type>, TypeMismatch> {
+    fn into_exists_bounded(self) -> Result<ExistsBounded<BoundedQuantification>, TypeMismatch> {
         if let Type::Exists(ex) = self {
             Ok(ex)
         } else {
@@ -74,7 +76,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_record(self) -> Result<Record<Type>, TypeMismatch> {
+    fn into_record(self) -> Result<Record<BoundedQuantification>, TypeMismatch> {
         if let Type::Record(rec) = self {
             Ok(rec)
         } else {
@@ -86,74 +88,76 @@ impl TypeGroup for Type {
 impl GrammarDescribe for Type {
     fn grammar() -> Grammar {
         Grammar::ty(vec![
-            TypeVariable::<Type>::rule(),
-            Top::<Type>::rule(),
-            Nat::<Type>::rule(),
-            Fun::<Type>::rule(),
-            ForallBounded::<Type>::rule(),
-            ExistsBounded::<Type>::rule(),
-            Record::<Type>::rule(),
+            TypeVariable::<BoundedQuantification>::rule(),
+            Top::<BoundedQuantification>::rule(),
+            Nat::<BoundedQuantification>::rule(),
+            Fun::<BoundedQuantification>::rule(),
+            ForallBounded::<BoundedQuantification>::rule(),
+            ExistsBounded::<BoundedQuantification>::rule(),
+            Record::<BoundedQuantification>::rule(),
         ])
     }
 }
 
-impl From<TypeVariable<Type>> for Type {
-    fn from(v: TypeVariable<Type>) -> Type {
+impl From<TypeVariable<BoundedQuantification>> for Type {
+    fn from(v: TypeVariable<BoundedQuantification>) -> Type {
         Type::Var(v)
     }
 }
-impl From<Top<Type>> for Type {
-    fn from(t: Top<Type>) -> Type {
+impl From<Top<BoundedQuantification>> for Type {
+    fn from(t: Top<BoundedQuantification>) -> Type {
         Type::Top(t)
     }
 }
 
-impl From<Nat<Type>> for Type {
-    fn from(nat: Nat<Type>) -> Type {
+impl From<Nat<BoundedQuantification>> for Type {
+    fn from(nat: Nat<BoundedQuantification>) -> Type {
         Type::Nat(nat)
     }
 }
 
-impl From<Fun<Type>> for Type {
-    fn from(fun: Fun<Type>) -> Type {
+impl From<Fun<BoundedQuantification>> for Type {
+    fn from(fun: Fun<BoundedQuantification>) -> Type {
         Type::Fun(fun)
     }
 }
 
-impl From<ForallBounded<Type>> for Type {
-    fn from(forall: ForallBounded<Type>) -> Type {
+impl From<ForallBounded<BoundedQuantification>> for Type {
+    fn from(forall: ForallBounded<BoundedQuantification>) -> Type {
         Type::Forall(forall)
     }
 }
 
-impl From<ExistsBounded<Type>> for Type {
-    fn from(exists: ExistsBounded<Type>) -> Type {
+impl From<ExistsBounded<BoundedQuantification>> for Type {
+    fn from(exists: ExistsBounded<BoundedQuantification>) -> Type {
         Type::Exists(exists)
     }
 }
 
-impl From<Record<Type>> for Type {
-    fn from(rec: Record<Type>) -> Type {
+impl From<Record<BoundedQuantification>> for Type {
+    fn from(rec: Record<BoundedQuantification>) -> Type {
         Type::Record(rec)
     }
 }
 
-impl SubstType<Self> for Type {
+impl SubstType for Type {
+    type Lang = BoundedQuantification;
     type Target = Self;
     fn subst_type(self, v: &TypeVar, ty: &Self) -> Self::Target {
         match self {
-            Type::Var(var) => var.subst_type(v, ty),
-            Type::Top(t) => t.subst_type(v, ty),
-            Type::Nat(n) => n.subst_type(v, ty),
-            Type::Fun(f) => f.subst_type(v, ty),
-            Type::Forall(f) => f.subst_type(v, ty),
-            Type::Exists(e) => e.subst_type(v, ty),
-            Type::Record(rec) => rec.subst_type(v, ty),
+            Type::Var(var) => var.subst_type(v, ty).into(),
+            Type::Top(t) => t.subst_type(v, ty).into(),
+            Type::Nat(n) => n.subst_type(v, ty).into(),
+            Type::Fun(f) => f.subst_type(v, ty).into(),
+            Type::Forall(f) => f.subst_type(v, ty).into(),
+            Type::Exists(e) => e.subst_type(v, ty).into(),
+            Type::Record(rec) => rec.subst_type(v, ty).into(),
         }
     }
 }
-impl Normalize<Type> for Type {
-    fn normalize(self, _: Environment<Type>) -> Type {
+impl Normalize for Type {
+    type Lang = BoundedQuantification;
+    fn normalize(self, _: Environment<BoundedQuantification>) -> Type {
         self
     }
 }

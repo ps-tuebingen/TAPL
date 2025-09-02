@@ -5,6 +5,7 @@ pub mod values;
 
 use crate::Language;
 use grammar::{GrammarDescribe, LanguageDescribe, LanguageGrammar};
+use std::fmt;
 use syntax::untyped::Untyped;
 use terms::Term;
 use values::Value;
@@ -14,7 +15,7 @@ pub struct UntypedArithmetic;
 
 impl Language for UntypedArithmetic {
     type Term = Term;
-    type Type = Untyped<Term>;
+    type Type = Untyped<UntypedArithmetic>;
     type Value = Value;
 
     fn describe(&self) -> &str {
@@ -26,10 +27,16 @@ impl LanguageDescribe for UntypedArithmetic {
     fn grammars() -> LanguageGrammar {
         LanguageGrammar {
             term_grammar: Term::grammar(),
-            type_grammar: Untyped::<Term>::grammar(),
+            type_grammar: Untyped::<UntypedArithmetic>::grammar(),
             value_grammar: Value::grammar(),
             include_kinds: false,
         }
+    }
+}
+
+impl fmt::Display for UntypedArithmetic {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        f.write_str("untyped-arithmetic")
     }
 }
 

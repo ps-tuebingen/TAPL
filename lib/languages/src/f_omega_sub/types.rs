@@ -1,3 +1,4 @@
+use super::FOmegaSub;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
@@ -13,15 +14,15 @@ use syntax::{
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Type {
-    Var(TypeVariable<Type>),
-    Top(Top<Type>),
-    Fun(Fun<Type>),
-    Forall(ForallBounded<Type>),
-    OpLambdaSub(OpLambdaSub<Type>),
-    OpApp(OpApp<Type>),
-    Exists(ExistsBounded<Type>),
-    Record(Record<Type>),
-    Nat(Nat<Type>),
+    Var(TypeVariable<FOmegaSub>),
+    Top(Top<FOmegaSub>),
+    Fun(Fun<FOmegaSub>),
+    Forall(ForallBounded<FOmegaSub>),
+    OpLambdaSub(OpLambdaSub<FOmegaSub>),
+    OpApp(OpApp<FOmegaSub>),
+    Exists(ExistsBounded<FOmegaSub>),
+    Record(Record<FOmegaSub>),
+    Nat(Nat<FOmegaSub>),
 }
 
 impl TypeTrait for Type {}
@@ -29,28 +30,29 @@ impl TypeTrait for Type {}
 impl GrammarDescribe for Type {
     fn grammar() -> Grammar {
         Grammar::ty(vec![
-            TypeVariable::<Type>::rule(),
-            Top::<Type>::rule(),
-            Fun::<Type>::rule(),
-            ForallBounded::<Type>::rule(),
-            OpLambdaSub::<Type>::rule(),
-            OpApp::<Type>::rule(),
-            ExistsBounded::<Type>::rule(),
-            Record::<Type>::rule(),
-            Nat::<Type>::rule(),
+            TypeVariable::<FOmegaSub>::rule(),
+            Top::<FOmegaSub>::rule(),
+            Fun::<FOmegaSub>::rule(),
+            ForallBounded::<FOmegaSub>::rule(),
+            OpLambdaSub::<FOmegaSub>::rule(),
+            OpApp::<FOmegaSub>::rule(),
+            ExistsBounded::<FOmegaSub>::rule(),
+            Record::<FOmegaSub>::rule(),
+            Nat::<FOmegaSub>::rule(),
         ])
     }
 }
 
 impl TypeGroup for Type {
-    fn into_variable(self) -> Result<TypeVariable<Type>, TypeMismatch> {
+    type Lang = FOmegaSub;
+    fn into_variable(self) -> Result<TypeVariable<FOmegaSub>, TypeMismatch> {
         if let Type::Var(var) = self {
             Ok(var)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Variable".to_owned()))
         }
     }
-    fn into_top(self) -> Result<Top<Type>, TypeMismatch> {
+    fn into_top(self) -> Result<Top<FOmegaSub>, TypeMismatch> {
         if let Type::Top(top) = self {
             Ok(top)
         } else {
@@ -58,7 +60,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_fun(self) -> Result<Fun<Type>, TypeMismatch> {
+    fn into_fun(self) -> Result<Fun<FOmegaSub>, TypeMismatch> {
         if let Type::Fun(fun) = self {
             Ok(fun)
         } else {
@@ -66,7 +68,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_forall_bounded(self) -> Result<ForallBounded<Type>, TypeMismatch> {
+    fn into_forall_bounded(self) -> Result<ForallBounded<FOmegaSub>, TypeMismatch> {
         if let Type::Forall(forall) = self {
             Ok(forall)
         } else {
@@ -74,7 +76,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_oplambdasub(self) -> Result<OpLambdaSub<Type>, TypeMismatch> {
+    fn into_oplambdasub(self) -> Result<OpLambdaSub<FOmegaSub>, TypeMismatch> {
         if let Type::OpLambdaSub(lam) = self {
             Ok(lam)
         } else {
@@ -82,7 +84,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_opapp(self) -> Result<OpApp<Type>, TypeMismatch> {
+    fn into_opapp(self) -> Result<OpApp<FOmegaSub>, TypeMismatch> {
         if let Type::OpApp(app) = self {
             Ok(app)
         } else {
@@ -90,7 +92,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_exists_bounded(self) -> Result<ExistsBounded<Type>, TypeMismatch> {
+    fn into_exists_bounded(self) -> Result<ExistsBounded<FOmegaSub>, TypeMismatch> {
         if let Type::Exists(ex) = self {
             Ok(ex)
         } else {
@@ -101,7 +103,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_record(self) -> Result<Record<Type>, TypeMismatch> {
+    fn into_record(self) -> Result<Record<FOmegaSub>, TypeMismatch> {
         if let Type::Record(rec) = self {
             Ok(rec)
         } else {
@@ -109,7 +111,7 @@ impl TypeGroup for Type {
         }
     }
 
-    fn into_nat(self) -> Result<Nat<Type>, TypeMismatch> {
+    fn into_nat(self) -> Result<Nat<FOmegaSub>, TypeMismatch> {
         if let Type::Nat(nat) = self {
             Ok(nat)
         } else {
@@ -118,19 +120,20 @@ impl TypeGroup for Type {
     }
 }
 
-impl SubstType<Type> for Type {
+impl SubstType for Type {
+    type Lang = FOmegaSub;
     type Target = Self;
     fn subst_type(self, v: &TypeVar, ty: &Type) -> Self::Target {
         match self {
-            Type::Var(var) => var.subst_type(v, ty),
-            Type::Top(top) => top.subst_type(v, ty),
-            Type::Fun(fun) => fun.subst_type(v, ty),
-            Type::Forall(forall) => forall.subst_type(v, ty),
-            Type::OpLambdaSub(lam) => lam.subst_type(v, ty),
-            Type::OpApp(app) => app.subst_type(v, ty),
-            Type::Exists(ex) => ex.subst_type(v, ty),
-            Type::Record(rec) => rec.subst_type(v, ty),
-            Type::Nat(nat) => nat.subst_type(v, ty),
+            Type::Var(var) => var.subst_type(v, ty).into(),
+            Type::Top(top) => top.subst_type(v, ty).into(),
+            Type::Fun(fun) => fun.subst_type(v, ty).into(),
+            Type::Forall(forall) => forall.subst_type(v, ty).into(),
+            Type::OpLambdaSub(lam) => lam.subst_type(v, ty).into(),
+            Type::OpApp(app) => app.subst_type(v, ty).into(),
+            Type::Exists(ex) => ex.subst_type(v, ty).into(),
+            Type::Record(rec) => rec.subst_type(v, ty).into(),
+            Type::Nat(nat) => nat.subst_type(v, ty).into(),
         }
     }
 }
@@ -166,49 +169,49 @@ impl LatexFmt for Type {
         }
     }
 }
-impl From<Top<Type>> for Type {
-    fn from(t: Top<Type>) -> Type {
+impl From<Top<FOmegaSub>> for Type {
+    fn from(t: Top<FOmegaSub>) -> Type {
         Type::Top(t)
     }
 }
 
-impl From<TypeVariable<Type>> for Type {
-    fn from(var: TypeVariable<Type>) -> Type {
+impl From<TypeVariable<FOmegaSub>> for Type {
+    fn from(var: TypeVariable<FOmegaSub>) -> Type {
         Type::Var(var)
     }
 }
-impl From<OpLambdaSub<Type>> for Type {
-    fn from(oplam: OpLambdaSub<Type>) -> Type {
+impl From<OpLambdaSub<FOmegaSub>> for Type {
+    fn from(oplam: OpLambdaSub<FOmegaSub>) -> Type {
         Type::OpLambdaSub(oplam)
     }
 }
-impl From<Fun<Type>> for Type {
-    fn from(fun: Fun<Type>) -> Type {
+impl From<Fun<FOmegaSub>> for Type {
+    fn from(fun: Fun<FOmegaSub>) -> Type {
         Type::Fun(fun)
     }
 }
-impl From<OpApp<Type>> for Type {
-    fn from(opapp: OpApp<Type>) -> Type {
+impl From<OpApp<FOmegaSub>> for Type {
+    fn from(opapp: OpApp<FOmegaSub>) -> Type {
         Type::OpApp(opapp)
     }
 }
-impl From<ForallBounded<Type>> for Type {
-    fn from(forall: ForallBounded<Type>) -> Type {
+impl From<ForallBounded<FOmegaSub>> for Type {
+    fn from(forall: ForallBounded<FOmegaSub>) -> Type {
         Type::Forall(forall)
     }
 }
-impl From<ExistsBounded<Type>> for Type {
-    fn from(exists: ExistsBounded<Type>) -> Type {
+impl From<ExistsBounded<FOmegaSub>> for Type {
+    fn from(exists: ExistsBounded<FOmegaSub>) -> Type {
         Type::Exists(exists)
     }
 }
-impl From<Record<Type>> for Type {
-    fn from(rec: Record<Type>) -> Type {
+impl From<Record<FOmegaSub>> for Type {
+    fn from(rec: Record<FOmegaSub>) -> Type {
         Type::Record(rec)
     }
 }
-impl From<Nat<Type>> for Type {
-    fn from(n: Nat<Type>) -> Type {
+impl From<Nat<FOmegaSub>> for Type {
+    fn from(n: Nat<FOmegaSub>) -> Type {
         Type::Nat(n)
     }
 }
