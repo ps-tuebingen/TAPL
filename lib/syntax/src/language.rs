@@ -7,11 +7,11 @@ use crate::{
 use std::fmt;
 
 pub struct LanguageFeatures {
-    typed: bool,
-    kinded: bool,
-    subtyped: bool,
-    normalizing: bool,
-    evaluating: bool,
+    pub typed: bool,
+    pub kinded: bool,
+    pub subtyped: bool,
+    pub normalizing: bool,
+    pub evaluating: bool,
 }
 
 impl LanguageFeatures {

@@ -19,11 +19,23 @@ where
     type Lang = Lang;
 
     fn check(&self, mut env: Environment<Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
-        self.annot.check_kind(env.clone())?;
+        let features = Lang::features();
+
+        if features.kinded {
+            self.annot.check_kind(env.clone())?;
+        }
+
         env.add_var(self.var.clone(), self.annot.clone());
         let body_res = self.body.check(env.clone())?;
-        let body_ty = body_res.ret_ty().normalize(env.clone());
-        body_ty.check_kind(env.clone())?;
+        let body_ty = if features.normalizing {
+            body_res.ret_ty().normalize(env.clone())
+        } else {
+            body_res.ret_ty()
+        };
+
+        if features.kinded {
+            body_ty.check_kind(env.clone())?;
+        }
 
         let conc = TypingConclusion::new(
             env.clone(),
