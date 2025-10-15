@@ -1,6 +1,6 @@
 use crate::{Kindcheck, Normalize, Subtypecheck, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
-use errors::{TypeMismatch, check_error::CheckError};
+use errors::{check_error::CheckError, TypeMismatch};
 use syntax::{
     env::Environment, language::Language, subst::SubstType, terms::TyApp, types::TypeGroup,
 };

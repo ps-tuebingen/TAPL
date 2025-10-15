@@ -1,6 +1,6 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
 use derivations::{Derivation, SubtypeDerivation};
-use errors::{NameMismatch, check_error::CheckError};
+use errors::{check_error::CheckError, NameMismatch};
 use syntax::{
     env::Environment,
     kinds::Kind,

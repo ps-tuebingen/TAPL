@@ -1,7 +1,7 @@
 use driver::languages::AllLanguages;
-use errors::{CouldNotCast, ElementNotFound, web_error::WebError};
+use errors::{web_error::WebError, CouldNotCast, ElementNotFound};
 use std::any::type_name;
-use wasm_bindgen::{JsCast, prelude::wasm_bindgen};
+use wasm_bindgen::{prelude::wasm_bindgen, JsCast};
 use web_sys::{Document, Element};
 
 pub mod collapsable;

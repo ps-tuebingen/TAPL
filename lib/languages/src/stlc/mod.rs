@@ -6,8 +6,10 @@ pub mod types;
 pub mod values;
 
 use crate::Language;
-use std::fmt;
 use grammar::{GrammarDescribe, LanguageDescribe, LanguageGrammar};
+use std::fmt;
+use syntax::language::LanguageFeatures;
+
 use terms::Term;
 use types::Type;
 use values::Value;
@@ -23,6 +25,10 @@ impl Language for Stlc {
     fn describe(&self) -> &str {
         "Simply-Typed Lambda Calculus"
     }
+
+    fn features() -> LanguageFeatures {
+        LanguageFeatures::new().with_eval().with_typed()
+    }
 }
 
 impl LanguageDescribe for Stlc {
@@ -36,8 +42,8 @@ impl LanguageDescribe for Stlc {
     }
 }
 
-impl fmt::Display for Stlc{
-    fn fmt(&self,f:&mut fmt::Formatter) -> fmt::Result{
+impl fmt::Display for Stlc {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.write_str("stlc")
     }
 }

@@ -8,6 +8,8 @@ pub mod values;
 use crate::Language;
 use grammar::{GrammarDescribe, LanguageDescribe, LanguageGrammar};
 use std::fmt;
+use syntax::language::LanguageFeatures;
+
 use terms::Term;
 use types::Type;
 use values::Value;
@@ -22,6 +24,10 @@ impl Language for Recursive {
 
     fn describe(&self) -> &str {
         "STLC with Recursive Types"
+    }
+
+    fn features() -> LanguageFeatures {
+        LanguageFeatures::new().with_typed().with_eval()
     }
 }
 

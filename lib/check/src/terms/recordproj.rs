@@ -1,7 +1,7 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
-use errors::UndefinedLabel;
 use errors::check_error::CheckError;
+use errors::UndefinedLabel;
 use syntax::{env::Environment, language::Language, terms::RecordProj, types::TypeGroup};
 
 impl<Lang> Typecheck for RecordProj<Lang>

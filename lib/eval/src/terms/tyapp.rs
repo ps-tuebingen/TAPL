@@ -1,6 +1,6 @@
 use crate::Eval;
-use errors::ValueMismatch;
 use errors::eval_error::EvalError;
+use errors::ValueMismatch;
 use syntax::{
     eval_context::EvalContext, language::Language, subst::SubstType, terms::TyApp,
     values::ValueGroup,

@@ -8,6 +8,8 @@ pub mod values;
 use crate::Language;
 use grammar::{GrammarDescribe, LanguageDescribe, LanguageGrammar};
 use std::fmt;
+use syntax::language::LanguageFeatures;
+
 use terms::Term;
 use types::Type;
 use values::Value;
@@ -22,6 +24,14 @@ impl Language for FOmegaSub {
 
     fn describe(&self) -> &str {
         "Higher Kinded System F with Subtyping"
+    }
+
+    fn features() -> LanguageFeatures {
+        LanguageFeatures::new()
+            .with_eval()
+            .with_typed()
+            .with_kinded()
+            .with_subtyped()
     }
 }
 

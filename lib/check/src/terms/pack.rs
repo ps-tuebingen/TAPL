@@ -1,7 +1,7 @@
 use crate::{Kindcheck, Normalize, Subtypecheck, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
-use errors::TypeMismatch;
 use errors::check_error::CheckError;
+use errors::TypeMismatch;
 use syntax::{
     env::Environment, language::Language, subst::SubstType, terms::Pack, types::TypeGroup,
 };

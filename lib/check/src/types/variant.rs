@@ -1,6 +1,6 @@
 use crate::Subtypecheck;
 use derivations::{Derivation, SubtypeDerivation};
-use errors::{UndefinedLabel, check_error::CheckError};
+use errors::{check_error::CheckError, UndefinedLabel};
 use syntax::{
     env::Environment,
     language::Language,

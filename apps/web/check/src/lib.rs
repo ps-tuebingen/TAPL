@@ -1,9 +1,9 @@
-use driver::{Driver, cli::Command, format::FormatMethod};
-use errors::{AddEventHandler, web_error::WebError};
+use driver::{cli::Command, format::FormatMethod, languages::AllLanguages, Driver};
+use errors::{web_error::WebError, AddEventHandler};
 use std::rc::Rc;
 use wasm_bindgen::{
     closure::Closure,
-    prelude::{JsCast, wasm_bindgen},
+    prelude::{wasm_bindgen, JsCast},
 };
 use web::{
     collapsable::CollapsableElement, example_select::ExampleSelect, get_by_id, get_lang,
@@ -27,7 +27,7 @@ impl CheckContext {
         let document = window.document().ok_or(WebError::Document)?;
         let language_select = LanguageSelect::new(&document, true)?;
         let example_select =
-            ExampleSelect::new(&document, &get_lang(language_select.selected()).to_string())?;
+            ExampleSelect::new(&document, &AllLanguages::all_typed()[0].to_string())?;
         let source_area = SourceArea::new(&document)?;
         let check_out = CollapsableElement::new(&document, "check_collapse", "check_out")?;
         let error_out = CollapsableElement::new(&document, "error_collapse", "error_out")?;
@@ -49,12 +49,17 @@ impl CheckContext {
         Ok(slf)
     }
 
+    fn get_ind(&self) -> usize {
+        let offset = AllLanguages::all().len() - AllLanguages::all_typed().len();
+        self.language_select.selected() + offset
+    }
+
     fn setup_events(self: Rc<Self>) -> Result<(), WebError> {
         let self_ = self.clone();
         let change_handler_language = Closure::wrap(Box::new(move || {
             let res = self_
                 .example_select
-                .set_options(&get_lang(self_.language_select.selected()).to_string());
+                .set_options(&get_lang(self_.get_ind()).to_string());
             match res {
                 Ok(_) => (),
                 Err(err) => {
@@ -102,8 +107,11 @@ impl CheckContext {
     }
 
     fn check_source(&self) -> Result<(), WebError> {
+        log("getting source contents");
         let source = self.source_area.get_contents();
-        let lang = get_lang(self.language_select.selected());
+        log("got contents");
+        let lang = get_lang(self.get_ind());
+        log(&format!("got lang {lang}"));
         match self.driver.run_lang(
             source,
             &lang,

@@ -8,6 +8,8 @@ pub mod values;
 use crate::Language;
 use grammar::{GrammarDescribe, LanguageDescribe, LanguageGrammar};
 use std::fmt;
+use syntax::language::LanguageFeatures;
+
 use terms::Term;
 use types::Type;
 use values::Value;
@@ -21,6 +23,10 @@ impl Language for TypedArithmetic {
     type Value = Value;
     fn describe(&self) -> &str {
         "Typed Arithmetic Expressions"
+    }
+
+    fn features() -> LanguageFeatures {
+        LanguageFeatures::new().with_eval().with_typed()
     }
 }
 

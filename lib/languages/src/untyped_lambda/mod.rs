@@ -6,7 +6,7 @@ pub mod values;
 use crate::Language;
 use grammar::{GrammarDescribe, LanguageDescribe, LanguageGrammar};
 use std::fmt;
-use syntax::untyped::Untyped;
+use syntax::{language::LanguageFeatures, untyped::Untyped};
 use terms::Term;
 use values::Value;
 
@@ -20,6 +20,10 @@ impl Language for UntypedLambda {
 
     fn describe(&self) -> &str {
         "Untyped Lambda Calculus"
+    }
+
+    fn features() -> LanguageFeatures {
+        LanguageFeatures::new().with_eval()
     }
 }
 

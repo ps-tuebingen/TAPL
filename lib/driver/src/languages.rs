@@ -1,5 +1,5 @@
-use crate::{Driver, cli::Command, format::FormatMethod};
-use errors::{NoTyping, UndefinedLanguage, driver_error::DriverError};
+use crate::{cli::Command, format::FormatMethod, Driver};
+use errors::{driver_error::DriverError, NoTyping, UndefinedLanguage};
 use grammar::{LanguageDescribe, LanguageGrammar};
 use languages::{
     BoundedQuantification, Exceptions, Existential, FOmega, FOmegaSub, LambdaOmega, Recursive,
@@ -31,6 +31,23 @@ impl AllLanguages {
         [
             AllLanguages::UntypedArithmetic,
             AllLanguages::UntypedLambda,
+            AllLanguages::TypedArithmetic,
+            AllLanguages::Stlc,
+            AllLanguages::Exceptions,
+            AllLanguages::References,
+            AllLanguages::Existential,
+            AllLanguages::Recursive,
+            AllLanguages::Subtypes,
+            AllLanguages::SystemF,
+            AllLanguages::BoundedQuantification,
+            AllLanguages::LambdaOmega,
+            AllLanguages::FOmega,
+            AllLanguages::FOmegaSub,
+        ]
+    }
+
+    pub fn all_typed() -> [AllLanguages; 12] {
+        [
             AllLanguages::TypedArithmetic,
             AllLanguages::Stlc,
             AllLanguages::Exceptions,
