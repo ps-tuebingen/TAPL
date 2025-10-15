@@ -9,7 +9,9 @@ runs:
       uses: Swatinem/rust-cache@v2
     - name: Install Latex (Ubuntu)
       if: runner.os == 'Linux'
-      run: sudo apt install -y texlive-full
+      run: |
+        sudo apt update 
+        sudo apt install -y texlive-full
       shell: bash
     - name: Install Latex (Mac)
       if: runner.os == 'macOS'
