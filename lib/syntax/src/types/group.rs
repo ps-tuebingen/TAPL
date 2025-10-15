@@ -10,13 +10,12 @@ use errors::TypeMismatch;
 
 pub trait TypeGroup: Type {
     type Lang: Language;
-    fn check_equal(&self, _: &Self) -> Result<(), TypeMismatch> {
-        todo!()
-        //        if self == other {
-        //            Ok(())
-        //        } else {
-        //            Err(TypeMismatch::new(self.to_string(), other.to_string()))
-        //        }
+    fn check_equal(&self, other: &Self) -> Result<(), TypeMismatch> {
+        if self == other {
+            Ok(())
+        } else {
+            Err(TypeMismatch::new(self.to_string(), other.to_string()))
+        }
     }
 
     fn into_variable(self) -> Result<TypeVariable<Self::Lang>, TypeMismatch> {

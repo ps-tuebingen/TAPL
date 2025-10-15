@@ -51,7 +51,7 @@ impl LanguageFeatures {
     }
 }
 
-pub trait Language: fmt::Display + fmt::Debug + Clone {
+pub trait Language: fmt::Display + fmt::Debug + Clone + PartialEq {
     type Term: Term
         + SubstTerm<Lang = Self, Target = Self::Term>
         + SubstType<Lang = Self, Target = Self::Term>;
