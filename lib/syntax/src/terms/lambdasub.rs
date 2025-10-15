@@ -81,14 +81,12 @@ where
                 sup_ty: sup_subst,
                 body: self.body,
             }
-            .into()
         } else {
             LambdaSub {
                 var: self.var,
                 sup_ty: sup_subst,
                 body: Box::new(self.body.subst_type(v, ty)),
             }
-            .into()
         }
     }
 }

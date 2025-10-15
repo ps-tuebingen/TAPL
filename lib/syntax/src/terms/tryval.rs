@@ -44,7 +44,6 @@ where
             term: Box::new(self.term.subst(v, t)),
             handler: Box::new(self.handler.subst(v, t)),
         }
-        .into()
     }
 }
 
@@ -59,7 +58,6 @@ where
             term: Box::new(self.term.subst_type(v, ty)),
             handler: Box::new(self.handler.subst_type(v, ty)),
         }
-        .into()
     }
 }
 

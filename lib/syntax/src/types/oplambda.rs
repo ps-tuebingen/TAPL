@@ -45,14 +45,13 @@ where
     type Lang = Lang;
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         if *v == self.var {
-            self.into()
+            self
         } else {
             OpLambda {
                 var: self.var,
                 annot: self.annot,
                 body: Box::new(self.body.subst_type(v, ty)),
             }
-            .into()
         }
     }
 }

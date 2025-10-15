@@ -1,7 +1,7 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
 use derivations::{Derivation, SubtypeDerivation};
-use errors::check_error::CheckError;
 use errors::KindMismatch;
+use errors::check_error::CheckError;
 use syntax::{
     env::Environment,
     kinds::Kind,

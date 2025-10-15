@@ -53,3 +53,12 @@ where
 {
     type Lang = Lang;
 }
+
+impl<Lang> Default for Untyped<Lang>
+where
+    Lang: Language,
+{
+    fn default() -> Untyped<Lang> {
+        Untyped::new()
+    }
+}

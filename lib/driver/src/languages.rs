@@ -1,5 +1,5 @@
-use crate::{cli::Command, format::FormatMethod, Driver};
-use errors::{driver_error::DriverError, NoTyping, UndefinedLanguage};
+use crate::{Driver, cli::Command, format::FormatMethod};
+use errors::{NoTyping, UndefinedLanguage, driver_error::DriverError};
 use grammar::{LanguageDescribe, LanguageGrammar};
 use languages::{
     BoundedQuantification, Exceptions, Existential, FOmega, FOmegaSub, LambdaOmega, Recursive,

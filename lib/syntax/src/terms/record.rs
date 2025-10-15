@@ -44,7 +44,6 @@ where
                 .map(|(lb, t1)| (lb, t1.subst(v, t)))
                 .collect(),
         }
-        .into()
     }
 }
 
@@ -62,7 +61,6 @@ where
                 .map(|(lb, t)| (lb, t.subst_type(v, ty)))
                 .collect(),
         }
-        .into()
     }
 }
 

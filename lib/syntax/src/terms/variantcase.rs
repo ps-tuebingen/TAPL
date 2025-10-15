@@ -69,7 +69,6 @@ where
             bound_term: Box::new(self.bound_term.subst(v, t)),
             patterns: self.patterns.into_iter().map(|pt| pt.subst(v, t)).collect(),
         }
-        .into()
     }
 }
 
@@ -88,7 +87,6 @@ where
                 .map(|pt| pt.subst_type(v, ty))
                 .collect(),
         }
-        .into()
     }
 }
 

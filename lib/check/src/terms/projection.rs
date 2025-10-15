@@ -1,7 +1,7 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
-use errors::check_error::CheckError;
 use errors::IndexOutOfBounds;
+use errors::check_error::CheckError;
 use syntax::{env::Environment, language::Language, terms::Projection, types::TypeGroup};
 
 impl<Lang> Typecheck for Projection<Lang>

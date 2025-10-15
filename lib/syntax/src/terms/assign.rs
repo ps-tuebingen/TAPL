@@ -44,7 +44,6 @@ where
             lhs: Box::new(self.lhs.subst(v, t)),
             rhs: Box::new(self.rhs.subst(v, t)),
         }
-        .into()
     }
 }
 
@@ -59,7 +58,6 @@ where
             lhs: Box::new(self.lhs.subst_type(v, ty)),
             rhs: Box::new(self.rhs.subst_type(v, ty)),
         }
-        .into()
     }
 }
 

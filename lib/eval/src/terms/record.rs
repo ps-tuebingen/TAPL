@@ -2,8 +2,8 @@ use crate::Eval;
 use errors::eval_error::EvalError;
 use std::collections::HashMap;
 use syntax::{
-    eval_context::EvalContext, language::Language, terms::Record, values::Record as RecordVal,
-    Label,
+    Label, eval_context::EvalContext, language::Language, terms::Record,
+    values::Record as RecordVal,
 };
 use trace::EvalTrace;
 

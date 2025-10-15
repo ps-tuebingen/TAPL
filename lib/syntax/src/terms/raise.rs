@@ -48,7 +48,6 @@ where
             exception_ty: self.exception_ty,
             cont_ty: self.cont_ty,
         }
-        .into()
     }
 }
 
@@ -64,7 +63,6 @@ where
             exception_ty: self.exception_ty.subst_type(v, ty),
             cont_ty: self.cont_ty.subst_type(v, ty),
         }
-        .into()
     }
 }
 

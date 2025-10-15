@@ -1,6 +1,6 @@
 use super::{test::Test, test_result::TestResult};
 use eval::{Eval, eval_main};
-use syntax::{language::Language, program::Program, terms::Term, types::Type};
+use syntax::{language::Language, program::Program};
 use trace::EvalTrace;
 
 pub struct EvalTest<Lang>

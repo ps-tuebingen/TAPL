@@ -7,7 +7,7 @@ use std::{
     path::PathBuf,
     process::{Command, Stdio},
 };
-use syntax::{language::Language, terms::Term, types::Type};
+use syntax::language::Language;
 
 pub struct LatexTestBuss<'a, Lang>
 where

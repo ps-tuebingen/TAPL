@@ -1,7 +1,7 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
 use derivations::{Derivation, SubtypeDerivation};
-use errors::check_error::CheckError;
 use errors::UndefinedLabel;
+use errors::check_error::CheckError;
 use std::collections::HashMap;
 use syntax::{
     env::Environment,

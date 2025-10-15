@@ -40,7 +40,6 @@ where
             fun: Box::new(self.fun.subst_type(v, ty)),
             arg: Box::new(self.arg.subst_type(v, ty)),
         }
-        .into()
     }
 }
 

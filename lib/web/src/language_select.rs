@@ -1,6 +1,6 @@
 use crate::get_by_id;
 use driver::languages::AllLanguages;
-use errors::{web_error::WebError, AddEventHandler, AppendChild, CouldNotCast, CreateElement};
+use errors::{AddEventHandler, AppendChild, CouldNotCast, CreateElement, web_error::WebError};
 use wasm_bindgen::{closure::Closure, prelude::JsCast};
 use web_sys::{Document, HtmlOptionElement, HtmlSelectElement};
 

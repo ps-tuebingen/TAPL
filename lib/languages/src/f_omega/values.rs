@@ -97,14 +97,14 @@ impl ValueGroup for Value {
 impl From<Value> for Term {
     fn from(val: Value) -> Term {
         match val {
-            Value::Lambda(lam) => lam.into_term().into(),
-            Value::TyLambda(tylam) => tylam.into_term().into(),
-            Value::Pack(pack) => pack.into_term().into(),
-            Value::Record(rec) => rec.into_term().into(),
-            Value::True(tru) => tru.into_term().into(),
-            Value::False(fls) => fls.into_term().into(),
-            Value::Unit(u) => u.into_term().into(),
-            Value::Num(num) => num.into_term().into(),
+            Value::Lambda(lam) => lam.into_term(),
+            Value::TyLambda(tylam) => tylam.into_term(),
+            Value::Pack(pack) => pack.into_term(),
+            Value::Record(rec) => rec.into_term(),
+            Value::True(tru) => tru.into_term(),
+            Value::False(fls) => fls.into_term(),
+            Value::Unit(u) => u.into_term(),
+            Value::Num(num) => num.into_term(),
         }
     }
 }

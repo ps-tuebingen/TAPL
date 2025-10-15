@@ -36,7 +36,6 @@ where
         Optional {
             ty: Box::new(self.ty.subst_type(v, ty)),
         }
-        .into()
     }
 }
 

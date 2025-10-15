@@ -35,7 +35,7 @@ where
     type Target = Self;
     type Lang = Lang;
     fn subst(self, _: &Var, _: &<Lang as Language>::Term) -> Self::Target {
-        self.into()
+        self
     }
 }
 
@@ -49,7 +49,6 @@ where
         Nil {
             ty: self.ty.subst_type(v, ty),
         }
-        .into()
     }
 }
 

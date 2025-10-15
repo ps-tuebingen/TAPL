@@ -57,14 +57,12 @@ where
                 sup: Box::new(sup_subst),
                 body: self.body,
             }
-            .into()
         } else {
             OpLambdaSub {
                 var: self.var,
                 sup: Box::new(sup_subst),
                 body: Box::new(self.body.subst_type(v, ty)),
             }
-            .into()
         }
     }
 }

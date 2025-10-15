@@ -44,7 +44,6 @@ where
             fun: Box::new(self.fun.subst(v, t)),
             arg: self.arg,
         }
-        .into()
     }
 }
 
@@ -59,7 +58,6 @@ where
             fun: Box::new(self.fun.subst_type(v, ty)),
             arg: self.arg.subst_type(v, ty),
         }
-        .into()
     }
 }
 

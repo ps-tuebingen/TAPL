@@ -48,7 +48,6 @@ where
             then_term: Box::new(self.then_term.subst(v, t)),
             else_term: Box::new(self.else_term.subst(v, t)),
         }
-        .into()
     }
 }
 
@@ -64,7 +63,6 @@ where
             then_term: Box::new(self.then_term.subst_type(v, ty)),
             else_term: Box::new(self.else_term.subst_type(v, ty)),
         }
-        .into()
     }
 }
 

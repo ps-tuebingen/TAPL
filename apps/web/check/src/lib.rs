@@ -1,9 +1,9 @@
-use driver::{cli::Command, format::FormatMethod, languages::AllLanguages, Driver};
-use errors::{web_error::WebError, AddEventHandler};
+use driver::{Driver, cli::Command, format::FormatMethod, languages::AllLanguages};
+use errors::{AddEventHandler, web_error::WebError};
 use std::rc::Rc;
 use wasm_bindgen::{
     closure::Closure,
-    prelude::{wasm_bindgen, JsCast},
+    prelude::{JsCast, wasm_bindgen},
 };
 use web::{
     collapsable::CollapsableElement, example_select::ExampleSelect, get_by_id, get_lang,

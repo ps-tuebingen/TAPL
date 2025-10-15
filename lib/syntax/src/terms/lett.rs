@@ -42,14 +42,13 @@ where
     type Lang = Lang;
     fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
         if *v == self.var {
-            self.into()
+            self
         } else {
             Let {
                 var: self.var,
                 bound_term: Box::new(self.bound_term.subst(v, t)),
                 in_term: Box::new(self.in_term.subst(v, t)),
             }
-            .into()
         }
     }
 }
@@ -66,7 +65,6 @@ where
             bound_term: Box::new(self.bound_term.subst_type(v, ty)),
             in_term: Box::new(self.in_term.subst_type(v, ty)),
         }
-        .into()
     }
 }
 

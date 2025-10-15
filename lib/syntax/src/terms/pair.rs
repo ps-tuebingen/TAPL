@@ -44,7 +44,6 @@ where
             fst: Box::new(self.fst.subst(v, t)),
             snd: Box::new(self.snd.subst(v, t)),
         }
-        .into()
     }
 }
 
@@ -59,7 +58,6 @@ where
             fst: Box::new(self.fst.subst_type(v, ty)),
             snd: Box::new(self.snd.subst_type(v, ty)),
         }
-        .into()
     }
 }
 

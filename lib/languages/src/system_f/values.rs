@@ -37,8 +37,8 @@ impl ValueGroup for Value {
 impl From<Value> for Term {
     fn from(v: Value) -> Term {
         match v {
-            Value::Lambda(lam) => lam.into_term().into(),
-            Value::TyLambda(tylam) => tylam.into_term().into(),
+            Value::Lambda(lam) => lam.into_term(),
+            Value::TyLambda(tylam) => tylam.into_term(),
         }
     }
 }

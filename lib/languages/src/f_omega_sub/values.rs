@@ -76,11 +76,11 @@ impl ValueGroup for Value {
 impl From<Value> for Term {
     fn from(val: Value) -> Term {
         match val {
-            Value::Lambda(lam) => lam.into_term().into(),
-            Value::LambdaSub(lam) => lam.into_term().into(),
-            Value::Pack(pack) => pack.into_term().into(),
-            Value::Record(rec) => rec.into_term().into(),
-            Value::Num(num) => num.into_term().into(),
+            Value::Lambda(lam) => lam.into_term(),
+            Value::LambdaSub(lam) => lam.into_term(),
+            Value::Pack(pack) => pack.into_term(),
+            Value::Record(rec) => rec.into_term(),
+            Value::Num(num) => num.into_term(),
         }
     }
 }

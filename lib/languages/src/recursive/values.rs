@@ -94,15 +94,15 @@ impl ValueGroup for Value {
 impl From<Value> for Term {
     fn from(v: Value) -> Term {
         match v {
-            Value::Unit(u) => u.into_term().into(),
-            Value::True(tru) => tru.into_term().into(),
-            Value::False(fls) => fls.into_term().into(),
-            Value::Num(num) => num.into_term().into(),
-            Value::Lambda(lam) => lam.into_term().into(),
-            Value::Fold(fld) => fld.into_term().into(),
-            Value::Pair(pr) => pr.into_term().into(),
-            Value::Record(rec) => rec.into_term().into(),
-            Value::Variant(var) => var.into_term().into(),
+            Value::Unit(u) => u.into_term(),
+            Value::True(tru) => tru.into_term(),
+            Value::False(fls) => fls.into_term(),
+            Value::Num(num) => num.into_term(),
+            Value::Lambda(lam) => lam.into_term(),
+            Value::Fold(fld) => fld.into_term(),
+            Value::Pair(pr) => pr.into_term(),
+            Value::Record(rec) => rec.into_term(),
+            Value::Variant(var) => var.into_term(),
         }
     }
 }

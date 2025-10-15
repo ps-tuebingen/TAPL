@@ -62,3 +62,9 @@ pub trait Language: fmt::Display + fmt::Debug + Clone + PartialEq {
 
     fn features() -> LanguageFeatures;
 }
+
+impl Default for LanguageFeatures {
+    fn default() -> LanguageFeatures {
+        LanguageFeatures::new()
+    }
+}

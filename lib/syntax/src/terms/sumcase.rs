@@ -71,7 +71,6 @@ where
             right_var: self.right_var,
             right_term,
         }
-        .into()
     }
 }
 
@@ -89,7 +88,6 @@ where
             right_var: self.right_var,
             right_term: Box::new(self.right_term.subst_type(v, ty)),
         }
-        .into()
     }
 }
 

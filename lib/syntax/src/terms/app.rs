@@ -54,7 +54,6 @@ where
             fun: Box::new(self.fun.subst(v, t)),
             arg: Box::new(self.arg.subst(v, t)),
         }
-        .into()
     }
 }
 impl<Lang> SubstType for App<Lang>

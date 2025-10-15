@@ -68,7 +68,6 @@ where
             annot: self.annot.subst_type(v, ty),
             body: Box::new(self.body.subst_type(v, ty)),
         }
-        .into()
     }
 }
 

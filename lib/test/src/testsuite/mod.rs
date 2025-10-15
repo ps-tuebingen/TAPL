@@ -157,7 +157,7 @@ pub trait TestSuite {
         <Self::Lang as Language>::Value: LatexFmt,
     {
         let name = conf.name();
-        let mut num_fails = 0;
+        let mut num_fail = 0;
         println!("Running tests for {name}",);
 
         print!("\t");
@@ -169,7 +169,7 @@ pub trait TestSuite {
         if inclusions.reparse {
             print!("\t");
             if matches!(Self::run_reparse(name, &prog), TestResult::Fail(_)) {
-                num_fails += 1
+                num_fail += 1
             };
         };
 
@@ -181,23 +181,23 @@ pub trait TestSuite {
                     if inclusions.derivation_buss {
                         print!("\t");
                         if matches!(Self::run_derivation_buss(name, deriv), TestResult::Fail(_)) {
-                            num_fails += 1;
+                            num_fail += 1;
                         }
                     }
                     if inclusions.derivation_frac {
                         print!("\t");
                         if matches!(Self::run_derivation_frac(name, deriv), TestResult::Fail(_)) {
-                            num_fails += 1;
+                            num_fail += 1;
                         }
                     }
                 }
                 TestResult::Fail(_) => {
-                    num_fails += 1;
+                    num_fail += 1;
                     if inclusions.derivation_buss {
-                        num_fails += 1;
+                        num_fail += 1;
                     }
                     if inclusions.derivation_frac {
-                        num_fails += 1;
+                        num_fail += 1;
                     }
                 }
             };
@@ -214,15 +214,15 @@ pub trait TestSuite {
                     }
                 }
                 TestResult::Fail(_) => {
-                    num_fails += 1;
+                    num_fail += 1;
                     if inclusions.trace {
-                        num_fails += 1
+                        num_fail += 1
                     }
                 }
             }
         }
 
-        num_fails
+        num_fail
     }
 
     fn run_all(&self, inclusions: &TestInclusions) -> Result<usize, TestError>
@@ -315,22 +315,21 @@ pub trait TestSuite {
         let num_tests = configs.len() * inclusions.num_tests();
         for conf in configs {
             let name = conf.name();
-            let mut num_fails = 0;
             println!("Running tests for {name}",);
 
             print!("\t");
             let prog = match Self::run_parse(&conf) {
                 TestResult::Success(p) => p,
                 TestResult::Fail(_) => {
-                    num_fails += 1;
-                    return Ok(());
+                    num_fail += 1;
+                    continue;
                 }
             };
 
             if inclusions.reparse {
                 print!("\t");
                 if matches!(Self::run_reparse(name, &prog), TestResult::Fail(_)) {
-                    num_fails += 1
+                    num_fail += 1
                 };
             };
 
@@ -345,9 +344,9 @@ pub trait TestSuite {
                         }
                     }
                     TestResult::Fail(_) => {
-                        num_fails += 1;
+                        num_fail += 1;
                         if inclusions.trace {
-                            num_fails += 1
+                            num_fail += 1
                         }
                     }
                 }

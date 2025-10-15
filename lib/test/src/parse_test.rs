@@ -1,7 +1,7 @@
 use super::{test::Test, test_result::TestResult};
 use parser::{GroupParse, Parse};
 use std::marker::PhantomData;
-use syntax::{language::Language, program::Program, terms::Term, types::Type};
+use syntax::{language::Language, program::Program};
 
 pub struct ParseTest<Lang>
 where

@@ -52,7 +52,6 @@ where
                 bound_term: Box::new(self.bound_term.subst(v, t)),
                 in_term: self.in_term,
             }
-            .into()
         } else {
             Unpack {
                 ty_name: self.ty_name,
@@ -60,7 +59,6 @@ where
                 bound_term: Box::new(self.bound_term.subst(v, t)),
                 in_term: Box::new(self.in_term.subst(v, t)),
             }
-            .into()
         }
     }
 }

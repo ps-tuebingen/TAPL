@@ -90,13 +90,13 @@ impl GrammarDescribe for Value {
 impl From<Value> for Term {
     fn from(val: Value) -> Term {
         match val {
-            Value::Lambda(lam) => lam.into_term().into(),
-            Value::Unit(u) => u.into_term().into(),
-            Value::True(tru) => tru.into_term().into(),
-            Value::False(fls) => fls.into_term().into(),
-            Value::Num(num) => num.into_term().into(),
-            Value::Exception(exc) => exc.into_term().into(),
-            Value::Raise(raise) => raise.into_term().into(),
+            Value::Lambda(lam) => lam.into_term(),
+            Value::Unit(u) => u.into_term(),
+            Value::True(tru) => tru.into_term(),
+            Value::False(fls) => fls.into_term(),
+            Value::Num(num) => num.into_term(),
+            Value::Exception(exc) => exc.into_term(),
+            Value::Raise(raise) => raise.into_term(),
         }
     }
 }

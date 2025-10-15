@@ -44,7 +44,6 @@ where
             right_term: Box::new(self.right_term.subst(v, t)),
             ty: self.ty,
         }
-        .into()
     }
 }
 
@@ -59,7 +58,6 @@ where
             right_term: Box::new(self.right_term.subst_type(v, ty)),
             ty: self.ty.subst_type(v, ty),
         }
-        .into()
     }
 }
 

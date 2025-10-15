@@ -41,7 +41,7 @@ impl LatexFmt for Value {
 impl From<Value> for Term {
     fn from(val: Value) -> Term {
         match val {
-            Value::Lambda(lam) => lam.into_term().into(),
+            Value::Lambda(lam) => lam.into_term(),
         }
     }
 }

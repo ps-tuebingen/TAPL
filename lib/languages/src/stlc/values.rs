@@ -171,21 +171,21 @@ impl GrammarDescribe for Value {
 impl From<Value> for Term {
     fn from(v: Value) -> Term {
         match v {
-            Value::Lambda(lam) => lam.into_term().into(),
-            Value::Unit(u) => u.into_term().into(),
-            Value::True(tru) => tru.into_term().into(),
-            Value::False(fls) => fls.into_term().into(),
-            Value::Num(num) => num.into_term().into(),
-            Value::Pair(pair) => pair.into_term().into(),
-            Value::Tuple(tup) => tup.into_term().into(),
-            Value::Record(rec) => rec.into_term().into(),
-            Value::Left(lft) => lft.into_term().into(),
-            Value::Right(right) => right.into_term().into(),
-            Value::Variant(var) => var.into_term().into(),
-            Value::Nothing(not) => not.into_term().into(),
-            Value::Something(some) => some.into_term().into(),
-            Value::Nil(nil) => nil.into_term().into(),
-            Value::Cons(cons) => cons.into_term().into(),
+            Value::Lambda(lam) => lam.into_term(),
+            Value::Unit(u) => u.into_term(),
+            Value::True(tru) => tru.into_term(),
+            Value::False(fls) => fls.into_term(),
+            Value::Num(num) => num.into_term(),
+            Value::Pair(pair) => pair.into_term(),
+            Value::Tuple(tup) => tup.into_term(),
+            Value::Record(rec) => rec.into_term(),
+            Value::Left(lft) => lft.into_term(),
+            Value::Right(right) => right.into_term(),
+            Value::Variant(var) => var.into_term(),
+            Value::Nothing(not) => not.into_term(),
+            Value::Something(some) => some.into_term(),
+            Value::Nil(nil) => nil.into_term(),
+            Value::Cons(cons) => cons.into_term(),
         }
     }
 }

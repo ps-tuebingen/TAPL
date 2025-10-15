@@ -52,7 +52,6 @@ where
                 some_var: self.some_var,
                 some_term: self.some_term,
             }
-            .into()
         } else {
             SomeCase {
                 bound_term: Box::new(self.bound_term.subst(v, t)),
@@ -60,7 +59,6 @@ where
                 some_var: self.some_var,
                 some_term: Box::new(self.some_term.subst(v, t)),
             }
-            .into()
         }
     }
 }
@@ -78,7 +76,6 @@ where
             some_var: self.some_var,
             some_term: Box::new(self.some_term.subst_type(v, ty)),
         }
-        .into()
     }
 }
 

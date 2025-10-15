@@ -47,7 +47,6 @@ where
             annot: self.annot,
             term: Box::new(self.term.subst(v, t)),
         }
-        .into()
     }
 }
 
@@ -59,14 +58,13 @@ where
     type Lang = Lang;
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         if *v == self.var {
-            self.into()
+            self
         } else {
             TyLambda {
                 var: self.var,
                 annot: self.annot,
                 term: Box::new(self.term.subst_type(v, ty)),
             }
-            .into()
         }
     }
 }

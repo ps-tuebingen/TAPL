@@ -73,7 +73,7 @@ impl SubstType for Type {
 
     fn subst_type(self, v: &TypeVar, ty: &Type) -> Self::Target {
         match self {
-            Type::Var(var) => var.subst_type(v, ty).into(),
+            Type::Var(var) => var.subst_type(v, ty),
             Type::Fun(fun) => fun.subst_type(v, ty).into(),
             Type::Forall(forall) => forall.subst_type(v, ty).into(),
         }

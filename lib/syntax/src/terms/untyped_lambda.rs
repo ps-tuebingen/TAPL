@@ -40,13 +40,12 @@ where
     type Lang = Lang;
     fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
         if *v == self.var {
-            self.into()
+            self
         } else {
             UntypedLambda {
                 var: self.var,
                 body: Box::new(self.body.subst(v, t)),
             }
-            .into()
         }
     }
 }
@@ -62,7 +61,6 @@ where
             var: self.var,
             body: Box::new(self.body.subst_type(v, ty)),
         }
-        .into()
     }
 }
 

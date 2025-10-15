@@ -40,7 +40,6 @@ where
         Tuple {
             terms: self.terms.into_iter().map(|t1| t1.subst(v, t)).collect(),
         }
-        .into()
     }
 }
 
@@ -58,7 +57,6 @@ where
                 .map(|t| t.subst_type(v, ty))
                 .collect(),
         }
-        .into()
     }
 }
 

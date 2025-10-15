@@ -57,7 +57,6 @@ where
                 cons_rst: self.cons_rst,
                 cons_rhs: self.cons_rhs,
             }
-            .into()
         } else {
             ListCase {
                 bound_term: Box::new(bound_subst),
@@ -66,7 +65,6 @@ where
                 cons_rst: self.cons_rst,
                 cons_rhs: Box::new(self.cons_rhs.subst(v, t)),
             }
-            .into()
         }
     }
 }
@@ -85,7 +83,6 @@ where
             cons_rst: self.cons_rst,
             cons_rhs: Box::new(self.cons_rhs.subst_type(v, ty)),
         }
-        .into()
     }
 }
 

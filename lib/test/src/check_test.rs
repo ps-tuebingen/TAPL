@@ -1,8 +1,7 @@
 use super::{test::Test, test_result::TestResult};
 use check::Typecheck;
 use derivations::ProgramDerivation;
-use std::marker::PhantomData;
-use syntax::{language::Language, program::Program, terms::Term, types::TypeGroup};
+use syntax::{language::Language, program::Program};
 
 pub struct CheckTest<Lang>
 where

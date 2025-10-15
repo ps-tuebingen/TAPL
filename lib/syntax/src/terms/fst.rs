@@ -40,7 +40,6 @@ where
         Fst {
             term: Box::new(self.term.subst(v, t)),
         }
-        .into()
     }
 }
 
@@ -54,7 +53,6 @@ where
         Fst {
             term: Box::new(self.term.subst_type(v, ty)),
         }
-        .into()
     }
 }
 

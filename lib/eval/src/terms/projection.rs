@@ -1,6 +1,6 @@
 use crate::Eval;
-use errors::eval_error::EvalError;
 use errors::IndexOutOfBounds;
+use errors::eval_error::EvalError;
 use syntax::{
     eval_context::EvalContext,
     language::Language,

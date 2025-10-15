@@ -52,7 +52,7 @@ where
     type Target = Self;
     type Lang = Lang;
     fn subst_type(self, _: &TypeVar, _: &<Lang as Language>::Type) -> Self::Target {
-        self.into()
+        self
     }
 }
 

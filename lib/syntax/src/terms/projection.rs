@@ -43,7 +43,6 @@ where
             term: Box::new(self.term.subst(v, t)),
             index: self.index,
         }
-        .into()
     }
 }
 
@@ -58,7 +57,6 @@ where
             term: Box::new(self.term.subst_type(v, ty)),
             index: self.index,
         }
-        .into()
     }
 }
 

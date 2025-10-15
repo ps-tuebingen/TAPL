@@ -128,7 +128,7 @@ impl SubstType for Type {
     type Target = Self;
     fn subst_type(self, v: &TypeVar, ty: &Type) -> Self::Target {
         match self {
-            Type::Var(var) => var.subst_type(v, ty).into(),
+            Type::Var(var) => var.subst_type(v, ty),
             Type::Fun(fun) => fun.subst_type(v, ty).into(),
             Type::Forall(forall) => forall.subst_type(v, ty).into(),
             Type::OpLambda(lam) => lam.subst_type(v, ty).into(),

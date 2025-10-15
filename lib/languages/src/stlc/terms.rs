@@ -106,7 +106,7 @@ impl SubstTerm for Term {
     type Target = Term;
     fn subst(self, v: &Var, t: &Term) -> Self::Target {
         match self {
-            Term::Var(var) => var.subst(v, t).into(),
+            Term::Var(var) => var.subst(v, t),
             Term::Lambda(lam) => lam.subst(v, t).into(),
             Term::App(app) => app.subst(v, t).into(),
             Term::True(tru) => tru.subst(v, t).into(),

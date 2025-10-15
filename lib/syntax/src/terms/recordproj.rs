@@ -43,7 +43,6 @@ where
             record: Box::new(self.record.subst(v, t)),
             label: self.label,
         }
-        .into()
     }
 }
 
@@ -58,7 +57,6 @@ where
             record: Box::new(self.record.subst_type(v, ty)),
             label: self.label,
         }
-        .into()
     }
 }
 

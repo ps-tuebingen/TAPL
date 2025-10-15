@@ -53,7 +53,6 @@ where
                 kind: self.kind,
                 ty: Box::new((*self.ty).subst_type(v, ty)),
             }
-            .into()
         }
     }
 }
