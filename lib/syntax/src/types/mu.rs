@@ -1,6 +1,6 @@
 use super::Type;
 use crate::{TypeVar, language::Language, subst::SubstType};
-use std::fmt;
+use std::{fmt, rc::Rc};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Mu<Lang>
@@ -8,7 +8,7 @@ where
     Lang: Language,
 {
     pub var: TypeVar,
-    pub ty: Box<Lang::Type>,
+    pub ty: Rc<Lang::Type>,
 }
 
 impl<Lang> Mu<Lang>
@@ -21,7 +21,7 @@ where
     {
         Mu {
             var: v.to_owned(),
-            ty: Box::new(ty.into()),
+            ty: Rc::new(ty.into()),
         }
     }
 }
@@ -40,7 +40,7 @@ where
         } else {
             Mu {
                 var: self.var,
-                ty: Box::new(self.ty.subst_type(v, ty)),
+                ty: self.ty.subst_type(v, ty),
             }
         }
     }

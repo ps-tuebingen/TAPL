@@ -1,13 +1,13 @@
 use super::Type;
 use crate::{TypeVar, language::Language, subst::SubstType};
-use std::fmt;
+use std::{fmt, rc::Rc};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct List<Lang>
 where
     Lang: Language,
 {
-    pub ty: Box<Lang::Type>,
+    pub ty: Rc<Lang::Type>,
 }
 
 impl<Lang> List<Lang>
@@ -19,7 +19,7 @@ where
         Ty1: Into<Lang::Type>,
     {
         List {
-            ty: Box::new(ty.into()),
+            ty: Rc::new(ty.into()),
         }
     }
 }
@@ -34,7 +34,7 @@ where
     type Lang = Lang;
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         List {
-            ty: Box::new(self.ty.subst_type(v, ty)),
+            ty: self.ty.subst_type(v, ty),
         }
     }
 }

@@ -1,6 +1,7 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
+use std::rc::Rc;
 use syntax::{env::Environment, language::Language, terms::SomeCase, types::TypeGroup};
 
 impl<Lang> Typecheck for SomeCase<Lang>
@@ -20,7 +21,7 @@ where
 
         let option = bound_ty.into_optional()?;
         let mut some_env = env.clone();
-        some_env.add_var(self.some_var.clone(), *option.ty);
+        some_env.add_var(self.some_var.clone(), Rc::unwrap_or_clone(option.ty));
         let some_res = self.some_term.check(some_env.clone())?;
         let some_ty = some_res.ret_ty().normalize(some_env.clone());
         let some_knd = some_ty.check_kind(some_env)?;

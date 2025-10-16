@@ -4,15 +4,15 @@ use crate::{
     language::Language,
     subst::{SubstTerm, SubstType},
 };
-use std::fmt;
+use std::{fmt, rc::Rc};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Cons<Lang>
 where
     Lang: Language,
 {
-    pub head: Box<Lang::Term>,
-    pub tail: Box<Lang::Term>,
+    pub head: Rc<Lang::Term>,
+    pub tail: Rc<Lang::Term>,
     pub ty: Lang::Type,
 }
 
@@ -27,8 +27,8 @@ where
         Typ: Into<Lang::Type>,
     {
         Cons {
-            head: Box::new(h.into()),
-            tail: Box::new(tl.into()),
+            head: Rc::new(h.into()),
+            tail: Rc::new(tl.into()),
             ty: ty.into(),
         }
     }
@@ -44,8 +44,8 @@ where
     type Lang = Lang;
     fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
         Cons {
-            head: Box::new(self.head.subst(v, t)),
-            tail: Box::new(self.tail.subst(v, t)),
+            head: self.head.subst(v, t),
+            tail: self.tail.subst(v, t),
             ty: self.ty,
         }
     }
@@ -59,8 +59,8 @@ where
     type Lang = Lang;
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         Cons {
-            head: Box::new(self.head.subst_type(v, ty)),
-            tail: Box::new(self.tail.subst_type(v, ty)),
+            head: self.head.subst_type(v, ty),
+            tail: self.tail.subst_type(v, ty),
             ty: self.ty.subst_type(v, ty),
         }
     }

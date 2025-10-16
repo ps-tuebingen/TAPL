@@ -4,7 +4,7 @@ use crate::{
     language::Language,
     subst::{SubstTerm, SubstType},
 };
-use std::fmt;
+use std::{fmt, rc::Rc};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Unfold<Lang>
@@ -12,7 +12,7 @@ where
     Lang: Language,
 {
     pub ty: Lang::Type,
-    pub term: Box<Lang::Term>,
+    pub term: Rc<Lang::Term>,
 }
 
 impl<Lang> Unfold<Lang>
@@ -26,7 +26,7 @@ where
     {
         Unfold {
             ty: ty.into(),
-            term: Box::new(t.into()),
+            term: Rc::new(t.into()),
         }
     }
 }
@@ -42,7 +42,7 @@ where
     fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
         Unfold {
             ty: self.ty,
-            term: Box::new(self.term.subst(v, t)),
+            term: self.term.subst(v, t),
         }
     }
 }
@@ -56,7 +56,7 @@ where
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         Unfold {
             ty: self.ty.subst_type(v, ty),
-            term: Box::new(self.term.subst_type(v, ty)),
+            term: self.term.subst_type(v, ty),
         }
     }
 }

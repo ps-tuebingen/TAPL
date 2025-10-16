@@ -1,6 +1,7 @@
 use crate::{Parse, Rule, pair_to_n_inner};
 use errors::{MissingInput, RemainingInput, UnexpectedRule, parse_error::ParserError};
 use pest::iterators::Pair;
+use std::rc::Rc;
 use syntax::kinds::Kind;
 
 impl Parse for Kind {
@@ -37,5 +38,5 @@ fn pair_to_prim_kind(p: Pair<'_, Rule>) -> Result<Kind, ParserError> {
 fn pair_to_leftrec_kind(p: Pair<'_, Rule>, knd: Kind) -> Result<Kind, ParserError> {
     let inner = pair_to_n_inner(p, vec!["Kind"])?.remove(0);
     let to_kind = Kind::from_pair(inner, ())?;
-    Ok(Kind::Arrow(Box::new(knd), Box::new(to_kind)))
+    Ok(Kind::Arrow(Rc::new(knd), Rc::new(to_kind)))
 }

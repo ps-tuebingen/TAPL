@@ -4,7 +4,7 @@ use crate::{
     language::Language,
     subst::{SubstTerm, SubstType},
 };
-use std::fmt;
+use std::{fmt, rc::Rc};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Pack<Lang>
@@ -12,7 +12,7 @@ where
     Lang: Language,
 {
     pub inner_ty: Lang::Type,
-    pub term: Box<Lang::Term>,
+    pub term: Rc<Lang::Term>,
     pub outer_ty: Lang::Type,
 }
 
@@ -28,7 +28,7 @@ where
     {
         Pack {
             inner_ty: inner.into(),
-            term: Box::new(t.into()),
+            term: Rc::new(t.into()),
             outer_ty: outer.into(),
         }
     }
@@ -45,7 +45,7 @@ where
     fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
         Pack {
             inner_ty: self.inner_ty,
-            term: Box::new(self.term.subst(v, t)),
+            term: self.term.subst(v, t),
             outer_ty: self.outer_ty,
         }
     }
@@ -60,7 +60,7 @@ where
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         Pack {
             inner_ty: self.inner_ty.subst_type(v, ty),
-            term: Box::new(self.term.subst_type(v, ty)),
+            term: self.term.subst_type(v, ty),
             outer_ty: self.outer_ty.subst_type(v, ty),
         }
     }

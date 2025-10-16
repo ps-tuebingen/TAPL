@@ -1,6 +1,7 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
+use std::rc::Rc;
 use syntax::{
     env::Environment,
     language::Language,
@@ -26,7 +27,7 @@ where
         let fun_ty = term_ty.into_fun()?;
         fun_ty.from.check_equal(&fun_ty.to)?;
 
-        let conc = TypingConclusion::new(env, self.clone(), *fun_ty.to);
+        let conc = TypingConclusion::new(env, self.clone(), Rc::unwrap_or_clone(fun_ty.to));
         let deriv = TypingDerivation::fix(conc, term_res);
         Ok(deriv.into())
     }

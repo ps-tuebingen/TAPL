@@ -2,6 +2,7 @@ use crate::{Kindcheck, Normalize, Subtypecheck};
 use derivations::{Derivation, SubtypeDerivation};
 use errors::KindMismatch;
 use errors::check_error::CheckError;
+use std::rc::Rc;
 use syntax::{
     env::Environment,
     kinds::Kind,
@@ -64,8 +65,8 @@ where
         let from_norm = self.from.normalize(env.clone());
         let to_norm = self.to.normalize(env);
         Fun {
-            from: Box::new(from_norm),
-            to: Box::new(to_norm),
+            from: Rc::new(from_norm),
+            to: Rc::new(to_norm),
         }
         .into()
     }

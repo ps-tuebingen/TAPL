@@ -4,14 +4,14 @@ use crate::{
     language::Language,
     subst::{SubstTerm, SubstType},
 };
-use std::fmt;
+use std::{fmt, rc::Rc};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Projection<Lang>
 where
     Lang: Language,
 {
-    pub term: Box<Lang::Term>,
+    pub term: Rc<Lang::Term>,
     pub index: usize,
 }
 
@@ -24,7 +24,7 @@ where
         T1: Into<Lang::Term>,
     {
         Projection {
-            term: Box::new(t.into()),
+            term: Rc::new(t.into()),
             index: ind,
         }
     }
@@ -40,7 +40,7 @@ where
     type Lang = Lang;
     fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
         Projection {
-            term: Box::new(self.term.subst(v, t)),
+            term: self.term.subst(v, t),
             index: self.index,
         }
     }
@@ -54,7 +54,7 @@ where
     type Lang = Lang;
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         Projection {
-            term: Box::new(self.term.subst_type(v, ty)),
+            term: self.term.subst_type(v, ty),
             index: self.index,
         }
     }

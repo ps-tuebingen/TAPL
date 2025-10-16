@@ -4,15 +4,15 @@ use crate::{
     language::Language,
     subst::{SubstTerm, SubstType},
 };
-use std::fmt;
+use std::{fmt, rc::Rc};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Assign<Lang>
 where
     Lang: Language,
 {
-    pub lhs: Box<Lang::Term>,
-    pub rhs: Box<Lang::Term>,
+    pub lhs: Rc<Lang::Term>,
+    pub rhs: Rc<Lang::Term>,
 }
 
 impl<Lang> Assign<Lang>
@@ -25,8 +25,8 @@ where
         T2: Into<Lang::Term>,
     {
         Assign {
-            lhs: Box::new(lhs.into()),
-            rhs: Box::new(rhs.into()),
+            lhs: Rc::new(lhs.into()),
+            rhs: Rc::new(rhs.into()),
         }
     }
 }
@@ -41,8 +41,8 @@ where
     type Lang = Lang;
     fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
         Assign {
-            lhs: Box::new(self.lhs.subst(v, t)),
-            rhs: Box::new(self.rhs.subst(v, t)),
+            lhs: self.lhs.subst(v, t),
+            rhs: self.rhs.subst(v, t),
         }
     }
 }
@@ -55,8 +55,8 @@ where
     type Lang = Lang;
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         Assign {
-            lhs: Box::new(self.lhs.subst_type(v, ty)),
-            rhs: Box::new(self.rhs.subst_type(v, ty)),
+            lhs: self.lhs.subst_type(v, ty),
+            rhs: self.rhs.subst_type(v, ty),
         }
     }
 }

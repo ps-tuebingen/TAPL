@@ -4,14 +4,14 @@ use crate::{
     language::Language,
     subst::{SubstTerm, SubstType},
 };
-use std::fmt;
+use std::{fmt, rc::Rc};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Left<Lang>
 where
     Lang: Language,
 {
-    pub left_term: Box<Lang::Term>,
+    pub left_term: Rc<Lang::Term>,
     pub ty: Lang::Type,
 }
 
@@ -25,7 +25,7 @@ where
         Typ: Into<Lang::Type>,
     {
         Left {
-            left_term: Box::new(left_t.into()),
+            left_term: Rc::new(left_t.into()),
             ty: ty.into(),
         }
     }
@@ -41,7 +41,7 @@ where
     type Lang = Lang;
     fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
         Left {
-            left_term: Box::new(self.left_term.subst(v, t)),
+            left_term: self.left_term.subst(v, t),
             ty: self.ty,
         }
     }
@@ -55,7 +55,7 @@ where
     type Lang = Lang;
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         Left {
-            left_term: Box::new(self.left_term.subst_type(v, ty)),
+            left_term: self.left_term.subst_type(v, ty),
             ty: self.ty.subst_type(v, ty),
         }
     }

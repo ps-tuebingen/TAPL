@@ -2,6 +2,7 @@ use crate::{Kindcheck, Normalize, Subtypecheck, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::TypeMismatch;
 use errors::check_error::CheckError;
+use std::rc::Rc;
 use syntax::{
     env::Environment, language::Language, subst::SubstType, terms::Pack, types::TypeGroup,
 };
@@ -44,7 +45,10 @@ where
         } else if let Ok(outer_bound) = outer_norm.clone().into_exists_bounded() {
             let sup_norm = outer_bound.sup_ty.clone().normalize(env.clone());
             let sup_kind = sup_norm.check_kind(env.clone())?;
-            env.add_tyvar_super(outer_bound.var.clone(), *outer_bound.sup_ty.clone());
+            env.add_tyvar_super(
+                outer_bound.var.clone(),
+                Rc::unwrap_or_clone(outer_bound.sup_ty),
+            );
             env.add_tyvar_kind(outer_bound.var.clone(), sup_kind);
 
             let term_res = self.term.check(env.clone())?;

@@ -1,14 +1,14 @@
 use super::Type;
 use crate::{TypeVar, language::Language, subst::SubstType};
-use std::fmt;
+use std::{fmt, rc::Rc};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Product<Lang>
 where
     Lang: Language,
 {
-    pub fst: Box<Lang::Type>,
-    pub snd: Box<Lang::Type>,
+    pub fst: Rc<Lang::Type>,
+    pub snd: Rc<Lang::Type>,
 }
 
 impl<Lang> Product<Lang>
@@ -21,8 +21,8 @@ where
         Ty2: Into<Lang::Type>,
     {
         Product {
-            fst: Box::new(fst.into()),
-            snd: Box::new(snd.into()),
+            fst: Rc::new(fst.into()),
+            snd: Rc::new(snd.into()),
         }
     }
 }
@@ -39,8 +39,8 @@ where
 
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         Product {
-            fst: Box::new(self.fst.subst_type(v, ty)),
-            snd: Box::new(self.snd.subst_type(v, ty)),
+            fst: self.fst.subst_type(v, ty),
+            snd: self.snd.subst_type(v, ty),
         }
     }
 }

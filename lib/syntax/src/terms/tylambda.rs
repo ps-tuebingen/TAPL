@@ -5,7 +5,7 @@ use crate::{
     language::Language,
     subst::{SubstTerm, SubstType},
 };
-use std::fmt;
+use std::{fmt, rc::Rc};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct TyLambda<Lang>
@@ -14,7 +14,7 @@ where
 {
     pub var: TypeVar,
     pub annot: Kind,
-    pub term: Box<Lang::Term>,
+    pub term: Rc<Lang::Term>,
 }
 
 impl<Lang> TyLambda<Lang>
@@ -28,7 +28,7 @@ where
         TyLambda {
             var: v.into(),
             annot: knd,
-            term: Box::new(t.into()),
+            term: Rc::new(t.into()),
         }
     }
 }
@@ -45,7 +45,7 @@ where
         TyLambda {
             var: self.var,
             annot: self.annot,
-            term: Box::new(self.term.subst(v, t)),
+            term: self.term.subst(v, t),
         }
     }
 }
@@ -63,7 +63,7 @@ where
             TyLambda {
                 var: self.var,
                 annot: self.annot,
-                term: Box::new(self.term.subst_type(v, ty)),
+                term: self.term.subst_type(v, ty),
             }
         }
     }

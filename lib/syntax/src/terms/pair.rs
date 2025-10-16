@@ -4,15 +4,15 @@ use crate::{
     language::Language,
     subst::{SubstTerm, SubstType},
 };
-use std::fmt;
+use std::{fmt, rc::Rc};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Pair<Lang>
 where
     Lang: Language,
 {
-    pub fst: Box<Lang::Term>,
-    pub snd: Box<Lang::Term>,
+    pub fst: Rc<Lang::Term>,
+    pub snd: Rc<Lang::Term>,
 }
 
 impl<Lang> Pair<Lang>
@@ -25,8 +25,8 @@ where
         T2: Into<Lang::Term>,
     {
         Pair {
-            fst: Box::new(fst.into()),
-            snd: Box::new(snd.into()),
+            fst: Rc::new(fst.into()),
+            snd: Rc::new(snd.into()),
         }
     }
 }
@@ -41,8 +41,8 @@ where
     type Lang = Lang;
     fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
         Pair {
-            fst: Box::new(self.fst.subst(v, t)),
-            snd: Box::new(self.snd.subst(v, t)),
+            fst: self.fst.subst(v, t),
+            snd: self.snd.subst(v, t),
         }
     }
 }
@@ -55,8 +55,8 @@ where
     type Lang = Lang;
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         Pair {
-            fst: Box::new(self.fst.subst_type(v, ty)),
-            snd: Box::new(self.snd.subst_type(v, ty)),
+            fst: self.fst.subst_type(v, ty),
+            snd: self.snd.subst_type(v, ty),
         }
     }
 }

@@ -2,6 +2,7 @@ use crate::{Kindcheck, Normalize, Subtypecheck};
 use derivations::{Derivation, SubtypeDerivation};
 use errors::NameMismatch;
 use errors::check_error::CheckError;
+use std::rc::Rc;
 use syntax::{
     env::Environment,
     kinds::Kind,
@@ -62,12 +63,12 @@ where
 {
     type Lang = Lang;
     fn normalize(self, mut env: Environment<Self::Lang>) -> <Self::Lang as Language>::Type {
-        env.add_tyvar_super(self.var.clone(), *self.ty.clone());
+        env.add_tyvar_super(self.var.clone(), Rc::unwrap_or_clone(self.ty.clone()));
         let ty_norm = self.ty.normalize(env);
         ForallBounded {
             var: self.var,
             sup_ty: self.sup_ty,
-            ty: Box::new(ty_norm),
+            ty: Rc::new(ty_norm),
         }
         .into()
     }

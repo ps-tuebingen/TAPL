@@ -1,6 +1,7 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
 use derivations::{Derivation, SubtypeDerivation};
 use errors::check_error::CheckError;
+use std::rc::Rc;
 use syntax::{
     env::Environment,
     kinds::Kind,
@@ -51,7 +52,7 @@ where
         let sup_kind = self.sup.check_kind(env.clone())?;
         env.add_tyvar_kind(self.var.clone(), sup_kind.clone());
         let body_kind = self.body.check_kind(env)?;
-        Ok(Kind::Arrow(Box::new(sup_kind), Box::new(body_kind)))
+        Ok(Kind::Arrow(Rc::new(sup_kind), Rc::new(body_kind)))
     }
 }
 
@@ -67,7 +68,7 @@ where
         OpLambdaSub {
             var: self.var,
             sup: self.sup,
-            body: Box::new(body_norm),
+            body: Rc::new(body_norm),
         }
         .into()
     }

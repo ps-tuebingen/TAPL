@@ -1,14 +1,14 @@
 use super::Type;
 use crate::{TypeVar, language::Language, subst::SubstType};
-use std::fmt;
+use std::{fmt, rc::Rc};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Sum<Lang>
 where
     Lang: Language,
 {
-    pub left: Box<Lang::Type>,
-    pub right: Box<Lang::Type>,
+    pub left: Rc<Lang::Type>,
+    pub right: Rc<Lang::Type>,
 }
 
 impl<Lang> Sum<Lang>
@@ -21,8 +21,8 @@ where
         Ty2: Into<Lang::Type>,
     {
         Sum {
-            left: Box::new(l.into()),
-            right: Box::new(r.into()),
+            left: Rc::new(l.into()),
+            right: Rc::new(r.into()),
         }
     }
 }
@@ -38,8 +38,8 @@ where
     type Target = Self;
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         Sum {
-            left: Box::new(self.left.subst_type(v, ty)),
-            right: Box::new(self.right.subst_type(v, ty)),
+            left: self.left.subst_type(v, ty),
+            right: self.right.subst_type(v, ty),
         }
     }
 }

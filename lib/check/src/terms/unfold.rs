@@ -1,6 +1,7 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
+use std::rc::Rc;
 use syntax::{
     env::Environment, language::Language, subst::SubstType, terms::Unfold, types::TypeGroup,
 };
@@ -26,7 +27,7 @@ where
         ty_norm.check_equal(&term_ty)?;
         let mu_ty = term_ty.clone().into_mu()?;
         let ty = mu_ty.ty.subst_type(&mu_ty.var, &term_ty);
-        let conc = TypingConclusion::new(env.clone(), self.clone(), ty);
+        let conc = TypingConclusion::new(env.clone(), self.clone(), Rc::unwrap_or_clone(ty));
         let deriv = TypingDerivation::unfold(conc, term_res);
         Ok(deriv.into())
     }

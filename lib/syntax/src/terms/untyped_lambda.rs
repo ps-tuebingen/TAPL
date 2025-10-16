@@ -4,7 +4,7 @@ use crate::{
     language::Language,
     subst::{SubstTerm, SubstType},
 };
-use std::fmt;
+use std::{fmt, rc::Rc};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct UntypedLambda<Lang>
@@ -12,7 +12,7 @@ where
     Lang: Language,
 {
     pub var: Var,
-    pub body: Box<Lang::Term>,
+    pub body: Rc<Lang::Term>,
 }
 
 impl<Lang> UntypedLambda<Lang>
@@ -25,7 +25,7 @@ where
     {
         UntypedLambda {
             var: v.to_owned(),
-            body: Box::new(t.into()),
+            body: Rc::new(t.into()),
         }
     }
 }
@@ -44,7 +44,7 @@ where
         } else {
             UntypedLambda {
                 var: self.var,
-                body: Box::new(self.body.subst(v, t)),
+                body: self.body.subst(v, t),
             }
         }
     }
@@ -59,7 +59,7 @@ where
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         UntypedLambda {
             var: self.var,
-            body: Box::new(self.body.subst_type(v, ty)),
+            body: self.body.subst_type(v, ty),
         }
     }
 }

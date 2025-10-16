@@ -4,17 +4,17 @@ use crate::{
     language::Language,
     subst::{SubstTerm, SubstType},
 };
-use std::fmt;
+use std::{fmt, rc::Rc};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct SomeCase<Lang>
 where
     Lang: Language,
 {
-    pub bound_term: Box<Lang::Term>,
-    pub none_term: Box<Lang::Term>,
+    pub bound_term: Rc<Lang::Term>,
+    pub none_term: Rc<Lang::Term>,
     pub some_var: Var,
-    pub some_term: Box<Lang::Term>,
+    pub some_term: Rc<Lang::Term>,
 }
 
 impl<Lang> SomeCase<Lang>
@@ -28,10 +28,10 @@ where
         T3: Into<Lang::Term>,
     {
         SomeCase {
-            bound_term: Box::new(bound.into()),
-            none_term: Box::new(none.into()),
+            bound_term: Rc::new(bound.into()),
+            none_term: Rc::new(none.into()),
             some_var: v.to_owned(),
-            some_term: Box::new(some.into()),
+            some_term: Rc::new(some.into()),
         }
     }
 }
@@ -47,17 +47,17 @@ where
     fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
         if *v == self.some_var {
             SomeCase {
-                bound_term: Box::new(self.bound_term.subst(v, t)),
-                none_term: Box::new(self.none_term.subst(v, t)),
+                bound_term: self.bound_term.subst(v, t),
+                none_term: self.none_term.subst(v, t),
                 some_var: self.some_var,
                 some_term: self.some_term,
             }
         } else {
             SomeCase {
-                bound_term: Box::new(self.bound_term.subst(v, t)),
-                none_term: Box::new(self.none_term.subst(v, t)),
+                bound_term: self.bound_term.subst(v, t),
+                none_term: self.none_term.subst(v, t),
                 some_var: self.some_var,
-                some_term: Box::new(self.some_term.subst(v, t)),
+                some_term: self.some_term.subst(v, t),
             }
         }
     }
@@ -71,10 +71,10 @@ where
     type Lang = Lang;
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         SomeCase {
-            bound_term: Box::new(self.bound_term.subst_type(v, ty)),
-            none_term: Box::new(self.none_term.subst_type(v, ty)),
+            bound_term: self.bound_term.subst_type(v, ty),
+            none_term: self.none_term.subst_type(v, ty),
             some_var: self.some_var,
-            some_term: Box::new(self.some_term.subst_type(v, ty)),
+            some_term: self.some_term.subst_type(v, ty),
         }
     }
 }

@@ -5,15 +5,15 @@ use crate::{
     subst::{SubstTerm, SubstType},
     types::Unit as UnitTy,
 };
-use std::fmt;
+use std::{fmt, rc::Rc};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct App<Lang>
 where
     Lang: Language,
 {
-    pub fun: Box<Lang::Term>,
-    pub arg: Box<Lang::Term>,
+    pub fun: Rc<Lang::Term>,
+    pub arg: Rc<Lang::Term>,
 }
 
 impl<Lang> App<Lang>
@@ -22,8 +22,8 @@ where
 {
     pub fn new<F: Into<Lang::Term>, A: Into<Lang::Term>>(f: F, a: A) -> App<Lang> {
         App {
-            fun: Box::new(f.into()),
-            arg: Box::new(a.into()),
+            fun: Rc::new(f.into()),
+            arg: Rc::new(a.into()),
         }
     }
 
@@ -35,8 +35,8 @@ where
         UnitTy<Lang>: Into<Lang::Type>,
     {
         App {
-            fun: Box::new(Lambda::new("_", UnitTy::new(), t2).into()),
-            arg: Box::new(t1.into()),
+            fun: Rc::new(Lambda::new("_", UnitTy::new(), t2).into()),
+            arg: Rc::new(t1.into()),
         }
     }
 }
@@ -51,8 +51,8 @@ where
     type Lang = Lang;
     fn subst(self, v: &Var, t: &Lang::Term) -> Self::Target {
         App {
-            fun: Box::new(self.fun.subst(v, t)),
-            arg: Box::new(self.arg.subst(v, t)),
+            fun: self.fun.subst(v, t),
+            arg: self.arg.subst(v, t),
         }
     }
 }
@@ -64,8 +64,8 @@ where
     type Lang = Lang;
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         App {
-            fun: Box::new(self.fun.subst_type(v, ty)),
-            arg: Box::new(self.arg.subst_type(v, ty)),
+            fun: self.fun.subst_type(v, ty),
+            arg: self.arg.subst_type(v, ty),
         }
     }
 }

@@ -1,6 +1,7 @@
 use crate::Eval;
 use errors::ValueMismatch;
 use errors::eval_error::EvalError;
+use std::rc::Rc;
 use syntax::{
     eval_context::EvalContext,
     language::Language,
@@ -30,11 +31,11 @@ where
             let next_step = EvalStep::somecase_some(
                 SomeCase::new(
                     bound_val,
-                    *self.none_term.clone(),
+                    Rc::unwrap_or_clone(self.none_term.clone()),
                     &self.some_var,
-                    *self.some_term.clone(),
+                    Rc::unwrap_or_clone(self.some_term.clone()),
                 ),
-                some_subst.clone(),
+                Rc::unwrap_or_clone(some_subst.clone()),
             );
             let some_res = some_subst.eval(env)?;
             let some_val = some_res.val();
@@ -45,11 +46,11 @@ where
             let next_step = EvalStep::somecase_none(
                 SomeCase::new(
                     bound_val,
-                    *self.none_term.clone(),
+                    Rc::unwrap_or_clone(self.none_term.clone()),
                     &self.some_var,
-                    *self.some_term.clone(),
+                    Rc::unwrap_or_clone(self.some_term.clone()),
                 ),
-                *self.none_term.clone(),
+                Rc::unwrap_or_clone(self.none_term.clone()),
             );
             let none_res = self.none_term.clone().eval(env)?;
             let none_val = none_res.val();
@@ -63,9 +64,9 @@ where
         let mut steps = bound_res.congruence(&move |t| {
             SomeCase::new(
                 t,
-                *self.none_term.clone(),
+                Rc::unwrap_or_clone(self.none_term.clone()),
                 &self.some_var,
-                *self.some_term.clone(),
+                Rc::unwrap_or_clone(self.some_term.clone()),
             )
             .into()
         });

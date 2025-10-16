@@ -1,6 +1,7 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
 use derivations::{Derivation, SubtypeDerivation};
 use errors::{NameMismatch, check_error::CheckError};
+use std::rc::Rc;
 use syntax::{
     env::Environment,
     kinds::Kind,
@@ -33,7 +34,7 @@ where
             return Err(NameMismatch::new(&other_exists.var, &self.var).into());
         }
         let old_env = env.clone();
-        env.add_tyvar_super(other_exists.var, *self.sup_ty.clone());
+        env.add_tyvar_super(other_exists.var, Rc::unwrap_or_clone(self.sup_ty.clone()));
         let inner_res = self
             .ty
             .clone()
@@ -63,7 +64,7 @@ where
 {
     type Lang = Lang;
     fn normalize(self, mut env: Environment<Self::Lang>) -> <Self::Lang as Language>::Type {
-        env.add_tyvar_super(self.var.clone(), *self.sup_ty.clone());
+        env.add_tyvar_super(self.var.clone(), Rc::unwrap_or_clone(self.sup_ty.clone()));
         self.into()
     }
 }

@@ -1,6 +1,7 @@
 use crate::Eval;
 use errors::UndefinedLabel;
 use errors::eval_error::EvalError;
+use std::rc::Rc;
 use syntax::{
     eval_context::EvalContext, language::Language, subst::SubstTerm, terms::VariantCase,
     values::ValueGroup,
@@ -31,7 +32,7 @@ where
             .subst(&matching.bound_var, &((*var_val.val).into()));
         let next_step = EvalStep::variantcase(
             VariantCase::new(bound_val, self.patterns.clone()),
-            rhs_subst.clone(),
+            Rc::unwrap_or_clone(rhs_subst.clone()),
         );
         let rhs_res = rhs_subst.eval(env)?;
         let val = rhs_res.val();

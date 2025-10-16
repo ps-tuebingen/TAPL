@@ -5,7 +5,7 @@ use crate::{
     subst::{SubstTerm, SubstType},
     types::Top,
 };
-use std::fmt;
+use std::{fmt, rc::Rc};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct LambdaSub<Lang>
@@ -14,7 +14,7 @@ where
 {
     pub var: TypeVar,
     pub sup_ty: Lang::Type,
-    pub body: Box<Lang::Term>,
+    pub body: Rc<Lang::Term>,
 }
 
 impl<Lang> LambdaSub<Lang>
@@ -29,7 +29,7 @@ where
         LambdaSub {
             var: v.to_owned(),
             sup_ty: sup.into(),
-            body: Box::new(bod.into()),
+            body: Rc::new(bod.into()),
         }
     }
 
@@ -41,7 +41,7 @@ where
         LambdaSub {
             var: v.to_owned(),
             sup_ty: Top::new_star().into(),
-            body: Box::new(bod.into()),
+            body: Rc::new(bod.into()),
         }
     }
 }
@@ -61,7 +61,7 @@ where
             LambdaSub {
                 var: self.var,
                 sup_ty: self.sup_ty,
-                body: Box::new(self.body.subst(v, t)),
+                body: self.body.subst(v, t),
             }
         }
     }
@@ -85,7 +85,7 @@ where
             LambdaSub {
                 var: self.var,
                 sup_ty: sup_subst,
-                body: Box::new(self.body.subst_type(v, ty)),
+                body: self.body.subst_type(v, ty),
             }
         }
     }

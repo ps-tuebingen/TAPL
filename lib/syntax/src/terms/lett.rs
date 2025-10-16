@@ -4,7 +4,7 @@ use crate::{
     language::Language,
     subst::{SubstTerm, SubstType},
 };
-use std::fmt;
+use std::{fmt, rc::Rc};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Let<Lang>
@@ -12,8 +12,8 @@ where
     Lang: Language,
 {
     pub var: Var,
-    pub bound_term: Box<Lang::Term>,
-    pub in_term: Box<Lang::Term>,
+    pub bound_term: Rc<Lang::Term>,
+    pub in_term: Rc<Lang::Term>,
 }
 
 impl<Lang> Let<Lang>
@@ -27,8 +27,8 @@ where
     {
         Let {
             var: v.to_owned(),
-            bound_term: Box::new(bound.into()),
-            in_term: Box::new(int.into()),
+            bound_term: Rc::new(bound.into()),
+            in_term: Rc::new(int.into()),
         }
     }
 }
@@ -46,8 +46,8 @@ where
         } else {
             Let {
                 var: self.var,
-                bound_term: Box::new(self.bound_term.subst(v, t)),
-                in_term: Box::new(self.in_term.subst(v, t)),
+                bound_term: self.bound_term.subst(v, t),
+                in_term: self.in_term.subst(v, t),
             }
         }
     }
@@ -62,8 +62,8 @@ where
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         Let {
             var: self.var,
-            bound_term: Box::new(self.bound_term.subst_type(v, ty)),
-            in_term: Box::new(self.in_term.subst_type(v, ty)),
+            bound_term: self.bound_term.subst_type(v, ty),
+            in_term: self.in_term.subst_type(v, ty),
         }
     }
 }

@@ -4,7 +4,7 @@ use crate::{
     language::Language,
     subst::{SubstTerm, SubstType},
 };
-use std::fmt;
+use std::{fmt, rc::Rc};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Variant<Lang>
@@ -12,7 +12,7 @@ where
     Lang: Language,
 {
     pub label: Label,
-    pub term: Box<Lang::Term>,
+    pub term: Rc<Lang::Term>,
     pub ty: Lang::Type,
 }
 
@@ -27,7 +27,7 @@ where
     {
         Variant {
             label: lb.to_owned(),
-            term: Box::new(t.into()),
+            term: Rc::new(t.into()),
             ty: ty.into(),
         }
     }
@@ -44,7 +44,7 @@ where
     fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
         Variant {
             label: self.label,
-            term: Box::new(self.term.subst(v, t)),
+            term: self.term.subst(v, t),
             ty: self.ty,
         }
     }
@@ -59,7 +59,7 @@ where
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         Variant {
             label: self.label,
-            term: Box::new(self.term.subst_type(v, ty)),
+            term: self.term.subst_type(v, ty),
             ty: self.ty.subst_type(v, ty),
         }
     }

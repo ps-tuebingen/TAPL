@@ -4,16 +4,16 @@ use crate::{
     language::Language,
     subst::{SubstTerm, SubstType},
 };
-use std::fmt;
+use std::{fmt, rc::Rc};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct If<Lang>
 where
     Lang: Language,
 {
-    pub if_cond: Box<Lang::Term>,
-    pub then_term: Box<Lang::Term>,
-    pub else_term: Box<Lang::Term>,
+    pub if_cond: Rc<Lang::Term>,
+    pub then_term: Rc<Lang::Term>,
+    pub else_term: Rc<Lang::Term>,
 }
 
 impl<Lang> If<Lang>
@@ -27,9 +27,9 @@ where
         T3: Into<Lang::Term>,
     {
         If {
-            if_cond: Box::new(cond.into()),
-            then_term: Box::new(th.into()),
-            else_term: Box::new(els.into()),
+            if_cond: Rc::new(cond.into()),
+            then_term: Rc::new(th.into()),
+            else_term: Rc::new(els.into()),
         }
     }
 }
@@ -44,9 +44,9 @@ where
     type Lang = Lang;
     fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
         If {
-            if_cond: Box::new(self.if_cond.subst(v, t)),
-            then_term: Box::new(self.then_term.subst(v, t)),
-            else_term: Box::new(self.else_term.subst(v, t)),
+            if_cond: self.if_cond.subst(v, t),
+            then_term: self.then_term.subst(v, t),
+            else_term: self.else_term.subst(v, t),
         }
     }
 }
@@ -59,9 +59,9 @@ where
     type Lang = Lang;
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         If {
-            if_cond: Box::new(self.if_cond.subst_type(v, ty)),
-            then_term: Box::new(self.then_term.subst_type(v, ty)),
-            else_term: Box::new(self.else_term.subst_type(v, ty)),
+            if_cond: self.if_cond.subst_type(v, ty),
+            then_term: self.then_term.subst_type(v, ty),
+            else_term: self.else_term.subst_type(v, ty),
         }
     }
 }

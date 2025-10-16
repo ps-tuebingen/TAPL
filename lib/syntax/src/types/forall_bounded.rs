@@ -1,6 +1,6 @@
 use super::{Top, Type};
 use crate::{TypeVar, language::Language, subst::SubstType};
-use std::fmt;
+use std::{fmt, rc::Rc};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct ForallBounded<Lang>
@@ -8,8 +8,8 @@ where
     Lang: Language,
 {
     pub var: TypeVar,
-    pub sup_ty: Box<Lang::Type>,
-    pub ty: Box<Lang::Type>,
+    pub sup_ty: Rc<Lang::Type>,
+    pub ty: Rc<Lang::Type>,
 }
 
 impl<Lang> ForallBounded<Lang>
@@ -23,8 +23,8 @@ where
     {
         ForallBounded {
             var: v.to_owned(),
-            sup_ty: Box::new(sup.into()),
-            ty: Box::new(ty.into()),
+            sup_ty: Rc::new(sup.into()),
+            ty: Rc::new(ty.into()),
         }
     }
 
@@ -35,8 +35,8 @@ where
     {
         ForallBounded {
             var: v.to_owned(),
-            sup_ty: Box::new(Top::new_star().into()),
-            ty: Box::new(ty.into()),
+            sup_ty: Rc::new(Top::new_star().into()),
+            ty: Rc::new(ty.into()),
         }
     }
 }
@@ -54,14 +54,14 @@ where
         if *v == self.var {
             ForallBounded {
                 var: self.var,
-                sup_ty: Box::new(sup_subst),
+                sup_ty: sup_subst,
                 ty: self.ty,
             }
         } else {
             ForallBounded {
                 var: self.var,
-                sup_ty: Box::new(sup_subst),
-                ty: Box::new(self.ty.subst_type(v, ty)),
+                sup_ty: sup_subst,
+                ty: self.ty.subst_type(v, ty),
             }
         }
     }

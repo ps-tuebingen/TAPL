@@ -4,14 +4,14 @@ use crate::{
     language::Language,
     subst::{SubstTerm, SubstType},
 };
-use std::fmt;
+use std::{fmt, rc::Rc};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct TyApp<Lang>
 where
     Lang: Language,
 {
-    pub fun: Box<Lang::Term>,
+    pub fun: Rc<Lang::Term>,
     pub arg: Lang::Type,
 }
 
@@ -25,7 +25,7 @@ where
         Typ: Into<Lang::Type>,
     {
         TyApp {
-            fun: Box::new(t.into()),
+            fun: Rc::new(t.into()),
             arg: ty.into(),
         }
     }
@@ -41,7 +41,7 @@ where
     type Lang = Lang;
     fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
         TyApp {
-            fun: Box::new(self.fun.subst(v, t)),
+            fun: self.fun.subst(v, t),
             arg: self.arg,
         }
     }
@@ -55,7 +55,7 @@ where
     type Lang = Lang;
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         TyApp {
-            fun: Box::new(self.fun.subst_type(v, ty)),
+            fun: self.fun.subst_type(v, ty),
             arg: self.arg.subst_type(v, ty),
         }
     }

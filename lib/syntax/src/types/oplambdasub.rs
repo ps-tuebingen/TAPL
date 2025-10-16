@@ -1,6 +1,6 @@
 use super::{Top, Type};
 use crate::{TypeVar, kinds::Kind, language::Language, subst::SubstType};
-use std::fmt;
+use std::{fmt, rc::Rc};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct OpLambdaSub<Lang>
@@ -8,8 +8,8 @@ where
     Lang: Language,
 {
     pub var: TypeVar,
-    pub sup: Box<Lang::Type>,
-    pub body: Box<Lang::Type>,
+    pub sup: Rc<Lang::Type>,
+    pub body: Rc<Lang::Type>,
 }
 
 impl<Lang> OpLambdaSub<Lang>
@@ -23,8 +23,8 @@ where
     {
         OpLambdaSub {
             var: var.to_owned(),
-            sup: Box::new(sup.into()),
-            body: Box::new(ty.into()),
+            sup: Rc::new(sup.into()),
+            body: Rc::new(ty.into()),
         }
     }
 
@@ -35,8 +35,8 @@ where
     {
         OpLambdaSub {
             var: var.to_owned(),
-            sup: Box::new(Top::new(knd).into()),
-            body: Box::new(ty.into()),
+            sup: Rc::new(Top::new(knd).into()),
+            body: Rc::new(ty.into()),
         }
     }
 }
@@ -54,14 +54,14 @@ where
         if *v == self.var {
             OpLambdaSub {
                 var: self.var,
-                sup: Box::new(sup_subst),
+                sup: sup_subst,
                 body: self.body,
             }
         } else {
             OpLambdaSub {
                 var: self.var,
-                sup: Box::new(sup_subst),
-                body: Box::new(self.body.subst_type(v, ty)),
+                sup: sup_subst,
+                body: self.body.subst_type(v, ty),
             }
         }
     }

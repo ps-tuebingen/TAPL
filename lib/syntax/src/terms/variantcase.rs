@@ -4,14 +4,14 @@ use crate::{
     language::Language,
     subst::{SubstTerm, SubstType},
 };
-use std::fmt;
+use std::{fmt, rc::Rc};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct VariantCase<Lang>
 where
     Lang: Language,
 {
-    pub bound_term: Box<Lang::Term>,
+    pub bound_term: Rc<Lang::Term>,
     pub patterns: Vec<VariantPattern<Lang>>,
 }
 
@@ -24,7 +24,7 @@ where
         T1: Into<Lang::Term>,
     {
         VariantCase {
-            bound_term: Box::new(bound.into()),
+            bound_term: Rc::new(bound.into()),
             patterns: pts,
         }
     }
@@ -37,7 +37,7 @@ where
 {
     pub label: Label,
     pub bound_var: Var,
-    pub rhs: Box<Lang::Term>,
+    pub rhs: Rc<Lang::Term>,
 }
 
 impl<Lang> VariantPattern<Lang>
@@ -51,7 +51,7 @@ where
         VariantPattern {
             label: lb.to_owned(),
             bound_var: bound.to_owned(),
-            rhs: Box::new(rhs.into()),
+            rhs: Rc::new(rhs.into()),
         }
     }
 }
@@ -66,7 +66,7 @@ where
     type Lang = Lang;
     fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
         VariantCase {
-            bound_term: Box::new(self.bound_term.subst(v, t)),
+            bound_term: self.bound_term.subst(v, t),
             patterns: self.patterns.into_iter().map(|pt| pt.subst(v, t)).collect(),
         }
     }
@@ -80,7 +80,7 @@ where
     type Lang = Lang;
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         VariantCase {
-            bound_term: Box::new(self.bound_term.subst_type(v, ty)),
+            bound_term: self.bound_term.subst_type(v, ty),
             patterns: self
                 .patterns
                 .into_iter()
@@ -107,7 +107,7 @@ where
             VariantPattern {
                 label: self.label,
                 bound_var: self.bound_var,
-                rhs: Box::new(self.rhs.subst(v, t)),
+                rhs: self.rhs.subst(v, t),
             }
         }
     }
@@ -123,7 +123,7 @@ where
         VariantPattern {
             label: self.label,
             bound_var: self.bound_var,
-            rhs: Box::new(self.rhs.subst_type(v, ty)),
+            rhs: self.rhs.subst_type(v, ty),
         }
     }
 }

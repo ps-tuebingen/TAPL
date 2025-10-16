@@ -1,5 +1,6 @@
 use crate::Eval;
 use errors::eval_error::EvalError;
+use std::rc::Rc;
 
 use syntax::{
     eval_context::EvalContext,
@@ -29,8 +30,12 @@ where
         let rhs_val = rhs_res.val();
         let rhs_t: Lang::Term = rhs_val.clone().into();
 
-        let mut steps = lhs_res.congruence(&move |t| Assign::new(t, *self.rhs.clone()).into());
-        steps.extend(rhs_res.congruence(&move |t| Assign::new(*self.lhs.clone(), t).into()));
+        let mut steps = lhs_res
+            .congruence(&move |t| Assign::new(t, Rc::unwrap_or_clone(self.rhs.clone())).into());
+        steps
+            .extend(rhs_res.congruence(&move |t| {
+                Assign::new(Rc::unwrap_or_clone(self.lhs.clone()), t).into()
+            }));
         env.save_location(lhs_loc.loc, rhs_val.clone());
 
         steps.push(EvalStep::assign(lhs_t, rhs_t));

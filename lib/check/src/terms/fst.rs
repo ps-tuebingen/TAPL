@@ -1,6 +1,7 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
+use std::rc::Rc;
 use syntax::{env::Environment, language::Language, terms::Fst, types::TypeGroup};
 
 impl<Lang> Typecheck for Fst<Lang>
@@ -19,7 +20,7 @@ where
         term_ty.check_kind(env.clone())?.into_star()?;
         let prod = term_ty.into_product()?;
 
-        let conc = TypingConclusion::new(env, self.clone(), *prod.fst);
+        let conc = TypingConclusion::new(env, self.clone(), Rc::unwrap_or_clone(prod.fst));
         let deriv = TypingDerivation::fst(conc, term_res);
         Ok(deriv.into())
     }

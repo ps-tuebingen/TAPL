@@ -2,6 +2,7 @@ use crate::{Kindcheck, Normalize, Subtypecheck};
 use derivations::{Derivation, SubtypeDerivation};
 use errors::KindMismatch;
 use errors::check_error::CheckError;
+use std::rc::Rc;
 use syntax::{
     env::Environment,
     kinds::Kind,
@@ -31,9 +32,9 @@ where
         self.arg.check_equal(&sup_op.arg)?;
         Ok(SubtypeDerivation::op_app(
             env,
-            *self.fun.clone(),
-            *sup_op.fun,
-            *self.arg.clone(),
+            Rc::unwrap_or_clone(self.fun.clone()),
+            Rc::unwrap_or_clone(sup_op.fun),
+            Rc::unwrap_or_clone(self.arg.clone()),
             fun_res,
         )
         .into())
@@ -76,8 +77,8 @@ where
             oplam.body.subst_type(&oplam.var, &self.arg).normalize(env)
         } else {
             OpApp {
-                fun: Box::new(fun_norm),
-                arg: Box::new(self.arg.normalize(env)),
+                fun: Rc::new(fun_norm),
+                arg: Rc::new(self.arg.normalize(env)),
             }
             .into()
         }

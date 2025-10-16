@@ -1,6 +1,7 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
 use derivations::{Derivation, SubtypeDerivation};
 use errors::check_error::CheckError;
+use std::rc::Rc;
 use syntax::{
     env::Environment,
     kinds::Kind,
@@ -49,10 +50,7 @@ where
     fn check_kind(&self, mut env: Environment<Self::Lang>) -> Result<Kind, CheckError> {
         env.add_tyvar_kind(self.var.clone(), self.annot.clone());
         let body_kind = self.body.check_kind(env)?;
-        Ok(Kind::Arrow(
-            Box::new(self.annot.clone()),
-            Box::new(body_kind),
-        ))
+        Ok(Kind::Arrow(Rc::new(self.annot.clone()), Rc::new(body_kind)))
     }
 }
 
@@ -68,7 +66,7 @@ where
         OpLambda {
             var: self.var,
             annot: self.annot,
-            body: Box::new(body_norm),
+            body: Rc::new(body_norm),
         }
         .into()
     }

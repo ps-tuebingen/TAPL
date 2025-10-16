@@ -1,5 +1,6 @@
 use crate::Eval;
 use errors::eval_error::EvalError;
+use std::rc::Rc;
 use syntax::{
     eval_context::EvalContext,
     language::Language,
@@ -23,8 +24,10 @@ where
         let snd_res = self.snd.clone().eval(env)?;
         let snd_val = snd_res.val();
 
-        let fst_steps = fst_res.congruence(&move |t| Pair::new(t, *self.snd.clone()).into());
-        let snd_steps = snd_res.congruence(&move |t| Pair::new(*self.fst.clone(), t).into());
+        let fst_steps = fst_res
+            .congruence(&move |t| Pair::new(t, Rc::unwrap_or_clone(self.snd.clone())).into());
+        let snd_steps = snd_res
+            .congruence(&move |t| Pair::new(Rc::unwrap_or_clone(self.fst.clone()), t).into());
         let mut steps = fst_steps;
         steps.extend(snd_steps);
         let val = PairVal::<Lang>::new(fst_val, snd_val);

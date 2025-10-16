@@ -1,15 +1,15 @@
 use errors::KindMismatch;
-use std::fmt;
+use std::{fmt, rc::Rc};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Kind {
     Star,
-    Arrow(Box<Kind>, Box<Kind>),
+    Arrow(Rc<Kind>, Rc<Kind>),
 }
 
 impl Kind {
     pub fn abs(self) -> Kind {
-        Kind::Arrow(Box::new(Kind::Star), Box::new(self))
+        Kind::Arrow(Rc::new(Kind::Star), Rc::new(self))
     }
 
     pub fn into_star(self) -> Result<Kind, KindMismatch> {
@@ -22,11 +22,11 @@ impl Kind {
 
     pub fn into_arrow(self) -> Result<(Kind, Kind), KindMismatch> {
         if let Kind::Arrow(from, to) = self {
-            Ok((*from, *to))
+            Ok((Rc::unwrap_or_clone(from), Rc::unwrap_or_clone(to)))
         } else {
             Err(KindMismatch::new(
                 self.to_string(),
-                Kind::Arrow(Box::new(Kind::Star), Box::new(Kind::Star)).to_string(),
+                Kind::Arrow(Rc::new(Kind::Star), Rc::new(Kind::Star)).to_string(),
             ))
         }
     }

@@ -1,6 +1,6 @@
 use super::{OpLambdaSub, Top, Type};
 use crate::{TypeVar, kinds::Kind, language::Language, subst::SubstType};
-use std::fmt;
+use std::{fmt, rc::Rc};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct OpLambda<Lang>
@@ -9,7 +9,7 @@ where
 {
     pub var: TypeVar,
     pub annot: Kind,
-    pub body: Box<Lang::Type>,
+    pub body: Rc<Lang::Type>,
 }
 
 impl<Lang> OpLambda<Lang>
@@ -23,7 +23,7 @@ where
         OpLambda {
             var: var.to_owned(),
             annot: knd,
-            body: Box::new(ty.into()),
+            body: Rc::new(ty.into()),
         }
     }
 
@@ -31,7 +31,7 @@ where
     where
         Top<Lang>: Into<Lang::Type>,
     {
-        OpLambdaSub::new_unbounded(&self.var, self.annot, *self.body)
+        OpLambdaSub::new_unbounded(&self.var, self.annot, Rc::unwrap_or_clone(self.body))
     }
 }
 
@@ -50,7 +50,7 @@ where
             OpLambda {
                 var: self.var,
                 annot: self.annot,
-                body: Box::new(self.body.subst_type(v, ty)),
+                body: self.body.subst_type(v, ty),
             }
         }
     }

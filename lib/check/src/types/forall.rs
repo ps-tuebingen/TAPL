@@ -1,5 +1,6 @@
 use crate::{Kindcheck, Normalize};
 use errors::check_error::CheckError;
+use std::rc::Rc;
 use syntax::{env::Environment, kinds::Kind, language::Language, types::Forall};
 
 impl<Lang> Kindcheck for Forall<Lang>
@@ -28,7 +29,7 @@ where
         Forall {
             var: self.var,
             kind: self.kind,
-            ty: Box::new(ty_norm),
+            ty: Rc::new(ty_norm),
         }
         .into()
     }

@@ -4,14 +4,14 @@ use crate::{
     language::Language,
     subst::{SubstTerm, SubstType},
 };
-use std::fmt;
+use std::{fmt, rc::Rc};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct IsNil<Lang>
 where
     Lang: Language,
 {
-    pub term: Box<Lang::Term>,
+    pub term: Rc<Lang::Term>,
     pub ty: Lang::Type,
 }
 
@@ -25,7 +25,7 @@ where
         Typ: Into<Lang::Type>,
     {
         IsNil {
-            term: Box::new(t.into()),
+            term: Rc::new(t.into()),
             ty: ty.into(),
         }
     }
@@ -41,7 +41,7 @@ where
     type Lang = Lang;
     fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
         IsNil {
-            term: Box::new(self.term.subst(v, t)),
+            term: self.term.subst(v, t),
             ty: self.ty,
         }
     }
@@ -55,7 +55,7 @@ where
     type Lang = Lang;
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         IsNil {
-            term: Box::new(self.term.subst_type(v, ty)),
+            term: self.term.subst_type(v, ty),
             ty: self.ty.subst_type(v, ty),
         }
     }

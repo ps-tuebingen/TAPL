@@ -1,6 +1,7 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
+use std::rc::Rc;
 use syntax::{env::Environment, language::Language, terms::Head, types::TypeGroup};
 
 impl<Lang> Typecheck for Head<Lang>
@@ -18,7 +19,8 @@ where
         term_ty.check_kind(env.clone())?.into_star()?;
         let list_ty = term_ty.into_list()?;
 
-        let conc = TypingConclusion::new(env.clone(), self.clone(), *list_ty.ty);
+        let conc =
+            TypingConclusion::new(env.clone(), self.clone(), Rc::unwrap_or_clone(list_ty.ty));
         let deriv = TypingDerivation::head(conc, term_res);
         Ok(deriv.into())
     }

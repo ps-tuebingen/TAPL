@@ -4,14 +4,14 @@ use crate::{
     language::Language,
     subst::{SubstTerm, SubstType},
 };
-use std::fmt;
+use std::{fmt, rc::Rc};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct RecordProj<Lang>
 where
     Lang: Language,
 {
-    pub record: Box<Lang::Term>,
+    pub record: Rc<Lang::Term>,
     pub label: Label,
 }
 
@@ -24,7 +24,7 @@ where
         T1: Into<Lang::Term>,
     {
         RecordProj {
-            record: Box::new(t.into()),
+            record: Rc::new(t.into()),
             label: lb.to_owned(),
         }
     }
@@ -40,7 +40,7 @@ where
     type Lang = Lang;
     fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
         RecordProj {
-            record: Box::new(self.record.subst(v, t)),
+            record: self.record.subst(v, t),
             label: self.label,
         }
     }
@@ -54,7 +54,7 @@ where
     type Lang = Lang;
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         RecordProj {
-            record: Box::new(self.record.subst_type(v, ty)),
+            record: self.record.subst_type(v, ty),
             label: self.label,
         }
     }

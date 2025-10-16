@@ -4,18 +4,18 @@ use crate::{
     language::Language,
     subst::{SubstTerm, SubstType},
 };
-use std::fmt;
+use std::{fmt, rc::Rc};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct ListCase<Lang>
 where
     Lang: Language,
 {
-    pub bound_term: Box<Lang::Term>,
-    pub nil_rhs: Box<Lang::Term>,
+    pub bound_term: Rc<Lang::Term>,
+    pub nil_rhs: Rc<Lang::Term>,
     pub cons_fst: Var,
     pub cons_rst: Var,
-    pub cons_rhs: Box<Lang::Term>,
+    pub cons_rhs: Rc<Lang::Term>,
 }
 
 impl<Lang> ListCase<Lang>
@@ -29,11 +29,11 @@ where
         T3: Into<Lang::Term>,
     {
         ListCase {
-            bound_term: Box::new(bound.into()),
-            nil_rhs: Box::new(nil.into()),
+            bound_term: Rc::new(bound.into()),
+            nil_rhs: Rc::new(nil.into()),
             cons_fst: hd.to_owned(),
             cons_rst: tl.to_owned(),
-            cons_rhs: Box::new(cons.into()),
+            cons_rhs: Rc::new(cons.into()),
         }
     }
 }
@@ -51,19 +51,19 @@ where
         let nil_subst = self.nil_rhs.subst(v, t);
         if *v == self.cons_fst || *v == self.cons_rst {
             ListCase {
-                bound_term: Box::new(bound_subst),
-                nil_rhs: Box::new(nil_subst),
+                bound_term: bound_subst,
+                nil_rhs: nil_subst,
                 cons_fst: self.cons_fst,
                 cons_rst: self.cons_rst,
                 cons_rhs: self.cons_rhs,
             }
         } else {
             ListCase {
-                bound_term: Box::new(bound_subst),
-                nil_rhs: Box::new(nil_subst),
+                bound_term: bound_subst,
+                nil_rhs: nil_subst,
                 cons_fst: self.cons_fst,
                 cons_rst: self.cons_rst,
-                cons_rhs: Box::new(self.cons_rhs.subst(v, t)),
+                cons_rhs: self.cons_rhs.subst(v, t),
             }
         }
     }
@@ -77,11 +77,11 @@ where
     type Lang = Lang;
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         ListCase {
-            bound_term: Box::new(self.bound_term.subst_type(v, ty)),
-            nil_rhs: Box::new(self.nil_rhs.subst_type(v, ty)),
+            bound_term: self.bound_term.subst_type(v, ty),
+            nil_rhs: self.nil_rhs.subst_type(v, ty),
             cons_fst: self.cons_fst,
             cons_rst: self.cons_rst,
-            cons_rhs: Box::new(self.cons_rhs.subst_type(v, ty)),
+            cons_rhs: self.cons_rhs.subst_type(v, ty),
         }
     }
 }

@@ -1,5 +1,6 @@
 use crate::Eval;
 use errors::eval_error::EvalError;
+use std::rc::Rc;
 
 use syntax::{
     eval_context::EvalContext,
@@ -32,15 +33,21 @@ where
                 &self.ty_name,
                 &self.term_name,
                 term_val,
-                *self.in_term.clone(),
+                Rc::unwrap_or_clone(self.in_term.clone()),
             ),
-            in_subst.clone(),
+            Rc::unwrap_or_clone(in_subst.clone()),
         );
         let in_res = in_subst.eval(env)?;
         let val = in_res.val();
 
         let mut steps = term_res.congruence(&move |t| {
-            Unpack::new(&self.ty_name, &self.term_name, t, *self.in_term.clone()).into()
+            Unpack::new(
+                &self.ty_name,
+                &self.term_name,
+                t,
+                Rc::unwrap_or_clone(self.in_term.clone()),
+            )
+            .into()
         });
         steps.push(next_step);
         steps.extend(in_res.steps);

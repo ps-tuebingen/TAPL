@@ -4,7 +4,7 @@ use crate::{
     language::Language,
     subst::{SubstTerm, SubstType},
 };
-use std::fmt;
+use std::{fmt, rc::Rc};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Lambda<Lang>
@@ -13,7 +13,7 @@ where
 {
     pub var: Var,
     pub annot: Lang::Type,
-    pub body: Box<Lang::Term>,
+    pub body: Rc<Lang::Term>,
 }
 
 impl<Lang> Lambda<Lang>
@@ -28,7 +28,7 @@ where
         Lambda {
             var: v.to_owned(),
             annot: ty.into(),
-            body: Box::new(t.into()),
+            body: Rc::new(t.into()),
         }
     }
 }
@@ -50,7 +50,7 @@ where
             Lambda {
                 var: self.var,
                 annot: self.annot,
-                body: Box::new(self.body.subst(v, t)),
+                body: self.body.subst(v, t),
             }
         }
     }
@@ -66,7 +66,7 @@ where
         Lambda {
             var: self.var,
             annot: self.annot.subst_type(v, ty),
-            body: Box::new(self.body.subst_type(v, ty)),
+            body: self.body.subst_type(v, ty),
         }
     }
 }

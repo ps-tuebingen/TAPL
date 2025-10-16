@@ -1,6 +1,7 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
+use std::rc::Rc;
 use syntax::{env::Environment, language::Language, terms::ListCase, types::TypeGroup};
 
 impl<Lang> Typecheck for ListCase<Lang>
@@ -23,7 +24,7 @@ where
         let nil_ty = nil_res.ret_ty().normalize(env.clone());
         let nil_kind = nil_ty.check_kind(env.clone())?;
 
-        env.add_var(self.cons_fst.clone(), *bound_list.ty);
+        env.add_var(self.cons_fst.clone(), Rc::unwrap_or_clone(bound_list.ty));
         env.add_var(self.cons_rst.clone(), bound_ty);
         let cons_res = self.cons_rhs.check(env.clone())?;
         let cons_ty = nil_res.ret_ty().normalize(env.clone());

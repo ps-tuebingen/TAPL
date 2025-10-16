@@ -1,5 +1,6 @@
 use crate::Eval;
 use errors::eval_error::EvalError;
+use std::rc::Rc;
 use syntax::{
     eval_context::EvalContext,
     language::Language,
@@ -27,12 +28,13 @@ where
         let val = ConsVal::<Lang>::new(hd_val, tail_val, self.ty.clone()).into();
 
         let ty_ = self.ty.clone();
-        let mut steps =
-            hd_res.congruence(&move |t| Cons::new(t, *self.tail.clone(), ty_.clone()).into());
+        let mut steps = hd_res.congruence(&move |t| {
+            Cons::new(t, Rc::unwrap_or_clone(self.tail.clone()), ty_.clone()).into()
+        });
 
-        steps.extend(
-            tail_res.congruence(&move |t| Cons::new(*self.head.clone(), t, self.ty.clone()).into()),
-        );
+        steps.extend(tail_res.congruence(&move |t| {
+            Cons::new(Rc::unwrap_or_clone(self.head.clone()), t, self.ty.clone()).into()
+        }));
         Ok(EvalTrace::<Lang>::new(steps, val))
     }
 }

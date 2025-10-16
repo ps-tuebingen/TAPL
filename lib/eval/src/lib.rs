@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 pub mod terms;
 
 use errors::eval_error::EvalError;
@@ -12,6 +14,16 @@ pub trait Eval: Sized {
     }
 
     fn eval(self, env: &mut EvalContext<Self::Lang>) -> Result<EvalTrace<Self::Lang>, EvalError>;
+}
+
+impl<T> Eval for Rc<T>
+where
+    T: Eval + Clone,
+{
+    type Lang = T::Lang;
+    fn eval(self, env: &mut EvalContext<Self::Lang>) -> Result<EvalTrace<Self::Lang>, EvalError> {
+        Rc::unwrap_or_clone(self).eval(env)
+    }
 }
 
 pub fn eval_main<Lang>(prog: Program<Lang>) -> Result<EvalTrace<Lang>, EvalError>

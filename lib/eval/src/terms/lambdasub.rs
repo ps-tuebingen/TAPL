@@ -1,5 +1,6 @@
 use crate::Eval;
 use errors::eval_error::EvalError;
+use std::rc::Rc;
 use syntax::{
     eval_context::EvalContext,
     language::Language,
@@ -19,7 +20,7 @@ where
     fn eval(self, _: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         Ok(EvalTrace::new(
             vec![],
-            LambdaSubVal::<Lang>::new(&self.var, self.sup_ty, *self.body),
+            LambdaSubVal::<Lang>::new(&self.var, self.sup_ty, Rc::unwrap_or_clone(self.body)),
         ))
     }
 }

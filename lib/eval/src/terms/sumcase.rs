@@ -1,6 +1,7 @@
 use crate::Eval;
 use errors::ValueMismatch;
 use errors::eval_error::EvalError;
+use std::rc::Rc;
 use syntax::{
     eval_context::EvalContext,
     language::Language,
@@ -31,11 +32,11 @@ where
                 SumCase::new(
                     bound_val,
                     &self.left_var,
-                    *self.left_term.clone(),
+                    Rc::unwrap_or_clone(self.left_term.clone()),
                     &self.right_var,
-                    *self.right_term.clone(),
+                    Rc::unwrap_or_clone(self.right_term.clone()),
                 ),
-                left_subst.clone(),
+                Rc::unwrap_or_clone(left_subst.clone()),
             );
             let left_res = left_subst.eval(env)?;
             let left_var = left_res.val();
@@ -51,11 +52,11 @@ where
                 SumCase::new(
                     bound_val,
                     &self.left_var,
-                    *self.left_term.clone(),
+                    Rc::unwrap_or_clone(self.left_term.clone()),
                     &self.right_var,
-                    *self.right_term.clone(),
+                    Rc::unwrap_or_clone(self.right_term.clone()),
                 ),
-                right_subst.clone(),
+                Rc::unwrap_or_clone(right_subst.clone()),
             );
             let right_res = right_subst.eval(env)?;
             let right_val = right_res.val();
@@ -70,9 +71,9 @@ where
             SumCase::new(
                 t,
                 &self.left_var,
-                *self.left_term.clone(),
+                Rc::unwrap_or_clone(self.left_term.clone()),
                 &self.right_var,
-                *self.right_term.clone(),
+                Rc::unwrap_or_clone(self.right_term.clone()),
             )
             .into()
         });

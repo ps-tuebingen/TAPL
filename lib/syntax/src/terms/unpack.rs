@@ -5,7 +5,7 @@ use crate::{
     subst::{SubstTerm, SubstType},
 };
 
-use std::fmt;
+use std::{fmt, rc::Rc};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Unpack<Lang>
@@ -14,8 +14,8 @@ where
 {
     pub ty_name: TypeVar,
     pub term_name: Var,
-    pub bound_term: Box<Lang::Term>,
-    pub in_term: Box<Lang::Term>,
+    pub bound_term: Rc<Lang::Term>,
+    pub in_term: Rc<Lang::Term>,
 }
 
 impl<Lang> Unpack<Lang>
@@ -30,8 +30,8 @@ where
         Unpack {
             ty_name: tyn.to_owned(),
             term_name: tn.to_owned(),
-            bound_term: Box::new(bound.into()),
-            in_term: Box::new(int.into()),
+            bound_term: Rc::new(bound.into()),
+            in_term: Rc::new(int.into()),
         }
     }
 }
@@ -49,15 +49,15 @@ where
             Unpack {
                 ty_name: self.ty_name,
                 term_name: self.term_name,
-                bound_term: Box::new(self.bound_term.subst(v, t)),
+                bound_term: self.bound_term.subst(v, t),
                 in_term: self.in_term,
             }
         } else {
             Unpack {
                 ty_name: self.ty_name,
                 term_name: self.term_name,
-                bound_term: Box::new(self.bound_term.subst(v, t)),
-                in_term: Box::new(self.in_term.subst(v, t)),
+                bound_term: self.bound_term.subst(v, t),
+                in_term: self.in_term.subst(v, t),
             }
         }
     }
@@ -76,15 +76,15 @@ where
             Unpack {
                 ty_name: self.ty_name,
                 term_name: self.term_name,
-                bound_term: Box::new(bound_subst),
+                bound_term: bound_subst,
                 in_term: self.in_term,
             }
         } else {
             Unpack {
                 ty_name: self.ty_name,
                 term_name: self.term_name,
-                bound_term: Box::new(bound_subst),
-                in_term: Box::new(self.in_term.subst_type(v, ty)),
+                bound_term: bound_subst,
+                in_term: self.in_term.subst_type(v, ty),
             }
         }
     }

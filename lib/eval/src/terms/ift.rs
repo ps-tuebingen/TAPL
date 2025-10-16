@@ -1,6 +1,7 @@
 use crate::Eval;
 use errors::ValueMismatch;
 use errors::eval_error::EvalError;
+use std::rc::Rc;
 use syntax::{eval_context::EvalContext, language::Language, terms::If, values::ValueGroup};
 use trace::{EvalStep, EvalTrace};
 
@@ -18,16 +19,24 @@ where
         let (next_step, branch_res) = if cond_val.clone().into_true().is_ok() {
             (
                 EvalStep::if_true(
-                    If::new(cond_val, *self.then_term.clone(), *self.else_term.clone()),
-                    *self.then_term.clone(),
+                    If::new(
+                        cond_val,
+                        Rc::unwrap_or_clone(self.then_term.clone()),
+                        Rc::unwrap_or_clone(self.else_term.clone()),
+                    ),
+                    Rc::unwrap_or_clone(self.then_term.clone()),
                 ),
                 self.then_term.clone().eval(env)?,
             )
         } else if cond_val.clone().into_false().is_ok() {
             (
                 EvalStep::if_false(
-                    If::new(cond_val, *self.then_term.clone(), *self.else_term.clone()),
-                    *self.else_term.clone(),
+                    If::new(
+                        cond_val,
+                        Rc::unwrap_or_clone(self.then_term.clone()),
+                        Rc::unwrap_or_clone(self.else_term.clone()),
+                    ),
+                    Rc::unwrap_or_clone(self.else_term.clone()),
                 ),
                 self.else_term.clone().eval(env)?,
             )
@@ -39,7 +48,12 @@ where
         let branch_val = branch_res.val();
 
         let mut steps = cond_res.congruence(&move |t| {
-            If::new(t, *self.then_term.clone(), *self.else_term.clone()).into()
+            If::new(
+                t,
+                Rc::unwrap_or_clone(self.then_term.clone()),
+                Rc::unwrap_or_clone(self.else_term.clone()),
+            )
+            .into()
         });
         steps.push(next_step);
         steps.extend(branch_res.steps);

@@ -4,14 +4,14 @@ use crate::{
     language::Language,
     subst::{SubstTerm, SubstType},
 };
-use std::fmt;
+use std::{fmt, rc::Rc};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Raise<Lang>
 where
     Lang: Language,
 {
-    pub exception: Box<Lang::Term>,
+    pub exception: Rc<Lang::Term>,
     pub exception_ty: Lang::Type,
     pub cont_ty: Lang::Type,
 }
@@ -27,7 +27,7 @@ where
         Ty2: Into<Lang::Type>,
     {
         Raise {
-            exception: Box::new(ex.into()),
+            exception: Rc::new(ex.into()),
             exception_ty: ex_ty.into(),
             cont_ty: cont_ty.into(),
         }
@@ -44,7 +44,7 @@ where
     type Lang = Lang;
     fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
         Raise {
-            exception: Box::new(self.exception.subst(v, t)),
+            exception: self.exception.subst(v, t),
             exception_ty: self.exception_ty,
             cont_ty: self.cont_ty,
         }
@@ -59,7 +59,7 @@ where
     type Lang = Lang;
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         Raise {
-            exception: Box::new(self.exception.subst_type(v, ty)),
+            exception: self.exception.subst_type(v, ty),
             exception_ty: self.exception_ty.subst_type(v, ty),
             cont_ty: self.cont_ty.subst_type(v, ty),
         }

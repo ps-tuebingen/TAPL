@@ -1,6 +1,6 @@
 use super::{ExistsBounded, Top, Type};
 use crate::{TypeVar, kinds::Kind, language::Language, subst::SubstType};
-use std::fmt;
+use std::{fmt, rc::Rc};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Exists<Lang>
@@ -9,7 +9,7 @@ where
 {
     pub var: TypeVar,
     pub kind: Kind,
-    pub ty: Box<Lang::Type>,
+    pub ty: Rc<Lang::Type>,
 }
 
 impl<Lang> Exists<Lang>
@@ -23,7 +23,7 @@ where
         Exists {
             var: v.to_owned(),
             kind: knd,
-            ty: Box::new(ty.into()),
+            ty: Rc::new(ty.into()),
         }
     }
 
@@ -31,7 +31,7 @@ where
     where
         Top<Lang>: Into<Lang::Type>,
     {
-        ExistsBounded::new_unbounded(&self.var, self.kind, *self.ty)
+        ExistsBounded::new_unbounded(&self.var, self.kind, Rc::unwrap_or_clone(self.ty))
     }
 }
 
@@ -51,7 +51,7 @@ where
             Exists {
                 var: self.var,
                 kind: self.kind,
-                ty: Box::new((*self.ty).subst_type(v, ty)),
+                ty: self.ty.subst_type(v, ty),
             }
         }
     }

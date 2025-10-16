@@ -2,6 +2,7 @@ use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
 use errors::{NameMismatch, TypeMismatch};
+use std::rc::Rc;
 use syntax::{env::Environment, language::Language, terms::Unpack, types::TypeGroup};
 
 impl<Lang> Typecheck for Unpack<Lang>
@@ -21,7 +22,7 @@ where
                 return Err(NameMismatch::new(&bound_exists.var, &self.ty_name).into());
             }
             env.add_tyvar_kind(bound_exists.var, bound_exists.kind);
-            env.add_var(self.term_name.clone(), *bound_exists.ty);
+            env.add_var(self.term_name.clone(), Rc::unwrap_or_clone(bound_exists.ty));
             let in_res = self.in_term.check(env.clone())?;
             let in_ty = in_res.ret_ty().normalize(env.clone());
             let conc = TypingConclusion::new(env, self.clone(), in_ty);
@@ -32,9 +33,9 @@ where
                 return Err(NameMismatch::new(&bound_bound.var, &self.ty_name).into());
             }
             let sup_kind = bound_bound.sup_ty.check_kind(env.clone())?;
-            env.add_tyvar_super(bound_bound.var, *bound_bound.sup_ty.clone());
+            env.add_tyvar_super(bound_bound.var, Rc::unwrap_or_clone(bound_bound.sup_ty));
             env.add_tyvar_kind(self.ty_name.clone(), sup_kind);
-            env.add_var(self.term_name.clone(), *bound_bound.ty.clone());
+            env.add_var(self.term_name.clone(), Rc::unwrap_or_clone(bound_bound.ty));
             let inner_res = self.in_term.check(env.clone())?;
             let inner_ty = inner_res.ret_ty().normalize(env.clone());
             let conc = TypingConclusion::new(env.clone(), self.clone(), inner_ty);

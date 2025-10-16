@@ -4,18 +4,18 @@ use crate::{
     language::Language,
     subst::{SubstTerm, SubstType},
 };
-use std::fmt;
+use std::{fmt, rc::Rc};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct SumCase<Lang>
 where
     Lang: Language,
 {
-    pub bound_term: Box<Lang::Term>,
+    pub bound_term: Rc<Lang::Term>,
     pub left_var: Var,
-    pub left_term: Box<Lang::Term>,
+    pub left_term: Rc<Lang::Term>,
     pub right_var: Var,
-    pub right_term: Box<Lang::Term>,
+    pub right_term: Rc<Lang::Term>,
 }
 
 impl<Lang> SumCase<Lang>
@@ -35,11 +35,11 @@ where
         T3: Into<Lang::Term>,
     {
         SumCase {
-            bound_term: Box::new(bound.into()),
+            bound_term: Rc::new(bound.into()),
             left_var: left_v.to_owned(),
-            left_term: Box::new(left_t.into()),
+            left_term: Rc::new(left_t.into()),
             right_var: right_v.to_owned(),
-            right_term: Box::new(right_t.into()),
+            right_term: Rc::new(right_t.into()),
         }
     }
 }
@@ -57,15 +57,15 @@ where
         let left_term = if *v == self.left_var {
             self.left_term
         } else {
-            Box::new(self.left_term.subst(v, t))
+            self.left_term.subst(v, t)
         };
         let right_term = if *v == self.right_var {
             self.right_term
         } else {
-            Box::new(self.right_term.subst(v, t))
+            self.right_term.subst(v, t)
         };
         SumCase {
-            bound_term: Box::new(bound_subst),
+            bound_term: bound_subst,
             left_var: self.left_var,
             left_term,
             right_var: self.right_var,
@@ -82,11 +82,11 @@ where
     type Lang = Lang;
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         SumCase {
-            bound_term: Box::new(self.bound_term.subst_type(v, ty)),
+            bound_term: self.bound_term.subst_type(v, ty),
             left_var: self.left_var,
-            left_term: Box::new(self.left_term.subst_type(v, ty)),
+            left_term: self.left_term.subst_type(v, ty),
             right_var: self.right_var,
-            right_term: Box::new(self.right_term.subst_type(v, ty)),
+            right_term: self.right_term.subst_type(v, ty),
         }
     }
 }

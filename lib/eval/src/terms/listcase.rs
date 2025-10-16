@@ -1,6 +1,7 @@
 use crate::Eval;
 use errors::ValueMismatch;
 use errors::eval_error::EvalError;
+use std::rc::Rc;
 use syntax::{
     eval_context::EvalContext, language::Language, subst::SubstTerm, terms::ListCase,
     values::ValueGroup,
@@ -23,12 +24,12 @@ where
             let next_step = EvalStep::listcase_nil(
                 ListCase::new(
                     bound_val,
-                    *self.nil_rhs.clone(),
+                    Rc::unwrap_or_clone(self.nil_rhs.clone()),
                     &self.cons_fst,
                     &self.cons_rst,
-                    *self.cons_rhs.clone(),
+                    Rc::unwrap_or_clone(self.cons_rhs.clone()),
                 ),
-                *self.nil_rhs.clone(),
+                Rc::unwrap_or_clone(self.nil_rhs.clone()),
             );
             let nil_res = self.nil_rhs.clone().eval(env)?;
             let nil_val = nil_res.val();
@@ -44,12 +45,12 @@ where
             let next_step = EvalStep::listcase_cons(
                 ListCase::new(
                     bound_val,
-                    *self.nil_rhs.clone(),
+                    Rc::unwrap_or_clone(self.nil_rhs.clone()),
                     &self.cons_fst,
                     &self.cons_rst,
-                    *self.cons_rhs.clone(),
+                    Rc::unwrap_or_clone(self.cons_rhs.clone()),
                 ),
-                cons_subst.clone(),
+                Rc::unwrap_or_clone(cons_subst.clone()),
             );
             let cons_res = cons_subst.eval(env)?;
             let cons_val = cons_res.val();
@@ -63,10 +64,10 @@ where
         let mut steps = bound_res.congruence(&move |t| {
             ListCase::new(
                 t,
-                *self.nil_rhs.clone(),
+                Rc::unwrap_or_clone(self.nil_rhs.clone()),
                 &self.cons_fst,
                 &self.cons_rst,
-                *self.cons_rhs.clone(),
+                Rc::unwrap_or_clone(self.cons_rhs.clone()),
             )
             .into()
         });

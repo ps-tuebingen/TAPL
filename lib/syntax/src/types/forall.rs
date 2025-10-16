@@ -1,6 +1,6 @@
 use super::Type;
 use crate::{TypeVar, kinds::Kind, language::Language, subst::SubstType};
-use std::fmt;
+use std::{fmt, rc::Rc};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Forall<Lang>
@@ -9,7 +9,7 @@ where
 {
     pub var: TypeVar,
     pub kind: Kind,
-    pub ty: Box<Lang::Type>,
+    pub ty: Rc<Lang::Type>,
 }
 
 impl<Lang> Forall<Lang>
@@ -23,7 +23,7 @@ where
         Forall {
             var: v.to_owned(),
             kind: knd,
-            ty: Box::new(ty.into()),
+            ty: Rc::new(ty.into()),
         }
     }
 }
@@ -43,7 +43,7 @@ where
             Forall {
                 var: self.var,
                 kind: self.kind,
-                ty: Box::new(self.ty.subst_type(v, ty)),
+                ty: self.ty.subst_type(v, ty),
             }
         }
     }

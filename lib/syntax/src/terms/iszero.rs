@@ -4,14 +4,14 @@ use crate::{
     language::Language,
     subst::{SubstTerm, SubstType},
 };
-use std::fmt;
+use std::{fmt, rc::Rc};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct IsZero<Lang>
 where
     Lang: Language,
 {
-    pub term: Box<Lang::Term>,
+    pub term: Rc<Lang::Term>,
 }
 
 impl<Lang> IsZero<Lang>
@@ -23,7 +23,7 @@ where
         T1: Into<Lang::Term>,
     {
         IsZero {
-            term: Box::new(t.into()),
+            term: Rc::new(t.into()),
         }
     }
 }
@@ -38,7 +38,7 @@ where
     type Lang = Lang;
     fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
         IsZero {
-            term: Box::new(self.term.subst(v, t)),
+            term: self.term.subst(v, t),
         }
     }
 }
@@ -51,7 +51,7 @@ where
     type Lang = Lang;
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         IsZero {
-            term: Box::new(self.term.subst_type(v, ty)),
+            term: self.term.subst_type(v, ty),
         }
     }
 }
