@@ -15,26 +15,44 @@ where
 
     fn check(&self, env: Environment<Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
         let features = Lang::features();
-        let term_res = self.term.check(env.clone())?;
+        let mut premises = vec![];
 
-        let term_ty = if features.normalizing {
-            term_res.ret_ty().normalize(env.clone())
+        let term_res = self.term.check(env.clone())?;
+        let term_ty = term_res.ret_ty();
+        premises.push(term_res);
+
+        let ty_norm;
+        if features.normalizing {
+            let ty_norm_deriv = term_ty.normalize(env.clone());
+            ty_norm = ty_norm_deriv.ret_ty();
+            premises.push(ty_norm_deriv);
         } else {
-            term_res.ret_ty()
+            ty_norm = term_ty;
         };
 
         let handler_res = self.handler.check(env.clone())?;
-        let handler_ty = handler_res.ret_ty().normalize(env.clone());
-        term_ty.check_equal(&handler_ty)?;
+        let handler_ty = handler_res.ret_ty();
+        premises.push(handler_res);
+
+        let handler_norm;
+        if features.normalizing {
+            let handler_norm_deriv = handler_ty.normalize(env.clone());
+            handler_norm = handler_norm_deriv.ret_ty();
+            premises.push(handler_norm_deriv);
+        } else {
+            handler_norm = handler_ty;
+        }
+
+        ty_norm.check_equal(&handler_norm)?;
 
         if features.kinded {
-            let term_knd = term_ty.check_kind(env.clone())?;
-            let handler_knd = handler_ty.check_kind(env.clone())?;
+            let term_knd = ty_norm.check_kind(env.clone())?;
+            let handler_knd = handler_norm.check_kind(env.clone())?;
             term_knd.check_equal(&handler_knd)?;
         }
 
-        let conc = TypingConclusion::new(env, self.clone(), term_ty);
-        let deriv = TypingDerivation::tryt(conc, term_res, handler_res);
+        let conc = TypingConclusion::new(env, self.clone(), ty_norm);
+        let deriv = TypingDerivation::tryt(conc, premises);
         Ok(deriv.into())
     }
 }

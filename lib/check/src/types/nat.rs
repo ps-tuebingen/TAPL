@@ -1,5 +1,5 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
-use derivations::{Derivation, SubtypeDerivation};
+use derivations::{Derivation, NormalizingDerivation, SubtypeDerivation};
 use errors::check_error::CheckError;
 use syntax::{
     env::Environment,
@@ -21,11 +21,11 @@ where
         env: Environment<Self::Lang>,
     ) -> Result<Derivation<Self::Lang>, CheckError> {
         if let Ok(top) = sup.clone().into_top() {
-            return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind).into());
+            return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind, vec![]).into());
         }
 
         sup.clone().into_nat()?;
-        Ok(SubtypeDerivation::refl(env, self.clone()).into())
+        Ok(SubtypeDerivation::refl(env, self.clone(), vec![]).into())
     }
 }
 
@@ -45,7 +45,7 @@ where
     Self: Into<Lang::Type>,
 {
     type Lang = Lang;
-    fn normalize(self, _: Environment<Self::Lang>) -> <Self::Lang as Language>::Type {
-        self.into()
+    fn normalize(self, _: Environment<Self::Lang>) -> Derivation<Self::Lang> {
+        NormalizingDerivation::empty(self).into()
     }
 }

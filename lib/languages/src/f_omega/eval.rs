@@ -1,5 +1,6 @@
 use super::{FOmega, terms::Term, types::Type};
 use check::Normalize;
+use derivations::Derivation;
 use errors::eval_error::EvalError;
 use eval::Eval;
 use syntax::{env::Environment, eval_context::EvalContext};
@@ -33,7 +34,7 @@ impl Eval for Term {
 
 impl Normalize for Type {
     type Lang = FOmega;
-    fn normalize(self, env: Environment<Self::Lang>) -> Type {
+    fn normalize(self, env: Environment<Self::Lang>) -> Derivation<Self::Lang> {
         match self {
             Type::Var(var) => var.normalize(env),
             Type::Fun(fun) => fun.normalize(env),

@@ -1,5 +1,6 @@
 use super::BoundedQuantification;
 use check::Normalize;
+use derivations::{Derivation, NormalizingDerivation};
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
@@ -157,8 +158,8 @@ impl SubstType for Type {
 }
 impl Normalize for Type {
     type Lang = BoundedQuantification;
-    fn normalize(self, _: Environment<BoundedQuantification>) -> Type {
-        self
+    fn normalize(self, _: Environment<BoundedQuantification>) -> Derivation<Self::Lang> {
+        NormalizingDerivation::empty(self).into()
     }
 }
 

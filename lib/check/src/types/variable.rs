@@ -1,5 +1,5 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
-use derivations::{Derivation, SubtypeDerivation};
+use derivations::{Derivation, NormalizingDerivation, SubtypeDerivation};
 use errors::check_error::CheckError;
 use syntax::{
     env::Environment,
@@ -20,20 +20,31 @@ where
         sup: &<Lang as Language>::Type,
         env: Environment<Self::Lang>,
     ) -> Result<Derivation<Self::Lang>, CheckError> {
+        let features = Lang::features();
+        let mut premises = vec![];
+
         let ty_super = env.get_tyvar_super(&self.v)?;
-        let sup_norm = sup.clone().normalize(env.clone());
+
+        let sup_norm;
+        if features.normalizing {
+            let sup_norm_deriv = sup.clone().normalize(env.clone());
+            sup_norm = sup_norm_deriv.ret_ty();
+            premises.push(sup_norm_deriv);
+        } else {
+            sup_norm = sup.clone();
+        }
 
         if let Ok(top) = sup_norm.clone().into_top() {
-            return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind).into());
+            return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind, premises).into());
         }
 
         if let Ok(v) = sup_norm.clone().into_variable()
             && v.v == self.v
         {
-            return Ok(SubtypeDerivation::refl(env, self.clone()).into());
+            return Ok(SubtypeDerivation::refl(env, self.clone(), premises).into());
         }
         ty_super.check_equal(&sup_norm)?;
-        Ok(SubtypeDerivation::refl(env, ty_super).into())
+        Ok(SubtypeDerivation::refl(env, ty_super, premises).into())
     }
 }
 
@@ -53,7 +64,7 @@ where
     Self: Into<Lang::Type>,
 {
     type Lang = Lang;
-    fn normalize(self, env: Environment<Self::Lang>) -> <Self::Lang as Language>::Type {
-        env.get_tyvar_super(&self.v).unwrap_or(self.into())
+    fn normalize(self, env: Environment<Self::Lang>) -> Derivation<Self::Lang> {
+        NormalizingDerivation::empty(env.get_tyvar_super(&self.v).unwrap_or(self.into())).into()
     }
 }

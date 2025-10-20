@@ -1,5 +1,5 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
-use derivations::{Derivation, SubtypeDerivation};
+use derivations::{Derivation, NormalizingDerivation, SubtypeDerivation};
 use errors::{NameMismatch, check_error::CheckError};
 use std::rc::Rc;
 use syntax::{
@@ -22,12 +22,27 @@ where
         sup: &<Lang as Language>::Type,
         mut env: Environment<Self::Lang>,
     ) -> Result<Derivation<Self::Lang>, CheckError> {
+        let features = Lang::features();
         if let Ok(top) = sup.clone().into_top() {
-            return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind).into());
+            return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind, vec![]).into());
         }
 
-        let sup_norm = sup.clone().normalize(env.clone());
-        let self_norm = self.sup_ty.clone().normalize(env.clone());
+        let mut premises = vec![];
+
+        let sup_norm;
+        let self_norm;
+        if features.normalizing {
+            let sup_norm_deriv = sup.clone().normalize(env.clone());
+            sup_norm = sup_norm_deriv.ret_ty();
+            premises.push(sup_norm_deriv);
+            let self_norm_deriv = self.sup_ty.clone().normalize(env.clone());
+            self_norm = self_norm_deriv.ret_ty();
+            premises.push(self_norm_deriv);
+        } else {
+            sup_norm = sup.clone();
+            self_norm = Rc::unwrap_or_clone(self.sup_ty.clone());
+        }
+
         let other_exists = sup_norm.into_exists_bounded()?;
         other_exists.sup_ty.check_equal(&self_norm)?;
         if self.var != other_exists.var {
@@ -35,12 +50,18 @@ where
         }
         let old_env = env.clone();
         env.add_tyvar_super(other_exists.var, Rc::unwrap_or_clone(self.sup_ty.clone()));
-        let inner_res = self
-            .ty
-            .clone()
-            .normalize(env.clone())
-            .check_subtype(&(*other_exists.ty), env)?;
-        Ok(SubtypeDerivation::exists_bounded(old_env, self.clone(), sup.clone(), inner_res).into())
+
+        let inner_res;
+        if features.normalizing {
+            let inner_deriv = self.ty.clone().normalize(env.clone());
+            inner_res = inner_deriv.ret_ty();
+            premises.push(inner_deriv);
+        } else {
+            inner_res = Rc::unwrap_or_clone(self.ty.clone());
+        }
+        let inner_sub_deriv = inner_res.check_subtype(&(*other_exists.ty), env)?;
+        premises.push(inner_sub_deriv);
+        Ok(SubtypeDerivation::exists_bounded(old_env, self.clone(), sup.clone(), premises).into())
     }
 }
 
@@ -63,8 +84,8 @@ where
     Self: Into<Lang::Type>,
 {
     type Lang = Lang;
-    fn normalize(self, mut env: Environment<Self::Lang>) -> <Self::Lang as Language>::Type {
+    fn normalize(self, mut env: Environment<Self::Lang>) -> Derivation<Self::Lang> {
         env.add_tyvar_super(self.var.clone(), Rc::unwrap_or_clone(self.sup_ty.clone()));
-        self.into()
+        NormalizingDerivation::empty(self).into()
     }
 }

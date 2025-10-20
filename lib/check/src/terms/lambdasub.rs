@@ -19,20 +19,42 @@ where
     type Lang = Lang;
 
     fn check(&self, mut env: Environment<Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
-        let sup_norm = self.sup_ty.clone().normalize(env.clone());
-        let sup_kind = sup_norm.check_kind(env.clone())?;
+        let features = Lang::features();
+        let mut premises = vec![];
+
+        let sup_norm;
+        if features.normalizing {
+            let sup_norm_deriv = self.sup_ty.clone().normalize(env.clone());
+            sup_norm = sup_norm_deriv.ret_ty();
+        } else {
+            sup_norm = self.sup_ty.clone();
+        }
+
+        if features.kinded {
+            let sup_kind = sup_norm.check_kind(env.clone())?;
+            env.add_tyvar_kind(self.var.clone(), sup_kind.clone());
+        }
+
         env.add_tyvar_super(self.var.clone(), sup_norm.clone());
-        env.add_tyvar_kind(self.var.clone(), sup_kind.clone());
         let term_res = self.body.check(env.clone())?;
-        let term_ty = term_res.ret_ty().normalize(env.clone());
+        let term_ty = term_res.ret_ty();
+        premises.push(term_res);
+
+        let term_norm;
+        if features.normalizing {
+            let term_norm_deriv = term_ty.normalize(env.clone());
+            term_norm = term_norm_deriv.ret_ty();
+            premises.push(term_norm_deriv);
+        } else {
+            term_norm = term_ty;
+        }
 
         let conc = TypingConclusion::new(
             env,
             self.clone(),
-            ForallBounded::new(&self.var, self.sup_ty.clone(), term_ty).into(),
+            ForallBounded::new(&self.var, self.sup_ty.clone(), term_norm).into(),
         );
-        let deriv = TypingDerivation::lambdasub(conc, term_res);
-
+        let deriv = TypingDerivation::lambdasub(conc, premises);
         Ok(deriv.into())
     }
 }

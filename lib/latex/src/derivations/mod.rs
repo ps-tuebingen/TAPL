@@ -3,6 +3,7 @@ use derivations::Derivation;
 use syntax::language::Language;
 
 mod definition;
+mod normalizing;
 mod program;
 mod subtyping;
 mod typing;
@@ -19,6 +20,7 @@ where
             Derivation::DefinitionDerivation(deriv) => deriv.to_latex(conf),
             Derivation::ProgramDerivation(deriv) => deriv.to_latex(conf),
             Derivation::SubtypeDerivation(deriv) => deriv.to_latex(conf),
+            Derivation::NormalizingDerivation(deriv) => deriv.to_latex(conf),
         }
     }
 }

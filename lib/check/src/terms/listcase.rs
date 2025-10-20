@@ -15,27 +15,65 @@ where
     type Lang = Lang;
 
     fn check(&self, mut env: Environment<Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
+        let features = Lang::features();
+        let mut premises = vec![];
+
         let bound_res = self.bound_term.check(env.clone())?;
-        let bound_ty = bound_res.ret_ty().normalize(env.clone());
-        bound_ty.check_kind(env.clone())?.into_star()?;
-        let bound_list = bound_ty.clone().into_list()?;
+        let bound_ty = bound_res.ret_ty();
+        premises.push(bound_res);
+
+        let bound_norm;
+        if features.normalizing {
+            let bound_norm_deriv = bound_ty.normalize(env.clone());
+            bound_norm = bound_norm_deriv.ret_ty();
+            premises.push(bound_norm_deriv);
+        } else {
+            bound_norm = bound_ty;
+        }
+
+        if features.kinded {
+            bound_norm.check_kind(env.clone())?.into_star()?;
+        }
+
+        let bound_list = bound_norm.clone().into_list()?;
 
         let nil_res = self.nil_rhs.check(env.clone())?;
-        let nil_ty = nil_res.ret_ty().normalize(env.clone());
-        let nil_kind = nil_ty.check_kind(env.clone())?;
+        let nil_ty = nil_res.ret_ty();
+        premises.push(nil_res);
+
+        let nil_norm;
+        if features.normalizing {
+            let nil_norm_deriv = nil_ty.normalize(env.clone());
+            nil_norm = nil_norm_deriv.ret_ty();
+            premises.push(nil_norm_deriv);
+        } else {
+            nil_norm = nil_ty;
+        }
 
         env.add_var(self.cons_fst.clone(), Rc::unwrap_or_clone(bound_list.ty));
-        env.add_var(self.cons_rst.clone(), bound_ty);
+        env.add_var(self.cons_rst.clone(), bound_norm);
         let cons_res = self.cons_rhs.check(env.clone())?;
-        let cons_ty = nil_res.ret_ty().normalize(env.clone());
-        let cons_kind = cons_ty.check_kind(env.clone())?;
+        let cons_ty = cons_res.ret_ty();
+        premises.push(cons_res);
 
-        nil_kind.check_equal(&cons_kind)?;
-        nil_ty.check_equal(&cons_ty)?;
+        let cons_norm;
+        if features.normalizing {
+            let cons_norm_deriv = cons_ty.normalize(env.clone());
+            cons_norm = cons_norm_deriv.ret_ty();
+            premises.push(cons_norm_deriv);
+        } else {
+            cons_norm = cons_ty;
+        }
 
-        let conc = TypingConclusion::new(env.clone(), self.clone(), cons_ty);
-        let deriv = TypingDerivation::listcase(conc, nil_res, cons_res);
+        if features.kinded {
+            let nil_kind = nil_norm.check_kind(env.clone())?;
+            let cons_kind = cons_norm.check_kind(env.clone())?;
+            nil_kind.check_equal(&cons_kind)?;
+        }
 
+        nil_norm.check_equal(&cons_norm)?;
+        let conc = TypingConclusion::new(env.clone(), self.clone(), cons_norm);
+        let deriv = TypingDerivation::listcase(conc, premises);
         Ok(deriv.into())
     }
 }

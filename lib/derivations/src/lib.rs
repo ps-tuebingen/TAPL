@@ -4,13 +4,15 @@ use syntax::language::Language;
 
 pub mod conclusion;
 pub mod definition_derivation;
+pub mod normalizing_derivation;
 pub mod program_derivation;
 pub mod rules;
 pub mod subtype_derivation;
 pub mod typing_derivation;
 
-pub use conclusion::{Conclusion, SubtypeConclusion, TypingConclusion};
+pub use conclusion::{Conclusion, NormalizingConclusion, SubtypeConclusion, TypingConclusion};
 pub use definition_derivation::DefinitionDerivation;
+pub use normalizing_derivation::NormalizingDerivation;
 pub use program_derivation::ProgramDerivation;
 pub use rules::{SubtypeRule, TypingRule};
 pub use subtype_derivation::SubtypeDerivation;
@@ -25,6 +27,7 @@ where
     ProgramDerivation(ProgramDerivation<Lang>),
     DefinitionDerivation(DefinitionDerivation<Lang>),
     SubtypeDerivation(SubtypeDerivation<Lang>),
+    NormalizingDerivation(NormalizingDerivation<Lang>),
 }
 
 impl<Lang> Derivation<Lang>
@@ -33,13 +36,13 @@ where
 {
     pub fn ret_ty(&self) -> Lang::Type {
         match self {
-            Derivation::TypingDerivation(deriv) => deriv.ret_ty(),
-            Derivation::ProgramDerivation(deriv) => deriv.ret_ty(),
             Derivation::DefinitionDerivation(deriv) => deriv.ret_ty(),
-            Derivation::SubtypeDerivation(deriv) => deriv.ret_ty(),
+            Derivation::TypingDerivation(typ) => typ.ret_ty(),
+            Derivation::SubtypeDerivation(sub) => sub.ret_ty(),
+            Derivation::ProgramDerivation(deriv) => deriv.ret_ty(),
+            Derivation::NormalizingDerivation(deriv) => deriv.ret_ty(),
         }
     }
-
     pub fn into_def(self) -> Result<DefinitionDerivation<Lang>, UnexpectedDerivation> {
         let exp = "Definition Derivation";
         match self {
@@ -52,6 +55,9 @@ where
             }
             Derivation::SubtypeDerivation(_) => {
                 Err(UnexpectedDerivation::new("Subtype Derivation", exp))
+            }
+            Derivation::NormalizingDerivation(_) => {
+                Err(UnexpectedDerivation::new("NormalizingDerivation", exp))
             }
         }
     }
@@ -69,6 +75,9 @@ where
             Derivation::SubtypeDerivation(_) => {
                 Err(UnexpectedDerivation::new("Subtype Derivation", exp))
             }
+            Derivation::NormalizingDerivation(_) => {
+                Err(UnexpectedDerivation::new("Normalizing Derivation", exp))
+            }
         }
     }
 
@@ -84,6 +93,9 @@ where
             }
             Derivation::SubtypeDerivation(_) => {
                 Err(UnexpectedDerivation::new("Subtype Derivation", exp))
+            }
+            Derivation::NormalizingDerivation(_) => {
+                Err(UnexpectedDerivation::new("Normalizing Derivation", exp))
             }
         }
     }
@@ -126,6 +138,7 @@ where
             Derivation::ProgramDerivation(deriv) => deriv.fmt(f),
             Derivation::DefinitionDerivation(deriv) => deriv.fmt(f),
             Derivation::SubtypeDerivation(deriv) => deriv.fmt(f),
+            Derivation::NormalizingDerivation(deriv) => deriv.fmt(f),
         }
     }
 }

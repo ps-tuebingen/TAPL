@@ -1,5 +1,5 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
-use derivations::{Derivation, SubtypeDerivation};
+use derivations::{Derivation, NormalizingDerivation, SubtypeDerivation};
 use errors::NameMismatch;
 use errors::check_error::CheckError;
 use std::rc::Rc;
@@ -23,22 +23,43 @@ where
         sup: &<Lang as Language>::Type,
         env: Environment<Self::Lang>,
     ) -> Result<Derivation<Self::Lang>, CheckError> {
+        let features = Lang::features();
+        let mut premises = vec![];
         if let Ok(top) = sup.clone().into_top() {
-            return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind).into());
+            return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind, vec![]).into());
         }
+
         let other_forall = sup.clone().into_forall_bounded()?;
-        let sup_norm = other_forall.sup_ty.normalize(env.clone());
-        let self_norm = self.sup_ty.clone().normalize(env.clone());
-        let sup_res = sup_norm.check_subtype(&self_norm, env.clone())?;
+
         if self.var != other_forall.var {
             return Err(NameMismatch::new(&other_forall.var, &self.var).into());
         }
-        let ty_norm = self.ty.clone().normalize(env.clone());
-        let inner_res = ty_norm.check_subtype(&(*other_forall.ty), env.clone())?;
-        Ok(
-            SubtypeDerivation::forall_bounded(env, self.clone(), sup.clone(), sup_res, inner_res)
-                .into(),
-        )
+
+        let other_sup_norm;
+        let self_sup_norm;
+        let self_norm;
+        if features.normalizing {
+            let other_sup_norm_deriv = other_forall.sup_ty.normalize(env.clone());
+            other_sup_norm = other_sup_norm_deriv.ret_ty();
+            let self_sup_norm_deriv = self.sup_ty.clone().normalize(env.clone());
+            self_sup_norm = self_sup_norm_deriv.ret_ty();
+            let self_norm_deriv = self.ty.clone().normalize(env.clone());
+            self_norm = self_norm_deriv.ret_ty();
+            premises.push(other_sup_norm_deriv);
+            premises.push(self_sup_norm_deriv);
+            premises.push(self_norm_deriv);
+        } else {
+            other_sup_norm = Rc::unwrap_or_clone(other_forall.sup_ty);
+            self_sup_norm = Rc::unwrap_or_clone(self.sup_ty.clone());
+            self_norm = Rc::unwrap_or_clone(self.ty.clone());
+        }
+
+        let sup_res = other_sup_norm.check_subtype(&self_sup_norm, env.clone())?;
+        let inner_res = self_norm.check_subtype(&(*other_forall.ty), env.clone())?;
+        premises.push(sup_res);
+        premises.push(inner_res);
+
+        Ok(SubtypeDerivation::forall_bounded(env, self.clone(), sup.clone(), premises).into())
     }
 }
 
@@ -62,14 +83,14 @@ where
     Lang::Type: Normalize<Lang = Lang>,
 {
     type Lang = Lang;
-    fn normalize(self, mut env: Environment<Self::Lang>) -> <Self::Lang as Language>::Type {
+    fn normalize(self, mut env: Environment<Self::Lang>) -> Derivation<Self::Lang> {
         env.add_tyvar_super(self.var.clone(), Rc::unwrap_or_clone(self.ty.clone()));
-        let ty_norm = self.ty.normalize(env);
-        ForallBounded {
-            var: self.var,
-            sup_ty: self.sup_ty,
-            ty: Rc::new(ty_norm),
-        }
-        .into()
+        let ty_norm = self.ty.clone().normalize(env);
+        let self_norm = ForallBounded {
+            var: self.var.clone(),
+            sup_ty: self.sup_ty.clone(),
+            ty: Rc::new(ty_norm.ret_ty()),
+        };
+        NormalizingDerivation::cong(self, self_norm, vec![ty_norm]).into()
     }
 }

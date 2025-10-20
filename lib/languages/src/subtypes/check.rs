@@ -1,6 +1,6 @@
 use super::{Subtypes, terms::Term, types::Type};
 use check::{Kindcheck, Normalize, Subtypecheck, Typecheck};
-use derivations::Derivation;
+use derivations::{Derivation, NormalizingDerivation};
 use errors::check_error::CheckError;
 use syntax::{env::Environment, kinds::Kind};
 
@@ -71,7 +71,7 @@ impl Kindcheck for Type {
 
 impl Normalize for Type {
     type Lang = Subtypes;
-    fn normalize(self, _: Environment<Self::Lang>) -> Type {
-        self
+    fn normalize(self, _: Environment<Self::Lang>) -> Derivation<Self::Lang> {
+        NormalizingDerivation::empty(self).into()
     }
 }

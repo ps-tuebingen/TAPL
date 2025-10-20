@@ -1,5 +1,5 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
-use derivations::{Derivation, SubtypeDerivation};
+use derivations::{Derivation, NormalizingDerivation, SubtypeDerivation};
 use errors::KindMismatch;
 use errors::check_error::CheckError;
 use std::rc::Rc;
@@ -25,7 +25,7 @@ where
         env: Environment<Self::Lang>,
     ) -> Result<Derivation<Self::Lang>, CheckError> {
         if let Ok(top) = sup.clone().into_top() {
-            return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind).into());
+            return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind, vec![]).into());
         }
         let sup_op = sup.clone().into_opapp()?;
         let fun_res = self.fun.check_subtype(&sup_op.fun, env.clone())?;
@@ -66,21 +66,32 @@ where
     Lang::Type: Normalize<Lang = Lang> + TypeGroup<Lang = Lang>,
 {
     type Lang = Lang;
-    fn normalize(self, env: Environment<Self::Lang>) -> <Self::Lang as Language>::Type {
-        let fun_norm = self.fun.normalize(env.clone());
+    fn normalize(self, env: Environment<Self::Lang>) -> Derivation<Self::Lang> {
+        let mut premises = vec![];
+        let fun_norm_deriv = self.fun.clone().normalize(env.clone());
+        let fun_norm = fun_norm_deriv.ret_ty();
+        premises.push(fun_norm_deriv);
         if let Ok(oplam) = fun_norm.clone().into_oplambda() {
-            oplam
+            let oplam_deriv = oplam
                 .body
                 .subst_type(&oplam.var, &self.arg)
-                .normalize(env.clone())
+                .normalize(env.clone());
+            let body_norm = oplam_deriv.ret_ty();
+            premises.push(oplam_deriv);
+            NormalizingDerivation::opapp(self, body_norm, premises).into()
         } else if let Ok(oplam) = fun_norm.clone().into_oplambdasub() {
-            oplam.body.subst_type(&oplam.var, &self.arg).normalize(env)
+            let oplam_deriv = oplam.body.subst_type(&oplam.var, &self.arg).normalize(env);
+            let body_norm = oplam_deriv.ret_ty();
+            premises.push(oplam_deriv);
+            NormalizingDerivation::opapp(self, body_norm, premises).into()
         } else {
-            OpApp {
+            let arg_deriv = self.arg.clone().normalize(env);
+            let body_norm = OpApp {
                 fun: Rc::new(fun_norm),
-                arg: Rc::new(self.arg.normalize(env)),
-            }
-            .into()
+                arg: Rc::new(arg_deriv.ret_ty()),
+            };
+            premises.push(arg_deriv);
+            NormalizingDerivation::cong(self, body_norm, premises).into()
         }
     }
 }

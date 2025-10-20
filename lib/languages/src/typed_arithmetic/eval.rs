@@ -1,5 +1,6 @@
 use super::{TypedArithmetic, terms::Term, types::Type};
 use check::Normalize;
+use derivations::{Derivation, NormalizingDerivation};
 use errors::eval_error::EvalError;
 use eval::Eval;
 use syntax::{env::Environment, eval_context::EvalContext};
@@ -22,7 +23,7 @@ impl Eval for Term {
 
 impl Normalize for Type {
     type Lang = TypedArithmetic;
-    fn normalize(self, _: Environment<Self::Lang>) -> Type {
-        self
+    fn normalize(self, _: Environment<Self::Lang>) -> Derivation<Self::Lang> {
+        NormalizingDerivation::empty(self).into()
     }
 }

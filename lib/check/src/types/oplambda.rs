@@ -1,5 +1,5 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
-use derivations::{Derivation, SubtypeDerivation};
+use derivations::{Derivation, NormalizingDerivation, SubtypeDerivation};
 use errors::check_error::CheckError;
 use std::rc::Rc;
 use syntax::{
@@ -24,7 +24,7 @@ where
         mut env: Environment<Self::Lang>,
     ) -> Result<Derivation<Self::Lang>, CheckError> {
         if let Ok(top) = sup.clone().into_top() {
-            return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind).into());
+            return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind, vec![]).into());
         }
 
         let sup_op = sup.clone().into_oplambda()?;
@@ -61,13 +61,13 @@ where
     Lang::Type: Normalize<Lang = Lang>,
 {
     type Lang = Lang;
-    fn normalize(self, env: Environment<Self::Lang>) -> <Self::Lang as Language>::Type {
-        let body_norm = self.body.normalize(env);
-        OpLambda {
-            var: self.var,
-            annot: self.annot,
-            body: Rc::new(body_norm),
-        }
-        .into()
+    fn normalize(self, env: Environment<Self::Lang>) -> Derivation<Self::Lang> {
+        let body_norm = self.body.clone().normalize(env);
+        let self_norm = OpLambda {
+            var: self.var.clone(),
+            annot: self.annot.clone(),
+            body: Rc::new(body_norm.ret_ty()),
+        };
+        NormalizingDerivation::cong(self, self_norm, vec![body_norm]).into()
     }
 }

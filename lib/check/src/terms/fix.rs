@@ -21,14 +21,31 @@ where
     type Lang = Lang;
 
     fn check(&self, env: Environment<Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
+        let features = Lang::features();
+        let mut premises = vec![];
+
         let term_res = self.term.check(env.clone())?;
-        let term_ty = term_res.ret_ty().normalize(env.clone());
-        term_ty.check_kind(env.clone())?.into_star()?;
-        let fun_ty = term_ty.into_fun()?;
+        let term_ty = term_res.ret_ty();
+        premises.push(term_res);
+
+        let term_norm;
+        if features.normalizing {
+            let term_norm_deriv = term_ty.normalize(env.clone());
+            term_norm = term_norm_deriv.ret_ty();
+            premises.push(term_norm_deriv);
+        } else {
+            term_norm = term_ty;
+        }
+
+        if features.kinded {
+            term_norm.check_kind(env.clone())?.into_star()?;
+        }
+
+        let fun_ty = term_norm.into_fun()?;
         fun_ty.from.check_equal(&fun_ty.to)?;
 
         let conc = TypingConclusion::new(env, self.clone(), Rc::unwrap_or_clone(fun_ty.to));
-        let deriv = TypingDerivation::fix(conc, term_res);
+        let deriv = TypingDerivation::fix(conc, premises);
         Ok(deriv.into())
     }
 }

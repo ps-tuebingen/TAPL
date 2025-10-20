@@ -25,7 +25,12 @@ where
         self.conc.sup.clone()
     }
 
-    pub fn sub_top<Ty1>(env: Environment<Lang>, sub: Ty1, top_knd: Kind) -> SubtypeDerivation<Lang>
+    pub fn sub_top<Ty1>(
+        env: Environment<Lang>,
+        sub: Ty1,
+        top_knd: Kind,
+        premises: Vec<Derivation<Lang>>,
+    ) -> SubtypeDerivation<Lang>
     where
         Ty1: Into<Lang::Type>,
         Top<Lang>: Into<Lang::Type>,
@@ -33,18 +38,22 @@ where
         SubtypeDerivation {
             conc: SubtypeConclusion::new(env, sub, Top::new(top_knd)),
             label: SubtypeRule::Top,
-            premises: vec![],
+            premises,
         }
     }
 
-    pub fn refl<Ty1>(env: Environment<Lang>, ty: Ty1) -> SubtypeDerivation<Lang>
+    pub fn refl<Ty1>(
+        env: Environment<Lang>,
+        ty: Ty1,
+        premises: Vec<Derivation<Lang>>,
+    ) -> SubtypeDerivation<Lang>
     where
         Ty1: Into<Lang::Type> + Clone,
     {
         SubtypeDerivation {
             conc: SubtypeConclusion::new(env, ty.clone(), ty),
             label: SubtypeRule::Refl,
-            premises: vec![],
+            premises,
         }
     }
 
@@ -64,7 +73,7 @@ where
         env: Environment<Lang>,
         sub: Ty1,
         sup: Ty2,
-        prem: Derivation<Lang>,
+        premises: Vec<Derivation<Lang>>,
     ) -> SubtypeDerivation<Lang>
     where
         Ty1: Into<Lang::Type>,
@@ -73,7 +82,7 @@ where
         SubtypeDerivation {
             conc: SubtypeConclusion::new(env, sub, sup),
             label: SubtypeRule::Exists,
-            premises: vec![prem],
+            premises,
         }
     }
 
@@ -81,8 +90,7 @@ where
         env: Environment<Lang>,
         sub: Ty1,
         sup: Ty2,
-        bound_deriv: Derivation<Lang>,
-        inner_deriv: Derivation<Lang>,
+        premises: Vec<Derivation<Lang>>,
     ) -> SubtypeDerivation<Lang>
     where
         Ty1: Into<Lang::Type>,
@@ -91,7 +99,7 @@ where
         SubtypeDerivation {
             conc: SubtypeConclusion::new(env, sub, sup),
             label: SubtypeRule::All,
-            premises: vec![bound_deriv, inner_deriv],
+            premises: premises,
         }
     }
 
@@ -175,7 +183,7 @@ where
         env: Environment<Lang>,
         sub: Ty1,
         sup: Ty2,
-        body_deriv: Derivation<Lang>,
+        premises: Vec<Derivation<Lang>>,
     ) -> SubtypeDerivation<Lang>
     where
         Ty1: Into<Lang::Type>,
@@ -184,7 +192,7 @@ where
         SubtypeDerivation {
             conc: SubtypeConclusion::new(env, sub, sup),
             label: SubtypeRule::AbsSub,
-            premises: vec![body_deriv],
+            premises,
         }
     }
 

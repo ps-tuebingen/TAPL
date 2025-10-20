@@ -1,5 +1,5 @@
 use crate::{LatexConfig, LatexFmt};
-use derivations::{Conclusion, SubtypeConclusion, TypingConclusion};
+use derivations::{Conclusion, NormalizingConclusion, SubtypeConclusion, TypingConclusion};
 use syntax::language::Language;
 
 impl<Lang> LatexFmt for Conclusion<Lang>
@@ -53,5 +53,22 @@ where
         let sup_str = self.sup.to_latex(conf);
 
         format!("{env_start} {env_str} \\vdash {sub_str} <: {sup_str} {env_end}")
+    }
+}
+
+impl<Lang> LatexFmt for NormalizingConclusion<Lang>
+where
+    Lang: Language,
+    Lang::Term: LatexFmt,
+    Lang::Type: LatexFmt,
+{
+    fn to_latex(&self, conf: &mut LatexConfig) -> String {
+        let (env_start, env_end) = conf.mathenv_strs();
+        conf.include_envs = false;
+        format!(
+            "{env_start}{}\\equiv{}{env_end}",
+            self.left.to_latex(conf),
+            self.right.to_latex(conf)
+        )
     }
 }

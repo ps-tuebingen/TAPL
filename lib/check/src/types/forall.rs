@@ -1,4 +1,5 @@
 use crate::{Kindcheck, Normalize};
+use derivations::{Derivation, NormalizingDerivation};
 use errors::check_error::CheckError;
 use std::rc::Rc;
 use syntax::{env::Environment, kinds::Kind, language::Language, types::Forall};
@@ -23,14 +24,14 @@ where
     Lang::Type: Normalize<Lang = Lang>,
 {
     type Lang = Lang;
-    fn normalize(self, mut env: Environment<Self::Lang>) -> <Self::Lang as Language>::Type {
+    fn normalize(self, mut env: Environment<Self::Lang>) -> Derivation<Self::Lang> {
         env.add_tyvar_kind(self.var.clone(), self.kind.clone());
-        let ty_norm = self.ty.normalize(env);
-        Forall {
-            var: self.var,
-            kind: self.kind,
-            ty: Rc::new(ty_norm),
-        }
-        .into()
+        let ty_norm = self.ty.clone().normalize(env);
+        let self_norm = Forall {
+            var: self.var.clone(),
+            kind: self.kind.clone(),
+            ty: Rc::new(ty_norm.ret_ty()),
+        };
+        NormalizingDerivation::cong(self, self_norm, vec![ty_norm]).into()
     }
 }

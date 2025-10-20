@@ -20,19 +20,45 @@ where
     type Lang = Lang;
 
     fn check(&self, env: Environment<Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
+        let features = Lang::features();
+        let mut premises = vec![];
+
         let lhs_res = self.lhs.check(env.clone())?;
-        let lhs_ty = lhs_res.ret_ty().normalize(env.clone());
-        lhs_ty.check_kind(env.clone())?.into_star()?;
-        let lhs_ref = lhs_ty.into_ref()?;
+        let lhs_ty = lhs_res.ret_ty();
+        premises.push(lhs_res);
+
+        let lhs_norm;
+        if features.normalizing {
+            let lhs_norm_deriv = lhs_ty.normalize(env.clone());
+            lhs_norm = lhs_norm_deriv.ret_ty();
+            premises.push(lhs_norm_deriv);
+        } else {
+            lhs_norm = lhs_ty;
+        }
+
+        if features.kinded {
+            lhs_norm.check_kind(env.clone())?.into_star()?;
+        }
+        let lhs_ref = lhs_norm.into_ref()?;
 
         let rhs_res = self.rhs.check(env.clone())?;
-        let rhs_ty = rhs_res.ret_ty().normalize(env.clone());
-        rhs_ty.check_kind(env.clone())?.into_star()?;
-        lhs_ref.ty.check_equal(&rhs_ty)?;
+        let rhs_ty = rhs_res.ret_ty();
+
+        let rhs_norm;
+        if features.normalizing {
+            let rhs_norm_deriv = rhs_ty.normalize(env.clone());
+            rhs_norm = rhs_norm_deriv.ret_ty();
+            premises.push(rhs_norm_deriv);
+        } else {
+            rhs_norm = rhs_ty;
+        }
+        if features.kinded {
+            rhs_norm.check_kind(env.clone())?.into_star()?;
+        }
+        lhs_ref.ty.check_equal(&rhs_norm)?;
 
         let conc = TypingConclusion::new(env.clone(), self.clone(), UnitTy::<Lang>::new());
-        let deriv = TypingDerivation::assign(conc, lhs_res, rhs_res);
-
+        let deriv = TypingDerivation::assign(conc, premises);
         Ok(deriv.into())
     }
 }

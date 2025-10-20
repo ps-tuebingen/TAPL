@@ -20,6 +20,7 @@ where
 
     fn check(&self, mut env: Environment<Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
         let features = Lang::features();
+        let mut premises = vec![];
 
         if features.kinded {
             self.annot.check_kind(env.clone())?;
@@ -27,22 +28,28 @@ where
 
         env.add_var(self.var.clone(), self.annot.clone());
         let body_res = self.body.check(env.clone())?;
-        let body_ty = if features.normalizing {
-            body_res.ret_ty().normalize(env.clone())
+        let body_ty = body_res.ret_ty();
+        premises.push(body_res);
+
+        let body_norm;
+        if features.normalizing {
+            let body_norm_deriv = body_ty.normalize(env.clone());
+            body_norm = body_norm_deriv.ret_ty();
+            premises.push(body_norm_deriv);
         } else {
-            body_res.ret_ty()
+            body_norm = body_ty;
         };
 
         if features.kinded {
-            body_ty.check_kind(env.clone())?;
+            body_norm.check_kind(env.clone())?;
         }
 
         let conc = TypingConclusion::new(
             env.clone(),
             self.clone(),
-            Fun::new(self.annot.clone(), body_ty).into(),
+            Fun::new(self.annot.clone(), body_norm).into(),
         );
-        let deriv = TypingDerivation::lambda(conc, body_res);
+        let deriv = TypingDerivation::lambda(conc, premises);
 
         Ok(deriv.into())
     }

@@ -1,5 +1,5 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
-use derivations::{Derivation, SubtypeDerivation};
+use derivations::{Derivation, NormalizingDerivation, SubtypeDerivation};
 use errors::check_error::CheckError;
 use std::rc::Rc;
 use syntax::{
@@ -23,11 +23,26 @@ where
         sup: &<Lang as Language>::Type,
         mut env: Environment<Self::Lang>,
     ) -> Result<Derivation<Self::Lang>, CheckError> {
+        let features = Lang::features();
         if let Ok(top) = sup.clone().into_top() {
-            return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind).into());
+            return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind, vec![]).into());
         }
-        let sup_norm = sup.clone().normalize(env.clone());
-        let self_sup_norm = self.sup.clone().normalize(env.clone());
+        let mut premises = vec![];
+
+        let sup_norm;
+        let self_sup_norm;
+        if features.normalizing {
+            let sup_norm_deriv = sup.clone().normalize(env.clone());
+            let self_sup_norm_deriv = self.sup.clone().normalize(env.clone());
+            sup_norm = sup_norm_deriv.ret_ty();
+            self_sup_norm = self_sup_norm_deriv.ret_ty();
+            premises.push(sup_norm_deriv);
+            premises.push(self_sup_norm_deriv);
+        } else {
+            sup_norm = sup.clone();
+            self_sup_norm = Rc::unwrap_or_clone(self.sup.clone());
+        }
+
         let sup_op = sup_norm.into_oplambdasub()?;
         sup_op.sup.check_equal(&self_sup_norm)?;
         env.add_tyvar_super(self.var.clone(), self_sup_norm);
@@ -38,7 +53,8 @@ where
                 .subst_type(&sup_op.var, &(TypeVariable::new(&self.var).into())),
             env.clone(),
         )?;
-        Ok(SubtypeDerivation::op_lambda_sub(env, self.clone(), sup.clone(), body_res).into())
+        premises.push(body_res);
+        Ok(SubtypeDerivation::op_lambda_sub(env, self.clone(), sup.clone(), premises).into())
     }
 }
 
@@ -63,13 +79,13 @@ where
     Lang::Type: Normalize<Lang = Lang>,
 {
     type Lang = Lang;
-    fn normalize(self, env: Environment<Self::Lang>) -> <Self::Lang as Language>::Type {
-        let body_norm = self.body.normalize(env);
-        OpLambdaSub {
-            var: self.var,
-            sup: self.sup,
-            body: Rc::new(body_norm),
-        }
-        .into()
+    fn normalize(self, env: Environment<Self::Lang>) -> Derivation<Self::Lang> {
+        let body_norm = self.body.clone().normalize(env);
+        let self_norm = OpLambdaSub {
+            var: self.var.clone(),
+            sup: self.sup.clone(),
+            body: Rc::new(body_norm.ret_ty()),
+        };
+        NormalizingDerivation::cong(self, self_norm, vec![body_norm]).into()
     }
 }

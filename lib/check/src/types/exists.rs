@@ -1,4 +1,5 @@
 use crate::{Kindcheck, Normalize};
+use derivations::{Derivation, NormalizingDerivation};
 use errors::check_error::CheckError;
 use syntax::{env::Environment, kinds::Kind, language::Language, types::Exists};
 
@@ -20,8 +21,8 @@ where
     Self: Into<Lang::Type>,
 {
     type Lang = Lang;
-    fn normalize(self, mut env: Environment<Self::Lang>) -> <Self::Lang as Language>::Type {
+    fn normalize(self, mut env: Environment<Self::Lang>) -> Derivation<Self::Lang> {
         env.add_tyvar_kind(self.var.clone(), self.kind.clone());
-        self.into()
+        NormalizingDerivation::empty(self).into()
     }
 }

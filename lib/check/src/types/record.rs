@@ -1,5 +1,5 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
-use derivations::{Derivation, SubtypeDerivation};
+use derivations::{Derivation, NormalizingDerivation, SubtypeDerivation};
 use errors::UndefinedLabel;
 use errors::check_error::CheckError;
 use std::collections::HashMap;
@@ -22,18 +22,28 @@ where
         sup: &<Lang as Language>::Type,
         env: Environment<Self::Lang>,
     ) -> Result<Derivation<Self::Lang>, CheckError> {
+        let features = Lang::features();
         if let Ok(top) = sup.clone().into_top() {
-            return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind).into());
+            return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind, vec![]).into());
         }
 
-        let sup_norm = sup.clone().normalize(env.clone());
+        let mut premises = vec![];
+
+        let sup_norm;
+        if features.normalizing {
+            let sup_norm_deriv = sup.clone().normalize(env.clone());
+            sup_norm = sup_norm_deriv.ret_ty();
+            premises.push(sup_norm_deriv);
+        } else {
+            sup_norm = sup.clone();
+        }
+
         let sup_rec = sup_norm.into_record()?;
-        let mut inner_res = vec![];
         for (lb, ty) in sup_rec.records.iter() {
             let sub_ty = self.records.get(lb).ok_or(UndefinedLabel::new(lb))?;
-            inner_res.push(sub_ty.check_subtype(ty, env.clone())?);
+            premises.push(sub_ty.check_subtype(ty, env.clone())?);
         }
-        Ok(SubtypeDerivation::record(env, self.clone(), sup.clone(), inner_res).into())
+        Ok(SubtypeDerivation::record(env, self.clone(), sup.clone(), premises).into())
     }
 }
 
@@ -58,12 +68,15 @@ where
     Lang::Type: Normalize<Lang = Lang>,
 {
     type Lang = Lang;
-    fn normalize(self, env: Environment<Self::Lang>) -> <Self::Lang as Language>::Type {
+    fn normalize(self, env: Environment<Self::Lang>) -> Derivation<Self::Lang> {
+        let mut premises = vec![];
         let mut recs_norm = HashMap::new();
-        for (lb, ty) in self.records {
-            let ty_norm = ty.normalize(env.clone());
-            recs_norm.insert(lb, ty_norm);
+        for (lb, ty) in self.records.iter() {
+            let ty_norm = ty.clone().normalize(env.clone());
+            recs_norm.insert(lb.clone(), ty_norm.ret_ty());
+            premises.push(ty_norm)
         }
-        Record { records: recs_norm }.into()
+        let self_norm = Record { records: recs_norm };
+        NormalizingDerivation::cong(self, self_norm, premises).into()
     }
 }
