@@ -30,6 +30,7 @@ impl Language for FOmega {
             .with_eval()
             .with_typed()
             .with_kinded()
+            .with_normalizing()
     }
 }
 

@@ -49,7 +49,7 @@ where
 
             if features.kinded {
                 let term_kind = ty_norm.check_kind(env.clone())?;
-                let outer_knd = outer_norm.check_kind(env.clone())?;
+                let outer_knd = outer_exists.ty.check_kind(env.clone())?;
                 let inner_kind = self.inner_ty.check_kind(env.clone())?;
                 term_kind.check_equal(&outer_knd)?;
                 inner_kind.check_equal(&outer_exists.kind)?;
@@ -89,7 +89,10 @@ where
                 env.add_tyvar_kind(outer_bound.var.clone(), sup_kind);
             }
 
-            env.add_tyvar_super(outer_bound.var.clone(), outer_norm.clone());
+            env.add_tyvar_super(
+                outer_bound.var.clone(),
+                Rc::unwrap_or_clone(outer_bound.sup_ty.clone()),
+            );
 
             let term_res = self.term.check(env.clone())?;
             let term_ty = term_res.ret_ty();
@@ -97,11 +100,12 @@ where
 
             if features.kinded {
                 let term_kind = term_ty.check_kind(env.clone())?;
-                let outer_knd = outer_norm.check_kind(env.clone())?;
+                let outer_knd = outer_bound.ty.check_kind(env.clone())?;
                 term_kind.check_equal(&outer_knd)?;
             }
 
-            let outer_subst = outer_norm.subst_type(&outer_bound.var, &self.inner_ty);
+            let outer_subst = outer_bound.ty.subst_type(&outer_bound.var, &self.inner_ty);
+
             if features.subtyped {
                 let sup_deriv = term_ty.check_subtype(&outer_subst, env.clone())?;
                 premises.push(sup_deriv);

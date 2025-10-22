@@ -32,6 +32,7 @@ impl Language for FOmegaSub {
             .with_typed()
             .with_kinded()
             .with_subtyped()
+            .with_normalizing()
     }
 }
 
