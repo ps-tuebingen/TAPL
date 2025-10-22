@@ -591,7 +591,7 @@ where
         TypingDerivation {
             conc,
             label: TypingRule::VariantCase,
-            premises: premises,
+            premises,
         }
     }
 

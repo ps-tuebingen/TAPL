@@ -20,14 +20,12 @@ where
 
         let bound_res = self.bound_term.check(env.clone())?;
         let bound_ty = bound_res.ret_ty();
-        let bound_norm;
-
-        if features.normalizing {
+        let bound_norm = if features.normalizing {
             let bound_norm_deriv = bound_ty.normalize(env.clone());
-            bound_norm = bound_norm_deriv.ret_ty();
+            bound_norm_deriv.ret_ty()
         } else {
-            bound_norm = bound_ty;
-        }
+            bound_ty
+        };
 
         if features.kinded {
             bound_norm.check_kind(env.clone())?.into_star()?;

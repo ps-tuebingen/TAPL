@@ -22,13 +22,12 @@ where
         let features = Lang::features();
         let mut premises = vec![];
 
-        let sup_norm;
-        if features.normalizing {
+        let sup_norm = if features.normalizing {
             let sup_norm_deriv = self.sup_ty.clone().normalize(env.clone());
-            sup_norm = sup_norm_deriv.ret_ty();
+            sup_norm_deriv.ret_ty()
         } else {
-            sup_norm = self.sup_ty.clone();
-        }
+            self.sup_ty.clone()
+        };
 
         if features.kinded {
             let sup_kind = sup_norm.check_kind(env.clone())?;

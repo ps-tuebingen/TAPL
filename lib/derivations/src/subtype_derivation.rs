@@ -99,7 +99,7 @@ where
         SubtypeDerivation {
             conc: SubtypeConclusion::new(env, sub, sup),
             label: SubtypeRule::All,
-            premises: premises,
+            premises,
         }
     }
 
