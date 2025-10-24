@@ -4,8 +4,6 @@ use languages::UntypedLambda;
 use std::path::PathBuf;
 
 impl TestSuite for UntypedLambda {
-    type Lang = Self;
-
     fn name(&self) -> &str {
         "Untyped Lambda"
     }

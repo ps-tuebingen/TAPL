@@ -4,8 +4,6 @@ use languages::Subtypes;
 use std::path::PathBuf;
 
 impl TestSuite for Subtypes {
-    type Lang = Self;
-
     fn name(&self) -> &str {
         "Subtypes"
     }

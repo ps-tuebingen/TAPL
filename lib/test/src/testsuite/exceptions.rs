@@ -4,8 +4,6 @@ use languages::Exceptions;
 use std::path::PathBuf;
 
 impl TestSuite for Exceptions {
-    type Lang = Self;
-
     fn name(&self) -> &str {
         "Exceptions"
     }

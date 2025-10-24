@@ -4,8 +4,6 @@ use languages::FOmegaSub;
 use std::path::PathBuf;
 
 impl TestSuite for FOmegaSub {
-    type Lang = Self;
-
     fn name(&self) -> &str {
         "Existential"
     }

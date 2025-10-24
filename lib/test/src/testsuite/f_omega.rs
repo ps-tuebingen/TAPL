@@ -4,8 +4,6 @@ use languages::FOmega;
 use std::path::PathBuf;
 
 impl TestSuite for FOmega {
-    type Lang = Self;
-
     fn name(&self) -> &str {
         "F-Omega"
     }

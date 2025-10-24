@@ -4,8 +4,6 @@ use languages::TypedArithmetic;
 use std::path::PathBuf;
 
 impl TestSuite for TypedArithmetic {
-    type Lang = Self;
-
     fn name(&self) -> &str {
         "Typed Arithmetic"
     }

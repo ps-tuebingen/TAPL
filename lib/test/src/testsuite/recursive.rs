@@ -4,8 +4,6 @@ use languages::Recursive;
 use std::path::PathBuf;
 
 impl TestSuite for Recursive {
-    type Lang = Self;
-
     fn name(&self) -> &str {
         "Recursive"
     }

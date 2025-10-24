@@ -4,8 +4,6 @@ use languages::BoundedQuantification;
 use std::path::PathBuf;
 
 impl TestSuite for BoundedQuantification {
-    type Lang = Self;
-
     fn source_dir(&self) -> PathBuf {
         PathBuf::from(EXAMPLES_PATH).join(BOUNDED_PATH)
     }

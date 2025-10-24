@@ -4,8 +4,6 @@ use languages::Existential;
 use std::path::PathBuf;
 
 impl TestSuite for Existential {
-    type Lang = Self;
-
     fn name(&self) -> &str {
         "Existential"
     }

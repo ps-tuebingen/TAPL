@@ -4,8 +4,6 @@ use languages::LambdaOmega;
 use std::path::PathBuf;
 
 impl TestSuite for LambdaOmega {
-    type Lang = Self;
-
     fn name(&self) -> &str {
         "Lambda Omega"
     }

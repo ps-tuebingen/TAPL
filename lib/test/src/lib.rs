@@ -1,5 +1,4 @@
 pub mod config;
-pub mod load_tests;
 pub mod paths;
 pub mod test;
 pub mod test_result;

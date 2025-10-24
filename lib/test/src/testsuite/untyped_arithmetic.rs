@@ -4,8 +4,6 @@ use languages::UntypedArithmetic;
 use std::path::PathBuf;
 
 impl TestSuite for UntypedArithmetic {
-    type Lang = Self;
-
     fn name(&self) -> &str {
         "Untyped Arithmetic"
     }

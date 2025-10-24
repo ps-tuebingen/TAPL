@@ -6,7 +6,6 @@ use super::{
         latex_buss_test::LatexTestBuss, latex_frac_test::LatexTestFrac,
         latex_grammar_test::LatexTestGrammar, latex_trace_test::LatexTestTrace,
     },
-    load_tests::load_dir,
     parse_test::ParseTest,
     paths::LATEX_OUT,
     reparse_test::ReparseTest,
@@ -44,82 +43,75 @@ pub mod typed_arithmetic;
 pub mod untyped_arithmetic;
 pub mod untyped_lambda;
 
-pub trait TestSuite {
-    type Lang: Language;
-
+/// Abstraction over tests for each different language
+/// This trait is implemented for each implementor of [`syntax::language::Language`]
+pub trait TestSuite: Language {
     fn name(&self) -> &str;
     fn source_dir(&self) -> PathBuf;
     fn ext(&self) -> &str;
 
-    fn configs(&self) -> Result<Vec<TestConfig>, TestError> {
-        load_dir(&self.source_dir(), self.ext())
-    }
-
-    fn run_parse(conf: &TestConfig) -> TestResult<Program<Self::Lang>>
+    fn run_parse(conf: &TestConfig) -> TestResult<Program<Self>>
     where
-        <Self::Lang as Language>::Term: GroupParse,
-        <Self::Lang as Language>::Type: GroupParse,
+        <Self as Language>::Term: GroupParse,
+        <Self as Language>::Type: GroupParse,
     {
         let name = conf.name.clone();
-        let parse_test = ParseTest::<Self::Lang>::new(&name, &conf.contents);
+        let parse_test = ParseTest::<Self>::new(&name, &conf.contents);
         let parse_res = parse_test.run();
         parse_res.report(&parse_test.name());
         parse_res
     }
 
-    fn run_reparse(name: &str, parsed: &Program<Self::Lang>) -> TestResult<()>
+    fn run_reparse(name: &str, parsed: &Program<Self>) -> TestResult<()>
     where
-        <Self::Lang as Language>::Term: GroupParse,
-        <Self::Lang as Language>::Type: GroupParse,
+        <Self as Language>::Term: GroupParse,
+        <Self as Language>::Type: GroupParse,
     {
-        let reparse_test = ReparseTest::<Self::Lang>::new(name, parsed);
+        let reparse_test = ReparseTest::<Self>::new(name, parsed);
         let res = reparse_test.run();
         res.report(&reparse_test.name());
         res
     }
 
-    fn run_check(
-        conf: &TestConfig,
-        prog: Program<Self::Lang>,
-    ) -> TestResult<ProgramDerivation<Self::Lang>>
+    fn run_check(conf: &TestConfig, prog: Program<Self>) -> TestResult<ProgramDerivation<Self>>
     where
-        <Self::Lang as Language>::Term: Typecheck<Lang = Self::Lang>,
+        <Self as Language>::Term: Typecheck<Lang = Self>,
     {
-        let check_test = CheckTest::<Self::Lang>::new(&conf.name, prog, &conf.ty);
+        let check_test = CheckTest::<Self>::new(&conf.name, prog, &conf.ty);
         let res = check_test.run();
         res.report(&check_test.name());
         res
     }
 
-    fn run_eval(conf: &TestConfig, prog: Program<Self::Lang>) -> TestResult<EvalTrace<Self::Lang>>
+    fn run_eval(conf: &TestConfig, prog: Program<Self>) -> TestResult<EvalTrace<Self>>
     where
-        <Self::Lang as Language>::Term: Eval<Lang = Self::Lang>,
+        <Self as Language>::Term: Eval<Lang = Self>,
     {
-        let eval_test = EvalTest::<Self::Lang>::new(&conf.name, prog, &conf.evaluated);
+        let eval_test = EvalTest::<Self>::new(&conf.name, prog, &conf.evaluated);
         let res = eval_test.run();
         res.report(&eval_test.name());
         res
     }
 
-    fn run_derivation_buss(name: &str, deriv: &ProgramDerivation<Self::Lang>) -> TestResult<()>
+    fn run_derivation_buss(name: &str, deriv: &ProgramDerivation<Self>) -> TestResult<()>
     where
-        <Self::Lang as Language>::Term: LatexFmt,
-        <Self::Lang as Language>::Type: LatexFmt,
+        <Self as Language>::Term: LatexFmt,
+        <Self as Language>::Type: LatexFmt,
     {
         std::fs::create_dir_all(PathBuf::from(LATEX_OUT)).unwrap();
-        let buss_test = LatexTestBuss::<Self::Lang>::new(name, deriv);
+        let buss_test = LatexTestBuss::<Self>::new(name, deriv);
         let res = buss_test.run();
         res.report(&buss_test.name());
         res
     }
 
-    fn run_derivation_frac(name: &str, deriv: &ProgramDerivation<Self::Lang>) -> TestResult<()>
+    fn run_derivation_frac(name: &str, deriv: &ProgramDerivation<Self>) -> TestResult<()>
     where
-        <Self::Lang as Language>::Term: LatexFmt,
-        <Self::Lang as Language>::Type: LatexFmt,
+        <Self as Language>::Term: LatexFmt,
+        <Self as Language>::Type: LatexFmt,
     {
         std::fs::create_dir_all(PathBuf::from(LATEX_OUT)).unwrap();
-        let frac_test = LatexTestFrac::<Self::Lang>::new(name, deriv);
+        let frac_test = LatexTestFrac::<Self>::new(name, deriv);
         let res = frac_test.run();
         res.report(&frac_test.name());
         res
@@ -127,23 +119,23 @@ pub trait TestSuite {
 
     fn run_grammar(name: &str) -> TestResult<()>
     where
-        Self::Lang: LanguageDescribe,
+        Self: LanguageDescribe,
     {
         std::fs::create_dir_all(PathBuf::from(LATEX_OUT)).unwrap();
-        let grammar_test = LatexTestGrammar::<Self::Lang>::new(name);
+        let grammar_test = LatexTestGrammar::<Self>::new(name);
         let res = grammar_test.run();
         res.report(&grammar_test.name());
         res
     }
 
-    fn run_trace(name: &str, tr: &EvalTrace<Self::Lang>) -> TestResult<()>
+    fn run_trace(name: &str, tr: &EvalTrace<Self>) -> TestResult<()>
     where
-        <Self::Lang as Language>::Term: LatexFmt,
-        <Self::Lang as Language>::Type: LatexFmt,
-        <Self::Lang as Language>::Value: LatexFmt,
+        <Self as Language>::Term: LatexFmt,
+        <Self as Language>::Type: LatexFmt,
+        <Self as Language>::Value: LatexFmt,
     {
         std::fs::create_dir_all(PathBuf::from(LATEX_OUT)).unwrap();
-        let trace_test = LatexTestTrace::<Self::Lang>::new(name, tr);
+        let trace_test = LatexTestTrace::<Self>::new(name, tr);
         let res = trace_test.run();
         res.report(&trace_test.name());
         res
@@ -151,10 +143,10 @@ pub trait TestSuite {
 
     fn run_conf(conf: &TestConfig, inclusions: &TestInclusions) -> usize
     where
-        <Self::Lang as Language>::Term:
-            GroupParse + Typecheck<Lang = Self::Lang> + Eval<Lang = Self::Lang> + LatexFmt,
-        <Self::Lang as Language>::Type: GroupParse + LatexFmt,
-        <Self::Lang as Language>::Value: LatexFmt,
+        <Self as Language>::Term:
+            GroupParse + Typecheck<Lang = Self> + Eval<Lang = Self> + LatexFmt,
+        <Self as Language>::Type: GroupParse + LatexFmt,
+        <Self as Language>::Value: LatexFmt,
     {
         let name = conf.name.clone();
         let mut num_fail = 0;
@@ -227,11 +219,11 @@ pub trait TestSuite {
 
     fn run_all(&self, inclusions: &TestInclusions) -> Result<usize, TestError>
     where
-        <Self::Lang as Language>::Term:
-            GroupParse + Typecheck<Lang = Self::Lang> + Eval<Lang = Self::Lang> + LatexFmt,
-        <Self::Lang as Language>::Type: GroupParse + LatexFmt,
-        <Self::Lang as Language>::Value: LatexFmt,
-        Self::Lang: LanguageDescribe,
+        <Self as Language>::Term:
+            GroupParse + Typecheck<Lang = Self> + Eval<Lang = Self> + LatexFmt,
+        <Self as Language>::Type: GroupParse + LatexFmt,
+        <Self as Language>::Value: LatexFmt,
+        Self: LanguageDescribe,
     {
         println!("Running Test Suite {}", self.name());
 
@@ -245,7 +237,7 @@ pub trait TestSuite {
         }
         println!();
 
-        let configs = self.configs()?;
+        let configs = TestConfig::load_suite(&self.source_dir(), self.ext())?;
         let num_tests = configs.len() * inclusions.num_tests();
         for conf in configs {
             let result = Self::run_conf(&conf, inclusions);
@@ -263,11 +255,11 @@ pub trait TestSuite {
 
     fn run_report(&self) -> Result<(), TestError>
     where
-        <Self::Lang as Language>::Term:
-            GroupParse + Typecheck<Lang = Self::Lang> + Eval<Lang = Self::Lang> + LatexFmt,
-        <Self::Lang as Language>::Type: GroupParse + LatexFmt,
-        <Self::Lang as Language>::Value: LatexFmt,
-        Self::Lang: LanguageDescribe,
+        <Self as Language>::Term:
+            GroupParse + Typecheck<Lang = Self> + Eval<Lang = Self> + LatexFmt,
+        <Self as Language>::Type: GroupParse + LatexFmt,
+        <Self as Language>::Value: LatexFmt,
+        Self: LanguageDescribe,
     {
         setup()?;
 
@@ -288,10 +280,10 @@ pub trait TestSuite {
 
     fn run_untyped(&self) -> Result<(), TestError>
     where
-        Self::Lang: LanguageDescribe,
-        <Self::Lang as Language>::Term: GroupParse + Eval<Lang = Self::Lang> + LatexFmt,
-        <Self::Lang as Language>::Type: GroupParse + LatexFmt,
-        <Self::Lang as Language>::Value: LatexFmt,
+        Self: LanguageDescribe,
+        <Self as Language>::Term: GroupParse + Eval<Lang = Self> + LatexFmt,
+        <Self as Language>::Type: GroupParse + LatexFmt,
+        <Self as Language>::Value: LatexFmt,
     {
         setup()?;
         let mut inclusions = Args::parse().to_inclusions();
@@ -311,7 +303,7 @@ pub trait TestSuite {
         }
         println!();
 
-        let configs = self.configs()?;
+        let configs = TestConfig::load_suite(&self.source_dir(), self.ext())?;
         let num_tests = configs.len() * inclusions.num_tests();
         for conf in configs {
             let name = conf.name.clone();

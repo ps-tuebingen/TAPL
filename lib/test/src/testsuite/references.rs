@@ -4,8 +4,6 @@ use languages::References;
 use std::path::PathBuf;
 
 impl TestSuite for References {
-    type Lang = Self;
-
     fn name(&self) -> &str {
         "References"
     }
