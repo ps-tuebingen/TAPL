@@ -39,7 +39,7 @@ impl TestSuite for FOmega {
     type Lang = Self;
 
     fn name(&self) -> &str {
-        "F-Omegs"
+        "F-Omega"
     }
 
     fn ext(&self) -> &str {

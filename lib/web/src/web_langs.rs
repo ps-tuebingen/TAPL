@@ -1,7 +1,7 @@
 //Automatically generated file, run `cargo run -p xtask` to regenerate
 
 use languages::AllLanguages;
-pub const WEB_LANGUAGES: [AllLanguages;13] = [
+pub const WEB_LANGUAGES: [AllLanguages;14] = [
 	AllLanguages::UntypedArithmetic,
 	AllLanguages::UntypedLambda,
 	AllLanguages::TypedArithmetic,
@@ -14,10 +14,11 @@ pub const WEB_LANGUAGES: [AllLanguages;13] = [
 	AllLanguages::SystemF,
 	AllLanguages::BoundedQuantification,
 	AllLanguages::LambdaOmega,
-	AllLanguages::FOmega
+	AllLanguages::FOmega,
+	AllLanguages::FOmegaSub
 ];
 
-pub const WEB_LANGUAGES_TYPED: [AllLanguages;11] = [
+pub const WEB_LANGUAGES_TYPED: [AllLanguages;12] = [
 	AllLanguages::TypedArithmetic,
 	AllLanguages::Stlc,
 	AllLanguages::Exceptions,
@@ -28,6 +29,7 @@ pub const WEB_LANGUAGES_TYPED: [AllLanguages;11] = [
 	AllLanguages::SystemF,
 	AllLanguages::BoundedQuantification,
 	AllLanguages::LambdaOmega,
-	AllLanguages::FOmega
+	AllLanguages::FOmega,
+	AllLanguages::FOmegaSub
 ];
         

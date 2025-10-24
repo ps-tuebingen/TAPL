@@ -15,8 +15,6 @@ pub const COUNTER: &str = include_str!("../../../../examples/subtypes/counter/co
 
 pub const NEWRESETCOUNTER: &str = include_str!("../../../../examples/subtypes/newresetcounter/newresetcounter.sub");
 
-pub const INSTRCOUNTERCLASS: &str = include_str!("../../../../examples/subtypes/instrcounterclass/instrcounterclass.sub");
-
 pub const VARIANT: &str = include_str!("../../../../examples/subtypes/variant/variant.sub");
 
 pub const DECCOUNTERCLASS: &str = include_str!("../../../../examples/subtypes/deccounterclass/deccounterclass.sub");
@@ -43,7 +41,6 @@ pub fn subtypes_all() -> Vec<(&'static str,&'static str)> {
         ("Backupcounterclass", BACKUPCOUNTERCLASS),
         ("Counter", COUNTER),
         ("Newresetcounter", NEWRESETCOUNTER),
-        ("Instrcounterclass", INSTRCOUNTERCLASS),
         ("Variant", VARIANT),
         ("Deccounterclass", DECCOUNTERCLASS),
         ("Setcounterclass", SETCOUNTERCLASS),
