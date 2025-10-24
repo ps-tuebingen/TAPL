@@ -4,10 +4,6 @@ use languages::Stlc;
 use std::path::PathBuf;
 
 impl TestSuite for Stlc {
-    fn name(&self) -> &str {
-        "Stlc"
-    }
-
     fn ext(&self) -> &str {
         "stlc"
     }

@@ -4,10 +4,6 @@ use languages::Existential;
 use std::path::PathBuf;
 
 impl TestSuite for Existential {
-    fn name(&self) -> &str {
-        "Existential"
-    }
-
     fn source_dir(&self) -> PathBuf {
         PathBuf::from(EXAMPLES_PATH).join(EXISTENTIAL_PATH)
     }

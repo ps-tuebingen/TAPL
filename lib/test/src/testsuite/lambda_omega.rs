@@ -4,10 +4,6 @@ use languages::LambdaOmega;
 use std::path::PathBuf;
 
 impl TestSuite for LambdaOmega {
-    fn name(&self) -> &str {
-        "Lambda Omega"
-    }
-
     fn ext(&self) -> &str {
         "lamo"
     }

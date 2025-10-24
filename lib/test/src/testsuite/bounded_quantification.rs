@@ -11,8 +11,4 @@ impl TestSuite for BoundedQuantification {
     fn ext(&self) -> &str {
         "bd"
     }
-
-    fn name(&self) -> &str {
-        "Bounded Quantification"
-    }
 }

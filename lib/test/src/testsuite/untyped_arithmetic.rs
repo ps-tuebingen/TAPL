@@ -4,10 +4,6 @@ use languages::UntypedArithmetic;
 use std::path::PathBuf;
 
 impl TestSuite for UntypedArithmetic {
-    fn name(&self) -> &str {
-        "Untyped Arithmetic"
-    }
-
     fn ext(&self) -> &str {
         "arith"
     }

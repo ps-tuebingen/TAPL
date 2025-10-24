@@ -4,10 +4,6 @@ use languages::UntypedLambda;
 use std::path::PathBuf;
 
 impl TestSuite for UntypedLambda {
-    fn name(&self) -> &str {
-        "Untyped Lambda"
-    }
-
     fn ext(&self) -> &str {
         "lam"
     }

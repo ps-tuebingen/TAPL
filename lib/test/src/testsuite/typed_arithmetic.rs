@@ -4,10 +4,6 @@ use languages::TypedArithmetic;
 use std::path::PathBuf;
 
 impl TestSuite for TypedArithmetic {
-    fn name(&self) -> &str {
-        "Typed Arithmetic"
-    }
-
     fn ext(&self) -> &str {
         "arith"
     }

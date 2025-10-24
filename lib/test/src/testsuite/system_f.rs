@@ -4,10 +4,6 @@ use languages::SystemF;
 use std::path::PathBuf;
 
 impl TestSuite for SystemF {
-    fn name(&self) -> &str {
-        "System F"
-    }
-
     fn ext(&self) -> &str {
         "f"
     }

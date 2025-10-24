@@ -46,7 +46,6 @@ pub mod untyped_lambda;
 /// Abstraction over tests for each different language
 /// This trait is implemented for each implementor of [`syntax::language::Language`]
 pub trait TestSuite: Language {
-    fn name(&self) -> &str;
     fn source_dir(&self) -> PathBuf;
     fn ext(&self) -> &str;
 
@@ -225,12 +224,12 @@ pub trait TestSuite: Language {
         <Self as Language>::Value: LatexFmt,
         Self: LanguageDescribe,
     {
-        println!("Running Test Suite {}", self.name());
+        println!("Running Test Suite {}", self.describe());
 
         let mut num_fail = 0;
         if inclusions.grammar {
             print!("\t");
-            let res = Self::run_grammar(self.name());
+            let res = Self::run_grammar(self.describe());
             if matches!(res, TestResult::Fail(_)) {
                 num_fail += 1;
             }
@@ -291,12 +290,12 @@ pub trait TestSuite: Language {
         inclusions.derivation_buss = false;
         inclusions.derivation_frac = false;
 
-        println!("Running Test Suite {}", self.name());
+        println!("Running Test Suite {}", self.describe());
 
         let mut num_fail = 0;
         if inclusions.grammar {
             print!("\t");
-            let res = Self::run_grammar(self.name());
+            let res = Self::run_grammar(self.describe());
             if matches!(res, TestResult::Fail(_)) {
                 num_fail += 1;
             }
