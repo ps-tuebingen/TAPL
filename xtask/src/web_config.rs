@@ -24,6 +24,9 @@ pub fn load_web_config() -> Result<(), BuildError> {
 fn parse_conf(contents: String) -> Result<Vec<AllLanguages>, BuildError> {
     let mut langs = vec![];
     for line in contents.lines() {
+        if line.starts_with("#") {
+            continue;
+        }
         let lang = line.trim().parse::<AllLanguages>()?;
         langs.push(lang);
     }
