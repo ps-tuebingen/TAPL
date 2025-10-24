@@ -109,7 +109,7 @@ impl FromStr for AllLanguages {
             "lambda-omega" => Ok(AllLanguages::LambdaOmega),
             "f-omega" => Ok(AllLanguages::FOmega),
             "f-omega-sub" => Ok(AllLanguages::FOmegaSub),
-            _ => Err(UndefinedLanguage::new(s).into()),
+            _ => Err(UndefinedLanguage::new(s)),
         }
     }
 }

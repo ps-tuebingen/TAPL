@@ -1,4 +1,4 @@
-use errors::{FileAccess, UndefinedLanguage, build_error::BuildError};
+use errors::{FileAccess, build_error::BuildError};
 use languages::AllLanguages;
 use std::{
     fs::{File, read_to_string},
