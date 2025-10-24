@@ -1,3 +1,3 @@
 name="SomeCase"
 ty="Optional[Nat]"
-evaled="Nothing[Nat]"
+evaluated="Nothing[Nat]"
