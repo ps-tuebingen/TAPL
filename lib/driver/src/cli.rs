@@ -1,6 +1,7 @@
-use crate::{format::FormatMethod, languages::AllLanguages};
+use crate::format::FormatMethod;
 use clap::Parser;
 use errors::driver_error::DriverError;
+use languages::AllLanguages;
 use std::{fmt, fs::read_to_string, path::PathBuf, str::FromStr};
 
 #[derive(Parser)]

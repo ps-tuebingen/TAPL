@@ -1,10 +1,9 @@
-use crate::{Driver, cli::Command, format::FormatMethod};
-use errors::{NoTyping, UndefinedLanguage, driver_error::DriverError};
-use grammar::{LanguageDescribe, LanguageGrammar};
-use languages::{
+use crate::{
     BoundedQuantification, Exceptions, Existential, FOmega, FOmegaSub, LambdaOmega, Recursive,
     References, Stlc, Subtypes, SystemF, TypedArithmetic, UntypedArithmetic, UntypedLambda,
 };
+use errors::UndefinedLanguage;
+use grammar::{LanguageDescribe, LanguageGrammar};
 use std::{fmt, str::FromStr};
 use syntax::language::Language;
 
@@ -27,70 +26,6 @@ pub enum AllLanguages {
 }
 
 impl AllLanguages {
-    pub fn all() -> [AllLanguages; 14] {
-        [
-            AllLanguages::UntypedArithmetic,
-            AllLanguages::UntypedLambda,
-            AllLanguages::TypedArithmetic,
-            AllLanguages::Stlc,
-            AllLanguages::Exceptions,
-            AllLanguages::References,
-            AllLanguages::Existential,
-            AllLanguages::Recursive,
-            AllLanguages::Subtypes,
-            AllLanguages::SystemF,
-            AllLanguages::BoundedQuantification,
-            AllLanguages::LambdaOmega,
-            AllLanguages::FOmega,
-            AllLanguages::FOmegaSub,
-        ]
-    }
-
-    pub fn all_typed() -> [AllLanguages; 12] {
-        [
-            AllLanguages::TypedArithmetic,
-            AllLanguages::Stlc,
-            AllLanguages::Exceptions,
-            AllLanguages::References,
-            AllLanguages::Existential,
-            AllLanguages::Recursive,
-            AllLanguages::Subtypes,
-            AllLanguages::SystemF,
-            AllLanguages::BoundedQuantification,
-            AllLanguages::LambdaOmega,
-            AllLanguages::FOmega,
-            AllLanguages::FOmegaSub,
-        ]
-    }
-
-    pub fn dispatch_run(
-        &self,
-        driver: &Driver,
-        method: &FormatMethod,
-        cmd: &Command,
-        input: String,
-    ) -> Result<String, DriverError> {
-        match self {
-            AllLanguages::TypedArithmetic => {
-                driver.run_format::<TypedArithmetic>(method, cmd, input)
-            }
-            AllLanguages::Stlc => driver.run_format::<Stlc>(method, cmd, input),
-            AllLanguages::Exceptions => driver.run_format::<Exceptions>(method, cmd, input),
-            AllLanguages::References => driver.run_format::<References>(method, cmd, input),
-            AllLanguages::Existential => driver.run_format::<Existential>(method, cmd, input),
-            AllLanguages::Recursive => driver.run_format::<Recursive>(method, cmd, input),
-            AllLanguages::Subtypes => driver.run_format::<Subtypes>(method, cmd, input),
-            AllLanguages::SystemF => driver.run_format::<SystemF>(method, cmd, input),
-            AllLanguages::BoundedQuantification => {
-                driver.run_format::<BoundedQuantification>(method, cmd, input)
-            }
-            AllLanguages::LambdaOmega => driver.run_format::<LambdaOmega>(method, cmd, input),
-            AllLanguages::FOmega => driver.run_format::<FOmega>(method, cmd, input),
-            AllLanguages::FOmegaSub => driver.run_format::<FOmegaSub>(method, cmd, input),
-            _ => Err(NoTyping::new(&self.to_string()).into()),
-        }
-    }
-
     pub fn describe(&self) -> &str {
         match self {
             AllLanguages::UntypedArithmetic => UntypedArithmetic.describe(),
@@ -128,10 +63,36 @@ impl AllLanguages {
             AllLanguages::FOmegaSub => FOmegaSub::grammars(),
         }
     }
+
+    pub fn is_typed(&self) -> bool {
+        !matches!(
+            self,
+            AllLanguages::UntypedArithmetic | AllLanguages::UntypedLambda
+        )
+    }
+
+    pub fn name(&self) -> &'static str {
+        match self {
+            Self::UntypedArithmetic => "UntypedArithmetic",
+            Self::UntypedLambda => "UntypedLambda",
+            Self::TypedArithmetic => "TypedArithmetic",
+            Self::Stlc => "Stlc",
+            Self::References => "References",
+            Self::Exceptions => "Exceptions",
+            Self::Subtypes => "Subtypes",
+            Self::Recursive => "Recursive",
+            Self::Existential => "Existential",
+            Self::SystemF => "SystemF",
+            Self::BoundedQuantification => "BoundedQuantification",
+            Self::LambdaOmega => "LambdaOmega",
+            Self::FOmega => "FOmega",
+            Self::FOmegaSub => "FOmegaSub",
+        }
+    }
 }
 
 impl FromStr for AllLanguages {
-    type Err = DriverError;
+    type Err = UndefinedLanguage;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_lowercase().trim() {
             "untyped-arithmetic" => Ok(AllLanguages::UntypedArithmetic),
@@ -148,7 +109,7 @@ impl FromStr for AllLanguages {
             "lambda-omega" => Ok(AllLanguages::LambdaOmega),
             "f-omega" => Ok(AllLanguages::FOmega),
             "f-omega-sub" => Ok(AllLanguages::FOmegaSub),
-            _ => Err(UndefinedLanguage::new(s).into()),
+            _ => Err(UndefinedLanguage::new(s)),
         }
     }
 }

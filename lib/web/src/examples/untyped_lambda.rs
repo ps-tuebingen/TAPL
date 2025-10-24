@@ -1,3 +1,4 @@
+//Automatically generated file, run `cargo run -p xtask` to regenerate
 pub const ZERO: &str = include_str!("../../../../examples/untyped_lambda/zero/zero.lam");
 
 pub const SND: &str = include_str!("../../../../examples/untyped_lambda/snd/snd.lam");

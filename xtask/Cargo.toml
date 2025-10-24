@@ -5,3 +5,4 @@ edition = "2024"
 
 [dependencies]
 errors = { path = "../lib/errors" }
+languages = { path = "../lib/languages" }

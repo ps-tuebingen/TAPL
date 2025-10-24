@@ -13,6 +13,9 @@ pub mod typed_arithmetic;
 pub mod untyped_arithmetic;
 pub mod untyped_lambda;
 
+pub mod all_languages;
+pub use all_languages::AllLanguages;
+
 use syntax::language::Language;
 
 pub use bounded_quantification::BoundedQuantification;

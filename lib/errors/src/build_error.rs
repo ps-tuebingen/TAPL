@@ -1,10 +1,11 @@
-use crate::{DirAccess, FileAccess};
+use crate::{DirAccess, FileAccess, UndefinedLanguage};
 use std::fmt;
 
 #[derive(Debug)]
 pub enum BuildError {
     DirAccess(DirAccess),
     FileAccess(FileAccess),
+    UndefinedLanguage(UndefinedLanguage),
 }
 
 impl fmt::Display for BuildError {
@@ -12,6 +13,7 @@ impl fmt::Display for BuildError {
         match self {
             BuildError::DirAccess(da) => da.fmt(f),
             BuildError::FileAccess(fa) => fa.fmt(f),
+            BuildError::UndefinedLanguage(ul) => ul.fmt(f),
         }
     }
 }
@@ -27,5 +29,11 @@ impl From<DirAccess> for BuildError {
 impl From<FileAccess> for BuildError {
     fn from(err: FileAccess) -> BuildError {
         BuildError::FileAccess(err)
+    }
+}
+
+impl From<UndefinedLanguage> for BuildError {
+    fn from(err: UndefinedLanguage) -> BuildError {
+        BuildError::UndefinedLanguage(err)
     }
 }

@@ -1,5 +1,7 @@
-use crate::get_by_id;
-use driver::languages::AllLanguages;
+use crate::{
+    get_by_id,
+    web_langs::{WEB_LANGUAGES, WEB_LANGUAGES_TYPED},
+};
 use errors::{AddEventHandler, AppendChild, CouldNotCast, CreateElement, web_error::WebError};
 use wasm_bindgen::{closure::Closure, prelude::JsCast};
 use web_sys::{Document, HtmlOptionElement, HtmlSelectElement};
@@ -25,9 +27,9 @@ impl LanguageSelect {
 
     fn setup_languages(&self, typed: bool) -> Result<(), WebError> {
         let langs = if typed {
-            AllLanguages::all_typed().to_vec()
+            WEB_LANGUAGES_TYPED.to_vec()
         } else {
-            AllLanguages::all().to_vec()
+            WEB_LANGUAGES.to_vec()
         };
         for lang in langs {
             if typed && lang.to_string().to_lowercase().contains("untyped") {

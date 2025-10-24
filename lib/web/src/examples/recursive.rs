@@ -1,3 +1,4 @@
+//Automatically generated file, run `cargo run -p xtask` to regenerate
 pub const PROCESS: &str = include_str!("../../../../examples/recursive/process/process.rec");
 
 pub const TAIL: &str = include_str!("../../../../examples/recursive/tail/tail.rec");

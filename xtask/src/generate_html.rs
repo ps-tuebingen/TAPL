@@ -6,9 +6,9 @@ use std::{
     path::PathBuf,
 };
 
-const TEMPLATES_PATH: &str = "html/templates";
-const OUT_PATH: &str = "html";
-const TEMPLATE_FILE: &str = "html/template.html";
+const TEMPLATES_PATH: &str = "web/templates";
+const OUT_PATH: &str = "web";
+const TEMPLATE_FILE: &str = "web/template.html";
 
 const TEMPLATE_PLACEHOLDER: &str = "{{- CONTENT -}}";
 const PAGE_NAME_PLACEHOLDER: &str = "{{- PAGE_NAME -}}";

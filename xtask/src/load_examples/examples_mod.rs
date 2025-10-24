@@ -8,7 +8,8 @@ use std::{
 
 fn examples_mod(mod_strs: &[String], hashmap_strs: &[String]) -> String {
     format!(
-        "use std::collections::HashMap;
+        "//Automatically generated file, run `cargo run -p xtask` to regenerate\n
+        use std::collections::HashMap;
 
 {}
 pub fn all_examples() -> HashMap<&'static str, Vec<(&'static str,&'static str)>> {{

@@ -4,9 +4,9 @@ prepare:
 
 .PHONY: web
 web: prepare
-	wasm-pack build apps/web/index --target web --out-dir ../../../html/wasm/index
-	wasm-pack build apps/web/check --target web --out-dir ../../../html/wasm/check
-	wasm-pack build apps/web/eval --target web --out-dir ../../../html/wasm/eval
+	wasm-pack build apps/web/index --target web --out-dir ../../../web/wasm/index
+	wasm-pack build apps/web/check --target web --out-dir ../../../web/wasm/check
+	wasm-pack build apps/web/eval --target web --out-dir ../../../web/wasm/eval
 
 .PHONY: test 
 test: prepare

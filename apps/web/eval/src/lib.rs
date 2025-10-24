@@ -6,8 +6,8 @@ use wasm_bindgen::{
     prelude::{JsCast, wasm_bindgen},
 };
 use web::{
-    collapsable::CollapsableElement, example_select::ExampleSelect, get_by_id, get_lang,
-    language_select::LanguageSelect, log, source_area::SourceArea,
+    collapsable::CollapsableElement, example_select::ExampleSelect, get_by_id,
+    language_select::LanguageSelect, log, source_area::SourceArea, web_langs::WEB_LANGUAGES,
 };
 use web_sys::{HtmlButtonElement, HtmlDivElement};
 
@@ -26,8 +26,10 @@ impl CheckContext {
         let window = web_sys::window().ok_or(WebError::Window)?;
         let document = window.document().ok_or(WebError::Document)?;
         let language_select = LanguageSelect::new(&document, false)?;
-        let example_select =
-            ExampleSelect::new(&document, &get_lang(language_select.selected()).to_string())?;
+        let example_select = ExampleSelect::new(
+            &document,
+            &WEB_LANGUAGES[language_select.selected()].to_string(),
+        )?;
         let source_area = SourceArea::new(&document)?;
         let eval_out = CollapsableElement::new(&document, "eval_collapse", "eval_out")?;
         let error_out = CollapsableElement::new(&document, "error_collapse", "error_out")?;
@@ -54,7 +56,7 @@ impl CheckContext {
         let change_handler_language = Closure::wrap(Box::new(move || {
             let res = self_
                 .example_select
-                .set_options(&get_lang(self_.language_select.selected()).to_string());
+                .set_options(&WEB_LANGUAGES[self_.language_select.selected()].to_string());
             match res {
                 Ok(_) => (),
                 Err(err) => {
@@ -103,7 +105,7 @@ impl CheckContext {
 
     fn eval_source(&self) -> Result<(), WebError> {
         let source = self.source_area.get_contents();
-        let lang = get_lang(self.language_select.selected());
+        let lang = WEB_LANGUAGES[self.language_select.selected()];
         match self.driver.run_lang(
             source,
             &lang,

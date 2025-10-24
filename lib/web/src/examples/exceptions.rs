@@ -1,3 +1,4 @@
+//Automatically generated file, run `cargo run -p xtask` to regenerate
 pub const LAMBDAERR: &str = include_str!("../../../../examples/exceptions/lambdaerr/lambdaerr.ex");
 
 pub const TRYRAISE: &str = include_str!("../../../../examples/exceptions/tryraise/tryraise.ex");
