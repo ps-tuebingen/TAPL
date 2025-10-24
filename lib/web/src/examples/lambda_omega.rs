@@ -1,3 +1,4 @@
+//Automatically generated file, run `cargo run -p xtask` to regenerate
 pub const PAIRNATBOOL: &str = include_str!("../../../../examples/lambda_omega/pairnatbool/pairnatbool.lamo");
 
 pub const PAIR: &str = include_str!("../../../../examples/lambda_omega/pair/pair.lamo");

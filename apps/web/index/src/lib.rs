@@ -2,7 +2,9 @@ use driver::format::FormatMethod;
 use errors::web_error::WebError;
 use std::rc::Rc;
 use wasm_bindgen::{closure::Closure, prelude::wasm_bindgen};
-use web::{collapsable::CollapsableElement, get_lang, language_select::LanguageSelect, log};
+use web::{
+    collapsable::CollapsableElement, language_select::LanguageSelect, log, web_langs::WEB_LANGUAGES,
+};
 use web_sys::HtmlDivElement;
 //mod context;
 //mod example_select;
@@ -34,7 +36,7 @@ impl IndexContext {
 
     fn get_grammar(&self) -> String {
         FormatMethod::LatexFracStripped
-            .format(&get_lang(self.language_select.selected()).grammars())
+            .format(&WEB_LANGUAGES[self.language_select.selected()].grammars())
     }
 
     fn setup_events(self: Rc<Self>) -> Result<(), WebError> {

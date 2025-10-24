@@ -1,4 +1,4 @@
-use driver::{Driver, cli::Command, format::FormatMethod, languages::AllLanguages};
+use driver::{Driver, cli::Command, format::FormatMethod};
 use errors::{AddEventHandler, web_error::WebError};
 use std::rc::Rc;
 use wasm_bindgen::{
@@ -6,8 +6,13 @@ use wasm_bindgen::{
     prelude::{JsCast, wasm_bindgen},
 };
 use web::{
-    collapsable::CollapsableElement, example_select::ExampleSelect, get_by_id, get_lang,
-    language_select::LanguageSelect, log, source_area::SourceArea,
+    collapsable::CollapsableElement,
+    example_select::ExampleSelect,
+    get_by_id,
+    language_select::LanguageSelect,
+    log,
+    source_area::SourceArea,
+    web_langs::{WEB_LANGUAGES, WEB_LANGUAGES_TYPED},
 };
 use web_sys::{HtmlButtonElement, HtmlDivElement};
 
@@ -26,8 +31,7 @@ impl CheckContext {
         let window = web_sys::window().ok_or(WebError::Window)?;
         let document = window.document().ok_or(WebError::Document)?;
         let language_select = LanguageSelect::new(&document, true)?;
-        let example_select =
-            ExampleSelect::new(&document, &AllLanguages::all_typed()[0].to_string())?;
+        let example_select = ExampleSelect::new(&document, &WEB_LANGUAGES_TYPED[0].to_string())?;
         let source_area = SourceArea::new(&document)?;
         let check_out = CollapsableElement::new(&document, "check_collapse", "check_out")?;
         let error_out = CollapsableElement::new(&document, "error_collapse", "error_out")?;
@@ -50,7 +54,7 @@ impl CheckContext {
     }
 
     fn get_ind(&self) -> usize {
-        let offset = AllLanguages::all().len() - AllLanguages::all_typed().len();
+        let offset = WEB_LANGUAGES.len() - WEB_LANGUAGES_TYPED.len();
         self.language_select.selected() + offset
     }
 
@@ -59,7 +63,7 @@ impl CheckContext {
         let change_handler_language = Closure::wrap(Box::new(move || {
             let res = self_
                 .example_select
-                .set_options(&get_lang(self_.get_ind()).to_string());
+                .set_options(&WEB_LANGUAGES[self_.get_ind()].to_string());
             match res {
                 Ok(_) => (),
                 Err(err) => {
@@ -110,7 +114,7 @@ impl CheckContext {
         log("getting source contents");
         let source = self.source_area.get_contents();
         log("got contents");
-        let lang = get_lang(self.get_ind());
+        let lang = WEB_LANGUAGES[self.get_ind()];
         log(&format!("got lang {lang}"));
         match self.driver.run_lang(
             source,

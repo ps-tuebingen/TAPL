@@ -1,4 +1,6 @@
-use std::collections::HashMap;
+//Automatically generated file, run `cargo run -p xtask` to regenerate
+
+        use std::collections::HashMap;
 
 pub mod lambda_omega;
 pub use lambda_omega::lambda_omega_all;

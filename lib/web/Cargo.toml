@@ -5,6 +5,7 @@ edition = "2024"
 
 [dependencies]
 errors = { path = "../errors" }
+languages = { path = "../languages" }
 driver = { path = "../driver" }
 
 wasm-bindgen = "0.2"

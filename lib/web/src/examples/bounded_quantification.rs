@@ -1,3 +1,4 @@
+//Automatically generated file, run `cargo run -p xtask` to regenerate
 pub const SONE: &str = include_str!("../../../../examples/bounded_quantification/sone/sone.bd");
 
 pub const SPLUSPP: &str = include_str!("../../../../examples/bounded_quantification/spluspp/spluspp.bd");

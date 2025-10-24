@@ -1,3 +1,4 @@
+//Automatically generated file, run `cargo run -p xtask` to regenerate
 pub const RESETCOUNTERCLASS: &str = include_str!("../../../../examples/subtypes/resetcounterclass/resetcounterclass.sub");
 
 pub const VARIANTCASE: &str = include_str!("../../../../examples/subtypes/variantcase/variantcase.sub");

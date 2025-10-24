@@ -1,8 +1,12 @@
 use check::Typecheck;
 use derivations::Derivation;
-use errors::{FileAccess, driver_error::DriverError};
+use errors::{FileAccess, NoTyping, driver_error::DriverError};
 use eval::{Eval, eval_main};
 use grammar::LanguageDescribe;
+use languages::{
+    AllLanguages, BoundedQuantification, Exceptions, Existential, FOmega, FOmegaSub, LambdaOmega,
+    Recursive, References, Stlc, Subtypes, SystemF, TypedArithmetic,
+};
 use latex::LatexFmt;
 use parser::{GroupParse, Parse};
 use syntax::{language::Language, program::Program};
@@ -13,11 +17,9 @@ use std::{fs::File, io::Write, path::PathBuf};
 pub mod cli;
 pub mod format;
 mod formattable;
-pub mod languages;
 
 use cli::{Args, Command};
 use format::FormatMethod;
-use languages::AllLanguages;
 
 #[derive(Clone)]
 pub struct Driver;
@@ -30,9 +32,7 @@ impl Driver {
         } else {
             args.source.get_source()?
         };
-        let res = args
-            .lang
-            .dispatch_run(self, &args.method(), &args.cmd, input)?;
+        let res = dispatch_run(&args.lang, self, &args.method(), &args.cmd, input)?;
         match args.out_file {
             None => {
                 println!("{res}");
@@ -69,8 +69,7 @@ impl Driver {
         cmd: &Command,
         method: &FormatMethod,
     ) -> Result<String, String> {
-        lang.dispatch_run(self, method, cmd, input)
-            .map_err(|err| err.to_string())
+        dispatch_run(lang, self, method, cmd, input).map_err(|err| err.to_string())
     }
 
     pub fn run_all_lang(
@@ -84,16 +83,16 @@ impl Driver {
         Option<String>,
         Option<String>,
     ) {
-        let parse_res = match lang.dispatch_run(self, method, &Command::Parse, input.clone()) {
+        let parse_res = match dispatch_run(lang, self, method, &Command::Parse, input.clone()) {
             Ok(p) => p,
             Err(err) => return (None, None, None, Some(err.to_string())),
         };
-        let check_res = match lang.dispatch_run(self, method, &Command::Check, input.clone()) {
+        let check_res = match dispatch_run(lang, self, method, &Command::Check, input.clone()) {
             Ok(ty) => ty,
             Err(err) => return (None, None, None, Some(err.to_string())),
         };
 
-        let eval_res = match lang.dispatch_run(self, method, &Command::Check, input.clone()) {
+        let eval_res = match dispatch_run(lang, self, method, &Command::Check, input.clone()) {
             Ok(v) => v,
             Err(err) => return (None, None, None, Some(err.to_string())),
         };
@@ -188,5 +187,31 @@ impl Driver {
         file.write_all(res.as_bytes())
             .map_err(|err| FileAccess::new("write to file", err))?;
         Ok(())
+    }
+}
+
+pub fn dispatch_run(
+    lang: &AllLanguages,
+    driver: &Driver,
+    method: &FormatMethod,
+    cmd: &Command,
+    input: String,
+) -> Result<String, DriverError> {
+    match lang {
+        AllLanguages::TypedArithmetic => driver.run_format::<TypedArithmetic>(method, cmd, input),
+        AllLanguages::Stlc => driver.run_format::<Stlc>(method, cmd, input),
+        AllLanguages::Exceptions => driver.run_format::<Exceptions>(method, cmd, input),
+        AllLanguages::References => driver.run_format::<References>(method, cmd, input),
+        AllLanguages::Existential => driver.run_format::<Existential>(method, cmd, input),
+        AllLanguages::Recursive => driver.run_format::<Recursive>(method, cmd, input),
+        AllLanguages::Subtypes => driver.run_format::<Subtypes>(method, cmd, input),
+        AllLanguages::SystemF => driver.run_format::<SystemF>(method, cmd, input),
+        AllLanguages::BoundedQuantification => {
+            driver.run_format::<BoundedQuantification>(method, cmd, input)
+        }
+        AllLanguages::LambdaOmega => driver.run_format::<LambdaOmega>(method, cmd, input),
+        AllLanguages::FOmega => driver.run_format::<FOmega>(method, cmd, input),
+        AllLanguages::FOmegaSub => driver.run_format::<FOmegaSub>(method, cmd, input),
+        _ => Err(NoTyping::new(&lang.to_string()).into()),
     }
 }

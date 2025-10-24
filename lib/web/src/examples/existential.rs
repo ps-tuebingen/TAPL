@@ -1,3 +1,4 @@
+//Automatically generated file, run `cargo run -p xtask` to regenerate
 pub const FLIPFLOP: &str = include_str!("../../../../examples/existential/flipflop/flipflop.ex");
 
 pub const PACKNAT: &str = include_str!("../../../../examples/existential/packnat/packnat.ex");

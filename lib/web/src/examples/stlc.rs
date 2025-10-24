@@ -1,3 +1,4 @@
+//Automatically generated file, run `cargo run -p xtask` to regenerate
 pub const SND: &str = include_str!("../../../../examples/stlc/snd/snd.stlc");
 
 pub const PREDSUCC: &str = include_str!("../../../../examples/stlc/predsucc/predsucc.stlc");

@@ -1,3 +1,4 @@
+//Automatically generated file, run `cargo run -p xtask` to regenerate
 pub const REFNAT: &str = include_str!("../../../../examples/references/refnat/refnat.ref");
 
 pub const INCC: &str = include_str!("../../../../examples/references/incc/incc.ref");

@@ -1,3 +1,4 @@
+//Automatically generated file, run `cargo run -p xtask` to regenerate
 pub const CEXP: &str = include_str!("../../../../examples/system_f/cexp/cexp.f");
 
 pub const C1: &str = include_str!("../../../../examples/system_f/c1/c1.f");

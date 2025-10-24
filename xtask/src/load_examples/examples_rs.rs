@@ -8,7 +8,7 @@ use std::{
 
 fn examples_rs(example_strs: &[String], vec_strs: &[String], path_stem: &str) -> String {
     format!(
-        "{}
+        "//Automatically generated file, run `cargo run -p xtask` to regenerate\n{}
 pub fn {}_all() -> Vec<(&'static str,&'static str)> {{
     vec![
 {}

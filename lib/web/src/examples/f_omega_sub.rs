@@ -1,3 +1,4 @@
+//Automatically generated file, run `cargo run -p xtask` to regenerate
 pub const RESETCOUNTERCLASS: &str = include_str!("../../../../examples/f_omega_sub/resetcounterclass/resetcounterclass.omega");
 
 pub const SENDINC: &str = include_str!("../../../../examples/f_omega_sub/sendinc/sendinc.omega");
