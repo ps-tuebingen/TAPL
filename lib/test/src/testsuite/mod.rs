@@ -1,5 +1,6 @@
 use super::{
     check_test::CheckTest,
+    config::TestConfig,
     eval_test::EvalTest,
     latex::{
         latex_buss_test::LatexTestBuss, latex_frac_test::LatexTestFrac,
@@ -10,7 +11,7 @@ use super::{
     paths::LATEX_OUT,
     reparse_test::ReparseTest,
     setup,
-    test::{Test, TestConfig, TestInclusions},
+    test::{Test, TestInclusions},
     test_result::TestResult,
 };
 use check::Typecheck;
@@ -44,24 +45,23 @@ pub mod untyped_arithmetic;
 pub mod untyped_lambda;
 
 pub trait TestSuite {
-    type Config: TestConfig;
     type Lang: Language;
 
     fn name(&self) -> &str;
     fn source_dir(&self) -> PathBuf;
     fn ext(&self) -> &str;
 
-    fn configs(&self) -> Result<Vec<Self::Config>, TestError> {
+    fn configs(&self) -> Result<Vec<TestConfig>, TestError> {
         load_dir(&self.source_dir(), self.ext())
     }
 
-    fn run_parse(conf: &Self::Config) -> TestResult<Program<Self::Lang>>
+    fn run_parse(conf: &TestConfig) -> TestResult<Program<Self::Lang>>
     where
         <Self::Lang as Language>::Term: GroupParse,
         <Self::Lang as Language>::Type: GroupParse,
     {
-        let name = conf.name();
-        let parse_test = ParseTest::<Self::Lang>::new(name, conf.contents());
+        let name = conf.name.clone();
+        let parse_test = ParseTest::<Self::Lang>::new(&name, &conf.contents);
         let parse_res = parse_test.run();
         parse_res.report(&parse_test.name());
         parse_res
@@ -79,23 +79,23 @@ pub trait TestSuite {
     }
 
     fn run_check(
-        conf: &Self::Config,
+        conf: &TestConfig,
         prog: Program<Self::Lang>,
     ) -> TestResult<ProgramDerivation<Self::Lang>>
     where
         <Self::Lang as Language>::Term: Typecheck<Lang = Self::Lang>,
     {
-        let check_test = CheckTest::<Self::Lang>::new(conf.name(), prog, conf.ty());
+        let check_test = CheckTest::<Self::Lang>::new(&conf.name, prog, &conf.ty);
         let res = check_test.run();
         res.report(&check_test.name());
         res
     }
 
-    fn run_eval(conf: &Self::Config, prog: Program<Self::Lang>) -> TestResult<EvalTrace<Self::Lang>>
+    fn run_eval(conf: &TestConfig, prog: Program<Self::Lang>) -> TestResult<EvalTrace<Self::Lang>>
     where
         <Self::Lang as Language>::Term: Eval<Lang = Self::Lang>,
     {
-        let eval_test = EvalTest::<Self::Lang>::new(conf.name(), prog, conf.evaluated());
+        let eval_test = EvalTest::<Self::Lang>::new(&conf.name, prog, &conf.evaluated);
         let res = eval_test.run();
         res.report(&eval_test.name());
         res
@@ -149,14 +149,14 @@ pub trait TestSuite {
         res
     }
 
-    fn run_conf(conf: &Self::Config, inclusions: &TestInclusions) -> usize
+    fn run_conf(conf: &TestConfig, inclusions: &TestInclusions) -> usize
     where
         <Self::Lang as Language>::Term:
             GroupParse + Typecheck<Lang = Self::Lang> + Eval<Lang = Self::Lang> + LatexFmt,
         <Self::Lang as Language>::Type: GroupParse + LatexFmt,
         <Self::Lang as Language>::Value: LatexFmt,
     {
-        let name = conf.name();
+        let name = conf.name.clone();
         let mut num_fail = 0;
         println!("Running tests for {name}",);
 
@@ -168,7 +168,7 @@ pub trait TestSuite {
 
         if inclusions.reparse {
             print!("\t");
-            if matches!(Self::run_reparse(name, &prog), TestResult::Fail(_)) {
+            if matches!(Self::run_reparse(&name, &prog), TestResult::Fail(_)) {
                 num_fail += 1
             };
         };
@@ -180,13 +180,13 @@ pub trait TestSuite {
                 TestResult::Success(ref deriv) => {
                     if inclusions.derivation_buss {
                         print!("\t");
-                        if matches!(Self::run_derivation_buss(name, deriv), TestResult::Fail(_)) {
+                        if matches!(Self::run_derivation_buss(&name, deriv), TestResult::Fail(_)) {
                             num_fail += 1;
                         }
                     }
                     if inclusions.derivation_frac {
                         print!("\t");
-                        if matches!(Self::run_derivation_frac(name, deriv), TestResult::Fail(_)) {
+                        if matches!(Self::run_derivation_frac(&name, deriv), TestResult::Fail(_)) {
                             num_fail += 1;
                         }
                     }
@@ -210,7 +210,7 @@ pub trait TestSuite {
                 TestResult::Success(ref tr) => {
                     if inclusions.trace {
                         print!("\t");
-                        Self::run_trace(name, tr);
+                        Self::run_trace(&name, tr);
                     }
                 }
                 TestResult::Fail(_) => {
@@ -314,7 +314,7 @@ pub trait TestSuite {
         let configs = self.configs()?;
         let num_tests = configs.len() * inclusions.num_tests();
         for conf in configs {
-            let name = conf.name();
+            let name = conf.name.clone();
             println!("Running tests for {name}",);
 
             print!("\t");
@@ -328,7 +328,7 @@ pub trait TestSuite {
 
             if inclusions.reparse {
                 print!("\t");
-                if matches!(Self::run_reparse(name, &prog), TestResult::Fail(_)) {
+                if matches!(Self::run_reparse(&name, &prog), TestResult::Fail(_)) {
                     num_fail += 1
                 };
             };
@@ -340,7 +340,7 @@ pub trait TestSuite {
                     TestResult::Success(ref tr) => {
                         if inclusions.trace {
                             print!("\t");
-                            Self::run_trace(name, tr);
+                            Self::run_trace(&name, tr);
                         }
                     }
                     TestResult::Fail(_) => {

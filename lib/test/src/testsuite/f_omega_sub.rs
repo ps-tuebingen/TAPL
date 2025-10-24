@@ -1,42 +1,10 @@
 use super::TestSuite;
-use crate::{
-    paths::{EXAMPLES_PATH, F_OMEGA_SUB_PATH},
-    test::TestConfig,
-};
+use crate::paths::{EXAMPLES_PATH, F_OMEGA_SUB_PATH};
 use languages::FOmegaSub;
 use std::path::PathBuf;
 
-#[derive(serde::Deserialize)]
-pub struct FOmegaSubConf {
-    ty: String,
-    evaluated: String,
-    name: String,
-    #[serde(default)]
-    contents: String,
-}
-
-impl TestConfig for FOmegaSubConf {
-    fn set_contents(&mut self, contents: String) {
-        self.contents = contents
-    }
-
-    fn name(&self) -> &str {
-        &self.name
-    }
-    fn contents(&self) -> &str {
-        &self.contents
-    }
-    fn ty(&self) -> &str {
-        &self.ty
-    }
-    fn evaluated(&self) -> &str {
-        &self.evaluated
-    }
-}
-
 impl TestSuite for FOmegaSub {
     type Lang = Self;
-    type Config = FOmegaSubConf;
 
     fn name(&self) -> &str {
         "Existential"

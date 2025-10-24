@@ -1,14 +1,11 @@
-use super::test::TestConfig;
+use crate::config::TestConfig;
 use errors::{DirAccess, FileAccess, Toml, test_error::TestError};
 use std::{
     fs::{read_dir, read_to_string},
     path::PathBuf,
 };
 
-pub fn load_dir<Conf>(dir: &PathBuf, src_ext: &str) -> Result<Vec<Conf>, TestError>
-where
-    Conf: TestConfig,
-{
+pub fn load_dir(dir: &PathBuf, src_ext: &str) -> Result<Vec<TestConfig>, TestError> {
     let mut tests = vec![];
     for entry in read_dir(dir).map_err(|err| DirAccess::new(&format!("read {dir:?}"), err))? {
         let entry = entry.map_err(|err| DirAccess::new(&format!("read {dir:?}"), err))?;
@@ -36,12 +33,12 @@ where
         config_file.set_extension("toml");
         let config_contents = read_to_string(&config_file)
             .map_err(|err| FileAccess::new(&format!("Read File {config_file:?}"), err))?;
-        let mut config: Conf = basic_toml::from_str(&config_contents)
+        let mut config: TestConfig = basic_toml::from_str(&config_contents)
             .map_err(|err| Toml::new(&config_contents, err))?;
-        config.set_contents(contents);
+        config.contents = contents;
 
         tests.push(config);
     }
-    tests.sort_by(|tst1, tst2| tst1.name().cmp(tst2.name()));
+    tests.sort_by(|tst1, tst2| tst1.name.cmp(&tst2.name));
     Ok(tests)
 }
