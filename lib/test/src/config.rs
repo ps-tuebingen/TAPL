@@ -25,7 +25,7 @@ pub const KEY_PARSE: &str = "parse";
 
 /// configuration for a single test in `examples/`
 /// Parsed from the correspongding .toml file for each example
-#[derive(serde::Deserialize)]
+#[derive(Debug, serde::Deserialize)]
 pub struct TestConfig {
     /// The name of the test (used for pretty printing during testing)
     pub name: String,
@@ -167,7 +167,6 @@ impl TestConfig {
             self.include_frac(),
             self.include_eval(),
             self.include_trace(),
-            self.include_grammar(),
         ];
         inclusions.iter().filter(|inc| **inc).count()
     }

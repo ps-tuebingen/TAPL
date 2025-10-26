@@ -1,3 +1,6 @@
 name="UnpackPair"
 ty="Nat"
 evaluated="5"
+
+[exclusions]
+derivation_buss=true

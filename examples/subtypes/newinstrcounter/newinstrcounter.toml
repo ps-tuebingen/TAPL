@@ -1,3 +1,6 @@
 name="NewInstrCounter"
 ty="(Unit -> {accesses:(Unit -> Nat), get:(Unit -> Nat), inc:(Unit -> Unit), set:(Nat -> Unit)})"
 evaluated="\\_:Unit.(let (r = {a=ref(0), x=ref(1)}) in (fix((\\r:{a:Ref[Nat], x:Ref[Nat]}.(\\self:(Unit -> {accesses:(Unit -> Nat), get:(Unit -> Nat), inc:(Unit -> Unit), set:(Nat -> Unit)}).(\\_:Unit.(let (super = (((\\r:{x:Ref[Nat]}.(\\self:(Unit -> {get:(Unit -> Nat), inc:(Unit -> Unit), set:(Nat -> Unit)}).(\\_:Unit.({get=\\_:Unit.(!(r).x), inc=\\_:Unit.((((self) (unit)).set) (succ((((self) (unit)).get) (unit)))), set=\\i:Nat.(((r).x) := i)})))) (r)) (self)) (unit)) in {accesses=\\_:Unit.(!(r).a), get=(super).get, inc=(super).inc, set=\\i:Nat.((\\_:Unit.(((super).set) (i))) (((r).a) := succ(!(r).a)))})))) (r))) (unit))"
+
+[exclusions]
+derivation_buss=true

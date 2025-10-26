@@ -1,3 +1,6 @@
 name="InstrCounterClass"
 ty="({a:Ref[Nat], x:Ref[Nat]} -> ((Unit -> {accesses:(Unit -> Nat), get:(Unit -> Nat), inc:(Unit -> Unit), set:(Nat -> Unit)}) -> (Unit -> {accesses:(Unit -> Nat), get:(Unit -> Nat), inc:(Unit -> Unit), set:(Nat -> Unit)})))"
 evaluated="\\r:{a:Ref[Nat], x:Ref[Nat]}.(\\self:(Unit -> {accesses:(Unit -> Nat), get:(Unit -> Nat), inc:(Unit -> Unit), set:(Nat -> Unit)}).(\\_:Unit.(let (super = (((inccounterclass) (r)) (self)) (unit)) in {accesses=\\_:Unit.(!(r).a), get=(super).get, inc=(super).inc, set=\\i:Nat.((\\_:Unit.(((super).set) (i))) (((r).a) := succ(!(r).a)))})))"
+
+[exclusions]
+derivation_buss=true

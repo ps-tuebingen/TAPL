@@ -1,3 +1,6 @@
 name="PairADT"
 ty="Nat"
 evaluated="1"
+
+[exclusions]
+derivation_buss=true

@@ -51,7 +51,8 @@ pub trait TestSuite: Language {
         let mut num_fails = 0;
         let check_res = match CheckTest::<Self>::run_report(&conf, parse_res.clone()) {
             TestResult::Success(res) => res,
-            _ => return 3,
+            TestResult::Skipped => return 0,
+            TestResult::Fail(_) => return 3,
         };
         if matches!(
             LatexTestBuss::<Self>::run_report(&conf, &check_res),
@@ -76,7 +77,8 @@ pub trait TestSuite: Language {
         let mut num_fails = 0;
         let eval_res = match EvalTest::<Self>::run_report(&conf, parse_res.clone()) {
             TestResult::Success(res) => res,
-            _ => return 2,
+            TestResult::Skipped => return 0,
+            TestResult::Fail(_) => return 2,
         };
         if matches!(
             LatexTestTrace::<Self>::run_report(&conf, &eval_res),
@@ -137,15 +139,10 @@ pub trait TestSuite: Language {
         println!();
 
         let configs = TestConfig::load_suite(&self.source_dir(), self.ext())?;
-        let num_tests = configs.len() * configs.iter().fold(0, |num, conf| num + conf.num_tests());
+        let num_tests = configs.iter().fold(0, |num, conf| num + conf.num_tests());
         for mut conf in configs {
             args.update_conf(&mut conf);
             conf.update_features(&Self::features());
-            println!(
-                "Running tests for language {} with exclusions {:?}",
-                self.describe(),
-                conf.exclusions
-            );
 
             let result = Self::run_conf(&conf);
             num_fails += result;
