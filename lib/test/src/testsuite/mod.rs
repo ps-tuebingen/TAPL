@@ -140,6 +140,13 @@ pub trait TestSuite: Language {
         let num_tests = configs.len() * configs.iter().fold(0, |num, conf| num + conf.num_tests());
         for mut conf in configs {
             args.update_conf(&mut conf);
+            conf.update_features(&Self::features());
+            println!(
+                "Running tests for language {} with exclusions {:?}",
+                self.describe(),
+                conf.exclusions
+            );
+
             let result = Self::run_conf(&conf);
             num_fails += result;
         }

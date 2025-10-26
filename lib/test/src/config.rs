@@ -4,6 +4,7 @@ use std::{
     fs::{read_dir, read_to_string},
     path::PathBuf,
 };
+use syntax::language::LanguageFeatures;
 
 /// key for reparsing tests used in the `exclusions` map
 pub const KEY_REPARSE: &str = "reparse";
@@ -53,6 +54,16 @@ impl TestConfig {
             evaluated: "".to_owned(),
             contents: "".to_owned(),
             exclusions: HashMap::new(),
+        }
+    }
+
+    /// Updates `self` based on a given language's features
+    pub fn update_features(&mut self, features: &LanguageFeatures) {
+        if !features.typed {
+            self.exclusions.insert(KEY_CHECK.to_owned(), true);
+        }
+        if !features.evaluating {
+            self.exclusions.insert(KEY_EVAL.to_owned(), true);
         }
     }
 
