@@ -1,9 +1,14 @@
 use super::UntypedArithmetic;
+use check::Typecheck;
+use derivations::Derivation;
+use errors::{NoTyping, check_error::CheckError};
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
 use syntax::{
     TypeVar, Var,
+    env::Environment,
+    language::Language,
     subst::{SubstTerm, SubstType},
     terms::{False, If, IsZero, Num, Pred, Succ, True},
     untyped::Untyped,
@@ -77,6 +82,16 @@ impl LatexFmt for Term {
             Term::Pred(pred) => pred.to_latex(conf),
             Term::IsZero(isz) => isz.to_latex(conf),
         }
+    }
+}
+
+impl Typecheck for Term {
+    type Lang = UntypedArithmetic;
+    fn check(
+        &self,
+        _: Environment<UntypedArithmetic>,
+    ) -> Result<Derivation<UntypedArithmetic>, CheckError> {
+        Err(NoTyping::new(UntypedArithmetic.describe()).into())
     }
 }
 

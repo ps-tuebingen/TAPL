@@ -1,8 +1,26 @@
 use errors::{DirAccess, FileAccess, Toml, test_error::TestError};
 use std::{
+    collections::HashMap,
     fs::{read_dir, read_to_string},
     path::PathBuf,
 };
+
+/// key for reparsing tests used in the `exclusions` map
+pub const KEY_REPARSE: &str = "reparse";
+/// key for check tests used in the `exclusions` map
+pub const KEY_CHECK: &str = "check";
+/// key for derivation (bussproofs) tests used in the `exclusions` map
+pub const KEY_BUSS: &str = "derivation_buss";
+/// key for derivation (frac+array) tests used in the `exclusions` map
+pub const KEY_FRAC: &str = "derivation_frac";
+/// key for eval tests used in the `exclusions` map
+pub const KEY_EVAL: &str = "eval";
+/// key for trace tests used in the `exclusions` map
+pub const KEY_TRACE: &str = "trace";
+/// key for grammar tests used in the `exclusions` map
+pub const KEY_GRAMMAR: &str = "grammar";
+/// key for parsing tests used in the `exclusions` map
+pub const KEY_PARSE: &str = "parse";
 
 /// configuration for a single test in `examples/`
 /// Parsed from the correspongding .toml file for each example
@@ -22,9 +40,22 @@ pub struct TestConfig {
     /// Instead this is the file contents of the actual example
     #[serde(default)]
     pub contents: String,
+    #[serde(default)]
+    pub exclusions: HashMap<String, bool>,
 }
 
 impl TestConfig {
+    /// Empty configuration with only a name
+    pub fn empty(name: &str) -> TestConfig {
+        TestConfig {
+            name: name.to_owned(),
+            ty: "".to_owned(),
+            evaluated: "".to_owned(),
+            contents: "".to_owned(),
+            exclusions: HashMap::new(),
+        }
+    }
+
     /// Loads a Test config from a base directory
     /// Assumes the example is located in `dir/dir.src_ext`
     /// and assumes the config is located in `dir/dir.toml`
@@ -73,5 +104,60 @@ impl TestConfig {
         }
         tests.sort_by(|tst1, tst2| tst1.name.cmp(&tst2.name));
         Ok(tests)
+    }
+
+    /// Does this test include reparsing
+    pub fn include_reparse(&self) -> bool {
+        matches!(self.exclusions.get(KEY_REPARSE), None | Some(false))
+    }
+
+    /// Does this test include type checking
+    pub fn include_check(&self) -> bool {
+        matches!(self.exclusions.get(KEY_CHECK), None | Some(false))
+    }
+
+    /// Does this test include derivations (bussproofs)
+    pub fn include_buss(&self) -> bool {
+        matches!(self.exclusions.get(KEY_BUSS), None | Some(false))
+    }
+
+    /// Does this test include derivations (frac+array)
+    pub fn include_frac(&self) -> bool {
+        matches!(self.exclusions.get(KEY_FRAC), None | Some(false))
+    }
+
+    /// Does this test include evaluation
+    pub fn include_eval(&self) -> bool {
+        matches!(self.exclusions.get(KEY_EVAL), None | Some(false))
+    }
+
+    /// Does this test include evaluation
+    pub fn include_trace(&self) -> bool {
+        matches!(self.exclusions.get(KEY_TRACE), None | Some(false))
+    }
+
+    /// Does this test include grammar
+    pub fn include_grammar(&self) -> bool {
+        matches!(self.exclusions.get(KEY_GRAMMAR), None | Some(false))
+    }
+
+    /// Does this test include parsing
+    pub fn include_parse(&self) -> bool {
+        matches!(self.exclusions.get(KEY_PARSE), None | Some(false))
+    }
+
+    /// The number of tests that are set for this test
+    pub fn num_tests(&self) -> usize {
+        let inclusions = [
+            self.include_parse(),
+            self.include_reparse(),
+            self.include_check(),
+            self.include_buss(),
+            self.include_frac(),
+            self.include_eval(),
+            self.include_trace(),
+            self.include_grammar(),
+        ];
+        inclusions.iter().filter(|inc| **inc).count()
     }
 }

@@ -1,4 +1,4 @@
-use crate::{paths::LATEX_OUT, test::Test, test_result::TestResult};
+use crate::{config::TestConfig, paths::LATEX_OUT, test_result::TestResult, tests::Test};
 use derivations::ProgramDerivation;
 use latex::{LatexConfig, LatexFmt};
 use std::{
@@ -9,13 +9,17 @@ use std::{
 };
 use syntax::language::Language;
 
+/// Test formatting a typing derivation using latex fractions+arrays
+/// The Lang parameter is the language of the program ([`syntax::language::Language`])
 pub struct LatexTestFrac<'a, Lang>
 where
     Lang: Language,
     Lang::Term: LatexFmt,
     Lang::Type: LatexFmt,
 {
+    /// The name of the program
     name: String,
+    /// The derivation to format
     deriv: &'a ProgramDerivation<Lang>,
 }
 
@@ -33,12 +37,15 @@ where
     }
 }
 
-impl<'a, Lang> Test<()> for LatexTestFrac<'a, Lang>
+impl<'a, Lang> Test for LatexTestFrac<'a, Lang>
 where
     Lang: Language,
     Lang::Term: LatexFmt,
     Lang::Type: LatexFmt,
 {
+    type Result = ();
+    type Input = &'a ProgramDerivation<Lang>;
+
     fn name(&self) -> String {
         format!(
             "Generating Latex for Derivation Tree of {} (Frac + Array)",
@@ -78,6 +85,17 @@ where
                     TestResult::Fail("xelatex exited with non-zero exit status".to_owned())
                 }
             }
+        }
+    }
+
+    fn from_conf(conf: &TestConfig, deriv: Self::Input) -> Option<Self> {
+        if !conf.include_frac() {
+            None
+        } else {
+            Some(LatexTestFrac {
+                name: conf.name.clone(),
+                deriv,
+            })
         }
     }
 }

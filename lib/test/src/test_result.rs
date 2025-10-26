@@ -3,6 +3,7 @@ use std::fmt;
 pub enum TestResult<T> {
     Success(T),
     Fail(String),
+    Skipped,
 }
 
 impl<T> TestResult<T> {
@@ -33,6 +34,7 @@ impl<T> TestResult<T> {
         match self {
             TestResult::Success(_) => println!("Test {test_name}.....\x1b[32mok\x1b[39m"),
             TestResult::Fail(msg) => println!("Test {test_name}.....\x1b[31mfail\n\t{msg}\x1b[39m"),
+            TestResult::Skipped => println!("Test {test_name} ... Skipped"),
         }
     }
 }

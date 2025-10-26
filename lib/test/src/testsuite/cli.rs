@@ -1,36 +1,42 @@
-use crate::test::TestInclusions;
+use crate::config::{KEY_BUSS, KEY_CHECK, KEY_EVAL, KEY_FRAC, KEY_REPARSE, KEY_TRACE, TestConfig};
 use clap::Parser;
 
+/// Command line arguments for the test suite
+/// used to disable certain tests
+/// in particular, excluding latex speeds up tests significantly
 #[derive(Parser)]
 pub struct Args {
+    /// Exclude type checking
     #[clap(long)]
-    exclude_check: bool,
+    pub exclude_check: bool,
     #[clap(long)]
-    exclude_eval: bool,
+    /// Exclude evaluation
+    pub exclude_eval: bool,
     #[clap(long)]
-    exclude_latex: bool,
+    /// Exclude latex compiling
+    /// this includes derivations (buss/frac+array) and traces
+    pub exclude_latex: bool,
+    #[clap(long)]
+    /// Exclude reparsing
+    pub exclude_reparse: bool,
 }
 
 impl Args {
-    pub fn to_inclusions(&self) -> TestInclusions {
-        let mut inc = TestInclusions::default();
+    /// update a [`TestConfig`] (in particular the `exclusions` field) with given cli arguments
+    pub fn update_conf(&self, conf: &mut TestConfig) {
         if self.exclude_check {
-            inc.check = false;
-            inc.derivation_buss = false;
-            inc.derivation_frac = false;
+            conf.exclusions.insert(KEY_CHECK.to_owned(), true);
         }
-
         if self.exclude_eval {
-            inc.eval = false;
-            inc.trace = false;
+            conf.exclusions.insert(KEY_EVAL.to_owned(), true);
         }
-
         if self.exclude_latex {
-            inc.derivation_buss = false;
-            inc.derivation_frac = false;
-            inc.grammar = false;
-            inc.trace = false;
+            conf.exclusions.insert(KEY_BUSS.to_owned(), true);
+            conf.exclusions.insert(KEY_FRAC.to_owned(), true);
+            conf.exclusions.insert(KEY_TRACE.to_owned(), true);
         }
-        inc
+        if self.exclude_reparse {
+            conf.exclusions.insert(KEY_REPARSE.to_owned(), true);
+        }
     }
 }

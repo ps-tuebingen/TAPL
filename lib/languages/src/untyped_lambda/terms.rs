@@ -1,9 +1,13 @@
 use super::UntypedLambda;
+use check::Typecheck;
+use derivations::Derivation;
+use errors::{NoTyping, check_error::CheckError};
 use grammar::{Grammar, GrammarDescribe, RuleDescribe};
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
 use syntax::{
     TypeVar,
+    env::Environment,
     language::Language,
     subst::{SubstTerm, SubstType},
     terms::{App, UntypedLambda as UntypedLambdaT, Variable},
@@ -67,6 +71,14 @@ impl SubstType for Term {
     type Target = Self;
     fn subst_type(self, _: &TypeVar, _: &<Self::Lang as Language>::Type) -> Self::Target {
         self
+    }
+}
+
+impl Typecheck for Term {
+    type Lang = UntypedLambda;
+
+    fn check(&self, _: Environment<Self::Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
+        Err(NoTyping::new(UntypedLambda.describe()).into())
     }
 }
 

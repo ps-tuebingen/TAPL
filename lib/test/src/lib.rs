@@ -1,14 +1,8 @@
 pub mod config;
 pub mod paths;
-pub mod test;
 pub mod test_result;
+pub mod tests;
 pub mod testsuite;
-
-pub mod check_test;
-pub mod eval_test;
-pub mod latex;
-pub mod parse_test;
-pub mod reparse_test;
 
 use errors::{DirAccess, test_error::TestError};
 

@@ -1,4 +1,4 @@
-use crate::{paths::LATEX_OUT, test::Test, test_result::TestResult};
+use crate::{config::TestConfig, paths::LATEX_OUT, test_result::TestResult, tests::Test};
 use grammar::LanguageDescribe;
 use latex::LatexFmt;
 use std::marker::PhantomData;
@@ -10,11 +10,14 @@ use std::{
 };
 use syntax::language::Language;
 
+/// Tests printing and compiling a language ([`syntax::language::Language`]) grammar
 pub struct LatexTestGrammar<L>
 where
     L: Language,
 {
+    /// The name of the language
     name: String,
+    /// phantom data to save the language type
     phantom: PhantomData<L>,
 }
 
@@ -22,6 +25,7 @@ impl<L> LatexTestGrammar<L>
 where
     L: Language,
 {
+    /// Crate a new grammar test from a given name
     pub fn new(name: &str) -> LatexTestGrammar<L> {
         LatexTestGrammar {
             name: name.to_owned(),
@@ -30,10 +34,13 @@ where
     }
 }
 
-impl<L> Test<()> for LatexTestGrammar<L>
+impl<L> Test for LatexTestGrammar<L>
 where
     L: Language + LanguageDescribe,
 {
+    type Result = ();
+    type Input = ();
+
     fn name(&self) -> String {
         format!("Generating Latex for Grammar of {}", self.name)
     }
@@ -70,6 +77,17 @@ where
                     TestResult::Fail("xelatex exited with non-zero exit status".to_owned())
                 }
             }
+        }
+    }
+
+    fn from_conf(conf: &TestConfig, _: Self::Input) -> Option<Self> {
+        if !conf.include_grammar() {
+            None
+        } else {
+            Some(LatexTestGrammar {
+                name: conf.name.clone(),
+                phantom: PhantomData,
+            })
         }
     }
 }

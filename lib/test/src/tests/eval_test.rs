@@ -1,16 +1,21 @@
-use super::{test::Test, test_result::TestResult};
+use crate::{config::TestConfig, test_result::TestResult, tests::Test};
 use eval::{Eval, eval_main};
 use syntax::{language::Language, program::Program};
 use trace::EvalTrace;
 
+/// Test evaluating a program (i.e. the main defintion)
+/// The program is in the given languge ([`syntax::language::Language`])
 pub struct EvalTest<Lang>
 where
     Lang: Language,
     Lang::Term: Eval<Lang = Lang>,
 {
+    /// The name of the program
     name: String,
-    expected: String,
+    /// The program to evaluate
     prog: Program<Lang>,
+    /// The expected value
+    expected: String,
 }
 
 impl<Lang> EvalTest<Lang>
@@ -18,6 +23,7 @@ where
     Lang: Language,
     Lang::Term: Eval<Lang = Lang>,
 {
+    /// Crate a new Eval test with given name program and expected value
     pub fn new(name: &str, prog: Program<Lang>, exp: &str) -> EvalTest<Lang> {
         EvalTest {
             name: name.to_owned(),
@@ -27,11 +33,14 @@ where
     }
 }
 
-impl<Lang> Test<EvalTrace<Lang>> for EvalTest<Lang>
+impl<Lang> Test for EvalTest<Lang>
 where
     Lang: Language,
     Lang::Term: Eval<Lang = Lang>,
 {
+    type Result = EvalTrace<Lang>;
+    type Input = Program<Lang>;
+
     fn name(&self) -> String {
         format!("Evaluating {}", self.name)
     }
@@ -49,6 +58,18 @@ where
                 "Result!=Expected:\n\tresult:   {evaled_str}\n\texpected: {}",
                 self.expected
             ))
+        }
+    }
+
+    fn from_conf(conf: &TestConfig, prog: Self::Input) -> Option<Self> {
+        if !conf.include_eval() {
+            None
+        } else {
+            Some(EvalTest {
+                name: conf.name.clone(),
+                expected: conf.evaluated.clone(),
+                prog,
+            })
         }
     }
 }

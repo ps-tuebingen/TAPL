@@ -1,4 +1,4 @@
-use crate::{paths::LATEX_OUT, test::Test, test_result::TestResult};
+use crate::{config::TestConfig, paths::LATEX_OUT, test_result::TestResult, tests::Test};
 use derivations::ProgramDerivation;
 use latex::LatexFmt;
 use std::{
@@ -9,13 +9,19 @@ use std::{
 };
 use syntax::language::Language;
 
+/// Test formatting and compiling a typing derivation in latex
+/// uses bussproofs for formatting
+/// For some examples this has to be skipped because of limits on derivation sizes
+/// The derivation is in the given languge ([`syntax::language::Language`])
 pub struct LatexTestBuss<'a, Lang>
 where
     Lang: Language,
     Lang::Term: LatexFmt,
     Lang::Type: LatexFmt,
 {
+    /// The name of the program
     name: String,
+    /// The derivation to format
     deriv: &'a ProgramDerivation<Lang>,
 }
 
@@ -25,6 +31,7 @@ where
     Lang::Term: LatexFmt,
     Lang::Type: LatexFmt,
 {
+    /// Create a new test with given name and derivation
     pub fn new(name: &str, deriv: &'a ProgramDerivation<Lang>) -> LatexTestBuss<'a, Lang> {
         LatexTestBuss {
             name: name.to_owned(),
@@ -33,12 +40,15 @@ where
     }
 }
 
-impl<'a, Lang> Test<()> for LatexTestBuss<'a, Lang>
+impl<'a, Lang> Test for LatexTestBuss<'a, Lang>
 where
     Lang: Language,
     Lang::Term: LatexFmt,
     Lang::Type: LatexFmt,
 {
+    type Result = ();
+    type Input = &'a ProgramDerivation<Lang>;
+
     fn name(&self) -> String {
         format!(
             "Generating Latex for Derivation Trees of {} (Bussproofs)",
@@ -78,6 +88,17 @@ where
                     TestResult::Fail("xelatex exited with non-zero exit status".to_owned())
                 }
             }
+        }
+    }
+
+    fn from_conf(conf: &TestConfig, deriv: Self::Input) -> Option<Self> {
+        if !conf.include_buss() {
+            None
+        } else {
+            Some(LatexTestBuss {
+                name: conf.name.clone(),
+                deriv,
+            })
         }
     }
 }
