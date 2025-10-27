@@ -1,3 +1,6 @@
 name="CounterClass"
 ty="{get:({x:Nat} -> Nat), inc:({x:Nat} -> {x:Nat})}"
 evaluated="{get=\\r:{x:Nat}.((r).x), inc=\\r:{x:Nat}.({x=succ((r).x)})}"
+
+[exclusions]
+derivation_buss=true
