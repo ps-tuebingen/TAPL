@@ -49,19 +49,19 @@ pub trait TestSuite: Language {
         <Self as Language>::Type: LatexFmt,
     {
         let mut num_fails = 0;
-        let check_res = match CheckTest::<Self>::run_report(&conf, parse_res.clone()) {
+        let check_res = match CheckTest::<Self>::run_report(conf, parse_res.clone()) {
             TestResult::Success(res) => res,
             TestResult::Skipped => return 0,
             TestResult::Fail(_) => return 3,
         };
         if matches!(
-            LatexTestBuss::<Self>::run_report(&conf, &check_res),
+            LatexTestBuss::<Self>::run_report(conf, &check_res),
             TestResult::Fail(_)
         ) {
             num_fails += 1;
         };
         if matches!(
-            LatexTestFrac::<Self>::run_report(&conf, &check_res),
+            LatexTestFrac::<Self>::run_report(conf, &check_res),
             TestResult::Fail(_)
         ) {
             num_fails += 1;
@@ -75,13 +75,13 @@ pub trait TestSuite: Language {
         <Self as Language>::Value: LatexFmt,
     {
         let mut num_fails = 0;
-        let eval_res = match EvalTest::<Self>::run_report(&conf, parse_res.clone()) {
+        let eval_res = match EvalTest::<Self>::run_report(conf, parse_res.clone()) {
             TestResult::Success(res) => res,
             TestResult::Skipped => return 0,
             TestResult::Fail(_) => return 2,
         };
         if matches!(
-            LatexTestTrace::<Self>::run_report(&conf, &eval_res),
+            LatexTestTrace::<Self>::run_report(conf, &eval_res),
             TestResult::Fail(_)
         ) {
             num_fails += 1
@@ -101,18 +101,18 @@ pub trait TestSuite: Language {
         let mut num_fails = 0;
         println!("Running tests for {name}",);
 
-        let parse_res = match ParseTest::<Self>::run_report(&conf, ()) {
+        let parse_res = match ParseTest::<Self>::run_report(conf, ()) {
             TestResult::Success(res) => res,
             _ => return num_fails + (conf.num_tests() - 1),
         };
         if matches!(
-            ReparseTest::<Self>::run_report(&conf, parse_res.clone()),
+            ReparseTest::<Self>::run_report(conf, parse_res.clone()),
             TestResult::Fail(_)
         ) {
             num_fails += 1
         };
-        num_fails += Self::run_check_tests(&conf, &parse_res);
-        num_fails += Self::run_eval_tests(&conf, &parse_res);
+        num_fails += Self::run_check_tests(conf, &parse_res);
+        num_fails += Self::run_eval_tests(conf, &parse_res);
         num_fails
     }
 
