@@ -1,4 +1,3 @@
-use super::Conclusion;
 use std::fmt;
 use syntax::{env::Environment, language::Language};
 
@@ -30,15 +29,6 @@ where
 
     pub fn ty(&self) -> Lang::Type {
         self.ty.clone()
-    }
-}
-
-impl<Lang> From<TypingConclusion<Lang>> for Conclusion<Lang>
-where
-    Lang: Language,
-{
-    fn from(conc: TypingConclusion<Lang>) -> Conclusion<Lang> {
-        Conclusion::Typing(conc)
     }
 }
 

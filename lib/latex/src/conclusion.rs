@@ -1,20 +1,6 @@
 use crate::{LatexConfig, LatexFmt};
-use derivations::{Conclusion, NormalizingConclusion, SubtypeConclusion, TypingConclusion};
+use derivations::{NormalizingConclusion, SubtypeConclusion, TypingConclusion};
 use syntax::language::Language;
-
-impl<Lang> LatexFmt for Conclusion<Lang>
-where
-    Lang: Language,
-    Lang::Term: LatexFmt,
-    Lang::Type: LatexFmt,
-{
-    fn to_latex(&self, conf: &mut LatexConfig) -> String {
-        match self {
-            Conclusion::Typing(conc) => conc.to_latex(conf),
-            Conclusion::Subtyping(conc) => conc.to_latex(conf),
-        }
-    }
-}
 
 impl<Lang> LatexFmt for TypingConclusion<Lang>
 where

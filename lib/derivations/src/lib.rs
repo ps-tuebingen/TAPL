@@ -10,7 +10,7 @@ pub mod rules;
 pub mod subtype_derivation;
 pub mod typing_derivation;
 
-pub use conclusion::{Conclusion, NormalizingConclusion, SubtypeConclusion, TypingConclusion};
+pub use conclusion::{NormalizingConclusion, SubtypeConclusion, TypingConclusion};
 pub use definition_derivation::DefinitionDerivation;
 pub use normalizing_derivation::NormalizingDerivation;
 pub use program_derivation::ProgramDerivation;

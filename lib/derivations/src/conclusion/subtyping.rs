@@ -1,4 +1,3 @@
-use super::Conclusion;
 use std::fmt;
 use syntax::{env::Environment, language::Language};
 
@@ -26,15 +25,6 @@ where
             sub: sub.into(),
             sup: sup.into(),
         }
-    }
-}
-
-impl<Lang> From<SubtypeConclusion<Lang>> for Conclusion<Lang>
-where
-    Lang: Language,
-{
-    fn from(conc: SubtypeConclusion<Lang>) -> Conclusion<Lang> {
-        Conclusion::Subtyping(conc)
     }
 }
 
