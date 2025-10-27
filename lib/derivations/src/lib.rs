@@ -3,20 +3,17 @@ use std::fmt;
 use syntax::language::Language;
 
 pub mod conclusion;
-pub mod definition_derivation;
-pub mod normalizing_derivation;
-pub mod program_derivation;
+pub mod derivation;
 pub mod rules;
-pub mod subtype_derivation;
-pub mod typing_derivation;
 
-pub use conclusion::{NormalizingConclusion, SubtypeConclusion, TypingConclusion};
-pub use definition_derivation::DefinitionDerivation;
-pub use normalizing_derivation::NormalizingDerivation;
-pub use program_derivation::ProgramDerivation;
+pub use conclusion::{
+    KindingConclusion, NormalizingConclusion, SubtypeConclusion, TypingConclusion,
+};
+pub use derivation::{
+    DefinitionDerivation, KindingDerivation, NormalizingDerivation, ProgramDerivation,
+    SubtypeDerivation, TypingDerivation,
+};
 pub use rules::{SubtypeRule, TypingRule};
-pub use subtype_derivation::SubtypeDerivation;
-pub use typing_derivation::TypingDerivation;
 
 #[derive(Debug)]
 pub enum Derivation<Lang>
@@ -28,6 +25,7 @@ where
     DefinitionDerivation(DefinitionDerivation<Lang>),
     SubtypeDerivation(SubtypeDerivation<Lang>),
     NormalizingDerivation(NormalizingDerivation<Lang>),
+    KindingDerivation(KindingDerivation<Lang>),
 }
 
 impl<Lang> Derivation<Lang>
@@ -41,6 +39,7 @@ where
             Derivation::SubtypeDerivation(sub) => sub.ret_ty(),
             Derivation::ProgramDerivation(deriv) => deriv.ret_ty(),
             Derivation::NormalizingDerivation(deriv) => deriv.ret_ty(),
+            Derivation::KindingDerivation(deriv) => deriv.ret_ty(),
         }
     }
     pub fn into_def(self) -> Result<DefinitionDerivation<Lang>, UnexpectedDerivation> {
@@ -139,6 +138,7 @@ where
             Derivation::DefinitionDerivation(deriv) => deriv.fmt(f),
             Derivation::SubtypeDerivation(deriv) => deriv.fmt(f),
             Derivation::NormalizingDerivation(deriv) => deriv.fmt(f),
+            Derivation::KindingDerivation(deriv) => deriv.fmt(f),
         }
     }
 }

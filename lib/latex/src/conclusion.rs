@@ -1,5 +1,5 @@
 use crate::{LatexConfig, LatexFmt};
-use derivations::{NormalizingConclusion, SubtypeConclusion, TypingConclusion};
+use derivations::{KindingConclusion, NormalizingConclusion, SubtypeConclusion, TypingConclusion};
 use syntax::language::Language;
 
 impl<Lang> LatexFmt for TypingConclusion<Lang>
@@ -55,6 +55,23 @@ where
             "{env_start}{}\\equiv{}{env_end}",
             self.left.to_latex(conf),
             self.right.to_latex(conf)
+        )
+    }
+}
+
+impl<Lang> LatexFmt for KindingConclusion<Lang>
+where
+    Lang: Language,
+    Lang::Term: LatexFmt,
+    Lang::Type: LatexFmt,
+{
+    fn to_latex(&self, conf: &mut LatexConfig) -> String {
+        let (env_start, env_end) = conf.mathenv_strs();
+        conf.include_envs = false;
+        format!(
+            "{env_start}{}::{}{env_end}",
+            self.ty.to_latex(conf),
+            self.kind.to_latex(conf)
         )
     }
 }

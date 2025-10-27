@@ -1,4 +1,4 @@
-use crate::{definition_derivation::DefinitionDerivation, typing_derivation::TypingDerivation};
+use crate::{DefinitionDerivation, TypingDerivation};
 use std::{collections::HashMap, fmt};
 use syntax::language::Language;
 
