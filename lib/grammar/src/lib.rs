@@ -1,3 +1,4 @@
+mod derivation_rule;
 mod grammar;
 mod rule;
 pub mod symbols;
@@ -8,6 +9,7 @@ mod types;
 mod untyped;
 mod values;
 
+pub use derivation_rule::DerivationRule;
 pub use grammar::{Grammar, LanguageGrammar};
 pub use rule::Rule;
 pub use symbols::Symbol;

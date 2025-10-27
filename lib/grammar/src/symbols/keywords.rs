@@ -1,11 +1,11 @@
 use super::Symbol;
 use std::fmt;
 
+/// Keyword used in [`super::Symbol`]
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Keyword {
     As,
     In,
-
     Let,
     If,
     Else,
@@ -34,7 +34,6 @@ pub enum Keyword {
     False,
     Fst,
     Snd,
-
     Source,
     Sink,
     Reference,

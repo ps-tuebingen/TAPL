@@ -1,6 +1,8 @@
 use super::Symbol;
 use std::fmt;
 
+/// Special characters used in [`super::Symbol`]
+/// Can be printed in textual representation or in latex representation
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum SpecialChar {
     Number,
