@@ -77,7 +77,7 @@ where
                         rhs_knd = Some(rhs_res.ret_kind());
                     }
                     Some(ref rhs) => {
-                        rhs_res.ret_kind().check_equal(&rhs)?;
+                        rhs_res.ret_kind().check_equal(rhs)?;
                     }
                 }
                 premises.push(rhs_res.into());

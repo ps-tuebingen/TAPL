@@ -2,7 +2,7 @@ use super::{Subtypes, terms::Term, types::Type};
 use check::{Kindcheck, Normalize, Subtypecheck, Typecheck};
 use derivations::{Derivation, NormalizingDerivation};
 use errors::{NoKinding, check_error::CheckError};
-use syntax::{env::Environment, kinds::Kind};
+use syntax::env::Environment;
 
 impl Typecheck for Term {
     type Lang = Subtypes;

@@ -3,7 +3,6 @@ use derivations::{Derivation, KindingDerivation, NormalizingDerivation, SubtypeD
 use errors::{NotASubtype, check_error::CheckError};
 use syntax::{
     env::Environment,
-    kinds::Kind,
     language::Language,
     types::{Top, TypeGroup},
 };

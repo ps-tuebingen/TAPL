@@ -5,7 +5,6 @@ use errors::check_error::CheckError;
 use std::collections::HashMap;
 use syntax::{
     env::Environment,
-    kinds::Kind,
     language::Language,
     types::{Record, Top, TypeGroup},
 };

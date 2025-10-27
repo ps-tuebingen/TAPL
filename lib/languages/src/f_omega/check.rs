@@ -2,7 +2,7 @@ use super::{FOmega, terms::Term, types::Type};
 use check::{Kindcheck, Subtypecheck, Typecheck};
 use derivations::Derivation;
 use errors::{NoSubtyping, check_error::CheckError};
-use syntax::{env::Environment, kinds::Kind};
+use syntax::env::Environment;
 
 impl Typecheck for Term {
     type Lang = FOmega;

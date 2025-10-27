@@ -28,7 +28,7 @@ where
 
         let fun_res = self.fun.check(env.clone())?;
         let fun_ty = fun_res.ret_ty();
-        premises.push(fun_res.into());
+        premises.push(fun_res);
 
         let fun_norm;
         if features.normalizing {
