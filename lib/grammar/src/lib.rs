@@ -9,7 +9,7 @@ mod types;
 mod untyped;
 mod values;
 
-pub use derivation_rule::DerivationRule;
+pub use derivation_rule::{ConclusionRule, DerivationRule};
 pub use grammar::{Grammar, LanguageGrammar};
 pub use rule::Rule;
 pub use symbols::Symbol;

@@ -8,7 +8,7 @@ use crate::Symbol;
 #[derive(Debug)]
 pub struct DerivationRule {
     /// premises of the derivation rule
-    premises: Vec<ConclusionRule>,
+    pub premises: Vec<ConclusionRule>,
     /// Name of the rule
     label: String,
     /// Conclusion of the rule
