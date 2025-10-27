@@ -1,5 +1,5 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
-use derivations::{Derivation, NormalizingDerivation, SubtypeDerivation};
+use derivations::{Derivation, KindingDerivation, NormalizingDerivation, SubtypeDerivation};
 use errors::check_error::CheckError;
 use syntax::{
     env::Environment,
@@ -51,10 +51,12 @@ where
 impl<Lang> Kindcheck for TypeVariable<Lang>
 where
     Lang: Language,
+    Self: Into<Lang::Type>,
 {
     type Lang = Lang;
-    fn check_kind(&self, env: Environment<Self::Lang>) -> Result<Kind, CheckError> {
-        env.get_tyvar_kind(&self.v).map_err(|err| err.into())
+    fn check_kind(&self, env: Environment<Self::Lang>) -> Result<Derivation<Lang>, CheckError> {
+        let knd = env.get_tyvar_kind(&self.v)?;
+        Ok(KindingDerivation::var(&self.v, knd).into())
     }
 }
 

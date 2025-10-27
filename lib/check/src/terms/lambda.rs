@@ -23,7 +23,7 @@ where
         let mut premises = vec![];
 
         if features.kinded {
-            self.annot.check_kind(env.clone())?;
+            premises.push(self.annot.check_kind(env.clone())?);
         }
 
         env.add_var(self.var.clone(), self.annot.clone());
@@ -41,7 +41,7 @@ where
         };
 
         if features.kinded {
-            body_norm.check_kind(env.clone())?;
+            premises.push(body_norm.check_kind(env.clone())?);
         }
 
         let conc = TypingConclusion::new(

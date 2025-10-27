@@ -32,7 +32,9 @@ where
         }
 
         if features.kinded {
-            bound_norm.check_kind(env.clone())?.into_star()?;
+            let bound_res = bound_norm.check_kind(env.clone())?.into_kind()?;
+            bound_res.ret_kind().into_star()?;
+            premises.push(bound_res.into());
         }
 
         let bound_sum = bound_norm.into_sum()?;
@@ -67,9 +69,11 @@ where
         }
 
         if features.kinded {
-            let left_knd = left_norm.check_kind(left_env)?;
-            let right_knd = right_norm.check_kind(env.clone())?;
-            left_knd.check_equal(&right_knd)?;
+            let left_res = left_norm.check_kind(left_env)?.into_kind()?;
+            let right_res = right_norm.check_kind(env.clone())?.into_kind()?;
+            left_res.ret_kind().check_equal(&right_res.ret_kind())?;
+            premises.push(left_res.into());
+            premises.push(right_res.into());
         }
 
         left_norm.check_equal(&right_norm)?;

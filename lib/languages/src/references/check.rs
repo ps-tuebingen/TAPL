@@ -1,9 +1,9 @@
 use super::{References, terms::Term, types::Type};
 use check::{Kindcheck, Subtypecheck, Typecheck};
 use derivations::Derivation;
-use errors::{NoSubtyping, check_error::CheckError};
+use errors::{NoKinding, NoSubtyping, check_error::CheckError};
 use std::collections::HashMap;
-use syntax::{Location, Var, env::Environment, kinds::Kind};
+use syntax::{Location, Var, env::Environment};
 
 pub type Env = HashMap<Var, Type>;
 pub type StoreTy = HashMap<Location, Type>;
@@ -48,8 +48,8 @@ impl Subtypecheck for Type {
 
 impl Kindcheck for Type {
     type Lang = References;
-    fn check_kind(&self, _: Environment<Self::Lang>) -> Result<Kind, CheckError> {
-        Ok(Kind::Star)
+    fn check_kind(&self, _: Environment<Self::Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
+        Err(NoKinding::new("References").into())
     }
 }
 

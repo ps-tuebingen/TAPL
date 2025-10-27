@@ -24,11 +24,11 @@ where
 
     fn check(&self, env: Environment<Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
         let features = Lang::features();
-        let mut premises = vec![];
+        let mut premises: Vec<Derivation<Lang>> = vec![];
 
         let fun_res = self.fun.check(env.clone())?;
         let fun_ty = fun_res.ret_ty();
-        premises.push(fun_res);
+        premises.push(fun_res.into());
 
         let fun_norm;
         if features.normalizing {
@@ -40,7 +40,9 @@ where
         };
 
         if features.kinded {
-            fun_norm.check_kind(env.clone())?.into_star()?;
+            let knd_res = fun_norm.check_kind(env.clone())?.into_kind()?;
+            knd_res.ret_kind().into_star()?;
+            premises.push(knd_res.into());
         }
 
         let fun: Fun<Lang> = fun_norm.into_fun()?;
@@ -58,7 +60,9 @@ where
         }
 
         if features.kinded {
-            arg_norm.check_kind(env.clone())?.into_star()?;
+            let knd_res = arg_norm.check_kind(env.clone())?.into_kind()?;
+            knd_res.ret_kind().into_star()?;
+            premises.push(knd_res.into());
         }
 
         if features.subtyped {

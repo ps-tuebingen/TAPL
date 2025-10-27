@@ -32,7 +32,9 @@ where
         }
 
         if features.kinded {
-            bound_norm.check_kind(env.clone())?.into_star()?;
+            let bound_res = bound_norm.check_kind(env.clone())?.into_kind()?;
+            bound_res.ret_kind().into_star()?;
+            premises.push(bound_res.into());
         }
 
         let bound_list = bound_norm.clone().into_list()?;
@@ -66,9 +68,11 @@ where
         }
 
         if features.kinded {
-            let nil_kind = nil_norm.check_kind(env.clone())?;
-            let cons_kind = cons_norm.check_kind(env.clone())?;
-            nil_kind.check_equal(&cons_kind)?;
+            let nil_res = nil_norm.check_kind(env.clone())?.into_kind()?;
+            let cons_res = cons_norm.check_kind(env.clone())?.into_kind()?;
+            nil_res.ret_kind().check_equal(&cons_res.ret_kind())?;
+            premises.push(nil_res.into());
+            premises.push(cons_res.into());
         }
 
         nil_norm.check_equal(&cons_norm)?;

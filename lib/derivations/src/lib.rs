@@ -42,6 +42,7 @@ where
             Derivation::KindingDerivation(deriv) => deriv.ret_ty(),
         }
     }
+
     pub fn into_def(self) -> Result<DefinitionDerivation<Lang>, UnexpectedDerivation> {
         let exp = "Definition Derivation";
         match self {
@@ -56,7 +57,10 @@ where
                 Err(UnexpectedDerivation::new("Subtype Derivation", exp))
             }
             Derivation::NormalizingDerivation(_) => {
-                Err(UnexpectedDerivation::new("NormalizingDerivation", exp))
+                Err(UnexpectedDerivation::new("Normalizing Derivation", exp))
+            }
+            Derivation::KindingDerivation(_) => {
+                Err(UnexpectedDerivation::new("Kinding Derivation", exp))
             }
         }
     }
@@ -77,6 +81,9 @@ where
             Derivation::NormalizingDerivation(_) => {
                 Err(UnexpectedDerivation::new("Normalizing Derivation", exp))
             }
+            Derivation::KindingDerivation(_) => {
+                Err(UnexpectedDerivation::new("Kinding Derivation", exp))
+            }
         }
     }
 
@@ -95,6 +102,31 @@ where
             }
             Derivation::NormalizingDerivation(_) => {
                 Err(UnexpectedDerivation::new("Normalizing Derivation", exp))
+            }
+            Derivation::KindingDerivation(_) => {
+                Err(UnexpectedDerivation::new("Kinding Derivation", exp))
+            }
+        }
+    }
+
+    pub fn into_kind(self) -> Result<KindingDerivation<Lang>, UnexpectedDerivation> {
+        let exp = "Kinding Derivation";
+        match self {
+            Derivation::KindingDerivation(deriv) => Ok(deriv),
+            Derivation::TypingDerivation(_) => {
+                Err(UnexpectedDerivation::new("Typing Derivation", exp))
+            }
+            Derivation::SubtypeDerivation(_) => {
+                Err(UnexpectedDerivation::new("Subtype Derivation", exp))
+            }
+            Derivation::NormalizingDerivation(_) => {
+                Err(UnexpectedDerivation::new("Normalizing Derivation", exp))
+            }
+            Derivation::ProgramDerivation(_) => {
+                Err(UnexpectedDerivation::new("Program Derivation", exp))
+            }
+            Derivation::DefinitionDerivation(_) => {
+                Err(UnexpectedDerivation::new("Definition Derivation", exp))
             }
         }
     }

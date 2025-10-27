@@ -30,7 +30,7 @@ where
         }
 
         if features.kinded {
-            bound_norm.check_kind(env.clone())?;
+            premises.push(bound_norm.check_kind(env.clone())?);
         }
 
         env.add_var(self.var.clone(), bound_norm);
@@ -48,7 +48,7 @@ where
         }
 
         if features.kinded {
-            in_norm.check_kind(env.clone())?;
+            premises.push(in_norm.check_kind(env.clone())?);
         }
 
         let conc = TypingConclusion::new(env.clone(), self.clone(), in_norm);

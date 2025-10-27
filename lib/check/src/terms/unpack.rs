@@ -60,8 +60,9 @@ where
             }
 
             if features.kinded {
-                let sup_kind = bound_bound.sup_ty.check_kind(env.clone())?;
-                env.add_tyvar_kind(self.ty_name.clone(), sup_kind);
+                let sup_res = bound_bound.sup_ty.check_kind(env.clone())?.into_kind()?;
+                env.add_tyvar_kind(self.ty_name.clone(), sup_res.ret_kind());
+                premises.push(sup_res.into());
             }
 
             env.add_tyvar_super(bound_bound.var, Rc::unwrap_or_clone(bound_bound.sup_ty));

@@ -46,9 +46,11 @@ where
         ty_norm.check_equal(&handler_norm)?;
 
         if features.kinded {
-            let term_knd = ty_norm.check_kind(env.clone())?;
-            let handler_knd = handler_norm.check_kind(env.clone())?;
-            term_knd.check_equal(&handler_knd)?;
+            let term_res = ty_norm.check_kind(env.clone())?.into_kind()?;
+            let handler_res = handler_norm.check_kind(env.clone())?.into_kind()?;
+            term_res.ret_kind().check_equal(&handler_res.ret_kind())?;
+            premises.push(term_res.into());
+            premises.push(handler_res.into());
         }
 
         let conc = TypingConclusion::new(env, self.clone(), ty_norm);

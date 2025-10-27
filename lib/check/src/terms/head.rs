@@ -31,7 +31,9 @@ where
         }
 
         if features.kinded {
-            term_norm.check_kind(env.clone())?.into_star()?;
+            let term_res = term_norm.check_kind(env.clone())?.into_kind()?;
+            term_res.ret_kind().into_star()?;
+            premises.push(term_res.into());
         }
 
         let list_ty = term_norm.into_list()?;

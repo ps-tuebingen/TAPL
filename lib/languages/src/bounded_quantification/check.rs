@@ -1,7 +1,7 @@
 use super::{BoundedQuantification, terms::Term, types::Type};
 use check::{Kindcheck, Subtypecheck, Typecheck};
 use derivations::Derivation;
-use errors::check_error::CheckError;
+use errors::{NoKinding, check_error::CheckError};
 use syntax::{env::Environment, kinds::Kind};
 impl Typecheck for Term {
     type Lang = BoundedQuantification;
@@ -48,7 +48,7 @@ impl Subtypecheck for Type {
 
 impl Kindcheck for Type {
     type Lang = BoundedQuantification;
-    fn check_kind(&self, _: Environment<Self::Lang>) -> Result<Kind, CheckError> {
-        Ok(Kind::Star)
+    fn check_kind(&self, _: Environment<Self::Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
+        Err(NoKinding::new("Bounded Quantification").into())
     }
 }

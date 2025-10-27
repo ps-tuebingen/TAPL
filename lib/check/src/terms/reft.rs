@@ -31,7 +31,9 @@ where
         }
 
         if features.kinded {
-            ty_norm.check_kind(env.clone())?.into_star()?;
+            let ty_res = ty_norm.check_kind(env.clone())?.into_kind()?;
+            ty_res.ret_kind().into_star()?;
+            premises.push(ty_res.into());
         }
 
         let conc = TypingConclusion::new(env, self.clone(), Reference::new(ty_norm));

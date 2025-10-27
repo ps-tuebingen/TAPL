@@ -35,9 +35,11 @@ where
         }
 
         if features.kinded {
-            let t_kind = ty_norm.check_kind(env.clone())?;
-            let ty_kind = self.ty.check_kind(env.clone())?;
-            t_kind.check_equal(&ty_kind)?;
+            let ty_norm_res = ty_norm.check_kind(env.clone())?.into_kind()?;
+            let ty_res = self.ty.check_kind(env.clone())?.into_kind()?;
+            ty_norm_res.ret_kind().check_equal(&ty_res.ret_kind())?;
+            premises.push(ty_norm_res.into());
+            premises.push(ty_res.into());
         }
 
         asc_norm.check_equal(&ty_norm)?;

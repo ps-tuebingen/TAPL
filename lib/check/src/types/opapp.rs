@@ -1,11 +1,10 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
-use derivations::{Derivation, NormalizingDerivation, SubtypeDerivation};
+use derivations::{Derivation, KindingDerivation, NormalizingDerivation, SubtypeDerivation};
 use errors::KindMismatch;
 use errors::check_error::CheckError;
 use std::rc::Rc;
 use syntax::{
     env::Environment,
-    kinds::Kind,
     language::Language,
     subst::SubstType,
     types::{OpApp, Top, TypeGroup},
@@ -45,17 +44,19 @@ impl<Lang> Kindcheck for OpApp<Lang>
 where
     Lang: Language,
     Lang::Type: Kindcheck<Lang = Lang>,
+    Self: Into<Lang::Type>,
 {
     type Lang = Lang;
-    fn check_kind(&self, env: Environment<Self::Lang>) -> Result<Kind, CheckError> {
-        let fun_kind = self.fun.check_kind(env.clone())?;
+    fn check_kind(&self, env: Environment<Self::Lang>) -> Result<Derivation<Lang>, CheckError> {
+        let fun_res = self.fun.check_kind(env.clone())?.into_kind()?;
+        let fun_kind = fun_res.ret_kind();
         let (fun_from, fun_to) = fun_kind.into_arrow()?;
-        let arg_kind = self.arg.check_kind(env)?;
-        if fun_from == arg_kind {
-            Ok(fun_to)
-        } else {
-            Err(KindMismatch::new(arg_kind.to_string(), fun_from.to_string()).into())
+        let arg_res = self.arg.check_kind(env)?.into_kind()?;
+        let arg_kind = arg_res.ret_kind();
+        if fun_from != arg_kind {
+            return Err(KindMismatch::new(arg_kind.to_string(), fun_from.to_string()).into());
         }
+        Ok(KindingDerivation::op_app(self.clone(), fun_to, fun_res, arg_res).into())
     }
 }
 

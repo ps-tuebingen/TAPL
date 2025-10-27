@@ -1,19 +1,23 @@
 use crate::{Kindcheck, Normalize};
-use derivations::{Derivation, NormalizingDerivation};
+use derivations::{Derivation, KindingDerivation, NormalizingDerivation};
 use errors::check_error::CheckError;
 use std::rc::Rc;
-use syntax::{env::Environment, kinds::Kind, language::Language, types::Forall};
+use syntax::{env::Environment, language::Language, types::Forall};
 
 impl<Lang> Kindcheck for Forall<Lang>
 where
     Lang: Language,
     Lang::Type: Kindcheck<Lang = Lang>,
+    Self: Into<Lang::Type>,
 {
     type Lang = Lang;
-    fn check_kind(&self, mut env: Environment<Self::Lang>) -> Result<Kind, CheckError> {
+    fn check_kind(
+        &self,
+        mut env: Environment<Self::Lang>,
+    ) -> Result<Derivation<Self::Lang>, CheckError> {
         env.add_tyvar_kind(self.var.clone(), self.kind.clone());
-        let ty_kind = self.ty.check_kind(env)?;
-        Ok(ty_kind)
+        let ty_res = self.ty.check_kind(env)?.into_kind()?;
+        Ok(KindingDerivation::forall(self.clone(), ty_res.ret_kind(), ty_res).into())
     }
 }
 

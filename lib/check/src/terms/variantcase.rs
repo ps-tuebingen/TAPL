@@ -28,7 +28,9 @@ where
         };
 
         if features.kinded {
-            bound_norm.check_kind(env.clone())?.into_star()?;
+            let bound_res = bound_norm.check_kind(env.clone())?.into_kind()?;
+            bound_res.ret_kind().into_star()?;
+            premises.push(bound_res.into());
         }
 
         let bound_var = bound_norm.into_variant()?;
@@ -51,7 +53,7 @@ where
             }
 
             if features.kinded {
-                var_norm.check_kind(env.clone())?;
+                premises.push(var_norm.check_kind(env.clone())?);
             }
 
             let mut rhs_env = env.clone();
@@ -68,16 +70,17 @@ where
             }
 
             if features.kinded {
-                let knd = rhs_norm.check_kind(env.clone())?;
+                let rhs_res = rhs_norm.check_kind(env.clone())?.into_kind()?;
 
                 match rhs_knd {
                     None => {
-                        rhs_knd = Some(knd);
+                        rhs_knd = Some(rhs_res.ret_kind());
                     }
                     Some(ref rhs) => {
-                        rhs.check_equal(&knd)?;
+                        rhs_res.ret_kind().check_equal(&rhs)?;
                     }
                 }
+                premises.push(rhs_res.into());
             }
             rhs_tys.push(rhs_norm)
         }

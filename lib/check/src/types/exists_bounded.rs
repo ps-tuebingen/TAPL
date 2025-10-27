@@ -1,10 +1,9 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
-use derivations::{Derivation, NormalizingDerivation, SubtypeDerivation};
+use derivations::{Derivation, KindingDerivation, NormalizingDerivation, SubtypeDerivation};
 use errors::{NameMismatch, check_error::CheckError};
 use std::rc::Rc;
 use syntax::{
     env::Environment,
-    kinds::Kind,
     language::Language,
     types::{ExistsBounded, Top, TypeGroup},
 };
@@ -69,12 +68,17 @@ impl<Lang> Kindcheck for ExistsBounded<Lang>
 where
     Lang: Language,
     Lang::Type: Kindcheck<Lang = Lang>,
+    Self: Into<Lang::Type>,
 {
     type Lang = Lang;
-    fn check_kind(&self, mut env: Environment<Self::Lang>) -> Result<Kind, CheckError> {
-        let sup_kind = self.sup_ty.check_kind(env.clone())?;
-        env.add_tyvar_kind(self.var.clone(), sup_kind);
-        self.ty.check_kind(env)
+    fn check_kind(&self, mut env: Environment<Self::Lang>) -> Result<Derivation<Lang>, CheckError> {
+        let sup_res = self.sup_ty.check_kind(env.clone())?.into_kind()?;
+        env.add_tyvar_kind(self.var.clone(), sup_res.ret_kind());
+        let inner_res = self.ty.check_kind(env)?.into_kind()?;
+        Ok(
+            KindingDerivation::exists_bound(self.clone(), inner_res.ret_kind(), sup_res, inner_res)
+                .into(),
+        )
     }
 }
 

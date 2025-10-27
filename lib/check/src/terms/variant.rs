@@ -51,9 +51,11 @@ where
             .ok_or(UndefinedLabel::new(&self.label))?;
 
         if features.kinded {
-            let term_knd = term_ty_norm.check_kind(env.clone())?;
-            let lb_knd = lb_ty.check_kind(env.clone())?;
-            lb_knd.check_equal(&term_knd)?;
+            let term_res = term_ty_norm.check_kind(env.clone())?.into_kind()?;
+            let lb_res = lb_ty.check_kind(env.clone())?.into_kind()?;
+            lb_res.ret_kind().check_equal(&term_res.ret_kind())?;
+            premises.push(term_res.into());
+            premises.push(lb_res.into());
         }
         lb_ty.check_equal(&term_ty_norm)?;
 

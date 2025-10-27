@@ -49,9 +49,11 @@ where
         }
 
         if features.kinded {
-            let t_knd = t_norm.check_kind(env.clone())?;
-            let handler_knd = handler_norm.check_kind(env.clone())?;
-            t_knd.check_equal(&handler_knd)?;
+            let t_res = t_norm.check_kind(env.clone())?.into_kind()?;
+            let handler_res = handler_norm.check_kind(env.clone())?.into_kind()?;
+            t_res.ret_kind().check_equal(&handler_res.ret_kind())?;
+            premises.push(t_res.into());
+            premises.push(handler_res.into());
         }
         let fun: Fun<Lang> = handler_norm.into_fun()?;
         fun.to.check_equal(&t_norm)?;

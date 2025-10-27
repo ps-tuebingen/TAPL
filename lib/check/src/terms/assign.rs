@@ -37,7 +37,9 @@ where
         }
 
         if features.kinded {
-            lhs_norm.check_kind(env.clone())?.into_star()?;
+            let lhs_res = lhs_norm.check_kind(env.clone())?.into_kind()?;
+            lhs_res.ret_kind().into_star()?;
+            premises.push(lhs_res.into());
         }
         let lhs_ref = lhs_norm.into_ref()?;
 
@@ -53,7 +55,9 @@ where
             rhs_norm = rhs_ty;
         }
         if features.kinded {
-            rhs_norm.check_kind(env.clone())?.into_star()?;
+            let rhs_res = rhs_norm.check_kind(env.clone())?.into_kind()?;
+            rhs_res.ret_kind().into_star()?;
+            premises.push(rhs_res.into());
         }
         lhs_ref.ty.check_equal(&rhs_norm)?;
 

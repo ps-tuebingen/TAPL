@@ -26,7 +26,7 @@ where
         }
 
         if features.kinded {
-            ty_norm.check_kind(env.clone())?;
+            premises.push(ty_norm.check_kind(env.clone())?);
         }
 
         let conc = TypingConclusion::new(env.clone(), self.clone(), ty_norm);

@@ -42,9 +42,11 @@ where
         }
 
         if features.kinded {
-            let ty_kind = ty_norm.check_kind(env.clone())?;
-            let term_knd = term_ty_norm.check_kind(env.clone())?;
-            term_knd.check_equal(&ty_kind)?;
+            let ty_res = ty_norm.check_kind(env.clone())?.into_kind()?;
+            let term_res = term_ty_norm.check_kind(env.clone())?.into_kind()?;
+            term_res.ret_kind().check_equal(&ty_res.ret_kind())?;
+            premises.push(ty_res.into());
+            premises.push(term_res.into());
         }
 
         ty_norm.check_equal(&term_ty_norm)?;

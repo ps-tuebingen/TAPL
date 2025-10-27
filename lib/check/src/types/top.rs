@@ -1,5 +1,5 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
-use derivations::{Derivation, NormalizingDerivation, SubtypeDerivation};
+use derivations::{Derivation, KindingDerivation, NormalizingDerivation, SubtypeDerivation};
 use errors::{NotASubtype, check_error::CheckError};
 use syntax::{
     env::Environment,
@@ -30,10 +30,11 @@ where
 impl<Lang> Kindcheck for Top<Lang>
 where
     Lang: Language,
+    Self: Into<Lang::Type>,
 {
     type Lang = Lang;
-    fn check_kind(&self, _: Environment<Self::Lang>) -> Result<Kind, CheckError> {
-        Ok(self.kind.clone())
+    fn check_kind(&self, _: Environment<Self::Lang>) -> Result<Derivation<Lang>, CheckError> {
+        Ok(KindingDerivation::annotated(self.clone(), self.kind.clone()).into())
     }
 }
 

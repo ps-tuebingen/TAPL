@@ -35,7 +35,10 @@ impl Subtypecheck for Type {
 
 impl Kindcheck for Type {
     type Lang = LambdaOmega;
-    fn check_kind(&self, env: Environment<Self::Lang>) -> Result<Kind, CheckError> {
+    fn check_kind(
+        &self,
+        env: Environment<Self::Lang>,
+    ) -> Result<Derivation<Self::Lang>, CheckError> {
         match self {
             Type::Var(var) => var.check_kind(env),
             Type::Unit(u) => u.check_kind(env),

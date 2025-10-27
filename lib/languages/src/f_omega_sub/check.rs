@@ -49,7 +49,10 @@ impl Subtypecheck for Type {
 
 impl Kindcheck for Type {
     type Lang = FOmegaSub;
-    fn check_kind(&self, env: Environment<Self::Lang>) -> Result<Kind, CheckError> {
+    fn check_kind(
+        &self,
+        env: Environment<Self::Lang>,
+    ) -> Result<Derivation<Self::Lang>, CheckError> {
         match self {
             Type::Var(var) => var.check_kind(env),
             Type::Top(top) => top.check_kind(env),

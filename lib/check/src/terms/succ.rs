@@ -37,7 +37,9 @@ where
         }
 
         if features.kinded {
-            inner_norm.check_kind(env.clone())?.into_star()?;
+            let inner_res = inner_norm.check_kind(env.clone())?.into_kind()?;
+            inner_res.ret_kind().into_star()?;
+            premises.push(inner_res.into());
         }
 
         let nat = inner_norm.into_nat()?;

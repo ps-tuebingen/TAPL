@@ -1,19 +1,19 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
-use derivations::{Derivation, NormalizingDerivation, SubtypeDerivation};
+use derivations::{Derivation, KindingDerivation, NormalizingDerivation, SubtypeDerivation};
 use errors::check_error::CheckError;
 use syntax::{
     env::Environment,
-    kinds::Kind,
     language::Language,
     types::{Top, TypeGroup, Unit},
 };
 impl<Lang> Kindcheck for Unit<Lang>
 where
     Lang: Language,
+    Self: Into<Lang::Type>,
 {
     type Lang = Lang;
-    fn check_kind(&self, _: Environment<Self::Lang>) -> Result<Kind, CheckError> {
-        Ok(Kind::Star)
+    fn check_kind(&self, _: Environment<Self::Lang>) -> Result<Derivation<Lang>, CheckError> {
+        Ok(KindingDerivation::prim(self.clone()).into())
     }
 }
 

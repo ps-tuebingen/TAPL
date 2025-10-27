@@ -1,5 +1,5 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
-use derivations::{Derivation, NormalizingDerivation, SubtypeDerivation};
+use derivations::{Derivation, KindingDerivation, NormalizingDerivation, SubtypeDerivation};
 use errors::check_error::CheckError;
 use std::rc::Rc;
 use syntax::{
@@ -45,12 +45,15 @@ impl<Lang> Kindcheck for OpLambda<Lang>
 where
     Lang: Language,
     Lang::Type: Kindcheck<Lang = Lang>,
+    Self: Into<Lang::Type>,
 {
     type Lang = Lang;
-    fn check_kind(&self, mut env: Environment<Self::Lang>) -> Result<Kind, CheckError> {
+    fn check_kind(&self, mut env: Environment<Self::Lang>) -> Result<Derivation<Lang>, CheckError> {
         env.add_tyvar_kind(self.var.clone(), self.annot.clone());
-        let body_kind = self.body.check_kind(env)?;
-        Ok(Kind::Arrow(Rc::new(self.annot.clone()), Rc::new(body_kind)))
+        let body_res = self.body.check_kind(env)?.into_kind()?;
+        let body_kind = body_res.ret_kind();
+        let ret_knd = Kind::Arrow(Rc::new(self.annot.clone()), Rc::new(body_kind));
+        Ok(KindingDerivation::op_lam(self.clone(), ret_knd, body_res).into())
     }
 }
 

@@ -1,8 +1,8 @@
 use super::{Recursive, terms::Term, types::Type};
 use check::{Kindcheck, Subtypecheck, Typecheck};
 use derivations::Derivation;
-use errors::{NoSubtyping, check_error::CheckError};
-use syntax::{env::Environment, kinds::Kind};
+use errors::{NoKinding, NoSubtyping, check_error::CheckError};
+use syntax::env::Environment;
 
 impl Typecheck for Term {
     type Lang = Recursive;
@@ -49,7 +49,7 @@ impl Subtypecheck for Type {
 
 impl Kindcheck for Type {
     type Lang = Recursive;
-    fn check_kind(&self, _: Environment<Self::Lang>) -> Result<Kind, CheckError> {
-        Ok(Kind::Star)
+    fn check_kind(&self, _: Environment<Self::Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
+        Err(NoKinding::new("Recursive").into())
     }
 }

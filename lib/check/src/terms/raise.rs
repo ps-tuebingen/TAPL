@@ -40,10 +40,13 @@ where
         }
 
         if features.kinded {
-            let ex_knd = ex_norm.check_kind(env.clone())?;
-            self.cont_ty.check_kind(env.clone())?;
-            let err_knd = err_norm.check_kind(env.clone())?;
-            ex_knd.check_equal(&err_knd)?;
+            let ex_res = ex_norm.check_kind(env.clone())?.into_kind()?;
+            let cont_res = self.cont_ty.check_kind(env.clone())?;
+            let err_res = err_norm.check_kind(env.clone())?.into_kind()?;
+            ex_res.ret_kind().check_equal(&err_res.ret_kind())?;
+            premises.push(ex_res.into());
+            premises.push(cont_res);
+            premises.push(err_res.into());
         }
 
         ex_norm.check_equal(&err_norm)?;

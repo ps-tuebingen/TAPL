@@ -36,7 +36,9 @@ where
         let mu_ty = ty_norm.into_mu()?;
         env.add_tyvar_kind(mu_ty.var.clone(), Kind::Star);
         if features.kinded {
-            mu_ty.ty.check_kind(env.clone())?.into_star()?;
+            let mu_res = mu_ty.ty.check_kind(env.clone())?.into_kind()?;
+            mu_res.ret_kind().into_star()?;
+            premises.push(mu_res.into());
         }
 
         let mu_subst = mu_ty
@@ -57,7 +59,9 @@ where
         }
 
         if features.kinded {
-            term_norm.check_kind(env.clone())?.into_star()?;
+            let term_res = term_norm.check_kind(env.clone())?.into_kind()?;
+            term_res.ret_kind().into_star()?;
+            premises.push(term_res.into());
         }
         term_norm.check_equal(&mu_subst)?;
 

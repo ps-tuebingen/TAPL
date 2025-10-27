@@ -1,7 +1,7 @@
 use crate::{Kindcheck, Subtypecheck};
-use derivations::{Derivation, SubtypeDerivation};
+use derivations::{Derivation, KindingDerivation, SubtypeDerivation};
 use errors::check_error::CheckError;
-use syntax::{env::Environment, kinds::Kind, language::Language, types::Bot};
+use syntax::{env::Environment, language::Language, types::Bot};
 
 impl<Lang> Subtypecheck for Bot<Lang>
 where
@@ -21,9 +21,10 @@ where
 impl<Lang> Kindcheck for Bot<Lang>
 where
     Lang: Language,
+    Self: Into<Lang::Type>,
 {
     type Lang = Lang;
-    fn check_kind(&self, _: Environment<Self::Lang>) -> Result<Kind, CheckError> {
-        Ok(self.kind.clone())
+    fn check_kind(&self, _: Environment<Self::Lang>) -> Result<Derivation<Lang>, CheckError> {
+        Ok(KindingDerivation::annotated(self.clone(), self.kind.clone()).into())
     }
 }

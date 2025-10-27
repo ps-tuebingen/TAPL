@@ -30,8 +30,9 @@ where
         };
 
         if features.kinded {
-            let sup_kind = sup_norm.check_kind(env.clone())?;
-            env.add_tyvar_kind(self.var.clone(), sup_kind.clone());
+            let sup_res = sup_norm.check_kind(env.clone())?.into_kind()?;
+            env.add_tyvar_kind(self.var.clone(), sup_res.ret_kind());
+            premises.push(sup_res.into());
         }
 
         env.add_tyvar_super(self.var.clone(), sup_norm.clone());

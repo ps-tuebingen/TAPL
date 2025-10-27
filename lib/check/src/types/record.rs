@@ -1,5 +1,5 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
-use derivations::{Derivation, NormalizingDerivation, SubtypeDerivation};
+use derivations::{Derivation, KindingDerivation, NormalizingDerivation, SubtypeDerivation};
 use errors::UndefinedLabel;
 use errors::check_error::CheckError;
 use std::collections::HashMap;
@@ -51,13 +51,16 @@ impl<Lang> Kindcheck for Record<Lang>
 where
     Lang: Language,
     Lang::Type: Kindcheck<Lang = Lang>,
+    Self: Into<Lang::Type>,
 {
     type Lang = Lang;
-    fn check_kind(&self, env: Environment<Self::Lang>) -> Result<Kind, CheckError> {
+    fn check_kind(&self, env: Environment<Self::Lang>) -> Result<Derivation<Lang>, CheckError> {
+        let mut rec_res = vec![];
         for (_, t) in self.records.iter() {
-            t.check_kind(env.clone())?.into_star()?;
+            let ty_res = t.check_kind(env.clone())?;
+            rec_res.push(ty_res);
         }
-        Ok(Kind::Star)
+        Ok(KindingDerivation::record(self.clone(), rec_res).into())
     }
 }
 

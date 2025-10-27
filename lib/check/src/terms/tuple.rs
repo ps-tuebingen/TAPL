@@ -35,15 +35,16 @@ where
             }
 
             if features.kinded {
-                let ty_knd = t_norm.check_kind(env.clone())?;
+                let ty_res = t_norm.check_kind(env.clone())?.into_kind()?;
                 match knd {
                     None => {
-                        knd = Some(ty_knd);
+                        knd = Some(ty_res.ret_kind());
                     }
                     Some(ref knd) => {
-                        ty_knd.check_equal(knd)?;
+                        ty_res.ret_kind().check_equal(knd)?;
                     }
                 }
+                premises.push(ty_res.into());
             }
             tys.push(t_norm);
         }

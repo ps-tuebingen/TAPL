@@ -1,5 +1,5 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
-use derivations::{Derivation, NormalizingDerivation, SubtypeDerivation};
+use derivations::{Derivation, KindingDerivation, NormalizingDerivation, SubtypeDerivation};
 use errors::KindMismatch;
 use errors::check_error::CheckError;
 use std::rc::Rc;
@@ -38,19 +38,22 @@ impl<Lang> Kindcheck for Fun<Lang>
 where
     Lang: Language,
     Lang::Type: Kindcheck<Lang = Lang>,
+    Self: Into<Lang::Type>,
 {
     type Lang = Lang;
-    fn check_kind(&self, env: Environment<Self::Lang>) -> Result<Kind, CheckError> {
-        let from_kind = self.from.check_kind(env.clone())?;
+    fn check_kind(&self, env: Environment<Self::Lang>) -> Result<Derivation<Lang>, CheckError> {
+        let from_res = self.from.check_kind(env.clone())?.into_kind()?;
+        let from_kind = from_res.ret_kind();
         if from_kind != Kind::Star {
             return Err(KindMismatch::new(from_kind.to_string(), Kind::Star.to_string()).into());
         };
 
-        let to_kind = self.to.check_kind(env)?;
+        let to_res = self.to.check_kind(env)?.into_kind()?;
+        let to_kind = to_res.ret_kind();
         if to_kind != Kind::Star {
             return Err(KindMismatch::new(to_kind.to_string(), Kind::Star.to_string()).into());
         }
-        Ok(Kind::Star)
+        Ok(KindingDerivation::fun(self.clone(), from_res, to_res).into())
     }
 }
 

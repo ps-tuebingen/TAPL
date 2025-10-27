@@ -33,8 +33,9 @@ where
         }
 
         if features.kinded {
-            let term_knd = ty_norm.check_kind(env.clone())?;
-            self.annot.check_equal(&term_knd)?;
+            let term_res = ty_norm.check_kind(env.clone())?.into_kind()?;
+            self.annot.check_equal(&term_res.ret_kind())?;
+            premises.push(term_res.into());
         }
 
         let ty = Forall::new(&self.var, self.annot.clone(), ty_norm);

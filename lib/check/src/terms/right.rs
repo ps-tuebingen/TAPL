@@ -1,7 +1,12 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
-use syntax::{env::Environment, language::Language, terms::Right, types::TypeGroup};
+use syntax::{
+    env::Environment,
+    language::Language,
+    terms::Right,
+    types::{Sum, TypeGroup},
+};
 
 impl<Lang> Typecheck for Right<Lang>
 where
@@ -9,6 +14,7 @@ where
     Lang::Term: Typecheck<Lang = Lang>,
     Lang::Type: TypeGroup<Lang = Lang> + Normalize<Lang = Lang> + Kindcheck<Lang = Lang>,
     Self: Into<Lang::Term>,
+    Sum<Lang>: Into<Lang::Type>,
 {
     type Lang = Lang;
 
@@ -38,9 +44,11 @@ where
         sum_ty.right.check_equal(&right_norm)?;
 
         if features.kinded {
-            let right_knd = right_norm.check_kind(env.clone())?;
-            let sum_knd = sum_ty.check_kind(env.clone())?;
-            right_knd.check_equal(&sum_knd)?;
+            let right_res = right_norm.check_kind(env.clone())?.into_kind()?;
+            let sum_res = sum_ty.check_kind(env.clone())?.into_kind()?;
+            right_res.ret_kind().check_equal(&sum_res.ret_kind())?;
+            premises.push(right_res.into());
+            premises.push(sum_res.into());
         }
 
         let conc = TypingConclusion::new(env, self.clone(), self.ty.clone());

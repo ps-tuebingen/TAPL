@@ -32,7 +32,7 @@ where
         }
 
         if features.kinded {
-            ty_norm.check_kind(env.clone())?;
+            premises.push(ty_norm.check_kind(env.clone())?);
         }
 
         let term_rec = match ty_norm.clone().into_variable() {

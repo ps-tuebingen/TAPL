@@ -28,7 +28,9 @@ where
         }
 
         if features.kinded {
-            loc_norm.check_kind(env.clone())?.into_star()?;
+            let loc_res = loc_norm.check_kind(env.clone())?.into_kind()?;
+            loc_res.ret_kind().into_star()?;
+            premises.push(loc_res.into());
         }
 
         let conc = TypingConclusion::new(env, self.clone(), Reference::new(loc_norm));

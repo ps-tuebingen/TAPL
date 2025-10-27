@@ -32,7 +32,7 @@ where
         }
 
         if features.kinded {
-            ty_norm.check_kind(env.clone())?;
+            premises.push(ty_norm.check_kind(env.clone())?);
         }
 
         let prod_ty = ty_norm.into_product()?;

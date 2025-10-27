@@ -32,7 +32,9 @@ where
         }
 
         if features.kinded {
-            bound_norm.check_kind(env.clone())?.into_star()?;
+            let bound_res = bound_norm.check_kind(env.clone())?.into_kind()?;
+            bound_res.ret_kind().into_star()?;
+            premises.push(bound_res.into());
         }
 
         let option = bound_norm.into_optional()?;
@@ -65,9 +67,11 @@ where
         }
 
         if features.kinded {
-            let some_knd = some_norm.check_kind(some_env)?;
-            let none_knd = none_norm.check_kind(env.clone())?;
-            some_knd.check_equal(&none_knd)?;
+            let some_res = some_norm.check_kind(some_env)?.into_kind()?;
+            let none_res = none_norm.check_kind(env.clone())?.into_kind()?;
+            some_res.ret_kind().check_equal(&none_res.ret_kind())?;
+            premises.push(some_res.into());
+            premises.push(none_res.into());
         }
 
         some_norm.check_equal(&none_norm)?;

@@ -10,6 +10,21 @@ where
     pub kind: Kind,
 }
 
+impl<Lang> KindingConclusion<Lang>
+where
+    Lang: Language,
+{
+    pub fn new<Ty>(ty: Ty, knd: Kind) -> KindingConclusion<Lang>
+    where
+        Ty: Into<Lang::Type>,
+    {
+        KindingConclusion {
+            ty: ty.into(),
+            kind: knd,
+        }
+    }
+}
+
 impl<Lang> fmt::Display for KindingConclusion<Lang>
 where
     Lang: Language,

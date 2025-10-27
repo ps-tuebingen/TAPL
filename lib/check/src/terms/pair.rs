@@ -44,9 +44,11 @@ where
         }
 
         if features.kinded {
-            let fst_knd = fst_norm.check_kind(env.clone())?;
-            let snd_knd = snd_norm.check_kind(env.clone())?;
-            fst_knd.check_equal(&snd_knd)?;
+            let fst_res = fst_norm.check_kind(env.clone())?.into_kind()?;
+            let snd_res = snd_norm.check_kind(env.clone())?.into_kind()?;
+            fst_res.ret_kind().check_equal(&snd_res.ret_kind())?;
+            premises.push(fst_res.into());
+            premises.push(snd_res.into());
         }
 
         let conc = TypingConclusion::new(env, self.clone(), Product::new(fst_norm, snd_norm));

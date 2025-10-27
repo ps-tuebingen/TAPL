@@ -42,8 +42,9 @@ where
 
         if let Ok(forall) = fun_norm.clone().into_forall() {
             if features.kinded {
-                let arg_kind = arg_norm.check_kind(env.clone())?;
-                forall.kind.check_equal(&arg_kind)?;
+                let arg_res = arg_norm.check_kind(env.clone())?.into_kind()?;
+                forall.kind.check_equal(&arg_res.ret_kind())?;
+                premises.push(arg_res.into());
             }
 
             let ty = forall.ty.subst_type(&forall.var, &arg_norm);
@@ -52,9 +53,9 @@ where
             Ok(deriv.into())
         } else if let Ok(forall) = fun_norm.clone().into_forall_bounded() {
             if features.kinded {
-                let arg_kind = arg_norm.check_kind(env.clone())?;
-                let sup_knd = forall.sup_ty.check_kind(env.clone())?;
-                sup_knd.check_equal(&arg_kind)?;
+                let arg_res = arg_norm.check_kind(env.clone())?.into_kind()?;
+                let sup_res = forall.sup_ty.check_kind(env.clone())?.into_kind()?;
+                sup_res.ret_kind().check_equal(&arg_res.ret_kind())?;
             }
             arg_norm.check_subtype(&forall.sup_ty, env.clone())?;
             let ty = forall.ty.subst_type(&forall.var, &arg_norm);

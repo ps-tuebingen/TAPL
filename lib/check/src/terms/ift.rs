@@ -31,7 +31,9 @@ where
         }
 
         if features.kinded {
-            if_norm.check_kind(env.clone())?.into_star()?;
+            let if_res = if_norm.check_kind(env.clone())?.into_kind()?;
+            if_res.ret_kind().into_star()?;
+            premises.push(if_res.into());
         }
 
         if_norm.into_bool()?;
@@ -63,9 +65,11 @@ where
         }
 
         if features.kinded {
-            let then_kind = then_norm.check_kind(env.clone())?;
-            let else_kind = else_norm.check_kind(env.clone())?;
-            then_kind.check_equal(&else_kind)?;
+            let then_res = then_norm.check_kind(env.clone())?.into_kind()?;
+            let else_res = else_norm.check_kind(env.clone())?.into_kind()?;
+            then_res.ret_kind().check_equal(&else_res.ret_kind())?;
+            premises.push(then_res.into());
+            premises.push(else_res.into());
         }
 
         then_norm.check_equal(&else_norm)?;

@@ -34,9 +34,11 @@ where
         }
 
         if features.kinded {
-            let term_kind = term_norm.check_kind(env.clone())?;
-            let ty_kind = self_norm.check_kind(env.clone())?;
-            term_kind.check_equal(&ty_kind)?;
+            let term_res = term_norm.check_kind(env.clone())?.into_kind()?;
+            let ty_res = self_norm.check_kind(env.clone())?.into_kind()?;
+            term_res.ret_kind().check_equal(&ty_res.ret_kind())?;
+            premises.push(term_res.into());
+            premises.push(ty_res.into());
         }
 
         let conc = TypingConclusion::new(env, self.clone(), self_norm.clone());

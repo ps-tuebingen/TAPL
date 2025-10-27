@@ -48,11 +48,14 @@ where
             }
 
             if features.kinded {
-                let term_kind = ty_norm.check_kind(env.clone())?;
-                let outer_knd = outer_exists.ty.check_kind(env.clone())?;
-                let inner_kind = self.inner_ty.check_kind(env.clone())?;
-                term_kind.check_equal(&outer_knd)?;
-                inner_kind.check_equal(&outer_exists.kind)?;
+                let term_res = ty_norm.check_kind(env.clone())?.into_kind()?;
+                let outer_res = outer_exists.ty.check_kind(env.clone())?.into_kind()?;
+                let inner_res = self.inner_ty.check_kind(env.clone())?.into_kind()?;
+                term_res.ret_kind().check_equal(&outer_res.ret_kind())?;
+                inner_res.ret_kind().check_equal(&outer_exists.kind)?;
+                premises.push(term_res.into());
+                premises.push(outer_res.into());
+                premises.push(inner_res.into());
             };
 
             let outer_subst = Rc::unwrap_or_clone(
@@ -85,8 +88,9 @@ where
             }
 
             if features.kinded {
-                let sup_kind = sup_norm.check_kind(env.clone())?;
-                env.add_tyvar_kind(outer_bound.var.clone(), sup_kind);
+                let sup_res = sup_norm.check_kind(env.clone())?.into_kind()?;
+                env.add_tyvar_kind(outer_bound.var.clone(), sup_res.ret_kind());
+                premises.push(sup_res.into());
             }
 
             env.add_tyvar_super(
@@ -99,9 +103,11 @@ where
             premises.push(term_res);
 
             if features.kinded {
-                let term_kind = term_ty.check_kind(env.clone())?;
-                let outer_knd = outer_bound.ty.check_kind(env.clone())?;
-                term_kind.check_equal(&outer_knd)?;
+                let term_res = term_ty.check_kind(env.clone())?.into_kind()?;
+                let outer_res = outer_bound.ty.check_kind(env.clone())?.into_kind()?;
+                term_res.ret_kind().check_equal(&outer_res.ret_kind())?;
+                premises.push(term_res.into());
+                premises.push(outer_res.into());
             }
 
             let outer_subst = outer_bound.ty.subst_type(&outer_bound.var, &self.inner_ty);
