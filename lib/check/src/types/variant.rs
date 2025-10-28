@@ -1,6 +1,8 @@
 use crate::Subtypecheck;
 use derivations::{Derivation, SubtypeDerivation};
 use errors::{UndefinedLabel, check_error::CheckError};
+use grammar::DerivationRule;
+use std::collections::HashSet;
 use syntax::{
     env::Environment,
     language::Language,
@@ -32,5 +34,9 @@ where
             inner_res.push(self_ty.check_subtype(ty, env.clone())?);
         }
         Ok(SubtypeDerivation::variant(env, self.clone(), sup.clone(), inner_res).into())
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([DerivationRule::sub_top(), DerivationRule::sub_variant()])
     }
 }

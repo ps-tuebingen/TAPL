@@ -1,7 +1,7 @@
-use crate::{Rule, RuleDescribe, symbols::SpecialChar};
+use crate::{GrammarRuleDescribe, Rule, symbols::SpecialChar};
 use syntax::{language::Language, types::Bot};
 
-impl<Lang> RuleDescribe for Bot<Lang>
+impl<Lang> GrammarRuleDescribe for Bot<Lang>
 where
     Lang: Language,
 {

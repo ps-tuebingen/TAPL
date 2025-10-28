@@ -2,7 +2,7 @@ use super::{LatexConfig, LatexFmt};
 use grammar::{ConclusionRule, DerivationRule};
 
 impl LatexFmt for DerivationRule {
-    fn to_latex(&self, conf: &mut LatexConfig) {
+    fn to_latex(&self, conf: &mut LatexConfig) -> String {
         if conf.use_frac_array {
             derivation_to_frac_array(self, conf)
         } else {
@@ -12,15 +12,15 @@ impl LatexFmt for DerivationRule {
 }
 
 impl LatexFmt for ConclusionRule {
-    fn to_latex(&self, conf: &mut LatexConfig) {
+    fn to_latex(&self, conf: &mut LatexConfig) -> String {
         let (env_start, env_end) = conf.mathenv_strs();
         conf.include_envs = false;
         format!(
             "{env_start}{} \\vdash {} {} {}{env_end}",
-            env.to_latex(conf),
-            input.to_latex(confg),
-            separator.to_latex(conf),
-            output.to_latex(conf)
+            self.env.to_latex(conf),
+            self.input.to_latex(conf),
+            self.separator.to_latex(conf),
+            self.output.to_latex(conf)
         )
     }
 }
@@ -33,7 +33,7 @@ fn derivation_to_frac_array(deriv: &DerivationRule, conf: &mut LatexConfig) -> S
     for prem in deriv.premises.iter() {
         premise_strs.push(prem.to_latex(conf));
     }
-    let cs = 0..=premise_strs.len().map(|ind| "c").collect::<Vec<_>>();
+    let cs = (0..=premise_strs.len()).map(|ind| "c").collect::<Vec<_>>();
     let premise_str = format!(
         "\\begin{{array}}{{ {} }}\n {} \\end{{array}}",
         cs.join(" "),
@@ -41,7 +41,7 @@ fn derivation_to_frac_array(deriv: &DerivationRule, conf: &mut LatexConfig) -> S
     );
     let conc_str = deriv.conclusion.to_latex(conf);
 
-    format!("{env_start}\n\\frac{{ {premise_str} }}{{ {conc_str} }}{env_env}",)
+    format!("{env_start}\n\\frac{{ {premise_str} }}{{ {conc_str} }}{env_end}",)
 }
 
 fn derivation_to_buss(deriv: &DerivationRule, conf: &mut LatexConfig) -> String {

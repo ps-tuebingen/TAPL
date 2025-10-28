@@ -2,7 +2,7 @@ use super::Symbol;
 use std::fmt;
 
 /// Keyword used in [`super::Symbol`]
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub enum Keyword {
     As,
     In,

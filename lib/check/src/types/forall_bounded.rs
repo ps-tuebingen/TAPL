@@ -1,7 +1,11 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
 use derivations::{Derivation, KindingDerivation, NormalizingDerivation, SubtypeDerivation};
-use errors::NameMismatch;
-use errors::check_error::CheckError;
+use errors::{NameMismatch, check_error::CheckError};
+use grammar::{
+    DerivationRule,
+    symbols::{SpecialChar, Symbol},
+};
+use std::collections::HashSet;
 use std::rc::Rc;
 use syntax::{
     env::Environment,
@@ -60,6 +64,10 @@ where
 
         Ok(SubtypeDerivation::forall_bounded(env, self.clone(), sup.clone(), premises).into())
     }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([DerivationRule::sub_forall(true)])
+    }
 }
 
 impl<Lang> Kindcheck for ForallBounded<Lang>
@@ -81,6 +89,10 @@ where
                 .into(),
         )
     }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([DerivationRule::kind_forall(true)])
+    }
 }
 
 impl<Lang> Normalize for ForallBounded<Lang>
@@ -99,5 +111,20 @@ where
             ty: Rc::new(ty_norm.ret_ty()),
         };
         NormalizingDerivation::cong(self, self_norm, vec![ty_norm]).into()
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([DerivationRule::norm_cong(|sym| Symbol::Separated {
+            fst: Box::new(Symbol::Prefixed {
+                prefix: Box::new(SpecialChar::Forall.into()),
+                inner: Box::new(Symbol::Separated {
+                    fst: Box::new(Symbol::Typevariable),
+                    separator: Box::new(SpecialChar::LessColon.into()),
+                    snd: Box::new(Symbol::Type),
+                }),
+            }),
+            separator: Box::new(SpecialChar::Dot.into()),
+            snd: Box::new(sym),
+        })])
     }
 }

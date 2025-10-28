@@ -1,6 +1,11 @@
 use crate::{Kindcheck, Normalize};
 use derivations::{Derivation, KindingDerivation, NormalizingDerivation};
 use errors::check_error::CheckError;
+use grammar::{
+    DerivationRule,
+    symbols::{SpecialChar, Symbol},
+};
+use std::collections::HashSet;
 use std::rc::Rc;
 use syntax::{env::Environment, language::Language, types::Forall};
 
@@ -18,6 +23,10 @@ where
         env.add_tyvar_kind(self.var.clone(), self.kind.clone());
         let ty_res = self.ty.check_kind(env)?.into_kind()?;
         Ok(KindingDerivation::forall(self.clone(), ty_res.ret_kind(), ty_res).into())
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([DerivationRule::kind_forall(false)])
     }
 }
 
@@ -37,5 +46,20 @@ where
             ty: Rc::new(ty_norm.ret_ty()),
         };
         NormalizingDerivation::cong(self, self_norm, vec![ty_norm]).into()
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([DerivationRule::norm_cong(|sym| Symbol::Separated {
+            fst: Box::new(Symbol::Prefixed {
+                prefix: Box::new(SpecialChar::Forall.into()),
+                inner: Box::new(Symbol::Separated {
+                    fst: Box::new(Symbol::Typevariable),
+                    separator: Box::new(SpecialChar::DoubleColon.into()),
+                    snd: Box::new(Symbol::Type),
+                }),
+            }),
+            separator: Box::new(SpecialChar::Dot.into()),
+            snd: Box::new(sym),
+        })])
     }
 }

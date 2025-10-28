@@ -1,7 +1,7 @@
-use crate::{Rule, RuleDescribe, Symbol, symbols::Keyword};
+use crate::{GrammarRuleDescribe, Rule, Symbol, symbols::Keyword};
 use syntax::{language::Language, terms::Nothing};
 
-impl<Lang> RuleDescribe for Nothing<Lang>
+impl<Lang> GrammarRuleDescribe for Nothing<Lang>
 where
     Lang: Language,
 {

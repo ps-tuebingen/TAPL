@@ -1,6 +1,8 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
 use derivations::{Derivation, KindingDerivation, NormalizingDerivation, SubtypeDerivation};
 use errors::check_error::CheckError;
+use grammar::DerivationRule;
+use std::collections::HashSet;
 use syntax::{
     env::Environment,
     language::Language,
@@ -45,6 +47,10 @@ where
         ty_super.check_equal(&sup_norm)?;
         Ok(SubtypeDerivation::refl(env, ty_super, premises).into())
     }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([DerivationRule::sub_top(), DerivationRule::sub_var()])
+    }
 }
 
 impl<Lang> Kindcheck for TypeVariable<Lang>
@@ -57,6 +63,10 @@ where
         let knd = env.get_tyvar_kind(&self.v)?;
         Ok(KindingDerivation::var(&self.v, knd).into())
     }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([DerivationRule::kind_var()])
+    }
 }
 
 impl<Lang> Normalize for TypeVariable<Lang>
@@ -67,5 +77,9 @@ where
     type Lang = Lang;
     fn normalize(self, env: Environment<Self::Lang>) -> Derivation<Self::Lang> {
         NormalizingDerivation::empty(env.get_tyvar_super(&self.v).unwrap_or(self.into())).into()
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::new()
     }
 }

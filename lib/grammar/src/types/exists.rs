@@ -1,7 +1,7 @@
-use crate::{Rule, RuleDescribe, Symbol};
+use crate::{GrammarRuleDescribe, Rule, Symbol};
 use syntax::{language::Language, types::Exists};
 
-impl<Lang> RuleDescribe for Exists<Lang>
+impl<Lang> GrammarRuleDescribe for Exists<Lang>
 where
     Lang: Language,
 {

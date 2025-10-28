@@ -1,11 +1,17 @@
 use crate::Subtypecheck;
 use derivations::{Derivation, SubtypeDerivation};
 use errors::check_error::CheckError;
+use grammar::{
+    DerivationRule,
+    symbols::{Keyword, SpecialChar, Symbol},
+};
+use std::collections::HashSet;
 use syntax::{
     env::Environment,
     language::Language,
     types::{Reference, Sink, Source, Top, TypeGroup},
 };
+
 impl<Lang> Subtypecheck for Reference<Lang>
 where
     Lang: Language,
@@ -38,5 +44,20 @@ where
             let inner_res = self.ty.check_subtype(&(*sup_ref.ty), env.clone())?;
             Ok(SubtypeDerivation::ref_ref(env, self.clone(), sup_ref.clone(), inner_res).into())
         }
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([
+            DerivationRule::sub_cong(|sym| Symbol::Prefixed {
+                prefix: Box::new(Keyword::Ref.into()),
+                inner: Box::new(Symbol::Delim {
+                    delim_open: SpecialChar::SqBrackO,
+                    inner: Box::new(sym),
+                    delim_close: SpecialChar::SqBrackC,
+                }),
+            }),
+            DerivationRule::sub_ref_sink(),
+            DerivationRule::sub_ref_source(),
+        ])
     }
 }

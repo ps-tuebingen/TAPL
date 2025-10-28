@@ -1,5 +1,5 @@
 use super::{FOmegaSub, types::Type};
-use grammar::{Grammar, GrammarDescribe, RuleDescribe};
+use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
 use syntax::{

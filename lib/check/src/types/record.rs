@@ -1,13 +1,17 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
 use derivations::{Derivation, KindingDerivation, NormalizingDerivation, SubtypeDerivation};
-use errors::UndefinedLabel;
-use errors::check_error::CheckError;
-use std::collections::HashMap;
+use errors::{UndefinedLabel, check_error::CheckError};
+use grammar::{
+    DerivationRule,
+    symbols::{SpecialChar, Symbol},
+};
+use std::collections::{HashMap, HashSet};
 use syntax::{
     env::Environment,
     language::Language,
     types::{Record, Top, TypeGroup},
 };
+
 impl<Lang> Subtypecheck for Record<Lang>
 where
     Lang: Language,
@@ -44,6 +48,10 @@ where
         }
         Ok(SubtypeDerivation::record(env, self.clone(), sup.clone(), premises).into())
     }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([DerivationRule::sub_rec()])
+    }
 }
 
 impl<Lang> Kindcheck for Record<Lang>
@@ -60,6 +68,10 @@ where
             rec_res.push(ty_res);
         }
         Ok(KindingDerivation::record(self.clone(), rec_res).into())
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([DerivationRule::kind_rec()])
     }
 }
 
@@ -80,5 +92,17 @@ where
         }
         let self_norm = Record { records: recs_norm };
         NormalizingDerivation::cong(self, self_norm, premises).into()
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([DerivationRule::norm_cong(|sym| Symbol::Delim {
+            delim_open: SpecialChar::BrackO,
+            inner: Box::new(Symbol::Many(Box::new(Symbol::Separated {
+                fst: Box::new(Symbol::Label),
+                separator: Box::new(SpecialChar::Colon.into()),
+                snd: Box::new(sym),
+            }))),
+            delim_close: SpecialChar::BrackC,
+        })])
     }
 }

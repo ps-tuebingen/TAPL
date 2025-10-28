@@ -1,5 +1,7 @@
 use derivations::Derivation;
 use errors::check_error::CheckError;
+use grammar::DerivationRule;
+use std::collections::HashSet;
 use syntax::{env::Environment, language::Language};
 
 pub trait Subtypecheck {
@@ -10,4 +12,6 @@ pub trait Subtypecheck {
         sup: &<Self::Lang as Language>::Type,
         env: Environment<Self::Lang>,
     ) -> Result<Derivation<Self::Lang>, CheckError>;
+
+    fn rules() -> HashSet<DerivationRule>;
 }

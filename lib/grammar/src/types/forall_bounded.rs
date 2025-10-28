@@ -1,7 +1,7 @@
-use crate::{Rule, RuleDescribe, Symbol};
+use crate::{GrammarRuleDescribe, Rule, Symbol};
 use syntax::{language::Language, types::ForallBounded};
 
-impl<Lang> RuleDescribe for ForallBounded<Lang>
+impl<Lang> GrammarRuleDescribe for ForallBounded<Lang>
 where
     Lang: Language,
 {

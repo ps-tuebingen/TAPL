@@ -1,8 +1,11 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
 use derivations::{Derivation, KindingDerivation, NormalizingDerivation, SubtypeDerivation};
-use errors::KindMismatch;
-use errors::check_error::CheckError;
-use std::rc::Rc;
+use errors::{KindMismatch, check_error::CheckError};
+use grammar::{
+    DerivationRule,
+    symbols::{SpecialChar, Symbol},
+};
+use std::{collections::HashSet, rc::Rc};
 use syntax::{
     env::Environment,
     language::Language,
@@ -38,6 +41,17 @@ where
         )
         .into())
     }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([DerivationRule::sub_cong(|sym| Symbol::Prefixed {
+            prefix: Box::new(sym),
+            inner: Box::new(Symbol::Delim {
+                delim_open: SpecialChar::BrackO,
+                inner: Box::new(Symbol::Type),
+                delim_close: SpecialChar::BrackC,
+            }),
+        })])
+    }
 }
 
 impl<Lang> Kindcheck for OpApp<Lang>
@@ -57,6 +71,10 @@ where
             return Err(KindMismatch::new(arg_kind.to_string(), fun_from.to_string()).into());
         }
         Ok(KindingDerivation::op_app(self.clone(), fun_to, fun_res, arg_res).into())
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([DerivationRule::kind_op_app()])
     }
 }
 
@@ -94,5 +112,28 @@ where
             premises.push(arg_deriv);
             NormalizingDerivation::cong(self, body_norm, premises).into()
         }
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        let features = Lang::features();
+        HashSet::from([
+            DerivationRule::norm_cong(|sym| Symbol::Prefixed {
+                prefix: Box::new(sym),
+                inner: Box::new(Symbol::Delim {
+                    delim_open: SpecialChar::BrackO,
+                    inner: Box::new(Symbol::Type),
+                    delim_close: SpecialChar::BrackC,
+                }),
+            }),
+            DerivationRule::norm_cong(|sym| Symbol::Prefixed {
+                prefix: Box::new(Symbol::Type),
+                inner: Box::new(Symbol::Delim {
+                    delim_open: SpecialChar::BrackO,
+                    inner: Box::new(sym),
+                    delim_close: SpecialChar::BrackC,
+                }),
+            }),
+            DerivationRule::norm_ap(features.subtyped),
+        ])
     }
 }

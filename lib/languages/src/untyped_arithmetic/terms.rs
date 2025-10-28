@@ -2,7 +2,7 @@ use super::UntypedArithmetic;
 use check::Typecheck;
 use derivations::Derivation;
 use errors::{NoTyping, check_error::CheckError};
-use grammar::{Grammar, GrammarDescribe, RuleDescribe};
+use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
 use syntax::{

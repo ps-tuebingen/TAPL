@@ -1,7 +1,7 @@
-use crate::{Rule, RuleDescribe, Symbol};
+use crate::{GrammarRuleDescribe, Rule, Symbol};
 use syntax::{language::Language, types::OpLambda};
 
-impl<Lang> RuleDescribe for OpLambda<Lang>
+impl<Lang> GrammarRuleDescribe for OpLambda<Lang>
 where
     Lang: Language,
 {

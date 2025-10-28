@@ -3,11 +3,12 @@ use std::fmt;
 
 /// Special characters used in [`super::Symbol`]
 /// Can be printed in textual representation or in latex representation
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub enum SpecialChar {
     Number,
     Lambda,
     Mu,
+    Gamma,
     Forall,
     Exists,
     Top,
@@ -35,6 +36,8 @@ pub enum SpecialChar {
     AngBrackO,
     AngBrackC,
     Star,
+    LessEq,
+    Ellipses,
 }
 
 impl From<SpecialChar> for Symbol {
@@ -49,6 +52,7 @@ impl fmt::Display for SpecialChar {
             SpecialChar::Number => f.write_str("int"),
             SpecialChar::Lambda => f.write_str("\\"),
             SpecialChar::Mu => f.write_str("mu"),
+            SpecialChar::Gamma => f.write_str("Gamma"),
             SpecialChar::Forall => f.write_str("forall"),
             SpecialChar::Exists => f.write_str("exists"),
             SpecialChar::Top => f.write_str("Top"),
@@ -76,6 +80,8 @@ impl fmt::Display for SpecialChar {
             SpecialChar::AngBrackO => f.write_str("<"),
             SpecialChar::AngBrackC => f.write_str(">"),
             SpecialChar::Star => f.write_str("*"),
+            SpecialChar::LessEq => f.write_str("<="),
+            SpecialChar::Ellipses => f.write_str("..."),
         }
     }
 }

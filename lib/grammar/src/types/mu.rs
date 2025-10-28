@@ -1,7 +1,7 @@
-use crate::{Rule, RuleDescribe, Symbol};
+use crate::{GrammarRuleDescribe, Rule, Symbol};
 use syntax::{language::Language, types::Mu};
 
-impl<Lang> RuleDescribe for Mu<Lang>
+impl<Lang> GrammarRuleDescribe for Mu<Lang>
 where
     Lang: Language,
 {

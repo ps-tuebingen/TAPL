@@ -1,6 +1,8 @@
 use crate::Kindcheck;
 use derivations::{Derivation, KindingDerivation};
 use errors::check_error::CheckError;
+use grammar::DerivationRule;
+use std::collections::HashSet;
 use syntax::{env::Environment, language::Language, types::Sum};
 
 impl<Lang> Kindcheck for Sum<Lang>
@@ -16,5 +18,9 @@ where
         let right_kind = right_res.ret_kind();
         left_res.ret_kind().check_equal(&right_kind)?;
         Ok(KindingDerivation::sum(self.clone(), right_kind, left_res, right_res).into())
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        todo!()
     }
 }

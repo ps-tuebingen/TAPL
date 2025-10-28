@@ -2,6 +2,7 @@ use crate::{LatexConfig, LatexFmt};
 use grammar::{Grammar, GrammarDescribe, LanguageGrammar};
 use syntax::kinds::Kind;
 
+mod derivation_rule;
 mod keyword;
 mod rule;
 mod special_char;

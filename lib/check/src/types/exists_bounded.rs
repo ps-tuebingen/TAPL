@@ -1,6 +1,8 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
 use derivations::{Derivation, KindingDerivation, NormalizingDerivation, SubtypeDerivation};
 use errors::{NameMismatch, check_error::CheckError};
+use grammar::DerivationRule;
+use std::collections::HashSet;
 use std::rc::Rc;
 use syntax::{
     env::Environment,
@@ -62,6 +64,10 @@ where
         premises.push(inner_sub_deriv);
         Ok(SubtypeDerivation::exists_bounded(old_env, self.clone(), sup.clone(), premises).into())
     }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([DerivationRule::sub_top(), DerivationRule::sub_exists(true)])
+    }
 }
 
 impl<Lang> Kindcheck for ExistsBounded<Lang>
@@ -80,6 +86,10 @@ where
                 .into(),
         )
     }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([DerivationRule::kind_exists(true)])
+    }
 }
 
 impl<Lang> Normalize for ExistsBounded<Lang>
@@ -91,5 +101,9 @@ where
     fn normalize(self, mut env: Environment<Self::Lang>) -> Derivation<Self::Lang> {
         env.add_tyvar_super(self.var.clone(), Rc::unwrap_or_clone(self.sup_ty.clone()));
         NormalizingDerivation::empty(self).into()
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::new()
     }
 }

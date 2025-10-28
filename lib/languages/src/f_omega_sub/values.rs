@@ -1,6 +1,6 @@
 use super::{FOmegaSub, terms::Term};
 use errors::ValueMismatch;
-use grammar::{Grammar, GrammarDescribe, RuleDescribe};
+use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
 use syntax::values::{Lambda, LambdaSub, Num, Pack, Record, Value as ValueTrait, ValueGroup};

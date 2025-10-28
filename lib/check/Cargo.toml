@@ -7,3 +7,4 @@ edition = "2024"
 errors={path="../errors"}
 syntax={path="../syntax"}
 derivations={path="../derivations"}
+grammar={path="../grammar"} 

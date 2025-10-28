@@ -1,7 +1,11 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
 use derivations::{Derivation, KindingDerivation, NormalizingDerivation, SubtypeDerivation};
 use errors::check_error::CheckError;
-use std::rc::Rc;
+use grammar::{
+    DerivationRule,
+    symbols::{SpecialChar, Symbol},
+};
+use std::{collections::HashSet, rc::Rc};
 use syntax::{
     env::Environment,
     kinds::Kind,
@@ -9,6 +13,7 @@ use syntax::{
     subst::SubstType,
     types::{OpLambda, Top, TypeGroup, TypeVariable},
 };
+
 impl<Lang> Subtypecheck for OpLambda<Lang>
 where
     Lang: Language,
@@ -39,6 +44,10 @@ where
         )?;
         Ok(SubtypeDerivation::op_lambda(env, self.clone(), sup.clone(), body_res).into())
     }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([DerivationRule::sub_top(), DerivationRule::sub_oplam(false)])
+    }
 }
 
 impl<Lang> Kindcheck for OpLambda<Lang>
@@ -54,6 +63,10 @@ where
         let body_kind = body_res.ret_kind();
         let ret_knd = Kind::Arrow(Rc::new(self.annot.clone()), Rc::new(body_kind));
         Ok(KindingDerivation::op_lam(self.clone(), ret_knd, body_res).into())
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([DerivationRule::kind_op_lam(false)])
     }
 }
 
@@ -72,5 +85,20 @@ where
             body: Rc::new(body_norm.ret_ty()),
         };
         NormalizingDerivation::cong(self, self_norm, vec![body_norm]).into()
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([DerivationRule::norm_cong(|sym| Symbol::Prefixed {
+            prefix: Box::new(SpecialChar::Lambda.into()),
+            inner: Box::new(Symbol::Separated {
+                fst: Box::new(Symbol::Separated {
+                    fst: Box::new(Symbol::Typevariable),
+                    separator: Box::new(SpecialChar::DoubleColon.into()),
+                    snd: Box::new(Symbol::Kind),
+                }),
+                separator: Box::new(SpecialChar::Dot.into()),
+                snd: Box::new(sym),
+            }),
+        })])
     }
 }

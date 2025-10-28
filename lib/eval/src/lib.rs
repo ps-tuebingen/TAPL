@@ -3,6 +3,7 @@ use std::rc::Rc;
 pub mod terms;
 
 use errors::eval_error::EvalError;
+use grammar::DerivationRule;
 use syntax::{eval_context::EvalContext, language::Language, program::Program};
 use trace::EvalTrace;
 
@@ -14,6 +15,8 @@ pub trait Eval: Sized {
     }
 
     fn eval(self, env: &mut EvalContext<Self::Lang>) -> Result<EvalTrace<Self::Lang>, EvalError>;
+
+    fn rules() -> Vec<DerivationRule>;
 }
 
 impl<T> Eval for Rc<T>
@@ -23,6 +26,10 @@ where
     type Lang = T::Lang;
     fn eval(self, env: &mut EvalContext<Self::Lang>) -> Result<EvalTrace<Self::Lang>, EvalError> {
         Rc::unwrap_or_clone(self).eval(env)
+    }
+
+    fn rules() -> Vec<DerivationRule> {
+        T::rules()
     }
 }
 

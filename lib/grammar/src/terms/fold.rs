@@ -1,7 +1,7 @@
-use crate::{Rule, RuleDescribe, Symbol, symbols::Keyword};
+use crate::{GrammarRuleDescribe, Rule, Symbol, symbols::Keyword};
 use syntax::{language::Language, terms::Fold};
 
-impl<Lang> RuleDescribe for Fold<Lang>
+impl<Lang> GrammarRuleDescribe for Fold<Lang>
 where
     Lang: Language,
 {

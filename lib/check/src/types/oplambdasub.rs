@@ -1,7 +1,11 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
 use derivations::{Derivation, KindingDerivation, NormalizingDerivation, SubtypeDerivation};
 use errors::check_error::CheckError;
-use std::rc::Rc;
+use grammar::{
+    DerivationRule,
+    symbols::{SpecialChar, Symbol},
+};
+use std::{collections::HashSet, rc::Rc};
 use syntax::{
     env::Environment,
     kinds::Kind,
@@ -9,6 +13,7 @@ use syntax::{
     subst::SubstType,
     types::{OpLambdaSub, Top, TypeGroup, TypeVariable},
 };
+
 impl<Lang> Subtypecheck for OpLambdaSub<Lang>
 where
     Lang: Language,
@@ -56,6 +61,10 @@ where
         premises.push(body_res);
         Ok(SubtypeDerivation::op_lambda_sub(env, self.clone(), sup.clone(), premises).into())
     }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([DerivationRule::sub_top(), DerivationRule::sub_oplam(true)])
+    }
 }
 
 impl<Lang> Kindcheck for OpLambdaSub<Lang>
@@ -71,6 +80,10 @@ where
         let body_res = self.body.check_kind(env)?.into_kind()?;
         let ret_kind = Kind::Arrow(Rc::new(sup_res.ret_kind()), Rc::new(body_res.ret_kind()));
         Ok(KindingDerivation::op_lam_sub(self.clone(), ret_kind, sup_res, body_res).into())
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([DerivationRule::kind_op_lam(true)])
     }
 }
 
@@ -89,5 +102,20 @@ where
             body: Rc::new(body_norm.ret_ty()),
         };
         NormalizingDerivation::cong(self, self_norm, vec![body_norm]).into()
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([DerivationRule::norm_cong(|sym| Symbol::Prefixed {
+            prefix: Box::new(SpecialChar::Forall.into()),
+            inner: Box::new(Symbol::Separated {
+                fst: Box::new(Symbol::Separated {
+                    fst: Box::new(Symbol::Typevariable),
+                    separator: Box::new(SpecialChar::LessColon.into()),
+                    snd: Box::new(Symbol::Type),
+                }),
+                separator: Box::new(SpecialChar::Dot.into()),
+                snd: Box::new(sym),
+            }),
+        })])
     }
 }

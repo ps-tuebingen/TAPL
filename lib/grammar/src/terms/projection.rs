@@ -1,7 +1,7 @@
-use crate::{Rule, RuleDescribe, Symbol, symbols::SpecialChar};
+use crate::{GrammarRuleDescribe, Rule, Symbol, symbols::SpecialChar};
 use syntax::{language::Language, terms::Projection};
 
-impl<Lang> RuleDescribe for Projection<Lang>
+impl<Lang> GrammarRuleDescribe for Projection<Lang>
 where
     Lang: Language,
 {

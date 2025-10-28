@@ -1,4 +1,4 @@
-use crate::{Grammar, GrammarDescribe, Rule, RuleDescribe, symbols::SpecialChar};
+use crate::{Grammar, GrammarDescribe, GrammarRuleDescribe, Rule, symbols::SpecialChar};
 use syntax::{language::Language, untyped::Untyped};
 
 impl<Lang> GrammarDescribe for Untyped<Lang>
@@ -10,7 +10,7 @@ where
     }
 }
 
-impl<Lang> RuleDescribe for Untyped<Lang>
+impl<Lang> GrammarRuleDescribe for Untyped<Lang>
 where
     Lang: Language,
 {

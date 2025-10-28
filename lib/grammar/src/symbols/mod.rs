@@ -8,13 +8,17 @@ use std::fmt;
 /// Symbols used to define [`crate::Rule`],[`crate::Grammar`] and [`crate::DerivationRule`]
 /// These can be printed either as textual (e.g. Gamma, T,Ty,etc)
 /// or as latex (e.g. `\Gamma`,`\tau`,etc)
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub enum Symbol {
     /// any number of the same symbol
     /// usually indicated by overline or ...
     /// e.g. clauses in a pattern match
     Many(Box<Symbol>),
 
+    /// A constant String
+    Str(String),
+    /// A constant integer
+    Int(i64),
     /// A Keyword symbol
     Keyword(Keyword),
     /// A special character
@@ -36,6 +40,14 @@ pub enum Symbol {
     Label,
     /// Symbols for locations (e.g. in references)
     Location,
+
+    /// Symbol with index
+    Subscript {
+        /// the symbol with subscript
+        sym: Box<Symbol>,
+        /// the index
+        ind: Box<Symbol>,
+    },
 
     /// A Symbol with a prefix
     Prefixed {
@@ -512,6 +524,7 @@ impl fmt::Display for Symbol {
             Symbol::Typevariable => f.write_str("X"),
             Symbol::Label => f.write_str("lb"),
             Symbol::Location => f.write_str("loc"),
+            Symbol::Subscript { sym, ind } => write!(f, "{sym}_{ind}"),
             Symbol::Prefixed { prefix, inner } => write!(f, "{prefix} {inner}"),
             Symbol::Delim {
                 delim_open,
@@ -533,6 +546,20 @@ impl fmt::Display for Symbol {
                     .join(" | ")
             ),
             Symbol::Pattern { lhs, rhs } => write!(f, "{lhs} => {rhs}"),
+            Symbol::Str(s) => write!(f, "{s}"),
+            Symbol::Int(i) => write!(f, "{i}"),
         }
+    }
+}
+
+impl From<&str> for Symbol {
+    fn from(s: &str) -> Symbol {
+        Symbol::Str(s.to_owned())
+    }
+}
+
+impl From<i64> for Symbol {
+    fn from(i: i64) -> Symbol {
+        Symbol::Int(i)
     }
 }

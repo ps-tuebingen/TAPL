@@ -6,7 +6,8 @@ pub mod types;
 pub mod values;
 
 use crate::Language;
-use grammar::{GrammarDescribe, LanguageDescribe, LanguageGrammar};
+use check::Typecheck;
+use grammar::{GrammarDescribe, LanguageDescribe, LanguageGrammar, LanguageRules};
 use std::fmt;
 use syntax::language::LanguageFeatures;
 
@@ -41,6 +42,16 @@ impl LanguageDescribe for BoundedQuantification {
             type_grammar: Type::grammar(),
             value_grammar: Value::grammar(),
             include_kinds: true,
+        }
+    }
+
+    fn rules() -> LanguageRules {
+        LanguageRules {
+            typing: <Term as Typecheck>::rules(),
+            subtyping: <Term as Subtypecheck>::rules(),
+            kinding: <Term as Kindcheck>::rules(),
+            normalizing: <Term as Normalize>::rules(),
+            eval: <Term as Eval>::rules(),
         }
     }
 }

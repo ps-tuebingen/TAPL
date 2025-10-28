@@ -1,5 +1,5 @@
 use super::{UntypedLambda, terms::Term};
-use grammar::{Grammar, GrammarDescribe, RuleDescribe};
+use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
 use syntax::values::{UntypedLambda as UntypedLambdaVal, Value as ValueTrait, ValueGroup};
 

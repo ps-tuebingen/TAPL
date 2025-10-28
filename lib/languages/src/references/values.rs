@@ -1,6 +1,6 @@
 use super::{References, terms::Term};
 use errors::ValueMismatch;
-use grammar::{Grammar, GrammarDescribe, RuleDescribe};
+use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
 use std::fmt;
 use syntax::values::{False, Lambda, Loc, Num, True, Unit, Value as ValueTrait, ValueGroup};

@@ -1,6 +1,8 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
 use derivations::{Derivation, KindingDerivation, NormalizingDerivation, SubtypeDerivation};
 use errors::{NotASubtype, check_error::CheckError};
+use grammar::{DerivationRule, symbols::SpecialChar};
+use std::collections::HashSet;
 use syntax::{
     env::Environment,
     language::Language,
@@ -24,6 +26,10 @@ where
             Err(NotASubtype::new(self.clone(), sup.clone()).into())
         }
     }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([DerivationRule::sub_top()])
+    }
 }
 
 impl<Lang> Kindcheck for Top<Lang>
@@ -35,6 +41,10 @@ where
     fn check_kind(&self, _: Environment<Self::Lang>) -> Result<Derivation<Lang>, CheckError> {
         Ok(KindingDerivation::annotated(self.clone(), self.kind.clone()).into())
     }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([DerivationRule::kind_any(SpecialChar::Top.into())])
+    }
 }
 
 impl<Lang> Normalize for Top<Lang>
@@ -45,5 +55,9 @@ where
     type Lang = Lang;
     fn normalize(self, _: Environment<Self::Lang>) -> Derivation<Self::Lang> {
         NormalizingDerivation::empty(self).into()
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::new()
     }
 }

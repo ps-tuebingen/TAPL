@@ -1,7 +1,7 @@
-use crate::{Rule, RuleDescribe, Symbol};
+use crate::{GrammarRuleDescribe, Rule, Symbol};
 use syntax::{language::Language, terms::TyLambda};
 
-impl<Lang> RuleDescribe for TyLambda<Lang>
+impl<Lang> GrammarRuleDescribe for TyLambda<Lang>
 where
     Lang: Language,
 {

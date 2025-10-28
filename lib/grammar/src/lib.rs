@@ -9,7 +9,7 @@ mod types;
 mod untyped;
 mod values;
 
-pub use derivation_rule::{ConclusionRule, DerivationRule};
+pub use derivation_rule::{ConclusionRule, DerivationRule, LanguageRules};
 pub use grammar::{Grammar, LanguageGrammar};
 pub use rule::Rule;
 pub use symbols::Symbol;
@@ -20,8 +20,9 @@ pub trait GrammarDescribe {
 
 pub trait LanguageDescribe {
     fn grammars() -> LanguageGrammar;
+    fn rules() -> LanguageRules;
 }
 
-pub trait RuleDescribe {
+pub trait GrammarRuleDescribe {
     fn rule() -> Rule;
 }

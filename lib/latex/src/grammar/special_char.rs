@@ -9,6 +9,7 @@ impl LatexFmt for SpecialChar {
             SpecialChar::Number => format!("{env_start}int{env_end}"),
             SpecialChar::Lambda => format!("{env_start}\\lambda{env_end}"),
             SpecialChar::Mu => format!("{env_start}\\mu{env_end}"),
+            SpecialChar::Gamma => format!("{env_start}\\Gamma{env_end}"),
             SpecialChar::Forall => format!("{env_start}\\forall{env_end}"),
             SpecialChar::Exists => format!("{env_start}\\exists{env_end}"),
             SpecialChar::Top => format!("{env_start}\\top{env_end}"),

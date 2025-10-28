@@ -1,7 +1,7 @@
-use crate::{Rule, RuleDescribe, Symbol};
+use crate::{GrammarRuleDescribe, Rule, Symbol};
 use syntax::{language::Language, types::Sum};
 
-impl<Lang> RuleDescribe for Sum<Lang>
+impl<Lang> GrammarRuleDescribe for Sum<Lang>
 where
     Lang: Language,
 {

@@ -1,8 +1,11 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
 use derivations::{Derivation, KindingDerivation, NormalizingDerivation, SubtypeDerivation};
-use errors::KindMismatch;
-use errors::check_error::CheckError;
-use std::rc::Rc;
+use errors::{KindMismatch, check_error::CheckError};
+use grammar::{
+    DerivationRule,
+    symbols::{SpecialChar, Symbol},
+};
+use std::{collections::HashSet, rc::Rc};
 use syntax::{
     env::Environment,
     kinds::Kind,
@@ -32,6 +35,10 @@ where
         let to_res = self.to.check_subtype(&(*sup_fun.to), env.clone())?;
         Ok(SubtypeDerivation::fun(env, self.clone(), sup.clone(), from_res, to_res).into())
     }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([DerivationRule::sub_fun()])
+    }
 }
 
 impl<Lang> Kindcheck for Fun<Lang>
@@ -55,6 +62,10 @@ where
         }
         Ok(KindingDerivation::fun(self.clone(), from_res, to_res).into())
     }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([DerivationRule::kind_fun()])
+    }
 }
 
 impl<Lang> Normalize for Fun<Lang>
@@ -72,5 +83,20 @@ where
             to: Rc::new(to_norm.ret_ty()),
         };
         NormalizingDerivation::cong(self, self_norm, vec![from_norm, to_norm]).into()
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([
+            DerivationRule::norm_cong(|sym| Symbol::Separated {
+                fst: Box::new(Symbol::Type),
+                separator: Box::new(SpecialChar::Arrow.into()),
+                snd: Box::new(sym),
+            }),
+            DerivationRule::norm_cong(|sym| Symbol::Separated {
+                fst: Box::new(sym),
+                separator: Box::new(SpecialChar::Arrow.into()),
+                snd: Box::new(Symbol::Type),
+            }),
+        ])
     }
 }

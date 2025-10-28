@@ -1,7 +1,7 @@
-use crate::{Rule, RuleDescribe, Symbol};
+use crate::{GrammarRuleDescribe, Rule, Symbol};
 use syntax::{language::Language, values::UntypedLambda};
 
-impl<Lang> RuleDescribe for UntypedLambda<Lang>
+impl<Lang> GrammarRuleDescribe for UntypedLambda<Lang>
 where
     Lang: Language,
 {
