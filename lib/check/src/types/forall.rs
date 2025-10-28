@@ -49,17 +49,16 @@ where
     }
 
     fn rules() -> HashSet<DerivationRule> {
-        HashSet::from([DerivationRule::norm_cong(|sym| Symbol::Separated {
-            fst: Box::new(Symbol::Prefixed {
-                prefix: Box::new(SpecialChar::Forall.into()),
-                inner: Box::new(Symbol::Separated {
-                    fst: Box::new(Symbol::Typevariable),
-                    separator: Box::new(SpecialChar::DoubleColon.into()),
-                    snd: Box::new(Symbol::Type),
-                }),
-            }),
-            separator: Box::new(SpecialChar::Dot.into()),
-            snd: Box::new(sym),
+        HashSet::from([DerivationRule::norm_cong(|sym| {
+            vec![
+                SpecialChar::Forall.into(),
+                Symbol::Typevariable,
+                SpecialChar::DoubleColon.into(),
+                Symbol::Type,
+                SpecialChar::Dot.into(),
+                sym,
+            ]
+            .into()
         })])
     }
 }

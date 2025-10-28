@@ -87,15 +87,11 @@ where
 
     fn rules() -> HashSet<DerivationRule> {
         HashSet::from([
-            DerivationRule::norm_cong(|sym| Symbol::Separated {
-                fst: Box::new(Symbol::Type),
-                separator: Box::new(SpecialChar::Arrow.into()),
-                snd: Box::new(sym),
+            DerivationRule::norm_cong(|sym| {
+                vec![Symbol::Type, SpecialChar::Arrow.into(), sym].into()
             }),
-            DerivationRule::norm_cong(|sym| Symbol::Separated {
-                fst: Box::new(sym),
-                separator: Box::new(SpecialChar::Arrow.into()),
-                snd: Box::new(Symbol::Type),
+            DerivationRule::norm_cong(|sym| {
+                vec![sym, SpecialChar::Arrow.into(), Symbol::Type].into()
             }),
         ])
     }

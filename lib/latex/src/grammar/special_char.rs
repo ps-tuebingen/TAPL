@@ -37,6 +37,8 @@ impl LatexFmt for SpecialChar {
             SpecialChar::AngBrackO => format!("{env_start}<{env_end}"),
             SpecialChar::AngBrackC => format!("{env_start}>{env_end}"),
             SpecialChar::Star => format!("{env_start}*{env_end}"),
+            SpecialChar::LessEq => format!("{env_start}\\leq{env_end}"),
+            SpecialChar::Ellipses => format!("{env_start}\\dots{env_end}"),
         }
     }
 }

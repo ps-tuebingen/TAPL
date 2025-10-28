@@ -43,6 +43,8 @@ impl LatexFmt for Keyword {
             Keyword::UnitTy => format!("{env_start}\\text{{ Unit }} {env_end}"),
             Keyword::Nat => format!("{env_start}\\text{{ Nat }} {env_end}"),
             Keyword::Bool => format!("{env_start}\\text{{ Bool }} {env_end}"),
+            Keyword::Case => format!("{env_start}\\text{{ case }} {env_end}"),
+            Keyword::Of => format!("{env_start} \\text{{ of }} {env_end}"),
         }
     }
 }

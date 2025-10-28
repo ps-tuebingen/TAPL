@@ -36,13 +36,14 @@ where
     }
 
     fn rules() -> HashSet<DerivationRule> {
-        HashSet::from([DerivationRule::sub_cong(|sym| Symbol::Prefixed {
-            prefix: Box::new(Keyword::Sink.into()),
-            inner: Box::new(Symbol::Delim {
-                delim_open: SpecialChar::SqBrackO,
-                inner: Box::new(sym),
-                delim_close: SpecialChar::SqBrackC,
-            }),
+        HashSet::from([DerivationRule::sub_cong(|sym| {
+            vec![
+                Keyword::Sink.into(),
+                SpecialChar::SqBrackO.into(),
+                sym,
+                SpecialChar::SqBrackC.into(),
+            ]
+            .into()
         })])
     }
 }

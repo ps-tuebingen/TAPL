@@ -95,14 +95,13 @@ where
     }
 
     fn rules() -> HashSet<DerivationRule> {
-        HashSet::from([DerivationRule::norm_cong(|sym| Symbol::Delim {
-            delim_open: SpecialChar::BrackO,
-            inner: Box::new(Symbol::Many(Box::new(Symbol::Separated {
-                fst: Box::new(Symbol::Label),
-                separator: Box::new(SpecialChar::Colon.into()),
-                snd: Box::new(sym),
-            }))),
-            delim_close: SpecialChar::BrackC,
+        HashSet::from([DerivationRule::norm_cong(|sym| {
+            vec![
+                SpecialChar::BrackO.into(),
+                Symbol::many(vec![Symbol::Label, SpecialChar::Colon.into(), sym]),
+                SpecialChar::BrackC.into(),
+            ]
+            .into()
         })])
     }
 }

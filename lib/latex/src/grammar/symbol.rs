@@ -8,6 +8,8 @@ impl LatexFmt for Symbol {
 
         let sym_str = match self {
             Symbol::Many(sym) => format!("\\overline{{ {} }}", sym.to_latex(conf)),
+            Symbol::Str(s) => s.to_latex(conf),
+            Symbol::Int(i) => i.to_string(),
             Symbol::Keyword(kw) => kw.to_latex(conf),
             Symbol::SpecialChar(ch) => ch.to_latex(conf),
             Symbol::Term => "t".to_owned(),
@@ -18,41 +20,14 @@ impl LatexFmt for Symbol {
             Symbol::Typevariable => "X".to_owned(),
             Symbol::Label => "\\text{{label}}".to_owned(),
             Symbol::Location => "l".to_owned(),
-            Symbol::Prefixed { prefix, inner } => {
-                format!("{} {}", prefix.to_latex(conf), inner.to_latex(conf))
+            Symbol::Subscript { sym, ind } => {
+                format!("{}_{}", sym.to_latex(conf), ind.to_latex(conf))
             }
-            Symbol::Delim {
-                delim_open,
-                inner,
-                delim_close,
-            } => format!(
-                "{}{}{}",
-                delim_open.to_latex(conf),
-                inner.to_latex(conf),
-                delim_close.to_latex(conf)
-            ),
-            Symbol::Separated {
-                fst,
-                separator,
-                snd,
-            } => format!(
-                "{}{}{}",
-                fst.to_latex(conf),
-                separator.to_latex(conf),
-                snd.to_latex(conf)
-            ),
-            Symbol::Case { bound, patterns } => format!(
-                "\\text{{ case }} {} \\text{{ of }} \\{{ {} \\}}",
-                bound.to_latex(conf),
-                patterns
-                    .iter()
-                    .map(|pt| pt.to_latex(conf))
-                    .collect::<Vec<String>>()
-                    .join(" \\mid")
-            ),
-            Symbol::Pattern { lhs, rhs } => {
-                format!("{} \\Rightarrow {}", lhs.to_latex(conf), rhs.to_latex(conf))
-            }
+            Symbol::Seq(syms) => syms
+                .iter()
+                .map(|sym| sym.to_latex(conf))
+                .collect::<Vec<_>>()
+                .join(" "),
         };
         format!("{env_start}{sym_str}{env_end}")
     }

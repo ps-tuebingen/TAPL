@@ -43,13 +43,14 @@ where
     }
 
     fn rules() -> HashSet<DerivationRule> {
-        HashSet::from([DerivationRule::sub_cong(|sym| Symbol::Prefixed {
-            prefix: Box::new(sym),
-            inner: Box::new(Symbol::Delim {
-                delim_open: SpecialChar::BrackO,
-                inner: Box::new(Symbol::Type),
-                delim_close: SpecialChar::BrackC,
-            }),
+        HashSet::from([DerivationRule::sub_cong(|sym| {
+            vec![
+                sym,
+                SpecialChar::BrackO.into(),
+                Symbol::Type,
+                SpecialChar::BrackC.into(),
+            ]
+            .into()
         })])
     }
 }
@@ -117,21 +118,23 @@ where
     fn rules() -> HashSet<DerivationRule> {
         let features = Lang::features();
         HashSet::from([
-            DerivationRule::norm_cong(|sym| Symbol::Prefixed {
-                prefix: Box::new(sym),
-                inner: Box::new(Symbol::Delim {
-                    delim_open: SpecialChar::BrackO,
-                    inner: Box::new(Symbol::Type),
-                    delim_close: SpecialChar::BrackC,
-                }),
+            DerivationRule::norm_cong(|sym| {
+                vec![
+                    sym,
+                    SpecialChar::BrackO.into(),
+                    Symbol::Type,
+                    SpecialChar::BrackC.into(),
+                ]
+                .into()
             }),
-            DerivationRule::norm_cong(|sym| Symbol::Prefixed {
-                prefix: Box::new(Symbol::Type),
-                inner: Box::new(Symbol::Delim {
-                    delim_open: SpecialChar::BrackO,
-                    inner: Box::new(sym),
-                    delim_close: SpecialChar::BrackC,
-                }),
+            DerivationRule::norm_cong(|sym| {
+                vec![
+                    Symbol::Type,
+                    SpecialChar::BrackO.into(),
+                    sym,
+                    SpecialChar::BrackC.into(),
+                ]
+                .into()
             }),
             DerivationRule::norm_ap(features.subtyped),
         ])
