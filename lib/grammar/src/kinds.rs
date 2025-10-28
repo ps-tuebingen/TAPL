@@ -9,11 +9,7 @@ impl GrammarDescribe for Kind {
             alternatives: vec![
                 Rule::new(SpecialChar::Star.into(), "Star Kind"),
                 Rule::new(
-                    Symbol::Separated {
-                        fst: Box::new(Symbol::Kind),
-                        separator: Box::new(SpecialChar::DoubleArrow.into()),
-                        snd: Box::new(Symbol::Kind),
-                    },
+                    vec![Symbol::Kind, SpecialChar::DoubleArrow.into(), Symbol::Kind].into(),
                     "Arrow Kind",
                 ),
             ],

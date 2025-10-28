@@ -3,7 +3,7 @@ mod special_char;
 
 pub use keywords::Keyword;
 pub use special_char::SpecialChar;
-use std::fmt;
+use std::{fmt, iter::Iterator};
 
 /// Symbols used to define [`crate::Rule`],[`crate::Grammar`] and [`crate::DerivationRule`]
 /// These can be printed either as textual (e.g. Gamma, T,Ty,etc)
@@ -49,248 +49,186 @@ pub enum Symbol {
         ind: Box<Symbol>,
     },
 
-    /// A Symbol with a prefix
-    Prefixed {
-        /// The prefix of the symbol
-        prefix: Box<Symbol>,
-        /// The symbol being prefixed
-        inner: Box<Symbol>,
-    },
-    /// A Symbol inside delimiters (e.g. parentheses)
-    Delim {
-        /// The opening delimiter (e.g. `(`)
-        delim_open: SpecialChar,
-        /// The symbol inside delimiters
-        inner: Box<Symbol>,
-        /// The closing delimiter (e.g. `)`)
-        delim_close: SpecialChar,
-    },
-    /// Two symbols being separated by a symbol
-    Separated {
-        /// The first symbol
-        fst: Box<Symbol>,
-        /// The separator between them
-        separator: Box<Symbol>,
-        /// The second symbol
-        snd: Box<Symbol>,
-    },
-    /// Symbol for case expressions
-    Case {
-        /// The bound symbol (e.g. `case t of ...`)
-        bound: Box<Symbol>,
-        /// Symbols for each pattern
-        patterns: Vec<Symbol>,
-    },
-    /// Symbol for patterns (e.g. `Nil => t`)
-    Pattern {
-        /// The left hand side of the pattern
-        lhs: Box<Symbol>,
-        /// The right hand side of the pattern
-        rhs: Box<Symbol>,
-    },
+    /// List of sequential symbols
+    Seq(Vec<Symbol>),
 }
 
 impl Symbol {
+    /// Create [`Symbol::Many`] with a given inner symbol
+    pub fn many<S>(inner: S) -> Symbol
+    where
+        S: Into<Symbol>,
+    {
+        Symbol::Many(Box::new(inner.into()))
+    }
+
+    /// Create [`Symbol::Subscript`] with given symbol and subscript
+    pub fn sub<S1, S2>(sym: S1, ind: S2) -> Symbol
+    where
+        S1: Into<Symbol>,
+        S2: Into<Symbol>,
+    {
+        Symbol::Subscript {
+            sym: Box::new(sym.into()),
+            ind: Box::new(ind.into()),
+        }
+    }
+
     /// Create a symbol for an untyped lambda expression
     /// with a given symbol for the body
     /// lambda var.inner
     pub fn lam_untyped(inner: Symbol) -> Symbol {
-        Symbol::Prefixed {
-            prefix: Box::new(SpecialChar::Lambda.into()),
-            inner: Box::new(Symbol::Separated {
-                fst: Box::new(Symbol::Variable),
-                separator: Box::new(SpecialChar::Dot.into()),
-                snd: Box::new(inner),
-            }),
-        }
+        vec![
+            SpecialChar::Lambda.into(),
+            Symbol::Variable,
+            SpecialChar::Dot.into(),
+            inner,
+        ]
+        .into()
     }
 
     /// Create a symbol type annotating a given symbol
     /// sym : Type
     pub fn ty_annot(sym: Symbol) -> Symbol {
-        Symbol::Separated {
-            fst: Box::new(sym),
-            separator: Box::new(SpecialChar::Colon.into()),
-            snd: Box::new(Symbol::Type),
-        }
+        vec![sym, SpecialChar::Colon.into(), Symbol::Type].into()
     }
 
     /// Create a symbol kind annotating a given symbol
     /// sym :: Kind
     pub fn kind_annot(sym: Symbol) -> Symbol {
-        Symbol::Separated {
-            fst: Box::new(sym),
-            separator: Box::new(SpecialChar::DoubleColon.into()),
-            snd: Box::new(Symbol::Kind),
-        }
+        vec![sym, SpecialChar::DoubleColon.into(), Symbol::Kind].into()
     }
 
     /// Create a symbol subtype annotating a given symbol
     /// sym <: Type
     pub fn subty_annot(sym: Symbol) -> Symbol {
-        Symbol::Separated {
-            fst: Box::new(sym),
-            separator: Box::new(SpecialChar::LessColon.into()),
-            snd: Box::new(Symbol::Type),
-        }
+        vec![sym, SpecialChar::LessColon.into(), Symbol::Type].into()
     }
 
     /// Create a symbol for a lambda abstraction
     /// with given annotation symbol and body symbol
     /// lambda annot.body
     pub fn lam(annot: Symbol, body: Symbol) -> Symbol {
-        Symbol::Prefixed {
-            prefix: Box::new(SpecialChar::Lambda.into()),
-            inner: Box::new(Symbol::Separated {
-                fst: Box::new(annot),
-                separator: Box::new(SpecialChar::Dot.into()),
-                snd: Box::new(body),
-            }),
-        }
+        vec![
+            SpecialChar::Lambda.into(),
+            annot,
+            SpecialChar::Dot.into(),
+            body,
+        ]
+        .into()
     }
 
     /// Crate a symbol for a mu type
     /// mu var.Type
     pub fn mu() -> Symbol {
-        Symbol::Prefixed {
-            prefix: Box::new(SpecialChar::Mu.into()),
-            inner: Box::new(Symbol::Separated {
-                fst: Box::new(Symbol::Variable),
-                separator: Box::new(SpecialChar::Dot.into()),
-                snd: Box::new(Symbol::Type),
-            }),
-        }
+        vec![
+            SpecialChar::Mu.into(),
+            Symbol::Variable,
+            SpecialChar::Dot.into(),
+            Symbol::Type,
+        ]
+        .into()
     }
 
     /// Create a symbol for a packed symbol (existentials)
     ///  {inner,Type} as Type
     pub fn pack(inner: Symbol) -> Symbol {
-        Symbol::Separated {
-            fst: Box::new(Symbol::Delim {
-                delim_open: SpecialChar::BrackO,
-                inner: Box::new(Symbol::Separated {
-                    fst: Box::new(inner),
-                    separator: Box::new(SpecialChar::Comma.into()),
-                    snd: Box::new(Symbol::Type),
-                }),
-                delim_close: SpecialChar::BrackC,
-            }),
-            separator: Box::new(Keyword::As.into()),
-            snd: Box::new(Symbol::Type),
-        }
+        vec![
+            SpecialChar::BrackO.into(),
+            inner,
+            SpecialChar::Comma.into(),
+            Symbol::Type,
+            SpecialChar::BrackC.into(),
+        ]
+        .into()
     }
 
     /// Create a symbol for an unpack term
     /// let {TypeVar,Var} = Term in Term
     pub fn unpack() -> Symbol {
-        Symbol::Separated {
-            fst: Box::new(Symbol::Prefixed {
-                prefix: Box::new(Keyword::Let.into()),
-                inner: Box::new(Symbol::Separated {
-                    fst: Box::new(Symbol::Delim {
-                        delim_open: SpecialChar::BrackO,
-                        inner: Box::new(Symbol::Separated {
-                            fst: Box::new(Symbol::Typevariable),
-                            separator: Box::new(SpecialChar::Comma.into()),
-                            snd: Box::new(Symbol::Variable),
-                        }),
-                        delim_close: SpecialChar::BrackC,
-                    }),
-                    separator: Box::new(SpecialChar::Equals.into()),
-                    snd: Box::new(Symbol::Term),
-                }),
-            }),
-            separator: Box::new(Keyword::In.into()),
-            snd: Box::new(Symbol::Term),
-        }
+        vec![
+            SpecialChar::BrackO.into(),
+            Symbol::Typevariable,
+            SpecialChar::Comma.into(),
+            Symbol::Variable,
+            SpecialChar::BrackC.into(),
+            SpecialChar::Equals.into(),
+            Symbol::Term,
+            Keyword::In.into(),
+            Symbol::Term,
+        ]
+        .into()
     }
 
     /// Create a symbol for a let binding
     /// let (var = Term) in Term
     pub fn lett() -> Symbol {
-        Symbol::Separated {
-            fst: Box::new(Symbol::Prefixed {
-                prefix: Box::new(Keyword::Let.into()),
-                inner: Box::new(Symbol::Delim {
-                    delim_open: SpecialChar::ParenO,
-                    inner: Box::new(Symbol::Separated {
-                        fst: Box::new(Symbol::Variable),
-                        separator: Box::new(SpecialChar::Equals.into()),
-                        snd: Box::new(Symbol::Term),
-                    }),
-                    delim_close: SpecialChar::ParenC,
-                }),
-            }),
-            separator: Box::new(Keyword::In.into()),
-            snd: Box::new(Symbol::Term),
-        }
+        vec![
+            SpecialChar::ParenO.into(),
+            Symbol::Variable,
+            SpecialChar::Equals.into(),
+            Symbol::Term,
+            SpecialChar::ParenC.into(),
+            Keyword::In.into(),
+            Symbol::Term,
+        ]
+        .into()
     }
 
     /// Create a symbol for an if expression
     /// if { Term } else { Term }
     pub fn ift() -> Symbol {
-        Symbol::Separated {
-            fst: Box::new(Symbol::Prefixed {
-                prefix: Box::new(Keyword::If.into()),
-                inner: Box::new(Symbol::Delim {
-                    delim_open: SpecialChar::BrackO,
-                    inner: Box::new(Symbol::Term),
-                    delim_close: SpecialChar::BrackC,
-                }),
-            }),
-            separator: Box::new(Keyword::Else.into()),
-            snd: Box::new(Symbol::Delim {
-                delim_open: SpecialChar::BrackO,
-                inner: Box::new(Symbol::Term),
-                delim_close: SpecialChar::BrackC,
-            }),
-        }
+        vec![
+            Keyword::If.into(),
+            SpecialChar::BrackO.into(),
+            Symbol::Term,
+            SpecialChar::BrackC.into(),
+            Keyword::Else.into(),
+            SpecialChar::BrackO.into(),
+            Symbol::Term,
+            SpecialChar::BrackC.into(),
+        ]
+        .into()
     }
 
     /// Crate a symbol for a dereference term
     /// !Term
     pub fn dereft() -> Symbol {
-        Symbol::Prefixed {
-            prefix: Box::new(SpecialChar::Exclamation.into()),
-            inner: Box::new(Symbol::Term),
-        }
+        vec![SpecialChar::Exclamation.into(), Symbol::Term].into()
     }
 
     /// Create a symbol for a try term
     /// Try { Term }
     pub fn tryt() -> Symbol {
-        Symbol::Prefixed {
-            prefix: Box::new(Keyword::Try.into()),
-            inner: Box::new(Symbol::Delim {
-                delim_open: SpecialChar::BrackO,
-                inner: Box::new(Symbol::Term),
-                delim_close: SpecialChar::BrackC,
-            }),
-        }
+        vec![
+            Keyword::Try.into(),
+            SpecialChar::BrackO.into(),
+            Symbol::Term,
+            SpecialChar::BrackC.into(),
+        ]
+        .into()
     }
 
     /// Crate a symbol for a try-catch term
     /// Try { Term } Catch { Term }
     pub fn try_catch() -> Symbol {
-        Symbol::Separated {
-            fst: Box::new(Symbol::tryt()),
-            separator: Box::new(Keyword::Catch.into()),
-            snd: Box::new(Symbol::Delim {
-                delim_open: SpecialChar::BrackO,
-                inner: Box::new(Symbol::Term),
-                delim_close: SpecialChar::BrackC,
-            }),
-        }
+        vec![
+            Keyword::Try.into(),
+            SpecialChar::BrackO.into(),
+            Symbol::Term,
+            SpecialChar::BrackC.into(),
+            Keyword::Catch.into(),
+            SpecialChar::BrackO.into(),
+            Symbol::Term,
+            SpecialChar::BrackC.into(),
+        ]
+        .into()
     }
 
     // Crate a symbol for dot notation
     // Term.op (e.g. Term.fst())
     pub fn dot(op: Symbol) -> Symbol {
-        Symbol::Separated {
-            fst: Box::new(Symbol::Term),
-            separator: Box::new(SpecialChar::Dot.into()),
-            snd: Box::new(op),
-        }
+        vec![Symbol::Term, SpecialChar::Dot.into(), op].into()
     }
 
     /// Create a symbol for a constructor
@@ -298,51 +236,40 @@ impl Symbol {
     /// ctor(arg1,arg2,...) without type argument
     /// ctor[ty_arg](arg1,arg2,...) with type argument
     pub fn ctor(ctor: Keyword, ty_arg: Option<Symbol>, args: Vec<Symbol>) -> Symbol {
-        let mut inner = SpecialChar::Empty.into();
+        let mut seq = vec![ctor.into()];
 
+        if let Some(arg) = ty_arg {
+            seq.push(SpecialChar::SqBrackO.into());
+            seq.push(arg);
+            seq.push(SpecialChar::SqBrackC.into());
+        }
+
+        seq.push(SpecialChar::ParenO.into());
+
+        let empt = args.is_empty();
         for arg in args {
-            if inner == SpecialChar::Empty.into() {
-                inner = arg;
-            } else {
-                inner = Symbol::Separated {
-                    fst: Box::new(inner),
-                    separator: Box::new(SpecialChar::Comma.into()),
-                    snd: Box::new(arg),
-                };
-            }
+            seq.push(arg);
+            seq.push(SpecialChar::Comma.into());
         }
-
-        let mut prefix_inner = Box::new(Symbol::Delim {
-            delim_open: SpecialChar::ParenO,
-            inner: Box::new(inner),
-            delim_close: SpecialChar::ParenC,
-        });
-
-        if let Some(ty) = ty_arg {
-            prefix_inner = Box::new(Symbol::Separated {
-                fst: Box::new(Symbol::Delim {
-                    delim_open: SpecialChar::SqBrackO,
-                    inner: Box::new(ty),
-                    delim_close: SpecialChar::SqBrackC,
-                }),
-                separator: Box::new(SpecialChar::Empty.into()),
-                snd: prefix_inner,
-            })
+        if !empt {
+            seq.remove(seq.len() - 1);
         }
-
-        Symbol::Prefixed {
-            prefix: Box::new(ctor.into()),
-            inner: prefix_inner,
-        }
+        seq.push(SpecialChar::ParenC.into());
+        seq.into()
     }
 
     /// Create a symbol for a case expression with givven patterns
     /// case Term of { pts }
     pub fn case(pts: Vec<Symbol>) -> Symbol {
-        Symbol::Case {
-            bound: Box::new(Symbol::Term),
-            patterns: pts,
-        }
+        let mut seq = vec![
+            Keyword::Case.into(),
+            Symbol::Term,
+            Keyword::Of.into(),
+            SpecialChar::BrackO.into(),
+        ];
+        seq.extend(pts);
+        seq.push(SpecialChar::SqBrackC.into());
+        seq.into()
     }
 
     // Create a symbol for a constructor pattern
@@ -359,154 +286,121 @@ impl Symbol {
     /// Create a symbol for a pattern with given constructor and right-hand side
     /// ctor => rhs
     pub fn pt(ctor: Symbol, rhs: Symbol) -> Symbol {
-        Symbol::Pattern {
-            lhs: Box::new(ctor),
-            rhs: Box::new(rhs),
-        }
+        vec![ctor, SpecialChar::DoubleArrow.into(), rhs].into()
     }
 
     /// Create a symbol for a variant term/type
     /// with given inner symbol on the rhs of labels
     /// <label=inner,...>
     pub fn variant(inner: Symbol) -> Symbol {
-        Symbol::Delim {
-            delim_open: SpecialChar::AngBrackO,
-            inner: Box::new(Symbol::Many(Box::new(Symbol::Separated {
-                fst: Box::new(Symbol::Label),
-                separator: Box::new(SpecialChar::Equals.into()),
-                snd: Box::new(inner),
-            }))),
-            delim_close: SpecialChar::AngBrackC,
-        }
+        vec![
+            SpecialChar::AngBrackO.into(),
+            Symbol::Many(Box::new(
+                vec![Symbol::Label.into(), SpecialChar::Equals.into(), inner].into(),
+            )),
+            SpecialChar::AngBrackC.into(),
+        ]
+        .into()
     }
 
     /// Create a symbol for a tuple term/type
     /// with a given inner symbol (usually term/type)
     /// (inner,...)
     pub fn tuple(inner: Symbol) -> Symbol {
-        Symbol::Delim {
-            delim_open: SpecialChar::ParenO,
-            inner: Box::new(Symbol::Many(Box::new(inner))),
-            delim_close: SpecialChar::ParenC,
-        }
+        vec![
+            SpecialChar::ParenO.into(),
+            Symbol::Many(Box::new(inner)),
+            SpecialChar::ParenC.into(),
+        ]
+        .into()
     }
 
     /// Crate a symbol for a pair term/type
     /// with given inner symbol (usually term/type)
     /// [inner,inner...]
     pub fn pair(inner: Symbol) -> Symbol {
-        Symbol::Delim {
-            delim_open: SpecialChar::BrackO,
-            inner: Box::new(Symbol::Separated {
-                fst: Box::new(inner.clone()),
-                separator: Box::new(SpecialChar::Comma.into()),
-                snd: Box::new(inner),
-            }),
-            delim_close: SpecialChar::BrackC,
-        }
+        vec![
+            SpecialChar::BrackO.into(),
+            Symbol::Many(Box::new(inner)),
+            SpecialChar::BrackC.into(),
+        ]
+        .into()
     }
 
     /// Create a symbol for a record term/type
     /// with given inner symbol (usually term/type)
     /// { Label = inner,...}
     pub fn record(inner: Symbol) -> Symbol {
-        Symbol::Delim {
-            delim_open: SpecialChar::BrackO,
-            inner: Box::new(Symbol::Many(Box::new(Symbol::Separated {
-                fst: Box::new(Symbol::Label),
-                separator: Box::new(SpecialChar::Equals.into()),
-                snd: Box::new(inner),
-            }))),
-            delim_close: SpecialChar::BrackC,
-        }
+        vec![
+            SpecialChar::BrackO.into(),
+            Symbol::Many(Box::new(
+                vec![Symbol::Label, SpecialChar::Equals.into(), inner].into(),
+            )),
+            SpecialChar::BrackC.into(),
+        ]
+        .into()
     }
 
     /// Create a label for a sum type
     /// Type + Type
     pub fn sum_ty() -> Symbol {
-        Symbol::Separated {
-            fst: Box::new(Symbol::Type),
-            separator: Box::new(SpecialChar::Plus.into()),
-            snd: Box::new(Symbol::Type),
-        }
+        vec![Symbol::Type, SpecialChar::Plus.into(), Symbol::Type].into()
     }
 
     /// Crate a symbol for a product type
     /// Type x Type
     pub fn product_ty() -> Symbol {
-        Symbol::Separated {
-            fst: Box::new(Symbol::Type),
-            separator: Box::new(SpecialChar::Times.into()),
-            snd: Box::new(Symbol::Type),
-        }
+        vec![Symbol::Type, SpecialChar::Times.into(), Symbol::Type].into()
     }
 
     /// Create a symbol for a function type
     /// Type -> Type
     pub fn fun_ty() -> Symbol {
-        Symbol::Separated {
-            fst: Box::new(Symbol::Type),
-            separator: Box::new(SpecialChar::Arrow.into()),
-            snd: Box::new(Symbol::Type),
-        }
+        vec![Symbol::Type, SpecialChar::Arrow.into(), Symbol::Type].into()
     }
 
     /// Create a symbol for an application with given function and argument
     /// fun arg
     pub fn app(fun: Symbol, arg: Symbol) -> Symbol {
-        Symbol::Separated {
-            fst: Box::new(fun),
-            separator: Box::new(SpecialChar::Space.into()),
-            snd: Box::new(arg),
-        }
+        vec![fun, arg].into()
     }
 
     /// Create a symbol for an assignment Term
     /// Term := Term
     pub fn assign() -> Symbol {
-        Symbol::Separated {
-            fst: Box::new(Symbol::Term),
-            separator: Box::new(SpecialChar::ColonEq.into()),
-            snd: Box::new(Symbol::Term),
-        }
+        vec![Symbol::Term, SpecialChar::ColonEq.into(), Symbol::Term].into()
     }
 
     /// Create a symbol for a type cast
     /// Term as Type
     pub fn cast() -> Symbol {
-        Symbol::Separated {
-            fst: Box::new(Symbol::Term),
-            separator: Box::new(Keyword::As.into()),
-            snd: Box::new(Symbol::Type),
-        }
+        vec![Symbol::Term, Keyword::As.into(), Symbol::Term].into()
     }
 
     /// Create a symbol for a universal type
     /// with given symbol annotating the bound variable
     /// forall annot.Type
     pub fn forall_ty(annot: Symbol) -> Symbol {
-        Symbol::Prefixed {
-            prefix: Box::new(SpecialChar::Forall.into()),
-            inner: Box::new(Symbol::Separated {
-                fst: Box::new(annot),
-                separator: Box::new(SpecialChar::Dot.into()),
-                snd: Box::new(Symbol::Type),
-            }),
-        }
+        vec![
+            SpecialChar::Forall.into(),
+            annot,
+            SpecialChar::Dot.into(),
+            Symbol::Type,
+        ]
+        .into()
     }
 
     /// Create a symbol for an existential type
     /// with given symbol annotating the bound variable
     /// exists annot.Type
     pub fn exists_ty(annot: Symbol) -> Symbol {
-        Symbol::Prefixed {
-            prefix: Box::new(SpecialChar::Exists.into()),
-            inner: Box::new(Symbol::Separated {
-                fst: Box::new(annot),
-                separator: Box::new(SpecialChar::Dot.into()),
-                snd: Box::new(Symbol::Type),
-            }),
-        }
+        vec![
+            SpecialChar::Exists.into(),
+            annot,
+            SpecialChar::Dot.into(),
+            Symbol::Type,
+        ]
+        .into()
     }
 }
 
@@ -525,30 +419,23 @@ impl fmt::Display for Symbol {
             Symbol::Label => f.write_str("lb"),
             Symbol::Location => f.write_str("loc"),
             Symbol::Subscript { sym, ind } => write!(f, "{sym}_{ind}"),
-            Symbol::Prefixed { prefix, inner } => write!(f, "{prefix} {inner}"),
-            Symbol::Delim {
-                delim_open,
-                inner,
-                delim_close,
-            } => write!(f, "{delim_open} {inner} {delim_close}"),
-            Symbol::Separated {
-                fst,
-                separator,
-                snd,
-            } => write!(f, "{fst} {separator} {snd}"),
-            Symbol::Case { bound, patterns } => write!(
+            Symbol::Seq(syms) => write!(
                 f,
-                "case {bound} of {{ {} }}",
-                patterns
-                    .iter()
-                    .map(|pt| pt.to_string())
-                    .collect::<Vec<String>>()
-                    .join(" | ")
+                "{}",
+                syms.iter()
+                    .map(|sym| sym.to_string())
+                    .collect::<Vec<_>>()
+                    .join(" "),
             ),
-            Symbol::Pattern { lhs, rhs } => write!(f, "{lhs} => {rhs}"),
             Symbol::Str(s) => write!(f, "{s}"),
             Symbol::Int(i) => write!(f, "{i}"),
         }
+    }
+}
+
+impl From<Vec<Symbol>> for Symbol {
+    fn from(syms: Vec<Symbol>) -> Symbol {
+        Symbol::Seq(syms)
     }
 }
 

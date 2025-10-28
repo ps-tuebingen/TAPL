@@ -83,62 +83,46 @@ impl DerivationRule {
     /// Gamma |-> exists TyperVar.Ty2 <: exists TypeVar.Ty3
     pub fn sub_exists(bounded: bool) -> DerivationRule {
         let var_sym = if bounded {
-            Box::new(Symbol::Separated {
-                fst: Box::new(Symbol::Typevariable),
-                separator: Box::new(SpecialChar::LessColon.into()),
-                snd: Box::new(Symbol::Subscript {
-                    sym: Box::new(Symbol::Type),
-                    ind: Box::new(1.into()),
-                }),
-            })
+            vec![
+                Symbol::Typevariable,
+                SpecialChar::LessColon.into(),
+                Symbol::sub(Symbol::Type, 1),
+            ]
+            .into()
         } else {
-            Box::new(Symbol::Typevariable)
+            Symbol::Typevariable
         };
         let ind_lower = if bounded { 1 } else { 2 };
         let ind_upper = if bounded { 2 } else { 3 };
         DerivationRule {
             premises: vec![ConclusionRule {
-                env: Symbol::Separated {
-                    fst: Box::new(SpecialChar::Gamma.into()),
-                    separator: Box::new(SpecialChar::Comma.into()),
-                    snd: var_sym.clone(),
-                },
-                input: Symbol::Subscript {
-                    sym: Box::new(Symbol::Type),
-                    ind: Box::new(ind_lower.into()),
-                },
+                env: vec![
+                    SpecialChar::Gamma.into(),
+                    SpecialChar::Comma.into(),
+                    var_sym.clone(),
+                ]
+                .into(),
+                input: Symbol::sub(Symbol::Type, ind_lower),
                 separator: SpecialChar::LessColon.into(),
-                output: Symbol::Subscript {
-                    sym: Box::new(Symbol::Type),
-                    ind: Box::new(ind_upper.into()),
-                },
+                output: Symbol::sub(Symbol::Type, ind_upper),
             }],
             label: format!("S-Exists{}", if bounded { "<" } else { "" }),
             conclusion: ConclusionRule {
                 env: SpecialChar::Gamma.into(),
-                input: Symbol::Prefixed {
-                    prefix: Box::new(SpecialChar::Exists.into()),
-                    inner: Box::new(Symbol::Separated {
-                        fst: var_sym.clone(),
-                        separator: Box::new(SpecialChar::Dot.into()),
-                        snd: Box::new(Symbol::Subscript {
-                            sym: Box::new(Symbol::Type),
-                            ind: Box::new(ind_lower.into()),
-                        }),
-                    }),
-                },
+                input: vec![
+                    SpecialChar::Exists.into(),
+                    SpecialChar::Dot.into(),
+                    Symbol::sub(Symbol::Type, ind_lower),
+                ]
+                .into(),
                 separator: SpecialChar::LessColon.into(),
-                output: Symbol::Prefixed {
-                    prefix: Box::new(SpecialChar::Exists.into()),
-                    inner: Box::new(Symbol::Separated {
-                        fst: var_sym,
-                        separator: Box::new(SpecialChar::Dot.into()),
-                        snd: Box::new(Symbol::Subscript {
-                            sym: Box::new(Symbol::Type),
-                            ind: Box::new(ind_lower.into()),
-                        }),
-                    }),
-                },
+                output: vec![
+                    SpecialChar::Exists.into(),
+                    var_sym,
+                    SpecialChar::Dot.into(),
+                    Symbol::sub(Symbol::Type, ind_lower),
+                ]
+                .into(),
             },
         }
     }
@@ -157,128 +141,85 @@ impl DerivationRule {
     /// Gamma |-> forall TypeVar::Kind.Ty1 <: forall TypeVar::Kind.Ty2
     pub fn sub_forall(bounded: bool) -> DerivationRule {
         let env_var = if bounded {
-            Symbol::Separated {
-                fst: Box::new(Symbol::Typevariable),
-                separator: Box::new(SpecialChar::LessColon.into()),
-                snd: Box::new(Symbol::Subscript {
-                    sym: Box::new(Symbol::Type),
-                    ind: Box::new(1.into()),
-                }),
-            }
+            vec![
+                Symbol::Typevariable,
+                SpecialChar::LessColon.into(),
+                Symbol::sub(Symbol::Type, 1),
+            ]
+            .into()
         } else {
-            Symbol::Separated {
-                fst: Box::new(Symbol::Typevariable),
-                separator: Box::new(SpecialChar::DoubleColon.into()),
-                snd: Box::new(Symbol::Kind),
-            }
+            vec![
+                Symbol::Typevariable,
+                SpecialChar::DoubleColon.into(),
+                Symbol::Kind,
+            ]
+            .into()
         };
         let prem_in = if bounded {
-            Symbol::Subscript {
-                sym: Box::new(Symbol::Type),
-                ind: Box::new(2.into()),
-            }
+            Symbol::sub(Symbol::Type, 2)
         } else {
-            Symbol::Subscript {
-                sym: Box::new(Symbol::Type),
-                ind: Box::new(1.into()),
-            }
+            Symbol::sub(Symbol::Type, 1)
         };
         let prem_out = if bounded {
-            Symbol::Subscript {
-                sym: Box::new(Symbol::Type),
-                ind: Box::new(3.into()),
-            }
+            Symbol::sub(Symbol::Type, 3)
         } else {
-            Symbol::Subscript {
-                sym: Box::new(Symbol::Type),
-                ind: Box::new(2.into()),
-            }
+            Symbol::sub(Symbol::Type, 2)
         };
         let premise = ConclusionRule {
-            env: Symbol::Separated {
-                fst: Box::new(SpecialChar::Gamma.into()),
-                separator: Box::new(SpecialChar::Comma.into()),
-                snd: Box::new(env_var),
-            },
+            env: vec![
+                SpecialChar::Gamma.into(),
+                SpecialChar::Comma.into(),
+                env_var,
+            ]
+            .into(),
             input: prem_in,
             separator: SpecialChar::LessColon.into(),
             output: prem_out,
         };
         let conc_in = if bounded {
-            Symbol::Prefixed {
-                prefix: Box::new(SpecialChar::Forall.into()),
-                inner: Box::new(Symbol::Separated {
-                    fst: Box::new(Symbol::Separated {
-                        fst: Box::new(Symbol::Typevariable),
-                        separator: Box::new(SpecialChar::LessColon.into()),
-                        snd: Box::new(Symbol::Subscript {
-                            sym: Box::new(Symbol::Type),
-                            ind: Box::new(1.into()),
-                        }),
-                    }),
-                    separator: Box::new(SpecialChar::Dot.into()),
-                    snd: Box::new(Symbol::Subscript {
-                        sym: Box::new(Symbol::Type),
-                        ind: Box::new(2.into()),
-                    }),
-                }),
-            }
+            vec![
+                SpecialChar::Forall.into(),
+                Symbol::Typevariable,
+                SpecialChar::LessColon.into(),
+                Symbol::sub(Symbol::Type, 1),
+                SpecialChar::Dot.into(),
+                Symbol::sub(Symbol::Type, 2),
+            ]
         } else {
-            Symbol::Prefixed {
-                prefix: Box::new(SpecialChar::Forall.into()),
-                inner: Box::new(Symbol::Separated {
-                    fst: Box::new(Symbol::Separated {
-                        fst: Box::new(Symbol::Typevariable),
-                        separator: Box::new(SpecialChar::DoubleColon.into()),
-                        snd: Box::new(Symbol::Kind),
-                    }),
-                    separator: Box::new(SpecialChar::Dot.into()),
-                    snd: Box::new(Symbol::Subscript {
-                        sym: Box::new(Symbol::Type),
-                        ind: Box::new(1.into()),
-                    }),
-                }),
-            }
+            vec![
+                SpecialChar::Forall.into(),
+                Symbol::Typevariable,
+                SpecialChar::DoubleColon.into(),
+                Symbol::Kind,
+                SpecialChar::Dot.into(),
+                Symbol::sub(Symbol::Type, 1),
+            ]
+            .into()
         };
         let conc_out = if bounded {
-            Symbol::Prefixed {
-                prefix: Box::new(SpecialChar::Forall.into()),
-                inner: Box::new(Symbol::Separated {
-                    fst: Box::new(Symbol::Separated {
-                        fst: Box::new(Symbol::Typevariable),
-                        separator: Box::new(SpecialChar::LessColon.into()),
-                        snd: Box::new(Symbol::Subscript {
-                            sym: Box::new(Symbol::Type),
-                            ind: Box::new(1.into()),
-                        }),
-                    }),
-                    separator: Box::new(SpecialChar::Dot.into()),
-                    snd: Box::new(Symbol::Subscript {
-                        sym: Box::new(Symbol::Type),
-                        ind: Box::new(3.into()),
-                    }),
-                }),
-            }
+            vec![
+                SpecialChar::Forall.into(),
+                Symbol::Typevariable,
+                SpecialChar::LessColon.into(),
+                Symbol::sub(Symbol::Type, 1),
+                SpecialChar::Dot.into(),
+                Symbol::sub(Symbol::Type, 3),
+            ]
+            .into()
         } else {
-            Symbol::Prefixed {
-                prefix: Box::new(SpecialChar::Forall.into()),
-                inner: Box::new(Symbol::Separated {
-                    fst: Box::new(Symbol::Separated {
-                        fst: Box::new(Symbol::Typevariable),
-                        separator: Box::new(SpecialChar::DoubleColon.into()),
-                        snd: Box::new(Symbol::Kind),
-                    }),
-                    separator: Box::new(SpecialChar::Dot.into()),
-                    snd: Box::new(Symbol::Subscript {
-                        sym: Box::new(Symbol::Type),
-                        ind: Box::new(2.into()),
-                    }),
-                }),
-            }
+            vec![
+                SpecialChar::Forall.into(),
+                Symbol::Typevariable.into(),
+                SpecialChar::DoubleColon.into(),
+                Symbol::Kind,
+                SpecialChar::Dot.into(),
+                Symbol::sub(Symbol::Type, 2),
+            ]
+            .into()
         };
         let conclusion = ConclusionRule {
             env: SpecialChar::Gamma.into(),
-            input: conc_in,
+            input: conc_in.into(),
             separator: SpecialChar::LessColon.into(),
             output: conc_out,
         };
@@ -294,51 +235,29 @@ impl DerivationRule {
     /// ------------------------------------------
     /// Gamma |-> Ty1 -> Ty2 <: Ty3 -> Ty4
     pub fn sub_fun() -> DerivationRule {
-        let conc_in = Symbol::Separated {
-            fst: Box::new(Symbol::Subscript {
-                sym: Box::new(Symbol::Type),
-                ind: Box::new(1.into()),
-            }),
-            separator: Box::new(SpecialChar::Arrow.into()),
-            snd: Box::new(Symbol::Subscript {
-                sym: Box::new(Symbol::Type),
-                ind: Box::new(2.into()),
-            }),
-        };
-        let conc_out = Symbol::Separated {
-            fst: Box::new(Symbol::Subscript {
-                sym: Box::new(Symbol::Type),
-                ind: Box::new(3.into()),
-            }),
-            separator: Box::new(SpecialChar::Arrow.into()),
-            snd: Box::new(Symbol::Subscript {
-                sym: Box::new(Symbol::Type),
-                ind: Box::new(4.into()),
-            }),
-        };
+        let conc_in = vec![
+            Symbol::sub(Symbol::Type, 1),
+            SpecialChar::Arrow.into(),
+            Symbol::sub(Symbol::Type, 2),
+        ]
+        .into();
+        let conc_out = vec![
+            Symbol::sub(Symbol::Type, 3),
+            SpecialChar::Arrow.into(),
+            Symbol::sub(Symbol::Type, 4),
+        ]
+        .into();
         let prem_from = ConclusionRule {
             env: SpecialChar::Gamma.into(),
-            input: Symbol::Subscript {
-                sym: Box::new(Symbol::Type),
-                ind: Box::new(3.into()),
-            },
+            input: Symbol::sub(Symbol::Type, 3),
             separator: SpecialChar::LessColon.into(),
-            output: Symbol::Subscript {
-                sym: Box::new(Symbol::Type),
-                ind: Box::new(1.into()),
-            },
+            output: Symbol::sub(Symbol::Type, 1),
         };
         let prem_to = ConclusionRule {
             env: SpecialChar::Gamma.into(),
-            input: Symbol::Subscript {
-                sym: Box::new(Symbol::Type),
-                ind: Box::new(2.into()),
-            },
+            input: Symbol::sub(Symbol::Type, 2),
             separator: SpecialChar::LessColon.into(),
-            output: Symbol::Subscript {
-                sym: Box::new(Symbol::Type),
-                ind: Box::new(4.into()),
-            },
+            output: Symbol::sub(Symbol::Type, 4),
         };
         DerivationRule {
             premises: vec![prem_from, prem_to],
@@ -365,66 +284,49 @@ impl DerivationRule {
     /// Gamma |-> \Typevar::Kind.Ty1 <: \Typevar::Kind.Ty2
     pub fn sub_oplam(bounded: bool) -> DerivationRule {
         let annot = if bounded {
-            Symbol::Separated {
-                fst: Box::new(Symbol::Typevariable),
-                separator: Box::new(SpecialChar::LessColon.into()),
-                snd: Box::new(Symbol::Subscript {
-                    sym: Box::new(Symbol::Type),
-                    ind: Box::new(3.into()),
-                }),
-            }
+            vec![
+                Symbol::Typevariable,
+                SpecialChar::LessColon.into(),
+                Symbol::sub(Symbol::Type, 3),
+            ]
         } else {
-            Symbol::Separated {
-                fst: Box::new(Symbol::Typevariable),
-                separator: Box::new(SpecialChar::DoubleColon.into()),
-                snd: Box::new(Symbol::Kind),
-            }
+            vec![
+                Symbol::Typevariable,
+                SpecialChar::DoubleColon.into(),
+                Symbol::Kind,
+            ]
         };
 
         let prem = ConclusionRule {
-            env: Symbol::Separated {
-                fst: Box::new(SpecialChar::Gamma.into()),
-                separator: Box::new(SpecialChar::Comma.into()),
-                snd: Box::new(annot.clone()),
-            },
-            input: Symbol::Subscript {
-                sym: Box::new(Symbol::Type),
-                ind: Box::new(1.into()),
-            },
+            env: vec![
+                SpecialChar::Gamma.into(),
+                SpecialChar::Comma.into(),
+                annot.clone().into(),
+            ]
+            .into(),
+            input: Symbol::sub(Symbol::Type, 1),
             separator: SpecialChar::LessColon.into(),
-            output: Symbol::Subscript {
-                sym: Box::new(Symbol::Type),
-                ind: Box::new(2.into()),
-            },
+            output: Symbol::sub(Symbol::Type, 2),
         };
 
-        let conc_in = Symbol::Prefixed {
-            prefix: Box::new(SpecialChar::Lambda.into()),
-            inner: Box::new(Symbol::Separated {
-                fst: Box::new(annot.clone()),
-                separator: Box::new(SpecialChar::Dot.into()),
-                snd: Box::new(Symbol::Subscript {
-                    sym: Box::new(Symbol::Type),
-                    ind: Box::new(1.into()),
-                }),
-            }),
-        };
+        let conc_in = vec![
+            SpecialChar::Lambda.into(),
+            annot.clone().into(),
+            SpecialChar::Dot.into(),
+            Symbol::sub(Symbol::Type, 1),
+        ];
 
         let conclusion = ConclusionRule {
             env: SpecialChar::Gamma.into(),
-            input: conc_in,
+            input: conc_in.into(),
             separator: SpecialChar::LessColon.into(),
-            output: Symbol::Prefixed {
-                prefix: Box::new(SpecialChar::Lambda.into()),
-                inner: Box::new(Symbol::Separated {
-                    fst: Box::new(annot),
-                    separator: Box::new(SpecialChar::Dot.into()),
-                    snd: Box::new(Symbol::Subscript {
-                        sym: Box::new(Symbol::Type),
-                        ind: Box::new(2.into()),
-                    }),
-                }),
-            },
+            output: vec![
+                SpecialChar::Lambda.into(),
+                annot.into(),
+                SpecialChar::Dot.into(),
+                Symbol::sub(Symbol::Type, 2),
+            ]
+            .into(),
         };
         DerivationRule {
             premises: vec![prem],
@@ -443,39 +345,28 @@ impl DerivationRule {
                 env: SpecialChar::Gamma.into(),
                 input: Symbol::Term,
                 separator: SpecialChar::LessColon.into(),
-                output: Symbol::Subscript {
-                    sym: Box::new(Symbol::Type),
-                    ind: Box::new(1.into()),
-                },
+                output: Symbol::sub(Symbol::Type, 1),
             }],
             label: "S-Rec".to_owned(),
             conclusion: ConclusionRule {
                 env: SpecialChar::Gamma.into(),
-                input: Symbol::Delim {
-                    delim_open: SpecialChar::BrackO,
-                    inner: Box::new(Symbol::Many(Box::new(Symbol::Separated {
-                        fst: Box::new(Symbol::Label),
-                        separator: Box::new(SpecialChar::Colon.into()),
-                        snd: Box::new(Symbol::Subscript {
-                            sym: Box::new(Symbol::Type),
-                            ind: Box::new(1.into()),
-                        }),
-                    }))),
-                    delim_close: SpecialChar::BrackC,
-                },
+                input: vec![
+                    SpecialChar::BrackO.into(),
+                    Symbol::Label,
+                    SpecialChar::Colon.into(),
+                    Symbol::sub(Symbol::Type, 1),
+                    SpecialChar::BrackC.into(),
+                ]
+                .into(),
                 separator: SpecialChar::LessColon.into(),
-                output: Symbol::Delim {
-                    delim_open: SpecialChar::BrackO,
-                    inner: Box::new(Symbol::Many(Box::new(Symbol::Separated {
-                        fst: Box::new(Symbol::Label),
-                        separator: Box::new(SpecialChar::Colon.into()),
-                        snd: Box::new(Symbol::Subscript {
-                            sym: Box::new(Symbol::Type),
-                            ind: Box::new(2.into()),
-                        }),
-                    }))),
-                    delim_close: SpecialChar::BrackC,
-                },
+                output: vec![
+                    SpecialChar::BrackO.into(),
+                    Symbol::Label,
+                    SpecialChar::Colon.into(),
+                    Symbol::sub(Symbol::Type, 2),
+                    SpecialChar::BrackC.into(),
+                ]
+                .into(),
             },
         }
     }
@@ -490,23 +381,21 @@ impl DerivationRule {
             label: "S-Ref-Sink".to_owned(),
             conclusion: ConclusionRule {
                 env: SpecialChar::Gamma.into(),
-                input: Symbol::Prefixed {
-                    prefix: Box::new(Keyword::Ref.into()),
-                    inner: Box::new(Symbol::Delim {
-                        delim_open: SpecialChar::SqBrackO,
-                        inner: Box::new(Symbol::Type),
-                        delim_close: SpecialChar::SqBrackC,
-                    }),
-                },
+                input: vec![
+                    Keyword::Ref.into(),
+                    SpecialChar::SqBrackO.into(),
+                    Symbol::Type,
+                    SpecialChar::SqBrackC.into(),
+                ]
+                .into(),
                 separator: SpecialChar::LessColon.into(),
-                output: Symbol::Prefixed {
-                    prefix: Box::new(Keyword::Sink.into()),
-                    inner: Box::new(Symbol::Delim {
-                        delim_open: SpecialChar::SqBrackO,
-                        inner: Box::new(Symbol::Type),
-                        delim_close: SpecialChar::SqBrackC,
-                    }),
-                },
+                output: vec![
+                    Keyword::Sink.into(),
+                    SpecialChar::SqBrackO.into(),
+                    Symbol::Type,
+                    SpecialChar::SqBrackC.into(),
+                ]
+                .into(),
             },
         }
     }
@@ -521,23 +410,21 @@ impl DerivationRule {
             label: "S-Ref-Source".to_owned(),
             conclusion: ConclusionRule {
                 env: SpecialChar::Gamma.into(),
-                input: Symbol::Prefixed {
-                    prefix: Box::new(Keyword::Ref.into()),
-                    inner: Box::new(Symbol::Delim {
-                        delim_open: SpecialChar::SqBrackO,
-                        inner: Box::new(Symbol::Type),
-                        delim_close: SpecialChar::SqBrackC,
-                    }),
-                },
+                input: vec![
+                    Keyword::Ref.into(),
+                    SpecialChar::SqBrackO.into(),
+                    Symbol::Type,
+                    SpecialChar::SqBrackC.into(),
+                ]
+                .into(),
                 separator: SpecialChar::LessColon.into(),
-                output: Symbol::Prefixed {
-                    prefix: Box::new(Keyword::Source.into()),
-                    inner: Box::new(Symbol::Delim {
-                        delim_open: SpecialChar::SqBrackO,
-                        inner: Box::new(Symbol::Type),
-                        delim_close: SpecialChar::SqBrackC,
-                    }),
-                },
+                output: vec![
+                    Keyword::Source.into(),
+                    SpecialChar::SqBrackO.into(),
+                    Symbol::Type,
+                    SpecialChar::SqBrackC.into(),
+                ]
+                .into(),
             },
         }
     }
@@ -550,11 +437,12 @@ impl DerivationRule {
         DerivationRule {
             premises: vec![ConclusionRule {
                 env: SpecialChar::Space.into(),
-                input: Symbol::Separated {
-                    fst: Box::new(Symbol::Typevariable),
-                    separator: Box::new(SpecialChar::LessColon.into()),
-                    snd: Box::new(Symbol::Type),
-                },
+                input: vec![
+                    Symbol::Typevariable,
+                    SpecialChar::LessColon.into(),
+                    Symbol::Type,
+                ]
+                .into(),
                 separator: Keyword::In.into(),
                 output: SpecialChar::Gamma.into(),
             }],
@@ -583,23 +471,15 @@ impl DerivationRule {
                 },
                 ConclusionRule {
                     env: SpecialChar::Gamma.into(),
-                    input: Symbol::Subscript {
-                        sym: Box::new(Symbol::Type),
-                        ind: Box::new(Symbol::Separated {
-                            fst: Box::new("i".into()),
-                            separator: Box::new(SpecialChar::Comma.into()),
-                            snd: Box::new("k".into()),
-                        }),
-                    },
+                    input: Symbol::sub(
+                        Symbol::Type,
+                        vec!["i".into(), SpecialChar::Comma.into(), "k".into()],
+                    ),
                     separator: SpecialChar::LessColon.into(),
-                    output: Symbol::Subscript {
-                        sym: Box::new(Symbol::Type),
-                        ind: Box::new(Symbol::Separated {
-                            fst: Box::new("j".into()),
-                            separator: Box::new(SpecialChar::Comma.into()),
-                            snd: Box::new("k".into()),
-                        }),
-                    },
+                    output: Symbol::sub(
+                        Symbol::Type,
+                        vec!["j".into(), SpecialChar::Comma.into(), "k".into()],
+                    ),
                 },
                 ConclusionRule {
                     env: SpecialChar::Space.into(),
@@ -611,45 +491,34 @@ impl DerivationRule {
             label: "S-Variant".to_owned(),
             conclusion: ConclusionRule {
                 env: SpecialChar::Gamma.into(),
-                input: Symbol::Delim {
-                    delim_open: SpecialChar::AngBrackO,
-                    inner: Box::new(Symbol::Many(Box::new(Symbol::Separated {
-                        fst: Box::new(Symbol::Subscript {
-                            sym: Box::new(Symbol::Label),
-                            ind: Box::new("i".into()),
-                        }),
-                        separator: Box::new(SpecialChar::Colon.into()),
-                        snd: Box::new(Symbol::Subscript {
-                            sym: Box::new(Symbol::Type),
-                            ind: Box::new(Symbol::Separated {
-                                fst: Box::new("i".into()),
-                                separator: Box::new(SpecialChar::Comma.into()),
-                                snd: Box::new("k".into()),
-                            }),
-                        }),
-                    }))),
-                    delim_close: SpecialChar::AngBrackC,
-                },
+                input: vec![
+                    SpecialChar::AngBrackO.into(),
+                    Symbol::many(vec![
+                        Symbol::sub(Symbol::Label, "i"),
+                        SpecialChar::Colon.into(),
+                        Symbol::sub(
+                            Symbol::Type,
+                            vec!["i".into(), SpecialChar::Comma.into(), "k".into()],
+                        ),
+                    ]),
+                    SpecialChar::AngBrackC.into(),
+                ]
+                .into(),
+
                 separator: SpecialChar::LessColon.into(),
-                output: Symbol::Delim {
-                    delim_open: SpecialChar::AngBrackO,
-                    inner: Box::new(Symbol::Many(Box::new(Symbol::Separated {
-                        fst: Box::new(Symbol::Subscript {
-                            sym: Box::new(Symbol::Label),
-                            ind: Box::new("j".into()),
-                        }),
-                        separator: Box::new(SpecialChar::Colon.into()),
-                        snd: Box::new(Symbol::Subscript {
-                            sym: Box::new(Symbol::Type),
-                            ind: Box::new(Symbol::Separated {
-                                fst: Box::new("i".into()),
-                                separator: Box::new(SpecialChar::Comma.into()),
-                                snd: Box::new("k".into()),
-                            }),
-                        }),
-                    }))),
-                    delim_close: SpecialChar::AngBrackC,
-                },
+                output: vec![
+                    SpecialChar::AngBrackO.into(),
+                    Symbol::many(vec![
+                        Symbol::sub(Symbol::Label, "j"),
+                        SpecialChar::Colon.into(),
+                        Symbol::sub(
+                            Symbol::Type,
+                            vec!["i".into(), SpecialChar::Comma.into(), "k".into()],
+                        ),
+                    ]),
+                    SpecialChar::AngBrackC.into(),
+                ]
+                .into(),
             },
         }
     }
@@ -663,28 +532,16 @@ impl DerivationRule {
         DerivationRule {
             premises: vec![ConclusionRule {
                 env: SpecialChar::Gamma.into(),
-                input: Symbol::Subscript {
-                    sym: Box::new(Symbol::Type),
-                    ind: Box::new(1.into()),
-                },
+                input: Symbol::sub(Symbol::Type, 1),
                 separator: SpecialChar::LessColon.into(),
-                output: Symbol::Subscript {
-                    sym: Box::new(Symbol::Type),
-                    ind: Box::new(2.into()),
-                },
+                output: Symbol::sub(Symbol::Type, 2),
             }],
             label: "S-Cong".to_owned(),
             conclusion: ConclusionRule {
                 env: SpecialChar::Gamma.into(),
-                input: cong_fun(Symbol::Subscript {
-                    sym: Box::new(Symbol::Type),
-                    ind: Box::new(1.into()),
-                }),
+                input: cong_fun(Symbol::sub(Symbol::Type, 1)),
                 separator: SpecialChar::LessColon.into(),
-                output: cong_fun(Symbol::Subscript {
-                    sym: Box::new(Symbol::Type),
-                    ind: Box::new(2.into()),
-                }),
+                output: cong_fun(Symbol::sub(Symbol::Type, 2)),
             },
         }
     }
@@ -738,97 +595,67 @@ impl DerivationRule {
     /// Gamma |-> exists TypeVar::Kind1.Type :: Kind2
     pub fn kind_exists(bounded: bool) -> DerivationRule {
         let prem_env_snd = if bounded {
-            Symbol::Separated {
-                fst: Box::new(Symbol::Typevariable),
-                separator: Box::new(SpecialChar::LessColon.into()),
-                snd: Box::new(Symbol::Subscript {
-                    sym: Box::new(Symbol::Type),
-                    ind: Box::new(1.into()),
-                }),
-            }
+            vec![
+                Symbol::Typevariable,
+                SpecialChar::LessColon.into(),
+                Symbol::sub(Symbol::Type, 1),
+            ]
         } else {
-            Symbol::Separated {
-                fst: Box::new(Symbol::Typevariable),
-                separator: Box::new(SpecialChar::DoubleColon.into()),
-                snd: Box::new(Symbol::Subscript {
-                    sym: Box::new(Symbol::Kind),
-                    ind: Box::new(1.into()),
-                }),
-            }
+            vec![
+                Symbol::Typevariable,
+                SpecialChar::DoubleColon.into(),
+                Symbol::sub(Symbol::Kind, 1),
+            ]
         };
         let prem_input = if bounded {
-            Symbol::Subscript {
-                sym: Box::new(Symbol::Type),
-                ind: Box::new(2.into()),
-            }
+            Symbol::sub(Symbol::Type, 2)
         } else {
             Symbol::Type
         };
         let prem_output = if bounded {
             Symbol::Kind
         } else {
-            Symbol::Subscript {
-                sym: Box::new(Symbol::Kind),
-                ind: Box::new(2.into()),
-            }
+            Symbol::sub(Symbol::Kind, 2)
         };
         let premise = ConclusionRule {
-            env: Symbol::Separated {
-                fst: Box::new(SpecialChar::Gamma.into()),
-                separator: Box::new(SpecialChar::Comma.into()),
-                snd: Box::new(prem_env_snd),
-            },
+            env: vec![
+                SpecialChar::Gamma.into(),
+                SpecialChar::Comma.into(),
+                prem_env_snd.into(),
+            ]
+            .into(),
             input: prem_input,
             separator: SpecialChar::DoubleColon.into(),
             output: prem_output,
         };
         let conc_input = if bounded {
-            Symbol::Prefixed {
-                prefix: Box::new(SpecialChar::Exists.into()),
-                inner: Box::new(Symbol::Separated {
-                    fst: Box::new(Symbol::Separated {
-                        fst: Box::new(Symbol::Typevariable),
-                        separator: Box::new(SpecialChar::LessColon.into()),
-                        snd: Box::new(Symbol::Subscript {
-                            sym: Box::new(Symbol::Type),
-                            ind: Box::new(1.into()),
-                        }),
-                    }),
-                    separator: Box::new(SpecialChar::Dot.into()),
-                    snd: Box::new(Symbol::Subscript {
-                        sym: Box::new(Symbol::Type),
-                        ind: Box::new(2.into()),
-                    }),
-                }),
-            }
+            vec![
+                SpecialChar::Exists.into(),
+                Symbol::Typevariable,
+                SpecialChar::LessColon.into(),
+                Symbol::sub(Symbol::Type, 1),
+                SpecialChar::Dot.into(),
+                Symbol::sub(Symbol::Type, 2),
+            ]
+            .into()
         } else {
-            Symbol::Prefixed {
-                prefix: Box::new(SpecialChar::Exists.into()),
-                inner: Box::new(Symbol::Separated {
-                    fst: Box::new(Symbol::Separated {
-                        fst: Box::new(Symbol::Typevariable),
-                        separator: Box::new(SpecialChar::DoubleColon.into()),
-                        snd: Box::new(Symbol::Subscript {
-                            sym: Box::new(Symbol::Kind),
-                            ind: Box::new(1.into()),
-                        }),
-                    }),
-                    separator: Box::new(SpecialChar::Dot.into()),
-                    snd: Box::new(Symbol::Type),
-                }),
-            }
+            vec![
+                SpecialChar::Exists.into(),
+                Symbol::Typevariable,
+                SpecialChar::DoubleColon.into(),
+                Symbol::sub(Symbol::Kind, 1),
+                SpecialChar::Dot.into(),
+                Symbol::Type,
+            ]
         };
         let conc_output = if bounded {
             Symbol::Kind
         } else {
-            Symbol::Subscript {
-                sym: Box::new(Symbol::Kind),
-                ind: Box::new(2.into()),
-            }
+            Symbol::sub(Symbol::Kind, 2)
         };
         let conc = ConclusionRule {
             env: SpecialChar::Gamma.into(),
-            input: conc_input,
+            input: conc_input.into(),
             separator: SpecialChar::DoubleColon.into(),
             output: conc_output,
         };
@@ -851,46 +678,32 @@ impl DerivationRule {
     /// Gamma |-> forall TypeVar::Kind1. Ty :: Kind2
     pub fn kind_forall(bounded: bool) -> DerivationRule {
         let tyvar = if bounded {
-            Symbol::Separated {
-                fst: Box::new(Symbol::Typevariable),
-                separator: Box::new(SpecialChar::LessColon.into()),
-                snd: Box::new(Symbol::Subscript {
-                    sym: Box::new(Symbol::Type),
-                    ind: Box::new(1.into()),
-                }),
-            }
+            vec![
+                Symbol::Typevariable,
+                SpecialChar::LessColon.into(),
+                Symbol::sub(Symbol::Type, 1),
+            ]
+            .into()
         } else {
-            Symbol::Separated {
-                fst: Box::new(Symbol::Typevariable),
-                separator: Box::new(SpecialChar::DoubleColon.into()),
-                snd: Box::new(Symbol::Subscript {
-                    sym: Box::new(Symbol::Kind),
-                    ind: Box::new(1.into()),
-                }),
-            }
+            vec![
+                Symbol::Typevariable,
+                SpecialChar::DoubleColon.into(),
+                Symbol::sub(Symbol::Kind, 1),
+            ]
+            .into()
         };
         let prem_input = if bounded {
-            Symbol::Subscript {
-                sym: Box::new(Symbol::Type),
-                ind: Box::new(2.into()),
-            }
+            Symbol::sub(Symbol::Type, 2)
         } else {
             Symbol::Type
         };
         let prem_output = if bounded {
             Symbol::Kind
         } else {
-            Symbol::Subscript {
-                sym: Box::new(Symbol::Kind),
-                ind: Box::new(2.into()),
-            }
+            Symbol::sub(Symbol::Kind, 2)
         };
         let premise = ConclusionRule {
-            env: Symbol::Separated {
-                fst: Box::new(SpecialChar::Gamma.into()),
-                separator: Box::new(SpecialChar::Comma.into()),
-                snd: Box::new(tyvar),
-            },
+            env: vec![SpecialChar::Gamma.into(), SpecialChar::Comma.into(), tyvar].into(),
             input: prem_input,
             separator: SpecialChar::DoubleColon.into(),
             output: prem_output,
@@ -898,45 +711,28 @@ impl DerivationRule {
         let conc_out = if bounded {
             Symbol::Kind
         } else {
-            Symbol::Subscript {
-                sym: Box::new(Symbol::Kind),
-                ind: Box::new(2.into()),
-            }
+            Symbol::sub(Symbol::Kind, 2)
         };
         let conc_in_inner = if bounded {
-            Symbol::Separated {
-                fst: Box::new(Symbol::Separated {
-                    fst: Box::new(Symbol::Typevariable),
-                    separator: Box::new(SpecialChar::LessColon.into()),
-                    snd: Box::new(Symbol::Subscript {
-                        sym: Box::new(Symbol::Type),
-                        ind: Box::new(1.into()),
-                    }),
-                }),
-                separator: Box::new(SpecialChar::Dot.into()),
-                snd: Box::new(Symbol::Subscript {
-                    sym: Box::new(Symbol::Type),
-                    ind: Box::new(2.into()),
-                }),
-            }
+            vec![
+                Symbol::Typevariable,
+                SpecialChar::LessColon.into(),
+                Symbol::sub(Symbol::Type, 1),
+                SpecialChar::Dot.into(),
+                Symbol::sub(Symbol::Type, 2),
+            ]
+            .into()
         } else {
-            Symbol::Separated {
-                fst: Box::new(Symbol::Separated {
-                    fst: Box::new(Symbol::Typevariable),
-                    separator: Box::new(SpecialChar::DoubleColon.into()),
-                    snd: Box::new(Symbol::Subscript {
-                        sym: Box::new(Symbol::Kind),
-                        ind: Box::new(1.into()),
-                    }),
-                }),
-                separator: Box::new(SpecialChar::Dot.into()),
-                snd: Box::new(Symbol::Type),
-            }
+            vec![
+                Symbol::Typevariable,
+                SpecialChar::DoubleColon.into(),
+                Symbol::sub(Symbol::Kind, 1),
+                SpecialChar::Dot.into(),
+                Symbol::Type,
+            ]
+            .into()
         };
-        let conc_in = Symbol::Prefixed {
-            prefix: Box::new(SpecialChar::Forall.into()),
-            inner: Box::new(conc_in_inner),
-        };
+        let conc_in = vec![SpecialChar::Forall.into(), conc_in_inner].into();
         let conclusion = ConclusionRule {
             env: SpecialChar::Gamma.into(),
             input: conc_in,
@@ -959,35 +755,25 @@ impl DerivationRule {
     pub fn kind_fun() -> DerivationRule {
         let prem_from = ConclusionRule {
             env: SpecialChar::Gamma.into(),
-            input: Symbol::Subscript {
-                sym: Box::new(Symbol::Type),
-                ind: Box::new(1.into()),
-            },
+            input: Symbol::sub(Symbol::Type, 1),
             separator: SpecialChar::DoubleColon.into(),
             output: SpecialChar::Star.into(),
         };
         let prem_to = ConclusionRule {
             env: SpecialChar::Gamma.into(),
-            input: Symbol::Subscript {
-                sym: Box::new(Symbol::Type),
-                ind: Box::new(2.into()),
-            },
+            input: Symbol::sub(Symbol::Type, 2),
             separator: SpecialChar::DoubleColon.into(),
             output: SpecialChar::Star.into(),
         };
         let conclusion = ConclusionRule {
             env: SpecialChar::Gamma.into(),
-            input: Symbol::Separated {
-                fst: Box::new(Symbol::Subscript {
-                    sym: Box::new(Symbol::Type),
-                    ind: Box::new(1.into()),
-                }),
-                separator: Box::new(SpecialChar::Arrow.into()),
-                snd: Box::new(Symbol::Subscript {
-                    sym: Box::new(Symbol::Type),
-                    ind: Box::new(2.into()),
-                }),
-            },
+            input: vec![
+                Symbol::sub(Symbol::Type, 1),
+                SpecialChar::Arrow.into(),
+                Symbol::sub(Symbol::Type, 2),
+            ]
+            .into(),
+
             separator: SpecialChar::DoubleColon.into(),
             output: SpecialChar::Star.into(),
         };
@@ -1005,52 +791,26 @@ impl DerivationRule {
     pub fn kind_op_app() -> DerivationRule {
         let prem_from = ConclusionRule {
             env: SpecialChar::Gamma.into(),
-            input: Symbol::Subscript {
-                sym: Box::new(Symbol::Type),
-                ind: Box::new(1.into()),
-            },
+            input: Symbol::sub(Symbol::Type, 1),
             separator: SpecialChar::DoubleColon.into(),
-            output: Symbol::Separated {
-                fst: Box::new(Symbol::Subscript {
-                    sym: Box::new(Symbol::Kind),
-                    ind: Box::new(2.into()),
-                }),
-                separator: Box::new(SpecialChar::Arrow.into()),
-                snd: Box::new(Symbol::Subscript {
-                    sym: Box::new(Symbol::Kind),
-                    ind: Box::new(1.into()),
-                }),
-            },
+            output: vec![
+                Symbol::sub(Symbol::Kind, 2),
+                SpecialChar::Arrow.into(),
+                Symbol::sub(Symbol::Kind, 1),
+            ]
+            .into(),
         };
         let prem_to = ConclusionRule {
             env: SpecialChar::Gamma.into(),
-            input: Symbol::Subscript {
-                sym: Box::new(Symbol::Type),
-                ind: Box::new(2.into()),
-            },
+            input: Symbol::sub(Symbol::Type, 2),
             separator: SpecialChar::DoubleColon.into(),
-            output: Symbol::Subscript {
-                sym: Box::new(Symbol::Kind),
-                ind: Box::new(2.into()),
-            },
+            output: Symbol::sub(Symbol::Kind, 2),
         };
         let conclusion = ConclusionRule {
             env: SpecialChar::Gamma.into(),
-            input: Symbol::Prefixed {
-                prefix: Box::new(Symbol::Subscript {
-                    sym: Box::new(Symbol::Type),
-                    ind: Box::new(1.into()),
-                }),
-                inner: Box::new(Symbol::Subscript {
-                    sym: Box::new(Symbol::Type),
-                    ind: Box::new(2.into()),
-                }),
-            },
+            input: vec![Symbol::sub(Symbol::Type, 1), Symbol::sub(Symbol::Type, 2)].into(),
             separator: SpecialChar::DoubleColon.into(),
-            output: Symbol::Subscript {
-                sym: Box::new(Symbol::Kind),
-                ind: Box::new(1.into()),
-            },
+            output: Symbol::sub(Symbol::Kind, 1),
         };
         DerivationRule {
             premises: vec![prem_from, prem_to],
@@ -1073,98 +833,58 @@ impl DerivationRule {
     /// Gamma |-> \TypeVar::Kind3.Ty2 :: Kind1 -> Kind2
     pub fn kind_op_lam(bounded: bool) -> DerivationRule {
         let annot = if bounded {
-            Box::new(Symbol::Separated {
-                fst: Box::new(Symbol::Typevariable),
-                separator: Box::new(SpecialChar::LessColon.into()),
-                snd: Box::new(Symbol::Subscript {
-                    sym: Box::new(Symbol::Type),
-                    ind: Box::new(1.into()),
-                }),
-            })
+            vec![
+                Symbol::Typevariable,
+                SpecialChar::LessColon.into(),
+                Symbol::sub(Symbol::Type, 1),
+            ]
         } else {
-            Box::new(Symbol::Separated {
-                fst: Box::new(Symbol::Typevariable),
-                separator: Box::new(SpecialChar::DoubleColon.into()),
-                snd: Box::new(Symbol::Subscript {
-                    sym: Box::new(Symbol::Kind),
-                    ind: Box::new(3.into()),
-                }),
-            })
+            vec![
+                Symbol::Typevariable,
+                SpecialChar::DoubleColon.into(),
+                Symbol::sub(Symbol::Kind, 3),
+            ]
         };
+        let mut prem_env = vec![SpecialChar::Gamma.into(), SpecialChar::Comma.into()];
+        prem_env.extend(annot.clone());
         let prem_bound = vec![
             ConclusionRule {
                 env: SpecialChar::Gamma.into(),
-                input: Symbol::Subscript {
-                    sym: Box::new(Symbol::Type),
-                    ind: Box::new(1.into()),
-                },
+                input: Symbol::sub(Symbol::Type, 1),
                 separator: SpecialChar::DoubleColon.into(),
-                output: Symbol::Subscript {
-                    sym: Box::new(Symbol::Kind),
-                    ind: Box::new(1.into()),
-                },
+                output: Symbol::sub(Symbol::Kind, 1),
             },
             ConclusionRule {
-                env: Symbol::Separated {
-                    fst: Box::new(SpecialChar::Gamma.into()),
-                    separator: Box::new(SpecialChar::Comma.into()),
-                    snd: annot.clone(),
-                },
-                input: Symbol::Subscript {
-                    sym: Box::new(Symbol::Type),
-                    ind: Box::new(2.into()),
-                },
+                env: prem_env.clone().into(),
+                input: Symbol::sub(Symbol::Type, 2),
                 separator: SpecialChar::DoubleColon.into(),
-                output: Symbol::Subscript {
-                    sym: Box::new(Symbol::Kind),
-                    ind: Box::new(2.into()),
-                },
+                output: Symbol::sub(Symbol::Kind, 2),
             },
         ];
         let prem_unbound = vec![ConclusionRule {
-            env: Symbol::Separated {
-                fst: Box::new(SpecialChar::Gamma.into()),
-                separator: Box::new(SpecialChar::Comma.into()),
-                snd: annot.clone(),
-            },
-            input: Symbol::Subscript {
-                sym: Box::new(Symbol::Type),
-                ind: Box::new(2.into()),
-            },
+            env: prem_env.into(),
+            input: Symbol::sub(Symbol::Type, 2),
             separator: SpecialChar::DoubleColon.into(),
-            output: Symbol::Subscript {
-                sym: Box::new(Symbol::Kind),
-                ind: Box::new(2.into()),
-            },
+            output: Symbol::sub(Symbol::Kind, 2),
         }];
+        let mut conc_in = vec![SpecialChar::Lambda.into()];
+        conc_in.extend(annot);
+        conc_in.push(SpecialChar::Dot.into());
+        conc_in.push(Symbol::sub(Symbol::Type, 2));
+
         DerivationRule {
             premises: if bounded { prem_bound } else { prem_unbound },
             label: format!("K-OpLam{}", if bounded { "<:" } else { "" }),
             conclusion: ConclusionRule {
                 env: SpecialChar::Gamma.into(),
-                input: Symbol::Prefixed {
-                    prefix: Box::new(SpecialChar::Lambda.into()),
-                    inner: Box::new(Symbol::Separated {
-                        fst: annot,
-                        separator: Box::new(SpecialChar::Dot.into()),
-                        snd: Box::new(Symbol::Subscript {
-                            sym: Box::new(Symbol::Type),
-                            ind: Box::new(2.into()),
-                        }),
-                    }),
-                },
+                input: conc_in.into(),
                 separator: SpecialChar::DoubleColon.into(),
-                output: Symbol::Separated {
-                    fst: Box::new(Symbol::Subscript {
-                        sym: Box::new(Symbol::Kind),
-                        ind: Box::new(1.into()),
-                    }),
-                    separator: Box::new(SpecialChar::Arrow.into()),
-                    snd: Box::new(Symbol::Subscript {
-                        sym: Box::new(Symbol::Kind),
-                        ind: Box::new(2.into()),
-                    }),
-                },
+                output: vec![
+                    Symbol::sub(Symbol::Kind, 1),
+                    SpecialChar::Arrow.into(),
+                    Symbol::sub(Symbol::Kind, 2),
+                ]
+                .into(),
             },
         }
     }
@@ -1184,15 +904,14 @@ impl DerivationRule {
             label: "K-Rec".to_owned(),
             conclusion: ConclusionRule {
                 env: SpecialChar::Gamma.into(),
-                input: Symbol::Delim {
-                    delim_open: SpecialChar::BrackO,
-                    inner: Box::new(Symbol::Separated {
-                        fst: Box::new(Symbol::Label),
-                        separator: Box::new(SpecialChar::Colon.into()),
-                        snd: Box::new(Symbol::Type),
-                    }),
-                    delim_close: SpecialChar::BrackC,
-                },
+                input: vec![
+                    SpecialChar::BrackO.into(),
+                    Symbol::Label,
+                    SpecialChar::Colon.into(),
+                    Symbol::Type,
+                    SpecialChar::BrackC.into(),
+                ]
+                .into(),
                 separator: SpecialChar::DoubleColon.into(),
                 output: SpecialChar::Star.into(),
             },
@@ -1208,19 +927,13 @@ impl DerivationRule {
             premises: vec![
                 ConclusionRule {
                     env: SpecialChar::Gamma.into(),
-                    input: Symbol::Subscript {
-                        sym: Box::new(Symbol::Type),
-                        ind: Box::new(1.into()),
-                    },
+                    input: Symbol::sub(Symbol::Type, 1),
                     separator: SpecialChar::DoubleColon.into(),
                     output: SpecialChar::Star.into(),
                 },
                 ConclusionRule {
                     env: SpecialChar::Gamma.into(),
-                    input: Symbol::Subscript {
-                        sym: Box::new(Symbol::Type),
-                        ind: Box::new(2.into()),
-                    },
+                    input: Symbol::sub(Symbol::Type, 2),
                     separator: SpecialChar::DoubleColon.into(),
                     output: SpecialChar::Star.into(),
                 },
@@ -1228,17 +941,13 @@ impl DerivationRule {
             label: "K-Sum".to_owned(),
             conclusion: ConclusionRule {
                 env: SpecialChar::Gamma.into(),
-                input: Symbol::Separated {
-                    fst: Box::new(Symbol::Subscript {
-                        sym: Box::new(Symbol::Type),
-                        ind: Box::new(1.into()),
-                    }),
-                    separator: Box::new(SpecialChar::Plus.into()),
-                    snd: Box::new(Symbol::Subscript {
-                        sym: Box::new(Symbol::Type),
-                        ind: Box::new(2.into()),
-                    }),
-                },
+                input: vec![
+                    Symbol::sub(Symbol::Type, 1),
+                    SpecialChar::Plus.into(),
+                    Symbol::sub(Symbol::Type, 2),
+                ]
+                .into(),
+
                 separator: SpecialChar::DoubleColon.into(),
                 output: SpecialChar::Star.into(),
             },
@@ -1253,11 +962,12 @@ impl DerivationRule {
         DerivationRule {
             premises: vec![ConclusionRule {
                 env: SpecialChar::Space.into(),
-                input: Symbol::Separated {
-                    fst: Box::new(Symbol::Typevariable),
-                    separator: Box::new(SpecialChar::DoubleColon.into()),
-                    snd: Box::new(Symbol::Kind),
-                },
+                input: vec![
+                    Symbol::Typevariable,
+                    SpecialChar::DoubleColon.into(),
+                    Symbol::Kind,
+                ]
+                .into(),
                 separator: Keyword::In.into(),
                 output: SpecialChar::Gamma.into(),
             }],
@@ -1280,28 +990,16 @@ impl DerivationRule {
         DerivationRule {
             premises: vec![ConclusionRule {
                 env: SpecialChar::Gamma.into(),
-                input: Symbol::Subscript {
-                    sym: Box::new(Symbol::Type),
-                    ind: Box::new(1.into()),
-                },
+                input: Symbol::sub(Symbol::Type, 1),
                 separator: SpecialChar::Arrow.into(),
-                output: Symbol::Subscript {
-                    sym: Box::new(Symbol::Type),
-                    ind: Box::new(2.into()),
-                },
+                output: Symbol::sub(Symbol::Type, 2),
             }],
             label: "Norm-Cong".to_owned(),
             conclusion: ConclusionRule {
                 env: SpecialChar::Gamma.into(),
-                input: conf_f(Symbol::Subscript {
-                    sym: Box::new(Symbol::Type),
-                    ind: Box::new(1.into()),
-                }),
+                input: conf_f(Symbol::sub(Symbol::Type, 1)),
                 separator: SpecialChar::Arrow.into(),
-                output: conf_f(Symbol::Subscript {
-                    sym: Box::new(Symbol::Type),
-                    ind: Box::new(2.into()),
-                }),
+                output: conf_f(Symbol::sub(Symbol::Type, 2)),
             },
         }
     }
@@ -1314,63 +1012,44 @@ impl DerivationRule {
     /// Gamma |-> (\Typevar::Kind.Type1) Type2 -> Type1[TypeVar -> Type2]
     pub fn norm_ap(bounded: bool) -> DerivationRule {
         let annot = if bounded {
-            Symbol::Separated {
-                fst: Box::new(Symbol::Typevariable),
-                separator: Box::new(SpecialChar::LessColon.into()),
-                snd: Box::new(Symbol::Subscript {
-                    sym: Box::new(Symbol::Type),
-                    ind: Box::new(3.into()),
-                }),
-            }
+            vec![
+                Symbol::Typevariable,
+                SpecialChar::LessColon.into(),
+                Symbol::sub(Symbol::Type, 3),
+            ]
+            .into()
         } else {
-            Symbol::Separated {
-                fst: Box::new(Symbol::Typevariable),
-                separator: Box::new(SpecialChar::DoubleColon.into()),
-                snd: Box::new(Symbol::Kind),
-            }
+            vec![
+                Symbol::Typevariable,
+                SpecialChar::DoubleColon.into(),
+                Symbol::Kind,
+            ]
+            .into()
         };
         DerivationRule {
             premises: vec![],
             label: format!("N-OpApp{}-Beta", if bounded { "<:" } else { "" }),
             conclusion: ConclusionRule {
                 env: SpecialChar::Gamma.into(),
-                input: Symbol::Separated {
-                    fst: Box::new(Symbol::Prefixed {
-                        prefix: Box::new(SpecialChar::Lambda.into()),
-                        inner: Box::new(Symbol::Separated {
-                            fst: Box::new(annot),
-                            separator: Box::new(SpecialChar::Dot.into()),
-                            snd: Box::new(Symbol::Subscript {
-                                sym: Box::new(Symbol::Type),
-                                ind: Box::new(1.into()),
-                            }),
-                        }),
-                    }),
-                    separator: Box::new(SpecialChar::Space.into()),
-                    snd: Box::new(Symbol::Subscript {
-                        sym: Box::new(Symbol::Type),
-                        ind: Box::new(2.into()),
-                    }),
-                },
+                input: vec![
+                    SpecialChar::Lambda.into(),
+                    annot,
+                    SpecialChar::Dot.into(),
+                    Symbol::sub(Symbol::Type, 1),
+                    Symbol::sub(Symbol::Type, 2),
+                ]
+                .into(),
+
                 separator: SpecialChar::Arrow.into(),
-                output: Symbol::Prefixed {
-                    prefix: Box::new(Symbol::Subscript {
-                        sym: Box::new(Symbol::Type),
-                        ind: Box::new(1.into()),
-                    }),
-                    inner: Box::new(Symbol::Delim {
-                        delim_open: SpecialChar::SqBrackO,
-                        inner: Box::new(Symbol::Separated {
-                            fst: Box::new(Symbol::Typevariable),
-                            separator: Box::new(SpecialChar::Arrow.into()),
-                            snd: Box::new(Symbol::Subscript {
-                                sym: Box::new(Symbol::Type),
-                                ind: Box::new(2.into()),
-                            }),
-                        }),
-                        delim_close: SpecialChar::SqBrackC,
-                    }),
-                },
+                output: vec![
+                    Symbol::sub(Symbol::Type, 1),
+                    SpecialChar::SqBrackO.into(),
+                    Symbol::Typevariable,
+                    SpecialChar::Arrow.into(),
+                    Symbol::sub(Symbol::Type, 2),
+                    SpecialChar::SqBrackC.into(),
+                ]
+                .into(),
             },
         }
     }
