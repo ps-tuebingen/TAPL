@@ -1,6 +1,10 @@
 use crate::Eval;
 use errors::eval_error::EvalError;
-use std::rc::Rc;
+use grammar::{
+    DerivationRule,
+    symbols::{Keyword, SpecialChar, Symbol},
+};
+use std::{collections::HashSet, rc::Rc};
 
 use syntax::{
     eval_context::EvalContext,
@@ -40,5 +44,53 @@ where
 
         steps.push(EvalStep::assign(lhs_t, rhs_t));
         Ok(EvalTrace::new(steps, UnitVal::<Lang>::new()))
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([
+            DerivationRule::eval(
+                vec![
+                    Symbol::Label,
+                    SpecialChar::ColonEq.into(),
+                    Symbol::Value,
+                    SpecialChar::Pipe.into(),
+                    SpecialChar::Mu.into(),
+                ],
+                vec![
+                    Keyword::Unit.into(),
+                    SpecialChar::Pipe.into(),
+                    SpecialChar::SqBrackO.into(),
+                    Symbol::Label,
+                    SpecialChar::Arrow.into(),
+                    Symbol::Value,
+                    SpecialChar::Mu.into(),
+                ],
+                "E-Assign",
+            ),
+            DerivationRule::eval_cong(
+                |sym| {
+                    vec![
+                        sym,
+                        SpecialChar::ColonEq.into(),
+                        Symbol::sub(Symbol::Term, 3),
+                        SpecialChar::Pipe.into(),
+                        SpecialChar::Mu.into(),
+                    ]
+                },
+                "E-Assign1",
+            ),
+            DerivationRule::eval_cong(
+                |sym| {
+                    vec![
+                        Symbol::Value,
+                        SpecialChar::ColonEq.into(),
+                        sym,
+                        SpecialChar::Pipe.into(),
+                        SpecialChar::Mu.into(),
+                    ]
+                },
+                "E-Assign2",
+            ),
+        ])
     }
 }

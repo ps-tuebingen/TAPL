@@ -1,5 +1,10 @@
 use crate::Eval;
 use errors::eval_error::EvalError;
+use grammar::{
+    DerivationRule,
+    symbols::{Keyword, SpecialChar, Symbol},
+};
+use std::collections::HashSet;
 use syntax::{
     eval_context::EvalContext,
     language::Language,
@@ -23,5 +28,21 @@ where
         let val = RightVal::<Lang>::new(right_val, self.ty.clone());
         let steps = right_res.congruence(&move |t| Right::new(t, self.ty.clone()).into());
         Ok(EvalTrace::new(steps, val))
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([DerivationRule::eval_cong(
+            |sym| {
+                vec![
+                    Keyword::Right.into(),
+                    SpecialChar::ParenO.into(),
+                    sym,
+                    SpecialChar::ParenC.into(),
+                    Keyword::As.into(),
+                    Symbol::Type,
+                ]
+            },
+            "E-Right",
+        )])
     }
 }

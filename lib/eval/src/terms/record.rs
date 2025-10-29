@@ -1,6 +1,11 @@
 use crate::Eval;
 use errors::eval_error::EvalError;
+use grammar::{
+    DerivationRule,
+    symbols::{SpecialChar, Symbol},
+};
 use std::collections::HashMap;
+use std::collections::HashSet;
 use syntax::{
     Label, eval_context::EvalContext, language::Language, terms::Record,
     values::Record as RecordVal,
@@ -39,5 +44,19 @@ where
         }
         let val = RecordVal::<Lang>::new::<<Self::Lang as Language>::Value>(recs);
         Ok(EvalTrace::new(steps, val))
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([DerivationRule::eval_cong(
+            |sym| {
+                vec![
+                    SpecialChar::BrackO.into(),
+                    Symbol::many(Symbol::sub(Symbol::Value, "i")),
+                    sym,
+                    Symbol::many(Symbol::sub(Symbol::Term, "j")),
+                ]
+            },
+            "E-Record1",
+        )])
     }
 }

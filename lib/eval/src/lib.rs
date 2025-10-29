@@ -1,4 +1,4 @@
-use std::rc::Rc;
+use std::{collections::HashSet, rc::Rc};
 
 pub mod terms;
 
@@ -16,7 +16,7 @@ pub trait Eval: Sized {
 
     fn eval(self, env: &mut EvalContext<Self::Lang>) -> Result<EvalTrace<Self::Lang>, EvalError>;
 
-    fn rules() -> Vec<DerivationRule>;
+    fn rules() -> HashSet<DerivationRule>;
 }
 
 impl<T> Eval for Rc<T>
@@ -28,7 +28,7 @@ where
         Rc::unwrap_or_clone(self).eval(env)
     }
 
-    fn rules() -> Vec<DerivationRule> {
+    fn rules() -> HashSet<DerivationRule> {
         T::rules()
     }
 }

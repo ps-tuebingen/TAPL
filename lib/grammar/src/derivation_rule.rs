@@ -2236,6 +2236,53 @@ impl DerivationRule {
             },
         }
     }
+
+    /// Derivation rule for congruence evaluation
+    /// with a single premise
+    /// The arguments to cong_fun are Term1 and Term2 so this should not be used in the
+    /// constructed symbol
+    /// That is `cong_fun = |sym| vec![Symbol::Value,SpecialChar::Space,sym]` will create
+    /// Gamma |-> value Term1 -> value Term2
+    pub fn eval_cong<F, S>(cong_fun: F, lb: &str) -> DerivationRule
+    where
+        S: Into<Symbol>,
+        F: Fn(Symbol) -> S,
+    {
+        DerivationRule {
+            premises: vec![ConclusionRule {
+                env: SpecialChar::Gamma.into(),
+                input: Symbol::sub(Symbol::Term, 1),
+                separator: SpecialChar::Arrow.into(),
+                output: Symbol::sub(Symbol::Term, 2),
+            }],
+            label: lb.to_owned(),
+            conclusion: ConclusionRule {
+                env: SpecialChar::Gamma.into(),
+                input: cong_fun(Symbol::sub(Symbol::Term, 1)).into(),
+                separator: SpecialChar::Arrow.into(),
+                output: cong_fun(Symbol::sub(Symbol::Term, 2)).into(),
+            },
+        }
+    }
+
+    // Evaluation rule for evaluation steps
+    // from -- label --> to
+    pub fn eval<S1, S2>(from: S1, to: S2, lb: &str) -> DerivationRule
+    where
+        S1: Into<Symbol>,
+        S2: Into<Symbol>,
+    {
+        DerivationRule {
+            premises: vec![],
+            label: lb.to_owned(),
+            conclusion: ConclusionRule {
+                env: SpecialChar::Gamma.into(),
+                input: from.into(),
+                separator: SpecialChar::Arrow.into(),
+                output: to.into(),
+            },
+        }
+    }
 }
 
 /// Conclusion for a Derivation rule

@@ -1,5 +1,10 @@
 use crate::Eval;
 use errors::eval_error::EvalError;
+use grammar::{
+    DerivationRule,
+    symbols::{Keyword, SpecialChar, Symbol},
+};
+use std::collections::HashSet;
 use syntax::{
     eval_context::EvalContext,
     language::Language,
@@ -32,5 +37,44 @@ where
             steps.push(EvalStep::iszero_false(IsZero::new(val)));
             Ok(EvalTrace::new(steps, False::new()))
         }
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([
+            DerivationRule::eval(
+                vec![
+                    Keyword::IsZero.into(),
+                    SpecialChar::ParenO.into(),
+                    0.into(),
+                    SpecialChar::ParenC.into(),
+                ],
+                Keyword::True,
+                "E-IsZeroZero",
+            ),
+            DerivationRule::eval(
+                vec![
+                    Keyword::IsZero.into(),
+                    SpecialChar::ParenO.into(),
+                    Keyword::Succ.into(),
+                    SpecialChar::ParenO.into(),
+                    Symbol::Value,
+                    SpecialChar::ParenC.into(),
+                    SpecialChar::ParenC.into(),
+                ],
+                Keyword::False,
+                "E-IsZeroSucc",
+            ),
+            DerivationRule::eval_cong(
+                |sym| {
+                    vec![
+                        Keyword::IsZero.into(),
+                        SpecialChar::ParenO.into(),
+                        sym,
+                        SpecialChar::ParenC.into(),
+                    ]
+                },
+                "E-IsZero1",
+            ),
+        ])
     }
 }

@@ -1,5 +1,10 @@
 use crate::Eval;
 use errors::eval_error::EvalError;
+use grammar::{
+    DerivationRule,
+    symbols::{Keyword, SpecialChar, Symbol},
+};
+use std::collections::HashSet;
 use syntax::{eval_context::EvalContext, language::Language, terms::Fold, values::Fold as FoldVal};
 use trace::{EvalStep, EvalTrace};
 
@@ -21,5 +26,22 @@ where
         let mut steps = term_res.congruence(&move |t| Fold::new(t, self.ty.clone()).into());
         steps.push(last_step);
         Ok(EvalTrace::<Lang>::new(steps, val))
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([DerivationRule::eval_cong(
+            |sym| {
+                vec![
+                    Keyword::Fold.into(),
+                    SpecialChar::SqBrackO.into(),
+                    Symbol::Term,
+                    SpecialChar::SqBrackC.into(),
+                    SpecialChar::ParenO.into(),
+                    sym,
+                    SpecialChar::ParenC.into(),
+                ]
+            },
+            "E-Fold1",
+        )])
     }
 }

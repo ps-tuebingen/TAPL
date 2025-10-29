@@ -1,6 +1,10 @@
 use crate::Eval;
 use errors::eval_error::EvalError;
-
+use grammar::{
+    DerivationRule,
+    symbols::{Keyword, SpecialChar, Symbol},
+};
+use std::collections::HashSet;
 use syntax::{
     eval_context::EvalContext,
     language::Language,
@@ -27,5 +31,26 @@ where
         let last_step = EvalStep::snd(Snd::new(term_val), val.clone());
         steps.push(last_step);
         Ok(EvalTrace::<Lang>::new(steps, val))
+    }
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([
+            DerivationRule::eval(
+                vec![
+                    SpecialChar::BrackO.into(),
+                    Symbol::sub(Symbol::Value, 1),
+                    SpecialChar::Comma.into(),
+                    Symbol::sub(Symbol::Value, 2),
+                    SpecialChar::BrackC.into(),
+                    SpecialChar::Dot.into(),
+                    Keyword::Snd.into(),
+                ],
+                Symbol::sub(Symbol::Value, 2),
+                "E-Snd",
+            ),
+            DerivationRule::eval_cong(
+                |sym| vec![sym, SpecialChar::Dot.into(), Keyword::Snd.into()],
+                "E-Snd1",
+            ),
+        ])
     }
 }

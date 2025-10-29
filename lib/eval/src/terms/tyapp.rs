@@ -1,6 +1,10 @@
 use crate::Eval;
-use errors::ValueMismatch;
-use errors::eval_error::EvalError;
+use errors::{ValueMismatch, eval_error::EvalError};
+use grammar::{
+    DerivationRule,
+    symbols::{SpecialChar, Symbol},
+};
+use std::collections::HashSet;
 use syntax::{
     eval_context::EvalContext, language::Language, subst::SubstType, terms::TyApp,
     values::ValueGroup,
@@ -45,5 +49,57 @@ where
         let mut steps = fun_res.congruence(&move |t| TyApp::new(t, self.arg.clone()).into());
         steps.extend(res_steps);
         Ok(EvalTrace::<Lang>::new(steps, res_val))
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        let features = Lang::features();
+        let ty_var = if features.subtyped {
+            vec![
+                Symbol::Typevariable,
+                SpecialChar::LessColon.into(),
+                Symbol::sub(Symbol::Type, 1),
+            ]
+        } else {
+            vec![
+                Symbol::Typevariable,
+                SpecialChar::DoubleColon.into(),
+                Symbol::Kind,
+            ]
+        };
+
+        HashSet::from([
+            DerivationRule::eval_cong(
+                |sym| {
+                    vec![
+                        sym,
+                        SpecialChar::SqBrackO.into(),
+                        Symbol::Type,
+                        SpecialChar::SqBrackC.into(),
+                    ]
+                },
+                "E-TyApp1",
+            ),
+            DerivationRule::eval(
+                vec![
+                    SpecialChar::Lambda.into(),
+                    Symbol::Typevariable.into(),
+                    ty_var.into(),
+                    SpecialChar::Dot.into(),
+                    Symbol::Term,
+                    SpecialChar::SqBrackO.into(),
+                    Symbol::Type,
+                    SpecialChar::SqBrackC.into(),
+                ],
+                vec![
+                    Symbol::Term,
+                    SpecialChar::SqBrackO.into(),
+                    Symbol::Typevariable,
+                    SpecialChar::Arrow.into(),
+                    Symbol::Type,
+                    SpecialChar::SqBrackC.into(),
+                ],
+                "E-TyAppAbs",
+            ),
+        ])
     }
 }

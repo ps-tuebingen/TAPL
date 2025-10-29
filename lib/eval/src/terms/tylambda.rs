@@ -1,6 +1,7 @@
 use crate::Eval;
 use errors::eval_error::EvalError;
-use std::rc::Rc;
+use grammar::DerivationRule;
+use std::{collections::HashSet, rc::Rc};
 use syntax::{
     eval_context::EvalContext,
     language::Language,
@@ -22,5 +23,9 @@ where
             vec![],
             TyLambdaVal::new(&self.var, self.annot, Rc::unwrap_or_clone(self.term)),
         ))
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::new()
     }
 }

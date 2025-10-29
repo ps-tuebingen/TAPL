@@ -1,6 +1,10 @@
 use crate::Eval;
 use errors::eval_error::EvalError;
-use std::rc::Rc;
+use grammar::{
+    DerivationRule,
+    symbols::{SpecialChar, Symbol},
+};
+use std::{collections::HashSet, rc::Rc};
 use syntax::{
     eval_context::EvalContext,
     language::Language,
@@ -32,5 +36,32 @@ where
         steps.extend(snd_steps);
         let val = PairVal::<Lang>::new(fst_val, snd_val);
         Ok(EvalTrace::new(steps, val))
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([
+            DerivationRule::eval_cong(
+                |sym| {
+                    vec![
+                        SpecialChar::BrackO.into(),
+                        sym,
+                        Symbol::sub(Symbol::Term, 3),
+                        SpecialChar::BrackC.into(),
+                    ]
+                },
+                "E-Pair1",
+            ),
+            DerivationRule::eval_cong(
+                |sym| {
+                    vec![
+                        SpecialChar::BrackO.into(),
+                        Symbol::Value,
+                        sym,
+                        SpecialChar::BrackC.into(),
+                    ]
+                },
+                "E-Pair2",
+            ),
+        ])
     }
 }

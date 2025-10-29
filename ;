@@ -59,29 +59,7 @@ where
                 |sym| vec![Symbol::Value, SpecialChar::Space.into(), sym],
                 "E-App2",
             ),
-            DerivationRule::eval(
-                vec![
-                    SpecialChar::ParenO.into(),
-                    SpecialChar::Lambda.into(),
-                    Symbol::Variable,
-                    SpecialChar::Colon.into(),
-                    Symbol::Type,
-                    SpecialChar::Dot.into(),
-                    Symbol::sub(Symbol::Term, 1),
-                    SpecialChar::ParenC.into(),
-                    SpecialChar::Space.into(),
-                    Symbol::Value,
-                ],
-                vec![
-                    Symbol::sub(Symbol::Term, 1),
-                    SpecialChar::SqBrackO.into(),
-                    Symbol::Variable,
-                    SpecialChar::Arrow.into(),
-                    Symbol::Value,
-                    SpecialChar::SqBrackC.into(),
-                ],
-                "E-AppAbs",
-            ),
+            DerivationRule::eval_appabs(),
         ])
     }
 }

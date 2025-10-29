@@ -1,6 +1,10 @@
 use crate::Eval;
-use errors::UndefinedLabel;
-use errors::eval_error::EvalError;
+use errors::{UndefinedLabel, eval_error::EvalError};
+use grammar::{
+    DerivationRule,
+    symbols::{SpecialChar, Symbol},
+};
+use std::collections::HashSet;
 use syntax::{
     eval_context::EvalContext,
     language::Language,
@@ -33,5 +37,29 @@ where
         let mut steps = term_res.congruence(&move |t| RecordProj::new(t, &self.label).into());
         steps.push(last_step);
         Ok(EvalTrace::<Lang>::new(steps, val))
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([
+            DerivationRule::eval_cong(
+                |sym| vec![sym, SpecialChar::Dot.into(), Symbol::Label],
+                "E-RecordProj1",
+            ),
+            DerivationRule::eval(
+                vec![
+                    SpecialChar::BrackO.into(),
+                    Symbol::many(vec![
+                        Symbol::sub(Symbol::Label, "i"),
+                        SpecialChar::Equals.into(),
+                        Symbol::sub(Symbol::Value, "i"),
+                    ]),
+                    SpecialChar::BrackC.into(),
+                    SpecialChar::Dot.into(),
+                    Symbol::sub(Symbol::Label, "k"),
+                ],
+                Symbol::sub(Symbol::Value, "k"),
+                "E-RecordProj",
+            ),
+        ])
     }
 }

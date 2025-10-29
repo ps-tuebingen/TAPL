@@ -1,6 +1,10 @@
 use crate::Eval;
-use errors::IndexOutOfBounds;
-use errors::eval_error::EvalError;
+use errors::{IndexOutOfBounds, eval_error::EvalError};
+use grammar::{
+    DerivationRule,
+    symbols::{SpecialChar, Symbol},
+};
+use std::collections::HashSet;
 use syntax::{
     eval_context::EvalContext,
     language::Language,
@@ -32,5 +36,25 @@ where
         steps.push(last_step);
 
         Ok(EvalTrace::<Lang>::new(steps, val))
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([
+            DerivationRule::eval_cong(
+                |sym| vec![sym, SpecialChar::Dot.into(), SpecialChar::Number.into()],
+                "E-Proj1",
+            ),
+            DerivationRule::eval(
+                vec![
+                    SpecialChar::ParenO.into(),
+                    Symbol::many(Symbol::sub(Symbol::Value, "i")),
+                    SpecialChar::ParenC.into(),
+                    SpecialChar::Dot.into(),
+                    "k".into(),
+                ],
+                Symbol::sub(Symbol::Value, "k"),
+                "E-Proj",
+            ),
+        ])
     }
 }

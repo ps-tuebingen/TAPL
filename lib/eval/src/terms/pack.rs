@@ -1,5 +1,7 @@
 use crate::Eval;
 use errors::eval_error::EvalError;
+use grammar::DerivationRule;
+use std::collections::HashSet;
 use syntax::{
     eval_context::EvalContext,
     language::Language,
@@ -28,5 +30,9 @@ where
         });
 
         Ok(EvalTrace::new(steps, val))
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::new()
     }
 }

@@ -1,5 +1,10 @@
 use crate::Eval;
 use errors::eval_error::EvalError;
+use grammar::{
+    DerivationRule,
+    symbols::{SpecialChar, Symbol},
+};
+use std::collections::HashSet;
 use syntax::{
     eval_context::EvalContext, language::Language, terms::Variant, values::Variant as VariantVal,
 };
@@ -22,5 +27,20 @@ where
         let steps =
             term_res.congruence(&move |t| Variant::new(&self.label, t, self.ty.clone()).into());
         Ok(EvalTrace::new(steps, val))
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([DerivationRule::eval_cong(
+            |sym| {
+                vec![
+                    SpecialChar::AngBrackO.into(),
+                    Symbol::Label,
+                    SpecialChar::Equals.into(),
+                    sym,
+                    SpecialChar::AngBrackC.into(),
+                ]
+            },
+            "E-Variant",
+        )])
     }
 }

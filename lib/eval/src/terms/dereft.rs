@@ -1,5 +1,10 @@
 use crate::Eval;
 use errors::eval_error::EvalError;
+use grammar::{
+    DerivationRule,
+    symbols::{SpecialChar, Symbol},
+};
+use std::collections::HashSet;
 use syntax::{
     eval_context::EvalContext,
     language::Language,
@@ -26,5 +31,31 @@ where
         let mut steps = term_res.congruence(&move |t| Deref::new(t).into());
         steps.push(last_step);
         Ok(EvalTrace::<Lang>::new(steps, loc_val))
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([
+            DerivationRule::eval(
+                vec![
+                    SpecialChar::Exclamation.into(),
+                    Symbol::Location,
+                    SpecialChar::Pipe.into(),
+                    SpecialChar::Mu.into(),
+                ],
+                vec![
+                    SpecialChar::Mu.into(),
+                    SpecialChar::ParenO.into(),
+                    Symbol::Location,
+                    SpecialChar::ParenC.into(),
+                    SpecialChar::Pipe.into(),
+                    SpecialChar::Mu.into(),
+                ],
+                "E-Deref",
+            ),
+            DerivationRule::eval_cong(
+                |sym| vec![SpecialChar::Exclamation.into(), sym, SpecialChar::Mu.into()],
+                "E-Deref1",
+            ),
+        ])
     }
 }

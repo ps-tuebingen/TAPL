@@ -1,5 +1,10 @@
 use crate::Eval;
 use errors::eval_error::EvalError;
+use grammar::{
+    DerivationRule,
+    symbols::{Keyword, SpecialChar, Symbol},
+};
+use std::collections::HashSet;
 use syntax::{
     eval_context::EvalContext,
     language::Language,
@@ -28,5 +33,39 @@ where
         let mut steps = term_res.congruence(&move |t| Unfold::new(self.ty.clone(), t).into());
         steps.push(last_step);
         Ok(EvalTrace::<Lang>::new(steps, *term_fold.val))
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([
+            DerivationRule::eval_cong(
+                |sym| {
+                    vec![
+                        Keyword::Unfold.into(),
+                        SpecialChar::SqBrackO.into(),
+                        Symbol::Type,
+                        SpecialChar::SqBrackC.into(),
+                        sym,
+                    ]
+                },
+                "E-Unfold1",
+            ),
+            DerivationRule::eval(
+                vec![
+                    Keyword::Unfold.into(),
+                    SpecialChar::SqBrackO.into(),
+                    Symbol::sub(Symbol::Type, 1),
+                    SpecialChar::SqBrackC.into(),
+                    SpecialChar::ParenO.into(),
+                    Keyword::Fold.into(),
+                    SpecialChar::SqBrackO.into(),
+                    Symbol::sub(Symbol::Type, 2),
+                    SpecialChar::SqBrackC.into(),
+                    Symbol::Value,
+                    SpecialChar::ParenC.into(),
+                ],
+                Symbol::Value,
+                "E-UnfoldFold",
+            ),
+        ])
     }
 }

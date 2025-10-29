@@ -1,6 +1,10 @@
 use crate::Eval;
 use errors::eval_error::EvalError;
-use std::rc::Rc;
+use grammar::{
+    DerivationRule,
+    symbols::{Keyword, SpecialChar, Symbol},
+};
+use std::{collections::HashSet, rc::Rc};
 
 use syntax::{
     eval_context::EvalContext,
@@ -52,5 +56,62 @@ where
         steps.push(next_step);
         steps.extend(in_res.steps);
         Ok(EvalTrace::<Lang>::new(steps, val))
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([
+            DerivationRule::eval_cong(
+                |sym| {
+                    vec![
+                        Keyword::Let.into(),
+                        SpecialChar::BrackO.into(),
+                        Symbol::Typevariable,
+                        SpecialChar::Comma.into(),
+                        Symbol::Variable,
+                        SpecialChar::BrackC.into(),
+                        SpecialChar::Equals.into(),
+                        sym,
+                        Keyword::In.into(),
+                        Symbol::sub(Symbol::Term, 3),
+                    ]
+                },
+                "E-Unpack1",
+            ),
+            DerivationRule::eval(
+                vec![
+                    Keyword::Let.into(),
+                    SpecialChar::BrackO.into(),
+                    Symbol::Typevariable,
+                    SpecialChar::Comma.into(),
+                    Symbol::Variable,
+                    SpecialChar::Equals.into(),
+                    SpecialChar::ParenO.into(),
+                    SpecialChar::BrackO.into(),
+                    SpecialChar::Star.into(),
+                    Symbol::sub(Symbol::Type, 1),
+                    SpecialChar::Comma.into(),
+                    Symbol::Value,
+                    SpecialChar::BrackC.into(),
+                    Keyword::As.into(),
+                    Symbol::sub(Symbol::Type, 2),
+                    SpecialChar::ParenC.into(),
+                    Keyword::In.into(),
+                    Symbol::Term,
+                ],
+                vec![
+                    Symbol::Term,
+                    SpecialChar::SqBrackO.into(),
+                    Symbol::Typevariable,
+                    SpecialChar::Arrow.into(),
+                    Symbol::sub(Symbol::Type, 1),
+                    SpecialChar::Comma.into(),
+                    Symbol::Variable,
+                    SpecialChar::Arrow.into(),
+                    Symbol::Value,
+                    SpecialChar::BrackC.into(),
+                ],
+                "E-UnpackPack",
+            ),
+        ])
     }
 }

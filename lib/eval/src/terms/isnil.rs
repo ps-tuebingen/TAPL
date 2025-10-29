@@ -1,6 +1,10 @@
 use crate::Eval;
-use errors::ValueMismatch;
-use errors::eval_error::EvalError;
+use errors::{ValueMismatch, eval_error::EvalError};
+use grammar::{
+    DerivationRule,
+    symbols::{Keyword, SpecialChar, Symbol},
+};
+use std::collections::HashSet;
 use syntax::{
     eval_context::EvalContext,
     language::Language,
@@ -36,5 +40,58 @@ where
         let mut steps = term_res.congruence(&move |t| IsNil::new(t, self.ty.clone()).into());
         steps.push(step);
         Ok(EvalTrace::<Lang>::new(steps, val))
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([
+            DerivationRule::eval_cong(
+                |sym| {
+                    vec![
+                        Keyword::IsNil.into(),
+                        SpecialChar::SqBrackO.into(),
+                        Symbol::Type,
+                        SpecialChar::SqBrackC.into(),
+                        SpecialChar::ParenO.into(),
+                        sym,
+                        SpecialChar::ParenC.into(),
+                    ]
+                },
+                "E-IsNil1",
+            ),
+            DerivationRule::eval(
+                vec![
+                    Keyword::IsNil.into(),
+                    SpecialChar::SqBrackO.into(),
+                    Symbol::Type,
+                    SpecialChar::SqBrackC.into(),
+                    SpecialChar::ParenO.into(),
+                    Keyword::Nil.into(),
+                    SpecialChar::ParenC.into(),
+                ],
+                Keyword::True,
+                "E-IsNilNil",
+            ),
+            DerivationRule::eval(
+                vec![
+                    Keyword::IsNil.into(),
+                    SpecialChar::SqBrackO.into(),
+                    Symbol::Type,
+                    SpecialChar::SqBrackC.into(),
+                    SpecialChar::ParenO.into(),
+                    Keyword::Cons.into(),
+                    SpecialChar::SqBrackO.into(),
+                    Symbol::Type,
+                    SpecialChar::SqBrackC.into(),
+                    SpecialChar::ParenO.into(),
+                    Symbol::sub(Symbol::Value, 1),
+                    SpecialChar::Comma.into(),
+                    Symbol::sub(Symbol::Value, 2),
+                    SpecialChar::ParenC.into(),
+                    SpecialChar::ParenC.into(),
+                ],
+                Keyword::False,
+                "E-IsNilCons",
+            ),
+        ])
     }
 }

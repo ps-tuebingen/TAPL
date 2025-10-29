@@ -1,5 +1,7 @@
 use crate::Eval;
 use errors::eval_error::EvalError;
+use grammar::DerivationRule;
+use std::collections::HashSet;
 use syntax::{
     eval_context::EvalContext,
     language::Language,
@@ -18,5 +20,9 @@ where
 
     fn eval(self, _: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         Ok(EvalTrace::new(vec![], TrueVal::new()))
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::new()
     }
 }

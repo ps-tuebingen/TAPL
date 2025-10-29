@@ -1,7 +1,10 @@
 use crate::Eval;
-use errors::ValueMismatch;
-use errors::eval_error::EvalError;
-use std::rc::Rc;
+use errors::{ValueMismatch, eval_error::EvalError};
+use grammar::{
+    DerivationRule,
+    symbols::{Keyword, SpecialChar, Symbol},
+};
+use std::{collections::HashSet, rc::Rc};
 use syntax::{
     eval_context::EvalContext,
     language::Language,
@@ -72,5 +75,102 @@ where
         });
         steps.extend(res_steps);
         Ok(EvalTrace::<Lang>::new(steps, res_val))
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([
+            DerivationRule::eval_cong(
+                |sym| {
+                    vec![
+                        Keyword::Case.into(),
+                        sym,
+                        Keyword::Of.into(),
+                        SpecialChar::BrackO.into(),
+                        Keyword::Nothing.into(),
+                        SpecialChar::DoubleArrow.into(),
+                        Symbol::sub(Symbol::Term, 3),
+                        SpecialChar::Pipe.into(),
+                        Keyword::Something.into(),
+                        SpecialChar::ParenO.into(),
+                        Symbol::sub(Symbol::Variable, 1),
+                        SpecialChar::Comma.into(),
+                        Symbol::sub(Symbol::Variable, 2),
+                        SpecialChar::ParenC.into(),
+                        SpecialChar::DoubleArrow.into(),
+                        Symbol::sub(Symbol::Term, 4),
+                        SpecialChar::BrackC.into(),
+                    ]
+                },
+                "E-SomeCase1",
+            ),
+            DerivationRule::eval(
+                vec![
+                    Keyword::Case.into(),
+                    Keyword::Nothing.into(),
+                    SpecialChar::SqBrackO.into(),
+                    Symbol::Type,
+                    SpecialChar::SqBrackC.into(),
+                    Keyword::Of.into(),
+                    SpecialChar::BrackO.into(),
+                    Keyword::Nothing.into(),
+                    SpecialChar::DoubleArrow.into(),
+                    Symbol::sub(Symbol::Term, 1),
+                    SpecialChar::Pipe.into(),
+                    Keyword::Something.into(),
+                    SpecialChar::ParenO.into(),
+                    Symbol::sub(Symbol::Variable, 1),
+                    SpecialChar::Comma.into(),
+                    Symbol::sub(Symbol::Variable, 2),
+                    SpecialChar::ParenC.into(),
+                    SpecialChar::DoubleArrow.into(),
+                    Symbol::sub(Symbol::Term, 2),
+                    SpecialChar::BrackC.into(),
+                ],
+                Symbol::sub(Symbol::Term, 1),
+                "E-SomeCaseNothing",
+            ),
+            DerivationRule::eval(
+                vec![
+                    Keyword::Case.into(),
+                    Keyword::Something.into(),
+                    SpecialChar::SqBrackO.into(),
+                    Symbol::Type,
+                    SpecialChar::SqBrackC.into(),
+                    SpecialChar::ParenO.into(),
+                    Symbol::sub(Symbol::Value, 1),
+                    SpecialChar::Comma.into(),
+                    Symbol::sub(Symbol::Value, 2),
+                    SpecialChar::ParenC.into(),
+                    Keyword::Of.into(),
+                    SpecialChar::BrackO.into(),
+                    Keyword::Nothing.into(),
+                    SpecialChar::DoubleArrow.into(),
+                    Symbol::sub(Symbol::Term, 1),
+                    SpecialChar::Pipe.into(),
+                    Keyword::Something.into(),
+                    SpecialChar::ParenO.into(),
+                    Symbol::sub(Symbol::Variable, 1),
+                    SpecialChar::Comma.into(),
+                    Symbol::sub(Symbol::Variable, 2),
+                    SpecialChar::ParenC.into(),
+                    SpecialChar::DoubleArrow.into(),
+                    Symbol::sub(Symbol::Term, 2),
+                    SpecialChar::BrackC.into(),
+                ],
+                vec![
+                    Symbol::sub(Symbol::Term, 2),
+                    SpecialChar::SqBrackO.into(),
+                    Symbol::sub(Symbol::Variable, 1),
+                    SpecialChar::Arrow.into(),
+                    Symbol::sub(Symbol::Value, 1),
+                    SpecialChar::Comma.into(),
+                    Symbol::sub(Symbol::Variable, 2),
+                    SpecialChar::Arrow.into(),
+                    Symbol::sub(Symbol::Value, 2),
+                    SpecialChar::SqBrackC.into(),
+                ],
+                "E-SomeCaseSomething",
+            ),
+        ])
     }
 }

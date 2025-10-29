@@ -1,5 +1,10 @@
 use crate::Eval;
 use errors::eval_error::EvalError;
+use grammar::{
+    DerivationRule,
+    symbols::{Keyword, SpecialChar, Symbol},
+};
+use std::collections::HashSet;
 use syntax::{
     eval_context::EvalContext,
     language::Language,
@@ -26,5 +31,45 @@ where
         let mut steps = term_res.congruence(&move |t| Tail::new(t, self.ty.clone()).into());
         steps.push(last_step);
         Ok(EvalTrace::<Lang>::new(steps, val))
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([
+            DerivationRule::eval(
+                vec![
+                    Keyword::Tail.into(),
+                    SpecialChar::SqBrackO.into(),
+                    Symbol::Type,
+                    SpecialChar::SqBrackC.into(),
+                    SpecialChar::ParenO.into(),
+                    Keyword::Cons.into(),
+                    SpecialChar::SqBrackO.into(),
+                    Symbol::Type,
+                    SpecialChar::SqBrackC.into(),
+                    SpecialChar::ParenO.into(),
+                    Symbol::sub(Symbol::Value, 1),
+                    SpecialChar::Comma.into(),
+                    Symbol::sub(Symbol::Value, 2),
+                    SpecialChar::ParenC.into(),
+                    SpecialChar::ParenC.into(),
+                ],
+                Symbol::Value,
+                "E-TailCons",
+            ),
+            DerivationRule::eval_cong(
+                |sym| {
+                    vec![
+                        Keyword::Tail.into(),
+                        SpecialChar::SqBrackO.into(),
+                        Symbol::Type,
+                        SpecialChar::SqBrackC.into(),
+                        SpecialChar::ParenO.into(),
+                        sym,
+                        SpecialChar::ParenC.into(),
+                    ]
+                },
+                "E-Tail1",
+            ),
+        ])
     }
 }

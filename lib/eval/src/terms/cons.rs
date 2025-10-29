@@ -1,6 +1,10 @@
 use crate::Eval;
 use errors::eval_error::EvalError;
-use std::rc::Rc;
+use grammar::{
+    DerivationRule,
+    symbols::{Keyword, SpecialChar, Symbol},
+};
+use std::{collections::HashSet, rc::Rc};
 use syntax::{
     eval_context::EvalContext,
     language::Language,
@@ -36,5 +40,41 @@ where
             Cons::new(Rc::unwrap_or_clone(self.head.clone()), t, self.ty.clone()).into()
         }));
         Ok(EvalTrace::<Lang>::new(steps, val))
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([
+            DerivationRule::eval_cong(
+                |sym| {
+                    vec![
+                        Keyword::Cons.into(),
+                        SpecialChar::SqBrackO.into(),
+                        Symbol::Type,
+                        SpecialChar::SqBrackC.into(),
+                        SpecialChar::ParenO.into(),
+                        sym,
+                        SpecialChar::Comma.into(),
+                        Symbol::sub(Symbol::Term, 3),
+                    ]
+                },
+                "E-Cons1",
+            ),
+            DerivationRule::eval_cong(
+                |sym| {
+                    vec![
+                        Keyword::Cons.into(),
+                        SpecialChar::SqBrackO.into(),
+                        Symbol::Type,
+                        SpecialChar::SqBrackC.into(),
+                        SpecialChar::ParenO.into(),
+                        Symbol::Value,
+                        SpecialChar::Comma.into(),
+                        sym,
+                        SpecialChar::ParenC.into(),
+                    ]
+                },
+                "E-Cons2",
+            ),
+        ])
     }
 }

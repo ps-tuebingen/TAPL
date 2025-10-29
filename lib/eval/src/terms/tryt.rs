@@ -1,6 +1,10 @@
 use crate::Eval;
 use errors::eval_error::EvalError;
-use std::rc::Rc;
+use grammar::{
+    DerivationRule,
+    symbols::{Keyword, Symbol},
+};
+use std::{collections::HashSet, rc::Rc};
 use syntax::{
     eval_context::EvalContext,
     language::Language,
@@ -42,5 +46,41 @@ where
             .congruence(&move |t| Try::new(t, Rc::unwrap_or_clone(self.handler.clone())).into());
         steps.extend(res_steps);
         Ok(EvalTrace::<Lang>::new(steps, res_val))
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([
+            DerivationRule::eval_cong(
+                |sym| {
+                    vec![
+                        Keyword::Try.into(),
+                        sym,
+                        Keyword::With.into(),
+                        Symbol::sub(Symbol::Term, 3),
+                    ]
+                },
+                "E-Try1",
+            ),
+            DerivationRule::eval(
+                vec![
+                    Keyword::Try.into(),
+                    Symbol::Value,
+                    Keyword::With.into(),
+                    Symbol::Term,
+                ],
+                Symbol::Value,
+                "E-TryVal",
+            ),
+            DerivationRule::eval(
+                vec![
+                    Keyword::Try.into(),
+                    Keyword::Err.into(),
+                    Keyword::With.into(),
+                    Symbol::Term.into(),
+                ],
+                Keyword::Err,
+                "E-TryErr",
+            ),
+        ])
     }
 }

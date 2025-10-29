@@ -1,5 +1,10 @@
 use crate::Eval;
 use errors::eval_error::EvalError;
+use grammar::{
+    DerivationRule,
+    symbols::{Keyword, SpecialChar, Symbol},
+};
+use std::collections::HashSet;
 use syntax::{
     eval_context::EvalContext,
     language::Language,
@@ -27,5 +32,55 @@ where
             Raise::new(t, self.cont_ty.clone(), self.exception_ty.clone()).into()
         });
         Ok(EvalTrace::new(steps, raise_val))
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([
+            DerivationRule::eval_cong(
+                |sym| {
+                    vec![
+                        Keyword::Raise.into(),
+                        SpecialChar::SqBrackO.into(),
+                        Symbol::sub(Symbol::Type, 1),
+                        Symbol::sub(Symbol::Type, 2),
+                        SpecialChar::SqBrackC.into(),
+                        SpecialChar::ParenO.into(),
+                        sym,
+                        SpecialChar::ParenC.into(),
+                    ]
+                },
+                "E-Raise1",
+            ),
+            DerivationRule::eval(
+                vec![
+                    Keyword::Raise.into(),
+                    SpecialChar::SqBrackO.into(),
+                    Symbol::sub(Symbol::Type, 1),
+                    Symbol::sub(Symbol::Type, 2),
+                    SpecialChar::SqBrackC.into(),
+                    SpecialChar::ParenO.into(),
+                    Keyword::Raise.into(),
+                    SpecialChar::SqBrackO.into(),
+                    Symbol::sub(Symbol::Type, 1),
+                    Symbol::sub(Symbol::Type, 2),
+                    SpecialChar::SqBrackC.into(),
+                    SpecialChar::ParenO.into(),
+                    Symbol::Value,
+                    SpecialChar::ParenC.into(),
+                    SpecialChar::ParenC.into(),
+                ],
+                vec![
+                    Keyword::Raise.into(),
+                    SpecialChar::SqBrackO.into(),
+                    Symbol::sub(Symbol::Type, 1),
+                    Symbol::sub(Symbol::Type, 2),
+                    SpecialChar::SqBrackC.into(),
+                    SpecialChar::ParenO.into(),
+                    Symbol::Value,
+                    SpecialChar::ParenC.into(),
+                ],
+                "E-RaiseRaise",
+            ),
+        ])
     }
 }

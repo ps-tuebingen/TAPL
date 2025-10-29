@@ -1,7 +1,10 @@
 use crate::Eval;
-use errors::UndefinedLabel;
-use errors::eval_error::EvalError;
-use std::rc::Rc;
+use errors::{UndefinedLabel, eval_error::EvalError};
+use grammar::{
+    DerivationRule,
+    symbols::{Keyword, SpecialChar, Symbol},
+};
+use std::{collections::HashSet, rc::Rc};
 use syntax::{
     eval_context::EvalContext, language::Language, subst::SubstTerm, terms::VariantCase,
     values::ValueGroup,
@@ -42,5 +45,62 @@ where
         steps.push(next_step);
         steps.extend(rhs_res.steps);
         Ok(EvalTrace::<Lang>::new(steps, val))
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([
+            DerivationRule::eval_cong(
+                |sym| {
+                    vec![
+                        Keyword::Case.into(),
+                        sym,
+                        Keyword::Of.into(),
+                        SpecialChar::BrackO.into(),
+                        Symbol::many(vec![
+                            SpecialChar::AngBrackO.into(),
+                            Symbol::sub(Symbol::Label, "i"),
+                            SpecialChar::Equals.into(),
+                            Symbol::sub(Symbol::Variable, "i"),
+                            SpecialChar::AngBrackC.into(),
+                            SpecialChar::DoubleArrow.into(),
+                            Symbol::sub(Symbol::Term, "i"),
+                        ]),
+                        SpecialChar::BrackC.into(),
+                    ]
+                },
+                "E-VariantCase1",
+            ),
+            DerivationRule::eval(
+                vec![
+                    Keyword::Case.into(),
+                    SpecialChar::AngBrackO.into(),
+                    Symbol::sub(Symbol::Label, "k"),
+                    SpecialChar::Equals.into(),
+                    Symbol::Value,
+                    SpecialChar::AngBrackC.into(),
+                    Keyword::Of.into(),
+                    SpecialChar::BrackO.into(),
+                    Symbol::many(vec![
+                        SpecialChar::AngBrackO.into(),
+                        Symbol::sub(Symbol::Label, "i"),
+                        SpecialChar::Equals.into(),
+                        Symbol::sub(Symbol::Variable, "i"),
+                        SpecialChar::AngBrackC.into(),
+                        SpecialChar::DoubleArrow.into(),
+                        Symbol::sub(Symbol::Term, "i"),
+                    ]),
+                    SpecialChar::BrackC.into(),
+                ],
+                vec![
+                    Symbol::sub(Symbol::Term, "i"),
+                    SpecialChar::SqBrackO.into(),
+                    Symbol::sub(Symbol::Variable, "i"),
+                    SpecialChar::Arrow.into(),
+                    Symbol::Value,
+                    SpecialChar::SqBrackC.into(),
+                ],
+                "E-VariantCase",
+            ),
+        ])
     }
 }
