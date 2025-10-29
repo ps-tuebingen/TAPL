@@ -1,7 +1,8 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
-use errors::{EmptyCase, check_error::CheckError};
-use errors::{TypeMismatch, UndefinedLabel};
+use errors::{EmptyCase, TypeMismatch, UndefinedLabel, check_error::CheckError};
+use grammar::DerivationRule;
+use std::collections::HashSet;
 use syntax::{env::Environment, language::Language, terms::VariantCase, types::TypeGroup};
 
 impl<Lang> Typecheck for VariantCase<Lang>
@@ -97,5 +98,9 @@ where
         let conc = TypingConclusion::new(env, self.clone(), rhs_fst);
         let deriv = TypingDerivation::variantcase(conc, premises);
         Ok(deriv.into())
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([DerivationRule::check_variantcase()])
     }
 }

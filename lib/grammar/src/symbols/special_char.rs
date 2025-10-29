@@ -38,6 +38,7 @@ pub enum SpecialChar {
     Star,
     LessEq,
     Ellipses,
+    Pipe,
 }
 
 impl From<SpecialChar> for Symbol {
@@ -82,6 +83,7 @@ impl fmt::Display for SpecialChar {
             SpecialChar::Star => f.write_str("*"),
             SpecialChar::LessEq => f.write_str("<="),
             SpecialChar::Ellipses => f.write_str("..."),
+            SpecialChar::Pipe => f.write_str("|"),
         }
     }
 }

@@ -19,7 +19,1190 @@ pub struct DerivationRule {
 }
 
 impl DerivationRule {
-    /// Create a derivation rule for reflexive subtyping
+    /// Derivation Rule for Typechecking Applications
+    /// Gamma |-> Term1 : Type1 -> Type2    Gamma |-> Term2: Type1
+    /// ---------------------------------------------------------
+    /// Gamma |-> Term1 Term2 : Type2
+    pub fn check_ap() -> DerivationRule {
+        DerivationRule {
+            premises: vec![
+                ConclusionRule {
+                    env: SpecialChar::Gamma.into(),
+                    input: Symbol::sub(Symbol::Term, 1),
+                    separator: SpecialChar::Colon.into(),
+                    output: vec![
+                        Symbol::sub(Symbol::Type, 1),
+                        SpecialChar::Arrow.into(),
+                        Symbol::sub(Symbol::Type, 2),
+                    ]
+                    .into(),
+                },
+                ConclusionRule {
+                    env: SpecialChar::Gamma.into(),
+                    input: Symbol::sub(Symbol::Term, 2),
+                    separator: SpecialChar::Colon.into(),
+                    output: Symbol::sub(Symbol::Type, 1),
+                },
+            ],
+            label: "T-Ap".to_owned(),
+            conclusion: ConclusionRule {
+                env: SpecialChar::Gamma.into(),
+                input: vec![
+                    Symbol::sub(Symbol::Term, 1),
+                    SpecialChar::Space.into(),
+                    Symbol::sub(Symbol::Term, 2),
+                ]
+                .into(),
+                separator: SpecialChar::Colon.into(),
+                output: Symbol::sub(Symbol::Type, 2),
+            },
+        }
+    }
+
+    /// Derivation Rule for checking let bindings
+    /// Gamma |-> Term1 : Ref[Type1]
+    /// Gamma |-> Term2 : Type
+    /// -----------------------------
+    /// Gamma |-> Term1 := Term2 : Unit
+    pub fn check_assign() -> DerivationRule {
+        DerivationRule {
+            premises: vec![
+                ConclusionRule {
+                    env: SpecialChar::Gamma.into(),
+                    input: Symbol::sub(Symbol::Term, 1),
+                    separator: SpecialChar::Colon.into(),
+                    output: vec![
+                        Keyword::Ref.into(),
+                        SpecialChar::SqBrackO.into(),
+                        Symbol::sub(Symbol::Type, 1),
+                        SpecialChar::SqBrackC.into(),
+                    ]
+                    .into(),
+                },
+                ConclusionRule {
+                    env: SpecialChar::Gamma.into(),
+                    input: Symbol::sub(Symbol::Term, 2),
+                    separator: SpecialChar::Colon.into(),
+                    output: Symbol::Type,
+                },
+            ],
+            label: "T-Assign".to_owned(),
+            conclusion: ConclusionRule {
+                env: SpecialChar::Gamma.into(),
+                input: vec![
+                    Symbol::sub(Symbol::Term, 1),
+                    SpecialChar::ColonEq.into(),
+                    Symbol::sub(Symbol::Term, 2),
+                ]
+                .into(),
+                separator: SpecialChar::Colon.into(),
+                output: Keyword::Unit.into(),
+            },
+        }
+    }
+
+    /// Derivation rule for checking Cons
+    /// Gamma |-> Term1:Type    Gamma |-> Term2: List[Type]
+    /// -------------------------------------------------
+    /// Gamma |-> Cons[Type](Term1,Term2) : List[Type]
+    pub fn check_cons() -> DerivationRule {
+        DerivationRule {
+            premises: vec![
+                ConclusionRule {
+                    env: SpecialChar::Gamma.into(),
+                    input: Symbol::sub(Symbol::Term, 1),
+                    separator: SpecialChar::Colon.into(),
+                    output: Symbol::Type,
+                },
+                ConclusionRule {
+                    env: SpecialChar::Gamma.into(),
+                    input: Symbol::sub(Symbol::Term, 2),
+                    separator: SpecialChar::Colon.into(),
+                    output: vec![
+                        Keyword::List.into(),
+                        SpecialChar::SqBrackO.into(),
+                        Symbol::Type,
+                        SpecialChar::SqBrackC.into(),
+                    ]
+                    .into(),
+                },
+            ],
+            label: "T-Cons".to_owned(),
+            conclusion: ConclusionRule {
+                env: SpecialChar::Gamma.into(),
+                input: vec![
+                    Keyword::Cons.into(),
+                    SpecialChar::SqBrackO.into(),
+                    Symbol::Type,
+                    SpecialChar::SqBrackC.into(),
+                    SpecialChar::ParenO.into(),
+                    Symbol::sub(Symbol::Term, 1),
+                    SpecialChar::Comma.into(),
+                    Symbol::sub(Symbol::Term, 2),
+                    SpecialChar::ParenC.into(),
+                ]
+                .into(),
+                separator: SpecialChar::Colon.into(),
+                output: vec![
+                    Keyword::List.into(),
+                    SpecialChar::SqBrackO.into(),
+                    Symbol::Type,
+                    SpecialChar::SqBrackC.into(),
+                ]
+                .into(),
+            },
+        }
+    }
+
+    /// Derivation Rule for checking if expressions
+    /// Gamma |-> Term1 : Bool
+    /// Gamma |-> Term2 : Type
+    /// Gamma |-> Term3 : Type
+    /// --------------------------------------
+    /// Gamma |-> if Term1 { Term2 } else { Term3 } : Type
+    pub fn check_if() -> DerivationRule {
+        DerivationRule {
+            premises: vec![
+                ConclusionRule {
+                    env: SpecialChar::Gamma.into(),
+                    input: Symbol::sub(Symbol::Term, 1),
+                    separator: SpecialChar::Colon.into(),
+                    output: Keyword::Bool.into(),
+                },
+                ConclusionRule {
+                    env: SpecialChar::Gamma.into(),
+                    input: Symbol::sub(Symbol::Term, 2),
+                    separator: SpecialChar::Colon.into(),
+                    output: Symbol::Type,
+                },
+                ConclusionRule {
+                    env: SpecialChar::Gamma.into(),
+                    input: Symbol::sub(Symbol::Term, 3),
+                    separator: SpecialChar::Colon.into(),
+                    output: Symbol::Type,
+                },
+            ],
+            label: "T-If".to_owned(),
+            conclusion: ConclusionRule {
+                env: SpecialChar::Gamma.into(),
+                input: vec![
+                    Keyword::If.into(),
+                    Symbol::sub(Symbol::Term, 1),
+                    SpecialChar::BrackO.into(),
+                    Symbol::sub(Symbol::Term, 2),
+                    SpecialChar::BrackC.into(),
+                    Keyword::Else.into(),
+                    SpecialChar::BrackO.into(),
+                    Symbol::sub(Symbol::Term, 3),
+                    SpecialChar::BrackC.into(),
+                ]
+                .into(),
+                separator: SpecialChar::Colon.into(),
+                output: Symbol::Type,
+            },
+        }
+    }
+
+    /// Derivation Rule for checking lambda abstractions (either type or term)
+    /// if bounded
+    /// Gamma, X <: Type1 |-> Term : Type2
+    /// -------------------------------------------------------------
+    /// Gamma |-> Lambda TypeVariable <: Type1. Term : Forall X <: Type1.Type2
+    ///
+    /// otherwise
+    /// Gamma,Variable:Type1 |-> Term:Type2
+    /// ---------------------------------------------------
+    /// Gamma |-> Lambda Variable:Type1.Term : Type1 -> Type2
+    pub fn check_lambda(bounded: bool) -> DerivationRule {
+        let prem_env = if bounded {
+            vec![
+                SpecialChar::Gamma.into(),
+                SpecialChar::Comma.into(),
+                Symbol::Typevariable,
+                SpecialChar::LessColon.into(),
+                Symbol::sub(Symbol::Type, 1),
+            ]
+        } else {
+            vec![
+                SpecialChar::Gamma.into(),
+                SpecialChar::Comma.into(),
+                Symbol::Variable,
+                SpecialChar::Colon.into(),
+                Symbol::sub(Symbol::Type, 1),
+            ]
+        };
+        let conc_input = if bounded {
+            vec![
+                SpecialChar::Lambda.into(),
+                Symbol::Typevariable,
+                SpecialChar::LessColon.into(),
+                Symbol::sub(Symbol::Type, 1),
+                SpecialChar::Dot.into(),
+                Symbol::Term,
+            ]
+        } else {
+            vec![
+                SpecialChar::Lambda.into(),
+                Symbol::Variable,
+                SpecialChar::Colon.into(),
+                Symbol::sub(Symbol::Type, 1),
+                SpecialChar::Dot.into(),
+                Symbol::Term,
+            ]
+        };
+        let conc_out = if bounded {
+            vec![
+                SpecialChar::Forall.into(),
+                Symbol::Typevariable,
+                SpecialChar::LessColon.into(),
+                Symbol::sub(Symbol::Type, 1),
+                SpecialChar::Dot.into(),
+                Symbol::sub(Symbol::Type, 2),
+            ]
+        } else {
+            vec![
+                Symbol::sub(Symbol::Type, 1),
+                SpecialChar::Arrow.into(),
+                Symbol::sub(Symbol::Type, 2),
+            ]
+        };
+        DerivationRule {
+            premises: vec![ConclusionRule {
+                env: prem_env.into(),
+                input: Symbol::Term,
+                separator: SpecialChar::Colon.into(),
+                output: Symbol::sub(Symbol::Type, 2),
+            }],
+            label: "T-Lambda".to_owned(),
+            conclusion: ConclusionRule {
+                env: SpecialChar::Gamma.into(),
+                input: conc_input.into(),
+                separator: SpecialChar::Colon.into(),
+                output: conc_out.into(),
+            },
+        }
+    }
+
+    /// Derivation rule for checking let bindings
+    /// Gamma |-> Term1:Type1
+    /// Gamma, x:Type1 |-> Term2:Type2
+    /// -----------------------------------------------
+    /// Gamma |-> let Variable = Term1 in Term2 : Type2
+    pub fn check_let() -> DerivationRule {
+        DerivationRule {
+            premises: vec![
+                ConclusionRule {
+                    env: SpecialChar::Gamma.into(),
+                    input: Symbol::sub(Symbol::Term, 1),
+                    separator: SpecialChar::Colon.into(),
+                    output: Symbol::sub(Symbol::Term, 1),
+                },
+                ConclusionRule {
+                    env: vec![
+                        SpecialChar::Gamma.into(),
+                        Symbol::Variable.into(),
+                        SpecialChar::Colon.into(),
+                        Symbol::sub(Symbol::Type, 1),
+                    ]
+                    .into(),
+                    input: Symbol::sub(Symbol::Term, 2),
+                    separator: SpecialChar::Colon.into(),
+                    output: Symbol::sub(Symbol::Type, 2),
+                },
+            ],
+            label: "T-Let".to_owned(),
+            conclusion: ConclusionRule {
+                env: SpecialChar::Gamma.into(),
+                input: vec![
+                    Keyword::Let.into(),
+                    Symbol::Variable.into(),
+                    SpecialChar::Equals.into(),
+                    Symbol::sub(Symbol::Term, 1),
+                    Keyword::Let.into(),
+                    Symbol::sub(Symbol::Term, 2),
+                ]
+                .into(),
+                separator: SpecialChar::Colon.into(),
+                output: Symbol::sub(Symbol::Term, 2),
+            },
+        }
+    }
+
+    /// Derivation rule for checking anything that is looked up in the environment
+    /// i.e. Locations and Variables
+    /// term:Type in Gamma
+    /// -------------------
+    /// Gamma |-> term: Type
+    pub fn check_env(term: Symbol) -> DerivationRule {
+        DerivationRule {
+            premises: vec![ConclusionRule {
+                env: SpecialChar::Empty.into(),
+                input: SpecialChar::Empty.into(),
+                separator: SpecialChar::Empty.into(),
+                output: vec![
+                    term,
+                    SpecialChar::Colon.into(),
+                    Symbol::Type,
+                    Keyword::In.into(),
+                    SpecialChar::Gamma.into(),
+                ]
+                .into(),
+            }],
+            label: "T-Loc".into(),
+            conclusion: ConclusionRule {
+                env: SpecialChar::Gamma.into(),
+                input: Symbol::Location,
+                separator: SpecialChar::Colon.into(),
+                output: Symbol::Type,
+            },
+        }
+    }
+
+    /// Derivation Rule for checking pack terms
+    /// if bounded
+    /// Gamma |-> Term : Type2[TypeVar -> Type1]
+    /// Gamma |-> Type1 <: Type3
+    /// ---------------------------------------
+    /// Gamma |-> {*Type1,Term} as exists {TypeVar<:Type3,Type2}
+    /// : exists {Typevar<:Type3,Type2}
+    ///
+    /// otherwise
+    /// Gamma |-> Term: Type2[Typevar -> Type1]
+    /// ----------------------------------------------
+    /// Gamma |-> {*Type1,Term} as exists {TypeVar::Kind,Type2} : exists {Typevar::Kind,Type2}
+    pub fn check_pack(bounded: bool) -> DerivationRule {
+        let ex_type = if bounded {
+            vec![
+                SpecialChar::Exists.into(),
+                SpecialChar::BrackO.into(),
+                Symbol::Typevariable,
+                SpecialChar::LessColon.into(),
+                Symbol::sub(Symbol::Type, 3),
+                SpecialChar::Comma.into(),
+                Symbol::sub(Symbol::Type, 2),
+                SpecialChar::BrackC.into(),
+            ]
+        } else {
+            vec![
+                SpecialChar::Exists.into(),
+                SpecialChar::BrackO.into(),
+                Symbol::Typevariable,
+                SpecialChar::DoubleColon.into(),
+                SpecialChar::Comma.into(),
+                Symbol::sub(Symbol::Type, 2),
+                SpecialChar::BrackC.into(),
+            ]
+        };
+
+        let prems_bounded = vec![
+            ConclusionRule {
+                env: SpecialChar::Gamma.into(),
+                input: Symbol::Term,
+                separator: SpecialChar::Colon.into(),
+                output: vec![
+                    Symbol::sub(Symbol::Type, 2),
+                    SpecialChar::SqBrackO.into(),
+                    Symbol::Typevariable,
+                    SpecialChar::Arrow.into(),
+                    Symbol::sub(Symbol::Type, 1),
+                ]
+                .into(),
+            },
+            ConclusionRule {
+                env: SpecialChar::Gamma.into(),
+                input: Symbol::sub(Symbol::Type, 1),
+                separator: SpecialChar::LessColon.into(),
+                output: Symbol::sub(Symbol::Type, 3),
+            },
+        ];
+        let prems_unbounded = vec![ConclusionRule {
+            env: SpecialChar::Gamma.into(),
+            input: Symbol::Term,
+            separator: SpecialChar::Colon.into(),
+            output: vec![
+                Symbol::sub(Symbol::Type, 2),
+                SpecialChar::SqBrackO.into(),
+                Symbol::Typevariable,
+                SpecialChar::Arrow.into(),
+                Symbol::sub(Symbol::Type, 1),
+                SpecialChar::SqBrackO.into(),
+            ]
+            .into(),
+        }];
+        DerivationRule {
+            premises: if bounded {
+                prems_bounded
+            } else {
+                prems_unbounded
+            },
+            label: format!("T-Pack{}", if bounded { "<:" } else { "" }),
+            conclusion: ConclusionRule {
+                env: SpecialChar::Gamma.into(),
+                input: vec![
+                    SpecialChar::BrackO.into(),
+                    SpecialChar::Star.into(),
+                    Symbol::sub(Symbol::Type, 1),
+                    Symbol::Term,
+                    SpecialChar::BrackC.into(),
+                    Keyword::As.into(),
+                    ex_type.clone().into(),
+                ]
+                .into(),
+                separator: SpecialChar::Colon.into(),
+                output: ex_type.into(),
+            },
+        }
+    }
+
+    /// Derivation Rule for checking unpack terms
+    /// if bounded
+    /// Gamma |-> Term1 : Exists TypeVar<:Type3.Type2
+    /// Gamma, TypeVar<:Type3,Var:Type2 |-> Term2: Type1
+    /// -------------------------------------------------
+    /// Gamma |-> Let {TypeVar,Var} = Term1 in Term2 : Type1
+    ///
+    /// otherwise
+    /// Gamma |-> Term1 : Exists TypeVar::Kind.Type2
+    /// Gamma, TypeVar::Kind,Var:Type2 |-> Term2: Type1
+    /// -------------------------------------------------
+    /// Gamma |-> Let {TypeVar,Var} = Term1 in Term2 : Type1
+    pub fn check_unpack(bounded: bool) -> DerivationRule {
+        let ty_var = if bounded {
+            vec![
+                Symbol::Typevariable,
+                SpecialChar::LessColon.into(),
+                Symbol::sub(Symbol::Type, 3),
+            ]
+        } else {
+            vec![
+                Symbol::Typevariable,
+                SpecialChar::DoubleColon.into(),
+                Symbol::Kind,
+            ]
+        };
+        let prem_bound = ConclusionRule {
+            env: SpecialChar::Gamma.into(),
+            input: Symbol::sub(Symbol::Term, 1),
+            separator: SpecialChar::Colon.into(),
+            output: vec![
+                SpecialChar::Exists.into(),
+                ty_var.clone().into(),
+                SpecialChar::Dot.into(),
+                Symbol::sub(Symbol::Type, 2),
+            ]
+            .into(),
+        };
+        let prem_in = ConclusionRule {
+            env: vec![
+                SpecialChar::Gamma.into(),
+                SpecialChar::Comma.into(),
+                ty_var.into(),
+            ]
+            .into(),
+            input: Symbol::sub(Symbol::Term, 2),
+            separator: SpecialChar::Colon.into(),
+            output: Symbol::sub(Symbol::Type, 1),
+        };
+        DerivationRule {
+            premises: vec![prem_bound, prem_in],
+            label: format!("T-Unpack{}", if bounded { "<:" } else { "" }),
+            conclusion: ConclusionRule {
+                env: SpecialChar::Gamma.into(),
+                input: vec![
+                    Keyword::Let.into(),
+                    SpecialChar::BrackO.into(),
+                    Symbol::Typevariable,
+                    SpecialChar::Comma.into(),
+                    Symbol::Variable,
+                    SpecialChar::BrackC.into(),
+                    SpecialChar::Equals.into(),
+                    Symbol::sub(Symbol::Term, 1),
+                    Keyword::In.into(),
+                    Symbol::sub(Symbol::Term, 2),
+                ]
+                .into(),
+                separator: SpecialChar::Colon.into(),
+                output: Symbol::sub(Symbol::Type, 1),
+            },
+        }
+    }
+
+    /// Derivation rule for checking pairs
+    /// Gamma |-> Term1 : Type1
+    /// Gamma |-> Term2 : Type2
+    /// ----------------------------------
+    /// Gamma |-> {Term1,Term2} : Type1 x Type2
+    pub fn check_pair() -> DerivationRule {
+        DerivationRule {
+            premises: vec![
+                ConclusionRule {
+                    env: SpecialChar::Gamma.into(),
+                    input: Symbol::sub(Symbol::Term, 1),
+                    separator: SpecialChar::Colon.into(),
+                    output: Symbol::sub(Symbol::Type, 2),
+                },
+                ConclusionRule {
+                    env: SpecialChar::Gamma.into(),
+                    input: Symbol::sub(Symbol::Term, 2),
+                    separator: SpecialChar::Colon.into(),
+                    output: Symbol::sub(Symbol::Type, 2),
+                },
+            ],
+            label: "T-Pair".to_owned(),
+            conclusion: ConclusionRule {
+                env: SpecialChar::Gamma.into(),
+                input: vec![
+                    SpecialChar::BrackO.into(),
+                    Symbol::sub(Symbol::Term, 1),
+                    SpecialChar::Comma.into(),
+                    Symbol::sub(Symbol::Term, 2),
+                    SpecialChar::BrackC.into(),
+                ]
+                .into(),
+                separator: SpecialChar::Colon.into(),
+                output: vec![
+                    Symbol::sub(Symbol::Type, 1),
+                    SpecialChar::Times.into(),
+                    Symbol::sub(Symbol::Type, 2),
+                ]
+                .into(),
+            },
+        }
+    }
+
+    /// Derivation rule for checking record terms
+    /// Gamma |-> Label_i : Type_i
+    /// ----------------------------------
+    /// Gamma |-> { Label_i = Term_i,... } : { Label_i : Type_i }
+    pub fn check_record() -> DerivationRule {
+        DerivationRule {
+            premises: vec![ConclusionRule {
+                env: SpecialChar::Gamma.into(),
+                input: Symbol::sub(Symbol::Label, "i"),
+                separator: SpecialChar::Colon.into(),
+                output: Symbol::sub(Symbol::Type, "i"),
+            }],
+            label: "T-Record".to_owned(),
+            conclusion: ConclusionRule {
+                env: SpecialChar::Gamma.into(),
+                input: vec![
+                    SpecialChar::BrackO.into(),
+                    Symbol::many(vec![
+                        Symbol::sub(Symbol::Label, "i"),
+                        SpecialChar::Equals.into(),
+                        Symbol::sub(Symbol::Term, "i"),
+                    ]),
+                    SpecialChar::BrackC.into(),
+                ]
+                .into(),
+                separator: SpecialChar::Colon.into(),
+                output: vec![
+                    SpecialChar::BrackO.into(),
+                    Symbol::many(vec![
+                        Symbol::sub(Symbol::Label, "i"),
+                        SpecialChar::Colon.into(),
+                        Symbol::sub(Symbol::Type, "i"),
+                    ]),
+                    SpecialChar::BrackC.into(),
+                ]
+                .into(),
+            },
+        }
+    }
+
+    /// Derivation Rule for checking list case
+    /// Gamma |-> Term1: List[Type1]
+    /// Gamma |-> Term2: Type2
+    /// Gamma,Var1:Type1,Var2:List[Type2] |-> Term3: Type2
+    /// ----------------------------------------------------------
+    /// Gamma |-> case Term1 of { Nil => Term2 | Cons(Var1,Var2) => Term3 } : Type2
+    pub fn check_listcase() -> DerivationRule {
+        let prem_bound = ConclusionRule {
+            env: SpecialChar::Gamma.into(),
+            input: Symbol::sub(Symbol::Term, 1),
+            separator: SpecialChar::Colon.into(),
+            output: vec![
+                Keyword::List.into(),
+                SpecialChar::SqBrackO.into(),
+                Symbol::sub(Symbol::Type, 1),
+                SpecialChar::SqBrackC.into(),
+            ]
+            .into(),
+        };
+        let prem_nil = ConclusionRule {
+            env: SpecialChar::Gamma.into(),
+            input: Symbol::sub(Symbol::Term, 2),
+            separator: SpecialChar::Colon.into(),
+            output: Symbol::sub(Symbol::Type, 2),
+        };
+        let prem_cons = ConclusionRule {
+            env: vec![
+                SpecialChar::Gamma.into(),
+                SpecialChar::Comma.into(),
+                Symbol::sub(Symbol::Variable, 1),
+                SpecialChar::Colon.into(),
+                Symbol::sub(Symbol::Type, 1),
+                SpecialChar::Comma.into(),
+                Symbol::sub(Symbol::Variable, 2),
+                SpecialChar::Colon.into(),
+                Keyword::List.into(),
+                SpecialChar::SqBrackO.into(),
+                Symbol::sub(Symbol::Type, 2),
+                SpecialChar::SqBrackC.into(),
+            ]
+            .into(),
+            input: Symbol::sub(Symbol::Term, 2),
+            separator: SpecialChar::Colon.into(),
+            output: Symbol::sub(Symbol::Type, 2),
+        };
+        let conc = ConclusionRule {
+            env: SpecialChar::Gamma.into(),
+            input: vec![
+                Keyword::Case.into(),
+                Symbol::sub(Symbol::Term, 1),
+                Keyword::Of.into(),
+                SpecialChar::BrackO.into(),
+                Keyword::Nil.into(),
+                SpecialChar::DoubleArrow.into(),
+                Symbol::sub(Symbol::Term, 2),
+                SpecialChar::Pipe.into(),
+                Keyword::Cons.into(),
+                SpecialChar::ParenO.into(),
+                Symbol::sub(Symbol::Variable, 1),
+                SpecialChar::Comma.into(),
+                Symbol::sub(Symbol::Variable, 2),
+                SpecialChar::ParenC.into(),
+                SpecialChar::DoubleArrow.into(),
+                Symbol::sub(Symbol::Term, 3),
+                SpecialChar::BrackC.into(),
+            ]
+            .into(),
+            separator: SpecialChar::Colon.into(),
+            output: Symbol::sub(Symbol::Type, 2),
+        };
+        DerivationRule {
+            premises: vec![prem_bound, prem_nil, prem_cons],
+            label: "T-ListCase".to_owned(),
+            conclusion: conc,
+        }
+    }
+    /// Derivation rule for cases of something
+    /// Gamma |-> Term1 : Optional[Type1]
+    /// Gamma |-> Term2 : Type2
+    /// Gamma,Variable:Type1 |-> Term3 : Type2
+    /// Gamma |-> case Term1 of { Nothing => Term2 | Something(Variable) => Term3 } : Type2
+    pub fn check_somecase() -> DerivationRule {
+        let prem_bound = ConclusionRule {
+            env: SpecialChar::Gamma.into(),
+            input: Symbol::sub(Symbol::Term, 1),
+            separator: SpecialChar::Colon.into(),
+            output: vec![
+                Keyword::Optional.into(),
+                SpecialChar::SqBrackO.into(),
+                Symbol::sub(Symbol::Type, 1),
+                SpecialChar::SqBrackC.into(),
+            ]
+            .into(),
+        };
+        let prem_nothing = ConclusionRule {
+            env: SpecialChar::Gamma.into(),
+            input: Symbol::sub(Symbol::Term, 2),
+            separator: SpecialChar::Colon.into(),
+            output: Symbol::sub(Symbol::Type, 2),
+        };
+        let prem_something = ConclusionRule {
+            env: vec![
+                SpecialChar::Gamma.into(),
+                SpecialChar::Comma.into(),
+                Symbol::Variable,
+                SpecialChar::Comma.into(),
+                Symbol::sub(Symbol::Type, 1),
+            ]
+            .into(),
+            input: Symbol::sub(Symbol::Term, 3),
+            separator: SpecialChar::Colon.into(),
+            output: Symbol::sub(Symbol::Type, 2),
+        };
+        let conclusion = ConclusionRule {
+            env: SpecialChar::Gamma.into(),
+            input: vec![
+                Keyword::Case.into(),
+                Symbol::sub(Symbol::Term, 1),
+                Keyword::Of.into(),
+                SpecialChar::BrackO.into(),
+                Keyword::Nothing.into(),
+                SpecialChar::DoubleArrow.into(),
+                Symbol::sub(Symbol::Term, 2),
+                SpecialChar::Pipe.into(),
+                Keyword::Something.into(),
+                SpecialChar::ParenO.into(),
+                Symbol::Variable,
+                SpecialChar::ParenC.into(),
+                SpecialChar::DoubleArrow.into(),
+                Symbol::sub(Symbol::Term, 3),
+                SpecialChar::BrackC.into(),
+            ]
+            .into(),
+            separator: SpecialChar::Colon.into(),
+            output: Symbol::sub(Symbol::Type, 2),
+        };
+        DerivationRule {
+            premises: vec![prem_bound, prem_nothing, prem_something],
+            label: "T-SomeCase".to_owned(),
+            conclusion,
+        }
+    }
+
+    /// Derivation Rule for checking cases of sum types
+    /// Gamma |-> Term1: Type1 + Type2
+    /// Gamma,Variable1:Type1 |-> Term2 : Type3
+    /// Gamma, Variable2:Type2 |-> Term3: Type3
+    /// ------------------------------------------
+    /// Gamma |-> case Term1 of { inl(Variable1) => Term2 | inr(Variable2) => Term3 } : Type3
+    pub fn check_sumcase() -> DerivationRule {
+        let prem_bound = ConclusionRule {
+            env: SpecialChar::Gamma.into(),
+            input: Symbol::sub(Symbol::Term, 1),
+            separator: SpecialChar::Colon.into(),
+            output: vec![
+                Symbol::sub(Symbol::Type, 1),
+                SpecialChar::Plus.into(),
+                Symbol::sub(Symbol::Type, 2),
+            ]
+            .into(),
+        };
+        let prem_left = ConclusionRule {
+            env: vec![
+                SpecialChar::Gamma.into(),
+                SpecialChar::Comma.into(),
+                Symbol::sub(Symbol::Variable, 1),
+                SpecialChar::Colon.into(),
+                Symbol::sub(Symbol::Type, 1),
+            ]
+            .into(),
+            input: Symbol::sub(Symbol::Term, 2),
+            separator: SpecialChar::Colon.into(),
+            output: Symbol::sub(Symbol::Type, 3),
+        };
+        let prem_right = ConclusionRule {
+            env: vec![
+                SpecialChar::Gamma.into(),
+                SpecialChar::Comma.into(),
+                Symbol::sub(Symbol::Variable, 2),
+                Symbol::sub(Symbol::Type, 2),
+            ]
+            .into(),
+            input: Symbol::sub(Symbol::Term, 3),
+            separator: SpecialChar::Colon.into(),
+            output: Symbol::sub(Symbol::Type, 3),
+        };
+        let conclusion = ConclusionRule {
+            env: SpecialChar::Gamma.into(),
+            input: vec![
+                Keyword::Case.into(),
+                Symbol::sub(Symbol::Term, 1),
+                Keyword::Of.into(),
+                SpecialChar::BrackO.into(),
+                Keyword::Left.into(),
+                SpecialChar::ParenO.into(),
+                Symbol::sub(Symbol::Variable, 1),
+                SpecialChar::DoubleArrow.into(),
+                Symbol::sub(Symbol::Term, 2),
+                SpecialChar::Pipe.into(),
+                Keyword::Right.into(),
+                SpecialChar::ParenO.into(),
+                Symbol::sub(Symbol::Variable, 2),
+                SpecialChar::DoubleArrow.into(),
+                Symbol::sub(Symbol::Term, 3),
+                SpecialChar::BrackC.into(),
+            ]
+            .into(),
+            separator: SpecialChar::Colon.into(),
+            output: Symbol::sub(Symbol::Type, 3),
+        };
+        DerivationRule {
+            premises: vec![prem_bound, prem_left, prem_right],
+            label: "T-SumCase".to_owned(),
+            conclusion,
+        }
+    }
+
+    ///Derivation rule for checking variant cases
+    /// Gamma |-> Term : <Label_i:Term_i>
+    /// Gamma |-> Term_k: Type
+    /// ------------------------
+    /// Gamma |-> case <Label_k=Term> of { Label_i => Term_i, ... } : Type
+    pub fn check_variantcase() -> DerivationRule {
+        let prem_bound = ConclusionRule {
+            env: SpecialChar::Gamma.into(),
+            input: Symbol::Term,
+            separator: SpecialChar::Colon.into(),
+            output: vec![
+                SpecialChar::AngBrackO.into(),
+                Symbol::many(vec![
+                    Symbol::sub(Symbol::Label, "i"),
+                    SpecialChar::Colon.into(),
+                    Symbol::sub(Symbol::Term, "i"),
+                ]),
+                SpecialChar::AngBrackC.into(),
+            ]
+            .into(),
+        };
+        let prem_rhs = ConclusionRule {
+            env: SpecialChar::Gamma.into(),
+            input: Symbol::sub(Symbol::Term, "k"),
+            separator: SpecialChar::Colon.into(),
+            output: Symbol::Type,
+        };
+        let conclusion = ConclusionRule {
+            env: SpecialChar::Gamma.into(),
+            input: vec![
+                Keyword::Case.into(),
+                SpecialChar::AngBrackO.into(),
+                Symbol::sub(Symbol::Label, "k"),
+                SpecialChar::Equals.into(),
+                Symbol::Term,
+                SpecialChar::AngBrackC.into(),
+                Keyword::Of.into(),
+                SpecialChar::BrackO.into(),
+                Symbol::many(vec![
+                    Symbol::sub(Symbol::Label, "i"),
+                    SpecialChar::DoubleArrow.into(),
+                    Symbol::sub(Symbol::Term, "i"),
+                ]),
+                SpecialChar::BrackC.into(),
+            ]
+            .into(),
+            separator: SpecialChar::Colon.into(),
+            output: Symbol::Type,
+        };
+        DerivationRule {
+            premises: vec![prem_bound, prem_rhs],
+            label: "T-VariantCase".to_owned(),
+            conclusion,
+        }
+    }
+
+    /// Derivation Rule for checking try terms (either with error or try catch
+    /// with catch
+    ///Gamma |-> Term1: Type
+    /// Gamma |-> Term2: Type2
+    /// Gamma |-> try Term1 catch Term2 : Type
+    ///otherwise
+    /// Gamma |-> Term1: Type
+    /// Gamma |-> Term2: Type
+    /// Gamma |-> try Term1 with Term2 : Type
+    pub fn check_tryt(catch: bool) -> DerivationRule {
+        DerivationRule {
+            premises: vec![
+                ConclusionRule {
+                    env: SpecialChar::Gamma.into(),
+                    input: Symbol::sub(Symbol::Term, 1),
+                    separator: SpecialChar::Colon.into(),
+                    output: Symbol::Type,
+                },
+                ConclusionRule {
+                    env: SpecialChar::Gamma.into(),
+                    input: Symbol::sub(Symbol::Term, 2),
+                    separator: SpecialChar::Colon.into(),
+                    output: if catch {
+                        Symbol::sub(Symbol::Type, "exn")
+                    } else {
+                        Symbol::Type
+                    },
+                },
+            ],
+            label: "T-Try".to_owned(),
+            conclusion: ConclusionRule {
+                env: SpecialChar::Gamma.into(),
+                input: vec![
+                    Keyword::Try.into(),
+                    Symbol::sub(Symbol::Term, 1),
+                    if catch {
+                        Keyword::Catch.into()
+                    } else {
+                        Keyword::With.into()
+                    },
+                    Symbol::sub(Symbol::Term, 2),
+                ]
+                .into(),
+                separator: SpecialChar::Colon.into(),
+                output: Symbol::Type,
+            },
+        }
+    }
+
+    /// Derivation rule for checking tuples
+    /// Gamma |-> Term_i : Type_i
+    /// ---------------------------
+    /// Gamma |-> ( Term1,...) : (Type1,....)
+    pub fn check_tuple() -> DerivationRule {
+        DerivationRule {
+            premises: vec![ConclusionRule {
+                env: SpecialChar::Gamma.into(),
+                input: Symbol::sub(Symbol::Term, "i"),
+                separator: SpecialChar::Colon.into(),
+                output: Symbol::sub(Symbol::Type, "i"),
+            }],
+            label: "T-Tup".to_owned(),
+            conclusion: ConclusionRule {
+                env: SpecialChar::Gamma.into(),
+                input: vec![
+                    SpecialChar::ParenO.into(),
+                    Symbol::many(Symbol::sub(Symbol::Term, "i")),
+                    SpecialChar::ParenC.into(),
+                ]
+                .into(),
+                separator: SpecialChar::Colon.into(),
+                output: vec![
+                    SpecialChar::ParenO.into(),
+                    Symbol::many(Symbol::sub(Symbol::Type, "i")),
+                    SpecialChar::ParenC.into(),
+                ]
+                .into(),
+            },
+        }
+    }
+
+    /// Derivation rule for checking type applications
+    /// if bounded
+    /// Gamma |-> Term: forall TypeVar<:Type3.Type2
+    /// Gamma |-> Type1 <: Type2
+    /// ----------------------------------------------
+    /// Gamma |-> Term [Type1] : Type2[TypeVar -> Type1]
+    ///
+    /// otherwise
+    /// Gamma |-> Term : forall TypeVar::Kind.Type2
+    /// ------------------------------------------
+    /// Gamma |-> Term [Type1] : Type2[TypeVar -> Type1]
+    pub fn check_ty_app(bounded: bool) -> DerivationRule {
+        let premises = if bounded {
+            vec![
+                ConclusionRule {
+                    env: SpecialChar::Gamma.into(),
+                    input: Symbol::Term,
+                    separator: SpecialChar::Colon.into(),
+                    output: vec![
+                        SpecialChar::Forall.into(),
+                        Symbol::Typevariable,
+                        SpecialChar::LessColon.into(),
+                        Symbol::sub(Symbol::Type, 3),
+                        SpecialChar::Dot.into(),
+                        Symbol::sub(Symbol::Type, 2),
+                    ]
+                    .into(),
+                },
+                ConclusionRule {
+                    env: SpecialChar::Gamma.into(),
+                    input: Symbol::sub(Symbol::Type, 1),
+                    separator: SpecialChar::LessColon.into(),
+                    output: Symbol::sub(Symbol::Type, 2),
+                },
+            ]
+        } else {
+            vec![ConclusionRule {
+                env: SpecialChar::Gamma.into(),
+                input: Symbol::Term,
+                separator: SpecialChar::Colon.into(),
+                output: vec![
+                    SpecialChar::Forall.into(),
+                    Symbol::Typevariable,
+                    SpecialChar::DoubleColon.into(),
+                    Symbol::Kind,
+                    SpecialChar::Dot.into(),
+                    Symbol::sub(Symbol::Type, 2),
+                ]
+                .into(),
+            }]
+        };
+        let conclusion = ConclusionRule {
+            env: SpecialChar::Gamma.into(),
+            input: vec![
+                Symbol::Term,
+                SpecialChar::SqBrackO.into(),
+                Symbol::sub(Symbol::Type, 1),
+                SpecialChar::SqBrackC.into(),
+            ]
+            .into(),
+            separator: SpecialChar::Colon.into(),
+            output: vec![
+                Symbol::sub(Symbol::Type, 2),
+                SpecialChar::SqBrackO.into(),
+                Symbol::Typevariable,
+                SpecialChar::Arrow.into(),
+                Symbol::sub(Symbol::Type, 1),
+                SpecialChar::SqBrackC.into(),
+            ]
+            .into(),
+        };
+        DerivationRule {
+            premises,
+            label: format!("T-TyApp{}", if bounded { "<:" } else { "" }),
+            conclusion,
+        }
+    }
+
+    /// derivation rule checking type abstractions
+    /// if bounded
+    /// Gamma,TypeVar<:Type2 |-> Term: Type
+    /// ------------------------------------
+    /// Gamma |-> Lambda TypeVar <: Type2. Term : Forall TypeVar<:Type2.Type
+    ///
+    /// otherwise
+    /// Gamma, TypeVar::Kind |-> Term:Type
+    /// --------------------------------------
+    /// Gamma |-> Lambda TypeVar::Kind.Term : Forall TypeVar::Kind.Type
+    pub fn check_ty_lambda(bounded: bool) -> DerivationRule {
+        let prem_env = if bounded {
+            vec![
+                SpecialChar::Gamma.into(),
+                SpecialChar::Comma.into(),
+                Symbol::Typevariable,
+                SpecialChar::LessColon.into(),
+                Symbol::sub(Symbol::Type, 2),
+            ]
+        } else {
+            vec![
+                SpecialChar::Gamma.into(),
+                SpecialChar::Comma.into(),
+                Symbol::Typevariable,
+                SpecialChar::DoubleColon.into(),
+                Symbol::Kind,
+            ]
+        };
+        let ty_var = if bounded {
+            vec![
+                Symbol::Typevariable,
+                SpecialChar::LessColon.into(),
+                Symbol::sub(Symbol::Type, 2),
+            ]
+        } else {
+            vec![
+                Symbol::Typevariable,
+                SpecialChar::DoubleColon.into(),
+                Symbol::Kind,
+            ]
+        };
+        DerivationRule {
+            premises: vec![ConclusionRule {
+                env: prem_env.into(),
+                input: Symbol::Term,
+                separator: SpecialChar::Colon.into(),
+                output: Symbol::Type,
+            }],
+            label: format!("T-TyLam{}", if bounded { "<:" } else { "" }),
+            conclusion: ConclusionRule {
+                env: SpecialChar::Gamma.into(),
+                input: vec![
+                    SpecialChar::Lambda.into(),
+                    ty_var.clone().into(),
+                    SpecialChar::Dot.into(),
+                    Symbol::Term,
+                ]
+                .into(),
+                separator: SpecialChar::Colon.into(),
+                output: vec![
+                    SpecialChar::Forall.into(),
+                    ty_var.into(),
+                    SpecialChar::Dot.into(),
+                    Symbol::Type,
+                ]
+                .into(),
+            },
+        }
+    }
+
+    /// Derivation Rule for checking unfold terms
+    /// Gamma |-> Term : mu Typevariable.Type
+    /// --------
+    /// Gamma |-> unfold [mu Typevariable.Type] Term : Type[Typevariable -> Type]
+    pub fn check_unfold() -> DerivationRule {
+        let mu_ty = vec![
+            SpecialChar::Mu.into(),
+            Symbol::Typevariable,
+            SpecialChar::Dot.into(),
+            Symbol::Type,
+        ];
+        DerivationRule {
+            premises: vec![ConclusionRule {
+                env: SpecialChar::Gamma.into(),
+                input: Symbol::Term,
+                separator: SpecialChar::Colon.into(),
+                output: mu_ty.clone().into(),
+            }],
+            label: "T-Unfold".to_owned(),
+            conclusion: ConclusionRule {
+                env: SpecialChar::Gamma.into(),
+                input: vec![
+                    Keyword::Unfold.into(),
+                    SpecialChar::SqBrackO.into(),
+                    mu_ty.into(),
+                    SpecialChar::SqBrackC.into(),
+                    Symbol::Term,
+                ]
+                .into(),
+                separator: SpecialChar::Colon.into(),
+                output: vec![
+                    Symbol::Type,
+                    SpecialChar::SqBrackO.into(),
+                    Symbol::Typevariable,
+                    SpecialChar::Arrow.into(),
+                    Symbol::Type,
+                ]
+                .into(),
+            },
+        }
+    }
+
+    /// Derivation rule for checking terms with exactly one (simple) premise
+    /// Gamma |-> Term:ty_prem
+    /// ------------------
+    /// Gamma |-> term:ty_res
+    pub fn check_cong<S1, S2, S3>(term: S1, ty_res: S2, ty_prem: S3, lb: &str) -> DerivationRule
+    where
+        S1: Into<Symbol>,
+        S2: Into<Symbol>,
+        S3: Into<Symbol>,
+    {
+        DerivationRule {
+            premises: vec![ConclusionRule {
+                env: SpecialChar::Gamma.into(),
+                input: Symbol::Term,
+                separator: SpecialChar::Colon.into(),
+                output: ty_prem.into(),
+            }],
+            label: lb.to_owned(),
+            conclusion: ConclusionRule {
+                env: SpecialChar::Gamma.into(),
+                input: term.into(),
+                separator: SpecialChar::Colon.into(),
+                output: ty_res.into(),
+            },
+        }
+    }
+
+    /// Derivation rule for checking terms with no premises
+    ///
+    /// ------------------
+    /// Gamma |-> term : ty
+    pub fn check_const<S1, S2>(term: S1, ty: S2, lb: &str) -> DerivationRule
+    where
+        S1: Into<Symbol>,
+        S2: Into<Symbol>,
+    {
+        DerivationRule {
+            premises: vec![],
+            label: lb.to_owned(),
+            conclusion: ConclusionRule {
+                env: SpecialChar::Gamma.into(),
+                input: term.into(),
+                separator: SpecialChar::Colon.into(),
+                output: ty.into(),
+            },
+        }
+    }
+
+    /// derivation rule for reflexive subtyping
     ///
     /// --------------------
     /// Gamma |-> Type<:Type

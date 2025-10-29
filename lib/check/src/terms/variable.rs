@@ -1,6 +1,8 @@
 use crate::Typecheck;
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
+use grammar::{DerivationRule, Symbol};
+use std::collections::HashSet;
 use syntax::{env::Environment, language::Language, terms::Variable};
 
 impl<Lang> Typecheck for Variable<Lang>
@@ -16,5 +18,9 @@ where
         let conc = TypingConclusion::new(env.clone(), self.clone(), ty);
         let deriv = TypingDerivation::var(conc);
         Ok(deriv.into())
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([DerivationRule::check_env(Symbol::Variable)])
     }
 }

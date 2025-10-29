@@ -1,7 +1,11 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
-use errors::UndefinedLabel;
-use errors::check_error::CheckError;
+use errors::{UndefinedLabel, check_error::CheckError};
+use grammar::{
+    DerivationRule,
+    symbols::{Keyword, SpecialChar, Symbol},
+};
+use std::collections::HashSet;
 use syntax::{
     env::Environment,
     language::Language,
@@ -62,5 +66,30 @@ where
         let conc = TypingConclusion::new(env, self.clone(), ty_norm);
         let deriv = TypingDerivation::variant(conc, term_res);
         Ok(deriv.into())
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        // <Label_k = Term> as <Label_i=Type_i,...>
+        let term = vec![
+            SpecialChar::AngBrackO.into(),
+            Symbol::sub(Symbol::Label, "k"),
+            SpecialChar::Equals.into(),
+            Symbol::Term,
+            SpecialChar::AngBrackC.into(),
+            Keyword::As.into(),
+            SpecialChar::AngBrackO.into(),
+            Symbol::many(vec![
+                Symbol::sub(Symbol::Label, "i"),
+                SpecialChar::Colon.into(),
+                Symbol::sub(Symbol::Type, "i"),
+            ]),
+            SpecialChar::AngBrackC.into(),
+        ];
+        HashSet::from([DerivationRule::check_cong(
+            term,
+            Symbol::Type,
+            Symbol::sub(Symbol::Type, "k"),
+            "T-Variant",
+        )])
     }
 }

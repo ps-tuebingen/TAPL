@@ -1,7 +1,11 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
-use std::rc::Rc;
+use grammar::{
+    DerivationRule,
+    symbols::{Keyword, SpecialChar, Symbol},
+};
+use std::{collections::HashSet, rc::Rc};
 use syntax::{env::Environment, language::Language, terms::Fst, types::TypeGroup};
 
 impl<Lang> Typecheck for Fst<Lang>
@@ -42,5 +46,18 @@ where
         let conc = TypingConclusion::new(env, self.clone(), Rc::unwrap_or_clone(prod.fst));
         let deriv = TypingDerivation::fst(conc, premises);
         Ok(deriv.into())
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([DerivationRule::check_cong(
+            vec![Symbol::Term, SpecialChar::Dot.into(), Keyword::Fst.into()],
+            Symbol::sub(Symbol::Type, 1),
+            vec![
+                Symbol::sub(Symbol::Type, 1),
+                SpecialChar::Times.into(),
+                Symbol::sub(Symbol::Type, 2),
+            ],
+            "T-Fst",
+        )])
     }
 }

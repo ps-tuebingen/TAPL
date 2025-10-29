@@ -1,7 +1,8 @@
 use crate::{Kindcheck, Normalize, Subtypecheck, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::{TypeMismatch, check_error::CheckError};
-use std::rc::Rc;
+use grammar::DerivationRule;
+use std::{collections::HashSet, rc::Rc};
 use syntax::{
     env::Environment, language::Language, subst::SubstType, terms::TyApp, types::TypeGroup,
 };
@@ -65,5 +66,10 @@ where
         } else {
             Err(TypeMismatch::new(fun_norm.to_string(), "Universal Type".to_owned()).into())
         }
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        let features = Lang::features();
+        HashSet::from([DerivationRule::check_ty_app(features.subtyped)])
     }
 }

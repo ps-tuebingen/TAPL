@@ -1,6 +1,11 @@
 use crate::Typecheck;
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
+use grammar::{
+    DerivationRule,
+    symbols::{Keyword, SpecialChar},
+};
+use std::collections::HashSet;
 use syntax::{env::Environment, language::Language, terms::Num, types::Nat};
 
 impl<Lang> Typecheck for Num<Lang>
@@ -15,5 +20,13 @@ where
     fn check(&self, env: Environment<Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
         let conc = TypingConclusion::new(env.clone(), self.clone(), Nat::new());
         Ok(TypingDerivation::num(conc).into())
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([DerivationRule::check_const(
+            SpecialChar::Number,
+            Keyword::Nat,
+            "T-Nat",
+        )])
     }
 }

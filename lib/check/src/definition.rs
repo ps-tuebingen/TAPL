@@ -1,6 +1,8 @@
 use crate::Typecheck;
 use derivations::{DefinitionDerivation, Derivation};
 use errors::check_error::CheckError;
+use grammar::DerivationRule;
+use std::collections::HashSet;
 use syntax::{definition::Definition, env::Environment, language::Language, types::TypeGroup};
 
 impl<Lang> Typecheck for Definition<Lang>
@@ -14,5 +16,9 @@ where
         let body_ty = body_res.ret_ty();
         self.annot.check_equal(&body_ty)?;
         Ok(DefinitionDerivation::new(&self.name, body_res.into_ty()?).into())
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        <Lang::Term as Typecheck>::rules()
     }
 }

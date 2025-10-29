@@ -1,6 +1,8 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
+use grammar::{DerivationRule, Symbol};
+use std::collections::HashSet;
 use syntax::{env::Environment, language::Language, terms::Loc, types::Reference};
 
 impl<Lang> Typecheck for Loc<Lang>
@@ -36,5 +38,9 @@ where
         let conc = TypingConclusion::new(env, self.clone(), Reference::new(loc_norm));
         let deriv = TypingDerivation::loc(conc, premises);
         Ok(deriv.into())
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([DerivationRule::check_env(Symbol::Location)])
     }
 }

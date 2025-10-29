@@ -1,7 +1,11 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
-use errors::IndexOutOfBounds;
-use errors::check_error::CheckError;
+use errors::{IndexOutOfBounds, check_error::CheckError};
+use grammar::{
+    DerivationRule,
+    symbols::{SpecialChar, Symbol},
+};
+use std::collections::HashSet;
 use syntax::{env::Environment, language::Language, terms::Projection, types::TypeGroup};
 
 impl<Lang> Typecheck for Projection<Lang>
@@ -46,5 +50,24 @@ where
         let conc = TypingConclusion::new(env, self.clone(), tup);
         let deriv = TypingDerivation::projection(conc, premises);
         Ok(deriv.into())
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([DerivationRule::check_cong(
+            vec![Symbol::Term, SpecialChar::Dot.into(), "n".into()],
+            Symbol::sub(Symbol::Type, "n"),
+            vec![
+                SpecialChar::ParenO.into(),
+                Symbol::sub(Symbol::Type, 1),
+                SpecialChar::Comma.into(),
+                SpecialChar::Ellipses.into(),
+                SpecialChar::Comma.into(),
+                Symbol::sub(Symbol::Type, "n"),
+                SpecialChar::Comma.into(),
+                SpecialChar::Ellipses.into(),
+                SpecialChar::ParenC.into(),
+            ],
+            "T-Proj".into(),
+        )])
     }
 }

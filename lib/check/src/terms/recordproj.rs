@@ -1,7 +1,11 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
-use errors::UndefinedLabel;
-use errors::check_error::CheckError;
+use errors::{UndefinedLabel, check_error::CheckError};
+use grammar::{
+    DerivationRule,
+    symbols::{SpecialChar, Symbol},
+};
+use std::collections::HashSet;
 use syntax::{env::Environment, language::Language, terms::RecordProj, types::TypeGroup};
 
 impl<Lang> Typecheck for RecordProj<Lang>
@@ -59,5 +63,26 @@ where
         let conc = TypingConclusion::new(env, self.clone(), ty);
         let deriv = TypingDerivation::recordproj(conc, premises);
         Ok(deriv.into())
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([DerivationRule::check_cong(
+            vec![
+                Symbol::Term,
+                SpecialChar::Dot.into(),
+                Symbol::sub(Symbol::Label, "i"),
+            ],
+            Symbol::sub(Symbol::Type, "i"),
+            vec![
+                SpecialChar::BrackO.into(),
+                Symbol::many(vec![
+                    Symbol::sub(Symbol::Label, "i"),
+                    SpecialChar::Colon.into(),
+                    Symbol::sub(Symbol::Type, "i"),
+                ]),
+                SpecialChar::BrackC.into(),
+            ],
+            "T-RecordProj",
+        )])
     }
 }

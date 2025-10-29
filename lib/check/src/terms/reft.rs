@@ -1,6 +1,11 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
+use grammar::{
+    DerivationRule,
+    symbols::{Keyword, SpecialChar, Symbol},
+};
+use std::collections::HashSet;
 use syntax::{env::Environment, language::Language, terms::Ref, types::Reference};
 
 impl<Lang> Typecheck for Ref<Lang>
@@ -39,5 +44,26 @@ where
         let conc = TypingConclusion::new(env, self.clone(), Reference::new(ty_norm));
         let deriv = TypingDerivation::reft(conc, premises);
         Ok(deriv.into())
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        let term = vec![
+            Keyword::Ref.into(),
+            SpecialChar::ParenO.into(),
+            Symbol::Term,
+            SpecialChar::ParenC.into(),
+        ];
+        let ty_res = vec![
+            Keyword::Ref.into(),
+            SpecialChar::SqBrackO.into(),
+            Symbol::Type,
+            SpecialChar::SqBrackC.into(),
+        ];
+        HashSet::from([DerivationRule::check_cong(
+            term,
+            ty_res,
+            Symbol::Type,
+            "T-Ref",
+        )])
     }
 }

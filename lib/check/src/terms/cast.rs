@@ -1,6 +1,11 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
+use grammar::{
+    DerivationRule,
+    symbols::{Keyword, Symbol},
+};
+use std::collections::HashSet;
 use syntax::{env::Environment, language::Language, terms::Cast, types::TypeGroup};
 
 impl<Lang> Typecheck for Cast<Lang>
@@ -44,5 +49,13 @@ where
         let conc = TypingConclusion::new(env, self.clone(), self_norm.clone());
         let deriv = TypingDerivation::cast(conc, premises);
         Ok(deriv.into())
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([DerivationRule::check_const(
+            vec![Symbol::Term, Keyword::As.into(), Symbol::Type],
+            Symbol::Type,
+            "T-Cast",
+        )])
     }
 }

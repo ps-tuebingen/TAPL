@@ -78,6 +78,6 @@ where
     }
 
     fn rules() -> HashSet<DerivationRule> {
-        todo!() //HashSet::from([DerivationRule::check_ap()])
+        HashSet::from([DerivationRule::check_ap()])
     }
 }

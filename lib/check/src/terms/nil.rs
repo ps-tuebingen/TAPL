@@ -1,6 +1,11 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
+use grammar::{
+    DerivationRule,
+    symbols::{Keyword, SpecialChar, Symbol},
+};
+use std::collections::HashSet;
 use syntax::{
     env::Environment,
     language::Language,
@@ -41,5 +46,23 @@ where
             TypingConclusion::new(env.clone(), self.clone(), List::new(ty_norm.clone()).into());
         let deriv = TypingDerivation::nil(conc, premises);
         Ok(deriv.into())
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([DerivationRule::check_const(
+            vec![
+                Keyword::Nil.into(),
+                SpecialChar::SqBrackO.into(),
+                Symbol::Type,
+                SpecialChar::SqBrackC.into(),
+            ],
+            vec![
+                Keyword::List.into(),
+                SpecialChar::SqBrackO.into(),
+                Symbol::Type,
+                SpecialChar::SqBrackC.into(),
+            ],
+            "T-Nil",
+        )])
     }
 }

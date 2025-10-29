@@ -1,6 +1,8 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
+use grammar::DerivationRule;
+use std::collections::HashSet;
 use syntax::{env::Environment, language::Language, terms::TyLambda, types::Forall};
 
 impl<Lang> Typecheck for TyLambda<Lang>
@@ -42,5 +44,10 @@ where
         let conc = TypingConclusion::new(env, self.clone(), ty);
         let deriv = TypingDerivation::tylambda(conc, premises);
         Ok(deriv.into())
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        let features = Lang::features();
+        HashSet::from([DerivationRule::check_ty_lambda(features.subtyped)])
     }
 }

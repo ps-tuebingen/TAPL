@@ -45,6 +45,7 @@ impl LatexFmt for Keyword {
             Keyword::Bool => format!("{env_start}\\text{{ Bool }} {env_end}"),
             Keyword::Case => format!("{env_start}\\text{{ case }} {env_end}"),
             Keyword::Of => format!("{env_start} \\text{{ of }} {env_end}"),
+            Keyword::With => format!("{env_start}\\text{{with}}{env_end}"),
         }
     }
 }

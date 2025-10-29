@@ -1,6 +1,11 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
+use grammar::{
+    DerivationRule,
+    symbols::{Keyword, SpecialChar, Symbol},
+};
+use std::collections::HashSet;
 use syntax::{env::Environment, language::Language, terms::Raise, types::TypeGroup};
 
 impl<Lang> Typecheck for Raise<Lang>
@@ -53,5 +58,22 @@ where
         let conc = TypingConclusion::new(env, self.clone(), cont_norm.clone());
         let deriv = TypingDerivation::raise(conc, premises);
         Ok(deriv.into())
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([DerivationRule::check_cong(
+            vec![
+                Keyword::Raise.into(),
+                SpecialChar::SqBrackO.into(),
+                Symbol::sub(Symbol::Type, "exn"),
+                SpecialChar::SqBrackC.into(),
+                SpecialChar::ParenO.into(),
+                Symbol::Term,
+                SpecialChar::ParenC.into(),
+            ],
+            Symbol::Type,
+            Symbol::sub(Symbol::Type, "exn"),
+            "T-Raise",
+        )])
     }
 }

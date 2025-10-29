@@ -1,6 +1,8 @@
 use crate::{Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
+use grammar::{DerivationRule, symbols::Keyword};
+use std::collections::HashSet;
 use syntax::{
     env::Environment,
     language::Language,
@@ -21,5 +23,13 @@ where
     fn check(&self, env: Environment<Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
         let conc = TypingConclusion::new(env.clone(), self.clone(), Bool::new());
         Ok(TypingDerivation::fls(conc).into())
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([DerivationRule::check_const(
+            Keyword::False,
+            Keyword::Bool,
+            "T-False",
+        )])
     }
 }

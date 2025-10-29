@@ -1,7 +1,8 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
-use std::collections::HashMap;
+use grammar::DerivationRule;
+use std::collections::{HashMap, HashSet};
 use syntax::{env::Environment, language::Language, terms::Record, types::Record as RecordTy};
 
 impl<Lang> Typecheck for Record<Lang>
@@ -53,5 +54,9 @@ where
         let conc = TypingConclusion::new(env, self.clone(), RecordTy::<Lang>::new(recs));
         let deriv = TypingDerivation::record(conc, premises);
         Ok(deriv.into())
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([DerivationRule::check_record()])
     }
 }

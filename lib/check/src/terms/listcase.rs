@@ -1,7 +1,8 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
-use std::rc::Rc;
+use grammar::DerivationRule;
+use std::{collections::HashSet, rc::Rc};
 use syntax::{env::Environment, language::Language, terms::ListCase, types::TypeGroup};
 
 impl<Lang> Typecheck for ListCase<Lang>
@@ -79,5 +80,9 @@ where
         let conc = TypingConclusion::new(env.clone(), self.clone(), cons_norm);
         let deriv = TypingDerivation::listcase(conc, premises);
         Ok(deriv.into())
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([DerivationRule::check_listcase()])
     }
 }

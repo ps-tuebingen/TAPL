@@ -1,7 +1,11 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
-use std::rc::Rc;
+use grammar::{
+    DerivationRule,
+    symbols::{Keyword, SpecialChar, Symbol},
+};
+use std::{collections::HashSet, rc::Rc};
 use syntax::{env::Environment, language::Language, terms::Tail, types::TypeGroup};
 
 impl<Lang> Typecheck for Tail<Lang>
@@ -40,5 +44,29 @@ where
         let conc = TypingConclusion::new(env, self.clone(), Rc::unwrap_or_clone(list_ty.ty));
         let deriv = TypingDerivation::tail(conc, premises);
         Ok(deriv.into())
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        let term = vec![
+            Keyword::Tail.into(),
+            SpecialChar::SqBrackO.into(),
+            Symbol::Type,
+            SpecialChar::SqBrackC.into(),
+            SpecialChar::ParenO.into(),
+            Symbol::Term,
+            SpecialChar::ParenC.into(),
+        ];
+        let list_ty = vec![
+            Keyword::List.into(),
+            SpecialChar::SqBrackO.into(),
+            Symbol::Type,
+            SpecialChar::SqBrackC.into(),
+        ];
+        HashSet::from([DerivationRule::check_cong(
+            term,
+            list_ty.clone(),
+            list_ty.clone(),
+            "T-Tail",
+        )])
     }
 }

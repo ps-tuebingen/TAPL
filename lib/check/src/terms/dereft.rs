@@ -1,7 +1,11 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
-use std::rc::Rc;
+use grammar::{
+    DerivationRule,
+    symbols::{Keyword, SpecialChar, Symbol},
+};
+use std::{collections::HashSet, rc::Rc};
 use syntax::{env::Environment, language::Language, terms::Deref, types::TypeGroup};
 
 impl<Lang> Typecheck for Deref<Lang>
@@ -42,5 +46,19 @@ where
         let deriv = TypingDerivation::deref(conc, premises);
 
         Ok(deriv.into())
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([DerivationRule::check_cong(
+            vec![SpecialChar::Exclamation.into(), Symbol::Term],
+            Symbol::Type,
+            vec![
+                Keyword::Ref.into(),
+                SpecialChar::SqBrackO.into(),
+                Symbol::Type,
+                SpecialChar::SqBrackC.into(),
+            ],
+            "T-Deref",
+        )])
     }
 }

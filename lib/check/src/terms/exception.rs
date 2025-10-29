@@ -1,6 +1,11 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
+use grammar::{
+    DerivationRule,
+    symbols::{Keyword, SpecialChar, Symbol},
+};
+use std::collections::HashSet;
 use syntax::{env::Environment, language::Language, terms::Exception, types::Type};
 
 impl<Lang> Typecheck for Exception<Lang>
@@ -32,5 +37,18 @@ where
         let conc = TypingConclusion::new(env.clone(), self.clone(), ty_norm);
         let deriv = TypingDerivation::exception(conc, premises);
         Ok(deriv.into())
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([DerivationRule::check_const(
+            vec![
+                Keyword::Err.into(),
+                SpecialChar::SqBrackO.into(),
+                Symbol::Type.into(),
+                SpecialChar::SqBrackC.into(),
+            ],
+            Symbol::Type,
+            "T-Error",
+        )])
     }
 }

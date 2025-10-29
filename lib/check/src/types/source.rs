@@ -3,7 +3,7 @@ use derivations::{Derivation, SubtypeDerivation};
 use errors::check_error::CheckError;
 use grammar::{
     DerivationRule,
-    symbols::{Keyword, SpecialChar, Symbol},
+    symbols::{Keyword, SpecialChar},
 };
 use std::collections::HashSet;
 use syntax::{

@@ -1,6 +1,8 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
+use grammar::DerivationRule;
+use std::collections::HashSet;
 use syntax::{env::Environment, language::Language, terms::If, types::TypeGroup};
 
 impl<Lang> Typecheck for If<Lang>
@@ -77,5 +79,9 @@ where
         let conc = TypingConclusion::new(env.clone(), self.clone(), then_norm);
         let deriv = TypingDerivation::ift(conc, premises);
         Ok(deriv.into())
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([DerivationRule::check_if()])
     }
 }

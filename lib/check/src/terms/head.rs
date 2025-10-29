@@ -1,7 +1,11 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
-use std::rc::Rc;
+use grammar::{
+    DerivationRule,
+    symbols::{Keyword, SpecialChar, Symbol},
+};
+use std::{collections::HashSet, rc::Rc};
 use syntax::{env::Environment, language::Language, terms::Head, types::TypeGroup};
 
 impl<Lang> Typecheck for Head<Lang>
@@ -42,5 +46,27 @@ where
             TypingConclusion::new(env.clone(), self.clone(), Rc::unwrap_or_clone(list_ty.ty));
         let deriv = TypingDerivation::head(conc, premises);
         Ok(deriv.into())
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([DerivationRule::check_cong(
+            vec![
+                Keyword::Head.into(),
+                SpecialChar::SqBrackO.into(),
+                Symbol::Type,
+                SpecialChar::SqBrackC.into(),
+                SpecialChar::ParenO.into(),
+                Symbol::Term,
+                SpecialChar::ParenC.into(),
+            ],
+            Symbol::Type,
+            vec![
+                Keyword::List.into(),
+                SpecialChar::SqBrackO.into(),
+                Symbol::Type,
+                SpecialChar::SqBrackC.into(),
+            ],
+            "T-Head",
+        )])
     }
 }

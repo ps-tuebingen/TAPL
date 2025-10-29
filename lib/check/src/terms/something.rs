@@ -1,6 +1,11 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
+use grammar::{
+    DerivationRule,
+    symbols::{Keyword, SpecialChar, Symbol},
+};
+use std::collections::HashSet;
 use syntax::{env::Environment, language::Language, terms::Something, types::Optional};
 
 impl<Lang> Typecheck for Something<Lang>
@@ -38,5 +43,26 @@ where
         let conc = TypingConclusion::new(env, self.clone(), Optional::new(ty_norm.clone()));
         let deriv = TypingDerivation::something(conc, premises);
         Ok(deriv.into())
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        let term = vec![
+            Keyword::Something.into(),
+            SpecialChar::ParenO.into(),
+            Symbol::Term,
+            SpecialChar::ParenC.into(),
+        ];
+        let ty_res = vec![
+            Keyword::Optional.into(),
+            SpecialChar::SqBrackO.into(),
+            Symbol::Type,
+            SpecialChar::SqBrackC.into(),
+        ];
+        HashSet::from([DerivationRule::check_cong(
+            term,
+            ty_res,
+            Symbol::Type,
+            "T-Something",
+        )])
     }
 }

@@ -1,6 +1,8 @@
 use crate::Typecheck;
 use derivations::{Derivation, ProgramDerivation};
 use errors::check_error::CheckError;
+use grammar::DerivationRule;
+use std::collections::HashSet;
 use syntax::{env::Environment, language::Language, program::Program};
 
 impl<Lang> Typecheck for Program<Lang>
@@ -22,5 +24,9 @@ where
 
         let main_res = self.main.check(env)?;
         Ok(ProgramDerivation::new(main_res.into_ty()?, derivs).into())
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        <Lang::Term as Typecheck>::rules()
     }
 }

@@ -1,8 +1,8 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
-use errors::check_error::CheckError;
-use errors::{NameMismatch, TypeMismatch};
-use std::rc::Rc;
+use errors::{NameMismatch, TypeMismatch, check_error::CheckError};
+use grammar::DerivationRule;
+use std::{collections::HashSet, rc::Rc};
 use syntax::{env::Environment, language::Language, terms::Unpack, types::TypeGroup};
 
 impl<Lang> Typecheck for Unpack<Lang>
@@ -87,5 +87,10 @@ where
         } else {
             Err(TypeMismatch::new(bound_norm.to_string(), "Existential Type".to_owned()).into())
         }
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        let features = Lang::features();
+        HashSet::from([DerivationRule::check_unpack(features.subtyped)])
     }
 }

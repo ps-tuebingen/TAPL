@@ -1,6 +1,11 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
+use grammar::{
+    DerivationRule,
+    symbols::{SpecialChar, Symbol},
+};
+use std::collections::HashSet;
 use syntax::{env::Environment, language::Language, terms::Ascribe, types::TypeGroup};
 
 impl<Lang> Typecheck for Ascribe<Lang>
@@ -47,5 +52,20 @@ where
         let conc = TypingConclusion::new(env, self.clone(), self.ty.clone());
         let deriv = TypingDerivation::ascribe(conc, premises);
         Ok(deriv.into())
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::from([DerivationRule::check_cong(
+            vec![
+                SpecialChar::ParenO.into(),
+                Symbol::Term,
+                SpecialChar::Colon.into(),
+                Symbol::Type,
+                SpecialChar::ParenC.into(),
+            ],
+            Symbol::Type,
+            Symbol::Type,
+            "T-Ascribe",
+        )])
     }
 }
