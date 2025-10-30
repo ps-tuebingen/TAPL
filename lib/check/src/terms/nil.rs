@@ -3,7 +3,7 @@ use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
 use grammar::{
     DerivationRule,
-    symbols::{Keyword, SpecialChar, Symbol},
+    symbols::{Keyword, Symbol},
 };
 use std::collections::HashSet;
 use syntax::{
@@ -50,18 +50,8 @@ where
 
     fn rules() -> HashSet<DerivationRule> {
         HashSet::from([DerivationRule::check_const(
-            vec![
-                Keyword::Nil.into(),
-                SpecialChar::SqBrackO.into(),
-                Symbol::Type,
-                SpecialChar::SqBrackC.into(),
-            ],
-            vec![
-                Keyword::List.into(),
-                SpecialChar::SqBrackO.into(),
-                Symbol::Type,
-                SpecialChar::SqBrackC.into(),
-            ],
+            vec![Keyword::Nil.into(), Symbol::sqbrack(Symbol::Type)],
+            vec![Keyword::List.into(), Symbol::sqbrack(Symbol::Type)],
             "T-Nil",
         )])
     }

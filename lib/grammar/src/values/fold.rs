@@ -1,7 +1,4 @@
-use crate::{
-    GrammarRuleDescribe, Rule, Symbol,
-    symbols::{Keyword, SpecialChar},
-};
+use crate::{GrammarRuleDescribe, Rule, Symbol, symbols::Keyword};
 use syntax::{language::Language, values::Fold};
 
 impl<Lang> GrammarRuleDescribe for Fold<Lang>
@@ -12,13 +9,8 @@ where
         Rule::new(
             vec![
                 Keyword::Fold.into(),
-                SpecialChar::SqBrackO.into(),
-                Symbol::Type,
-                SpecialChar::SqBrackC.into(),
-                SpecialChar::SqBrackC.into(),
-                SpecialChar::ParenO.into(),
-                Symbol::Value,
-                SpecialChar::ParenC.into(),
+                Symbol::sqbrack(Symbol::Type),
+                Symbol::paren(Symbol::Value),
             ]
             .into(),
             "Fold",

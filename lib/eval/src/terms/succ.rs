@@ -39,25 +39,17 @@ where
             DerivationRule::eval(
                 vec![
                     Keyword::Succ.into(),
-                    SpecialChar::ParenO.into(),
-                    Keyword::Pred.into(),
-                    SpecialChar::ParenO.into(),
-                    Symbol::Value,
-                    SpecialChar::ParenC.into(),
-                    SpecialChar::ParenC.into(),
+                    Symbol::paren(vec![
+                        Keyword::Pred.into(),
+                        Symbol::paren(Symbol::Value),
+                        SpecialChar::ParenC.into(),
+                    ]),
                 ],
                 Symbol::Value,
                 "E-SuccPred",
             ),
             DerivationRule::eval_cong(
-                |sym| {
-                    vec![
-                        Keyword::Succ.into(),
-                        SpecialChar::ParenO.into(),
-                        sym,
-                        SpecialChar::ParenC.into(),
-                    ]
-                },
+                |sym| vec![Keyword::Succ.into(), Symbol::paren(sym)],
                 "E-Succ1",
             ),
         ])

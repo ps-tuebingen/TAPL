@@ -74,9 +74,7 @@ impl DerivationRule {
                     separator: SpecialChar::Colon.into(),
                     output: vec![
                         Keyword::Ref.into(),
-                        SpecialChar::SqBrackO.into(),
-                        Symbol::sub(Symbol::Type, 1),
-                        SpecialChar::SqBrackC.into(),
+                        Symbol::sqbrack(Symbol::sub(Symbol::Type, 1)),
                     ]
                     .into(),
                 },
@@ -119,13 +117,7 @@ impl DerivationRule {
                     env: SpecialChar::Gamma.into(),
                     input: Symbol::sub(Symbol::Term, 2),
                     separator: SpecialChar::Colon.into(),
-                    output: vec![
-                        Keyword::List.into(),
-                        SpecialChar::SqBrackO.into(),
-                        Symbol::Type,
-                        SpecialChar::SqBrackC.into(),
-                    ]
-                    .into(),
+                    output: vec![Keyword::List.into(), Symbol::sqbrack(Symbol::Type)].into(),
                 },
             ],
             label: "T-Cons".to_owned(),
@@ -133,24 +125,16 @@ impl DerivationRule {
                 env: SpecialChar::Gamma.into(),
                 input: vec![
                     Keyword::Cons.into(),
-                    SpecialChar::SqBrackO.into(),
-                    Symbol::Type,
-                    SpecialChar::SqBrackC.into(),
-                    SpecialChar::ParenO.into(),
-                    Symbol::sub(Symbol::Term, 1),
-                    SpecialChar::Comma.into(),
-                    Symbol::sub(Symbol::Term, 2),
-                    SpecialChar::ParenC.into(),
+                    Symbol::sqbrack(Symbol::Type),
+                    Symbol::paren(vec![
+                        Symbol::sub(Symbol::Term, 1),
+                        SpecialChar::Comma.into(),
+                        Symbol::sub(Symbol::Term, 2),
+                    ]),
                 ]
                 .into(),
                 separator: SpecialChar::Colon.into(),
-                output: vec![
-                    Keyword::List.into(),
-                    SpecialChar::SqBrackO.into(),
-                    Symbol::Type,
-                    SpecialChar::SqBrackC.into(),
-                ]
-                .into(),
+                output: vec![Keyword::List.into(), Symbol::sqbrack(Symbol::Type)].into(),
             },
         }
     }
@@ -189,13 +173,9 @@ impl DerivationRule {
                 input: vec![
                     Keyword::If.into(),
                     Symbol::sub(Symbol::Term, 1),
-                    SpecialChar::BrackO.into(),
-                    Symbol::sub(Symbol::Term, 2),
-                    SpecialChar::BrackC.into(),
+                    Symbol::brack(Symbol::sub(Symbol::Term, 2)),
                     Keyword::Else.into(),
-                    SpecialChar::BrackO.into(),
-                    Symbol::sub(Symbol::Term, 3),
-                    SpecialChar::BrackC.into(),
+                    Symbol::brack(Symbol::sub(Symbol::Term, 3)),
                 ]
                 .into(),
                 separator: SpecialChar::Colon.into(),
@@ -375,23 +355,23 @@ impl DerivationRule {
         let ex_type = if bounded {
             vec![
                 SpecialChar::Exists.into(),
-                SpecialChar::BrackO.into(),
-                Symbol::Typevariable,
-                SpecialChar::LessColon.into(),
-                Symbol::sub(Symbol::Type, 3),
-                SpecialChar::Comma.into(),
-                Symbol::sub(Symbol::Type, 2),
-                SpecialChar::BrackC.into(),
+                Symbol::brack(vec![
+                    Symbol::Typevariable,
+                    SpecialChar::LessColon.into(),
+                    Symbol::sub(Symbol::Type, 3),
+                    SpecialChar::Comma.into(),
+                    Symbol::sub(Symbol::Type, 2),
+                ]),
             ]
         } else {
             vec![
                 SpecialChar::Exists.into(),
-                SpecialChar::BrackO.into(),
-                Symbol::Typevariable,
-                SpecialChar::DoubleColon.into(),
-                SpecialChar::Comma.into(),
-                Symbol::sub(Symbol::Type, 2),
-                SpecialChar::BrackC.into(),
+                Symbol::brack(vec![
+                    Symbol::Typevariable,
+                    SpecialChar::DoubleColon.into(),
+                    SpecialChar::Comma.into(),
+                    Symbol::sub(Symbol::Type, 2),
+                ]),
             ]
         };
 
@@ -402,10 +382,11 @@ impl DerivationRule {
                 separator: SpecialChar::Colon.into(),
                 output: vec![
                     Symbol::sub(Symbol::Type, 2),
-                    SpecialChar::SqBrackO.into(),
-                    Symbol::Typevariable,
-                    SpecialChar::Arrow.into(),
-                    Symbol::sub(Symbol::Type, 1),
+                    Symbol::sqbrack(vec![
+                        Symbol::Typevariable,
+                        SpecialChar::Arrow.into(),
+                        Symbol::sub(Symbol::Type, 1),
+                    ]),
                 ]
                 .into(),
             },
@@ -422,11 +403,11 @@ impl DerivationRule {
             separator: SpecialChar::Colon.into(),
             output: vec![
                 Symbol::sub(Symbol::Type, 2),
-                SpecialChar::SqBrackO.into(),
-                Symbol::Typevariable,
-                SpecialChar::Arrow.into(),
-                Symbol::sub(Symbol::Type, 1),
-                SpecialChar::SqBrackO.into(),
+                Symbol::sqbrack(vec![
+                    Symbol::Typevariable,
+                    SpecialChar::Arrow.into(),
+                    Symbol::sub(Symbol::Type, 1),
+                ]),
             ]
             .into(),
         }];
@@ -440,11 +421,11 @@ impl DerivationRule {
             conclusion: ConclusionRule {
                 env: SpecialChar::Gamma.into(),
                 input: vec![
-                    SpecialChar::BrackO.into(),
-                    SpecialChar::Star.into(),
-                    Symbol::sub(Symbol::Type, 1),
-                    Symbol::Term,
-                    SpecialChar::BrackC.into(),
+                    Symbol::brack(vec![
+                        SpecialChar::Star.into(),
+                        Symbol::sub(Symbol::Type, 1),
+                        Symbol::Term,
+                    ]),
                     Keyword::As.into(),
                     ex_type.clone().into(),
                 ]
@@ -511,11 +492,11 @@ impl DerivationRule {
                 env: SpecialChar::Gamma.into(),
                 input: vec![
                     Keyword::Let.into(),
-                    SpecialChar::BrackO.into(),
-                    Symbol::Typevariable,
-                    SpecialChar::Comma.into(),
-                    Symbol::Variable,
-                    SpecialChar::BrackC.into(),
+                    Symbol::brack(vec![
+                        Symbol::Typevariable,
+                        SpecialChar::Comma.into(),
+                        Symbol::Variable,
+                    ]),
                     SpecialChar::Equals.into(),
                     Symbol::sub(Symbol::Term, 1),
                     Keyword::In.into(),
@@ -552,13 +533,11 @@ impl DerivationRule {
             label: "T-Pair".to_owned(),
             conclusion: ConclusionRule {
                 env: SpecialChar::Gamma.into(),
-                input: vec![
-                    SpecialChar::BrackO.into(),
+                input: vec![Symbol::brack(vec![
                     Symbol::sub(Symbol::Term, 1),
                     SpecialChar::Comma.into(),
                     Symbol::sub(Symbol::Term, 2),
-                    SpecialChar::BrackC.into(),
-                ]
+                ])]
                 .into(),
                 separator: SpecialChar::Colon.into(),
                 output: vec![
@@ -586,27 +565,17 @@ impl DerivationRule {
             label: "T-Record".to_owned(),
             conclusion: ConclusionRule {
                 env: SpecialChar::Gamma.into(),
-                input: vec![
-                    SpecialChar::BrackO.into(),
-                    Symbol::many(vec![
-                        Symbol::sub(Symbol::Label, "i"),
-                        SpecialChar::Equals.into(),
-                        Symbol::sub(Symbol::Term, "i"),
-                    ]),
-                    SpecialChar::BrackC.into(),
-                ]
-                .into(),
+                input: Symbol::brack(Symbol::many(vec![
+                    Symbol::sub(Symbol::Label, "i"),
+                    SpecialChar::Equals.into(),
+                    Symbol::sub(Symbol::Term, "i"),
+                ])),
                 separator: SpecialChar::Colon.into(),
-                output: vec![
-                    SpecialChar::BrackO.into(),
-                    Symbol::many(vec![
-                        Symbol::sub(Symbol::Label, "i"),
-                        SpecialChar::Colon.into(),
-                        Symbol::sub(Symbol::Type, "i"),
-                    ]),
-                    SpecialChar::BrackC.into(),
-                ]
-                .into(),
+                output: Symbol::brack(Symbol::many(vec![
+                    Symbol::sub(Symbol::Label, "i"),
+                    SpecialChar::Colon.into(),
+                    Symbol::sub(Symbol::Type, "i"),
+                ])),
             },
         }
     }
@@ -624,9 +593,7 @@ impl DerivationRule {
             separator: SpecialChar::Colon.into(),
             output: vec![
                 Keyword::List.into(),
-                SpecialChar::SqBrackO.into(),
-                Symbol::sub(Symbol::Type, 1),
-                SpecialChar::SqBrackC.into(),
+                Symbol::sqbrack(Symbol::sub(Symbol::Type, 1)),
             ]
             .into(),
         };
@@ -647,9 +614,7 @@ impl DerivationRule {
                 Symbol::sub(Symbol::Variable, 2),
                 SpecialChar::Colon.into(),
                 Keyword::List.into(),
-                SpecialChar::SqBrackO.into(),
-                Symbol::sub(Symbol::Type, 2),
-                SpecialChar::SqBrackC.into(),
+                Symbol::sqbrack(Symbol::sub(Symbol::Type, 2)),
             ]
             .into(),
             input: Symbol::sub(Symbol::Term, 2),
@@ -662,20 +627,20 @@ impl DerivationRule {
                 Keyword::Case.into(),
                 Symbol::sub(Symbol::Term, 1),
                 Keyword::Of.into(),
-                SpecialChar::BrackO.into(),
-                Keyword::Nil.into(),
-                SpecialChar::DoubleArrow.into(),
-                Symbol::sub(Symbol::Term, 2),
-                SpecialChar::Pipe.into(),
-                Keyword::Cons.into(),
-                SpecialChar::ParenO.into(),
-                Symbol::sub(Symbol::Variable, 1),
-                SpecialChar::Comma.into(),
-                Symbol::sub(Symbol::Variable, 2),
-                SpecialChar::ParenC.into(),
-                SpecialChar::DoubleArrow.into(),
-                Symbol::sub(Symbol::Term, 3),
-                SpecialChar::BrackC.into(),
+                Symbol::brack(vec![
+                    Keyword::Nil.into(),
+                    SpecialChar::DoubleArrow.into(),
+                    Symbol::sub(Symbol::Term, 2),
+                    SpecialChar::Pipe.into(),
+                    Keyword::Cons.into(),
+                    Symbol::paren(vec![
+                        Symbol::sub(Symbol::Variable, 1),
+                        SpecialChar::Comma.into(),
+                        Symbol::sub(Symbol::Variable, 2),
+                    ]),
+                    SpecialChar::DoubleArrow.into(),
+                    Symbol::sub(Symbol::Term, 3),
+                ]),
             ]
             .into(),
             separator: SpecialChar::Colon.into(),
@@ -699,9 +664,7 @@ impl DerivationRule {
             separator: SpecialChar::Colon.into(),
             output: vec![
                 Keyword::Optional.into(),
-                SpecialChar::SqBrackO.into(),
-                Symbol::sub(Symbol::Type, 1),
-                SpecialChar::SqBrackC.into(),
+                Symbol::sqbrack(Symbol::sub(Symbol::Type, 1)),
             ]
             .into(),
         };
@@ -730,18 +693,16 @@ impl DerivationRule {
                 Keyword::Case.into(),
                 Symbol::sub(Symbol::Term, 1),
                 Keyword::Of.into(),
-                SpecialChar::BrackO.into(),
-                Keyword::Nothing.into(),
-                SpecialChar::DoubleArrow.into(),
-                Symbol::sub(Symbol::Term, 2),
-                SpecialChar::Pipe.into(),
-                Keyword::Something.into(),
-                SpecialChar::ParenO.into(),
-                Symbol::Variable,
-                SpecialChar::ParenC.into(),
-                SpecialChar::DoubleArrow.into(),
-                Symbol::sub(Symbol::Term, 3),
-                SpecialChar::BrackC.into(),
+                Symbol::brack(vec![
+                    Keyword::Nothing.into(),
+                    SpecialChar::DoubleArrow.into(),
+                    Symbol::sub(Symbol::Term, 2),
+                    SpecialChar::Pipe.into(),
+                    Keyword::Something.into(),
+                    Symbol::paren(Symbol::Variable),
+                    SpecialChar::DoubleArrow.into(),
+                    Symbol::sub(Symbol::Term, 3),
+                ]),
             ]
             .into(),
             separator: SpecialChar::Colon.into(),
@@ -803,19 +764,17 @@ impl DerivationRule {
                 Keyword::Case.into(),
                 Symbol::sub(Symbol::Term, 1),
                 Keyword::Of.into(),
-                SpecialChar::BrackO.into(),
-                Keyword::Left.into(),
-                SpecialChar::ParenO.into(),
-                Symbol::sub(Symbol::Variable, 1),
-                SpecialChar::DoubleArrow.into(),
-                Symbol::sub(Symbol::Term, 2),
-                SpecialChar::Pipe.into(),
-                Keyword::Right.into(),
-                SpecialChar::ParenO.into(),
-                Symbol::sub(Symbol::Variable, 2),
-                SpecialChar::DoubleArrow.into(),
-                Symbol::sub(Symbol::Term, 3),
-                SpecialChar::BrackC.into(),
+                Symbol::brack(vec![
+                    Keyword::Left.into(),
+                    Symbol::paren(Symbol::sub(Symbol::Variable, 1)),
+                    SpecialChar::DoubleArrow.into(),
+                    Symbol::sub(Symbol::Term, 2),
+                    SpecialChar::Pipe.into(),
+                    Keyword::Right.into(),
+                    Symbol::paren(Symbol::sub(Symbol::Variable, 2)),
+                    SpecialChar::DoubleArrow.into(),
+                    Symbol::sub(Symbol::Term, 3),
+                ]),
             ]
             .into(),
             separator: SpecialChar::Colon.into(),
@@ -838,16 +797,11 @@ impl DerivationRule {
             env: SpecialChar::Gamma.into(),
             input: Symbol::Term,
             separator: SpecialChar::Colon.into(),
-            output: vec![
-                SpecialChar::AngBrackO.into(),
-                Symbol::many(vec![
-                    Symbol::sub(Symbol::Label, "i"),
-                    SpecialChar::Colon.into(),
-                    Symbol::sub(Symbol::Term, "i"),
-                ]),
-                SpecialChar::AngBrackC.into(),
-            ]
-            .into(),
+            output: Symbol::angbrack(Symbol::many(vec![
+                Symbol::sub(Symbol::Label, "i"),
+                SpecialChar::Colon.into(),
+                Symbol::sub(Symbol::Term, "i"),
+            ])),
         };
         let prem_rhs = ConclusionRule {
             env: SpecialChar::Gamma.into(),
@@ -859,19 +813,17 @@ impl DerivationRule {
             env: SpecialChar::Gamma.into(),
             input: vec![
                 Keyword::Case.into(),
-                SpecialChar::AngBrackO.into(),
-                Symbol::sub(Symbol::Label, "k"),
-                SpecialChar::Equals.into(),
-                Symbol::Term,
-                SpecialChar::AngBrackC.into(),
+                Symbol::angbrack(vec![
+                    Symbol::sub(Symbol::Label, "k"),
+                    SpecialChar::Equals.into(),
+                    Symbol::Term,
+                ]),
                 Keyword::Of.into(),
-                SpecialChar::BrackO.into(),
-                Symbol::many(vec![
+                Symbol::brack(Symbol::many(vec![
                     Symbol::sub(Symbol::Label, "i"),
                     SpecialChar::DoubleArrow.into(),
                     Symbol::sub(Symbol::Term, "i"),
-                ]),
-                SpecialChar::BrackC.into(),
+                ])),
             ]
             .into(),
             separator: SpecialChar::Colon.into(),
@@ -948,19 +900,9 @@ impl DerivationRule {
             label: "T-Tup".to_owned(),
             conclusion: ConclusionRule {
                 env: SpecialChar::Gamma.into(),
-                input: vec![
-                    SpecialChar::ParenO.into(),
-                    Symbol::many(Symbol::sub(Symbol::Term, "i")),
-                    SpecialChar::ParenC.into(),
-                ]
-                .into(),
+                input: vec![Symbol::paren(Symbol::many(Symbol::sub(Symbol::Term, "i")))].into(),
                 separator: SpecialChar::Colon.into(),
-                output: vec![
-                    SpecialChar::ParenO.into(),
-                    Symbol::many(Symbol::sub(Symbol::Type, "i")),
-                    SpecialChar::ParenC.into(),
-                ]
-                .into(),
+                output: vec![Symbol::paren(Symbol::many(Symbol::sub(Symbol::Type, "i")))].into(),
             },
         }
     }
@@ -1018,21 +960,15 @@ impl DerivationRule {
         };
         let conclusion = ConclusionRule {
             env: SpecialChar::Gamma.into(),
-            input: vec![
-                Symbol::Term,
-                SpecialChar::SqBrackO.into(),
-                Symbol::sub(Symbol::Type, 1),
-                SpecialChar::SqBrackC.into(),
-            ]
-            .into(),
+            input: vec![Symbol::Term, Symbol::sqbrack(Symbol::sub(Symbol::Type, 1))].into(),
             separator: SpecialChar::Colon.into(),
             output: vec![
                 Symbol::sub(Symbol::Type, 2),
-                SpecialChar::SqBrackO.into(),
-                Symbol::Typevariable,
-                SpecialChar::Arrow.into(),
-                Symbol::sub(Symbol::Type, 1),
-                SpecialChar::SqBrackC.into(),
+                Symbol::sqbrack(vec![
+                    Symbol::Typevariable,
+                    SpecialChar::Arrow.into(),
+                    Symbol::sub(Symbol::Type, 1),
+                ]),
             ]
             .into(),
         };
@@ -1134,21 +1070,15 @@ impl DerivationRule {
             label: "T-Unfold".to_owned(),
             conclusion: ConclusionRule {
                 env: SpecialChar::Gamma.into(),
-                input: vec![
-                    Keyword::Unfold.into(),
-                    SpecialChar::SqBrackO.into(),
-                    mu_ty.into(),
-                    SpecialChar::SqBrackC.into(),
-                    Symbol::Term,
-                ]
-                .into(),
+                input: vec![Keyword::Unfold.into(), Symbol::sqbrack(mu_ty), Symbol::Term].into(),
                 separator: SpecialChar::Colon.into(),
                 output: vec![
                     Symbol::Type,
-                    SpecialChar::SqBrackO.into(),
-                    Symbol::Typevariable,
-                    SpecialChar::Arrow.into(),
-                    Symbol::Type,
+                    Symbol::sqbrack(vec![
+                        Symbol::Typevariable,
+                        SpecialChar::Arrow.into(),
+                        Symbol::Type,
+                    ]),
                 ]
                 .into(),
             },
@@ -1533,22 +1463,17 @@ impl DerivationRule {
             label: "S-Rec".to_owned(),
             conclusion: ConclusionRule {
                 env: SpecialChar::Gamma.into(),
-                input: vec![
-                    SpecialChar::BrackO.into(),
+                input: Symbol::brack(vec![
                     Symbol::Label,
                     SpecialChar::Colon.into(),
                     Symbol::sub(Symbol::Type, 1),
-                    SpecialChar::BrackC.into(),
-                ]
-                .into(),
+                ]),
                 separator: SpecialChar::LessColon.into(),
-                output: vec![
-                    SpecialChar::BrackO.into(),
+                output: Symbol::brack(vec![
                     Symbol::Label,
                     SpecialChar::Colon.into(),
                     Symbol::sub(Symbol::Type, 2),
-                    SpecialChar::BrackC.into(),
-                ]
+                ])
                 .into(),
             },
         }
@@ -1564,21 +1489,9 @@ impl DerivationRule {
             label: "S-Ref-Sink".to_owned(),
             conclusion: ConclusionRule {
                 env: SpecialChar::Gamma.into(),
-                input: vec![
-                    Keyword::Ref.into(),
-                    SpecialChar::SqBrackO.into(),
-                    Symbol::Type,
-                    SpecialChar::SqBrackC.into(),
-                ]
-                .into(),
+                input: vec![Keyword::Ref.into(), Symbol::sqbrack(Symbol::Type)].into(),
                 separator: SpecialChar::LessColon.into(),
-                output: vec![
-                    Keyword::Sink.into(),
-                    SpecialChar::SqBrackO.into(),
-                    Symbol::Type,
-                    SpecialChar::SqBrackC.into(),
-                ]
-                .into(),
+                output: vec![Keyword::Sink.into(), Symbol::sqbrack(Symbol::Type)].into(),
             },
         }
     }
@@ -1593,21 +1506,9 @@ impl DerivationRule {
             label: "S-Ref-Source".to_owned(),
             conclusion: ConclusionRule {
                 env: SpecialChar::Gamma.into(),
-                input: vec![
-                    Keyword::Ref.into(),
-                    SpecialChar::SqBrackO.into(),
-                    Symbol::Type,
-                    SpecialChar::SqBrackC.into(),
-                ]
-                .into(),
+                input: vec![Keyword::Ref.into(), Symbol::sqbrack(Symbol::Type)].into(),
                 separator: SpecialChar::LessColon.into(),
-                output: vec![
-                    Keyword::Source.into(),
-                    SpecialChar::SqBrackO.into(),
-                    Symbol::Type,
-                    SpecialChar::SqBrackC.into(),
-                ]
-                .into(),
+                output: vec![Keyword::Source.into(), Symbol::sqbrack(Symbol::Type)].into(),
             },
         }
     }
@@ -1674,34 +1575,24 @@ impl DerivationRule {
             label: "S-Variant".to_owned(),
             conclusion: ConclusionRule {
                 env: SpecialChar::Gamma.into(),
-                input: vec![
-                    SpecialChar::AngBrackO.into(),
-                    Symbol::many(vec![
-                        Symbol::sub(Symbol::Label, "i"),
-                        SpecialChar::Colon.into(),
-                        Symbol::sub(
-                            Symbol::Type,
-                            vec!["i".into(), SpecialChar::Comma.into(), "k".into()],
-                        ),
-                    ]),
-                    SpecialChar::AngBrackC.into(),
-                ]
-                .into(),
+                input: Symbol::angbrack(Symbol::many(vec![
+                    Symbol::sub(Symbol::Label, "i"),
+                    SpecialChar::Colon.into(),
+                    Symbol::sub(
+                        Symbol::Type,
+                        vec!["i".into(), SpecialChar::Comma.into(), "k".into()],
+                    ),
+                ])),
 
                 separator: SpecialChar::LessColon.into(),
-                output: vec![
-                    SpecialChar::AngBrackO.into(),
-                    Symbol::many(vec![
-                        Symbol::sub(Symbol::Label, "j"),
-                        SpecialChar::Colon.into(),
-                        Symbol::sub(
-                            Symbol::Type,
-                            vec!["i".into(), SpecialChar::Comma.into(), "k".into()],
-                        ),
-                    ]),
-                    SpecialChar::AngBrackC.into(),
-                ]
-                .into(),
+                output: Symbol::angbrack(Symbol::many(vec![
+                    Symbol::sub(Symbol::Label, "j"),
+                    SpecialChar::Colon.into(),
+                    Symbol::sub(
+                        Symbol::Type,
+                        vec!["i".into(), SpecialChar::Comma.into(), "k".into()],
+                    ),
+                ])),
             },
         }
     }
@@ -2086,14 +1977,7 @@ impl DerivationRule {
             label: "K-Rec".to_owned(),
             conclusion: ConclusionRule {
                 env: SpecialChar::Gamma.into(),
-                input: vec![
-                    SpecialChar::BrackO.into(),
-                    Symbol::Label,
-                    SpecialChar::Colon.into(),
-                    Symbol::Type,
-                    SpecialChar::BrackC.into(),
-                ]
-                .into(),
+                input: Symbol::brack(vec![Symbol::Label, SpecialChar::Colon.into(), Symbol::Type]),
                 separator: SpecialChar::DoubleColon.into(),
                 output: SpecialChar::Star.into(),
             },
@@ -2225,11 +2109,11 @@ impl DerivationRule {
                 separator: SpecialChar::Arrow.into(),
                 output: vec![
                     Symbol::sub(Symbol::Type, 1),
-                    SpecialChar::SqBrackO.into(),
-                    Symbol::Typevariable,
-                    SpecialChar::Arrow.into(),
-                    Symbol::sub(Symbol::Type, 2),
-                    SpecialChar::SqBrackC.into(),
+                    Symbol::sqbrack(vec![
+                        Symbol::Typevariable,
+                        SpecialChar::Arrow.into(),
+                        Symbol::sub(Symbol::Type, 2),
+                    ]),
                 ]
                 .into(),
             },

@@ -1,9 +1,6 @@
 use crate::Eval;
 use errors::eval_error::EvalError;
-use grammar::{
-    DerivationRule,
-    symbols::{SpecialChar, Symbol},
-};
+use grammar::{DerivationRule, symbols::Symbol};
 use std::collections::HashSet;
 use syntax::{
     eval_context::EvalContext,
@@ -47,12 +44,11 @@ where
     fn rules() -> HashSet<DerivationRule> {
         HashSet::from([DerivationRule::eval_cong(
             |sym| {
-                vec![
-                    SpecialChar::ParenO.into(),
+                Symbol::paren(vec![
                     Symbol::many(Symbol::sub(Symbol::Value, "i")),
                     sym,
                     Symbol::many(Symbol::sub(Symbol::Term, "i")),
-                ]
+                ])
             },
             "E-Tup1",
         )])

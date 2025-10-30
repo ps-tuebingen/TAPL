@@ -12,12 +12,9 @@ where
         Rule::new(
             vec![
                 Keyword::Right.into(),
-                SpecialChar::SqBrackO.into(),
-                Symbol::Type,
+                Symbol::sqbrack(Symbol::Type),
                 SpecialChar::SqBrackC.into(),
-                SpecialChar::ParenO.into(),
-                Symbol::Term,
-                SpecialChar::ParenC.into(),
+                Symbol::paren(vec![Symbol::Term]),
             ]
             .into(),
             "Right Injection",

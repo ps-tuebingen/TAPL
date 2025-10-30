@@ -11,11 +11,11 @@ where
     fn rule() -> Rule {
         Rule::new(
             vec![
-                SpecialChar::BrackO.into(),
-                Symbol::Typevariable,
-                SpecialChar::Comma.into(),
-                Symbol::Variable,
-                SpecialChar::BrackC.into(),
+                Symbol::brack(vec![
+                    Symbol::Typevariable,
+                    SpecialChar::Comma.into(),
+                    Symbol::Variable,
+                ]),
                 SpecialChar::Equals.into(),
                 Symbol::Term,
                 Keyword::In.into(),

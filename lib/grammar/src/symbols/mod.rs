@@ -73,6 +73,62 @@ impl Symbol {
             ind: Box::new(ind.into()),
         }
     }
+
+    /// Wrap S into parentheses
+    /// (inner)
+    pub fn paren<S>(inner: S) -> Symbol
+    where
+        S: Into<Symbol>,
+    {
+        vec![
+            SpecialChar::ParenO.into(),
+            inner.into(),
+            SpecialChar::ParenC.into(),
+        ]
+        .into()
+    }
+
+    /// Wrap S ino brackets
+    /// { inner }
+    pub fn brack<S>(inner: S) -> Symbol
+    where
+        S: Into<Symbol>,
+    {
+        vec![
+            SpecialChar::BrackO.into(),
+            inner.into(),
+            SpecialChar::BrackC.into(),
+        ]
+        .into()
+    }
+
+    /// wrap S in square brackets
+    /// [inner]
+    pub fn sqbrack<S>(inner: S) -> Symbol
+    where
+        S: Into<Symbol>,
+    {
+        vec![
+            SpecialChar::SqBrackO.into(),
+            inner.into(),
+            SpecialChar::SqBrackC.into(),
+        ]
+        .into()
+    }
+
+    /// Wrap S into angled brackets
+    /// <inner>
+    pub fn angbrack<S>(inner: S) -> Symbol
+    where
+        S: Into<Symbol>,
+    {
+        vec![
+            SpecialChar::AngBrackO.into(),
+            inner.into(),
+            SpecialChar::AngBrackC.into(),
+        ]
+        .into()
+    }
 }
 
 impl fmt::Display for Symbol {

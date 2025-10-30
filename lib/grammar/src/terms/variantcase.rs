@@ -15,11 +15,9 @@ where
                 Symbol::Term,
                 Keyword::Of.into(),
                 Symbol::many(vec![
-                    SpecialChar::AngBrackO.into(),
-                    Symbol::Many(Box::new(
+                    Symbol::angbrack(vec![Symbol::Many(Box::new(
                         vec![Symbol::Label, SpecialChar::Equals.into(), Symbol::Variable].into(),
-                    )),
-                    SpecialChar::AngBrackC.into(),
+                    ))]),
                     SpecialChar::DoubleArrow.into(),
                     Symbol::Term,
                 ]),

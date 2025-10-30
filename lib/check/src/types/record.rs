@@ -96,11 +96,11 @@ where
 
     fn rules() -> HashSet<DerivationRule> {
         HashSet::from([DerivationRule::norm_cong(|sym| {
-            vec![
-                SpecialChar::BrackO.into(),
-                Symbol::many(vec![Symbol::Label, SpecialChar::Colon.into(), sym]),
-                SpecialChar::BrackC.into(),
-            ]
+            vec![Symbol::brack(Symbol::many(vec![
+                Symbol::Label,
+                SpecialChar::Colon.into(),
+                sym,
+            ]))]
             .into()
         })])
     }

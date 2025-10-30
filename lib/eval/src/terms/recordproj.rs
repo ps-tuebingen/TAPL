@@ -47,13 +47,11 @@ where
             ),
             DerivationRule::eval(
                 vec![
-                    SpecialChar::BrackO.into(),
-                    Symbol::many(vec![
+                    Symbol::brack(vec![Symbol::many(vec![
                         Symbol::sub(Symbol::Label, "i"),
                         SpecialChar::Equals.into(),
                         Symbol::sub(Symbol::Value, "i"),
-                    ]),
-                    SpecialChar::BrackC.into(),
+                    ])]),
                     SpecialChar::Dot.into(),
                     Symbol::sub(Symbol::Label, "k"),
                 ],

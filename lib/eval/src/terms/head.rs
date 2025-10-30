@@ -40,12 +40,8 @@ where
                 |sym| {
                     vec![
                         Keyword::Head.into(),
-                        SpecialChar::SqBrackO.into(),
-                        Symbol::Type,
-                        SpecialChar::SqBrackC.into(),
-                        SpecialChar::ParenO.into(),
-                        sym,
-                        SpecialChar::ParenC.into(),
+                        Symbol::sqbrack(Symbol::Type),
+                        Symbol::paren(sym),
                     ]
                 },
                 "E-Head1",
@@ -53,19 +49,16 @@ where
             DerivationRule::eval(
                 vec![
                     Keyword::Head.into(),
-                    SpecialChar::SqBrackO.into(),
-                    Symbol::Type,
-                    SpecialChar::SqBrackC.into(),
-                    SpecialChar::ParenO.into(),
-                    Keyword::Cons.into(),
-                    SpecialChar::SqBrackO.into(),
-                    Symbol::Type,
-                    SpecialChar::SqBrackC.into(),
-                    SpecialChar::ParenO.into(),
-                    Symbol::sub(Symbol::Value, 1),
-                    SpecialChar::Comma.into(),
-                    Symbol::sub(Symbol::Value, 2),
-                    SpecialChar::ParenC.into(),
+                    Symbol::sqbrack(Symbol::Type),
+                    Symbol::paren(vec![
+                        Keyword::Cons.into(),
+                        Symbol::sqbrack(Symbol::Type),
+                        Symbol::paren(vec![
+                            Symbol::sub(Symbol::Value, 1),
+                            SpecialChar::Comma.into(),
+                            Symbol::sub(Symbol::Value, 2),
+                        ]),
+                    ]),
                 ],
                 vec![Symbol::sub(Symbol::Value, 1)],
                 "E-HeadCons",

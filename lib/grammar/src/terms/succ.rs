@@ -1,7 +1,4 @@
-use crate::{
-    GrammarRuleDescribe, Rule, Symbol,
-    symbols::{Keyword, SpecialChar},
-};
+use crate::{GrammarRuleDescribe, Rule, Symbol, symbols::Keyword};
 use syntax::{language::Language, terms::Succ};
 
 impl<Lang> GrammarRuleDescribe for Succ<Lang>
@@ -10,13 +7,7 @@ where
 {
     fn rule() -> Rule {
         Rule::new(
-            vec![
-                Keyword::Succ.into(),
-                SpecialChar::ParenO.into(),
-                Symbol::Term,
-                SpecialChar::ParenC.into(),
-            ]
-            .into(),
+            vec![Keyword::Succ.into(), Symbol::paren(Symbol::Term)].into(),
             "Succ",
         )
     }

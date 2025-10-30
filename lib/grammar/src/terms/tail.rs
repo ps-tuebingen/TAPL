@@ -1,7 +1,4 @@
-use crate::{
-    GrammarRuleDescribe, Rule, Symbol,
-    symbols::{Keyword, SpecialChar},
-};
+use crate::{GrammarRuleDescribe, Rule, Symbol, symbols::Keyword};
 use syntax::{language::Language, terms::Tail};
 
 impl<Lang> GrammarRuleDescribe for Tail<Lang>
@@ -12,12 +9,8 @@ where
         Rule::new(
             vec![
                 Keyword::Tail.into(),
-                SpecialChar::SqBrackO.into(),
-                Symbol::Type,
-                SpecialChar::SqBrackC.into(),
-                SpecialChar::ParenO.into(),
-                Symbol::Term,
-                SpecialChar::ParenC.into(),
+                Symbol::sqbrack(Symbol::Type),
+                Symbol::paren(vec![Symbol::Term]),
             ]
             .into(),
             "List Tail",

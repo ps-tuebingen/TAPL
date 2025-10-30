@@ -19,11 +19,11 @@ where
                 Symbol::Term,
                 SpecialChar::Pipe.into(),
                 Keyword::Cons.into(),
-                SpecialChar::ParenO.into(),
-                Symbol::Variable,
-                SpecialChar::Comma.into(),
-                Symbol::Variable,
-                SpecialChar::ParenC.into(),
+                Symbol::paren(vec![
+                    Symbol::Variable,
+                    SpecialChar::Comma.into(),
+                    Symbol::Variable,
+                ]),
                 SpecialChar::DoubleArrow.into(),
                 Symbol::Term,
             ]

@@ -1,10 +1,7 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
 use derivations::{Derivation, KindingDerivation, NormalizingDerivation, SubtypeDerivation};
 use errors::{KindMismatch, check_error::CheckError};
-use grammar::{
-    DerivationRule,
-    symbols::{SpecialChar, Symbol},
-};
+use grammar::{DerivationRule, symbols::Symbol};
 use std::{collections::HashSet, rc::Rc};
 use syntax::{
     env::Environment,
@@ -44,13 +41,7 @@ where
 
     fn rules() -> HashSet<DerivationRule> {
         HashSet::from([DerivationRule::sub_cong(|sym| {
-            vec![
-                sym,
-                SpecialChar::BrackO.into(),
-                Symbol::Type,
-                SpecialChar::BrackC.into(),
-            ]
-            .into()
+            vec![sym, Symbol::brack(Symbol::Type)].into()
         })])
     }
 }
@@ -118,24 +109,8 @@ where
     fn rules() -> HashSet<DerivationRule> {
         let features = Lang::features();
         HashSet::from([
-            DerivationRule::norm_cong(|sym| {
-                vec![
-                    sym,
-                    SpecialChar::BrackO.into(),
-                    Symbol::Type,
-                    SpecialChar::BrackC.into(),
-                ]
-                .into()
-            }),
-            DerivationRule::norm_cong(|sym| {
-                vec![
-                    Symbol::Type,
-                    SpecialChar::BrackO.into(),
-                    sym,
-                    SpecialChar::BrackC.into(),
-                ]
-                .into()
-            }),
+            DerivationRule::norm_cong(|sym| vec![sym, Symbol::brack(Symbol::Type)].into()),
+            DerivationRule::norm_cong(|sym| vec![Symbol::Type, Symbol::brack(sym)].into()),
             DerivationRule::norm_ap(features.subtyped),
         ])
     }

@@ -3,7 +3,7 @@ use derivations::{Derivation, SubtypeDerivation};
 use errors::check_error::CheckError;
 use grammar::{
     DerivationRule,
-    symbols::{Keyword, SpecialChar},
+    symbols::{Keyword, Symbol},
 };
 use std::collections::HashSet;
 use syntax::{
@@ -48,15 +48,7 @@ where
 
     fn rules() -> HashSet<DerivationRule> {
         HashSet::from([
-            DerivationRule::sub_cong(|sym| {
-                vec![
-                    Keyword::Ref.into(),
-                    SpecialChar::SqBrackO.into(),
-                    sym,
-                    SpecialChar::SqBrackC.into(),
-                ]
-                .into()
-            }),
+            DerivationRule::sub_cong(|sym| vec![Keyword::Ref.into(), Symbol::sqbrack(sym)].into()),
             DerivationRule::sub_ref_sink(),
             DerivationRule::sub_ref_source(),
         ])

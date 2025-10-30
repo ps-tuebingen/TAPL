@@ -43,8 +43,7 @@ where
         HashSet::from([DerivationRule::check_const(
             vec![
                 Keyword::Err.into(),
-                SpecialChar::SqBrackO.into(),
-                Symbol::Type,
+                Symbol::sqbrack(Symbol::Type),
                 SpecialChar::SqBrackC.into(),
             ],
             Symbol::Type,

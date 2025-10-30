@@ -36,11 +36,11 @@ where
         HashSet::from([
             DerivationRule::eval(
                 vec![
-                    SpecialChar::BrackO.into(),
-                    Symbol::sub(Symbol::Value, 1),
-                    SpecialChar::Comma.into(),
-                    Symbol::sub(Symbol::Value, 2),
-                    SpecialChar::BrackC.into(),
+                    Symbol::brack(vec![
+                        Symbol::sub(Symbol::Value, 1),
+                        SpecialChar::Comma.into(),
+                        Symbol::sub(Symbol::Value, 2),
+                    ]),
                     SpecialChar::Dot.into(),
                     Keyword::Snd.into(),
                 ],

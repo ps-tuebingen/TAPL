@@ -58,8 +58,7 @@ where
         HashSet::from([DerivationRule::check_cong(
             vec![
                 Keyword::IsZero.into(),
-                SpecialChar::ParenO.into(),
-                Symbol::Term,
+                Symbol::paren(Symbol::Term),
                 SpecialChar::ParenC.into(),
             ],
             Keyword::Bool,

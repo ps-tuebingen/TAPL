@@ -3,7 +3,7 @@ use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
 use grammar::{
     DerivationRule,
-    symbols::{Keyword, SpecialChar, Symbol},
+    symbols::{Keyword, Symbol},
 };
 use std::collections::HashSet;
 use syntax::{
@@ -55,12 +55,7 @@ where
     }
 
     fn rules() -> HashSet<DerivationRule> {
-        let term = vec![
-            Keyword::Succ.into(),
-            SpecialChar::ParenO.into(),
-            Symbol::Term,
-            SpecialChar::ParenC.into(),
-        ];
+        let term = vec![Keyword::Succ.into(), Symbol::paren(Symbol::Term)];
         HashSet::from([DerivationRule::check_cong(
             term,
             Keyword::Nat,

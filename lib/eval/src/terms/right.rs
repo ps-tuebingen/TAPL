@@ -2,7 +2,7 @@ use crate::Eval;
 use errors::eval_error::EvalError;
 use grammar::{
     DerivationRule,
-    symbols::{Keyword, SpecialChar, Symbol},
+    symbols::{Keyword, Symbol},
 };
 use std::collections::HashSet;
 use syntax::{
@@ -35,9 +35,7 @@ where
             |sym| {
                 vec![
                     Keyword::Right.into(),
-                    SpecialChar::ParenO.into(),
-                    sym,
-                    SpecialChar::ParenC.into(),
+                    Symbol::paren(sym),
                     Keyword::As.into(),
                     Symbol::Type,
                 ]

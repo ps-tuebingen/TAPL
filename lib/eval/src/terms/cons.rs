@@ -48,13 +48,12 @@ where
                 |sym| {
                     vec![
                         Keyword::Cons.into(),
-                        SpecialChar::SqBrackO.into(),
-                        Symbol::Type,
-                        SpecialChar::SqBrackC.into(),
-                        SpecialChar::ParenO.into(),
-                        sym,
-                        SpecialChar::Comma.into(),
-                        Symbol::sub(Symbol::Term, 3),
+                        Symbol::sqbrack(Symbol::Type),
+                        Symbol::paren(vec![
+                            sym,
+                            SpecialChar::Comma.into(),
+                            Symbol::sub(Symbol::Term, 3),
+                        ]),
                     ]
                 },
                 "E-Cons1",
@@ -63,14 +62,8 @@ where
                 |sym| {
                     vec![
                         Keyword::Cons.into(),
-                        SpecialChar::SqBrackO.into(),
-                        Symbol::Type,
-                        SpecialChar::SqBrackC.into(),
-                        SpecialChar::ParenO.into(),
-                        Symbol::Value,
-                        SpecialChar::Comma.into(),
-                        sym,
-                        SpecialChar::ParenC.into(),
+                        Symbol::sqbrack(Symbol::Type),
+                        Symbol::paren(vec![Symbol::Value, SpecialChar::Comma.into(), sym]),
                     ]
                 },
                 "E-Cons2",

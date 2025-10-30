@@ -64,14 +64,12 @@ where
         HashSet::from([DerivationRule::check_cong(
             vec![
                 Keyword::Left.into(),
-                SpecialChar::SqBrackO.into(),
-                Symbol::sub(Symbol::Type, 1),
-                SpecialChar::Plus.into(),
-                Symbol::sub(Symbol::Type, 2),
-                SpecialChar::SqBrackO.into(),
-                SpecialChar::ParenO.into(),
-                Symbol::Term,
-                SpecialChar::ParenC.into(),
+                Symbol::sqbrack(vec![
+                    Symbol::sub(Symbol::Type, 1),
+                    SpecialChar::Plus.into(),
+                    Symbol::sub(Symbol::Type, 2),
+                ]),
+                Symbol::paren(Symbol::Term),
             ],
             vec![
                 Symbol::sub(Symbol::Type, 1),

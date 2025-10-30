@@ -56,13 +56,11 @@ where
 
     fn rules() -> HashSet<DerivationRule> {
         HashSet::from([DerivationRule::check_cong(
-            vec![
-                SpecialChar::ParenO.into(),
+            vec![Symbol::paren(vec![
                 Symbol::Term,
                 SpecialChar::Colon.into(),
                 Symbol::Type,
-                SpecialChar::ParenC.into(),
-            ],
+            ])],
             Symbol::Type,
             Symbol::Type,
             "T-Ascribe",

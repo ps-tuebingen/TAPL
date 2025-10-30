@@ -7,14 +7,11 @@ where
 {
     fn rule() -> Rule {
         Rule::new(
-            vec![
-                SpecialChar::BrackO.into(),
-                Symbol::Many(Box::new(
-                    vec![Symbol::Label, SpecialChar::Equals.into(), Symbol::Value].into(),
-                )),
-                SpecialChar::BrackC.into(),
-            ]
-            .into(),
+            Symbol::brack(Symbol::many(vec![
+                Symbol::Label,
+                SpecialChar::Equals.into(),
+                Symbol::Value,
+            ])),
             "Record",
         )
     }

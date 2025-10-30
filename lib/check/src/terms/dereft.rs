@@ -52,12 +52,7 @@ where
         HashSet::from([DerivationRule::check_cong(
             vec![SpecialChar::Exclamation.into(), Symbol::Term],
             Symbol::Type,
-            vec![
-                Keyword::Ref.into(),
-                SpecialChar::SqBrackO.into(),
-                Symbol::Type,
-                SpecialChar::SqBrackC.into(),
-            ],
+            vec![Keyword::Ref.into(), Symbol::sqbrack(Symbol::Type)],
             "T-Deref",
         )])
     }

@@ -19,9 +19,7 @@ where
                 Symbol::Term,
                 SpecialChar::Pipe.into(),
                 Keyword::Something.into(),
-                SpecialChar::ParenO.into(),
-                Symbol::Variable,
-                SpecialChar::ParenC.into(),
+                Symbol::paren(vec![Symbol::Variable]),
                 SpecialChar::DoubleArrow.into(),
                 Symbol::Term,
             ]

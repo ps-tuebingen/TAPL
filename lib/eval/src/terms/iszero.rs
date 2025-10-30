@@ -2,7 +2,7 @@ use crate::Eval;
 use errors::eval_error::EvalError;
 use grammar::{
     DerivationRule,
-    symbols::{Keyword, SpecialChar, Symbol},
+    symbols::{Keyword, Symbol},
 };
 use std::collections::HashSet;
 use syntax::{
@@ -42,37 +42,20 @@ where
     fn rules() -> HashSet<DerivationRule> {
         HashSet::from([
             DerivationRule::eval(
-                vec![
-                    Keyword::IsZero.into(),
-                    SpecialChar::ParenO.into(),
-                    0.into(),
-                    SpecialChar::ParenC.into(),
-                ],
+                vec![Keyword::IsZero.into(), Symbol::paren(0)],
                 Keyword::True,
                 "E-IsZeroZero",
             ),
             DerivationRule::eval(
                 vec![
                     Keyword::IsZero.into(),
-                    SpecialChar::ParenO.into(),
-                    Keyword::Succ.into(),
-                    SpecialChar::ParenO.into(),
-                    Symbol::Value,
-                    SpecialChar::ParenC.into(),
-                    SpecialChar::ParenC.into(),
+                    Symbol::paren(vec![Keyword::Succ.into(), Symbol::paren(Symbol::Value)]),
                 ],
                 Keyword::False,
                 "E-IsZeroSucc",
             ),
             DerivationRule::eval_cong(
-                |sym| {
-                    vec![
-                        Keyword::IsZero.into(),
-                        SpecialChar::ParenO.into(),
-                        sym,
-                        SpecialChar::ParenC.into(),
-                    ]
-                },
+                |sym| vec![Keyword::IsZero.into(), Symbol::paren(sym)],
                 "E-IsZero1",
             ),
         ])

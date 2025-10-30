@@ -68,17 +68,7 @@ where
         };
 
         HashSet::from([
-            DerivationRule::eval_cong(
-                |sym| {
-                    vec![
-                        sym,
-                        SpecialChar::SqBrackO.into(),
-                        Symbol::Type,
-                        SpecialChar::SqBrackC.into(),
-                    ]
-                },
-                "E-TyApp1",
-            ),
+            DerivationRule::eval_cong(|sym| vec![sym, Symbol::sqbrack(Symbol::Type)], "E-TyApp1"),
             DerivationRule::eval(
                 vec![
                     SpecialChar::Lambda.into(),
@@ -86,17 +76,15 @@ where
                     ty_var.into(),
                     SpecialChar::Dot.into(),
                     Symbol::Term,
-                    SpecialChar::SqBrackO.into(),
-                    Symbol::Type,
-                    SpecialChar::SqBrackC.into(),
+                    Symbol::sqbrack(Symbol::Type),
                 ],
                 vec![
                     Symbol::Term,
-                    SpecialChar::SqBrackO.into(),
-                    Symbol::Typevariable,
-                    SpecialChar::Arrow.into(),
-                    Symbol::Type,
-                    SpecialChar::SqBrackC.into(),
+                    Symbol::sqbrack(vec![
+                        Symbol::Typevariable,
+                        SpecialChar::Arrow.into(),
+                        Symbol::Type,
+                    ]),
                 ],
                 "E-TyAppAbs",
             ),

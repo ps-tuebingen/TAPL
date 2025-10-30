@@ -74,11 +74,11 @@ where
                 ],
                 vec![
                     Symbol::Term,
-                    SpecialChar::SqBrackO.into(),
-                    Symbol::Variable,
-                    SpecialChar::Arrow.into(),
-                    Symbol::Value,
-                    SpecialChar::SqBrackC.into(),
+                    Symbol::sqbrack(vec![
+                        Symbol::Variable,
+                        SpecialChar::Arrow.into(),
+                        Symbol::Value,
+                    ]),
                 ],
                 "E-Let",
             ),

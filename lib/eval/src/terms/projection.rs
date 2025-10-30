@@ -46,9 +46,7 @@ where
             ),
             DerivationRule::eval(
                 vec![
-                    SpecialChar::ParenO.into(),
-                    Symbol::many(Symbol::sub(Symbol::Value, "i")),
-                    SpecialChar::ParenC.into(),
+                    Symbol::paren(Symbol::many(Symbol::sub(Symbol::Value, "i"))),
                     SpecialChar::Dot.into(),
                     "k".into(),
                 ],

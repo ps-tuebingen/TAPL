@@ -32,18 +32,11 @@ where
             DerivationRule::eval(
                 vec![
                     Keyword::Err.into(),
-                    SpecialChar::SqBrackO.into(),
-                    Symbol::Type,
-                    SpecialChar::SqBrackC.into(),
+                    Symbol::sqbrack(Symbol::Type),
                     SpecialChar::Space.into(),
                     Symbol::sub(Symbol::Term, 3),
                 ],
-                vec![
-                    Keyword::Err.into(),
-                    SpecialChar::SqBrackO.into(),
-                    Symbol::Type,
-                    SpecialChar::SqBrackC.into(),
-                ],
+                vec![Keyword::Err.into(), Symbol::sqbrack(Symbol::Type)],
                 "E-Err1",
             ),
             DerivationRule::eval(
@@ -51,16 +44,9 @@ where
                     Symbol::sub(Symbol::Term, 3),
                     SpecialChar::Space.into(),
                     Keyword::Err.into(),
-                    SpecialChar::SqBrackO.into(),
-                    Symbol::Type,
-                    SpecialChar::SqBrackC.into(),
+                    Symbol::sqbrack(Symbol::Type),
                 ],
-                vec![
-                    Keyword::Err.into(),
-                    SpecialChar::SqBrackO.into(),
-                    Symbol::Type,
-                    SpecialChar::SqBrackC.into(),
-                ],
+                vec![Keyword::Err.into(), Symbol::sqbrack(Symbol::Type)],
                 "E-Err2",
             ),
         ])

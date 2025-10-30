@@ -1,7 +1,4 @@
-use crate::{
-    GrammarRuleDescribe, Rule, Symbol,
-    symbols::{Keyword, SpecialChar},
-};
+use crate::{GrammarRuleDescribe, Rule, Symbol, symbols::Keyword};
 use syntax::{language::Language, types::Sink};
 
 impl<Lang> GrammarRuleDescribe for Sink<Lang>
@@ -10,13 +7,7 @@ where
 {
     fn rule() -> Rule {
         Rule::new(
-            vec![
-                Keyword::Sink.into(),
-                SpecialChar::SqBrackO.into(),
-                Symbol::Type,
-                SpecialChar::SqBrackC.into(),
-            ]
-            .into(),
+            vec![Keyword::Sink.into(), Symbol::sqbrack(Symbol::Type)].into(),
             "Sink Type",
         )
     }

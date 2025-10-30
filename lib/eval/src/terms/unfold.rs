@@ -2,7 +2,7 @@ use crate::Eval;
 use errors::eval_error::EvalError;
 use grammar::{
     DerivationRule,
-    symbols::{Keyword, SpecialChar, Symbol},
+    symbols::{Keyword, Symbol},
 };
 use std::collections::HashSet;
 use syntax::{
@@ -38,30 +38,18 @@ where
     fn rules() -> HashSet<DerivationRule> {
         HashSet::from([
             DerivationRule::eval_cong(
-                |sym| {
-                    vec![
-                        Keyword::Unfold.into(),
-                        SpecialChar::SqBrackO.into(),
-                        Symbol::Type,
-                        SpecialChar::SqBrackC.into(),
-                        sym,
-                    ]
-                },
+                |sym| vec![Keyword::Unfold.into(), Symbol::sqbrack(Symbol::Type), sym],
                 "E-Unfold1",
             ),
             DerivationRule::eval(
                 vec![
                     Keyword::Unfold.into(),
-                    SpecialChar::SqBrackO.into(),
-                    Symbol::sub(Symbol::Type, 1),
-                    SpecialChar::SqBrackC.into(),
-                    SpecialChar::ParenO.into(),
-                    Keyword::Fold.into(),
-                    SpecialChar::SqBrackO.into(),
-                    Symbol::sub(Symbol::Type, 2),
-                    SpecialChar::SqBrackC.into(),
-                    Symbol::Value,
-                    SpecialChar::ParenC.into(),
+                    Symbol::sqbrack(Symbol::sub(Symbol::Type, 1)),
+                    Symbol::paren(vec![
+                        Keyword::Fold.into(),
+                        Symbol::sqbrack(Symbol::sub(Symbol::Type, 2)),
+                        Symbol::Value,
+                    ]),
                 ],
                 Symbol::Value,
                 "E-UnfoldFold",

@@ -1,7 +1,4 @@
-use crate::{
-    GrammarRuleDescribe, Rule, Symbol,
-    symbols::{Keyword, SpecialChar},
-};
+use crate::{GrammarRuleDescribe, Rule, Symbol, symbols::Keyword};
 use syntax::{language::Language, terms::If};
 
 impl<Lang> GrammarRuleDescribe for If<Lang>
@@ -12,13 +9,9 @@ where
         Rule::new(
             vec![
                 Keyword::If.into(),
-                SpecialChar::BrackO.into(),
-                Symbol::Term,
-                SpecialChar::BrackC.into(),
+                Symbol::brack(Symbol::Term),
                 Keyword::Else.into(),
-                SpecialChar::BrackO.into(),
-                Symbol::Term,
-                SpecialChar::BrackC.into(),
+                Symbol::brack(Symbol::Term),
             ]
             .into(),
             "If",

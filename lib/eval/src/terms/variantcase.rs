@@ -55,17 +55,15 @@ where
                         Keyword::Case.into(),
                         sym,
                         Keyword::Of.into(),
-                        SpecialChar::BrackO.into(),
-                        Symbol::many(vec![
-                            SpecialChar::AngBrackO.into(),
-                            Symbol::sub(Symbol::Label, "i"),
-                            SpecialChar::Equals.into(),
-                            Symbol::sub(Symbol::Variable, "i"),
-                            SpecialChar::AngBrackC.into(),
+                        Symbol::brack(Symbol::many(vec![
+                            Symbol::angbrack(vec![
+                                Symbol::sub(Symbol::Label, "i"),
+                                SpecialChar::Equals.into(),
+                                Symbol::sub(Symbol::Variable, "i"),
+                            ]),
                             SpecialChar::DoubleArrow.into(),
                             Symbol::sub(Symbol::Term, "i"),
-                        ]),
-                        SpecialChar::BrackC.into(),
+                        ])),
                     ]
                 },
                 "E-VariantCase1",
@@ -73,31 +71,29 @@ where
             DerivationRule::eval(
                 vec![
                     Keyword::Case.into(),
-                    SpecialChar::AngBrackO.into(),
-                    Symbol::sub(Symbol::Label, "k"),
-                    SpecialChar::Equals.into(),
-                    Symbol::Value,
-                    SpecialChar::AngBrackC.into(),
-                    Keyword::Of.into(),
-                    SpecialChar::BrackO.into(),
-                    Symbol::many(vec![
-                        SpecialChar::AngBrackO.into(),
-                        Symbol::sub(Symbol::Label, "i"),
+                    Symbol::angbrack(vec![
+                        Symbol::sub(Symbol::Label, "k"),
                         SpecialChar::Equals.into(),
-                        Symbol::sub(Symbol::Variable, "i"),
-                        SpecialChar::AngBrackC.into(),
+                        Symbol::Value,
+                    ]),
+                    Keyword::Of.into(),
+                    Symbol::brack(Symbol::many(vec![
+                        Symbol::angbrack(vec![
+                            Symbol::sub(Symbol::Label, "i"),
+                            SpecialChar::Equals.into(),
+                            Symbol::sub(Symbol::Variable, "i"),
+                        ]),
                         SpecialChar::DoubleArrow.into(),
                         Symbol::sub(Symbol::Term, "i"),
-                    ]),
-                    SpecialChar::BrackC.into(),
+                    ])),
                 ],
                 vec![
                     Symbol::sub(Symbol::Term, "i"),
-                    SpecialChar::SqBrackO.into(),
-                    Symbol::sub(Symbol::Variable, "i"),
-                    SpecialChar::Arrow.into(),
-                    Symbol::Value,
-                    SpecialChar::SqBrackC.into(),
+                    Symbol::sqbrack(vec![
+                        Symbol::sub(Symbol::Variable, "i"),
+                        SpecialChar::Arrow.into(),
+                        Symbol::Value,
+                    ]),
                 ],
                 "E-VariantCase",
             ),

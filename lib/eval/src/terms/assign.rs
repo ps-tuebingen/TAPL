@@ -59,10 +59,11 @@ where
                 vec![
                     Keyword::Unit.into(),
                     SpecialChar::Pipe.into(),
-                    SpecialChar::SqBrackO.into(),
-                    Symbol::Label,
-                    SpecialChar::Arrow.into(),
-                    Symbol::Value,
+                    Symbol::sqbrack(vec![
+                        Symbol::Label,
+                        SpecialChar::Arrow.into(),
+                        Symbol::Value,
+                    ]),
                     SpecialChar::Mu.into(),
                 ],
                 "E-Assign",

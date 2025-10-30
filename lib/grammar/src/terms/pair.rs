@@ -1,4 +1,4 @@
-use crate::{GrammarRuleDescribe, Rule, Symbol, symbols::SpecialChar};
+use crate::{GrammarRuleDescribe, Rule, Symbol};
 use syntax::{language::Language, terms::Pair};
 
 impl<Lang> GrammarRuleDescribe for Pair<Lang>
@@ -6,14 +6,6 @@ where
     Lang: Language,
 {
     fn rule() -> Rule {
-        Rule::new(
-            vec![
-                SpecialChar::BrackO.into(),
-                Symbol::many(Symbol::Term),
-                SpecialChar::BrackC.into(),
-            ]
-            .into(),
-            "Pair",
-        )
+        Rule::new(Symbol::brack(Symbol::many(Symbol::Term)), "Pair")
     }
 }

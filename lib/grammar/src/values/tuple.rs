@@ -1,4 +1,4 @@
-use crate::{GrammarRuleDescribe, Rule, Symbol, symbols::SpecialChar};
+use crate::{GrammarRuleDescribe, Rule, Symbol};
 use syntax::{language::Language, values::Tuple};
 
 impl<Lang> GrammarRuleDescribe for Tuple<Lang>
@@ -7,12 +7,7 @@ where
 {
     fn rule() -> Rule {
         Rule::new(
-            vec![
-                SpecialChar::ParenO.into(),
-                Symbol::Many(Box::new(Symbol::Value)),
-                SpecialChar::ParenC.into(),
-            ]
-            .into(),
+            vec![Symbol::paren(Symbol::Many(Box::new(Symbol::Value)))].into(),
             "Tuple",
         )
     }

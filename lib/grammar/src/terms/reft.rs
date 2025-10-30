@@ -1,7 +1,4 @@
-use crate::{
-    GrammarRuleDescribe, Rule, Symbol,
-    symbols::{Keyword, SpecialChar},
-};
+use crate::{GrammarRuleDescribe, Rule, Symbol, symbols::Keyword};
 use syntax::{language::Language, terms::Ref};
 
 impl<Lang> GrammarRuleDescribe for Ref<Lang>
@@ -10,13 +7,7 @@ where
 {
     fn rule() -> Rule {
         Rule::new(
-            vec![
-                Keyword::Ref.into(),
-                SpecialChar::ParenO.into(),
-                Symbol::Term,
-                SpecialChar::ParenO.into(),
-            ]
-            .into(),
+            vec![Keyword::Ref.into(), Symbol::paren(Symbol::Term)].into(),
             "Reference",
         )
     }

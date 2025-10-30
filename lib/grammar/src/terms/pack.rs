@@ -7,14 +7,7 @@ where
 {
     fn rule() -> Rule {
         Rule::new(
-            vec![
-                SpecialChar::BrackO.into(),
-                Symbol::Term,
-                SpecialChar::Comma.into(),
-                Symbol::Type,
-                SpecialChar::BrackC.into(),
-            ]
-            .into(),
+            Symbol::brack(vec![Symbol::Term, SpecialChar::Comma.into(), Symbol::Type]),
             "Package",
         )
     }

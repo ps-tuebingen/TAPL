@@ -71,19 +71,17 @@ where
     fn rules() -> HashSet<DerivationRule> {
         // <Label_k = Term> as <Label_i=Type_i,...>
         let term = vec![
-            SpecialChar::AngBrackO.into(),
-            Symbol::sub(Symbol::Label, "k"),
-            SpecialChar::Equals.into(),
-            Symbol::Term,
-            SpecialChar::AngBrackC.into(),
+            Symbol::angbrack(vec![
+                Symbol::sub(Symbol::Label, "k"),
+                SpecialChar::Equals.into(),
+                Symbol::Term,
+            ]),
             Keyword::As.into(),
-            SpecialChar::AngBrackO.into(),
-            Symbol::many(vec![
+            Symbol::angbrack(Symbol::many(vec![
                 Symbol::sub(Symbol::Label, "i"),
                 SpecialChar::Colon.into(),
                 Symbol::sub(Symbol::Type, "i"),
-            ]),
-            SpecialChar::AngBrackC.into(),
+            ])),
         ];
         HashSet::from([DerivationRule::check_cong(
             term,

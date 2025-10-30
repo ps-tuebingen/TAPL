@@ -44,9 +44,7 @@ where
                 ],
                 vec![
                     SpecialChar::Mu.into(),
-                    SpecialChar::ParenO.into(),
-                    Symbol::Location,
-                    SpecialChar::ParenC.into(),
+                    Symbol::paren(Symbol::Location),
                     SpecialChar::Pipe.into(),
                     SpecialChar::Mu.into(),
                 ],

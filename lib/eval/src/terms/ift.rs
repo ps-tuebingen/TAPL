@@ -2,7 +2,7 @@ use crate::Eval;
 use errors::{ValueMismatch, eval_error::EvalError};
 use grammar::{
     DerivationRule,
-    symbols::{Keyword, SpecialChar, Symbol},
+    symbols::{Keyword, Symbol},
 };
 use std::{collections::HashSet, rc::Rc};
 use syntax::{eval_context::EvalContext, language::Language, terms::If, values::ValueGroup};
@@ -71,13 +71,9 @@ where
                     vec![
                         Keyword::If.into(),
                         sym,
-                        SpecialChar::BrackO.into(),
-                        Symbol::sub(Symbol::Term, 3),
-                        SpecialChar::BrackC.into(),
+                        Symbol::brack(Symbol::sub(Symbol::Term, 3)),
                         Keyword::Else.into(),
-                        SpecialChar::BrackO.into(),
-                        Symbol::sub(Symbol::Term, 4),
-                        SpecialChar::BrackC.into(),
+                        Symbol::brack(Symbol::sub(Symbol::Term, 4)),
                     ]
                 },
                 "E-If1",
@@ -86,13 +82,9 @@ where
                 vec![
                     Keyword::If.into(),
                     Keyword::True.into(),
-                    SpecialChar::BrackO.into(),
-                    Symbol::sub(Symbol::Term, 1),
-                    SpecialChar::BrackC.into(),
+                    Symbol::brack(Symbol::sub(Symbol::Term, 1)),
                     Keyword::Else.into(),
-                    SpecialChar::BrackO.into(),
-                    Symbol::sub(Symbol::Term, 2),
-                    SpecialChar::BrackC.into(),
+                    Symbol::brack(Symbol::sub(Symbol::Term, 2)),
                 ],
                 Symbol::sub(Symbol::Term, 1),
                 "E-IfTrue",
@@ -101,13 +93,9 @@ where
                 vec![
                     Keyword::If.into(),
                     Keyword::False.into(),
-                    SpecialChar::BrackO.into(),
-                    Symbol::sub(Symbol::Term, 1),
-                    SpecialChar::BrackC.into(),
+                    Symbol::brack(Symbol::sub(Symbol::Term, 1)),
                     Keyword::Else.into(),
-                    SpecialChar::BrackO.into(),
-                    Symbol::sub(Symbol::Term, 2),
-                    SpecialChar::BrackC.into(),
+                    Symbol::brack(Symbol::sub(Symbol::Term, 2)),
                 ],
                 Symbol::sub(Symbol::Type, 2),
                 "E-IfFalse",

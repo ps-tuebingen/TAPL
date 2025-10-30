@@ -2,7 +2,7 @@ use crate::Eval;
 use errors::eval_error::EvalError;
 use grammar::{
     DerivationRule,
-    symbols::{Keyword, SpecialChar, Symbol},
+    symbols::{Keyword, Symbol},
 };
 use std::collections::HashSet;
 use syntax::{
@@ -35,12 +35,8 @@ where
             |sym| {
                 vec![
                     Keyword::Something.into(),
-                    SpecialChar::SqBrackO.into(),
-                    Symbol::Term,
-                    SpecialChar::BrackC.into(),
-                    SpecialChar::ParenO.into(),
-                    sym,
-                    SpecialChar::ParenC.into(),
+                    Symbol::sqbrack(Symbol::Term),
+                    Symbol::paren(sym),
                 ]
             },
             "E-Something1",

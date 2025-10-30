@@ -85,18 +85,17 @@ where
         HashSet::from([DerivationRule::check_cong(
             vec![
                 Keyword::Fold.into(),
-                SpecialChar::SqBrackO.into(),
-                mu_ty.clone().into(),
-                SpecialChar::SqBrackC.into(),
+                Symbol::sqbrack(mu_ty.clone()),
                 Symbol::Term,
             ],
             mu_ty.clone(),
             vec![
                 Symbol::Type,
-                SpecialChar::SqBrackO.into(),
-                Symbol::Typevariable,
-                SpecialChar::Arrow.into(),
-                mu_ty.into(),
+                Symbol::sqbrack(vec![
+                    Symbol::Typevariable,
+                    SpecialChar::Arrow.into(),
+                    mu_ty.into(),
+                ]),
             ],
             "T-Fold",
         )])

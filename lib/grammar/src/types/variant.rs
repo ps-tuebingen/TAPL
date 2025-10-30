@@ -7,14 +7,9 @@ where
 {
     fn rule() -> Rule {
         Rule::new(
-            vec![
-                SpecialChar::AngBrackO.into(),
-                Symbol::Many(Box::new(
-                    vec![Symbol::Label, SpecialChar::Equals.into(), Symbol::Type].into(),
-                )),
-                SpecialChar::AngBrackC.into(),
-            ]
-            .into(),
+            Symbol::angbrack(Symbol::Many(Box::new(
+                vec![Symbol::Label, SpecialChar::Equals.into(), Symbol::Type].into(),
+            ))),
             "Variant Type",
         )
     }

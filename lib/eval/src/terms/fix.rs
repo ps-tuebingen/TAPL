@@ -40,41 +40,34 @@ where
     fn rules() -> HashSet<DerivationRule> {
         HashSet::from([
             DerivationRule::eval_cong(
-                |sym| {
-                    vec![
-                        Keyword::Fix.into(),
-                        SpecialChar::ParenO.into(),
-                        sym,
-                        SpecialChar::ParenC.into(),
-                    ]
-                },
+                |sym| vec![Keyword::Fix.into(), Symbol::paren(sym)],
                 "E-Fix1",
             ),
             DerivationRule::eval(
                 vec![
                     Keyword::Fix.into(),
-                    SpecialChar::ParenO.into(),
-                    SpecialChar::Lambda.into(),
-                    Symbol::Variable,
-                    SpecialChar::Colon.into(),
-                    Symbol::Type,
-                    SpecialChar::Dot.into(),
-                    Symbol::Term,
-                    SpecialChar::ParenC.into(),
+                    Symbol::paren(vec![
+                        SpecialChar::Lambda.into(),
+                        Symbol::Variable,
+                        SpecialChar::Colon.into(),
+                        Symbol::Type,
+                        SpecialChar::Dot.into(),
+                        Symbol::Term,
+                    ]),
                 ],
                 vec![
                     Symbol::Term,
-                    SpecialChar::SqBrackO.into(),
-                    Symbol::Variable,
-                    SpecialChar::Arrow.into(),
-                    Keyword::Fix.into(),
-                    SpecialChar::Lambda.into(),
-                    Symbol::Variable,
-                    SpecialChar::Colon.into(),
-                    Symbol::Type,
-                    SpecialChar::Dot.into(),
-                    Symbol::Term,
-                    SpecialChar::SqBrackC.into(),
+                    Symbol::sqbrack(vec![
+                        Symbol::Variable,
+                        SpecialChar::Arrow.into(),
+                        Keyword::Fix.into(),
+                        SpecialChar::Lambda.into(),
+                        Symbol::Variable,
+                        SpecialChar::Colon.into(),
+                        Symbol::Type,
+                        SpecialChar::Dot.into(),
+                        Symbol::Term,
+                    ]),
                 ],
                 "E-Fix",
             ),

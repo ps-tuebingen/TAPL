@@ -57,12 +57,7 @@ where
 
     fn rules() -> HashSet<DerivationRule> {
         HashSet::from([DerivationRule::check_cong(
-            vec![
-                Keyword::Fix.into(),
-                SpecialChar::ParenO.into(),
-                Symbol::Term,
-                SpecialChar::ParenC.into(),
-            ],
+            vec![Keyword::Fix.into(), Symbol::paren(Symbol::Term)],
             Symbol::Type,
             vec![Symbol::Type, SpecialChar::Arrow.into(), Symbol::Type],
             "T-Fix",

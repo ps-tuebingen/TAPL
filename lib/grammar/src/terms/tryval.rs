@@ -1,7 +1,4 @@
-use crate::{
-    GrammarRuleDescribe, Rule, Symbol,
-    symbols::{Keyword, SpecialChar},
-};
+use crate::{GrammarRuleDescribe, Rule, Symbol, symbols::Keyword};
 use syntax::{language::Language, terms::TryWithVal};
 
 impl<Lang> GrammarRuleDescribe for TryWithVal<Lang>
@@ -12,13 +9,9 @@ where
         Rule::new(
             vec![
                 Keyword::Try.into(),
-                SpecialChar::BrackO.into(),
-                Symbol::Term,
-                SpecialChar::BrackC.into(),
+                Symbol::brack(Symbol::Term),
                 Keyword::Catch.into(),
-                SpecialChar::BrackO.into(),
-                Symbol::Term,
-                SpecialChar::BrackC.into(),
+                Symbol::brack(Symbol::Term),
             ]
             .into(),
             "Try-Catch",

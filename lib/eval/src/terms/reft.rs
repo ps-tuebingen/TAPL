@@ -43,9 +43,7 @@ where
                 |sym| {
                     vec![
                         Keyword::Ref.into(),
-                        SpecialChar::ParenO.into(),
-                        sym,
-                        SpecialChar::ParenC.into(),
+                        Symbol::paren(sym),
                         SpecialChar::Pipe.into(),
                         SpecialChar::Mu.into(),
                     ]
@@ -55,19 +53,18 @@ where
             DerivationRule::eval(
                 vec![
                     Keyword::Ref.into(),
-                    SpecialChar::ParenO.into(),
-                    Symbol::Value,
-                    SpecialChar::ParenC.into(),
+                    Symbol::paren(Symbol::Value),
                     SpecialChar::Pipe.into(),
                     SpecialChar::Mu.into(),
                 ],
                 vec![
                     Symbol::Location,
                     SpecialChar::Pipe.into(),
-                    SpecialChar::SqBrackO.into(),
-                    Symbol::Location,
-                    SpecialChar::Arrow.into(),
-                    Symbol::Value,
+                    Symbol::sqbrack(vec![
+                        Symbol::Location,
+                        SpecialChar::Arrow.into(),
+                        Symbol::Value,
+                    ]),
                 ],
                 "E-Ref",
             ),

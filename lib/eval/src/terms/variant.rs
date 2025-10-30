@@ -31,15 +31,7 @@ where
 
     fn rules() -> HashSet<DerivationRule> {
         HashSet::from([DerivationRule::eval_cong(
-            |sym| {
-                vec![
-                    SpecialChar::AngBrackO.into(),
-                    Symbol::Label,
-                    SpecialChar::Equals.into(),
-                    sym,
-                    SpecialChar::AngBrackC.into(),
-                ]
-            },
+            |sym| Symbol::angbrack(vec![Symbol::Label, SpecialChar::Equals.into(), sym]),
             "E-Variant",
         )])
     }

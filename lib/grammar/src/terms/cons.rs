@@ -12,14 +12,8 @@ where
         Rule::new(
             vec![
                 Keyword::Cons.into(),
-                SpecialChar::SqBrackO.into(),
-                Symbol::Type,
-                SpecialChar::SqBrackC.into(),
-                SpecialChar::ParenO.into(),
-                Symbol::Term,
-                SpecialChar::Comma.into(),
-                Symbol::Term,
-                SpecialChar::ParenC.into(),
+                Symbol::sqbrack(Symbol::Type),
+                Symbol::paren(vec![Symbol::Term, SpecialChar::Comma.into(), Symbol::Term]),
             ]
             .into(),
             "Cons",
