@@ -1,4 +1,7 @@
-use crate::{GrammarRuleDescribe, Rule, Symbol, symbols::Keyword};
+use crate::{
+    GrammarRuleDescribe, Rule, Symbol,
+    symbols::{Keyword, SpecialChar},
+};
 use syntax::{language::Language, terms::Fix};
 
 impl<Lang> GrammarRuleDescribe for Fix<Lang>
@@ -7,7 +10,13 @@ where
 {
     fn rule() -> Rule {
         Rule::new(
-            Symbol::ctor(Keyword::Fix, None, vec![Symbol::Term]),
+            vec![
+                Keyword::Fix.into(),
+                SpecialChar::ParenO.into(),
+                Symbol::Term,
+                SpecialChar::ParenC.into(),
+            ]
+            .into(),
             "Fixed Point",
         )
     }

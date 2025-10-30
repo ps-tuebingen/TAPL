@@ -1,4 +1,7 @@
-use crate::{GrammarRuleDescribe, Rule, Symbol, symbols::Keyword};
+use crate::{
+    GrammarRuleDescribe, Rule, Symbol,
+    symbols::{Keyword, SpecialChar},
+};
 use syntax::{language::Language, terms::Nil};
 
 impl<Lang> GrammarRuleDescribe for Nil<Lang>
@@ -7,7 +10,16 @@ where
 {
     fn rule() -> Rule {
         Rule::new(
-            Symbol::ctor(Keyword::Nil, Some(Symbol::Term), vec![Symbol::Term]),
+            vec![
+                Keyword::Nil.into(),
+                SpecialChar::SqBrackO.into(),
+                Symbol::Term,
+                SpecialChar::SqBrackC.into(),
+                SpecialChar::ParenO.into(),
+                Symbol::Term,
+                SpecialChar::ParenC.into(),
+            ]
+            .into(),
             "Empty List",
         )
     }

@@ -1,4 +1,7 @@
-use crate::{GrammarRuleDescribe, Rule, Symbol, symbols::Keyword};
+use crate::{
+    GrammarRuleDescribe, Rule, Symbol,
+    symbols::{Keyword, SpecialChar},
+};
 use syntax::{language::Language, terms::Unfold};
 
 impl<Lang> GrammarRuleDescribe for Unfold<Lang>
@@ -7,7 +10,16 @@ where
 {
     fn rule() -> Rule {
         Rule::new(
-            Symbol::ctor(Keyword::Unfold, Some(Symbol::Type), vec![Symbol::Term]),
+            vec![
+                Keyword::Unfold.into(),
+                SpecialChar::SqBrackO.into(),
+                Symbol::Type,
+                SpecialChar::SqBrackC.into(),
+                SpecialChar::ParenO.into(),
+                Symbol::Term,
+                SpecialChar::ParenC.into(),
+            ]
+            .into(),
             "Unfold",
         )
     }

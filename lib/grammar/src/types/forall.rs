@@ -1,4 +1,4 @@
-use crate::{GrammarRuleDescribe, Rule, Symbol};
+use crate::{GrammarRuleDescribe, Rule, Symbol, symbols::SpecialChar};
 use syntax::{language::Language, types::Forall};
 
 impl<Lang> GrammarRuleDescribe for Forall<Lang>
@@ -7,7 +7,15 @@ where
 {
     fn rule() -> Rule {
         Rule::new(
-            Symbol::forall_ty(Symbol::kind_annot(Symbol::Typevariable)),
+            vec![
+                SpecialChar::Forall.into(),
+                Symbol::Typevariable,
+                SpecialChar::DoubleColon.into(),
+                Symbol::Kind,
+                SpecialChar::Dot.into(),
+                Symbol::Type,
+            ]
+            .into(),
             "Universal Type",
         )
     }

@@ -1,4 +1,4 @@
-use crate::{GrammarRuleDescribe, Rule, Symbol};
+use crate::{GrammarRuleDescribe, Rule, Symbol, symbols::SpecialChar};
 use syntax::{language::Language, types::OpApp};
 
 impl<Lang> GrammarRuleDescribe for OpApp<Lang>
@@ -7,7 +7,7 @@ where
 {
     fn rule() -> Rule {
         Rule::new(
-            Symbol::app(Symbol::Type, Symbol::Type),
+            vec![Symbol::Type, SpecialChar::Space.into(), Symbol::Type].into(),
             "Operator Application",
         )
     }

@@ -1,4 +1,4 @@
-use crate::{GrammarRuleDescribe, Rule, Symbol};
+use crate::{GrammarRuleDescribe, Rule, Symbol, symbols::SpecialChar};
 use syntax::{language::Language, terms::RecordProj};
 
 impl<Lang> GrammarRuleDescribe for RecordProj<Lang>
@@ -6,6 +6,9 @@ where
     Lang: Language,
 {
     fn rule() -> Rule {
-        Rule::new(Symbol::dot(Symbol::Label), "Record Projection")
+        Rule::new(
+            vec![Symbol::Term, SpecialChar::Dot.into(), Symbol::Label].into(),
+            "Record Projection",
+        )
     }
 }

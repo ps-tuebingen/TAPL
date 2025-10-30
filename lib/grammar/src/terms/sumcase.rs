@@ -1,4 +1,4 @@
-use crate::{GrammarRuleDescribe, Rule, Symbol, symbols::Keyword};
+use crate::{GrammarRuleDescribe, Rule, Symbol, symbols::Keyword, symbols::SpecialChar};
 use syntax::{language::Language, terms::SumCase};
 
 impl<Lang> GrammarRuleDescribe for SumCase<Lang>
@@ -7,10 +7,25 @@ where
 {
     fn rule() -> Rule {
         Rule::new(
-            Symbol::case(vec![
-                Symbol::pt(Symbol::ctor_pt(Keyword::Left, 1), Symbol::Term),
-                Symbol::pt(Symbol::ctor_pt(Keyword::Right, 1), Symbol::Term),
-            ]),
+            vec![
+                Keyword::Case.into(),
+                Symbol::Term,
+                Keyword::Of.into(),
+                Keyword::Left.into(),
+                SpecialChar::ParenO.into(),
+                Symbol::Variable,
+                SpecialChar::ParenC.into(),
+                SpecialChar::DoubleArrow.into(),
+                Symbol::Term,
+                SpecialChar::Pipe.into(),
+                Keyword::Right.into(),
+                SpecialChar::ParenO.into(),
+                Symbol::Variable,
+                SpecialChar::ParenC.into(),
+                SpecialChar::DoubleArrow.into(),
+                Symbol::Term,
+            ]
+            .into(),
             "Sum Case",
         )
     }

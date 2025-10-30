@@ -1,4 +1,4 @@
-use crate::{GrammarRuleDescribe, Rule, Symbol};
+use crate::{GrammarRuleDescribe, Rule, Symbol, symbols::SpecialChar};
 use syntax::{language::Language, terms::Ascribe};
 
 impl<Lang> GrammarRuleDescribe for Ascribe<Lang>
@@ -6,6 +6,9 @@ where
     Lang: Language,
 {
     fn rule() -> Rule {
-        Rule::new(Symbol::ty_annot(Symbol::Term), "Ascription")
+        Rule::new(
+            vec![Symbol::Term, SpecialChar::Colon.into(), Symbol::Type].into(),
+            "Ascription",
+        )
     }
 }

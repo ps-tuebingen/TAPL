@@ -1,4 +1,7 @@
-use crate::{GrammarRuleDescribe, Rule, Symbol, symbols::Keyword};
+use crate::{
+    GrammarRuleDescribe, Rule, Symbol,
+    symbols::{Keyword, SpecialChar},
+};
 use syntax::{language::Language, terms::IsZero};
 
 impl<Lang> GrammarRuleDescribe for IsZero<Lang>
@@ -7,7 +10,13 @@ where
 {
     fn rule() -> Rule {
         Rule::new(
-            Symbol::ctor(Keyword::IsZero, None, vec![Symbol::Term]),
+            vec![
+                Keyword::IsZero.into(),
+                SpecialChar::ParenO.into(),
+                Symbol::Term,
+                SpecialChar::ParenC.into(),
+            ]
+            .into(),
             "IsZero",
         )
     }

@@ -6,6 +6,14 @@ where
     Lang: Language,
 {
     fn rule() -> Rule {
-        Rule::new(Symbol::dot(SpecialChar::Number.into()), "Projection")
+        Rule::new(
+            vec![
+                Symbol::Term,
+                SpecialChar::Dot.into(),
+                SpecialChar::Number.into(),
+            ]
+            .into(),
+            "Projection",
+        )
     }
 }

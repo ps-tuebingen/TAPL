@@ -1,4 +1,7 @@
-use crate::{GrammarRuleDescribe, Rule, Symbol, symbols::Keyword};
+use crate::{
+    GrammarRuleDescribe, Rule, Symbol,
+    symbols::{Keyword, SpecialChar},
+};
 use syntax::{language::Language, terms::Cons};
 
 impl<Lang> GrammarRuleDescribe for Cons<Lang>
@@ -7,11 +10,18 @@ where
 {
     fn rule() -> Rule {
         Rule::new(
-            Symbol::ctor(
-                Keyword::Cons,
-                Some(Symbol::Type),
-                vec![Symbol::Term, Symbol::Term],
-            ),
+            vec![
+                Keyword::Cons.into(),
+                SpecialChar::SqBrackO.into(),
+                Symbol::Type,
+                SpecialChar::SqBrackC.into(),
+                SpecialChar::ParenO.into(),
+                Symbol::Term,
+                SpecialChar::Comma.into(),
+                Symbol::Term,
+                SpecialChar::ParenC.into(),
+            ]
+            .into(),
             "Cons",
         )
     }

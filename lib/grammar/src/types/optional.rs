@@ -1,4 +1,7 @@
-use crate::{GrammarRuleDescribe, Rule, Symbol, symbols::Keyword};
+use crate::{
+    GrammarRuleDescribe, Rule, Symbol,
+    symbols::{Keyword, SpecialChar},
+};
 use syntax::{language::Language, types::Optional};
 
 impl<Lang> GrammarRuleDescribe for Optional<Lang>
@@ -7,7 +10,13 @@ where
 {
     fn rule() -> Rule {
         Rule::new(
-            Symbol::ctor(Keyword::Optional, Some(Symbol::Type), vec![]),
+            vec![
+                Keyword::Optional.into(),
+                SpecialChar::SqBrackO.into(),
+                Symbol::Type,
+                SpecialChar::SqBrackC.into(),
+            ]
+            .into(),
             "Option Type",
         )
     }

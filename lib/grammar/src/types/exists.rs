@@ -1,4 +1,4 @@
-use crate::{GrammarRuleDescribe, Rule, Symbol};
+use crate::{GrammarRuleDescribe, Rule, Symbol, symbols::SpecialChar};
 use syntax::{language::Language, types::Exists};
 
 impl<Lang> GrammarRuleDescribe for Exists<Lang>
@@ -7,7 +7,15 @@ where
 {
     fn rule() -> Rule {
         Rule::new(
-            Symbol::exists_ty(Symbol::kind_annot(Symbol::Type)),
+            vec![
+                SpecialChar::Exists.into(),
+                Symbol::Type,
+                SpecialChar::DoubleColon.into(),
+                Symbol::Kind,
+                SpecialChar::Dot.into(),
+                Symbol::Type,
+            ]
+            .into(),
             "Existential Type",
         )
     }

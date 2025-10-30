@@ -1,4 +1,4 @@
-use crate::{GrammarRuleDescribe, Rule, Symbol};
+use crate::{GrammarRuleDescribe, Rule, Symbol, symbols::SpecialChar};
 use syntax::{language::Language, types::OpLambdaSub};
 
 impl<Lang> GrammarRuleDescribe for OpLambdaSub<Lang>
@@ -7,7 +7,13 @@ where
 {
     fn rule() -> Rule {
         Rule::new(
-            Symbol::lam(Symbol::Type, Symbol::Type),
+            vec![
+                SpecialChar::Lambda.into(),
+                Symbol::Type,
+                SpecialChar::Dot.into(),
+                Symbol::Type,
+            ]
+            .into(),
             "Operator Abstraction",
         )
     }

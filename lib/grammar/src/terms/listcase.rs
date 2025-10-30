@@ -1,4 +1,7 @@
-use crate::{GrammarRuleDescribe, Rule, Symbol, symbols::Keyword};
+use crate::{
+    GrammarRuleDescribe, Rule, Symbol,
+    symbols::{Keyword, SpecialChar},
+};
 use syntax::{language::Language, terms::ListCase};
 
 impl<Lang> GrammarRuleDescribe for ListCase<Lang>
@@ -7,10 +10,24 @@ where
 {
     fn rule() -> Rule {
         Rule::new(
-            Symbol::case(vec![
-                Symbol::pt(Symbol::ctor_pt(Keyword::Nil, 0), Symbol::Term),
-                Symbol::pt(Symbol::ctor_pt(Keyword::Cons, 2), Symbol::Term),
-            ]),
+            vec![
+                Keyword::Case.into(),
+                Symbol::Term,
+                Keyword::Of.into(),
+                Keyword::Nil.into(),
+                SpecialChar::DoubleArrow.into(),
+                Symbol::Term,
+                SpecialChar::Pipe.into(),
+                Keyword::Cons.into(),
+                SpecialChar::ParenO.into(),
+                Symbol::Variable,
+                SpecialChar::Comma.into(),
+                Symbol::Variable,
+                SpecialChar::ParenC.into(),
+                SpecialChar::DoubleArrow.into(),
+                Symbol::Term,
+            ]
+            .into(),
             "Cast",
         )
     }
