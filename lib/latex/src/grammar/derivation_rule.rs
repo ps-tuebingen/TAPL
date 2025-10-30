@@ -33,7 +33,7 @@ fn derivation_to_frac_array(deriv: &DerivationRule, conf: &mut LatexConfig) -> S
     for prem in deriv.premises.iter() {
         premise_strs.push(prem.to_latex(conf));
     }
-    let cs = (0..=premise_strs.len()).map(|ind| "c").collect::<Vec<_>>();
+    let cs = (0..=premise_strs.len()).map(|_| "c").collect::<Vec<_>>();
     let premise_str = format!(
         "\\begin{{array}}{{ {} }}\n {} \\end{{array}}",
         cs.join(" "),

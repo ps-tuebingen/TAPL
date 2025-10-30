@@ -65,7 +65,7 @@ where
                 vec![
                     Symbol::Term,
                     SpecialChar::SqBrackO.into(),
-                    Symbol::Variable.into(),
+                    Symbol::Variable,
                     SpecialChar::Arrow.into(),
                     Keyword::Fix.into(),
                     SpecialChar::Lambda.into(),

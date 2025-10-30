@@ -76,7 +76,7 @@ where
                     Keyword::Try.into(),
                     Keyword::Err.into(),
                     Keyword::With.into(),
-                    Symbol::Term.into(),
+                    Symbol::Term,
                 ],
                 Keyword::Err,
                 "E-TryErr",

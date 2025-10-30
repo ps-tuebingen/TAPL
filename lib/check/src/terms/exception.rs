@@ -44,7 +44,7 @@ where
             vec![
                 Keyword::Err.into(),
                 SpecialChar::SqBrackO.into(),
-                Symbol::Type.into(),
+                Symbol::Type,
                 SpecialChar::SqBrackC.into(),
             ],
             Symbol::Type,

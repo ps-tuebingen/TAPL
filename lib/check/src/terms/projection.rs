@@ -67,7 +67,7 @@ where
                 SpecialChar::Ellipses.into(),
                 SpecialChar::ParenC.into(),
             ],
-            "T-Proj".into(),
+            "T-Proj",
         )])
     }
 }

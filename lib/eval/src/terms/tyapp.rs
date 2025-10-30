@@ -82,7 +82,7 @@ where
             DerivationRule::eval(
                 vec![
                     SpecialChar::Lambda.into(),
-                    Symbol::Typevariable.into(),
+                    Symbol::Typevariable,
                     ty_var.into(),
                     SpecialChar::Dot.into(),
                     Symbol::Term,

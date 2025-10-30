@@ -296,7 +296,7 @@ impl Symbol {
         vec![
             SpecialChar::AngBrackO.into(),
             Symbol::Many(Box::new(
-                vec![Symbol::Label.into(), SpecialChar::Equals.into(), inner].into(),
+                vec![Symbol::Label, SpecialChar::Equals.into(), inner].into(),
             )),
             SpecialChar::AngBrackC.into(),
         ]

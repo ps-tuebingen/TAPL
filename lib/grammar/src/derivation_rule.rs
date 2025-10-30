@@ -301,7 +301,7 @@ impl DerivationRule {
                 ConclusionRule {
                     env: vec![
                         SpecialChar::Gamma.into(),
-                        Symbol::Variable.into(),
+                        Symbol::Variable,
                         SpecialChar::Colon.into(),
                         Symbol::sub(Symbol::Type, 1),
                     ]
@@ -316,7 +316,7 @@ impl DerivationRule {
                 env: SpecialChar::Gamma.into(),
                 input: vec![
                     Keyword::Let.into(),
-                    Symbol::Variable.into(),
+                    Symbol::Variable,
                     SpecialChar::Equals.into(),
                     Symbol::sub(Symbol::Term, 1),
                     Keyword::Let.into(),
@@ -1378,7 +1378,6 @@ impl DerivationRule {
                 SpecialChar::Dot.into(),
                 Symbol::sub(Symbol::Type, 1),
             ]
-            .into()
         };
         let conc_out = if bounded {
             vec![
@@ -1393,7 +1392,7 @@ impl DerivationRule {
         } else {
             vec![
                 SpecialChar::Forall.into(),
-                Symbol::Typevariable.into(),
+                Symbol::Typevariable,
                 SpecialChar::DoubleColon.into(),
                 Symbol::Kind,
                 SpecialChar::Dot.into(),
@@ -1821,7 +1820,6 @@ impl DerivationRule {
                 SpecialChar::Dot.into(),
                 Symbol::sub(Symbol::Type, 2),
             ]
-            .into()
         } else {
             vec![
                 SpecialChar::Exists.into(),
