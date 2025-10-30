@@ -2,7 +2,15 @@ use super::{Subtypes, terms::Term, types::Type};
 use check::{Kindcheck, Normalize, Subtypecheck, Typecheck};
 use derivations::{Derivation, NormalizingDerivation};
 use errors::{NoKinding, check_error::CheckError};
-use syntax::env::Environment;
+use grammar::DerivationRule;
+use std::collections::HashSet;
+use syntax::{
+    env::Environment,
+    terms::{
+        App, Assign, Cast, Cons, Deref, False, Fix, If, Lambda, Let, Loc, Nil, Num, Pred, Record,
+        RecordProj, Ref, Succ, True, Unit, Variable, Variant, VariantCase,
+    },
+};
 
 impl Typecheck for Term {
     type Lang = Subtypes;
@@ -35,6 +43,34 @@ impl Typecheck for Term {
             Term::Fix(fix) => fix.check(env),
         }
     }
+
+    fn rules() -> HashSet<DerivationRule> {
+        let mut rules = HashSet::new();
+        rules.extend(Variable::<Subtypes>::rules());
+        rules.extend(Lambda::<Subtypes>::rules());
+        rules.extend(App::<Subtypes>::rules());
+        rules.extend(Unit::<Subtypes>::rules());
+        rules.extend(Record::<Subtypes>::rules());
+        rules.extend(RecordProj::<Subtypes>::rules());
+        rules.extend(Variant::<Subtypes>::rules());
+        rules.extend(VariantCase::<Subtypes>::rules());
+        rules.extend(Cast::<Subtypes>::rules());
+        rules.extend(Nil::<Subtypes>::rules());
+        rules.extend(Cons::<Subtypes>::rules());
+        rules.extend(Ref::<Subtypes>::rules());
+        rules.extend(Deref::<Subtypes>::rules());
+        rules.extend(Assign::<Subtypes>::rules());
+        rules.extend(Loc::<Subtypes>::rules());
+        rules.extend(Num::<Subtypes>::rules());
+        rules.extend(Succ::<Subtypes>::rules());
+        rules.extend(Pred::<Subtypes>::rules());
+        rules.extend(True::<Subtypes>::rules());
+        rules.extend(False::<Subtypes>::rules());
+        rules.extend(If::<Subtypes>::rules());
+        rules.extend(Let::<Subtypes>::rules());
+        rules.extend(Fix::<Subtypes>::rules());
+        rules
+    }
 }
 
 impl Subtypecheck for Type {
@@ -60,6 +96,34 @@ impl Subtypecheck for Type {
             Type::Bool(b) => b.check_subtype(sup, env),
         }
     }
+
+    fn rules() -> HashSet<DerivationRule> {
+        let mut rules = HashSet::new();
+        rules.extend(Variable::<Subtypes>::rules());
+        rules.extend(Lambda::<Subtypes>::rules());
+        rules.extend(App::<Subtypes>::rules());
+        rules.extend(Unit::<Subtypes>::rules());
+        rules.extend(Record::<Subtypes>::rules());
+        rules.extend(RecordProj::<Subtypes>::rules());
+        rules.extend(Variant::<Subtypes>::rules());
+        rules.extend(VariantCase::<Subtypes>::rules());
+        rules.extend(Cast::<Subtypes>::rules());
+        rules.extend(Nil::<Subtypes>::rules());
+        rules.extend(Cons::<Subtypes>::rules());
+        rules.extend(Ref::<Subtypes>::rules());
+        rules.extend(Deref::<Subtypes>::rules());
+        rules.extend(Assign::<Subtypes>::rules());
+        rules.extend(Loc::<Subtypes>::rules());
+        rules.extend(Num::<Subtypes>::rules());
+        rules.extend(Succ::<Subtypes>::rules());
+        rules.extend(Pred::<Subtypes>::rules());
+        rules.extend(True::<Subtypes>::rules());
+        rules.extend(False::<Subtypes>::rules());
+        rules.extend(If::<Subtypes>::rules());
+        rules.extend(Let::<Subtypes>::rules());
+        rules.extend(Fix::<Subtypes>::rules());
+        rules
+    }
 }
 
 impl Kindcheck for Type {
@@ -67,11 +131,19 @@ impl Kindcheck for Type {
     fn check_kind(&self, _: Environment<Self::Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
         Err(NoKinding::new("Subtypes").into())
     }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::new()
+    }
 }
 
 impl Normalize for Type {
     type Lang = Subtypes;
     fn normalize(self, _: Environment<Self::Lang>) -> Derivation<Self::Lang> {
         NormalizingDerivation::empty(self).into()
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::new()
     }
 }

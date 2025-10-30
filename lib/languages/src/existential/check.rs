@@ -2,7 +2,15 @@ use super::{Existential, terms::Term, types::Type};
 use check::{Kindcheck, Subtypecheck, Typecheck};
 use derivations::Derivation;
 use errors::{NoKinding, NoSubtyping, check_error::CheckError};
-use syntax::env::Environment;
+use grammar::DerivationRule;
+use std::collections::HashSet;
+use syntax::{
+    env::Environment,
+    terms::{
+        App, False, Fix, If, IsZero, Lambda, Num, Pack, Pred, Record, RecordProj, Succ, True, Unit,
+        Unpack, Variable,
+    },
+};
 
 impl Typecheck for Term {
     type Lang = Existential;
@@ -27,6 +35,27 @@ impl Typecheck for Term {
             Term::Fix(fix) => fix.check(env),
         }
     }
+
+    fn rules() -> HashSet<DerivationRule> {
+        let mut rules = HashSet::new();
+        rules.extend(Variable::<Existential>::rules());
+        rules.extend(Unit::<Existential>::rules());
+        rules.extend(Lambda::<Existential>::rules());
+        rules.extend(App::<Existential>::rules());
+        rules.extend(Pack::<Existential>::rules());
+        rules.extend(Unpack::<Existential>::rules());
+        rules.extend(Num::<Existential>::rules());
+        rules.extend(Succ::<Existential>::rules());
+        rules.extend(Pred::<Existential>::rules());
+        rules.extend(IsZero::<Existential>::rules());
+        rules.extend(Record::<Existential>::rules());
+        rules.extend(RecordProj::<Existential>::rules());
+        rules.extend(True::<Existential>::rules());
+        rules.extend(False::<Existential>::rules());
+        rules.extend(If::<Existential>::rules());
+        rules.extend(Fix::<Existential>::rules());
+        rules
+    }
 }
 
 impl Subtypecheck for Type {
@@ -39,11 +68,19 @@ impl Subtypecheck for Type {
     ) -> Result<Derivation<Self::Lang>, CheckError> {
         Err(NoSubtyping::new("Existential").into())
     }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::new()
+    }
 }
 
 impl Kindcheck for Type {
     type Lang = Existential;
     fn check_kind(&self, _: Environment<Self::Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
         Err(NoKinding::new("Existential").into())
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::new()
     }
 }

@@ -46,6 +46,7 @@ pub mod tylambda;
 pub mod unfold;
 pub mod unit;
 pub mod unpack;
+pub mod untyped_lambda;
 pub mod variable;
 pub mod variant;
 pub mod variantcase;

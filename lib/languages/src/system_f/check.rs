@@ -2,7 +2,12 @@ use super::{SystemF, terms::Term, types::Type};
 use check::{Kindcheck, Subtypecheck, Typecheck};
 use derivations::Derivation;
 use errors::{NoKinding, NoSubtyping, check_error::CheckError};
-use syntax::env::Environment;
+use grammar::DerivationRule;
+use std::collections::HashSet;
+use syntax::{
+    env::Environment,
+    terms::{App, Lambda, TyApp, TyLambda, Variable},
+};
 
 impl Typecheck for Term {
     type Lang = SystemF;
@@ -16,6 +21,17 @@ impl Typecheck for Term {
             Term::TyApp(app) => app.check(env),
         }
     }
+
+    fn rules() -> HashSet<DerivationRule> {
+        let mut rules = HashSet::new();
+        rules.extend(Variable::<SystemF>::rules());
+        rules.extend(Lambda::<SystemF>::rules());
+        rules.extend(Lambda::<SystemF>::rules());
+        rules.extend(App::<SystemF>::rules());
+        rules.extend(TyLambda::<SystemF>::rules());
+        rules.extend(TyApp::<SystemF>::rules());
+        rules
+    }
 }
 
 impl Subtypecheck for Type {
@@ -27,11 +43,19 @@ impl Subtypecheck for Type {
     ) -> Result<Derivation<Self::Lang>, CheckError> {
         Err(NoSubtyping::new("System F").into())
     }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::new()
+    }
 }
 
 impl Kindcheck for Type {
     type Lang = SystemF;
     fn check_kind(&self, _: Environment<Self::Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
         Err(NoKinding::new("System F").into())
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::new()
     }
 }

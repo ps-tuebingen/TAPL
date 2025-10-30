@@ -3,8 +3,13 @@ use check::Normalize;
 use derivations::{Derivation, NormalizingDerivation};
 use errors::eval_error::EvalError;
 use eval::Eval;
-use syntax::env::Environment;
-use syntax::eval_context::EvalContext;
+use grammar::DerivationRule;
+use std::collections::HashSet;
+use syntax::{
+    env::Environment,
+    eval_context::EvalContext,
+    terms::{App, False, Lambda, Num, True, TyApp, TyLambda, Unit, Variable},
+};
 use trace::EvalTrace;
 
 impl Eval for Term {
@@ -22,11 +27,29 @@ impl Eval for Term {
             Term::TyApp(tyapp) => tyapp.eval(env),
         }
     }
+
+    fn rules() -> HashSet<DerivationRule> {
+        let mut rules = HashSet::new();
+        rules.extend(Variable::<LambdaOmega>::rules());
+        rules.extend(Num::<LambdaOmega>::rules());
+        rules.extend(True::<LambdaOmega>::rules());
+        rules.extend(False::<LambdaOmega>::rules());
+        rules.extend(Lambda::<LambdaOmega>::rules());
+        rules.extend(App::<LambdaOmega>::rules());
+        rules.extend(Unit::<LambdaOmega>::rules());
+        rules.extend(TyLambda::<LambdaOmega>::rules());
+        rules.extend(TyApp::<LambdaOmega>::rules());
+        rules
+    }
 }
 
 impl Normalize for Type {
     type Lang = LambdaOmega;
     fn normalize(self, _: Environment<Self::Lang>) -> Derivation<Self::Lang> {
         NormalizingDerivation::empty(self).into()
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::new()
     }
 }

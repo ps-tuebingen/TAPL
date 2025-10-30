@@ -2,7 +2,7 @@ use crate::{
     TypeVar,
     language::Language,
     subst::SubstType,
-    types::{Type, TypeGroup},
+    types::{Bool, Fun, Nat, Type, TypeGroup},
 };
 use std::{fmt, marker::PhantomData};
 
@@ -59,6 +59,33 @@ where
     Lang: Language,
 {
     fn default() -> Untyped<Lang> {
+        Untyped::new()
+    }
+}
+
+impl<Lang> From<Fun<Lang>> for Untyped<Lang>
+where
+    Lang: Language,
+{
+    fn from(_: Fun<Lang>) -> Untyped<Lang> {
+        Untyped::new()
+    }
+}
+
+impl<Lang> From<Bool<Lang>> for Untyped<Lang>
+where
+    Lang: Language,
+{
+    fn from(_: Bool<Lang>) -> Untyped<Lang> {
+        Untyped::new()
+    }
+}
+
+impl<Lang> From<Nat<Lang>> for Untyped<Lang>
+where
+    Lang: Language,
+{
+    fn from(_: Nat<Lang>) -> Untyped<Lang> {
         Untyped::new()
     }
 }

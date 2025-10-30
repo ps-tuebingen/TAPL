@@ -2,7 +2,15 @@ use super::{Exceptions, terms::Term, types::Type};
 use check::{Kindcheck, Subtypecheck, Typecheck};
 use derivations::Derivation;
 use errors::{NoKinding, NoSubtyping, check_error::CheckError};
-use syntax::env::Environment;
+use grammar::DerivationRule;
+use std::collections::HashSet;
+use syntax::{
+    env::Environment,
+    terms::{
+        App, Exception, False, If, IsZero, Lambda, Num, Pred, Raise, Succ, True, Try, TryWithVal,
+        Unit, Variable,
+    },
+};
 
 impl Typecheck for Term {
     type Lang = Exceptions;
@@ -26,6 +34,26 @@ impl Typecheck for Term {
             Term::TryWithVal(t) => t.check(env),
         }
     }
+
+    fn rules() -> HashSet<DerivationRule> {
+        let mut rules = HashSet::new();
+        rules.extend(Variable::<Exceptions>::rules());
+        rules.extend(Num::<Exceptions>::rules());
+        rules.extend(True::<Exceptions>::rules());
+        rules.extend(False::<Exceptions>::rules());
+        rules.extend(Succ::<Exceptions>::rules());
+        rules.extend(Pred::<Exceptions>::rules());
+        rules.extend(IsZero::<Exceptions>::rules());
+        rules.extend(If::<Exceptions>::rules());
+        rules.extend(Lambda::<Exceptions>::rules());
+        rules.extend(App::<Exceptions>::rules());
+        rules.extend(Unit::<Exceptions>::rules());
+        rules.extend(Exception::<Exceptions>::rules());
+        rules.extend(Try::<Exceptions>::rules());
+        rules.extend(Raise::<Exceptions>::rules());
+        rules.extend(TryWithVal::<Exceptions>::rules());
+        rules
+    }
 }
 
 impl Subtypecheck for Type {
@@ -38,12 +66,20 @@ impl Subtypecheck for Type {
     ) -> Result<Derivation<Self::Lang>, CheckError> {
         Err(NoSubtyping::new("Exceptions").into())
     }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::new()
+    }
 }
 
 impl Kindcheck for Type {
     type Lang = Exceptions;
     fn check_kind(&self, _: Environment<Self::Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
         Err(NoKinding::new("Exceptions").into())
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::new()
     }
 }
 

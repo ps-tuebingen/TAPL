@@ -2,8 +2,9 @@ use super::UntypedArithmetic;
 use check::Typecheck;
 use derivations::Derivation;
 use errors::{NoTyping, check_error::CheckError};
-use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
+use grammar::{DerivationRule, Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
+use std::collections::HashSet;
 use std::fmt;
 use syntax::{
     TypeVar, Var,
@@ -92,6 +93,10 @@ impl Typecheck for Term {
         _: Environment<UntypedArithmetic>,
     ) -> Result<Derivation<UntypedArithmetic>, CheckError> {
         Err(NoTyping::new(UntypedArithmetic.describe()).into())
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::new()
     }
 }
 

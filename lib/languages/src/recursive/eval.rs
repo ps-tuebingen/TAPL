@@ -3,8 +3,16 @@ use check::Normalize;
 use derivations::{Derivation, NormalizingDerivation};
 use errors::eval_error::EvalError;
 use eval::Eval;
-use syntax::env::Environment;
-use syntax::eval_context::EvalContext;
+use grammar::DerivationRule;
+use std::collections::HashSet;
+use syntax::{
+    env::Environment,
+    eval_context::EvalContext,
+    terms::{
+        App, False, Fix, Fold, Fst, If, IsZero, Lambda, Let, Num, Pair, Pred, Record, RecordProj,
+        Snd, Succ, True, Unfold, Unit, Variable, Variant, VariantCase,
+    },
+};
 use trace::EvalTrace;
 
 impl Eval for Term {
@@ -35,11 +43,42 @@ impl Eval for Term {
             Term::RecordProj(proj) => proj.eval(env),
         }
     }
+
+    fn rules() -> HashSet<DerivationRule> {
+        let mut rules = HashSet::new();
+        rules.extend(Variable::<Recursive>::rules());
+        rules.extend(Lambda::<Recursive>::rules());
+        rules.extend(App::<Recursive>::rules());
+        rules.extend(Unit::<Recursive>::rules());
+        rules.extend(Fold::<Recursive>::rules());
+        rules.extend(Unfold::<Recursive>::rules());
+        rules.extend(Variant::<Recursive>::rules());
+        rules.extend(VariantCase::<Recursive>::rules());
+        rules.extend(Pair::<Recursive>::rules());
+        rules.extend(Fst::<Recursive>::rules());
+        rules.extend(Snd::<Recursive>::rules());
+        rules.extend(Num::<Recursive>::rules());
+        rules.extend(Succ::<Recursive>::rules());
+        rules.extend(Pred::<Recursive>::rules());
+        rules.extend(IsZero::<Recursive>::rules());
+        rules.extend(True::<Recursive>::rules());
+        rules.extend(False::<Recursive>::rules());
+        rules.extend(If::<Recursive>::rules());
+        rules.extend(Fix::<Recursive>::rules());
+        rules.extend(Let::<Recursive>::rules());
+        rules.extend(Record::<Recursive>::rules());
+        rules.extend(RecordProj::<Recursive>::rules());
+        rules
+    }
 }
 
 impl Normalize for Type {
     type Lang = Recursive;
     fn normalize(self, _: Environment<Self::Lang>) -> Derivation<Self::Lang> {
         NormalizingDerivation::empty(self).into()
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::new()
     }
 }

@@ -2,9 +2,9 @@ use super::UntypedLambda;
 use check::Typecheck;
 use derivations::Derivation;
 use errors::{NoTyping, check_error::CheckError};
-use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
+use grammar::{DerivationRule, Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
-use std::fmt;
+use std::{collections::HashSet, fmt};
 use syntax::{
     TypeVar,
     env::Environment,
@@ -79,6 +79,10 @@ impl Typecheck for Term {
 
     fn check(&self, _: Environment<Self::Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
         Err(NoTyping::new(UntypedLambda.describe()).into())
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::new()
     }
 }
 

@@ -1,7 +1,8 @@
-pub mod definition;
-pub mod program;
-pub mod terms;
-pub mod types;
+mod definition;
+mod program;
+mod terms;
+mod types;
+mod untyped;
 
 mod kindcheck;
 mod normalize;

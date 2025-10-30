@@ -2,13 +2,14 @@ use crate::{
     Symbol,
     symbols::{Keyword, SpecialChar},
 };
+use std::collections::HashSet;
 
 /// Rule for a typing derivation
 /// For example
 /// Gamma |-> t1:ty2->ty1   Gamma |-> t2:ty2
 /// ---------------------------------------
 ///          Gamma |-> t1 t2: ty2
-#[derive(Debug, PartialEq, Eq, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct DerivationRule {
     /// premises of the derivation rule
     pub premises: Vec<ConclusionRule>,
@@ -2287,7 +2288,7 @@ impl DerivationRule {
 
 /// Conclusion for a Derivation rule
 /// for example Gamma |-> t:ty
-#[derive(Debug, PartialEq, Eq, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct ConclusionRule {
     /// The symbol used for the environment
     /// usually Gamma
@@ -2302,9 +2303,9 @@ pub struct ConclusionRule {
 
 #[derive(Debug)]
 pub struct LanguageRules {
-    pub typing: Vec<DerivationRule>,
-    pub subtyping: Vec<DerivationRule>,
-    pub kinding: Vec<DerivationRule>,
-    pub normalizing: Vec<DerivationRule>,
-    pub eval: Vec<DerivationRule>,
+    pub typing: HashSet<DerivationRule>,
+    pub subtyping: HashSet<DerivationRule>,
+    pub kinding: HashSet<DerivationRule>,
+    pub normalizing: HashSet<DerivationRule>,
+    pub eval: HashSet<DerivationRule>,
 }

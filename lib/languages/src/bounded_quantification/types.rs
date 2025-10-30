@@ -2,8 +2,9 @@ use super::BoundedQuantification;
 use check::Normalize;
 use derivations::{Derivation, NormalizingDerivation};
 use errors::TypeMismatch;
-use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
+use grammar::{DerivationRule, Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
+use std::collections::HashSet;
 use std::fmt;
 use syntax::{
     TypeVar,
@@ -160,6 +161,10 @@ impl Normalize for Type {
     type Lang = BoundedQuantification;
     fn normalize(self, _: Environment<BoundedQuantification>) -> Derivation<Self::Lang> {
         NormalizingDerivation::empty(self).into()
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::new()
     }
 }
 

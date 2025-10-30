@@ -3,10 +3,15 @@ use check::Normalize;
 use derivations::{Derivation, NormalizingDerivation};
 use errors::eval_error::EvalError;
 use eval::Eval;
-use syntax::eval_context::EvalContext;
+use grammar::DerivationRule;
+use std::collections::HashSet;
 use syntax::{
     env::Environment,
-    terms::{False, Num, True, Unit, Variable},
+    eval_context::EvalContext,
+    terms::{
+        App, Exception, False, If, IsZero, Lambda, Num, Pred, Raise, Succ, True, Try, TryWithVal,
+        Unit, Variable,
+    },
 };
 use trace::EvalTrace;
 
@@ -31,12 +36,36 @@ impl Eval for Term {
             Term::Raise(r) => r.eval(env),
         }
     }
+
+    fn rules() -> HashSet<DerivationRule> {
+        let mut rules = HashSet::new();
+        rules.extend(Variable::<Exceptions>::rules());
+        rules.extend(Num::<Exceptions>::rules());
+        rules.extend(True::<Exceptions>::rules());
+        rules.extend(False::<Exceptions>::rules());
+        rules.extend(Succ::<Exceptions>::rules());
+        rules.extend(Pred::<Exceptions>::rules());
+        rules.extend(IsZero::<Exceptions>::rules());
+        rules.extend(If::<Exceptions>::rules());
+        rules.extend(Lambda::<Exceptions>::rules());
+        rules.extend(App::<Exceptions>::rules());
+        rules.extend(Unit::<Exceptions>::rules());
+        rules.extend(Exception::<Exceptions>::rules());
+        rules.extend(Try::<Exceptions>::rules());
+        rules.extend(Raise::<Exceptions>::rules());
+        rules.extend(TryWithVal::<Exceptions>::rules());
+        rules
+    }
 }
 
 impl Normalize for Type {
     type Lang = Exceptions;
     fn normalize(self, _: Environment<Self::Lang>) -> Derivation<Self::Lang> {
         NormalizingDerivation::empty(self).into()
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::new()
     }
 }
 

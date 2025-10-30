@@ -1,12 +1,10 @@
 use crate::Typecheck;
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
+use grammar::DerivationRule;
+use std::collections::HashSet;
 use syntax::{
-    env::Environment,
-    language::Language,
-    terms::{Term, UntypedLambda},
-    types::Fun,
-    untyped::Untyped,
+    env::Environment, language::Language, terms::UntypedLambda, types::Fun, untyped::Untyped,
 };
 
 impl<Lang> Typecheck for UntypedLambda<Lang>
@@ -26,5 +24,9 @@ where
             Untyped::new().into(),
         ))
         .into())
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::new()
     }
 }

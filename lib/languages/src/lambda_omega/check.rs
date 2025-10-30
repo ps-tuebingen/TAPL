@@ -2,7 +2,12 @@ use super::{LambdaOmega, terms::Term, types::Type};
 use check::{Kindcheck, Subtypecheck, Typecheck};
 use derivations::Derivation;
 use errors::{NoSubtyping, check_error::CheckError};
-use syntax::env::Environment;
+use grammar::DerivationRule;
+use std::collections::HashSet;
+use syntax::{
+    env::Environment,
+    terms::{App, False, Lambda, Num, True, TyApp, TyLambda, Unit, Variable},
+};
 
 impl Typecheck for Term {
     type Lang = LambdaOmega;
@@ -20,6 +25,20 @@ impl Typecheck for Term {
             Term::TyApp(tyapp) => tyapp.check(env),
         }
     }
+
+    fn rules() -> HashSet<DerivationRule> {
+        let mut rules = HashSet::new();
+        rules.extend(Variable::<LambdaOmega>::rules());
+        rules.extend(Num::<LambdaOmega>::rules());
+        rules.extend(True::<LambdaOmega>::rules());
+        rules.extend(False::<LambdaOmega>::rules());
+        rules.extend(Lambda::<LambdaOmega>::rules());
+        rules.extend(App::<LambdaOmega>::rules());
+        rules.extend(Unit::<LambdaOmega>::rules());
+        rules.extend(TyLambda::<LambdaOmega>::rules());
+        rules.extend(TyApp::<LambdaOmega>::rules());
+        rules
+    }
 }
 
 impl Subtypecheck for Type {
@@ -30,6 +49,10 @@ impl Subtypecheck for Type {
         _: Environment<Self::Lang>,
     ) -> Result<Derivation<Self::Lang>, CheckError> {
         Err(NoSubtyping::new("Lambda Omega").into())
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::new()
     }
 }
 
@@ -49,5 +72,19 @@ impl Kindcheck for Type {
             Type::Fun(fun) => fun.check_kind(env),
             Type::Forall(forall) => forall.check_kind(env),
         }
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        let mut rules = HashSet::new();
+        rules.extend(Variable::<LambdaOmega>::rules());
+        rules.extend(Num::<LambdaOmega>::rules());
+        rules.extend(True::<LambdaOmega>::rules());
+        rules.extend(False::<LambdaOmega>::rules());
+        rules.extend(Lambda::<LambdaOmega>::rules());
+        rules.extend(App::<LambdaOmega>::rules());
+        rules.extend(Unit::<LambdaOmega>::rules());
+        rules.extend(TyLambda::<LambdaOmega>::rules());
+        rules.extend(TyApp::<LambdaOmega>::rules());
+        rules
     }
 }

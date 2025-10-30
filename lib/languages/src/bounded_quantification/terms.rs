@@ -23,7 +23,7 @@ pub enum Term {
     Pack(Pack<BoundedQuantification>),
     Unpack(Unpack<BoundedQuantification>),
     Record(Record<BoundedQuantification>),
-    Projection(RecordProj<BoundedQuantification>),
+    RecordProj(RecordProj<BoundedQuantification>),
 }
 
 impl syntax::terms::Term for Term {}
@@ -61,7 +61,7 @@ impl fmt::Display for Term {
             Term::Pack(pack) => pack.fmt(f),
             Term::Unpack(unpack) => unpack.fmt(f),
             Term::Record(rec) => rec.fmt(f),
-            Term::Projection(proj) => proj.fmt(f),
+            Term::RecordProj(proj) => proj.fmt(f),
         }
     }
 }
@@ -80,7 +80,7 @@ impl LatexFmt for Term {
             Term::Pack(pack) => pack.to_latex(conf),
             Term::Unpack(unpack) => unpack.to_latex(conf),
             Term::Record(rec) => rec.to_latex(conf),
-            Term::Projection(proj) => proj.to_latex(conf),
+            Term::RecordProj(proj) => proj.to_latex(conf),
         }
     }
 }
@@ -101,7 +101,7 @@ impl SubstTerm for Term {
             Term::Pack(pack) => pack.subst(v, t).into(),
             Term::Unpack(unpack) => unpack.subst(v, t).into(),
             Term::Record(rec) => rec.subst(v, t).into(),
-            Term::Projection(proj) => proj.subst(v, t).into(),
+            Term::RecordProj(proj) => proj.subst(v, t).into(),
         }
     }
 }
@@ -122,7 +122,7 @@ impl SubstType for Term {
             Term::Pack(pack) => pack.subst_type(v, t).into(),
             Term::Unpack(unpack) => unpack.subst_type(v, t).into(),
             Term::Record(rec) => rec.subst_type(v, t).into(),
-            Term::Projection(proj) => proj.subst_type(v, t).into(),
+            Term::RecordProj(proj) => proj.subst_type(v, t).into(),
         }
     }
 }
@@ -195,6 +195,6 @@ impl From<Record<BoundedQuantification>> for Term {
 
 impl From<RecordProj<BoundedQuantification>> for Term {
     fn from(proj: RecordProj<BoundedQuantification>) -> Term {
-        Term::Projection(proj)
+        Term::RecordProj(proj)
     }
 }

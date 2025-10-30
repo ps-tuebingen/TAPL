@@ -3,8 +3,16 @@ use check::Normalize;
 use derivations::Derivation;
 use errors::eval_error::EvalError;
 use eval::Eval;
-use syntax::env::Environment;
-use syntax::eval_context::EvalContext;
+use grammar::DerivationRule;
+use std::collections::HashSet;
+use syntax::{
+    env::Environment,
+    eval_context::EvalContext,
+    terms::{
+        App, Lambda, LambdaSub, Let, Num, Pack, Pred, Record, RecordProj, Succ, TyApp, Unpack,
+        Variable,
+    },
+};
 use trace::EvalTrace;
 
 impl Eval for Term {
@@ -26,6 +34,24 @@ impl Eval for Term {
             Term::Let(lt) => lt.eval(env),
         }
     }
+
+    fn rules() -> HashSet<DerivationRule> {
+        let mut rules = HashSet::new();
+        rules.extend(Variable::<FOmegaSub>::rules());
+        rules.extend(Lambda::<FOmegaSub>::rules());
+        rules.extend(App::<FOmegaSub>::rules());
+        rules.extend(LambdaSub::<FOmegaSub>::rules());
+        rules.extend(TyApp::<FOmegaSub>::rules());
+        rules.extend(Pack::<FOmegaSub>::rules());
+        rules.extend(Unpack::<FOmegaSub>::rules());
+        rules.extend(Record::<FOmegaSub>::rules());
+        rules.extend(RecordProj::<FOmegaSub>::rules());
+        rules.extend(Num::<FOmegaSub>::rules());
+        rules.extend(Succ::<FOmegaSub>::rules());
+        rules.extend(Pred::<FOmegaSub>::rules());
+        rules.extend(Let::<FOmegaSub>::rules());
+        rules
+    }
 }
 
 impl Normalize for Type {
@@ -42,5 +68,23 @@ impl Normalize for Type {
             Type::Record(rec) => rec.normalize(env),
             Type::Nat(nat) => nat.normalize(env),
         }
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        let mut rules = HashSet::new();
+        rules.extend(Variable::<FOmegaSub>::rules());
+        rules.extend(Lambda::<FOmegaSub>::rules());
+        rules.extend(App::<FOmegaSub>::rules());
+        rules.extend(LambdaSub::<FOmegaSub>::rules());
+        rules.extend(TyApp::<FOmegaSub>::rules());
+        rules.extend(Pack::<FOmegaSub>::rules());
+        rules.extend(Unpack::<FOmegaSub>::rules());
+        rules.extend(Record::<FOmegaSub>::rules());
+        rules.extend(RecordProj::<FOmegaSub>::rules());
+        rules.extend(Num::<FOmegaSub>::rules());
+        rules.extend(Succ::<FOmegaSub>::rules());
+        rules.extend(Pred::<FOmegaSub>::rules());
+        rules.extend(Let::<FOmegaSub>::rules());
+        rules
     }
 }

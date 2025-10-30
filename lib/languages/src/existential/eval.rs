@@ -3,8 +3,16 @@ use check::Normalize;
 use derivations::{Derivation, NormalizingDerivation};
 use errors::eval_error::EvalError;
 use eval::Eval;
-use syntax::env::Environment;
-use syntax::eval_context::EvalContext;
+use grammar::DerivationRule;
+use std::collections::HashSet;
+use syntax::{
+    env::Environment,
+    eval_context::EvalContext,
+    terms::{
+        App, False, Fix, If, IsZero, Lambda, Num, Pack, Pred, Record, RecordProj, Succ, True, Unit,
+        Unpack, Variable,
+    },
+};
 use trace::EvalTrace;
 
 impl Eval for Term {
@@ -29,11 +37,36 @@ impl Eval for Term {
             Term::Fix(fix) => fix.eval(env),
         }
     }
+
+    fn rules() -> HashSet<DerivationRule> {
+        let mut rules = HashSet::new();
+        rules.extend(Variable::<Existential>::rules());
+        rules.extend(Unit::<Existential>::rules());
+        rules.extend(Lambda::<Existential>::rules());
+        rules.extend(App::<Existential>::rules());
+        rules.extend(Pack::<Existential>::rules());
+        rules.extend(Unpack::<Existential>::rules());
+        rules.extend(Num::<Existential>::rules());
+        rules.extend(Succ::<Existential>::rules());
+        rules.extend(Pred::<Existential>::rules());
+        rules.extend(IsZero::<Existential>::rules());
+        rules.extend(Record::<Existential>::rules());
+        rules.extend(RecordProj::<Existential>::rules());
+        rules.extend(True::<Existential>::rules());
+        rules.extend(False::<Existential>::rules());
+        rules.extend(If::<Existential>::rules());
+        rules.extend(Fix::<Existential>::rules());
+        rules
+    }
 }
 
 impl Normalize for Type {
     type Lang = Existential;
     fn normalize(self, _: Environment<Self::Lang>) -> Derivation<Self::Lang> {
         NormalizingDerivation::empty(self).into()
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::new()
     }
 }

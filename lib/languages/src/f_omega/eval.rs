@@ -3,7 +3,16 @@ use check::Normalize;
 use derivations::Derivation;
 use errors::eval_error::EvalError;
 use eval::Eval;
-use syntax::{env::Environment, eval_context::EvalContext};
+use grammar::DerivationRule;
+use std::collections::HashSet;
+use syntax::{
+    env::Environment,
+    eval_context::EvalContext,
+    terms::{
+        App, False, Fix, If, IsZero, Lambda, Num, Pack, Pred, Record, RecordProj, Succ, True,
+        TyApp, TyLambda, Unit, Unpack, Variable,
+    },
+};
 use trace::EvalTrace;
 
 impl Eval for Term {
@@ -30,6 +39,29 @@ impl Eval for Term {
             Term::IsZero(isz) => isz.eval(env),
         }
     }
+
+    fn rules() -> HashSet<DerivationRule> {
+        let mut rules = HashSet::new();
+        rules.extend(Variable::<FOmega>::rules());
+        rules.extend(Lambda::<FOmega>::rules());
+        rules.extend(App::<FOmega>::rules());
+        rules.extend(TyLambda::<FOmega>::rules());
+        rules.extend(TyApp::<FOmega>::rules());
+        rules.extend(Pack::<FOmega>::rules());
+        rules.extend(Unpack::<FOmega>::rules());
+        rules.extend(Record::<FOmega>::rules());
+        rules.extend(RecordProj::<FOmega>::rules());
+        rules.extend(True::<FOmega>::rules());
+        rules.extend(False::<FOmega>::rules());
+        rules.extend(If::<FOmega>::rules());
+        rules.extend(Unit::<FOmega>::rules());
+        rules.extend(Fix::<FOmega>::rules());
+        rules.extend(Num::<FOmega>::rules());
+        rules.extend(Succ::<FOmega>::rules());
+        rules.extend(Pred::<FOmega>::rules());
+        rules.extend(IsZero::<FOmega>::rules());
+        rules
+    }
 }
 
 impl Normalize for Type {
@@ -47,5 +79,28 @@ impl Normalize for Type {
             Type::Unit(u) => u.normalize(env),
             Type::Nat(nat) => nat.normalize(env),
         }
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        let mut rules = HashSet::new();
+        rules.extend(Variable::<FOmega>::rules());
+        rules.extend(Lambda::<FOmega>::rules());
+        rules.extend(App::<FOmega>::rules());
+        rules.extend(TyLambda::<FOmega>::rules());
+        rules.extend(TyApp::<FOmega>::rules());
+        rules.extend(Pack::<FOmega>::rules());
+        rules.extend(Unpack::<FOmega>::rules());
+        rules.extend(Record::<FOmega>::rules());
+        rules.extend(RecordProj::<FOmega>::rules());
+        rules.extend(True::<FOmega>::rules());
+        rules.extend(False::<FOmega>::rules());
+        rules.extend(If::<FOmega>::rules());
+        rules.extend(Unit::<FOmega>::rules());
+        rules.extend(Fix::<FOmega>::rules());
+        rules.extend(Num::<FOmega>::rules());
+        rules.extend(Succ::<FOmega>::rules());
+        rules.extend(Pred::<FOmega>::rules());
+        rules.extend(IsZero::<FOmega>::rules());
+        rules
     }
 }

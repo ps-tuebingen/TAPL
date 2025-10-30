@@ -3,8 +3,17 @@ use check::Normalize;
 use derivations::{Derivation, NormalizingDerivation};
 use errors::eval_error::EvalError;
 use eval::Eval;
-use syntax::env::Environment;
-use syntax::eval_context::EvalContext;
+use grammar::DerivationRule;
+use std::collections::HashSet;
+use syntax::{
+    env::Environment,
+    eval_context::EvalContext,
+    terms::{
+        App, Ascribe, Cons, False, Fix, Fst, Head, If, IsNil, IsZero, Lambda, Left, Let, Nil,
+        Nothing, Num, Pair, Pred, Projection, Record, RecordProj, Right, Snd, SomeCase, Something,
+        Succ, SumCase, Tail, True, Tuple, Unit, Variable, Variant, VariantCase,
+    },
+};
 use trace::EvalTrace;
 
 impl Eval for Term {
@@ -47,11 +56,54 @@ impl Eval for Term {
             Term::Tail(tl) => tl.eval(env),
         }
     }
+
+    fn rules() -> HashSet<DerivationRule> {
+        let mut rules = HashSet::new();
+        rules.extend(Variable::<Stlc>::rules());
+        rules.extend(Lambda::<Stlc>::rules());
+        rules.extend(App::<Stlc>::rules());
+        rules.extend(Unit::<Stlc>::rules());
+        rules.extend(True::<Stlc>::rules());
+        rules.extend(False::<Stlc>::rules());
+        rules.extend(If::<Stlc>::rules());
+        rules.extend(Num::<Stlc>::rules());
+        rules.extend(Pred::<Stlc>::rules());
+        rules.extend(Succ::<Stlc>::rules());
+        rules.extend(IsZero::<Stlc>::rules());
+        rules.extend(Ascribe::<Stlc>::rules());
+        rules.extend(Let::<Stlc>::rules());
+        rules.extend(Pair::<Stlc>::rules());
+        rules.extend(Tuple::<Stlc>::rules());
+        rules.extend(Projection::<Stlc>::rules());
+        rules.extend(Fst::<Stlc>::rules());
+        rules.extend(Snd::<Stlc>::rules());
+        rules.extend(Record::<Stlc>::rules());
+        rules.extend(RecordProj::<Stlc>::rules());
+        rules.extend(Left::<Stlc>::rules());
+        rules.extend(Right::<Stlc>::rules());
+        rules.extend(SumCase::<Stlc>::rules());
+        rules.extend(Variant::<Stlc>::rules());
+        rules.extend(VariantCase::<Stlc>::rules());
+        rules.extend(Nothing::<Stlc>::rules());
+        rules.extend(Something::<Stlc>::rules());
+        rules.extend(SomeCase::<Stlc>::rules());
+        rules.extend(Fix::<Stlc>::rules());
+        rules.extend(Nil::<Stlc>::rules());
+        rules.extend(Cons::<Stlc>::rules());
+        rules.extend(IsNil::<Stlc>::rules());
+        rules.extend(Head::<Stlc>::rules());
+        rules.extend(Tail::<Stlc>::rules());
+        rules
+    }
 }
 
 impl Normalize for Type {
     type Lang = Stlc;
     fn normalize(self, _: Environment<Self::Lang>) -> Derivation<Self::Lang> {
         NormalizingDerivation::empty(self).into()
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::new()
     }
 }

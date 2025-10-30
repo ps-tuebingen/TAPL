@@ -4,7 +4,7 @@ pub mod terms;
 pub mod values;
 
 use crate::Language;
-use grammar::{GrammarDescribe, LanguageDescribe, LanguageGrammar};
+use grammar::{GrammarDescribe, LanguageDescribe, LanguageGrammar, LanguageRules};
 use std::fmt;
 use syntax::{language::LanguageFeatures, untyped::Untyped};
 use terms::Term;
@@ -28,6 +28,15 @@ impl Language for UntypedArithmetic {
 }
 
 impl LanguageDescribe for UntypedArithmetic {
+    fn rules() -> LanguageRules {
+        LanguageRules {
+            typing: <Term as ::check::Typecheck>::rules(),
+            subtyping: <Untyped<UntypedArithmetic> as ::check::Subtypecheck>::rules(),
+            kinding: <Untyped<UntypedArithmetic> as ::check::Kindcheck>::rules(),
+            normalizing: <Untyped<UntypedArithmetic> as ::check::Normalize>::rules(),
+            eval: <Term as ::eval::Eval>::rules(),
+        }
+    }
     fn grammars() -> LanguageGrammar {
         LanguageGrammar {
             term_grammar: Term::grammar(),

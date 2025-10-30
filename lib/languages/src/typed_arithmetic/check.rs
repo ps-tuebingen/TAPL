@@ -2,7 +2,12 @@ use super::{TypedArithmetic, terms::Term, types::Type};
 use check::{Kindcheck, Subtypecheck, Typecheck};
 use derivations::Derivation;
 use errors::{NoKinding, NoSubtyping, check_error::CheckError};
-use syntax::env::Environment;
+use grammar::DerivationRule;
+use std::collections::HashSet;
+use syntax::{
+    env::Environment,
+    terms::{False, If, IsZero, Num, Pred, Succ, True},
+};
 
 impl Typecheck for Term {
     type Lang = TypedArithmetic;
@@ -18,6 +23,18 @@ impl Typecheck for Term {
             Term::If(ift) => ift.check(env),
         }
     }
+
+    fn rules() -> HashSet<DerivationRule> {
+        let mut rules = HashSet::new();
+        rules.extend(True::<TypedArithmetic>::rules());
+        rules.extend(False::<TypedArithmetic>::rules());
+        rules.extend(If::<TypedArithmetic>::rules());
+        rules.extend(Num::<TypedArithmetic>::rules());
+        rules.extend(Succ::<TypedArithmetic>::rules());
+        rules.extend(Pred::<TypedArithmetic>::rules());
+        rules.extend(IsZero::<TypedArithmetic>::rules());
+        rules
+    }
 }
 
 impl Subtypecheck for Type {
@@ -29,11 +46,19 @@ impl Subtypecheck for Type {
     ) -> Result<Derivation<Self::Lang>, CheckError> {
         Err(NoSubtyping::new("Typed Arithmetic").into())
     }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::new()
+    }
 }
 
 impl Kindcheck for Type {
     type Lang = TypedArithmetic;
     fn check_kind(&self, _: Environment<Self::Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
         Err(NoKinding::new("Typed Arithmetic").into())
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::new()
     }
 }

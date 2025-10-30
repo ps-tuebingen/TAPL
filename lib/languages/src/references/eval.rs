@@ -3,7 +3,16 @@ use check::Normalize;
 use derivations::{Derivation, NormalizingDerivation};
 use errors::eval_error::EvalError;
 use eval::Eval;
-use syntax::{env::Environment, eval_context::EvalContext};
+use grammar::DerivationRule;
+use std::collections::HashSet;
+use syntax::{
+    env::Environment,
+    eval_context::EvalContext,
+    terms::{
+        App, Assign, Deref, False, Fix, If, IsZero, Lambda, Let, Loc, Num, Pred, Ref, Succ, True,
+        Unit, Variable,
+    },
+};
 use trace::EvalTrace;
 
 impl Eval for Term {
@@ -29,12 +38,38 @@ impl Eval for Term {
             Term::IsZero(isz) => isz.eval(env),
         }
     }
+
+    fn rules() -> HashSet<DerivationRule> {
+        let mut rules = HashSet::new();
+        rules.extend(Variable::<References>::rules());
+        rules.extend(Num::<References>::rules());
+        rules.extend(Succ::<References>::rules());
+        rules.extend(Pred::<References>::rules());
+        rules.extend(Lambda::<References>::rules());
+        rules.extend(App::<References>::rules());
+        rules.extend(Unit::<References>::rules());
+        rules.extend(Ref::<References>::rules());
+        rules.extend(Deref::<References>::rules());
+        rules.extend(Assign::<References>::rules());
+        rules.extend(Loc::<References>::rules());
+        rules.extend(Let::<References>::rules());
+        rules.extend(If::<References>::rules());
+        rules.extend(True::<References>::rules());
+        rules.extend(False::<References>::rules());
+        rules.extend(Fix::<References>::rules());
+        rules.extend(IsZero::<References>::rules());
+        rules
+    }
 }
 
 impl Normalize for Type {
     type Lang = References;
     fn normalize(self, _: Environment<Self::Lang>) -> Derivation<Self::Lang> {
         NormalizingDerivation::empty(self).into()
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::new()
     }
 }
 

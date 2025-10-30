@@ -1,7 +1,15 @@
 use super::{Subtypes, terms::Term};
 use errors::eval_error::EvalError;
 use eval::Eval;
-use syntax::eval_context::EvalContext;
+use grammar::DerivationRule;
+use std::collections::HashSet;
+use syntax::{
+    eval_context::EvalContext,
+    terms::{
+        App, Assign, Cast, Cons, Deref, False, Fix, If, Lambda, Let, Loc, Nil, Num, Pred, Record,
+        RecordProj, Ref, Succ, True, Unit, Variable, Variant, VariantCase,
+    },
+};
 use trace::EvalTrace;
 
 impl Eval for Term {
@@ -33,5 +41,33 @@ impl Eval for Term {
             Term::Let(lt) => lt.eval(env),
             Term::Fix(fix) => fix.eval(env),
         }
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        let mut rules = HashSet::new();
+        rules.extend(Variable::<Subtypes>::rules());
+        rules.extend(Lambda::<Subtypes>::rules());
+        rules.extend(App::<Subtypes>::rules());
+        rules.extend(Unit::<Subtypes>::rules());
+        rules.extend(Record::<Subtypes>::rules());
+        rules.extend(RecordProj::<Subtypes>::rules());
+        rules.extend(Variant::<Subtypes>::rules());
+        rules.extend(VariantCase::<Subtypes>::rules());
+        rules.extend(Cast::<Subtypes>::rules());
+        rules.extend(Nil::<Subtypes>::rules());
+        rules.extend(Cons::<Subtypes>::rules());
+        rules.extend(Ref::<Subtypes>::rules());
+        rules.extend(Deref::<Subtypes>::rules());
+        rules.extend(Assign::<Subtypes>::rules());
+        rules.extend(Loc::<Subtypes>::rules());
+        rules.extend(Num::<Subtypes>::rules());
+        rules.extend(Succ::<Subtypes>::rules());
+        rules.extend(Pred::<Subtypes>::rules());
+        rules.extend(True::<Subtypes>::rules());
+        rules.extend(False::<Subtypes>::rules());
+        rules.extend(If::<Subtypes>::rules());
+        rules.extend(Let::<Subtypes>::rules());
+        rules.extend(Fix::<Subtypes>::rules());
+        rules
     }
 }

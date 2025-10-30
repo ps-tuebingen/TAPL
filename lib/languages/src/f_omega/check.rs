@@ -2,7 +2,15 @@ use super::{FOmega, terms::Term, types::Type};
 use check::{Kindcheck, Subtypecheck, Typecheck};
 use derivations::Derivation;
 use errors::{NoSubtyping, check_error::CheckError};
-use syntax::env::Environment;
+use grammar::DerivationRule;
+use std::collections::HashSet;
+use syntax::{
+    env::Environment,
+    terms::{
+        App, False, Fix, If, IsZero, Lambda, Num, Pack, Pred, Record, RecordProj, Succ, True,
+        TyApp, TyLambda, Unit, Unpack, Variable,
+    },
+};
 
 impl Typecheck for Term {
     type Lang = FOmega;
@@ -29,6 +37,29 @@ impl Typecheck for Term {
             Term::IsZero(isz) => isz.check(env),
         }
     }
+
+    fn rules() -> HashSet<DerivationRule> {
+        let mut rules = HashSet::new();
+        rules.extend(Variable::<FOmega>::rules());
+        rules.extend(Lambda::<FOmega>::rules());
+        rules.extend(App::<FOmega>::rules());
+        rules.extend(TyLambda::<FOmega>::rules());
+        rules.extend(TyApp::<FOmega>::rules());
+        rules.extend(Pack::<FOmega>::rules());
+        rules.extend(Unpack::<FOmega>::rules());
+        rules.extend(Record::<FOmega>::rules());
+        rules.extend(RecordProj::<FOmega>::rules());
+        rules.extend(True::<FOmega>::rules());
+        rules.extend(False::<FOmega>::rules());
+        rules.extend(If::<FOmega>::rules());
+        rules.extend(Unit::<FOmega>::rules());
+        rules.extend(Fix::<FOmega>::rules());
+        rules.extend(Num::<FOmega>::rules());
+        rules.extend(Succ::<FOmega>::rules());
+        rules.extend(Pred::<FOmega>::rules());
+        rules.extend(IsZero::<FOmega>::rules());
+        rules
+    }
 }
 
 impl Subtypecheck for Type {
@@ -40,6 +71,10 @@ impl Subtypecheck for Type {
         _: Environment<Self::Lang>,
     ) -> Result<Derivation<Self::Lang>, CheckError> {
         Err(NoSubtyping::new("F Omega").into())
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::new()
     }
 }
 
@@ -61,5 +96,28 @@ impl Kindcheck for Type {
             Type::Unit(u) => u.check_kind(env),
             Type::Nat(nat) => nat.check_kind(env),
         }
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        let mut rules = HashSet::new();
+        rules.extend(Variable::<FOmega>::rules());
+        rules.extend(Lambda::<FOmega>::rules());
+        rules.extend(App::<FOmega>::rules());
+        rules.extend(TyLambda::<FOmega>::rules());
+        rules.extend(TyApp::<FOmega>::rules());
+        rules.extend(Pack::<FOmega>::rules());
+        rules.extend(Unpack::<FOmega>::rules());
+        rules.extend(Record::<FOmega>::rules());
+        rules.extend(RecordProj::<FOmega>::rules());
+        rules.extend(True::<FOmega>::rules());
+        rules.extend(False::<FOmega>::rules());
+        rules.extend(If::<FOmega>::rules());
+        rules.extend(Unit::<FOmega>::rules());
+        rules.extend(Fix::<FOmega>::rules());
+        rules.extend(Num::<FOmega>::rules());
+        rules.extend(Succ::<FOmega>::rules());
+        rules.extend(Pred::<FOmega>::rules());
+        rules.extend(IsZero::<FOmega>::rules());
+        rules
     }
 }

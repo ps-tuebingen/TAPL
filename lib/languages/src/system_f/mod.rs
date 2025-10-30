@@ -6,7 +6,7 @@ pub mod types;
 pub mod values;
 
 use crate::Language;
-use grammar::{GrammarDescribe, LanguageDescribe, LanguageGrammar};
+use grammar::{GrammarDescribe, LanguageDescribe, LanguageGrammar, LanguageRules};
 use std::fmt;
 use syntax::language::LanguageFeatures;
 
@@ -32,6 +32,15 @@ impl Language for SystemF {
 }
 
 impl LanguageDescribe for SystemF {
+    fn rules() -> LanguageRules {
+        LanguageRules {
+            typing: <Term as ::check::Typecheck>::rules(),
+            subtyping: <Type as ::check::Subtypecheck>::rules(),
+            kinding: <Type as ::check::Kindcheck>::rules(),
+            normalizing: <Type as ::check::Normalize>::rules(),
+            eval: <Term as ::eval::Eval>::rules(),
+        }
+    }
     fn grammars() -> LanguageGrammar {
         LanguageGrammar {
             term_grammar: Term::grammar(),

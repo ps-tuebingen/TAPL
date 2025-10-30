@@ -2,8 +2,17 @@ use super::{References, terms::Term, types::Type};
 use check::{Kindcheck, Subtypecheck, Typecheck};
 use derivations::Derivation;
 use errors::{NoKinding, NoSubtyping, check_error::CheckError};
+use grammar::DerivationRule;
 use std::collections::HashMap;
-use syntax::{Location, Var, env::Environment};
+use std::collections::HashSet;
+use syntax::{
+    Location, Var,
+    env::Environment,
+    terms::{
+        App, Assign, Deref, False, Fix, If, IsZero, Lambda, Let, Loc, Num, Pred, Ref, Succ, True,
+        Unit, Variable,
+    },
+};
 
 pub type Env = HashMap<Var, Type>;
 pub type StoreTy = HashMap<Location, Type>;
@@ -32,6 +41,28 @@ impl Typecheck for Term {
             Term::IsZero(isz) => isz.check(env),
         }
     }
+
+    fn rules() -> HashSet<DerivationRule> {
+        let mut rules = HashSet::new();
+        rules.extend(Variable::<References>::rules());
+        rules.extend(Num::<References>::rules());
+        rules.extend(Succ::<References>::rules());
+        rules.extend(Pred::<References>::rules());
+        rules.extend(Lambda::<References>::rules());
+        rules.extend(App::<References>::rules());
+        rules.extend(Unit::<References>::rules());
+        rules.extend(Ref::<References>::rules());
+        rules.extend(Deref::<References>::rules());
+        rules.extend(Assign::<References>::rules());
+        rules.extend(Loc::<References>::rules());
+        rules.extend(Let::<References>::rules());
+        rules.extend(If::<References>::rules());
+        rules.extend(True::<References>::rules());
+        rules.extend(False::<References>::rules());
+        rules.extend(Fix::<References>::rules());
+        rules.extend(IsZero::<References>::rules());
+        rules
+    }
 }
 
 impl Subtypecheck for Type {
@@ -44,12 +75,20 @@ impl Subtypecheck for Type {
     ) -> Result<Derivation<Self::Lang>, CheckError> {
         Err(NoSubtyping::new("References").into())
     }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::new()
+    }
 }
 
 impl Kindcheck for Type {
     type Lang = References;
     fn check_kind(&self, _: Environment<Self::Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
         Err(NoKinding::new("References").into())
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::new()
     }
 }
 

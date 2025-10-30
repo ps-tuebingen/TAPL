@@ -1,7 +1,12 @@
 use super::{UntypedArithmetic, terms::Term};
 use errors::eval_error::EvalError;
 use eval::Eval;
-use syntax::eval_context::EvalContext;
+use grammar::DerivationRule;
+use std::collections::HashSet;
+use syntax::{
+    eval_context::EvalContext,
+    terms::{False, If, IsZero, Num, Pred, Succ, True},
+};
 use trace::EvalTrace;
 
 impl Eval for Term {
@@ -16,5 +21,17 @@ impl Eval for Term {
             Term::Pred(pred) => pred.eval(env),
             Term::If(ift) => ift.eval(env),
         }
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        let mut rules = HashSet::new();
+        rules.extend(True::<UntypedArithmetic>::rules());
+        rules.extend(False::<UntypedArithmetic>::rules());
+        rules.extend(If::<UntypedArithmetic>::rules());
+        rules.extend(Num::<UntypedArithmetic>::rules());
+        rules.extend(Succ::<UntypedArithmetic>::rules());
+        rules.extend(Pred::<UntypedArithmetic>::rules());
+        rules.extend(IsZero::<UntypedArithmetic>::rules());
+        rules
     }
 }

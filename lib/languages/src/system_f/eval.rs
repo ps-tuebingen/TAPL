@@ -3,8 +3,13 @@ use check::Normalize;
 use derivations::{Derivation, NormalizingDerivation};
 use errors::eval_error::EvalError;
 use eval::Eval;
-use syntax::env::Environment;
-use syntax::eval_context::EvalContext;
+use grammar::DerivationRule;
+use std::collections::HashSet;
+use syntax::{
+    env::Environment,
+    eval_context::EvalContext,
+    terms::{App, Lambda, TyApp, TyLambda, Variable},
+};
 use trace::EvalTrace;
 
 impl Eval for Term {
@@ -18,11 +23,26 @@ impl Eval for Term {
             Term::TyApp(app) => app.eval(env),
         }
     }
+
+    fn rules() -> HashSet<DerivationRule> {
+        let mut rules = HashSet::new();
+        rules.extend(Variable::<SystemF>::rules());
+        rules.extend(Lambda::<SystemF>::rules());
+        rules.extend(Lambda::<SystemF>::rules());
+        rules.extend(App::<SystemF>::rules());
+        rules.extend(TyLambda::<SystemF>::rules());
+        rules.extend(TyApp::<SystemF>::rules());
+        rules
+    }
 }
 
 impl Normalize for Type {
     type Lang = SystemF;
     fn normalize(self, _: Environment<Self::Lang>) -> Derivation<Self::Lang> {
         NormalizingDerivation::empty(self).into()
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::new()
     }
 }
