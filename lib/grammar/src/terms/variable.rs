@@ -1,11 +1,11 @@
-use crate::{GrammarRuleDescribe, Rule, Symbol};
+use crate::{GrammarRule, GrammarRuleDescribe, Symbol};
 use syntax::{language::Language, terms::Variable};
 
 impl<Lang> GrammarRuleDescribe for Variable<Lang>
 where
     Lang: Language,
 {
-    fn rule() -> Rule {
-        Rule::new(Symbol::Variable, "Variable")
+    fn rule() -> GrammarRule {
+        GrammarRule::new(Symbol::Variable, "Variable")
     }
 }

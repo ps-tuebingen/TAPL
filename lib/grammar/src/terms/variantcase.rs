@@ -1,5 +1,5 @@
 use crate::{
-    GrammarRuleDescribe, Rule, Symbol,
+    GrammarRule, GrammarRuleDescribe, Symbol,
     symbols::{Keyword, SpecialChar},
 };
 use syntax::{language::Language, terms::VariantCase};
@@ -8,8 +8,8 @@ impl<Lang> GrammarRuleDescribe for VariantCase<Lang>
 where
     Lang: Language,
 {
-    fn rule() -> Rule {
-        Rule::new(
+    fn rule() -> GrammarRule {
+        GrammarRule::new(
             vec![
                 Keyword::Case.into(),
                 Symbol::Term,

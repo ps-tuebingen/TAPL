@@ -1,4 +1,4 @@
-use crate::{Grammar, GrammarDescribe, Rule, Symbol, symbols::SpecialChar};
+use crate::{Grammar, GrammarDescribe, GrammarRule, Symbol, symbols::SpecialChar};
 use syntax::kinds::Kind;
 
 impl GrammarDescribe for Kind {
@@ -7,8 +7,8 @@ impl GrammarDescribe for Kind {
             symbol: Symbol::Kind,
             description: "Kind".to_owned(),
             alternatives: vec![
-                Rule::new(SpecialChar::Star.into(), "Star Kind"),
-                Rule::new(
+                GrammarRule::new(SpecialChar::Star.into(), "Star Kind"),
+                GrammarRule::new(
                     vec![Symbol::Kind, SpecialChar::DoubleArrow.into(), Symbol::Kind].into(),
                     "Arrow Kind",
                 ),

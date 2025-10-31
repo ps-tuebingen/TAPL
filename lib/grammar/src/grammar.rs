@@ -1,6 +1,5 @@
-use crate::{GrammarDescribe, rule::Rule, symbols::Symbol};
+use crate::{rules::GrammarRule, symbols::Symbol};
 use std::fmt;
-use syntax::kinds::Kind;
 
 /// Describes the grammar of terms/types/etc
 /// In the form `t::= r1 | r2 | ...`
@@ -11,12 +10,12 @@ pub struct Grammar {
     /// A description for the definition (e.g. "Term" or "Type")
     pub description: String,
     /// A list of alternatives defining the grammar
-    pub alternatives: Vec<Rule>,
+    pub alternatives: Vec<GrammarRule>,
 }
 
 impl Grammar {
     /// create a term grammar with given alternatives
-    pub fn term(alternatives: Vec<Rule>) -> Grammar {
+    pub fn term(alternatives: Vec<GrammarRule>) -> Grammar {
         Grammar {
             symbol: Symbol::Term,
             description: "Term".to_owned(),
@@ -25,7 +24,7 @@ impl Grammar {
     }
 
     /// create a type grammar with given alternatives
-    pub fn ty(alternatives: Vec<Rule>) -> Grammar {
+    pub fn ty(alternatives: Vec<GrammarRule>) -> Grammar {
         Grammar {
             symbol: Symbol::Type,
             description: "Type".to_owned(),
@@ -34,37 +33,12 @@ impl Grammar {
     }
 
     /// Crate a value grammar with given alternatives
-    pub fn value(alternatives: Vec<Rule>) -> Grammar {
+    pub fn value(alternatives: Vec<GrammarRule>) -> Grammar {
         Grammar {
             symbol: Symbol::Value,
             description: "Value".to_owned(),
             alternatives,
         }
-    }
-}
-
-/// Grammar of a language
-#[derive(Debug)]
-pub struct LanguageGrammar {
-    /// The grammar of terms
-    pub term_grammar: Grammar,
-    /// The grammar of types
-    pub type_grammar: Grammar,
-    /// The grammar of values
-    pub value_grammar: Grammar,
-    /// Is the language kinded?
-    pub include_kinds: bool,
-}
-
-impl fmt::Display for LanguageGrammar {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        writeln!(f, "{}", self.term_grammar)?;
-        writeln!(f, "{}", self.type_grammar)?;
-        writeln!(f, "{}", self.value_grammar)?;
-        if self.include_kinds {
-            writeln!(f, "{}", Kind::grammar())?;
-        }
-        Ok(())
     }
 }
 

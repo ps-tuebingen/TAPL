@@ -1,5 +1,5 @@
 use crate::{
-    GrammarRuleDescribe, Rule, Symbol,
+    GrammarRule, GrammarRuleDescribe, Symbol,
     symbols::{Keyword, SpecialChar},
 };
 use syntax::{language::Language, terms::Unpack};
@@ -8,8 +8,8 @@ impl<Lang> GrammarRuleDescribe for Unpack<Lang>
 where
     Lang: Language,
 {
-    fn rule() -> Rule {
-        Rule::new(
+    fn rule() -> GrammarRule {
+        GrammarRule::new(
             vec![
                 Symbol::brack(Symbol::comma_sep(Symbol::Typevariable, Symbol::Variable)),
                 SpecialChar::Equals.into(),

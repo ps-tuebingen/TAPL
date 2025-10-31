@@ -1,4 +1,4 @@
-use crate::{Grammar, GrammarDescribe, GrammarRuleDescribe, Rule, symbols::SpecialChar};
+use crate::{Grammar, GrammarDescribe, GrammarRule, GrammarRuleDescribe, symbols::SpecialChar};
 use syntax::{language::Language, untyped::Untyped};
 
 impl<Lang> GrammarDescribe for Untyped<Lang>
@@ -14,7 +14,7 @@ impl<Lang> GrammarRuleDescribe for Untyped<Lang>
 where
     Lang: Language,
 {
-    fn rule() -> Rule {
-        Rule::new(SpecialChar::Empty.into(), "Untyped")
+    fn rule() -> GrammarRule {
+        GrammarRule::new(SpecialChar::Empty.into(), "Untyped")
     }
 }

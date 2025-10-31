@@ -1,12 +1,12 @@
-use crate::{GrammarRuleDescribe, Rule, Symbol, symbols::Keyword};
+use crate::{GrammarRule, GrammarRuleDescribe, Symbol, symbols::Keyword};
 use syntax::{language::Language, terms::Head};
 
 impl<Lang> GrammarRuleDescribe for Head<Lang>
 where
     Lang: Language,
 {
-    fn rule() -> Rule {
-        Rule::new(
+    fn rule() -> GrammarRule {
+        GrammarRule::new(
             vec![
                 Keyword::Head.into(),
                 Symbol::sqbrack(Symbol::Type),

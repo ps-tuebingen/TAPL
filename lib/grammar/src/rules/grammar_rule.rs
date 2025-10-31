@@ -3,24 +3,24 @@ use std::fmt;
 
 /// A rule used in [`crate::Grammar`]
 #[derive(Debug)]
-pub struct Rule {
+pub struct GrammarRule {
     /// The symbol defining the rule
     pub symbol: Symbol,
     /// A description for the rule
     pub description: String,
 }
 
-impl Rule {
+impl GrammarRule {
     /// Create a rule from a given symbol and description
-    pub fn new(symbol: Symbol, desc: &str) -> Rule {
-        Rule {
+    pub fn new(symbol: Symbol, desc: &str) -> GrammarRule {
+        GrammarRule {
             symbol,
             description: desc.to_owned(),
         }
     }
 }
 
-impl fmt::Display for Rule {
+impl fmt::Display for GrammarRule {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}\t\t\t{}", self.symbol, self.description)
     }

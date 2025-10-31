@@ -1,6 +1,8 @@
-mod derivation_rule;
+use std::{collections::HashSet, fmt};
+use syntax::kinds::Kind;
+
 mod grammar;
-mod rule;
+mod rules;
 pub mod symbols;
 
 mod kinds;
@@ -9,9 +11,8 @@ mod types;
 mod untyped;
 mod values;
 
-pub use derivation_rule::{ConclusionRule, DerivationRule, LanguageRules};
-pub use grammar::{Grammar, LanguageGrammar};
-pub use rule::Rule;
+pub use grammar::Grammar;
+pub use rules::{ConclusionRule, DerivationRule, GrammarRule};
 pub use symbols::Symbol;
 
 pub trait GrammarDescribe {
@@ -24,5 +25,38 @@ pub trait LanguageDescribe {
 }
 
 pub trait GrammarRuleDescribe {
-    fn rule() -> Rule;
+    fn rule() -> GrammarRule;
+}
+
+#[derive(Debug)]
+pub struct LanguageRules {
+    pub typing: HashSet<DerivationRule>,
+    pub subtyping: HashSet<DerivationRule>,
+    pub kinding: HashSet<DerivationRule>,
+    pub normalizing: HashSet<DerivationRule>,
+    pub eval: HashSet<DerivationRule>,
+}
+/// Grammar of a language
+#[derive(Debug)]
+pub struct LanguageGrammar {
+    /// The grammar of terms
+    pub term_grammar: Grammar,
+    /// The grammar of types
+    pub type_grammar: Grammar,
+    /// The grammar of values
+    pub value_grammar: Grammar,
+    /// Is the language kinded?
+    pub include_kinds: bool,
+}
+
+impl fmt::Display for LanguageGrammar {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        writeln!(f, "{}", self.term_grammar)?;
+        writeln!(f, "{}", self.type_grammar)?;
+        writeln!(f, "{}", self.value_grammar)?;
+        if self.include_kinds {
+            writeln!(f, "{}", Kind::grammar())?;
+        }
+        Ok(())
+    }
 }

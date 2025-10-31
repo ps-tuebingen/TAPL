@@ -1,12 +1,12 @@
-use crate::{GrammarRuleDescribe, Rule, Symbol, symbols::SpecialChar};
+use crate::{GrammarRule, GrammarRuleDescribe, Symbol, symbols::SpecialChar};
 use syntax::{language::Language, types::Exists};
 
 impl<Lang> GrammarRuleDescribe for Exists<Lang>
 where
     Lang: Language,
 {
-    fn rule() -> Rule {
-        Rule::new(
+    fn rule() -> GrammarRule {
+        GrammarRule::new(
             vec![
                 SpecialChar::Exists.into(),
                 Symbol::Type,
