@@ -1,10 +1,7 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
 use derivations::{Derivation, KindingDerivation, NormalizingDerivation, SubtypeDerivation};
 use errors::{KindMismatch, check_error::CheckError};
-use grammar::{
-    DerivationRule,
-    symbols::{SpecialChar, Symbol},
-};
+use grammar::{DerivationRule, symbols::Symbol};
 use std::{collections::HashSet, rc::Rc};
 use syntax::{
     env::Environment,
@@ -87,12 +84,8 @@ where
 
     fn rules() -> HashSet<DerivationRule> {
         HashSet::from([
-            DerivationRule::norm_cong(|sym| {
-                vec![Symbol::Type, SpecialChar::Arrow.into(), sym].into()
-            }),
-            DerivationRule::norm_cong(|sym| {
-                vec![sym, SpecialChar::Arrow.into(), Symbol::Type].into()
-            }),
+            DerivationRule::norm_cong(|sym| Symbol::arrow(Symbol::Type, sym)),
+            DerivationRule::norm_cong(|sym| Symbol::arrow(sym, Symbol::Type)),
         ])
     }
 }

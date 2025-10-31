@@ -92,12 +92,8 @@ where
                 vec![
                     Symbol::Term,
                     Symbol::sqbrack(Symbol::comma_sep(
-                        vec![
-                            Symbol::Typevariable,
-                            SpecialChar::Arrow.into(),
-                            Symbol::sub(Symbol::Type, 1),
-                        ],
-                        vec![Symbol::Variable, SpecialChar::Arrow.into(), Symbol::Value],
+                        Symbol::mapto(Symbol::Typevariable, Symbol::sub(Symbol::Type, 1)),
+                        Symbol::mapto(Symbol::Variable, Symbol::Value),
                     )),
                 ],
                 "E-UnpackPack",

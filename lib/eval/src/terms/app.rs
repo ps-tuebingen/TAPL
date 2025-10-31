@@ -74,11 +74,7 @@ where
                 ],
                 vec![
                     Symbol::sub(Symbol::Term, 1),
-                    Symbol::sqbrack(vec![
-                        Symbol::Variable,
-                        SpecialChar::Arrow.into(),
-                        Symbol::Value,
-                    ]),
+                    Symbol::sqbrack(Symbol::mapto(Symbol::Variable, Symbol::Value)),
                 ],
                 "E-AppAbs",
             ),

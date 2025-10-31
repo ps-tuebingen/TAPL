@@ -80,11 +80,7 @@ where
                 ],
                 vec![
                     Symbol::Term,
-                    Symbol::sqbrack(vec![
-                        Symbol::Typevariable,
-                        SpecialChar::Arrow.into(),
-                        Symbol::Type,
-                    ]),
+                    Symbol::sqbrack(Symbol::mapto(Symbol::Typevariable, Symbol::Type)),
                 ],
                 "E-TyAppAbs",
             ),

@@ -139,6 +139,26 @@ impl Symbol {
     {
         vec![fst.into(), SpecialChar::Comma.into(), snd.into()].into()
     }
+
+    /// Separate fst and snd by arrow
+    /// fst -> snd
+    pub fn arrow<S1, S2>(fst: S1, snd: S2) -> Symbol
+    where
+        S1: Into<Symbol>,
+        S2: Into<Symbol>,
+    {
+        vec![fst.into(), SpecialChar::Arrow.into(), snd.into()].into()
+    }
+
+    /// Separate fst and snd by mapsto
+    /// fst --> snd
+    pub fn mapto<S1, S2>(fst: S1, snd: S2) -> Symbol
+    where
+        S1: Into<Symbol>,
+        S2: Into<Symbol>,
+    {
+        vec![fst.into(), SpecialChar::Mapsto.into(), snd.into()].into()
+    }
 }
 
 impl fmt::Display for Symbol {

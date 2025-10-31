@@ -31,12 +31,10 @@ impl DerivationRule {
                     env: SpecialChar::Gamma.into(),
                     input: Symbol::sub(Symbol::Term, 1),
                     separator: SpecialChar::Colon.into(),
-                    output: vec![
+                    output: Symbol::arrow(
                         Symbol::sub(Symbol::Type, 1),
-                        SpecialChar::Arrow.into(),
                         Symbol::sub(Symbol::Type, 2),
-                    ]
-                    .into(),
+                    ),
                 },
                 ConclusionRule {
                     env: SpecialChar::Gamma.into(),
@@ -241,12 +239,9 @@ impl DerivationRule {
                 SpecialChar::Dot.into(),
                 Symbol::sub(Symbol::Type, 2),
             ]
+            .into()
         } else {
-            vec![
-                Symbol::sub(Symbol::Type, 1),
-                SpecialChar::Arrow.into(),
-                Symbol::sub(Symbol::Type, 2),
-            ]
+            Symbol::arrow(Symbol::sub(Symbol::Type, 1), Symbol::sub(Symbol::Type, 2))
         };
         DerivationRule {
             premises: vec![ConclusionRule {
@@ -260,7 +255,7 @@ impl DerivationRule {
                 env: SpecialChar::Gamma.into(),
                 input: conc_input.into(),
                 separator: SpecialChar::Colon.into(),
-                output: conc_out.into(),
+                output: conc_out,
             },
         }
     }
@@ -383,11 +378,10 @@ impl DerivationRule {
                 separator: SpecialChar::Colon.into(),
                 output: vec![
                     Symbol::sub(Symbol::Type, 2),
-                    Symbol::sqbrack(vec![
+                    Symbol::sqbrack(Symbol::mapto(
                         Symbol::Typevariable,
-                        SpecialChar::Arrow.into(),
                         Symbol::sub(Symbol::Type, 1),
-                    ]),
+                    )),
                 ]
                 .into(),
             },
@@ -404,11 +398,10 @@ impl DerivationRule {
             separator: SpecialChar::Colon.into(),
             output: vec![
                 Symbol::sub(Symbol::Type, 2),
-                Symbol::sqbrack(vec![
+                Symbol::sqbrack(Symbol::mapto(
                     Symbol::Typevariable,
-                    SpecialChar::Arrow.into(),
                     Symbol::sub(Symbol::Type, 1),
-                ]),
+                )),
             ]
             .into(),
         }];
@@ -954,11 +947,10 @@ impl DerivationRule {
             separator: SpecialChar::Colon.into(),
             output: vec![
                 Symbol::sub(Symbol::Type, 2),
-                Symbol::sqbrack(vec![
+                Symbol::sqbrack(Symbol::mapto(
                     Symbol::Typevariable,
-                    SpecialChar::Arrow.into(),
                     Symbol::sub(Symbol::Type, 1),
-                ]),
+                )),
             ]
             .into(),
         };
@@ -1066,11 +1058,7 @@ impl DerivationRule {
                 separator: SpecialChar::Colon.into(),
                 output: vec![
                     Symbol::Type,
-                    Symbol::sqbrack(vec![
-                        Symbol::Typevariable,
-                        SpecialChar::Arrow.into(),
-                        Symbol::Type,
-                    ]),
+                    Symbol::sqbrack(Symbol::mapto(Symbol::Typevariable, Symbol::Type)),
                 ]
                 .into(),
             },
@@ -1328,18 +1316,8 @@ impl DerivationRule {
     /// ------------------------------------------
     /// Gamma |-> Ty1 -> Ty2 <: Ty3 -> Ty4
     pub fn sub_fun() -> DerivationRule {
-        let conc_in = vec![
-            Symbol::sub(Symbol::Type, 1),
-            SpecialChar::Arrow.into(),
-            Symbol::sub(Symbol::Type, 2),
-        ]
-        .into();
-        let conc_out = vec![
-            Symbol::sub(Symbol::Type, 3),
-            SpecialChar::Arrow.into(),
-            Symbol::sub(Symbol::Type, 4),
-        ]
-        .into();
+        let conc_in = Symbol::arrow(Symbol::sub(Symbol::Type, 1), Symbol::sub(Symbol::Type, 2));
+        let conc_out = Symbol::arrow(Symbol::sub(Symbol::Type, 3), Symbol::sub(Symbol::Type, 4));
         let prem_from = ConclusionRule {
             env: SpecialChar::Gamma.into(),
             input: Symbol::sub(Symbol::Type, 3),
@@ -1795,13 +1773,7 @@ impl DerivationRule {
         };
         let conclusion = ConclusionRule {
             env: SpecialChar::Gamma.into(),
-            input: vec![
-                Symbol::sub(Symbol::Type, 1),
-                SpecialChar::Arrow.into(),
-                Symbol::sub(Symbol::Type, 2),
-            ]
-            .into(),
-
+            input: Symbol::arrow(Symbol::sub(Symbol::Type, 1), Symbol::sub(Symbol::Type, 2)),
             separator: SpecialChar::DoubleColon.into(),
             output: SpecialChar::Star.into(),
         };
@@ -1813,7 +1785,8 @@ impl DerivationRule {
     }
 
     /// Derivation Rule for operator applications
-    /// Gamma |-> Ty1 :: Kind2 -> Kind1 Gamma |-> Ty2::Kind2
+    /// Gamma |-> Ty1 :: Kind2 => Kind1
+    /// Gamma |-> Ty2::Kind2
     /// ---------------------------
     /// Gamma |-> Ty1 Ty2 :: Kind1
     pub fn kind_op_app() -> DerivationRule {
@@ -1823,7 +1796,7 @@ impl DerivationRule {
             separator: SpecialChar::DoubleColon.into(),
             output: vec![
                 Symbol::sub(Symbol::Kind, 2),
-                SpecialChar::Arrow.into(),
+                SpecialChar::DoubleArrow.into(),
                 Symbol::sub(Symbol::Kind, 1),
             ]
             .into(),
@@ -1858,7 +1831,7 @@ impl DerivationRule {
     ///
     /// Gamma,TypeVar::Kind3 |-> Ty2 :: Kind2
     /// ---------------------------------------------
-    /// Gamma |-> \TypeVar::Kind3.Ty2 :: Kind1 -> Kind2
+    /// Gamma |-> \TypeVar::Kind3.Ty2 :: Kind1 => Kind2
     pub fn kind_op_lam(bounded: bool) -> DerivationRule {
         let annot = if bounded {
             vec![
@@ -1908,7 +1881,7 @@ impl DerivationRule {
                 separator: SpecialChar::DoubleColon.into(),
                 output: vec![
                     Symbol::sub(Symbol::Kind, 1),
-                    SpecialChar::Arrow.into(),
+                    SpecialChar::DoubleArrow.into(),
                     Symbol::sub(Symbol::Kind, 2),
                 ]
                 .into(),
@@ -2011,14 +1984,14 @@ impl DerivationRule {
             premises: vec![ConclusionRule {
                 env: SpecialChar::Gamma.into(),
                 input: Symbol::sub(Symbol::Type, 1),
-                separator: SpecialChar::Arrow.into(),
+                separator: SpecialChar::Mapsto.into(),
                 output: Symbol::sub(Symbol::Type, 2),
             }],
             label: "Norm-Cong".to_owned(),
             conclusion: ConclusionRule {
                 env: SpecialChar::Gamma.into(),
                 input: conf_f(Symbol::sub(Symbol::Type, 1)),
-                separator: SpecialChar::Arrow.into(),
+                separator: SpecialChar::Mapsto.into(),
                 output: conf_f(Symbol::sub(Symbol::Type, 2)),
             },
         }
@@ -2060,14 +2033,13 @@ impl DerivationRule {
                 ]
                 .into(),
 
-                separator: SpecialChar::Arrow.into(),
+                separator: SpecialChar::Mapsto.into(),
                 output: vec![
                     Symbol::sub(Symbol::Type, 1),
-                    Symbol::sqbrack(vec![
+                    Symbol::sqbrack(Symbol::mapto(
                         Symbol::Typevariable,
-                        SpecialChar::Arrow.into(),
                         Symbol::sub(Symbol::Type, 2),
-                    ]),
+                    )),
                 ]
                 .into(),
             },
@@ -2089,14 +2061,14 @@ impl DerivationRule {
             premises: vec![ConclusionRule {
                 env: SpecialChar::Gamma.into(),
                 input: Symbol::sub(Symbol::Term, 1),
-                separator: SpecialChar::Arrow.into(),
+                separator: SpecialChar::Mapsto.into(),
                 output: Symbol::sub(Symbol::Term, 2),
             }],
             label: lb.to_owned(),
             conclusion: ConclusionRule {
                 env: SpecialChar::Gamma.into(),
                 input: cong_fun(Symbol::sub(Symbol::Term, 1)).into(),
-                separator: SpecialChar::Arrow.into(),
+                separator: SpecialChar::Mapsto.into(),
                 output: cong_fun(Symbol::sub(Symbol::Term, 2)).into(),
             },
         }
@@ -2115,7 +2087,7 @@ impl DerivationRule {
             conclusion: ConclusionRule {
                 env: SpecialChar::Gamma.into(),
                 input: from.into(),
-                separator: SpecialChar::Arrow.into(),
+                separator: SpecialChar::Mapsto.into(),
                 output: to.into(),
             },
         }

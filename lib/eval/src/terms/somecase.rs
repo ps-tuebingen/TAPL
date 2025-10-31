@@ -152,16 +152,14 @@ where
                 vec![
                     Symbol::sub(Symbol::Term, 2),
                     Symbol::brack(Symbol::comma_sep(
-                        vec![
+                        Symbol::mapto(
                             Symbol::sub(Symbol::Variable, 1),
-                            SpecialChar::Arrow.into(),
                             Symbol::sub(Symbol::Value, 1),
-                        ],
-                        vec![
+                        ),
+                        Symbol::mapto(
                             Symbol::sub(Symbol::Variable, 2),
-                            SpecialChar::Arrow.into(),
                             Symbol::sub(Symbol::Value, 2),
-                        ],
+                        ),
                     )),
                 ],
                 "E-SomeCaseSomething",

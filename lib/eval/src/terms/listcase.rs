@@ -150,15 +150,16 @@ where
                 ],
                 vec![
                     Symbol::sub(Symbol::Term, 4),
-                    Symbol::brack(vec![
-                        Symbol::sub(Symbol::Variable, 1),
-                        SpecialChar::Arrow.into(),
-                        Symbol::sub(Symbol::Value, 1),
-                        SpecialChar::Arrow.into(),
-                        Symbol::sub(Symbol::Variable, 2),
-                        SpecialChar::Arrow.into(),
-                        Symbol::sub(Symbol::Value, 2),
-                    ]),
+                    Symbol::sqbrack(Symbol::comma_sep(
+                        Symbol::mapto(
+                            Symbol::sub(Symbol::Variable, 1),
+                            Symbol::sub(Symbol::Value, 1),
+                        ),
+                        Symbol::mapto(
+                            Symbol::sub(Symbol::Variable, 2),
+                            Symbol::sub(Symbol::Value, 2),
+                        ),
+                    )),
                 ],
                 "E-ListCaseCons",
             ),

@@ -89,11 +89,10 @@ where
                 ],
                 vec![
                     Symbol::sub(Symbol::Term, "i"),
-                    Symbol::sqbrack(vec![
+                    Symbol::sqbrack(Symbol::mapto(
                         Symbol::sub(Symbol::Variable, "i"),
-                        SpecialChar::Arrow.into(),
                         Symbol::Value,
-                    ]),
+                    )),
                 ],
                 "E-VariantCase",
             ),

@@ -3,7 +3,7 @@ use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
 use grammar::{
     DerivationRule,
-    symbols::{Keyword, SpecialChar, Symbol},
+    symbols::{Keyword, Symbol},
 };
 use std::{collections::HashSet, rc::Rc};
 use syntax::{
@@ -59,7 +59,7 @@ where
         HashSet::from([DerivationRule::check_cong(
             vec![Keyword::Fix.into(), Symbol::paren(Symbol::Term)],
             Symbol::Type,
-            vec![Symbol::Type, SpecialChar::Arrow.into(), Symbol::Type],
+            Symbol::arrow(Symbol::Type, Symbol::Type),
             "T-Fix",
         )])
     }

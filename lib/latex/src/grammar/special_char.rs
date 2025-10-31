@@ -26,6 +26,7 @@ impl LatexFmt for SpecialChar {
             SpecialChar::Empty => "".to_owned(),
             SpecialChar::Arrow => format!("{env_start}\\rightarrow{env_end}"),
             SpecialChar::DoubleArrow => format!("{env_start}\\Rightarrow{env_end}"),
+            SpecialChar::Mapsto => format!("{env_start}\\mapsto{env_end}"),
             SpecialChar::Space => format!("{env_start}\\, {env_end}"),
             SpecialChar::ColonEq => format!("{env_start}:={env_end}"),
             SpecialChar::BrackO => format!("{env_start}\\{{{env_end}"),

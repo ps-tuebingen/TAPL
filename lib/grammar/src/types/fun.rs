@@ -1,4 +1,4 @@
-use crate::{GrammarRuleDescribe, Rule, Symbol, symbols::SpecialChar};
+use crate::{GrammarRuleDescribe, Rule, Symbol};
 use syntax::{language::Language, types::Fun};
 
 impl<Lang> GrammarRuleDescribe for Fun<Lang>
@@ -6,9 +6,6 @@ where
     Lang: Language,
 {
     fn rule() -> Rule {
-        Rule::new(
-            vec![Symbol::Type, SpecialChar::Arrow.into(), Symbol::Type].into(),
-            "Function Type",
-        )
+        Rule::new(Symbol::arrow(Symbol::Type, Symbol::Type), "Function Type")
     }
 }

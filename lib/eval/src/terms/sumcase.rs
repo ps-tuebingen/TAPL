@@ -128,11 +128,10 @@ where
                 ],
                 vec![
                     Symbol::sub(Symbol::Term, 1),
-                    Symbol::brack(vec![
+                    Symbol::sqbrack(Symbol::mapto(
                         Symbol::sub(Symbol::Variable, 1),
-                        SpecialChar::Arrow.into(),
                         Symbol::sub(Symbol::Term, 3),
-                    ]),
+                    )),
                 ],
                 "E-SumCaseLeft",
             ),
@@ -157,11 +156,10 @@ where
                 ],
                 vec![
                     Symbol::sub(Symbol::Term, 2),
-                    Symbol::sqbrack(vec![
+                    Symbol::sqbrack(Symbol::mapto(
                         Symbol::sub(Symbol::Variable, 2),
-                        SpecialChar::Arrow.into(),
                         Symbol::sub(Symbol::Term, 3),
-                    ]),
+                    )),
                 ],
                 "E-SumCaseRight",
             ),

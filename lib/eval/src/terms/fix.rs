@@ -57,17 +57,18 @@ where
                 ],
                 vec![
                     Symbol::Term,
-                    Symbol::sqbrack(vec![
+                    Symbol::sqbrack(Symbol::mapto(
                         Symbol::Variable,
-                        SpecialChar::Arrow.into(),
-                        Keyword::Fix.into(),
-                        SpecialChar::Lambda.into(),
-                        Symbol::Variable,
-                        SpecialChar::Colon.into(),
-                        Symbol::Type,
-                        SpecialChar::Dot.into(),
-                        Symbol::Term,
-                    ]),
+                        Symbol::paren(vec![
+                            Keyword::Fix.into(),
+                            SpecialChar::Lambda.into(),
+                            Symbol::Variable,
+                            SpecialChar::Colon.into(),
+                            Symbol::Type,
+                            SpecialChar::Dot.into(),
+                            Symbol::Term,
+                        ]),
+                    )),
                 ],
                 "E-Fix",
             ),

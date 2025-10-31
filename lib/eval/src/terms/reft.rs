@@ -60,11 +60,7 @@ where
                 vec![
                     Symbol::Location,
                     SpecialChar::Pipe.into(),
-                    Symbol::sqbrack(vec![
-                        Symbol::Location,
-                        SpecialChar::Arrow.into(),
-                        Symbol::Value,
-                    ]),
+                    Symbol::sqbrack(Symbol::mapto(Symbol::Location, Symbol::Value)),
                 ],
                 "E-Ref",
             ),

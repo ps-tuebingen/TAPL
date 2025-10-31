@@ -91,11 +91,7 @@ where
             mu_ty.clone(),
             vec![
                 Symbol::Type,
-                Symbol::sqbrack(vec![
-                    Symbol::Typevariable,
-                    SpecialChar::Arrow.into(),
-                    mu_ty.into(),
-                ]),
+                Symbol::sqbrack(Symbol::mapto(Symbol::Typevariable, mu_ty)),
             ],
             "T-Fold",
         )])
