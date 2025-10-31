@@ -250,7 +250,7 @@ impl DerivationRule {
         };
         DerivationRule {
             premises: vec![ConclusionRule {
-                env: prem_env.into(),
+                env: prem_env,
                 input: Symbol::Term,
                 separator: SpecialChar::Colon.into(),
                 output: Symbol::sub(Symbol::Type, 2),
@@ -1014,7 +1014,7 @@ impl DerivationRule {
         };
         DerivationRule {
             premises: vec![ConclusionRule {
-                env: prem_env.into(),
+                env: prem_env,
                 input: Symbol::Term,
                 separator: SpecialChar::Colon.into(),
                 output: Symbol::Type,
@@ -1448,8 +1448,7 @@ impl DerivationRule {
                     Symbol::Label,
                     SpecialChar::Colon.into(),
                     Symbol::sub(Symbol::Type, 2),
-                ])
-                .into(),
+                ]),
             },
         }
     }
@@ -1883,14 +1882,14 @@ impl DerivationRule {
                 output: Symbol::sub(Symbol::Kind, 1),
             },
             ConclusionRule {
-                env: prem_env.clone().into(),
+                env: prem_env.clone(),
                 input: Symbol::sub(Symbol::Type, 2),
                 separator: SpecialChar::DoubleColon.into(),
                 output: Symbol::sub(Symbol::Kind, 2),
             },
         ];
         let prem_unbound = vec![ConclusionRule {
-            env: prem_env.into(),
+            env: prem_env,
             input: Symbol::sub(Symbol::Type, 2),
             separator: SpecialChar::DoubleColon.into(),
             output: Symbol::sub(Symbol::Kind, 2),

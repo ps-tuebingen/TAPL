@@ -6,6 +6,6 @@ where
     Lang: Language,
 {
     fn rule() -> Rule {
-        Rule::new(Symbol::paren(Symbol::many(Symbol::Term)).into(), "Tuple")
+        Rule::new(Symbol::paren(Symbol::many(Symbol::Term)), "Tuple")
     }
 }

@@ -1,7 +1,4 @@
-use crate::{
-    GrammarRuleDescribe, Rule, Symbol,
-    symbols::{Keyword, SpecialChar},
-};
+use crate::{GrammarRuleDescribe, Rule, Symbol, symbols::Keyword};
 use syntax::{language::Language, terms::Cons};
 
 impl<Lang> GrammarRuleDescribe for Cons<Lang>
