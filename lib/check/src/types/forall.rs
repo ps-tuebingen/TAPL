@@ -52,9 +52,7 @@ where
         HashSet::from([DerivationRule::norm_cong(|sym| {
             vec![
                 SpecialChar::Forall.into(),
-                Symbol::Typevariable,
-                SpecialChar::DoubleColon.into(),
-                Symbol::Type,
+                Symbol::double_colon_sep(Symbol::Typevariable, Symbol::Type),
                 SpecialChar::Dot.into(),
                 sym,
             ]

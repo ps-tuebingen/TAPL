@@ -169,6 +169,16 @@ impl Symbol {
     {
         vec![fst.into(), SpecialChar::Colon.into(), snd.into()].into()
     }
+
+    /// Separate fst and snd by double colon
+    /// fst :: snd
+    pub fn double_colon_sep<S1, S2>(fst: S1, snd: S2) -> Symbol
+    where
+        S1: Into<Symbol>,
+        S2: Into<Symbol>,
+    {
+        vec![fst.into(), SpecialChar::DoubleColon.into(), snd.into()].into()
+    }
 }
 
 impl fmt::Display for Symbol {

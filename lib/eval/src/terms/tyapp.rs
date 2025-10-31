@@ -59,12 +59,9 @@ where
                 SpecialChar::LessColon.into(),
                 Symbol::sub(Symbol::Type, 1),
             ]
+            .into()
         } else {
-            vec![
-                Symbol::Typevariable,
-                SpecialChar::DoubleColon.into(),
-                Symbol::Kind,
-            ]
+            Symbol::double_colon_sep(Symbol::Typevariable, Symbol::Kind)
         };
 
         HashSet::from([
@@ -73,7 +70,7 @@ where
                 vec![
                     SpecialChar::Lambda.into(),
                     Symbol::Typevariable,
-                    ty_var.into(),
+                    ty_var,
                     SpecialChar::Dot.into(),
                     Symbol::Term,
                     Symbol::sqbrack(Symbol::Type),
