@@ -92,11 +92,10 @@ where
                             Symbol::sub(Symbol::Term, 3),
                             SpecialChar::Pipe.into(),
                             Keyword::Cons.into(),
-                            Symbol::paren(vec![
+                            Symbol::paren(Symbol::comma_sep(
                                 Symbol::sub(Symbol::Variable, 1),
-                                SpecialChar::Comma.into(),
                                 Symbol::sub(Symbol::Variable, 2),
-                            ]),
+                            )),
                             SpecialChar::DoubleArrow.into(),
                             Symbol::sub(Symbol::Term, 4),
                         ]),
@@ -115,11 +114,10 @@ where
                         Symbol::sub(Symbol::Term, 3),
                         SpecialChar::Pipe.into(),
                         Keyword::Cons.into(),
-                        Symbol::paren(vec![
+                        Symbol::paren(Symbol::comma_sep(
                             Symbol::sub(Symbol::Variable, 1),
-                            SpecialChar::Comma.into(),
                             Symbol::sub(Symbol::Variable, 2),
-                        ]),
+                        )),
                         SpecialChar::DoubleArrow.into(),
                         Symbol::sub(Symbol::Term, 4),
                     ]),
@@ -131,11 +129,10 @@ where
                 vec![
                     Keyword::Case.into(),
                     Keyword::Cons.into(),
-                    Symbol::paren(vec![
+                    Symbol::paren(Symbol::comma_sep(
                         Symbol::sub(Symbol::Value, 1),
-                        SpecialChar::Comma.into(),
                         Symbol::sub(Symbol::Value, 2),
-                    ]),
+                    )),
                     Keyword::Of.into(),
                     Symbol::brack(vec![
                         Keyword::Nil.into(),
@@ -143,11 +140,10 @@ where
                         Symbol::sub(Symbol::Term, 3),
                         SpecialChar::Pipe.into(),
                         Keyword::Cons.into(),
-                        Symbol::paren(vec![
+                        Symbol::paren(Symbol::comma_sep(
                             Symbol::sub(Symbol::Variable, 1),
-                            SpecialChar::Comma.into(),
                             Symbol::sub(Symbol::Variable, 2),
-                        ]),
+                        )),
                         SpecialChar::DoubleArrow.into(),
                         Symbol::sub(Symbol::Term, 4),
                     ]),

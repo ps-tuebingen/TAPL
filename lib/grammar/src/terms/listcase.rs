@@ -19,11 +19,7 @@ where
                 Symbol::Term,
                 SpecialChar::Pipe.into(),
                 Keyword::Cons.into(),
-                Symbol::paren(vec![
-                    Symbol::Variable,
-                    SpecialChar::Comma.into(),
-                    Symbol::Variable,
-                ]),
+                Symbol::paren(Symbol::comma_sep(Symbol::Variable, Symbol::Variable)),
                 SpecialChar::DoubleArrow.into(),
                 Symbol::Term,
             ]

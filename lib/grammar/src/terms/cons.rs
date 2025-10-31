@@ -13,7 +13,7 @@ where
             vec![
                 Keyword::Cons.into(),
                 Symbol::sqbrack(Symbol::Type),
-                Symbol::paren(vec![Symbol::Term, SpecialChar::Comma.into(), Symbol::Term]),
+                Symbol::paren(Symbol::comma_sep(Symbol::Term, Symbol::Term)),
             ]
             .into(),
             "Cons",

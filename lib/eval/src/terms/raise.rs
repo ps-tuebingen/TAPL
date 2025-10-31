@@ -2,7 +2,7 @@ use crate::Eval;
 use errors::eval_error::EvalError;
 use grammar::{
     DerivationRule,
-    symbols::{Keyword, SpecialChar, Symbol},
+    symbols::{Keyword, Symbol},
 };
 use std::collections::HashSet;
 use syntax::{
@@ -40,11 +40,10 @@ where
                 |sym| {
                     vec![
                         Keyword::Raise.into(),
-                        Symbol::sqbrack(vec![
+                        Symbol::sqbrack(Symbol::comma_sep(
                             Symbol::sub(Symbol::Type, 1),
-                            SpecialChar::Comma.into(),
                             Symbol::sub(Symbol::Type, 2),
-                        ]),
+                        )),
                         Symbol::paren(sym),
                     ]
                 },
@@ -53,28 +52,25 @@ where
             DerivationRule::eval(
                 vec![
                     Keyword::Raise.into(),
-                    Symbol::sqbrack(vec![
+                    Symbol::sqbrack(Symbol::comma_sep(
                         Symbol::sub(Symbol::Type, 1),
-                        SpecialChar::Comma.into(),
                         Symbol::sub(Symbol::Type, 2),
-                    ]),
+                    )),
                     Symbol::paren(vec![
                         Keyword::Raise.into(),
-                        Symbol::sqbrack(vec![
+                        Symbol::sqbrack(Symbol::comma_sep(
                             Symbol::sub(Symbol::Type, 1),
-                            SpecialChar::Comma.into(),
                             Symbol::sub(Symbol::Type, 2),
-                        ]),
+                        )),
                         Symbol::paren(Symbol::Value),
                     ]),
                 ],
                 vec![
                     Keyword::Raise.into(),
-                    Symbol::sqbrack(vec![
+                    Symbol::sqbrack(Symbol::comma_sep(
                         Symbol::sub(Symbol::Type, 1),
-                        SpecialChar::Comma.into(),
                         Symbol::sub(Symbol::Type, 2),
-                    ]),
+                    )),
                     Symbol::paren(Symbol::Value),
                 ],
                 "E-RaiseRaise",

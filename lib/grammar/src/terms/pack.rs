@@ -1,4 +1,4 @@
-use crate::{GrammarRuleDescribe, Rule, Symbol, symbols::SpecialChar};
+use crate::{GrammarRuleDescribe, Rule, Symbol};
 use syntax::{language::Language, terms::Pack};
 
 impl<Lang> GrammarRuleDescribe for Pack<Lang>
@@ -7,7 +7,7 @@ where
 {
     fn rule() -> Rule {
         Rule::new(
-            Symbol::brack(vec![Symbol::Term, SpecialChar::Comma.into(), Symbol::Type]),
+            Symbol::brack(Symbol::comma_sep(Symbol::Term, Symbol::Type)),
             "Package",
         )
     }

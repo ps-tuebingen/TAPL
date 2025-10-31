@@ -64,11 +64,7 @@ where
                 |sym| {
                     vec![
                         Keyword::Let.into(),
-                        Symbol::brack(vec![
-                            Symbol::Typevariable,
-                            SpecialChar::Comma.into(),
-                            Symbol::Variable,
-                        ]),
+                        Symbol::brack(Symbol::comma_sep(Symbol::Typevariable, Symbol::Variable)),
                         SpecialChar::Equals.into(),
                         sym,
                         Keyword::In.into(),
@@ -80,19 +76,13 @@ where
             DerivationRule::eval(
                 vec![
                     Keyword::Let.into(),
-                    Symbol::paren(vec![
-                        Symbol::Typevariable,
-                        SpecialChar::Comma.into(),
-                        Symbol::Variable,
-                    ]),
+                    Symbol::paren(Symbol::comma_sep(Symbol::Typevariable, Symbol::Variable)),
                     SpecialChar::Equals.into(),
                     Symbol::paren(vec![
-                        Symbol::brack(vec![
-                            SpecialChar::Star.into(),
-                            Symbol::sub(Symbol::Type, 1),
-                            SpecialChar::Comma.into(),
+                        Symbol::brack(Symbol::comma_sep(
+                            vec![SpecialChar::Star.into(), Symbol::sub(Symbol::Type, 1)],
                             Symbol::Value,
-                        ]),
+                        )),
                         Keyword::As.into(),
                         Symbol::sub(Symbol::Type, 2),
                     ]),
@@ -101,15 +91,14 @@ where
                 ],
                 vec![
                     Symbol::Term,
-                    Symbol::sqbrack(vec![
-                        Symbol::Typevariable,
-                        SpecialChar::Arrow.into(),
-                        Symbol::sub(Symbol::Type, 1),
-                        SpecialChar::Comma.into(),
-                        Symbol::Variable,
-                        SpecialChar::Arrow.into(),
-                        Symbol::Value,
-                    ]),
+                    Symbol::sqbrack(Symbol::comma_sep(
+                        vec![
+                            Symbol::Typevariable,
+                            SpecialChar::Arrow.into(),
+                            Symbol::sub(Symbol::Type, 1),
+                        ],
+                        vec![Symbol::Variable, SpecialChar::Arrow.into(), Symbol::Value],
+                    )),
                 ],
                 "E-UnpackPack",
             ),

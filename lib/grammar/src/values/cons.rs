@@ -1,7 +1,4 @@
-use crate::{
-    GrammarRuleDescribe, Rule, Symbol,
-    symbols::{Keyword, SpecialChar},
-};
+use crate::{GrammarRuleDescribe, Rule, Symbol, symbols::Keyword};
 use syntax::{language::Language, values::Cons};
 
 impl<Lang> GrammarRuleDescribe for Cons<Lang>
@@ -13,11 +10,7 @@ where
             vec![
                 Keyword::Cons.into(),
                 Symbol::sqbrack(Symbol::Type),
-                Symbol::paren(vec![
-                    Symbol::Value,
-                    SpecialChar::Comma.into(),
-                    Symbol::Value,
-                ]),
+                Symbol::paren(Symbol::comma_sep(Symbol::Value, Symbol::Value)),
             ]
             .into(),
             "Cons",

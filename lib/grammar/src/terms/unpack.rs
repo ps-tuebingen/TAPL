@@ -11,11 +11,7 @@ where
     fn rule() -> Rule {
         Rule::new(
             vec![
-                Symbol::brack(vec![
-                    Symbol::Typevariable,
-                    SpecialChar::Comma.into(),
-                    Symbol::Variable,
-                ]),
+                Symbol::brack(Symbol::comma_sep(Symbol::Typevariable, Symbol::Variable)),
                 SpecialChar::Equals.into(),
                 Symbol::Term,
                 Keyword::In.into(),

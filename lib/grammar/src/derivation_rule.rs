@@ -126,11 +126,10 @@ impl DerivationRule {
                 input: vec![
                     Keyword::Cons.into(),
                     Symbol::sqbrack(Symbol::Type),
-                    Symbol::paren(vec![
+                    Symbol::paren(Symbol::comma_sep(
                         Symbol::sub(Symbol::Term, 1),
-                        SpecialChar::Comma.into(),
                         Symbol::sub(Symbol::Term, 2),
-                    ]),
+                    )),
                 ]
                 .into(),
                 separator: SpecialChar::Colon.into(),
@@ -196,21 +195,23 @@ impl DerivationRule {
     /// Gamma |-> Lambda Variable:Type1.Term : Type1 -> Type2
     pub fn check_lambda(bounded: bool) -> DerivationRule {
         let prem_env = if bounded {
-            vec![
-                SpecialChar::Gamma.into(),
-                SpecialChar::Comma.into(),
-                Symbol::Typevariable,
-                SpecialChar::LessColon.into(),
-                Symbol::sub(Symbol::Type, 1),
-            ]
+            Symbol::comma_sep(
+                SpecialChar::Gamma,
+                vec![
+                    Symbol::Typevariable,
+                    SpecialChar::LessColon.into(),
+                    Symbol::sub(Symbol::Type, 1),
+                ],
+            )
         } else {
-            vec![
-                SpecialChar::Gamma.into(),
-                SpecialChar::Comma.into(),
-                Symbol::Variable,
-                SpecialChar::Colon.into(),
-                Symbol::sub(Symbol::Type, 1),
-            ]
+            Symbol::comma_sep(
+                SpecialChar::Gamma,
+                vec![
+                    Symbol::Variable,
+                    SpecialChar::Colon.into(),
+                    Symbol::sub(Symbol::Type, 1),
+                ],
+            )
         };
         let conc_input = if bounded {
             vec![
@@ -358,20 +359,20 @@ impl DerivationRule {
                 Symbol::brack(vec![
                     Symbol::Typevariable,
                     SpecialChar::LessColon.into(),
-                    Symbol::sub(Symbol::Type, 3),
-                    SpecialChar::Comma.into(),
-                    Symbol::sub(Symbol::Type, 2),
+                    Symbol::comma_sep(Symbol::sub(Symbol::Type, 3), Symbol::sub(Symbol::Type, 2)),
                 ]),
             ]
         } else {
             vec![
                 SpecialChar::Exists.into(),
-                Symbol::brack(vec![
-                    Symbol::Typevariable,
-                    SpecialChar::DoubleColon.into(),
-                    SpecialChar::Comma.into(),
+                Symbol::brack(vec![Symbol::comma_sep(
+                    vec![
+                        Symbol::Typevariable,
+                        SpecialChar::DoubleColon.into(),
+                        Symbol::Kind,
+                    ],
                     Symbol::sub(Symbol::Type, 2),
-                ]),
+                )]),
             ]
         };
 
@@ -475,12 +476,7 @@ impl DerivationRule {
             .into(),
         };
         let prem_in = ConclusionRule {
-            env: vec![
-                SpecialChar::Gamma.into(),
-                SpecialChar::Comma.into(),
-                ty_var.into(),
-            ]
-            .into(),
+            env: Symbol::comma_sep(SpecialChar::Gamma, ty_var),
             input: Symbol::sub(Symbol::Term, 2),
             separator: SpecialChar::Colon.into(),
             output: Symbol::sub(Symbol::Type, 1),
@@ -492,11 +488,7 @@ impl DerivationRule {
                 env: SpecialChar::Gamma.into(),
                 input: vec![
                     Keyword::Let.into(),
-                    Symbol::brack(vec![
-                        Symbol::Typevariable,
-                        SpecialChar::Comma.into(),
-                        Symbol::Variable,
-                    ]),
+                    Symbol::brack(Symbol::comma_sep(Symbol::Typevariable, Symbol::Variable)),
                     SpecialChar::Equals.into(),
                     Symbol::sub(Symbol::Term, 1),
                     Keyword::In.into(),
@@ -533,12 +525,10 @@ impl DerivationRule {
             label: "T-Pair".to_owned(),
             conclusion: ConclusionRule {
                 env: SpecialChar::Gamma.into(),
-                input: vec![Symbol::brack(vec![
+                input: Symbol::brack(Symbol::comma_sep(
                     Symbol::sub(Symbol::Term, 1),
-                    SpecialChar::Comma.into(),
                     Symbol::sub(Symbol::Term, 2),
-                ])]
-                .into(),
+                )),
                 separator: SpecialChar::Colon.into(),
                 output: vec![
                     Symbol::sub(Symbol::Type, 1),
@@ -604,19 +594,22 @@ impl DerivationRule {
             output: Symbol::sub(Symbol::Type, 2),
         };
         let prem_cons = ConclusionRule {
-            env: vec![
-                SpecialChar::Gamma.into(),
-                SpecialChar::Comma.into(),
-                Symbol::sub(Symbol::Variable, 1),
-                SpecialChar::Colon.into(),
-                Symbol::sub(Symbol::Type, 1),
-                SpecialChar::Comma.into(),
-                Symbol::sub(Symbol::Variable, 2),
-                SpecialChar::Colon.into(),
-                Keyword::List.into(),
-                Symbol::sqbrack(Symbol::sub(Symbol::Type, 2)),
-            ]
-            .into(),
+            env: Symbol::comma_sep(
+                Symbol::comma_sep(
+                    SpecialChar::Gamma,
+                    vec![
+                        Symbol::sub(Symbol::Variable, 1),
+                        SpecialChar::Colon.into(),
+                        Symbol::sub(Symbol::Type, 1),
+                    ],
+                ),
+                vec![
+                    Symbol::sub(Symbol::Variable, 2),
+                    SpecialChar::Colon.into(),
+                    Keyword::List.into(),
+                    Symbol::sqbrack(Symbol::sub(Symbol::Type, 2)),
+                ],
+            ),
             input: Symbol::sub(Symbol::Term, 2),
             separator: SpecialChar::Colon.into(),
             output: Symbol::sub(Symbol::Type, 2),
@@ -633,11 +626,10 @@ impl DerivationRule {
                     Symbol::sub(Symbol::Term, 2),
                     SpecialChar::Pipe.into(),
                     Keyword::Cons.into(),
-                    Symbol::paren(vec![
+                    Symbol::paren(Symbol::comma_sep(
                         Symbol::sub(Symbol::Variable, 1),
-                        SpecialChar::Comma.into(),
                         Symbol::sub(Symbol::Variable, 2),
-                    ]),
+                    )),
                     SpecialChar::DoubleArrow.into(),
                     Symbol::sub(Symbol::Term, 3),
                 ]),
@@ -675,14 +667,14 @@ impl DerivationRule {
             output: Symbol::sub(Symbol::Type, 2),
         };
         let prem_something = ConclusionRule {
-            env: vec![
-                SpecialChar::Gamma.into(),
-                SpecialChar::Comma.into(),
-                Symbol::Variable,
-                SpecialChar::Comma.into(),
-                Symbol::sub(Symbol::Type, 1),
-            ]
-            .into(),
+            env: Symbol::comma_sep(
+                SpecialChar::Gamma,
+                vec![
+                    Symbol::Variable,
+                    SpecialChar::Colon.into(),
+                    Symbol::sub(Symbol::Type, 1),
+                ],
+            ),
             input: Symbol::sub(Symbol::Term, 3),
             separator: SpecialChar::Colon.into(),
             output: Symbol::sub(Symbol::Type, 2),
@@ -734,26 +726,24 @@ impl DerivationRule {
             .into(),
         };
         let prem_left = ConclusionRule {
-            env: vec![
-                SpecialChar::Gamma.into(),
-                SpecialChar::Comma.into(),
-                Symbol::sub(Symbol::Variable, 1),
-                SpecialChar::Colon.into(),
-                Symbol::sub(Symbol::Type, 1),
-            ]
-            .into(),
+            env: Symbol::comma_sep(
+                SpecialChar::Gamma,
+                vec![
+                    Symbol::sub(Symbol::Variable, 1),
+                    SpecialChar::Colon.into(),
+                    Symbol::sub(Symbol::Type, 1),
+                ],
+            ),
             input: Symbol::sub(Symbol::Term, 2),
             separator: SpecialChar::Colon.into(),
             output: Symbol::sub(Symbol::Type, 3),
         };
         let prem_right = ConclusionRule {
-            env: vec![
-                SpecialChar::Gamma.into(),
-                SpecialChar::Comma.into(),
-                Symbol::sub(Symbol::Variable, 2),
+            env: Symbol::comma_sep(
+                Symbol::comma_sep(SpecialChar::Gamma, Symbol::sub(Symbol::Variable, 2)),
                 Symbol::sub(Symbol::Type, 2),
-            ]
-            .into(),
+            ),
+
             input: Symbol::sub(Symbol::Term, 3),
             separator: SpecialChar::Colon.into(),
             output: Symbol::sub(Symbol::Type, 3),
@@ -991,21 +981,23 @@ impl DerivationRule {
     /// Gamma |-> Lambda TypeVar::Kind.Term : Forall TypeVar::Kind.Type
     pub fn check_ty_lambda(bounded: bool) -> DerivationRule {
         let prem_env = if bounded {
-            vec![
-                SpecialChar::Gamma.into(),
-                SpecialChar::Comma.into(),
-                Symbol::Typevariable,
-                SpecialChar::LessColon.into(),
-                Symbol::sub(Symbol::Type, 2),
-            ]
+            Symbol::comma_sep(
+                SpecialChar::Gamma,
+                vec![
+                    Symbol::Typevariable,
+                    SpecialChar::LessColon.into(),
+                    Symbol::sub(Symbol::Type, 2),
+                ],
+            )
         } else {
-            vec![
-                SpecialChar::Gamma.into(),
-                SpecialChar::Comma.into(),
-                Symbol::Typevariable,
-                SpecialChar::DoubleColon.into(),
-                Symbol::Kind,
-            ]
+            Symbol::comma_sep(
+                SpecialChar::Gamma,
+                vec![
+                    Symbol::Typevariable,
+                    SpecialChar::DoubleColon.into(),
+                    Symbol::Kind,
+                ],
+            )
         };
         let ty_var = if bounded {
             vec![
@@ -1210,12 +1202,7 @@ impl DerivationRule {
         let ind_upper = if bounded { 2 } else { 3 };
         DerivationRule {
             premises: vec![ConclusionRule {
-                env: vec![
-                    SpecialChar::Gamma.into(),
-                    SpecialChar::Comma.into(),
-                    var_sym.clone(),
-                ]
-                .into(),
+                env: Symbol::comma_sep(SpecialChar::Gamma, var_sym.clone()),
                 input: Symbol::sub(Symbol::Type, ind_lower),
                 separator: SpecialChar::LessColon.into(),
                 output: Symbol::sub(Symbol::Type, ind_upper),
@@ -1260,14 +1247,12 @@ impl DerivationRule {
                 SpecialChar::LessColon.into(),
                 Symbol::sub(Symbol::Type, 1),
             ]
-            .into()
         } else {
             vec![
                 Symbol::Typevariable,
                 SpecialChar::DoubleColon.into(),
                 Symbol::Kind,
             ]
-            .into()
         };
         let prem_in = if bounded {
             Symbol::sub(Symbol::Type, 2)
@@ -1280,12 +1265,7 @@ impl DerivationRule {
             Symbol::sub(Symbol::Type, 2)
         };
         let premise = ConclusionRule {
-            env: vec![
-                SpecialChar::Gamma.into(),
-                SpecialChar::Comma.into(),
-                env_var,
-            ]
-            .into(),
+            env: Symbol::comma_sep(SpecialChar::Gamma, env_var),
             input: prem_in,
             separator: SpecialChar::LessColon.into(),
             output: prem_out,
@@ -1411,12 +1391,7 @@ impl DerivationRule {
         };
 
         let prem = ConclusionRule {
-            env: vec![
-                SpecialChar::Gamma.into(),
-                SpecialChar::Comma.into(),
-                annot.clone().into(),
-            ]
-            .into(),
+            env: Symbol::comma_sep(SpecialChar::Gamma, annot.clone()),
             input: Symbol::sub(Symbol::Type, 1),
             separator: SpecialChar::LessColon.into(),
             output: Symbol::sub(Symbol::Type, 2),
@@ -1555,15 +1530,9 @@ impl DerivationRule {
                 },
                 ConclusionRule {
                     env: SpecialChar::Gamma.into(),
-                    input: Symbol::sub(
-                        Symbol::Type,
-                        vec!["i".into(), SpecialChar::Comma.into(), "k".into()],
-                    ),
+                    input: Symbol::sub(Symbol::Type, Symbol::comma_sep("i", "k")),
                     separator: SpecialChar::LessColon.into(),
-                    output: Symbol::sub(
-                        Symbol::Type,
-                        vec!["j".into(), SpecialChar::Comma.into(), "k".into()],
-                    ),
+                    output: Symbol::sub(Symbol::Type, Symbol::comma_sep("j", "k")),
                 },
                 ConclusionRule {
                     env: SpecialChar::Space.into(),
@@ -1578,20 +1547,14 @@ impl DerivationRule {
                 input: Symbol::angbrack(Symbol::many(vec![
                     Symbol::sub(Symbol::Label, "i"),
                     SpecialChar::Colon.into(),
-                    Symbol::sub(
-                        Symbol::Type,
-                        vec!["i".into(), SpecialChar::Comma.into(), "k".into()],
-                    ),
+                    Symbol::sub(Symbol::Type, Symbol::comma_sep("i", "k")),
                 ])),
 
                 separator: SpecialChar::LessColon.into(),
                 output: Symbol::angbrack(Symbol::many(vec![
                     Symbol::sub(Symbol::Label, "j"),
                     SpecialChar::Colon.into(),
-                    Symbol::sub(
-                        Symbol::Type,
-                        vec!["i".into(), SpecialChar::Comma.into(), "k".into()],
-                    ),
+                    Symbol::sub(Symbol::Type, Symbol::comma_sep("i", "k")),
                 ])),
             },
         }
@@ -1692,12 +1655,7 @@ impl DerivationRule {
             Symbol::sub(Symbol::Kind, 2)
         };
         let premise = ConclusionRule {
-            env: vec![
-                SpecialChar::Gamma.into(),
-                SpecialChar::Comma.into(),
-                prem_env_snd.into(),
-            ]
-            .into(),
+            env: Symbol::comma_sep(SpecialChar::Gamma, prem_env_snd),
             input: prem_input,
             separator: SpecialChar::DoubleColon.into(),
             output: prem_output,
@@ -1756,14 +1714,12 @@ impl DerivationRule {
                 SpecialChar::LessColon.into(),
                 Symbol::sub(Symbol::Type, 1),
             ]
-            .into()
         } else {
             vec![
                 Symbol::Typevariable,
                 SpecialChar::DoubleColon.into(),
                 Symbol::sub(Symbol::Kind, 1),
             ]
-            .into()
         };
         let prem_input = if bounded {
             Symbol::sub(Symbol::Type, 2)
@@ -1776,7 +1732,7 @@ impl DerivationRule {
             Symbol::sub(Symbol::Kind, 2)
         };
         let premise = ConclusionRule {
-            env: vec![SpecialChar::Gamma.into(), SpecialChar::Comma.into(), tyvar].into(),
+            env: Symbol::comma_sep(SpecialChar::Gamma, tyvar),
             input: prem_input,
             separator: SpecialChar::DoubleColon.into(),
             output: prem_output,
@@ -1918,8 +1874,7 @@ impl DerivationRule {
                 Symbol::sub(Symbol::Kind, 3),
             ]
         };
-        let mut prem_env = vec![SpecialChar::Gamma.into(), SpecialChar::Comma.into()];
-        prem_env.extend(annot.clone());
+        let prem_env = Symbol::comma_sep(SpecialChar::Gamma, annot.clone());
         let prem_bound = vec![
             ConclusionRule {
                 env: SpecialChar::Gamma.into(),

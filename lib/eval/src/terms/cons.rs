@@ -2,7 +2,7 @@ use crate::Eval;
 use errors::eval_error::EvalError;
 use grammar::{
     DerivationRule,
-    symbols::{Keyword, SpecialChar, Symbol},
+    symbols::{Keyword, Symbol},
 };
 use std::{collections::HashSet, rc::Rc};
 use syntax::{
@@ -49,11 +49,7 @@ where
                     vec![
                         Keyword::Cons.into(),
                         Symbol::sqbrack(Symbol::Type),
-                        Symbol::paren(vec![
-                            sym,
-                            SpecialChar::Comma.into(),
-                            Symbol::sub(Symbol::Term, 3),
-                        ]),
+                        Symbol::paren(Symbol::comma_sep(sym, Symbol::sub(Symbol::Term, 3))),
                     ]
                 },
                 "E-Cons1",
@@ -63,7 +59,7 @@ where
                     vec![
                         Keyword::Cons.into(),
                         Symbol::sqbrack(Symbol::Type),
-                        Symbol::paren(vec![Symbol::Value, SpecialChar::Comma.into(), sym]),
+                        Symbol::paren(Symbol::comma_sep(Symbol::Value, sym)),
                     ]
                 },
                 "E-Cons2",

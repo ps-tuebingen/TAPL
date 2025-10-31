@@ -56,15 +56,7 @@ where
         HashSet::from([DerivationRule::check_cong(
             vec![Symbol::Term, SpecialChar::Dot.into(), "n".into()],
             Symbol::sub(Symbol::Type, "n"),
-            vec![Symbol::paren(vec![
-                Symbol::sub(Symbol::Type, 1),
-                SpecialChar::Comma.into(),
-                SpecialChar::Ellipses.into(),
-                SpecialChar::Comma.into(),
-                Symbol::sub(Symbol::Type, "n"),
-                SpecialChar::Comma.into(),
-                SpecialChar::Ellipses.into(),
-            ])],
+            vec![Symbol::paren(Symbol::many(Symbol::sub(Symbol::Type, "i")))],
             "T-Proj",
         )])
     }

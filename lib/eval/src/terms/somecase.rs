@@ -91,11 +91,10 @@ where
                             Symbol::sub(Symbol::Term, 3),
                             SpecialChar::Pipe.into(),
                             Keyword::Something.into(),
-                            Symbol::paren(vec![
+                            Symbol::paren(Symbol::comma_sep(
                                 Symbol::sub(Symbol::Variable, 1),
-                                SpecialChar::Comma.into(),
                                 Symbol::sub(Symbol::Variable, 2),
-                            ]),
+                            )),
                             SpecialChar::DoubleArrow.into(),
                             Symbol::sub(Symbol::Term, 4),
                         ]),
@@ -115,11 +114,10 @@ where
                         Symbol::sub(Symbol::Term, 1),
                         SpecialChar::Pipe.into(),
                         Keyword::Something.into(),
-                        Symbol::paren(vec![
+                        Symbol::paren(Symbol::comma_sep(
                             Symbol::sub(Symbol::Variable, 1),
-                            SpecialChar::Comma.into(),
                             Symbol::sub(Symbol::Variable, 2),
-                        ]),
+                        )),
                         SpecialChar::DoubleArrow.into(),
                         Symbol::sub(Symbol::Term, 2),
                     ]),
@@ -132,11 +130,10 @@ where
                     Keyword::Case.into(),
                     Keyword::Something.into(),
                     Symbol::brack(Symbol::Type),
-                    Symbol::paren(vec![
+                    Symbol::paren(Symbol::comma_sep(
                         Symbol::sub(Symbol::Value, 1),
-                        SpecialChar::Comma.into(),
                         Symbol::sub(Symbol::Value, 2),
-                    ]),
+                    )),
                     Keyword::Of.into(),
                     Symbol::brack(vec![
                         Keyword::Nothing.into(),
@@ -144,26 +141,28 @@ where
                         Symbol::sub(Symbol::Term, 1),
                         SpecialChar::Pipe.into(),
                         Keyword::Something.into(),
-                        Symbol::paren(vec![
+                        Symbol::paren(Symbol::comma_sep(
                             Symbol::sub(Symbol::Variable, 1),
-                            SpecialChar::Comma.into(),
                             Symbol::sub(Symbol::Variable, 2),
-                        ]),
+                        )),
                         SpecialChar::DoubleArrow.into(),
                         Symbol::sub(Symbol::Term, 2),
                     ]),
                 ],
                 vec![
                     Symbol::sub(Symbol::Term, 2),
-                    Symbol::brack(vec![
-                        Symbol::sub(Symbol::Variable, 1),
-                        SpecialChar::Arrow.into(),
-                        Symbol::sub(Symbol::Value, 1),
-                        SpecialChar::Comma.into(),
-                        Symbol::sub(Symbol::Variable, 2),
-                        SpecialChar::Arrow.into(),
-                        Symbol::sub(Symbol::Value, 2),
-                    ]),
+                    Symbol::brack(Symbol::comma_sep(
+                        vec![
+                            Symbol::sub(Symbol::Variable, 1),
+                            SpecialChar::Arrow.into(),
+                            Symbol::sub(Symbol::Value, 1),
+                        ],
+                        vec![
+                            Symbol::sub(Symbol::Variable, 2),
+                            SpecialChar::Arrow.into(),
+                            Symbol::sub(Symbol::Value, 2),
+                        ],
+                    )),
                 ],
                 "E-SomeCaseSomething",
             ),

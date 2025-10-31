@@ -2,7 +2,7 @@ use crate::Eval;
 use errors::eval_error::EvalError;
 use grammar::{
     DerivationRule,
-    symbols::{Keyword, SpecialChar, Symbol},
+    symbols::{Keyword, Symbol},
 };
 use std::collections::HashSet;
 use syntax::{
@@ -42,11 +42,10 @@ where
                     Symbol::paren(vec![
                         Keyword::Cons.into(),
                         Symbol::sqbrack(Symbol::Type),
-                        Symbol::paren(vec![
+                        Symbol::paren(Symbol::comma_sep(
                             Symbol::sub(Symbol::Value, 1),
-                            SpecialChar::Comma.into(),
                             Symbol::sub(Symbol::Value, 2),
-                        ]),
+                        )),
                     ]),
                 ],
                 Symbol::Value,
