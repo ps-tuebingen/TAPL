@@ -9,9 +9,7 @@ where
         GrammarRule::new(
             vec![
                 SpecialChar::Exists.into(),
-                Symbol::Type,
-                SpecialChar::LessColon.into(),
-                Symbol::Type,
+                Symbol::less_colon_sep(Symbol::Type, Symbol::Type),
                 SpecialChar::Dot.into(),
                 Symbol::Type,
             ]

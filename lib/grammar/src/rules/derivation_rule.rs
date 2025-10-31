@@ -142,11 +142,7 @@ impl DerivationRule {
         let prem_env = if bounded {
             Symbol::comma_sep(
                 SpecialChar::Gamma,
-                vec![
-                    Symbol::Typevariable,
-                    SpecialChar::LessColon.into(),
-                    Symbol::sub(Symbol::Type, 1),
-                ],
+                Symbol::less_colon_sep(Symbol::Typevariable, Symbol::sub(Symbol::Type, 1)),
             )
         } else {
             Symbol::comma_sep(
@@ -157,9 +153,7 @@ impl DerivationRule {
         let conc_input = if bounded {
             vec![
                 SpecialChar::Lambda.into(),
-                Symbol::Typevariable,
-                SpecialChar::LessColon.into(),
-                Symbol::sub(Symbol::Type, 1),
+                Symbol::less_colon_sep(Symbol::Typevariable, Symbol::sub(Symbol::Type, 1)),
                 SpecialChar::Dot.into(),
                 Symbol::Term,
             ]
@@ -174,9 +168,7 @@ impl DerivationRule {
         let conc_out = if bounded {
             vec![
                 SpecialChar::Forall.into(),
-                Symbol::Typevariable,
-                SpecialChar::LessColon.into(),
-                Symbol::sub(Symbol::Type, 1),
+                Symbol::less_colon_sep(Symbol::Typevariable, Symbol::sub(Symbol::Type, 1)),
                 SpecialChar::Dot.into(),
                 Symbol::sub(Symbol::Type, 2),
             ]
@@ -258,11 +250,10 @@ impl DerivationRule {
         let ex_type = if bounded {
             vec![
                 SpecialChar::Exists.into(),
-                Symbol::brack(vec![
+                Symbol::brack(Symbol::less_colon_sep(
                     Symbol::Typevariable,
-                    SpecialChar::LessColon.into(),
                     Symbol::comma_sep(Symbol::sub(Symbol::Type, 3), Symbol::sub(Symbol::Type, 2)),
-                ]),
+                )),
             ]
         } else {
             vec![
@@ -333,12 +324,7 @@ impl DerivationRule {
     /// Gamma |-> Let {TypeVar,Var} = Term1 in Term2 : Type1
     pub fn check_unpack(bounded: bool) -> DerivationRule {
         let ty_var = if bounded {
-            vec![
-                Symbol::Typevariable,
-                SpecialChar::LessColon.into(),
-                Symbol::sub(Symbol::Type, 3),
-            ]
-            .into()
+            Symbol::less_colon_sep(Symbol::Typevariable, Symbol::sub(Symbol::Type, 3))
         } else {
             Symbol::double_colon_sep(Symbol::Typevariable, Symbol::Kind)
         };
@@ -698,9 +684,7 @@ impl DerivationRule {
                     Symbol::Term,
                     vec![
                         SpecialChar::Forall.into(),
-                        Symbol::Typevariable,
-                        SpecialChar::LessColon.into(),
-                        Symbol::sub(Symbol::Type, 3),
+                        Symbol::less_colon_sep(Symbol::Typevariable, Symbol::sub(Symbol::Type, 3)),
                         SpecialChar::Dot.into(),
                         Symbol::sub(Symbol::Type, 2),
                     ],
@@ -752,11 +736,7 @@ impl DerivationRule {
         let prem_env = if bounded {
             Symbol::comma_sep(
                 SpecialChar::Gamma,
-                vec![
-                    Symbol::Typevariable,
-                    SpecialChar::LessColon.into(),
-                    Symbol::sub(Symbol::Type, 2),
-                ],
+                Symbol::less_colon_sep(Symbol::Typevariable, Symbol::sub(Symbol::Type, 2)),
             )
         } else {
             Symbol::comma_sep(
@@ -765,12 +745,7 @@ impl DerivationRule {
             )
         };
         let ty_var = if bounded {
-            vec![
-                Symbol::Typevariable,
-                SpecialChar::LessColon.into(),
-                Symbol::sub(Symbol::Type, 2),
-            ]
-            .into()
+            Symbol::less_colon_sep(Symbol::Typevariable, Symbol::sub(Symbol::Type, 2))
         } else {
             Symbol::double_colon_sep(Symbol::Typevariable, Symbol::Kind)
         };
@@ -900,12 +875,7 @@ impl DerivationRule {
     /// Gamma |-> exists TyperVar.Ty2 <: exists TypeVar.Ty3
     pub fn sub_exists(bounded: bool) -> DerivationRule {
         let var_sym = if bounded {
-            vec![
-                Symbol::Typevariable,
-                SpecialChar::LessColon.into(),
-                Symbol::sub(Symbol::Type, 1),
-            ]
-            .into()
+            Symbol::less_colon_sep(Symbol::Typevariable, Symbol::sub(Symbol::Type, 1))
         } else {
             Symbol::Typevariable
         };
@@ -950,12 +920,7 @@ impl DerivationRule {
     /// Gamma |-> forall TypeVar::Kind.Ty1 <: forall TypeVar::Kind.Ty2
     pub fn sub_forall(bounded: bool) -> DerivationRule {
         let env_var = if bounded {
-            vec![
-                Symbol::Typevariable,
-                SpecialChar::LessColon.into(),
-                Symbol::sub(Symbol::Type, 1),
-            ]
-            .into()
+            Symbol::less_colon_sep(Symbol::Typevariable, Symbol::sub(Symbol::Type, 1))
         } else {
             Symbol::double_colon_sep(Symbol::Typevariable, Symbol::Kind)
         };
@@ -974,9 +939,7 @@ impl DerivationRule {
         let conc_in = if bounded {
             vec![
                 SpecialChar::Forall.into(),
-                Symbol::Typevariable,
-                SpecialChar::LessColon.into(),
-                Symbol::sub(Symbol::Type, 1),
+                Symbol::less_colon_sep(Symbol::Typevariable, Symbol::sub(Symbol::Type, 1)),
                 SpecialChar::Dot.into(),
                 Symbol::sub(Symbol::Type, 2),
             ]
@@ -991,9 +954,7 @@ impl DerivationRule {
         let conc_out = if bounded {
             vec![
                 SpecialChar::Forall.into(),
-                Symbol::Typevariable,
-                SpecialChar::LessColon.into(),
-                Symbol::sub(Symbol::Type, 1),
+                Symbol::less_colon_sep(Symbol::Typevariable, Symbol::sub(Symbol::Type, 1)),
                 SpecialChar::Dot.into(),
                 Symbol::sub(Symbol::Type, 3),
             ]
@@ -1044,12 +1005,7 @@ impl DerivationRule {
     /// Gamma |-> \Typevar::Kind.Ty1 <: \Typevar::Kind.Ty2
     pub fn sub_oplam(bounded: bool) -> DerivationRule {
         let annot = if bounded {
-            vec![
-                Symbol::Typevariable,
-                SpecialChar::LessColon.into(),
-                Symbol::sub(Symbol::Type, 3),
-            ]
-            .into()
+            Symbol::less_colon_sep(Symbol::Typevariable, Symbol::sub(Symbol::Type, 3))
         } else {
             Symbol::double_colon_sep(Symbol::Typevariable, Symbol::Kind)
         };
@@ -1141,11 +1097,10 @@ impl DerivationRule {
     /// Gamma |-> Typevariable <: Type
     pub fn sub_var() -> DerivationRule {
         DerivationRule {
-            premises: vec![ConclusionRule::lookup_env(vec![
+            premises: vec![ConclusionRule::lookup_env(Symbol::less_colon_sep(
                 Symbol::Typevariable,
-                SpecialChar::LessColon.into(),
                 Symbol::Type,
-            ])],
+            ))],
             label: "S-Var".to_owned(),
             conclusion: ConclusionRule::subtyping(Symbol::Typevariable, Symbol::Type),
         }
@@ -1236,12 +1191,7 @@ impl DerivationRule {
     /// Gamma |-> exists TypeVar::Kind1.Type :: Kind2
     pub fn kind_exists(bounded: bool) -> DerivationRule {
         let prem_env_snd = if bounded {
-            vec![
-                Symbol::Typevariable,
-                SpecialChar::LessColon.into(),
-                Symbol::sub(Symbol::Type, 1),
-            ]
-            .into()
+            Symbol::less_colon_sep(Symbol::Typevariable, Symbol::sub(Symbol::Type, 1))
         } else {
             Symbol::double_colon_sep(Symbol::Typevariable, Symbol::sub(Symbol::Kind, 1))
         };
@@ -1260,9 +1210,7 @@ impl DerivationRule {
         let conc_input = if bounded {
             vec![
                 SpecialChar::Exists.into(),
-                Symbol::Typevariable,
-                SpecialChar::LessColon.into(),
-                Symbol::sub(Symbol::Type, 1),
+                Symbol::less_colon_sep(Symbol::Typevariable, Symbol::sub(Symbol::Type, 1)),
                 SpecialChar::Dot.into(),
                 Symbol::sub(Symbol::Type, 2),
             ]
@@ -1299,12 +1247,7 @@ impl DerivationRule {
     /// Gamma |-> forall TypeVar::Kind1. Ty :: Kind2
     pub fn kind_forall(bounded: bool) -> DerivationRule {
         let tyvar = if bounded {
-            vec![
-                Symbol::Typevariable,
-                SpecialChar::LessColon.into(),
-                Symbol::sub(Symbol::Type, 1),
-            ]
-            .into()
+            Symbol::less_colon_sep(Symbol::Typevariable, Symbol::sub(Symbol::Type, 1))
         } else {
             Symbol::double_colon_sep(Symbol::Typevariable, Symbol::sub(Symbol::Kind, 1))
         };
@@ -1327,9 +1270,7 @@ impl DerivationRule {
         };
         let conc_in_inner = if bounded {
             vec![
-                Symbol::Typevariable,
-                SpecialChar::LessColon.into(),
-                Symbol::sub(Symbol::Type, 1),
+                Symbol::less_colon_sep(Symbol::Typevariable, Symbol::sub(Symbol::Type, 1)),
                 SpecialChar::Dot.into(),
                 Symbol::sub(Symbol::Type, 2),
             ]
@@ -1410,12 +1351,7 @@ impl DerivationRule {
     /// Gamma |-> \TypeVar::Kind3.Ty2 :: Kind1 => Kind2
     pub fn kind_op_lam(bounded: bool) -> DerivationRule {
         let annot = if bounded {
-            vec![
-                Symbol::Typevariable,
-                SpecialChar::LessColon.into(),
-                Symbol::sub(Symbol::Type, 1),
-            ]
-            .into()
+            Symbol::less_colon_sep(Symbol::Typevariable, Symbol::sub(Symbol::Type, 1))
         } else {
             Symbol::double_colon_sep(Symbol::Typevariable, Symbol::sub(Symbol::Kind, 3))
         };
@@ -1528,12 +1464,7 @@ impl DerivationRule {
     /// Gamma |-> (\Typevar::Kind.Type1) Type2 -> Type1[TypeVar -> Type2]
     pub fn norm_ap(bounded: bool) -> DerivationRule {
         let annot = if bounded {
-            vec![
-                Symbol::Typevariable,
-                SpecialChar::LessColon.into(),
-                Symbol::sub(Symbol::Type, 3),
-            ]
-            .into()
+            Symbol::less_colon_sep(Symbol::Typevariable, Symbol::sub(Symbol::Type, 3))
         } else {
             Symbol::double_colon_sep(Symbol::Typevariable, Symbol::Kind)
         };

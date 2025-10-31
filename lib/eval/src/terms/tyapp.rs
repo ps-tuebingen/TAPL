@@ -54,12 +54,7 @@ where
     fn rules() -> HashSet<DerivationRule> {
         let features = Lang::features();
         let ty_var = if features.subtyped {
-            vec![
-                Symbol::Typevariable,
-                SpecialChar::LessColon.into(),
-                Symbol::sub(Symbol::Type, 1),
-            ]
-            .into()
+            Symbol::less_colon_sep(Symbol::Typevariable, Symbol::sub(Symbol::Type, 1))
         } else {
             Symbol::double_colon_sep(Symbol::Typevariable, Symbol::Kind)
         };
