@@ -40,6 +40,7 @@ pub enum SpecialChar {
     LessEq,
     Ellipses,
     Pipe,
+    Element,
 }
 
 impl From<SpecialChar> for Symbol {
@@ -86,6 +87,7 @@ impl fmt::Display for SpecialChar {
             SpecialChar::LessEq => f.write_str("<="),
             SpecialChar::Ellipses => f.write_str("..."),
             SpecialChar::Pipe => f.write_str("|"),
+            SpecialChar::Element => f.write_str("in"),
         }
     }
 }

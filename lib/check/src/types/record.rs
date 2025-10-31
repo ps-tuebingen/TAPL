@@ -1,10 +1,7 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
 use derivations::{Derivation, KindingDerivation, NormalizingDerivation, SubtypeDerivation};
 use errors::{UndefinedLabel, check_error::CheckError};
-use grammar::{
-    DerivationRule,
-    symbols::{SpecialChar, Symbol},
-};
+use grammar::{DerivationRule, symbols::Symbol};
 use std::collections::{HashMap, HashSet};
 use syntax::{
     env::Environment,
@@ -96,11 +93,10 @@ where
 
     fn rules() -> HashSet<DerivationRule> {
         HashSet::from([DerivationRule::norm_cong(|sym| {
-            vec![Symbol::brack(Symbol::many(vec![
+            vec![Symbol::brack(Symbol::many(Symbol::colon_sep(
                 Symbol::Label,
-                SpecialChar::Colon.into(),
                 sym,
-            ]))]
+            )))]
             .into()
         })])
     }

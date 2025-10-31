@@ -63,9 +63,7 @@ where
                 vec![
                     Symbol::paren(vec![
                         SpecialChar::Lambda.into(),
-                        Symbol::Variable,
-                        SpecialChar::Colon.into(),
-                        Symbol::Type,
+                        Symbol::colon_sep(Symbol::Variable, Symbol::Type),
                         SpecialChar::Dot.into(),
                         Symbol::sub(Symbol::Term, 1),
                     ]),

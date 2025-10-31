@@ -77,11 +77,10 @@ where
                 Symbol::Term,
             ]),
             Keyword::As.into(),
-            Symbol::angbrack(Symbol::many(vec![
+            Symbol::angbrack(Symbol::many(Symbol::colon_sep(
                 Symbol::sub(Symbol::Label, "i"),
-                SpecialChar::Colon.into(),
                 Symbol::sub(Symbol::Type, "i"),
-            ])),
+            ))),
         ];
         HashSet::from([DerivationRule::check_cong(
             term,

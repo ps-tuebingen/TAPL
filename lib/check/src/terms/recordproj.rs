@@ -73,11 +73,10 @@ where
                 Symbol::sub(Symbol::Label, "i"),
             ],
             Symbol::sub(Symbol::Type, "i"),
-            Symbol::brack(Symbol::many(vec![
+            Symbol::brack(Symbol::many(Symbol::colon_sep(
                 Symbol::sub(Symbol::Label, "i"),
-                SpecialChar::Colon.into(),
                 Symbol::sub(Symbol::Type, "i"),
-            ])),
+            ))),
             "T-RecordProj",
         )])
     }

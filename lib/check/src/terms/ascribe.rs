@@ -1,10 +1,7 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::check_error::CheckError;
-use grammar::{
-    DerivationRule,
-    symbols::{SpecialChar, Symbol},
-};
+use grammar::{DerivationRule, symbols::Symbol};
 use std::collections::HashSet;
 use syntax::{env::Environment, language::Language, terms::Ascribe, types::TypeGroup};
 
@@ -56,11 +53,7 @@ where
 
     fn rules() -> HashSet<DerivationRule> {
         HashSet::from([DerivationRule::check_cong(
-            vec![Symbol::paren(vec![
-                Symbol::Term,
-                SpecialChar::Colon.into(),
-                Symbol::Type,
-            ])],
+            vec![Symbol::paren(Symbol::colon_sep(Symbol::Term, Symbol::Type))],
             Symbol::Type,
             Symbol::Type,
             "T-Ascribe",

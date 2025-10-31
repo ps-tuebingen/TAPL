@@ -50,9 +50,7 @@ where
         HashSet::from([
             DerivationRule::eval(
                 vec![
-                    Symbol::Label,
-                    SpecialChar::ColonEq.into(),
-                    Symbol::Value,
+                    Symbol::colon_sep(Symbol::Label, Symbol::Value),
                     SpecialChar::Pipe.into(),
                     SpecialChar::Mu.into(),
                 ],
@@ -67,9 +65,7 @@ where
             DerivationRule::eval_cong(
                 |sym| {
                     vec![
-                        sym,
-                        SpecialChar::ColonEq.into(),
-                        Symbol::sub(Symbol::Term, 3),
+                        Symbol::colon_sep(sym, Symbol::sub(Symbol::Term, 3)),
                         SpecialChar::Pipe.into(),
                         SpecialChar::Mu.into(),
                     ]
@@ -79,9 +75,7 @@ where
             DerivationRule::eval_cong(
                 |sym| {
                     vec![
-                        Symbol::Value,
-                        SpecialChar::ColonEq.into(),
-                        sym,
+                        Symbol::colon_sep(Symbol::Value, sym),
                         SpecialChar::Pipe.into(),
                         SpecialChar::Mu.into(),
                     ]

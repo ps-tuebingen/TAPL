@@ -48,9 +48,7 @@ where
                     Keyword::Fix.into(),
                     Symbol::paren(vec![
                         SpecialChar::Lambda.into(),
-                        Symbol::Variable,
-                        SpecialChar::Colon.into(),
-                        Symbol::Type,
+                        Symbol::colon_sep(Symbol::Variable, Symbol::Type),
                         SpecialChar::Dot.into(),
                         Symbol::Term,
                     ]),
@@ -62,9 +60,7 @@ where
                         Symbol::paren(vec![
                             Keyword::Fix.into(),
                             SpecialChar::Lambda.into(),
-                            Symbol::Variable,
-                            SpecialChar::Colon.into(),
-                            Symbol::Type,
+                            Symbol::colon_sep(Symbol::Variable, Symbol::Type),
                             SpecialChar::Dot.into(),
                             Symbol::Term,
                         ]),

@@ -41,6 +41,7 @@ impl LatexFmt for SpecialChar {
             SpecialChar::LessEq => format!("{env_start}\\leq{env_end}"),
             SpecialChar::Ellipses => format!("{env_start}\\dots{env_end}"),
             SpecialChar::Pipe => format!("{env_start}\\bar{env_end}"),
+            SpecialChar::Element => format!("{env_start}\\elem{env_end}"),
         }
     }
 }
