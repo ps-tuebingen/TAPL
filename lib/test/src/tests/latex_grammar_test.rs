@@ -46,38 +46,59 @@ where
     }
 
     fn run(&self) -> TestResult<()> {
-        let latex_src = L::grammars().to_document(&mut Default::default());
+        let grammar_src = L::grammars().to_document(&mut Default::default());
+        let rule_src = L::rules().to_document(&mut Default::default());
 
-        let mut out_path = PathBuf::from(LATEX_OUT).join(format!("{}_grammar", self.name));
-        out_path.set_extension("tex");
+        let mut out_path_grammar = PathBuf::from(LATEX_OUT).join(format!("{}_grammar", self.name));
+        let mut out_path_rules = PathBuf::from(LATEX_OUT).join(format!("{}_rules", self.name));
+        out_path_grammar.set_extension("tex");
+        out_path_rules.set_extension("tex");
 
-        let mut out_file = match File::create(&out_path) {
+        let mut out_file_grammar = match File::create(&out_path_grammar) {
+            Ok(f) => f,
+            Err(err) => return TestResult::from_err(err),
+        };
+        let mut out_file_rules = match File::create(&out_path_rules) {
             Ok(f) => f,
             Err(err) => return TestResult::from_err(err),
         };
 
-        if let Err(err) = out_file.write_all(latex_src.as_bytes()) {
+        if let Err(err) = out_file_grammar.write_all(grammar_src.as_bytes()) {
+            return TestResult::from_err(err);
+        };
+        if let Err(err) = out_file_rules.write_all(rule_src.as_bytes()) {
             return TestResult::from_err(err);
         };
 
-        let mut latex_cmd_bus = Command::new("xelatex");
-        latex_cmd_bus.arg("-halt-on-error");
-        latex_cmd_bus.arg(format!("-output-directory={LATEX_OUT}"));
-        latex_cmd_bus.arg("-inteteraction=nonstopmode");
-        latex_cmd_bus.arg(out_path);
-        latex_cmd_bus.stdout(Stdio::null());
-        latex_cmd_bus.stderr(Stdio::null());
+        fn latex_cmd(out_path: PathBuf) -> Command {
+            let mut latex_cmd = Command::new("xelatex");
+            latex_cmd.arg("-halt-on-error");
+            latex_cmd.arg(format!("-output-directory={LATEX_OUT}"));
+            latex_cmd.arg("-inteteraction=nonstopmode");
+            latex_cmd.arg(out_path);
+            latex_cmd.stdout(Stdio::null());
+            latex_cmd.stderr(Stdio::null());
+            latex_cmd
+        };
 
-        match latex_cmd_bus.status() {
-            Err(err) => TestResult::from_err(err),
-            Ok(exit) => {
-                if exit.success() {
-                    TestResult::Success(())
-                } else {
-                    TestResult::Fail("xelatex exited with non-zero exit status".to_owned())
-                }
+        let mut latex_cmd_grammar = latex_cmd(out_path_grammar);
+        let mut latex_cmd_rules = latex_cmd(out_path_rules);
+
+        match latex_cmd_grammar.status() {
+            Err(err) => return TestResult::from_err(err),
+            Ok(exit) if !exit.success() => {
+                return TestResult::Fail("xelatex exited with non-zero exit status".to_owned());
             }
+            _ => (),
         }
+        match latex_cmd_rules.status() {
+            Err(err) => return TestResult::from_err(err),
+            Ok(exit) if !exit.success() => {
+                return TestResult::Fail("xelatex exited with non-zero exit status".to_owned());
+            }
+            _ => (),
+        }
+        TestResult::Success(())
     }
 
     fn from_conf(conf: &TestConfig, _: Self::Input) -> Option<Self> {
