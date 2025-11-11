@@ -2,6 +2,7 @@ use crate::{
     ConclusionRule, Symbol,
     symbols::{Keyword, SpecialChar},
 };
+use std::fmt;
 
 /// Rule for a typing derivation
 /// For example
@@ -1639,5 +1640,21 @@ impl DerivationRule {
             label: lb.to_owned(),
             conclusion: ConclusionRule::eval(from, to),
         }
+    }
+}
+
+impl fmt::Display for DerivationRule {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(
+            f,
+            "{}\n{}\n{}",
+            self.premises
+                .iter()
+                .map(|prem| prem.to_string())
+                .collect::<Vec<_>>()
+                .join("\n"),
+            self.label,
+            self.conclusion
+        )
     }
 }

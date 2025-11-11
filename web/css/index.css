@@ -1,7 +1,8 @@
 #content{
   display:grid;
-  justify-content:center;
   align-content:center;
+  padding-left:1em;
+  padding-right:1em;
   grid-template-rows: 1fr auto;
   grid-template-columns:auto;
 }

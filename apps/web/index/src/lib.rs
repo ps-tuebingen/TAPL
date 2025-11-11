@@ -6,10 +6,6 @@ use web::{
     collapsable::CollapsableElement, language_select::LanguageSelect, log, web_langs::WEB_LANGUAGES,
 };
 use web_sys::HtmlDivElement;
-//mod context;
-//mod example_select;
-//mod out_divs;
-//use context::HtmlContext;
 
 struct IndexContext {
     language_select: LanguageSelect,
@@ -35,8 +31,14 @@ impl IndexContext {
     }
 
     fn get_grammar(&self) -> String {
-        FormatMethod::LatexFracStripped
-            .format(&WEB_LANGUAGES[self.language_select.selected()].grammars())
+        let lang = &WEB_LANGUAGES[self.language_select.selected()];
+        let grammar = lang.grammars();
+        let rules = lang.rules();
+        format!(
+            "{}\n{}",
+            FormatMethod::LatexFracStripped.format(&grammar),
+            FormatMethod::LatexFracStripped.format(&rules)
+        )
     }
 
     fn setup_events(self: Rc<Self>) -> Result<(), WebError> {

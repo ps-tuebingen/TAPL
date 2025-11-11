@@ -3,7 +3,7 @@ use crate::{
     References, Stlc, Subtypes, SystemF, TypedArithmetic, UntypedArithmetic, UntypedLambda,
 };
 use errors::UndefinedLanguage;
-use grammar::{LanguageDescribe, LanguageGrammar};
+use grammar::{LanguageDescribe, LanguageGrammar, LanguageRules};
 use std::{fmt, str::FromStr};
 use syntax::language::Language;
 
@@ -61,6 +61,24 @@ impl AllLanguages {
             AllLanguages::LambdaOmega => LambdaOmega::grammars(),
             AllLanguages::FOmega => FOmega::grammars(),
             AllLanguages::FOmegaSub => FOmegaSub::grammars(),
+        }
+    }
+    pub fn rules(&self) -> LanguageRules {
+        match self {
+            AllLanguages::UntypedArithmetic => UntypedArithmetic::rules(),
+            AllLanguages::UntypedLambda => UntypedLambda::rules(),
+            AllLanguages::TypedArithmetic => TypedArithmetic::rules(),
+            AllLanguages::Stlc => Stlc::rules(),
+            AllLanguages::Exceptions => Exceptions::rules(),
+            AllLanguages::References => References::rules(),
+            AllLanguages::Existential => Existential::rules(),
+            AllLanguages::Recursive => Recursive::rules(),
+            AllLanguages::Subtypes => Subtypes::rules(),
+            AllLanguages::SystemF => SystemF::rules(),
+            AllLanguages::BoundedQuantification => BoundedQuantification::rules(),
+            AllLanguages::LambdaOmega => LambdaOmega::rules(),
+            AllLanguages::FOmega => FOmega::rules(),
+            AllLanguages::FOmegaSub => FOmegaSub::rules(),
         }
     }
 

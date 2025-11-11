@@ -60,3 +60,33 @@ impl fmt::Display for LanguageGrammar {
         Ok(())
     }
 }
+
+impl fmt::Display for LanguageRules {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        writeln!(f, "Typing Rules")?;
+        for rule in self.typing.iter() {
+            writeln!(f, "{rule}")?;
+        }
+
+        writeln!(f, "Subtyping Rules")?;
+        for rule in self.subtyping.iter() {
+            writeln!(f, "{rule}")?;
+        }
+
+        writeln!(f, "Kinding Rules")?;
+        for rule in self.kinding.iter() {
+            writeln!(f, "{rule}")?;
+        }
+
+        writeln!(f, "Normalizing Rules")?;
+        for rule in self.normalizing.iter() {
+            writeln!(f, "{rule}")?;
+        }
+
+        writeln!(f, "Evaluation Rules")?;
+        for rule in self.eval.iter() {
+            writeln!(f, "{rule}")?;
+        }
+        Ok(())
+    }
+}

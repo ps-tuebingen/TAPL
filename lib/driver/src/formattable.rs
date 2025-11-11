@@ -1,5 +1,5 @@
 use derivations::{DefinitionDerivation, Derivation, ProgramDerivation, TypingDerivation};
-use grammar::LanguageGrammar;
+use grammar::{LanguageGrammar, LanguageRules};
 use latex::LatexFmt;
 use std::fmt;
 use syntax::{language::Language, program::Program};
@@ -56,3 +56,5 @@ where
 }
 
 impl Formattable for LanguageGrammar {}
+
+impl Formattable for LanguageRules {}
