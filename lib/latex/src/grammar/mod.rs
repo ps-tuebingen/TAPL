@@ -1,5 +1,6 @@
 use crate::{LatexConfig, LatexFmt};
-use grammar::{Grammar, GrammarDescribe, LanguageGrammar, LanguageRules};
+use grammar::{DerivationRule, Grammar, GrammarDescribe, LanguageGrammar, LanguageRules};
+use std::collections::HashSet;
 use syntax::kinds::Kind;
 
 mod derivation_rule;
@@ -65,55 +66,45 @@ impl LatexFmt for LanguageGrammar {
 
 impl LatexFmt for LanguageRules {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
-        let (env_start, env_end) = conf.mathenv_strs();
-        conf.include_envs = false;
-        let mut ty_str = self
-            .typing
-            .iter()
-            .map(|rule| rule.to_latex(conf))
-            .collect::<Vec<_>>()
-            .join("\n\n");
+        fn format_vec(rules: &HashSet<DerivationRule>, conf: &mut LatexConfig) -> String {
+            let mut strs = vec![];
+            for rule in rules.iter() {
+                strs.push(rule.to_latex(conf));
+                conf.include_envs = true;
+            }
+            strs.join("\n")
+        }
+
+        let mut ty_str = format_vec(&self.typing, conf);
         if !ty_str.is_empty() {
             ty_str = format!("Typing\n{ty_str}")
         }
-        let mut subty_str = self
-            .subtyping
-            .iter()
-            .map(|rule| rule.to_latex(conf))
-            .collect::<Vec<_>>()
-            .join("\n\n");
+        conf.include_envs = true;
+
+        let mut subty_str = format_vec(&self.subtyping, conf);
         if !subty_str.is_empty() {
             subty_str = format!("Subtyping\n{subty_str}")
         }
-        let mut kind_str = self
-            .kinding
-            .iter()
-            .map(|rule| rule.to_latex(conf))
-            .collect::<Vec<_>>()
-            .join("\n\n");
+        conf.include_envs = true;
+
+        let mut kind_str = format_vec(&self.kinding, conf);
         if !kind_str.is_empty() {
             kind_str = format!("Kinding\n{kind_str}")
         }
-        let mut norm_str = self
-            .normalizing
-            .iter()
-            .map(|rule| rule.to_latex(conf))
-            .collect::<Vec<_>>()
-            .join("\n\n");
+        conf.include_envs = true;
+
+        let mut norm_str = format_vec(&self.normalizing, conf);
         if !norm_str.is_empty() {
             norm_str = format!("Normalizing\n{kind_str}")
         }
-        let mut eval_str = self
-            .eval
-            .iter()
-            .map(|rule| rule.to_latex(conf))
-            .collect::<Vec<_>>()
-            .join("\n\n");
+        conf.include_envs = true;
+
+        let mut eval_str = format_vec(&self.eval, conf);
         if !eval_str.is_empty() {
-            eval_str = format!("Evaluation\n{kind_str}")
+            eval_str = format!("Evaluation\n{eval_str}")
         }
-        format!(
-            "{env_start}{ty_str}\n\n{subty_str}\n\n{kind_str}\n\n{norm_str}\n\n{eval_str}{env_end}"
-        )
+        conf.include_envs = true;
+
+        format!("{ty_str}\n\n{subty_str}\n\n{kind_str}\n\n{norm_str}\n\n{eval_str}")
     }
 }

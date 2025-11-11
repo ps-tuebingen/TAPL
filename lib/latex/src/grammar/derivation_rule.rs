@@ -45,12 +45,16 @@ fn derivation_to_frac_array(deriv: &DerivationRule, conf: &mut LatexConfig) -> S
 }
 
 fn derivation_to_buss(deriv: &DerivationRule, conf: &mut LatexConfig) -> String {
-    let (env_start, env_end) = conf.mathenv_strs();
+    let (env_start, env_end) = if conf.include_envs {
+        ("\\begin{prooftree}", "\\end{prooftree}")
+    } else {
+        ("", "")
+    };
     conf.include_envs = false;
 
     let mut premise_strs = Vec::with_capacity(deriv.premises.len());
     for prem in deriv.premises.iter() {
-        premise_strs.push(prem.to_latex(conf));
+        premise_strs.push(format!("\\AxiomC{{${}$}}", prem.to_latex(conf)));
         conf.include_envs = false;
     }
 

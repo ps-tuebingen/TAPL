@@ -21,7 +21,7 @@ impl LatexFmt for Symbol {
             Symbol::Label => "\\text{{label}}".to_owned(),
             Symbol::Location => "l".to_owned(),
             Symbol::Subscript { sym, ind } => {
-                format!("{}_{}", sym.to_latex(conf), ind.to_latex(conf))
+                format!("{}_{{{}}}", sym.to_latex(conf), ind.to_latex(conf))
             }
             Symbol::Seq(syms) => syms
                 .iter()

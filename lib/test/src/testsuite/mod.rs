@@ -130,7 +130,7 @@ pub trait TestSuite: Language {
         print!("\t");
 
         if matches!(
-            LatexTestGrammar::<Self>::run_report(&TestConfig::empty(self.describe()), ()),
+            LatexTestGrammar::<Self>::run_report(&TestConfig::empty(&format!("{self:?}")), ()),
             TestResult::Fail(_)
         ) {
             num_fails += 1
