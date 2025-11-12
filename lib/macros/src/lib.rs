@@ -3,6 +3,7 @@ use proc_macro::TokenStream;
 
 mod check;
 mod eval;
+mod grammar;
 pub(crate) mod literals;
 pub(crate) mod utils;
 use check::{
@@ -12,6 +13,7 @@ use check::{
     typecheck::generate_typecheck,
 };
 use eval::generate_eval;
+use grammar::generate_grammar_describe;
 
 /// Derive Typecheck for Terms
 /// terms need to have the form `enum T { T1(T1),T2(T2),...}`
@@ -72,4 +74,12 @@ pub fn derive_no_normalize(input: TokenStream) -> TokenStream {
 #[proc_macro_derive(Eval, attributes(Lang))]
 pub fn derive_eval(input: TokenStream) -> TokenStream {
     generate_eval(input)
+}
+
+/// Derive Grammar Describe for Terms
+//// Terms need to have the form `enum Term { T1(T1),T2(T2),... }`
+/// where each `Ti` has `RuleDescribe` implemneted
+#[proc_macro_derive(GrammarDescribe, attributes(Lang))]
+pub fn derive_grammar_describe(input: TokenStream) -> TokenStream {
+    generate_grammar_describe(input)
 }

@@ -1,4 +1,4 @@
-use macros::{Eval, Kindcheck, Normalize, Subtypecheck, Typecheck};
+use macros::{Eval, GrammarDescribe, Kindcheck, Normalize, Subtypecheck, Typecheck};
 use std::fmt;
 use syntax::{
     TypeVar, Var,
@@ -12,7 +12,7 @@ use syntax::{
 #[derive(Debug, Clone, PartialEq)]
 struct DummyLang;
 
-#[derive(Eval, Typecheck, Debug, Clone, PartialEq)]
+#[derive(GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq)]
 #[Lang(DummyLang)]
 enum DummyTerm {
     Num(Num<DummyLang>),
