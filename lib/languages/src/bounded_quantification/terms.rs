@@ -1,15 +1,16 @@
 use super::{BoundedQuantification, types::Type};
-use latex::{LatexConfig, LatexFmt};
-use macros::{Eval, GrammarDescribe, LangDisplay, Typecheck};
+use macros::{Eval, GrammarDescribe, LangDisplay, LatexFmt, SubstTerm, Typecheck};
 use syntax::{
     TypeVar, Var,
-    subst::{SubstTerm, SubstType},
+    subst::SubstType,
     terms::{
         App, Lambda, LambdaSub, Num, Pack, Pred, Record, RecordProj, Succ, TyApp, Unpack, Variable,
     },
 };
 
-#[derive(LangDisplay, GrammarDescribe, Eval, Typecheck, Clone, Debug, PartialEq, Eq)]
+#[derive(
+    SubstTerm, LatexFmt, LangDisplay, GrammarDescribe, Eval, Typecheck, Clone, Debug, PartialEq, Eq,
+)]
 #[Lang(BoundedQuantification)]
 pub enum Term {
     Variable(Variable<BoundedQuantification>),
@@ -27,46 +28,6 @@ pub enum Term {
 }
 
 impl syntax::terms::Term for Term {}
-
-impl LatexFmt for Term {
-    fn to_latex(&self, conf: &mut LatexConfig) -> String {
-        match self {
-            Term::Variable(v) => v.to_latex(conf),
-            Term::Num(num) => num.to_latex(conf),
-            Term::Succ(s) => s.to_latex(conf),
-            Term::Pred(p) => p.to_latex(conf),
-            Term::Lambda(lam) => lam.to_latex(conf),
-            Term::App(app) => app.to_latex(conf),
-            Term::LambdaSub(lam) => lam.to_latex(conf),
-            Term::TyApp(app) => app.to_latex(conf),
-            Term::Pack(pack) => pack.to_latex(conf),
-            Term::Unpack(unpack) => unpack.to_latex(conf),
-            Term::Record(rec) => rec.to_latex(conf),
-            Term::RecordProj(proj) => proj.to_latex(conf),
-        }
-    }
-}
-
-impl SubstTerm for Term {
-    type Lang = BoundedQuantification;
-    type Target = Term;
-    fn subst(self, v: &Var, t: &Term) -> Self::Target {
-        match self {
-            Term::Variable(var) => var.subst(v, t),
-            Term::Num(num) => num.subst(v, t).into(),
-            Term::Succ(succ) => succ.subst(v, t).into(),
-            Term::Pred(pred) => pred.subst(v, t).into(),
-            Term::Lambda(lam) => lam.subst(v, t).into(),
-            Term::App(app) => app.subst(v, t).into(),
-            Term::LambdaSub(lam) => lam.subst(v, t).into(),
-            Term::TyApp(app) => app.subst(v, t).into(),
-            Term::Pack(pack) => pack.subst(v, t).into(),
-            Term::Unpack(unpack) => unpack.subst(v, t).into(),
-            Term::Record(rec) => rec.subst(v, t).into(),
-            Term::RecordProj(proj) => proj.subst(v, t).into(),
-        }
-    }
-}
 
 impl SubstType for Term {
     type Lang = BoundedQuantification;

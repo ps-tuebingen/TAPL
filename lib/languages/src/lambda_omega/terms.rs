@@ -1,13 +1,14 @@
 use super::{LambdaOmega, types::Type};
-use latex::{LatexConfig, LatexFmt};
-use macros::{Eval, GrammarDescribe, LangDisplay, Typecheck};
+use macros::{Eval, GrammarDescribe, LangDisplay, LatexFmt, SubstTerm, Typecheck};
 use syntax::{
     TypeVar, Var,
-    subst::{SubstTerm, SubstType},
+    subst::SubstType,
     terms::{App, False, Lambda, Num, True, TyApp, TyLambda, Unit, Variable},
 };
 
-#[derive(LangDisplay, GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq)]
+#[derive(
+    SubstTerm, LatexFmt, LangDisplay, GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq,
+)]
 #[Lang(LambdaOmega)]
 pub enum Term {
     Variable(Variable<LambdaOmega>),
@@ -37,40 +38,6 @@ impl SubstType for Term {
             Term::Unit(u) => u.subst_type(v, ty).into(),
             Term::TyLambda(tylam) => tylam.subst_type(v, ty).into(),
             Term::TyApp(tyapp) => tyapp.subst_type(v, ty).into(),
-        }
-    }
-}
-
-impl SubstTerm for Term {
-    type Lang = LambdaOmega;
-    type Target = Self;
-    fn subst(self, v: &Var, t: &Term) -> Self::Target {
-        match self {
-            Term::Variable(var) => var.subst(v, t),
-            Term::Num(num) => num.subst(v, t).into(),
-            Term::True(tru) => tru.subst(v, t).into(),
-            Term::False(fls) => fls.subst(v, t).into(),
-            Term::Lambda(lam) => lam.subst(v, t).into(),
-            Term::App(app) => app.subst(v, t).into(),
-            Term::Unit(u) => u.subst(v, t).into(),
-            Term::TyLambda(tylam) => tylam.subst(v, t).into(),
-            Term::TyApp(tyapp) => tyapp.subst(v, t).into(),
-        }
-    }
-}
-
-impl LatexFmt for Term {
-    fn to_latex(&self, conf: &mut LatexConfig) -> String {
-        match self {
-            Term::Variable(var) => var.to_latex(conf),
-            Term::Num(num) => num.to_latex(conf),
-            Term::True(tru) => tru.to_latex(conf),
-            Term::False(fls) => fls.to_latex(conf),
-            Term::Lambda(lam) => lam.to_latex(conf),
-            Term::App(app) => app.to_latex(conf),
-            Term::Unit(u) => u.to_latex(conf),
-            Term::TyLambda(tylam) => tylam.to_latex(conf),
-            Term::TyApp(tyapp) => tyapp.to_latex(conf),
         }
     }
 }

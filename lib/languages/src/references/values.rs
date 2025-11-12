@@ -1,12 +1,10 @@
 use super::{References, terms::Term};
 use errors::ValueMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use latex::{LatexConfig, LatexFmt};
-use macros::LangDisplay;
-use std::fmt;
+use macros::{LangDisplay, LatexFmt};
 use syntax::values::{False, Lambda, Loc, Num, True, Unit, Value as ValueTrait, ValueGroup};
 
-#[derive(LangDisplay, Debug, Clone, PartialEq, Eq)]
+#[derive(LatexFmt, LangDisplay, Debug, Clone, PartialEq, Eq)]
 pub enum Value {
     Lambda(Lambda<References>),
     Unit(Unit<References>),
@@ -86,19 +84,6 @@ impl GrammarDescribe for Value {
             True::<References>::rule(),
             False::<References>::rule(),
         ])
-    }
-}
-
-impl LatexFmt for Value {
-    fn to_latex(&self, conf: &mut LatexConfig) -> String {
-        match self {
-            Value::Lambda(lam) => lam.to_latex(conf),
-            Value::Num(num) => num.to_latex(conf),
-            Value::Unit(u) => u.to_latex(conf),
-            Value::Loc(loc) => loc.to_latex(conf),
-            Value::True(tru) => tru.to_latex(conf),
-            Value::False(fls) => fls.to_latex(conf),
-        }
     }
 }
 

@@ -1,12 +1,10 @@
 use super::{TypedArithmetic, terms::Term};
 use errors::ValueMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use latex::{LatexConfig, LatexFmt};
-use macros::LangDisplay;
-use std::fmt;
+use macros::{LangDisplay, LatexFmt};
 use syntax::values::{False, Num, True, Value as ValueTrait, ValueGroup};
 
-#[derive(LangDisplay, Debug, Clone, PartialEq, Eq)]
+#[derive(LatexFmt, LangDisplay, Debug, Clone, PartialEq, Eq)]
 pub enum Value {
     True(True<TypedArithmetic>),
     False(False<TypedArithmetic>),
@@ -58,16 +56,6 @@ impl From<Value> for Term {
             Value::True(tru) => tru.into_term(),
             Value::False(fls) => fls.into_term(),
             Value::Num(num) => num.into_term(),
-        }
-    }
-}
-
-impl LatexFmt for Value {
-    fn to_latex(&self, conf: &mut LatexConfig) -> String {
-        match self {
-            Value::True(tru) => tru.to_latex(conf),
-            Value::False(fls) => fls.to_latex(conf),
-            Value::Num(num) => num.to_latex(conf),
         }
     }
 }

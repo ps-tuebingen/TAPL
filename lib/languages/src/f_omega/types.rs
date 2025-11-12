@@ -1,9 +1,7 @@
 use super::FOmega;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use latex::{LatexConfig, LatexFmt};
-use macros::{Kindcheck, LangDisplay, NoSubtypes, Normalize};
-use std::fmt;
+use macros::{Kindcheck, LangDisplay, LatexFmt, NoSubtypes, Normalize};
 use syntax::{
     TypeVar,
     subst::SubstType,
@@ -13,7 +11,7 @@ use syntax::{
     },
 };
 
-#[derive(LangDisplay, Normalize, Kindcheck, NoSubtypes, Debug, Clone, PartialEq, Eq)]
+#[derive(LatexFmt, LangDisplay, Normalize, Kindcheck, NoSubtypes, Debug, Clone, PartialEq, Eq)]
 #[Lang(FOmega)]
 pub enum Type {
     Var(TypeVariable<FOmega>),
@@ -140,23 +138,6 @@ impl SubstType for Type {
             Type::Bool(b) => b.subst_type(v, ty).into(),
             Type::Unit(u) => u.subst_type(v, ty).into(),
             Type::Nat(nat) => nat.subst_type(v, ty).into(),
-        }
-    }
-}
-
-impl LatexFmt for Type {
-    fn to_latex(&self, conf: &mut LatexConfig) -> String {
-        match self {
-            Type::Var(var) => var.to_latex(conf),
-            Type::OpLambda(lambda) => lambda.to_latex(conf),
-            Type::Fun(fun) => fun.to_latex(conf),
-            Type::OpApp(app) => app.to_latex(conf),
-            Type::Forall(forall) => forall.to_latex(conf),
-            Type::Exists(ex) => ex.to_latex(conf),
-            Type::Record(rec) => rec.to_latex(conf),
-            Type::Bool(b) => b.to_latex(conf),
-            Type::Unit(u) => u.to_latex(conf),
-            Type::Nat(nat) => nat.to_latex(conf),
         }
     }
 }

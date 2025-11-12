@@ -1,8 +1,7 @@
 use super::Subtypes;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use latex::{LatexConfig, LatexFmt};
-use macros::{LangDisplay, NoKinds, NoNorm, Subtypecheck};
+use macros::{LangDisplay, LatexFmt, NoKinds, NoNorm, Subtypecheck};
 use syntax::{
     TypeVar,
     subst::SubstType,
@@ -12,7 +11,7 @@ use syntax::{
     },
 };
 
-#[derive(LangDisplay, NoNorm, NoKinds, Subtypecheck, Debug, Clone, PartialEq, Eq)]
+#[derive(LatexFmt, LangDisplay, NoNorm, NoKinds, Subtypecheck, Debug, Clone, PartialEq, Eq)]
 #[Lang(Subtypes)]
 pub enum Type {
     Top(Top<Subtypes>),
@@ -156,24 +155,6 @@ impl SubstType for Type {
     }
 }
 
-impl LatexFmt for Type {
-    fn to_latex(&self, conf: &mut LatexConfig) -> String {
-        match self {
-            Type::Top(top) => top.to_latex(conf),
-            Type::Bot(bot) => bot.to_latex(conf),
-            Type::Fun(fun) => fun.to_latex(conf),
-            Type::Record(rec) => rec.to_latex(conf),
-            Type::Variant(variant) => variant.to_latex(conf),
-            Type::List(list) => list.to_latex(conf),
-            Type::Ref(refty) => refty.to_latex(conf),
-            Type::Source(src) => src.to_latex(conf),
-            Type::Sink(snk) => snk.to_latex(conf),
-            Type::Nat(nat) => nat.to_latex(conf),
-            Type::Unit(unit) => unit.to_latex(conf),
-            Type::Bool(b) => b.to_latex(conf),
-        }
-    }
-}
 impl From<Source<Subtypes>> for Type {
     fn from(src: Source<Subtypes>) -> Type {
         Type::Source(src)

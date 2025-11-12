@@ -25,3 +25,23 @@ pub fn generate_display(input: TokenStream) -> TokenStream {
     };
     output.into()
 }
+
+pub fn generate_latexfmt(input: TokenStream) -> TokenStream {
+    let derive_input: DeriveInput = parse_macro_input!(input);
+    let ident = derive_input.ident;
+    let variants = get_enum_variants(&derive_input.data);
+    let variant_fmt = map_variants(&variants, |var| {
+        let ident = &var.ident;
+        quote! {Self::#ident(inner) => inner.to_latex(conf),}
+    });
+    let output = quote! {
+        impl latex::LatexFmt for #ident{
+            fn to_latex(&self,conf:&mut latex::LatexConfig) -> String{
+                match self{
+                    #(#variant_fmt)*
+                }
+            }
+        }
+    };
+    output.into()
+}

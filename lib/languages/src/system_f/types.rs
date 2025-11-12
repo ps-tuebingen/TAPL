@@ -1,15 +1,14 @@
 use super::SystemF;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use latex::{LatexConfig, LatexFmt};
-use macros::{LangDisplay, NoKinds, NoNorm, NoSubtypes};
+use macros::{LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes};
 use syntax::{
     TypeVar,
     subst::SubstType,
     types::{Forall, Fun, Type as TypeTrait, TypeGroup, TypeVariable},
 };
 
-#[derive(LangDisplay, NoNorm, NoKinds, NoSubtypes, Debug, Clone, PartialEq, Eq)]
+#[derive(LatexFmt, LangDisplay, NoNorm, NoKinds, NoSubtypes, Debug, Clone, PartialEq, Eq)]
 #[Lang(SystemF)]
 pub enum Type {
     Var(TypeVariable<SystemF>),
@@ -45,16 +44,6 @@ impl GrammarDescribe for Type {
             Fun::<SystemF>::rule(),
             Forall::<SystemF>::rule(),
         ])
-    }
-}
-
-impl LatexFmt for Type {
-    fn to_latex(&self, conf: &mut LatexConfig) -> String {
-        match self {
-            Type::Var(var) => var.to_latex(conf),
-            Type::Fun(fun) => fun.to_latex(conf),
-            Type::Forall(forall) => forall.to_latex(conf),
-        }
     }
 }
 

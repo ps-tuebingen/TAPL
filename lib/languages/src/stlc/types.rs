@@ -1,9 +1,7 @@
 use super::Stlc;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use latex::{LatexConfig, LatexFmt};
-use macros::{LangDisplay, NoKinds, NoNorm, NoSubtypes};
-use std::fmt;
+use macros::{LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes};
 use syntax::{
     TypeVar,
     subst::SubstType,
@@ -13,7 +11,7 @@ use syntax::{
     },
 };
 
-#[derive(LangDisplay, NoNorm, NoKinds, NoSubtypes, PartialEq, Eq, Clone, Debug)]
+#[derive(LatexFmt, LangDisplay, NoNorm, NoKinds, NoSubtypes, PartialEq, Eq, Clone, Debug)]
 #[Lang(Stlc)]
 pub enum Type {
     Unit(Unit<Stlc>),
@@ -137,24 +135,6 @@ impl GrammarDescribe for Type {
             Optional::<Stlc>::rule(),
             List::<Stlc>::rule(),
         ])
-    }
-}
-
-impl LatexFmt for Type {
-    fn to_latex(&self, conf: &mut LatexConfig) -> String {
-        match self {
-            Type::Unit(u) => u.to_latex(conf),
-            Type::Fun(fun) => fun.to_latex(conf),
-            Type::Bool(b) => b.to_latex(conf),
-            Type::Nat(n) => n.to_latex(conf),
-            Type::Prod(prod) => prod.to_latex(conf),
-            Type::Tup(tup) => tup.to_latex(conf),
-            Type::Record(recs) => recs.to_latex(conf),
-            Type::Sum(sum) => sum.to_latex(conf),
-            Type::Variant(vars) => vars.to_latex(conf),
-            Type::Optional(option) => option.to_latex(conf),
-            Type::List(list) => list.to_latex(conf),
-        }
     }
 }
 

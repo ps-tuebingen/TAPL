@@ -1,15 +1,14 @@
 use super::BoundedQuantification;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use latex::{LatexConfig, LatexFmt};
-use macros::{LangDisplay, NoKinds, NoNorm, Subtypecheck};
+use macros::{LangDisplay, LatexFmt, NoKinds, NoNorm, Subtypecheck};
 use syntax::{
     TypeVar,
     subst::SubstType,
     types::{ExistsBounded, ForallBounded, Fun, Nat, Record, Top, TypeGroup, TypeVariable},
 };
 
-#[derive(LangDisplay, NoNorm, NoKinds, Subtypecheck, Clone, Debug, PartialEq, Eq)]
+#[derive(LatexFmt, LangDisplay, NoNorm, NoKinds, Subtypecheck, Clone, Debug, PartialEq, Eq)]
 #[Lang(BoundedQuantification)]
 pub enum Type {
     Var(TypeVariable<BoundedQuantification>),
@@ -151,20 +150,6 @@ impl SubstType for Type {
             Type::Forall(f) => f.subst_type(v, ty).into(),
             Type::Exists(e) => e.subst_type(v, ty).into(),
             Type::Record(rec) => rec.subst_type(v, ty).into(),
-        }
-    }
-}
-
-impl LatexFmt for Type {
-    fn to_latex(&self, conf: &mut LatexConfig) -> String {
-        match self {
-            Type::Var(v) => v.to_latex(conf),
-            Type::Top(t) => t.to_latex(conf),
-            Type::Nat(n) => n.to_latex(conf),
-            Type::Fun(fun) => fun.to_latex(conf),
-            Type::Forall(forall) => forall.to_latex(conf),
-            Type::Exists(e) => e.to_latex(conf),
-            Type::Record(rec) => rec.to_latex(conf),
         }
     }
 }

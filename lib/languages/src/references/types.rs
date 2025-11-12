@@ -1,16 +1,14 @@
 use super::References;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use latex::{LatexConfig, LatexFmt};
-use macros::{LangDisplay, NoKinds, NoNorm, NoSubtypes};
-use std::fmt;
+use macros::{LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes};
 use syntax::{
     TypeVar,
     subst::SubstType,
     types::{Bool, Fun, Nat, Reference, Type as TypeTrait, TypeGroup, Unit},
 };
 
-#[derive(LangDisplay, NoNorm, NoKinds, NoSubtypes, Debug, Clone, PartialEq, Eq)]
+#[derive(LatexFmt, LangDisplay, NoNorm, NoKinds, NoSubtypes, Debug, Clone, PartialEq, Eq)]
 #[Lang(References)]
 pub enum Type {
     Unit(Unit<References>),
@@ -81,18 +79,6 @@ impl SubstType for Type {
     type Target = Self;
     fn subst_type(self, _: &TypeVar, _: &Self) -> Self::Target {
         self
-    }
-}
-
-impl LatexFmt for Type {
-    fn to_latex(&self, conf: &mut LatexConfig) -> String {
-        match self {
-            Type::Unit(u) => u.to_latex(conf),
-            Type::Nat(n) => n.to_latex(conf),
-            Type::Bool(b) => b.to_latex(conf),
-            Type::Fun(fun) => fun.to_latex(conf),
-            Type::Ref(rf) => rf.to_latex(conf),
-        }
     }
 }
 

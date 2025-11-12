@@ -1,16 +1,17 @@
 use super::{Recursive, types::Type};
-use latex::{LatexConfig, LatexFmt};
-use macros::{Eval, GrammarDescribe, LangDisplay, Typecheck};
+use macros::{Eval, GrammarDescribe, LangDisplay, LatexFmt, SubstTerm, Typecheck};
 use syntax::{
     TypeVar, Var,
-    subst::{SubstTerm, SubstType},
+    subst::SubstType,
     terms::{
         App, False, Fix, Fold, Fst, If, IsZero, Lambda, Let, Num, Pair, Pred, Record, RecordProj,
         Snd, Succ, True, Unfold, Unit, Variable, Variant, VariantCase,
     },
 };
 
-#[derive(LangDisplay, GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq)]
+#[derive(
+    SubstTerm, LatexFmt, LangDisplay, GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq,
+)]
 #[Lang(Recursive)]
 pub enum Term {
     Variable(Variable<Recursive>),
@@ -66,66 +67,6 @@ impl SubstType for Term {
             Term::Let(lt) => lt.subst_type(v, ty).into(),
             Term::Record(rec) => rec.subst_type(v, ty).into(),
             Term::RecordProj(proj) => proj.subst_type(v, ty).into(),
-        }
-    }
-}
-
-impl SubstTerm for Term {
-    type Lang = Recursive;
-    type Target = Self;
-    fn subst(self, v: &Var, t: &Term) -> Self::Target {
-        match self {
-            Term::Variable(var) => var.subst(v, t),
-            Term::Lambda(lam) => lam.subst(v, t).into(),
-            Term::App(app) => app.subst(v, t).into(),
-            Term::Unit(u) => u.subst(v, t).into(),
-            Term::Fold(fold) => fold.subst(v, t).into(),
-            Term::Unfold(unfold) => unfold.subst(v, t).into(),
-            Term::Variant(var) => var.subst(v, t).into(),
-            Term::VariantCase(case) => case.subst(v, t).into(),
-            Term::Pair(p) => p.subst(v, t).into(),
-            Term::Fst(fst) => fst.subst(v, t).into(),
-            Term::Snd(snd) => snd.subst(v, t).into(),
-            Term::Num(num) => num.subst(v, t).into(),
-            Term::Succ(succ) => succ.subst(v, t).into(),
-            Term::Pred(pred) => pred.subst(v, t).into(),
-            Term::IsZero(isz) => isz.subst(v, t).into(),
-            Term::True(tru) => tru.subst(v, t).into(),
-            Term::False(fls) => fls.subst(v, t).into(),
-            Term::If(ift) => ift.subst(v, t).into(),
-            Term::Fix(fix) => fix.subst(v, t).into(),
-            Term::Let(lt) => lt.subst(v, t).into(),
-            Term::Record(rec) => rec.subst(v, t).into(),
-            Term::RecordProj(proj) => proj.subst(v, t).into(),
-        }
-    }
-}
-
-impl LatexFmt for Term {
-    fn to_latex(&self, conf: &mut LatexConfig) -> String {
-        match self {
-            Term::Variable(v) => v.to_latex(conf),
-            Term::Lambda(lam) => lam.to_latex(conf),
-            Term::App(app) => app.to_latex(conf),
-            Term::Unit(u) => u.to_latex(conf),
-            Term::Fold(fold) => fold.to_latex(conf),
-            Term::Unfold(unfold) => unfold.to_latex(conf),
-            Term::Variant(var) => var.to_latex(conf),
-            Term::VariantCase(case) => case.to_latex(conf),
-            Term::Pair(p) => p.to_latex(conf),
-            Term::Fst(fst) => fst.to_latex(conf),
-            Term::Snd(snd) => snd.to_latex(conf),
-            Term::Num(num) => num.to_latex(conf),
-            Term::Succ(succ) => succ.to_latex(conf),
-            Term::Pred(pred) => pred.to_latex(conf),
-            Term::IsZero(isz) => isz.to_latex(conf),
-            Term::True(tru) => tru.to_latex(conf),
-            Term::False(fls) => fls.to_latex(conf),
-            Term::If(ift) => ift.to_latex(conf),
-            Term::Fix(fix) => fix.to_latex(conf),
-            Term::Let(lt) => lt.to_latex(conf),
-            Term::Record(rec) => rec.to_latex(conf),
-            Term::RecordProj(proj) => proj.to_latex(conf),
         }
     }
 }

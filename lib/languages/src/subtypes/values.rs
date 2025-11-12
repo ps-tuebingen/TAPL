@@ -1,15 +1,13 @@
 use super::{Subtypes, terms::Term};
 use errors::ValueMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use latex::{LatexConfig, LatexFmt};
-use macros::LangDisplay;
-use std::fmt;
+use macros::{LangDisplay, LatexFmt};
 use syntax::values::{
     Cons, False, Lambda, Loc, Nil, Num, Record, True, Unit, Value as ValueTrait, ValueGroup,
     Variant,
 };
 
-#[derive(LangDisplay, Debug, PartialEq, Eq, Clone)]
+#[derive(LatexFmt, LangDisplay, Debug, PartialEq, Eq, Clone)]
 pub enum Value {
     Lambda(Lambda<Subtypes>),
     Unit(Unit<Subtypes>),
@@ -133,23 +131,6 @@ impl GrammarDescribe for Value {
             True::<Subtypes>::rule(),
             False::<Subtypes>::rule(),
         ])
-    }
-}
-
-impl LatexFmt for Value {
-    fn to_latex(&self, conf: &mut LatexConfig) -> String {
-        match self {
-            Value::Lambda(lam) => lam.to_latex(conf),
-            Value::Unit(u) => u.to_latex(conf),
-            Value::Record(rec) => rec.to_latex(conf),
-            Value::Variant(var) => var.to_latex(conf),
-            Value::Nil(nil) => nil.to_latex(conf),
-            Value::Cons(cons) => cons.to_latex(conf),
-            Value::Loc(loc) => loc.to_latex(conf),
-            Value::Num(num) => num.to_latex(conf),
-            Value::True(tru) => tru.to_latex(conf),
-            Value::False(fls) => fls.to_latex(conf),
-        }
     }
 }
 

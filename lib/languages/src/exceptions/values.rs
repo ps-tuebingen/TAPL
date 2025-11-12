@@ -1,14 +1,12 @@
 use super::{Exceptions, terms::Term};
 use errors::ValueMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use latex::{LatexConfig, LatexFmt};
-use macros::LangDisplay;
-use std::fmt;
+use macros::{LangDisplay, LatexFmt};
 use syntax::values::{
     Exception, False, Lambda, Num, Raise, True, Unit, Value as ValueTrait, ValueGroup,
 };
 
-#[derive(LangDisplay, Debug, Clone, PartialEq, Eq)]
+#[derive(LatexFmt, LangDisplay, Debug, Clone, PartialEq, Eq)]
 pub enum Value {
     Lambda(Lambda<Exceptions>),
     Num(Num<Exceptions>),
@@ -98,20 +96,6 @@ impl From<Value> for Term {
             Value::Num(num) => num.into_term(),
             Value::Exception(exc) => exc.into_term(),
             Value::Raise(raise) => raise.into_term(),
-        }
-    }
-}
-
-impl LatexFmt for Value {
-    fn to_latex(&self, conf: &mut LatexConfig) -> String {
-        match self {
-            Value::Lambda(lam) => lam.to_latex(conf),
-            Value::Unit(u) => u.to_latex(conf),
-            Value::True(tru) => tru.to_latex(conf),
-            Value::False(fls) => fls.to_latex(conf),
-            Value::Num(num) => num.to_latex(conf),
-            Value::Exception(exc) => exc.to_latex(conf),
-            Value::Raise(raise) => raise.to_latex(conf),
         }
     }
 }

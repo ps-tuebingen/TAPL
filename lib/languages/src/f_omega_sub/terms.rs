@@ -1,16 +1,17 @@
 use super::{FOmegaSub, types::Type};
-use latex::{LatexConfig, LatexFmt};
-use macros::{Eval, GrammarDescribe, LangDisplay, Typecheck};
+use macros::{Eval, GrammarDescribe, LangDisplay, LatexFmt, SubstTerm, Typecheck};
 use syntax::{
     TypeVar, Var,
-    subst::{SubstTerm, SubstType},
+    subst::SubstType,
     terms::{
         App, Lambda, LambdaSub, Let, Num, Pack, Pred, Record, RecordProj, Succ, TyApp, Unpack,
         Variable,
     },
 };
 
-#[derive(LangDisplay, GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq)]
+#[derive(
+    SubstTerm, LatexFmt, LangDisplay, GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq,
+)]
 #[Lang(FOmegaSub)]
 pub enum Term {
     Variable(Variable<FOmegaSub>),
@@ -29,29 +30,6 @@ pub enum Term {
 }
 
 impl syntax::terms::Term for Term {}
-
-impl SubstTerm for Term {
-    type Lang = FOmegaSub;
-    type Target = Self;
-
-    fn subst(self, v: &Var, t: &Term) -> Term {
-        match self {
-            Term::Variable(var) => var.subst(v, t),
-            Term::Lambda(lam) => lam.subst(v, t).into(),
-            Term::App(app) => app.subst(v, t).into(),
-            Term::LambdaSub(lam) => lam.subst(v, t).into(),
-            Term::TyApp(app) => app.subst(v, t).into(),
-            Term::Pack(pack) => pack.subst(v, t).into(),
-            Term::Unpack(unpack) => unpack.subst(v, t).into(),
-            Term::Record(rec) => rec.subst(v, t).into(),
-            Term::RecordProj(proj) => proj.subst(v, t).into(),
-            Term::Num(num) => num.subst(v, t).into(),
-            Term::Succ(succ) => succ.subst(v, t).into(),
-            Term::Pred(pred) => pred.subst(v, t).into(),
-            Term::Let(lt) => lt.subst(v, t).into(),
-        }
-    }
-}
 
 impl SubstType for Term {
     type Lang = FOmegaSub;
@@ -72,26 +50,6 @@ impl SubstType for Term {
             Term::Succ(succ) => succ.subst_type(v, ty).into(),
             Term::Pred(pred) => pred.subst_type(v, ty).into(),
             Term::Let(lt) => lt.subst_type(v, ty).into(),
-        }
-    }
-}
-
-impl LatexFmt for Term {
-    fn to_latex(&self, conf: &mut LatexConfig) -> String {
-        match self {
-            Term::Variable(var) => var.to_latex(conf),
-            Term::Lambda(lam) => lam.to_latex(conf),
-            Term::App(app) => app.to_latex(conf),
-            Term::LambdaSub(lam) => lam.to_latex(conf),
-            Term::TyApp(app) => app.to_latex(conf),
-            Term::Pack(pack) => pack.to_latex(conf),
-            Term::Unpack(unpack) => unpack.to_latex(conf),
-            Term::Record(rec) => rec.to_latex(conf),
-            Term::RecordProj(proj) => proj.to_latex(conf),
-            Term::Num(num) => num.to_latex(conf),
-            Term::Succ(succ) => succ.to_latex(conf),
-            Term::Pred(pred) => pred.to_latex(conf),
-            Term::Let(lt) => lt.to_latex(conf),
         }
     }
 }

@@ -1,15 +1,14 @@
 use super::TypedArithmetic;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use latex::{LatexConfig, LatexFmt};
-use macros::{LangDisplay, NoKinds, NoNorm, NoSubtypes};
+use macros::{LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes};
 use syntax::{
     TypeVar,
     subst::SubstType,
     types::{Bool, Nat, Type as TypeTrait, TypeGroup},
 };
 
-#[derive(LangDisplay, NoNorm, NoKinds, NoSubtypes, Debug, PartialEq, Eq, Clone)]
+#[derive(LatexFmt, LangDisplay, NoNorm, NoKinds, NoSubtypes, Debug, PartialEq, Eq, Clone)]
 #[Lang(TypedArithmetic)]
 pub enum Type {
     Nat(Nat<TypedArithmetic>),
@@ -51,15 +50,6 @@ impl SubstType for Type {
     type Target = Type;
     fn subst_type(self, _: &TypeVar, _: &Type) -> Self::Target {
         self
-    }
-}
-
-impl LatexFmt for Type {
-    fn to_latex(&self, conf: &mut LatexConfig) -> String {
-        match self {
-            Type::Nat(n) => n.to_latex(conf),
-            Type::Bool(b) => b.to_latex(conf),
-        }
     }
 }
 

@@ -1,13 +1,12 @@
 use super::{Recursive, terms::Term};
 use errors::ValueMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use latex::{LatexConfig, LatexFmt};
-use macros::LangDisplay;
+use macros::{LangDisplay, LatexFmt};
 use syntax::values::{
     False, Fold, Lambda, Num, Pair, Record, True, Unit, Value as ValueTrait, ValueGroup, Variant,
 };
 
-#[derive(LangDisplay, Debug, Clone, PartialEq, Eq)]
+#[derive(LatexFmt, LangDisplay, Debug, Clone, PartialEq, Eq)]
 pub enum Value {
     True(True<Recursive>),
     False(False<Recursive>),
@@ -120,22 +119,6 @@ impl GrammarDescribe for Value {
             Record::<Recursive>::rule(),
             Variant::<Recursive>::rule(),
         ])
-    }
-}
-
-impl LatexFmt for Value {
-    fn to_latex(&self, conf: &mut LatexConfig) -> String {
-        match self {
-            Value::Unit(u) => u.to_latex(conf),
-            Value::True(tru) => tru.to_latex(conf),
-            Value::False(fls) => fls.to_latex(conf),
-            Value::Num(num) => num.to_latex(conf),
-            Value::Lambda(lam) => lam.to_latex(conf),
-            Value::Fold(fld) => fld.to_latex(conf),
-            Value::Pair(pr) => pr.to_latex(conf),
-            Value::Record(rec) => rec.to_latex(conf),
-            Value::Variant(var) => var.to_latex(conf),
-        }
     }
 }
 

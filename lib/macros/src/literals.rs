@@ -24,3 +24,8 @@ pub fn rule_set() -> proc_macro2::TokenStream {
 pub fn new_set() -> proc_macro2::TokenStream {
     quote! {let mut rules = ::std::collections::HashSet::new();}
 }
+
+/// <Self::Lang as Language>::Term
+pub fn lang_term() -> proc_macro2::TokenStream {
+    quote! { <Self::Lang as syntax::language::Language>::Term }
+}

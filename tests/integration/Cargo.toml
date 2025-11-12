@@ -16,3 +16,4 @@ grammar = { path="../../lib/grammar"}
 eval = { path="../../lib/eval"}
 trace = { path="../../lib/trace"}
 macros = { path = "../../lib/macros" }
+latex = { path="../../lib/latex" }

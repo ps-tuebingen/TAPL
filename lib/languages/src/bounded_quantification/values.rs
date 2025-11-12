@@ -1,11 +1,10 @@
 use super::{BoundedQuantification, terms::Term};
 use errors::ValueMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use latex::{LatexConfig, LatexFmt};
-use macros::LangDisplay;
+use macros::{LangDisplay, LatexFmt};
 use syntax::values::{Lambda, LambdaSub, Num, Pack, Record, Value as ValueTrait, ValueGroup};
 
-#[derive(LangDisplay, Debug, Clone, PartialEq, Eq)]
+#[derive(LatexFmt, LangDisplay, Debug, Clone, PartialEq, Eq)]
 pub enum Value {
     Lambda(Lambda<BoundedQuantification>),
     LambdaSub(LambdaSub<BoundedQuantification>),
@@ -81,18 +80,6 @@ impl From<Value> for Term {
             Value::Pack(pack) => pack.into_term(),
             Value::Num(num) => num.into_term(),
             Value::Record(rec) => rec.into_term(),
-        }
-    }
-}
-
-impl LatexFmt for Value {
-    fn to_latex(&self, conf: &mut LatexConfig) -> String {
-        match self {
-            Value::Lambda(lam) => lam.to_latex(conf),
-            Value::LambdaSub(lam) => lam.to_latex(conf),
-            Value::Pack(pack) => pack.to_latex(conf),
-            Value::Num(num) => num.to_latex(conf),
-            Value::Record(rec) => rec.to_latex(conf),
         }
     }
 }

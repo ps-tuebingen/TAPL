@@ -1,10 +1,9 @@
 use super::Recursive;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use latex::{LatexConfig, LatexFmt};
-use macros::{LangDisplay, NoKinds, NoNorm, NoSubtypes};
-use std::fmt;
+use macros::{LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes};
 use syntax::{
+    TypeVar,
     subst::SubstType,
     types::{
         Bool, Fun, Mu, Nat, Product, Record, Type as TypeTrait, TypeGroup, TypeVariable, Unit,
@@ -12,9 +11,7 @@ use syntax::{
     },
 };
 
-pub type TypeVar = String;
-
-#[derive(LangDisplay, NoNorm, NoKinds, NoSubtypes, Debug, Clone, PartialEq, Eq)]
+#[derive(LatexFmt, LangDisplay, NoNorm, NoKinds, NoSubtypes, Debug, Clone, PartialEq, Eq)]
 #[Lang(Recursive)]
 pub enum Type {
     TypeVar(TypeVariable<Recursive>),
@@ -109,22 +106,6 @@ impl GrammarDescribe for Type {
             Bool::<Recursive>::rule(),
             Record::<Recursive>::rule(),
         ])
-    }
-}
-
-impl LatexFmt for Type {
-    fn to_latex(&self, conf: &mut LatexConfig) -> String {
-        match self {
-            Type::TypeVar(v) => v.to_latex(conf),
-            Type::Unit(u) => u.to_latex(conf),
-            Type::Fun(fun) => fun.to_latex(conf),
-            Type::Mu(mu) => mu.to_latex(conf),
-            Type::Variant(var) => var.to_latex(conf),
-            Type::Product(prod) => prod.to_latex(conf),
-            Type::Nat(n) => n.to_latex(conf),
-            Type::Bool(b) => b.to_latex(conf),
-            Type::Record(rec) => rec.to_latex(conf),
-        }
     }
 }
 

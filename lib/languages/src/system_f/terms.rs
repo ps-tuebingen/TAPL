@@ -1,13 +1,14 @@
 use super::{SystemF, types::Type};
-use latex::{LatexConfig, LatexFmt};
-use macros::{Eval, GrammarDescribe, LangDisplay, Typecheck};
+use macros::{Eval, GrammarDescribe, LangDisplay, LatexFmt, SubstTerm, Typecheck};
 use syntax::{
     TypeVar, Var,
-    subst::{SubstTerm, SubstType},
+    subst::SubstType,
     terms::{App, Lambda, TyApp, TyLambda, Variable},
 };
 
-#[derive(LangDisplay, GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq)]
+#[derive(
+    SubstTerm, LatexFmt, LangDisplay, GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq,
+)]
 #[Lang(SystemF)]
 pub enum Term {
     Variable(Variable<SystemF>),
@@ -29,32 +30,6 @@ impl SubstType for Term {
             Term::App(app) => app.subst_type(v, ty).into(),
             Term::TyLambda(lam) => lam.subst_type(v, ty).into(),
             Term::TyApp(app) => app.subst_type(v, ty).into(),
-        }
-    }
-}
-
-impl SubstTerm for Term {
-    type Lang = SystemF;
-    type Target = Self;
-    fn subst(self, v: &Var, t: &Term) -> Self::Target {
-        match self {
-            Term::Variable(var) => var.subst(v, t),
-            Term::Lambda(lam) => lam.subst(v, t).into(),
-            Term::App(app) => app.subst(v, t).into(),
-            Term::TyLambda(lam) => lam.subst(v, t).into(),
-            Term::TyApp(app) => app.subst(v, t).into(),
-        }
-    }
-}
-
-impl LatexFmt for Term {
-    fn to_latex(&self, conf: &mut LatexConfig) -> String {
-        match self {
-            Term::Variable(var) => var.to_latex(conf),
-            Term::Lambda(lam) => lam.to_latex(conf),
-            Term::App(app) => app.to_latex(conf),
-            Term::TyLambda(lam) => lam.to_latex(conf),
-            Term::TyApp(app) => app.to_latex(conf),
         }
     }
 }

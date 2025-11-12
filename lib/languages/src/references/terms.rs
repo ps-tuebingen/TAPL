@@ -1,16 +1,17 @@
 use super::{References, types::Type};
-use latex::{LatexConfig, LatexFmt};
-use macros::{Eval, GrammarDescribe, LangDisplay, Typecheck};
+use macros::{Eval, GrammarDescribe, LangDisplay, LatexFmt, SubstTerm, Typecheck};
 use syntax::{
     TypeVar, Var,
-    subst::{SubstTerm, SubstType},
+    subst::SubstType,
     terms::{
         App, Assign, Deref, False, Fix, If, IsZero, Lambda, Let, Loc, Num, Pred, Ref, Succ, True,
         Unit, Variable,
     },
 };
 
-#[derive(LangDisplay, GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq)]
+#[derive(
+    SubstTerm, LatexFmt, LangDisplay, GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq,
+)]
 #[Lang(References)]
 pub enum Term {
     Variable(Variable<References>),
@@ -39,56 +40,6 @@ impl SubstType for Term {
     type Target = Self;
     fn subst_type(self, _: &TypeVar, _: &Type) -> Self::Target {
         self
-    }
-}
-
-impl SubstTerm for Term {
-    type Lang = References;
-    type Target = Self;
-    fn subst(self, v: &Var, t: &Term) -> Self::Target {
-        match self {
-            Term::Variable(var) => var.subst(v, t),
-            Term::Num(c) => c.subst(v, t).into(),
-            Term::Succ(s) => s.subst(v, t).into(),
-            Term::Pred(p) => p.subst(v, t).into(),
-            Term::Lambda(lam) => lam.subst(v, t).into(),
-            Term::App(app) => app.subst(v, t).into(),
-            Term::Unit(u) => u.subst(v, t).into(),
-            Term::Ref(reft) => reft.subst(v, t).into(),
-            Term::Deref(dereft) => dereft.subst(v, t).into(),
-            Term::Assign(ass) => ass.subst(v, t).into(),
-            Term::Loc(loc) => loc.subst(v, t).into(),
-            Term::Let(lett) => lett.subst(v, t).into(),
-            Term::If(ift) => ift.subst(v, t).into(),
-            Term::True(tru) => tru.subst(v, t).into(),
-            Term::False(fls) => fls.subst(v, t).into(),
-            Term::Fix(fix) => fix.subst(v, t).into(),
-            Term::IsZero(isz) => isz.subst(v, t).into(),
-        }
-    }
-}
-
-impl LatexFmt for Term {
-    fn to_latex(&self, conf: &mut LatexConfig) -> String {
-        match self {
-            Term::Variable(v) => v.to_latex(conf),
-            Term::Num(c) => c.to_latex(conf),
-            Term::Succ(s) => s.to_latex(conf),
-            Term::Pred(p) => p.to_latex(conf),
-            Term::Lambda(lam) => lam.to_latex(conf),
-            Term::App(app) => app.to_latex(conf),
-            Term::Unit(u) => u.to_latex(conf),
-            Term::Ref(reft) => reft.to_latex(conf),
-            Term::Deref(dereft) => dereft.to_latex(conf),
-            Term::Assign(ass) => ass.to_latex(conf),
-            Term::Loc(loc) => loc.to_latex(conf),
-            Term::Let(lett) => lett.to_latex(conf),
-            Term::If(ift) => ift.to_latex(conf),
-            Term::True(tru) => tru.to_latex(conf),
-            Term::False(fls) => fls.to_latex(conf),
-            Term::Fix(fix) => fix.to_latex(conf),
-            Term::IsZero(isz) => isz.to_latex(conf),
-        }
     }
 }
 

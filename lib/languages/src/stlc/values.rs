@@ -1,15 +1,13 @@
 use super::{Stlc, terms::Term};
 use errors::ValueMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use latex::{LatexConfig, LatexFmt};
-use macros::LangDisplay;
-use std::fmt;
+use macros::{LangDisplay, LatexFmt};
 use syntax::values::{
     Cons, False, Lambda, Left, Nil, Nothing, Num, Pair, Record, Right, Something, True, Tuple,
     Unit, Value as ValueTrait, ValueGroup, Variant,
 };
 
-#[derive(LangDisplay, Debug, Clone, PartialEq, Eq)]
+#[derive(LatexFmt, LangDisplay, Debug, Clone, PartialEq, Eq)]
 pub enum Value {
     Lambda(Lambda<Stlc>),
     Unit(Unit<Stlc>),
@@ -187,28 +185,6 @@ impl From<Value> for Term {
             Value::Something(some) => some.into_term(),
             Value::Nil(nil) => nil.into_term(),
             Value::Cons(cons) => cons.into_term(),
-        }
-    }
-}
-
-impl LatexFmt for Value {
-    fn to_latex(&self, conf: &mut LatexConfig) -> String {
-        match self {
-            Value::Lambda(lam) => lam.to_latex(conf),
-            Value::Unit(u) => u.to_latex(conf),
-            Value::True(tru) => tru.to_latex(conf),
-            Value::False(fls) => fls.to_latex(conf),
-            Value::Num(num) => num.to_latex(conf),
-            Value::Pair(pair) => pair.to_latex(conf),
-            Value::Tuple(tup) => tup.to_latex(conf),
-            Value::Record(rec) => rec.to_latex(conf),
-            Value::Left(lft) => lft.to_latex(conf),
-            Value::Right(right) => right.to_latex(conf),
-            Value::Variant(var) => var.to_latex(conf),
-            Value::Nothing(not) => not.to_latex(conf),
-            Value::Something(some) => some.to_latex(conf),
-            Value::Nil(nil) => nil.to_latex(conf),
-            Value::Cons(cons) => cons.to_latex(conf),
         }
     }
 }

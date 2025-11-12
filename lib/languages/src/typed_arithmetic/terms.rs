@@ -1,13 +1,14 @@
 use super::{TypedArithmetic, types::Type};
-use latex::{LatexConfig, LatexFmt};
-use macros::{Eval, GrammarDescribe, LangDisplay, Typecheck};
+use macros::{Eval, GrammarDescribe, LangDisplay, LatexFmt, SubstTerm, Typecheck};
 use syntax::{
     TypeVar, Var,
-    subst::{SubstTerm, SubstType},
+    subst::SubstType,
     terms::{False, If, IsZero, Num, Pred, Succ, True},
 };
 
-#[derive(LangDisplay, GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq)]
+#[derive(
+    SubstTerm, LatexFmt, LangDisplay, GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq,
+)]
 #[Lang(TypedArithmetic)]
 pub enum Term {
     True(True<TypedArithmetic>),
@@ -26,28 +27,6 @@ impl SubstType for Term {
     type Target = Term;
     fn subst_type(self, _: &TypeVar, _: &Type) -> Self::Target {
         self
-    }
-}
-
-impl SubstTerm for Term {
-    type Lang = TypedArithmetic;
-    type Target = Term;
-    fn subst(self, _: &Var, _: &Term) -> Self::Target {
-        self
-    }
-}
-
-impl LatexFmt for Term {
-    fn to_latex(&self, conf: &mut LatexConfig) -> String {
-        match self {
-            Term::True(tru) => tru.to_latex(conf),
-            Term::False(fls) => fls.to_latex(conf),
-            Term::If(ift) => ift.to_latex(conf),
-            Term::Num(num) => num.to_latex(conf),
-            Term::Succ(succ) => succ.to_latex(conf),
-            Term::Pred(pred) => pred.to_latex(conf),
-            Term::IsZero(isz) => isz.to_latex(conf),
-        }
     }
 }
 

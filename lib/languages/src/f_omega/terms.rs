@@ -1,16 +1,17 @@
 use super::{FOmega, types::Type};
-use latex::{LatexConfig, LatexFmt};
-use macros::{Eval, GrammarDescribe, LangDisplay, Typecheck};
+use macros::{Eval, GrammarDescribe, LangDisplay, LatexFmt, SubstTerm, Typecheck};
 use syntax::{
     TypeVar, Var,
-    subst::{SubstTerm, SubstType},
+    subst::SubstType,
     terms::{
         App, False, Fix, If, IsZero, Lambda, Num, Pack, Pred, Record, RecordProj, Succ, True,
         TyApp, TyLambda, Unit, Unpack, Variable,
     },
 };
 
-#[derive(LangDisplay, GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq)]
+#[derive(
+    SubstTerm, LatexFmt, LangDisplay, GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq,
+)]
 #[Lang(FOmega)]
 pub enum Term {
     Variable(Variable<FOmega>),
@@ -35,33 +36,6 @@ pub enum Term {
 
 impl syntax::terms::Term for Term {}
 
-impl SubstTerm for Term {
-    type Lang = FOmega;
-    type Target = Self;
-    fn subst(self, v: &Var, t: &Term) -> Term {
-        match self {
-            Term::Variable(var) => var.subst(v, t),
-            Term::Lambda(lam) => lam.subst(v, t).into(),
-            Term::App(app) => app.subst(v, t).into(),
-            Term::TyLambda(lam) => lam.subst(v, t).into(),
-            Term::TyApp(app) => app.subst(v, t).into(),
-            Term::Pack(pack) => pack.subst(v, t).into(),
-            Term::Unpack(unpack) => unpack.subst(v, t).into(),
-            Term::Record(rec) => rec.subst(v, t).into(),
-            Term::RecordProj(proj) => proj.subst(v, t).into(),
-            Term::True(tru) => tru.subst(v, t).into(),
-            Term::False(fls) => fls.subst(v, t).into(),
-            Term::If(ift) => ift.subst(v, t).into(),
-            Term::Unit(u) => u.subst(v, t).into(),
-            Term::Fix(fix) => fix.subst(v, t).into(),
-            Term::Num(num) => num.subst(v, t).into(),
-            Term::Succ(s) => s.subst(v, t).into(),
-            Term::Pred(p) => p.subst(v, t).into(),
-            Term::IsZero(isz) => isz.subst(v, t).into(),
-        }
-    }
-}
-
 impl SubstType for Term {
     type Lang = FOmega;
     type Target = Self;
@@ -85,31 +59,6 @@ impl SubstType for Term {
             Term::Succ(s) => s.subst_type(v, ty).into(),
             Term::Pred(p) => p.subst_type(v, ty).into(),
             Term::IsZero(isz) => isz.subst_type(v, ty).into(),
-        }
-    }
-}
-
-impl LatexFmt for Term {
-    fn to_latex(&self, conf: &mut LatexConfig) -> String {
-        match self {
-            Term::Variable(var) => var.to_latex(conf),
-            Term::Lambda(lam) => lam.to_latex(conf),
-            Term::App(app) => app.to_latex(conf),
-            Term::TyLambda(abs) => abs.to_latex(conf),
-            Term::TyApp(app) => app.to_latex(conf),
-            Term::Pack(pack) => pack.to_latex(conf),
-            Term::Unpack(unpack) => unpack.to_latex(conf),
-            Term::Record(rec) => rec.to_latex(conf),
-            Term::RecordProj(proj) => proj.to_latex(conf),
-            Term::True(tru) => tru.to_latex(conf),
-            Term::False(fls) => fls.to_latex(conf),
-            Term::If(ift) => ift.to_latex(conf),
-            Term::Unit(u) => u.to_latex(conf),
-            Term::Fix(fix) => fix.to_latex(conf),
-            Term::Num(num) => num.to_latex(conf),
-            Term::Succ(s) => s.to_latex(conf),
-            Term::Pred(p) => p.to_latex(conf),
-            Term::IsZero(isz) => isz.to_latex(conf),
         }
     }
 }

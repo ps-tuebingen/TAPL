@@ -3,18 +3,17 @@ use check::Typecheck;
 use derivations::Derivation;
 use errors::{NoTyping, check_error::CheckError};
 use grammar::DerivationRule;
-use latex::{LatexConfig, LatexFmt};
-use macros::{Eval, GrammarDescribe, LangDisplay};
+use macros::{Eval, GrammarDescribe, LangDisplay, LatexFmt, SubstTerm};
 use std::collections::HashSet;
 use syntax::{
     TypeVar, Var,
     env::Environment,
     language::Language,
-    subst::{SubstTerm, SubstType},
+    subst::SubstType,
     terms::{App, UntypedLambda as UntypedLambdaT, Variable},
 };
 
-#[derive(LangDisplay, GrammarDescribe, Eval, Debug, Clone, PartialEq, Eq)]
+#[derive(SubstTerm, LatexFmt, LangDisplay, GrammarDescribe, Eval, Debug, Clone, PartialEq, Eq)]
 #[Lang(UntypedLambda)]
 pub enum Term {
     Var(Variable<UntypedLambda>),
@@ -23,28 +22,6 @@ pub enum Term {
 }
 
 impl syntax::terms::Term for Term {}
-
-impl LatexFmt for Term {
-    fn to_latex(&self, conf: &mut LatexConfig) -> String {
-        match self {
-            Term::Var(var) => var.to_latex(conf),
-            Term::Lambda(lam) => lam.to_latex(conf),
-            Term::App(app) => app.to_latex(conf),
-        }
-    }
-}
-
-impl SubstTerm for Term {
-    type Lang = UntypedLambda;
-    type Target = Self;
-    fn subst(self, v: &Var, t: &Term) -> Self::Target {
-        match self {
-            Term::Var(var) => var.subst(v, t),
-            Term::Lambda(lam) => lam.subst(v, t).into(),
-            Term::App(app) => app.subst(v, t).into(),
-        }
-    }
-}
 
 impl SubstType for Term {
     type Lang = UntypedLambda;

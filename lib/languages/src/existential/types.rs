@@ -1,16 +1,14 @@
 use super::Existential;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use latex::{LatexConfig, LatexFmt};
-use macros::{LangDisplay, NoKinds, NoNorm, NoSubtypes};
-use std::fmt;
+use macros::{LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes};
 use syntax::{
     TypeVar,
     subst::SubstType,
     types::{Bool, Exists, Fun, Nat, Record, Type as TypeTrait, TypeGroup, TypeVariable, Unit},
 };
 
-#[derive(LangDisplay, NoNorm, NoKinds, NoSubtypes, Debug, Clone, PartialEq, Eq)]
+#[derive(LatexFmt, LangDisplay, NoNorm, NoKinds, NoSubtypes, Debug, Clone, PartialEq, Eq)]
 #[Lang(Existential)]
 pub enum Type {
     Var(TypeVariable<Existential>),
@@ -105,20 +103,6 @@ impl GrammarDescribe for Type {
             Exists::<Existential>::rule(),
             Record::<Existential>::rule(),
         ])
-    }
-}
-
-impl LatexFmt for Type {
-    fn to_latex(&self, conf: &mut LatexConfig) -> String {
-        match self {
-            Type::Var(v) => v.to_latex(conf),
-            Type::Unit(u) => u.to_latex(conf),
-            Type::Nat(nat) => nat.to_latex(conf),
-            Type::Bool(b) => b.to_latex(conf),
-            Type::Fun(fun) => fun.to_latex(conf),
-            Type::Exists(exists) => exists.to_latex(conf),
-            Type::Record(rec) => rec.to_latex(conf),
-        }
     }
 }
 

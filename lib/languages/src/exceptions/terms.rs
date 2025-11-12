@@ -1,16 +1,17 @@
 use super::{Exceptions, types::Type};
-use latex::{LatexConfig, LatexFmt};
-use macros::{Eval, GrammarDescribe, LangDisplay, Typecheck};
+use macros::{Eval, GrammarDescribe, LangDisplay, LatexFmt, SubstTerm, Typecheck};
 use syntax::{
     TypeVar, Var,
-    subst::{SubstTerm, SubstType},
+    subst::SubstType,
     terms::{
         App, Exception, False, If, IsZero, Lambda, Num, Pred, Raise, Succ, True, Try, TryWithVal,
         Unit, Variable,
     },
 };
 
-#[derive(LangDisplay, GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq)]
+#[derive(
+    SubstTerm, LatexFmt, LangDisplay, GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq,
+)]
 #[Lang(Exceptions)]
 pub enum Term {
     Variable(Variable<Exceptions>),
@@ -31,52 +32,6 @@ pub enum Term {
 }
 
 impl syntax::terms::Term for Term {}
-
-impl LatexFmt for Term {
-    fn to_latex(&self, conf: &mut LatexConfig) -> String {
-        match self {
-            Term::Variable(v) => v.to_latex(conf),
-            Term::Num(num) => num.to_latex(conf),
-            Term::True(tru) => tru.to_latex(conf),
-            Term::False(fls) => fls.to_latex(conf),
-            Term::Succ(s) => s.to_latex(conf),
-            Term::Pred(p) => p.to_latex(conf),
-            Term::IsZero(isz) => isz.to_latex(conf),
-            Term::If(ift) => ift.to_latex(conf),
-            Term::Lambda(lam) => lam.to_latex(conf),
-            Term::App(app) => app.to_latex(conf),
-            Term::Unit(u) => u.to_latex(conf),
-            Term::Exception(exc) => exc.to_latex(conf),
-            Term::Try(t) => t.to_latex(conf),
-            Term::Raise(r) => r.to_latex(conf),
-            Term::TryWithVal(t) => t.to_latex(conf),
-        }
-    }
-}
-
-impl SubstTerm for Term {
-    type Lang = Exceptions;
-    type Target = Term;
-    fn subst(self, v: &Var, t: &Term) -> Self::Target {
-        match self {
-            Term::Variable(var) => var.subst(v, t),
-            Term::Num(num) => num.subst(v, t).into(),
-            Term::True(tru) => tru.subst(v, t).into(),
-            Term::False(fls) => fls.subst(v, t).into(),
-            Term::Succ(succ) => succ.subst(v, t).into(),
-            Term::Pred(pred) => pred.subst(v, t).into(),
-            Term::IsZero(isz) => isz.subst(v, t).into(),
-            Term::If(ift) => ift.subst(v, t).into(),
-            Term::Lambda(lam) => lam.subst(v, t).into(),
-            Term::App(app) => app.subst(v, t).into(),
-            Term::Unit(u) => u.subst(v, t).into(),
-            Term::Exception(exc) => exc.subst(v, t).into(),
-            Term::Try(tryt) => tryt.subst(v, t).into(),
-            Term::Raise(raise) => raise.subst(v, t).into(),
-            Term::TryWithVal(tryval) => tryval.subst(v, t).into(),
-        }
-    }
-}
 
 impl SubstType for Term {
     type Lang = Exceptions;

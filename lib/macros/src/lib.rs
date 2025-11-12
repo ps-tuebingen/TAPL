@@ -6,6 +6,7 @@ mod eval;
 mod format;
 mod grammar;
 pub(crate) mod literals;
+mod subst;
 pub(crate) mod utils;
 use check::{
     kindcheck::{generate_kindcheck, generate_no_kindcheck},
@@ -14,12 +15,13 @@ use check::{
     typecheck::generate_typecheck,
 };
 use eval::generate_eval;
-use format::generate_display;
+use format::{generate_display, generate_latexfmt};
 use grammar::generate_grammar_describe;
+use subst::generate_subst_term;
 
 /// Derive Typecheck for Terms
 /// terms need to have the form `enum T { T1(T1),T2(T2),...}`
-/// where all `Ti` implement Typecheck already
+/// where all `Ti` implement Typecheck
 #[proc_macro_derive(Typecheck, attributes(Lang))]
 pub fn derive_check(input: TokenStream) -> TokenStream {
     generate_typecheck(input)
@@ -89,7 +91,23 @@ pub fn derive_grammar_describe(input: TokenStream) -> TokenStream {
 /// Derive fmt::Display for enums
 /// enums must have the form `enum T { T1(T1),T2(T2),...}`
 /// implementation calls `fmt` on all variants
-#[proc_macro_derive(LangDisplay, attributes(Lang))]
+#[proc_macro_derive(LangDisplay)]
 pub fn derive_display(input: TokenStream) -> TokenStream {
     generate_display(input)
+}
+
+/// Derive LatexFmt for enums
+/// enums must have the form `enum T { T1(T1),T2(T2),...}`
+/// implementation calls to_latex on all variants
+#[proc_macro_derive(LatexFmt)]
+pub fn derive_latexfmt(input: TokenStream) -> TokenStream {
+    generate_latexfmt(input)
+}
+
+/// Derive SubstTerm for terms
+/// terms need to have the form `enum T { T1(T1),T2(T2),...}`
+/// where all `Ti` implement SubstTerm
+#[proc_macro_derive(SubstTerm, attributes(Lang))]
+pub fn derive_substterm(input: TokenStream) -> TokenStream {
+    generate_subst_term(input)
 }

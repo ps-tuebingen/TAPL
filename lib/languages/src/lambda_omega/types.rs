@@ -1,9 +1,7 @@
 use super::LambdaOmega;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use latex::{LatexConfig, LatexFmt};
-use macros::{Kindcheck, LangDisplay, NoNorm, NoSubtypes};
-use std::fmt;
+use macros::{Kindcheck, LangDisplay, LatexFmt, NoNorm, NoSubtypes};
 use syntax::{
     subst::SubstType,
     types::{
@@ -13,7 +11,7 @@ use syntax::{
 
 pub type TypeVar = String;
 
-#[derive(LangDisplay, NoNorm, Kindcheck, NoSubtypes, Debug, Clone, PartialEq, Eq)]
+#[derive(LatexFmt, LangDisplay, NoNorm, Kindcheck, NoSubtypes, Debug, Clone, PartialEq, Eq)]
 #[Lang(LambdaOmega)]
 pub enum Type {
     Var(TypeVariable<LambdaOmega>),
@@ -107,21 +105,6 @@ impl GrammarDescribe for Type {
             Fun::<LambdaOmega>::rule(),
             Forall::<LambdaOmega>::rule(),
         ])
-    }
-}
-
-impl LatexFmt for Type {
-    fn to_latex(&self, conf: &mut LatexConfig) -> String {
-        match self {
-            Type::Var(var) => var.to_latex(conf),
-            Type::Unit(u) => u.to_latex(conf),
-            Type::Bool(b) => b.to_latex(conf),
-            Type::Nat(n) => n.to_latex(conf),
-            Type::OpLambda(oplam) => oplam.to_latex(conf),
-            Type::OpApp(opapp) => opapp.to_latex(conf),
-            Type::Fun(fun) => fun.to_latex(conf),
-            Type::Forall(forall) => forall.to_latex(conf),
-        }
     }
 }
 
