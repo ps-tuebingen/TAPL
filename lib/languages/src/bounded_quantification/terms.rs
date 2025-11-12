@@ -1,7 +1,6 @@
 use super::{BoundedQuantification, types::Type};
-use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
-use macros::{Eval, Typecheck};
+use macros::{Eval, GrammarDescribe, Typecheck};
 use std::fmt;
 use syntax::{
     TypeVar, Var,
@@ -11,10 +10,10 @@ use syntax::{
     },
 };
 
-#[derive(Eval, Typecheck, Clone, Debug, PartialEq, Eq)]
+#[derive(GrammarDescribe, Eval, Typecheck, Clone, Debug, PartialEq, Eq)]
 #[Lang(BoundedQuantification)]
 pub enum Term {
-    Var(Variable<BoundedQuantification>),
+    Variable(Variable<BoundedQuantification>),
     Num(Num<BoundedQuantification>),
     Succ(Succ<BoundedQuantification>),
     Pred(Pred<BoundedQuantification>),
@@ -30,29 +29,10 @@ pub enum Term {
 
 impl syntax::terms::Term for Term {}
 
-impl GrammarDescribe for Term {
-    fn grammar() -> Grammar {
-        Grammar::term(vec![
-            Variable::<BoundedQuantification>::rule(),
-            Num::<BoundedQuantification>::rule(),
-            Succ::<BoundedQuantification>::rule(),
-            Pred::<BoundedQuantification>::rule(),
-            Lambda::<BoundedQuantification>::rule(),
-            App::<BoundedQuantification>::rule(),
-            LambdaSub::<BoundedQuantification>::rule(),
-            TyApp::<BoundedQuantification>::rule(),
-            Pack::<BoundedQuantification>::rule(),
-            Unpack::<BoundedQuantification>::rule(),
-            Record::<BoundedQuantification>::rule(),
-            RecordProj::<BoundedQuantification>::rule(),
-        ])
-    }
-}
-
 impl fmt::Display for Term {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Term::Var(v) => v.fmt(f),
+            Term::Variable(v) => v.fmt(f),
             Term::Num(num) => num.fmt(f),
             Term::Succ(s) => s.fmt(f),
             Term::Pred(p) => p.fmt(f),
@@ -71,7 +51,7 @@ impl fmt::Display for Term {
 impl LatexFmt for Term {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         match self {
-            Term::Var(v) => v.to_latex(conf),
+            Term::Variable(v) => v.to_latex(conf),
             Term::Num(num) => num.to_latex(conf),
             Term::Succ(s) => s.to_latex(conf),
             Term::Pred(p) => p.to_latex(conf),
@@ -92,7 +72,7 @@ impl SubstTerm for Term {
     type Target = Term;
     fn subst(self, v: &Var, t: &Term) -> Self::Target {
         match self {
-            Term::Var(var) => var.subst(v, t),
+            Term::Variable(var) => var.subst(v, t),
             Term::Num(num) => num.subst(v, t).into(),
             Term::Succ(succ) => succ.subst(v, t).into(),
             Term::Pred(pred) => pred.subst(v, t).into(),
@@ -113,7 +93,7 @@ impl SubstType for Term {
     type Target = Term;
     fn subst_type(self, v: &TypeVar, t: &Type) -> Self::Target {
         match self {
-            Term::Var(var) => var.subst_type(v, t).into(),
+            Term::Variable(var) => var.subst_type(v, t).into(),
             Term::Num(num) => num.subst_type(v, t).into(),
             Term::Succ(succ) => succ.subst_type(v, t).into(),
             Term::Pred(pred) => pred.subst_type(v, t).into(),
@@ -131,7 +111,7 @@ impl SubstType for Term {
 
 impl From<Variable<BoundedQuantification>> for Term {
     fn from(var: Variable<BoundedQuantification>) -> Term {
-        Term::Var(var)
+        Term::Variable(var)
     }
 }
 

@@ -1,8 +1,6 @@
 use super::{References, types::Type};
-use eval::Eval;
-use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
-use macros::{Eval, Typecheck};
+use macros::{Eval, GrammarDescribe, Typecheck};
 use std::fmt;
 use syntax::{
     TypeVar, Var,
@@ -13,10 +11,10 @@ use syntax::{
     },
 };
 
-#[derive(Eval, Typecheck, Debug, Clone, PartialEq, Eq)]
+#[derive(GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq)]
 #[Lang(References)]
 pub enum Term {
-    Var(Variable<References>),
+    Variable(Variable<References>),
     Num(Num<References>),
     Succ(Succ<References>),
     Pred(Pred<References>),
@@ -37,30 +35,6 @@ pub enum Term {
 
 impl syntax::terms::Term for Term {}
 
-impl GrammarDescribe for Term {
-    fn grammar() -> Grammar {
-        Grammar::term(vec![
-            Variable::<References>::rule(),
-            Num::<References>::rule(),
-            Succ::<References>::rule(),
-            Pred::<References>::rule(),
-            Lambda::<References>::rule(),
-            App::<References>::rule(),
-            Unit::<References>::rule(),
-            Ref::<References>::rule(),
-            Deref::<References>::rule(),
-            Assign::<References>::rule(),
-            Loc::<References>::rule(),
-            Let::<References>::rule(),
-            If::<References>::rule(),
-            True::<References>::rule(),
-            False::<References>::rule(),
-            Fix::<References>::rule(),
-            IsZero::<References>::rule(),
-        ])
-    }
-}
-
 impl SubstType for Term {
     type Lang = References;
     type Target = Self;
@@ -74,7 +48,7 @@ impl SubstTerm for Term {
     type Target = Self;
     fn subst(self, v: &Var, t: &Term) -> Self::Target {
         match self {
-            Term::Var(var) => var.subst(v, t),
+            Term::Variable(var) => var.subst(v, t),
             Term::Num(c) => c.subst(v, t).into(),
             Term::Succ(s) => s.subst(v, t).into(),
             Term::Pred(p) => p.subst(v, t).into(),
@@ -98,7 +72,7 @@ impl SubstTerm for Term {
 impl fmt::Display for Term {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Term::Var(v) => v.fmt(f),
+            Term::Variable(v) => v.fmt(f),
             Term::Num(c) => c.fmt(f),
             Term::Succ(s) => s.fmt(f),
             Term::Pred(p) => p.fmt(f),
@@ -122,7 +96,7 @@ impl fmt::Display for Term {
 impl LatexFmt for Term {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         match self {
-            Term::Var(v) => v.to_latex(conf),
+            Term::Variable(v) => v.to_latex(conf),
             Term::Num(c) => c.to_latex(conf),
             Term::Succ(s) => s.to_latex(conf),
             Term::Pred(p) => p.to_latex(conf),
@@ -145,7 +119,7 @@ impl LatexFmt for Term {
 
 impl From<Variable<References>> for Term {
     fn from(v: Variable<References>) -> Term {
-        Term::Var(v)
+        Term::Variable(v)
     }
 }
 impl From<Num<References>> for Term {
@@ -303,7 +277,8 @@ mod term_tests {
 
 #[cfg(test)]
 mod check_tests {
-    use super::{Eval, References, Term};
+    use super::{References, Term};
+    use eval::Eval;
     use syntax::{
         terms::{App, Assign, Deref, Lambda, Loc, Ref, Unit, Variable},
         types::{Reference, Unit as UnitTy},

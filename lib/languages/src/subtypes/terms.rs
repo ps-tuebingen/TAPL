@@ -1,7 +1,6 @@
 use super::{Subtypes, types::Type};
-use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
-use macros::{Eval, Typecheck};
+use macros::{Eval, GrammarDescribe, Typecheck};
 use std::fmt;
 use syntax::{
     TypeVar, Var,
@@ -12,10 +11,10 @@ use syntax::{
     },
 };
 
-#[derive(Eval, Typecheck, Debug, PartialEq, Eq, Clone)]
+#[derive(GrammarDescribe, Eval, Typecheck, Debug, PartialEq, Eq, Clone)]
 #[Lang(Subtypes)]
 pub enum Term {
-    Var(Variable<Subtypes>),
+    Variable(Variable<Subtypes>),
     Lambda(Lambda<Subtypes>),
     App(App<Subtypes>),
     Unit(Unit<Subtypes>),
@@ -43,37 +42,6 @@ pub enum Term {
 
 impl syntax::terms::Term for Term {}
 
-impl GrammarDescribe for Term {
-    fn grammar() -> Grammar {
-        Grammar::term(vec![
-            Variable::<Subtypes>::rule(),
-            Lambda::<Subtypes>::rule(),
-            App::<Subtypes>::rule(),
-            Unit::<Subtypes>::rule(),
-            Record::<Subtypes>::rule(),
-            RecordProj::<Subtypes>::rule(),
-            Variant::<Subtypes>::rule(),
-            VariantCase::<Subtypes>::rule(),
-            Cast::<Subtypes>::rule(),
-            Nil::<Subtypes>::rule(),
-            Cons::<Subtypes>::rule(),
-            ListCase::<Subtypes>::rule(),
-            Ref::<Subtypes>::rule(),
-            Deref::<Subtypes>::rule(),
-            Assign::<Subtypes>::rule(),
-            Loc::<Subtypes>::rule(),
-            Num::<Subtypes>::rule(),
-            Succ::<Subtypes>::rule(),
-            Pred::<Subtypes>::rule(),
-            True::<Subtypes>::rule(),
-            False::<Subtypes>::rule(),
-            If::<Subtypes>::rule(),
-            Let::<Subtypes>::rule(),
-            Fix::<Subtypes>::rule(),
-        ])
-    }
-}
-
 impl SubstType for Term {
     type Lang = Subtypes;
     type Target = Term;
@@ -87,7 +55,7 @@ impl SubstTerm for Term {
     type Target = Self;
     fn subst(self, v: &Var, t: &Term) -> Self::Target {
         match self {
-            Term::Var(var) => var.subst(v, t),
+            Term::Variable(var) => var.subst(v, t),
             Term::Lambda(lam) => lam.subst(v, t).into(),
             Term::App(app) => app.subst(v, t).into(),
             Term::Unit(unit) => unit.subst(v, t).into(),
@@ -118,7 +86,7 @@ impl SubstTerm for Term {
 impl LatexFmt for Term {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         match self {
-            Term::Var(var) => var.to_latex(conf),
+            Term::Variable(var) => var.to_latex(conf),
             Term::Lambda(lam) => lam.to_latex(conf),
             Term::App(app) => app.to_latex(conf),
             Term::Unit(unit) => unit.to_latex(conf),
@@ -149,7 +117,7 @@ impl LatexFmt for Term {
 impl fmt::Display for Term {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Term::Var(var) => var.fmt(f),
+            Term::Variable(var) => var.fmt(f),
             Term::Lambda(lam) => lam.fmt(f),
             Term::App(app) => app.fmt(f),
             Term::Unit(unit) => unit.fmt(f),
@@ -265,7 +233,7 @@ impl From<Cons<Subtypes>> for Term {
 
 impl From<Variable<Subtypes>> for Term {
     fn from(var: Variable<Subtypes>) -> Term {
-        Term::Var(var)
+        Term::Variable(var)
     }
 }
 

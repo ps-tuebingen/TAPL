@@ -1,7 +1,6 @@
 use super::{TypedArithmetic, types::Type};
-use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
-use macros::{Eval, Typecheck};
+use macros::{Eval, GrammarDescribe, Typecheck};
 use std::fmt;
 use syntax::{
     TypeVar, Var,
@@ -9,7 +8,7 @@ use syntax::{
     terms::{False, If, IsZero, Num, Pred, Succ, True},
 };
 
-#[derive(Eval, Typecheck, Debug, Clone, PartialEq, Eq)]
+#[derive(GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq)]
 #[Lang(TypedArithmetic)]
 pub enum Term {
     True(True<TypedArithmetic>),
@@ -22,20 +21,6 @@ pub enum Term {
 }
 
 impl syntax::terms::Term for Term {}
-
-impl GrammarDescribe for Term {
-    fn grammar() -> Grammar {
-        Grammar::term(vec![
-            True::<TypedArithmetic>::rule(),
-            False::<TypedArithmetic>::rule(),
-            If::<TypedArithmetic>::rule(),
-            Num::<TypedArithmetic>::rule(),
-            Succ::<TypedArithmetic>::rule(),
-            Pred::<TypedArithmetic>::rule(),
-            IsZero::<TypedArithmetic>::rule(),
-        ])
-    }
-}
 
 impl SubstType for Term {
     type Lang = TypedArithmetic;

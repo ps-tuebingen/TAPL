@@ -1,7 +1,6 @@
 use super::{FOmegaSub, types::Type};
-use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
-use macros::{Eval, Typecheck};
+use macros::{Eval, GrammarDescribe, Typecheck};
 use std::fmt;
 use syntax::{
     TypeVar, Var,
@@ -12,10 +11,10 @@ use syntax::{
     },
 };
 
-#[derive(Eval, Typecheck, Debug, Clone, PartialEq, Eq)]
+#[derive(GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq)]
 #[Lang(FOmegaSub)]
 pub enum Term {
-    Var(Variable<FOmegaSub>),
+    Variable(Variable<FOmegaSub>),
     Lambda(Lambda<FOmegaSub>),
     App(App<FOmegaSub>),
     LambdaSub(LambdaSub<FOmegaSub>),
@@ -32,33 +31,13 @@ pub enum Term {
 
 impl syntax::terms::Term for Term {}
 
-impl GrammarDescribe for Term {
-    fn grammar() -> Grammar {
-        Grammar::term(vec![
-            Variable::<FOmegaSub>::rule(),
-            Lambda::<FOmegaSub>::rule(),
-            App::<FOmegaSub>::rule(),
-            LambdaSub::<FOmegaSub>::rule(),
-            TyApp::<FOmegaSub>::rule(),
-            Pack::<FOmegaSub>::rule(),
-            Unpack::<FOmegaSub>::rule(),
-            Record::<FOmegaSub>::rule(),
-            RecordProj::<FOmegaSub>::rule(),
-            Num::<FOmegaSub>::rule(),
-            Succ::<FOmegaSub>::rule(),
-            Pred::<FOmegaSub>::rule(),
-            Let::<FOmegaSub>::rule(),
-        ])
-    }
-}
-
 impl SubstTerm for Term {
     type Lang = FOmegaSub;
     type Target = Self;
 
     fn subst(self, v: &Var, t: &Term) -> Term {
         match self {
-            Term::Var(var) => var.subst(v, t),
+            Term::Variable(var) => var.subst(v, t),
             Term::Lambda(lam) => lam.subst(v, t).into(),
             Term::App(app) => app.subst(v, t).into(),
             Term::LambdaSub(lam) => lam.subst(v, t).into(),
@@ -81,7 +60,7 @@ impl SubstType for Term {
 
     fn subst_type(self, v: &TypeVar, ty: &Type) -> Self {
         match self {
-            Term::Var(var) => var.subst_type(v, ty).into(),
+            Term::Variable(var) => var.subst_type(v, ty).into(),
             Term::Lambda(lam) => lam.subst_type(v, ty).into(),
             Term::App(app) => app.subst_type(v, ty).into(),
             Term::LambdaSub(lam) => lam.subst_type(v, ty).into(),
@@ -101,7 +80,7 @@ impl SubstType for Term {
 impl fmt::Display for Term {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Term::Var(var) => var.fmt(f),
+            Term::Variable(var) => var.fmt(f),
             Term::Lambda(lam) => lam.fmt(f),
             Term::App(app) => app.fmt(f),
             Term::LambdaSub(lam) => lam.fmt(f),
@@ -121,7 +100,7 @@ impl fmt::Display for Term {
 impl LatexFmt for Term {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         match self {
-            Term::Var(var) => var.to_latex(conf),
+            Term::Variable(var) => var.to_latex(conf),
             Term::Lambda(lam) => lam.to_latex(conf),
             Term::App(app) => app.to_latex(conf),
             Term::LambdaSub(lam) => lam.to_latex(conf),
@@ -179,7 +158,7 @@ impl From<Record<FOmegaSub>> for Term {
 
 impl From<Variable<FOmegaSub>> for Term {
     fn from(var: Variable<FOmegaSub>) -> Term {
-        Term::Var(var)
+        Term::Variable(var)
     }
 }
 

@@ -2,9 +2,9 @@ use super::UntypedArithmetic;
 use check::Typecheck;
 use derivations::Derivation;
 use errors::{NoTyping, check_error::CheckError};
-use grammar::{DerivationRule, Grammar, GrammarDescribe, GrammarRuleDescribe};
+use grammar::DerivationRule;
 use latex::{LatexConfig, LatexFmt};
-use macros::Eval;
+use macros::{Eval, GrammarDescribe};
 use std::collections::HashSet;
 use std::fmt;
 use syntax::{
@@ -16,7 +16,7 @@ use syntax::{
     untyped::Untyped,
 };
 
-#[derive(Eval, Clone, Debug, PartialEq, Eq)]
+#[derive(GrammarDescribe, Eval, Clone, Debug, PartialEq, Eq)]
 #[Lang(UntypedArithmetic)]
 pub enum Term {
     True(True<UntypedArithmetic>),
@@ -29,20 +29,6 @@ pub enum Term {
 }
 
 impl syntax::terms::Term for Term {}
-
-impl GrammarDescribe for Term {
-    fn grammar() -> Grammar {
-        Grammar::term(vec![
-            True::<UntypedArithmetic>::rule(),
-            False::<UntypedArithmetic>::rule(),
-            If::<UntypedArithmetic>::rule(),
-            Num::<UntypedArithmetic>::rule(),
-            Succ::<UntypedArithmetic>::rule(),
-            Pred::<UntypedArithmetic>::rule(),
-            IsZero::<UntypedArithmetic>::rule(),
-        ])
-    }
-}
 
 impl SubstTerm for Term {
     type Lang = UntypedArithmetic;

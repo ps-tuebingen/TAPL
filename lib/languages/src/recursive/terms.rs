@@ -1,7 +1,6 @@
 use super::{Recursive, types::Type};
-use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
-use macros::{Eval, Typecheck};
+use macros::{Eval, GrammarDescribe, Typecheck};
 use std::fmt;
 use syntax::{
     TypeVar, Var,
@@ -12,10 +11,10 @@ use syntax::{
     },
 };
 
-#[derive(Eval, Typecheck, Debug, Clone, PartialEq, Eq)]
+#[derive(GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq)]
 #[Lang(Recursive)]
 pub enum Term {
-    Var(Variable<Recursive>),
+    Variable(Variable<Recursive>),
     Lambda(Lambda<Recursive>),
     App(App<Recursive>),
     Unit(Unit<Recursive>),
@@ -41,41 +40,12 @@ pub enum Term {
 
 impl syntax::terms::Term for Term {}
 
-impl GrammarDescribe for Term {
-    fn grammar() -> Grammar {
-        Grammar::term(vec![
-            Variable::<Recursive>::rule(),
-            Lambda::<Recursive>::rule(),
-            App::<Recursive>::rule(),
-            Unit::<Recursive>::rule(),
-            Fold::<Recursive>::rule(),
-            Unfold::<Recursive>::rule(),
-            Variant::<Recursive>::rule(),
-            VariantCase::<Recursive>::rule(),
-            Pair::<Recursive>::rule(),
-            Fst::<Recursive>::rule(),
-            Snd::<Recursive>::rule(),
-            Num::<Recursive>::rule(),
-            Succ::<Recursive>::rule(),
-            Pred::<Recursive>::rule(),
-            IsZero::<Recursive>::rule(),
-            True::<Recursive>::rule(),
-            False::<Recursive>::rule(),
-            If::<Recursive>::rule(),
-            Fix::<Recursive>::rule(),
-            Let::<Recursive>::rule(),
-            Record::<Recursive>::rule(),
-            RecordProj::<Recursive>::rule(),
-        ])
-    }
-}
-
 impl SubstType for Term {
     type Lang = Recursive;
     type Target = Self;
     fn subst_type(self, v: &TypeVar, ty: &Type) -> Self::Target {
         match self {
-            Term::Var(var) => var.subst_type(v, ty).into(),
+            Term::Variable(var) => var.subst_type(v, ty).into(),
             Term::Lambda(lam) => lam.subst_type(v, ty).into(),
             Term::App(app) => app.subst_type(v, ty).into(),
             Term::Unit(u) => u.subst_type(v, ty).into(),
@@ -106,7 +76,7 @@ impl SubstTerm for Term {
     type Target = Self;
     fn subst(self, v: &Var, t: &Term) -> Self::Target {
         match self {
-            Term::Var(var) => var.subst(v, t),
+            Term::Variable(var) => var.subst(v, t),
             Term::Lambda(lam) => lam.subst(v, t).into(),
             Term::App(app) => app.subst(v, t).into(),
             Term::Unit(u) => u.subst(v, t).into(),
@@ -135,7 +105,7 @@ impl SubstTerm for Term {
 impl fmt::Display for Term {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Term::Var(v) => v.fmt(f),
+            Term::Variable(v) => v.fmt(f),
             Term::Lambda(lam) => lam.fmt(f),
             Term::App(app) => app.fmt(f),
             Term::Unit(u) => u.fmt(f),
@@ -164,7 +134,7 @@ impl fmt::Display for Term {
 impl LatexFmt for Term {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         match self {
-            Term::Var(v) => v.to_latex(conf),
+            Term::Variable(v) => v.to_latex(conf),
             Term::Lambda(lam) => lam.to_latex(conf),
             Term::App(app) => app.to_latex(conf),
             Term::Unit(u) => u.to_latex(conf),
@@ -250,7 +220,7 @@ impl From<Variant<Recursive>> for Term {
 }
 impl From<Variable<Recursive>> for Term {
     fn from(var: Variable<Recursive>) -> Term {
-        Term::Var(var)
+        Term::Variable(var)
     }
 }
 

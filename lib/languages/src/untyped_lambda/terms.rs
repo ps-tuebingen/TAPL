@@ -2,21 +2,19 @@ use super::UntypedLambda;
 use check::Typecheck;
 use derivations::Derivation;
 use errors::{NoTyping, check_error::CheckError};
-use grammar::{DerivationRule, Grammar, GrammarDescribe, GrammarRuleDescribe};
+use grammar::DerivationRule;
 use latex::{LatexConfig, LatexFmt};
-use macros::Eval;
+use macros::{Eval, GrammarDescribe};
 use std::{collections::HashSet, fmt};
 use syntax::{
-    TypeVar,
+    TypeVar, Var,
     env::Environment,
     language::Language,
     subst::{SubstTerm, SubstType},
     terms::{App, UntypedLambda as UntypedLambdaT, Variable},
 };
 
-pub type Var = String;
-
-#[derive(Eval, Debug, Clone, PartialEq, Eq)]
+#[derive(GrammarDescribe, Eval, Debug, Clone, PartialEq, Eq)]
 #[Lang(UntypedLambda)]
 pub enum Term {
     Var(Variable<UntypedLambda>),
@@ -25,16 +23,6 @@ pub enum Term {
 }
 
 impl syntax::terms::Term for Term {}
-
-impl GrammarDescribe for Term {
-    fn grammar() -> Grammar {
-        Grammar::term(vec![
-            Variable::<UntypedLambda>::rule(),
-            UntypedLambdaT::<UntypedLambda>::rule(),
-            App::<UntypedLambda>::rule(),
-        ])
-    }
-}
 
 impl fmt::Display for Term {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {

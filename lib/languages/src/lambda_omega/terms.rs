@@ -1,7 +1,6 @@
 use super::{LambdaOmega, types::Type};
-use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
-use macros::{Eval, Typecheck};
+use macros::{Eval, GrammarDescribe, Typecheck};
 use std::fmt;
 use syntax::{
     TypeVar, Var,
@@ -9,10 +8,10 @@ use syntax::{
     terms::{App, False, Lambda, Num, True, TyApp, TyLambda, Unit, Variable},
 };
 
-#[derive(Eval, Typecheck, Debug, Clone, PartialEq, Eq)]
+#[derive(GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq)]
 #[Lang(LambdaOmega)]
 pub enum Term {
-    Var(Variable<LambdaOmega>),
+    Variable(Variable<LambdaOmega>),
     Num(Num<LambdaOmega>),
     True(True<LambdaOmega>),
     False(False<LambdaOmega>),
@@ -25,28 +24,12 @@ pub enum Term {
 
 impl syntax::terms::Term for Term {}
 
-impl GrammarDescribe for Term {
-    fn grammar() -> Grammar {
-        Grammar::term(vec![
-            Variable::<LambdaOmega>::rule(),
-            Num::<LambdaOmega>::rule(),
-            True::<LambdaOmega>::rule(),
-            False::<LambdaOmega>::rule(),
-            Lambda::<LambdaOmega>::rule(),
-            App::<LambdaOmega>::rule(),
-            Unit::<LambdaOmega>::rule(),
-            TyLambda::<LambdaOmega>::rule(),
-            TyApp::<LambdaOmega>::rule(),
-        ])
-    }
-}
-
 impl SubstType for Term {
     type Lang = LambdaOmega;
     type Target = Self;
     fn subst_type(self, v: &TypeVar, ty: &Type) -> Self::Target {
         match self {
-            Term::Var(var) => var.subst_type(v, ty).into(),
+            Term::Variable(var) => var.subst_type(v, ty).into(),
             Term::Num(num) => num.subst_type(v, ty).into(),
             Term::True(tru) => tru.subst_type(v, ty).into(),
             Term::False(fls) => fls.subst_type(v, ty).into(),
@@ -64,7 +47,7 @@ impl SubstTerm for Term {
     type Target = Self;
     fn subst(self, v: &Var, t: &Term) -> Self::Target {
         match self {
-            Term::Var(var) => var.subst(v, t),
+            Term::Variable(var) => var.subst(v, t),
             Term::Num(num) => num.subst(v, t).into(),
             Term::True(tru) => tru.subst(v, t).into(),
             Term::False(fls) => fls.subst(v, t).into(),
@@ -80,7 +63,7 @@ impl SubstTerm for Term {
 impl fmt::Display for Term {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Term::Var(var) => var.fmt(f),
+            Term::Variable(var) => var.fmt(f),
             Term::Num(num) => num.fmt(f),
             Term::True(tru) => tru.fmt(f),
             Term::False(fls) => fls.fmt(f),
@@ -96,7 +79,7 @@ impl fmt::Display for Term {
 impl LatexFmt for Term {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         match self {
-            Term::Var(var) => var.to_latex(conf),
+            Term::Variable(var) => var.to_latex(conf),
             Term::Num(num) => num.to_latex(conf),
             Term::True(tru) => tru.to_latex(conf),
             Term::False(fls) => fls.to_latex(conf),
@@ -111,7 +94,7 @@ impl LatexFmt for Term {
 
 impl From<Variable<LambdaOmega>> for Term {
     fn from(var: Variable<LambdaOmega>) -> Term {
-        Term::Var(var)
+        Term::Variable(var)
     }
 }
 

@@ -1,7 +1,6 @@
 use super::{Stlc, types::Type};
-use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
-use macros::{Eval, Typecheck};
+use macros::{Eval, GrammarDescribe, Typecheck};
 use std::fmt;
 use syntax::{
     TypeVar, Var,
@@ -13,10 +12,10 @@ use syntax::{
     },
 };
 
-#[derive(Eval, Typecheck, Debug, Clone, PartialEq, Eq)]
+#[derive(GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq)]
 #[Lang(Stlc)]
 pub enum Term {
-    Var(Variable<Stlc>),
+    Variable(Variable<Stlc>),
     Lambda(Lambda<Stlc>),
     App(App<Stlc>),
     Unit(Unit<Stlc>),
@@ -54,47 +53,6 @@ pub enum Term {
 
 impl syntax::terms::Term for Term {}
 
-impl GrammarDescribe for Term {
-    fn grammar() -> Grammar {
-        Grammar::term(vec![
-            Variable::<Stlc>::rule(),
-            Lambda::<Stlc>::rule(),
-            App::<Stlc>::rule(),
-            Unit::<Stlc>::rule(),
-            True::<Stlc>::rule(),
-            False::<Stlc>::rule(),
-            If::<Stlc>::rule(),
-            Num::<Stlc>::rule(),
-            Pred::<Stlc>::rule(),
-            Succ::<Stlc>::rule(),
-            IsZero::<Stlc>::rule(),
-            Ascribe::<Stlc>::rule(),
-            Let::<Stlc>::rule(),
-            Pair::<Stlc>::rule(),
-            Fst::<Stlc>::rule(),
-            Snd::<Stlc>::rule(),
-            Tuple::<Stlc>::rule(),
-            Projection::<Stlc>::rule(),
-            Record::<Stlc>::rule(),
-            RecordProj::<Stlc>::rule(),
-            Left::<Stlc>::rule(),
-            Right::<Stlc>::rule(),
-            SumCase::<Stlc>::rule(),
-            Variant::<Stlc>::rule(),
-            VariantCase::<Stlc>::rule(),
-            Nothing::<Stlc>::rule(),
-            Something::<Stlc>::rule(),
-            SomeCase::<Stlc>::rule(),
-            Fix::<Stlc>::rule(),
-            Nil::<Stlc>::rule(),
-            Cons::<Stlc>::rule(),
-            IsNil::<Stlc>::rule(),
-            Head::<Stlc>::rule(),
-            Tail::<Stlc>::rule(),
-        ])
-    }
-}
-
 impl SubstType for Term {
     type Lang = Stlc;
     type Target = Term;
@@ -108,7 +66,7 @@ impl SubstTerm for Term {
     type Target = Term;
     fn subst(self, v: &Var, t: &Term) -> Self::Target {
         match self {
-            Term::Var(var) => var.subst(v, t),
+            Term::Variable(var) => var.subst(v, t),
             Term::Lambda(lam) => lam.subst(v, t).into(),
             Term::App(app) => app.subst(v, t).into(),
             Term::True(tru) => tru.subst(v, t).into(),
@@ -149,7 +107,7 @@ impl SubstTerm for Term {
 impl fmt::Display for Term {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Term::Var(v) => v.fmt(f),
+            Term::Variable(v) => v.fmt(f),
             Term::Lambda(lam) => lam.fmt(f),
             Term::App(app) => app.fmt(f),
             Term::Unit(unit) => unit.fmt(f),
@@ -190,7 +148,7 @@ impl fmt::Display for Term {
 impl LatexFmt for Term {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         match self {
-            Term::Var(v) => v.to_latex(conf),
+            Term::Variable(v) => v.to_latex(conf),
             Term::Lambda(lam) => lam.to_latex(conf),
             Term::App(app) => app.to_latex(conf),
             Term::Unit(unit) => unit.to_latex(conf),
@@ -320,7 +278,7 @@ impl From<Cons<Stlc>> for Term {
 
 impl From<Variable<Stlc>> for Term {
     fn from(var: Variable<Stlc>) -> Term {
-        Term::Var(var)
+        Term::Variable(var)
     }
 }
 

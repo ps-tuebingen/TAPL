@@ -1,7 +1,6 @@
 use super::{Exceptions, types::Type};
-use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
-use macros::{Eval, Typecheck};
+use macros::{Eval, GrammarDescribe, Typecheck};
 use std::fmt;
 use syntax::{
     TypeVar, Var,
@@ -12,10 +11,10 @@ use syntax::{
     },
 };
 
-#[derive(Eval, Typecheck, Debug, Clone, PartialEq, Eq)]
+#[derive(GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq)]
 #[Lang(Exceptions)]
 pub enum Term {
-    Var(Variable<Exceptions>),
+    Variable(Variable<Exceptions>),
     Num(Num<Exceptions>),
     True(True<Exceptions>),
     False(False<Exceptions>),
@@ -34,32 +33,10 @@ pub enum Term {
 
 impl syntax::terms::Term for Term {}
 
-impl GrammarDescribe for Term {
-    fn grammar() -> Grammar {
-        Grammar::term(vec![
-            Variable::<Exceptions>::rule(),
-            Num::<Exceptions>::rule(),
-            True::<Exceptions>::rule(),
-            False::<Exceptions>::rule(),
-            Succ::<Exceptions>::rule(),
-            Pred::<Exceptions>::rule(),
-            IsZero::<Exceptions>::rule(),
-            If::<Exceptions>::rule(),
-            Lambda::<Exceptions>::rule(),
-            App::<Exceptions>::rule(),
-            Unit::<Exceptions>::rule(),
-            Exception::<Exceptions>::rule(),
-            Try::<Exceptions>::rule(),
-            Raise::<Exceptions>::rule(),
-            TryWithVal::<Exceptions>::rule(),
-        ])
-    }
-}
-
 impl fmt::Display for Term {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Term::Var(v) => v.fmt(f),
+            Term::Variable(v) => v.fmt(f),
             Term::Num(num) => num.fmt(f),
             Term::True(tru) => tru.fmt(f),
             Term::False(fls) => fls.fmt(f),
@@ -81,7 +58,7 @@ impl fmt::Display for Term {
 impl LatexFmt for Term {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         match self {
-            Term::Var(v) => v.to_latex(conf),
+            Term::Variable(v) => v.to_latex(conf),
             Term::Num(num) => num.to_latex(conf),
             Term::True(tru) => tru.to_latex(conf),
             Term::False(fls) => fls.to_latex(conf),
@@ -105,7 +82,7 @@ impl SubstTerm for Term {
     type Target = Term;
     fn subst(self, v: &Var, t: &Term) -> Self::Target {
         match self {
-            Term::Var(var) => var.subst(v, t),
+            Term::Variable(var) => var.subst(v, t),
             Term::Num(num) => num.subst(v, t).into(),
             Term::True(tru) => tru.subst(v, t).into(),
             Term::False(fls) => fls.subst(v, t).into(),
@@ -129,7 +106,7 @@ impl SubstType for Term {
     type Target = Term;
     fn subst_type(self, v: &TypeVar, t: &Type) -> Self::Target {
         match self {
-            Term::Var(var) => var.subst_type(v, t).into(),
+            Term::Variable(var) => var.subst_type(v, t).into(),
             Term::Num(num) => num.subst_type(v, t).into(),
             Term::True(tru) => tru.subst_type(v, t).into(),
             Term::False(fls) => fls.subst_type(v, t).into(),
@@ -150,7 +127,7 @@ impl SubstType for Term {
 
 impl From<Variable<Exceptions>> for Term {
     fn from(var: Variable<Exceptions>) -> Term {
-        Term::Var(var)
+        Term::Variable(var)
     }
 }
 
