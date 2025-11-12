@@ -3,6 +3,7 @@ use proc_macro::TokenStream;
 
 mod check;
 mod eval;
+mod format;
 mod grammar;
 pub(crate) mod literals;
 pub(crate) mod utils;
@@ -13,6 +14,7 @@ use check::{
     typecheck::generate_typecheck,
 };
 use eval::generate_eval;
+use format::generate_term_display;
 use grammar::generate_grammar_describe;
 
 /// Derive Typecheck for Terms
@@ -82,4 +84,9 @@ pub fn derive_eval(input: TokenStream) -> TokenStream {
 #[proc_macro_derive(GrammarDescribe, attributes(Lang))]
 pub fn derive_grammar_describe(input: TokenStream) -> TokenStream {
     generate_grammar_describe(input)
+}
+
+#[proc_macro_derive(TermDisplay, attributes(Lang))]
+pub fn derive_term_display(input: TokenStream) -> TokenStream {
+    generate_term_display(input)
 }
