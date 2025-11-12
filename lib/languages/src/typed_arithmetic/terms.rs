@@ -1,13 +1,19 @@
-use super::{TypedArithmetic, types::Type};
-use macros::{Eval, GrammarDescribe, LangDisplay, LatexFmt, SubstTerm, Typecheck};
-use syntax::{
-    TypeVar, Var,
-    subst::SubstType,
-    terms::{False, If, IsZero, Num, Pred, Succ, True},
-};
+use super::TypedArithmetic;
+use macros::{Eval, GrammarDescribe, LangDisplay, LatexFmt, SubstTerm, SubstType, Typecheck};
+use syntax::terms::{False, If, IsZero, Num, Pred, Succ, True};
 
 #[derive(
-    SubstTerm, LatexFmt, LangDisplay, GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq,
+    SubstType,
+    SubstTerm,
+    LatexFmt,
+    LangDisplay,
+    GrammarDescribe,
+    Eval,
+    Typecheck,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
 )]
 #[Lang(TypedArithmetic)]
 pub enum Term {
@@ -21,14 +27,6 @@ pub enum Term {
 }
 
 impl syntax::terms::Term for Term {}
-
-impl SubstType for Term {
-    type Lang = TypedArithmetic;
-    type Target = Term;
-    fn subst_type(self, _: &TypeVar, _: &Type) -> Self::Target {
-        self
-    }
-}
 
 impl From<True<TypedArithmetic>> for Term {
     fn from(tru: True<TypedArithmetic>) -> Term {

@@ -1,17 +1,15 @@
 use super::Subtypes;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{LangDisplay, LatexFmt, NoKinds, NoNorm, Subtypecheck};
-use syntax::{
-    TypeVar,
-    subst::SubstType,
-    types::{
-        Bool, Bot, Fun, List, Nat, Record, Reference, Sink, Source, Top, Type as TypeTrait,
-        TypeGroup, Unit, Variant,
-    },
+use macros::{LangDisplay, LatexFmt, NoKinds, NoNorm, SubstType, Subtypecheck};
+use syntax::types::{
+    Bool, Bot, Fun, List, Nat, Record, Reference, Sink, Source, Top, Type as TypeTrait, TypeGroup,
+    Unit, Variant,
 };
 
-#[derive(LatexFmt, LangDisplay, NoNorm, NoKinds, Subtypecheck, Debug, Clone, PartialEq, Eq)]
+#[derive(
+    SubstType, LatexFmt, LangDisplay, NoNorm, NoKinds, Subtypecheck, Debug, Clone, PartialEq, Eq,
+)]
 #[Lang(Subtypes)]
 pub enum Type {
     Top(Top<Subtypes>),
@@ -144,14 +142,6 @@ impl GrammarDescribe for Type {
             Unit::<Subtypes>::rule(),
             Bool::<Subtypes>::rule(),
         ])
-    }
-}
-
-impl SubstType for Type {
-    type Lang = Subtypes;
-    type Target = Self;
-    fn subst_type(self, _: &TypeVar, _: &Type) -> Self::Target {
-        self
     }
 }
 

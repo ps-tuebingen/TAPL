@@ -1,17 +1,14 @@
 use super::Recursive;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes};
-use syntax::{
-    TypeVar,
-    subst::SubstType,
-    types::{
-        Bool, Fun, Mu, Nat, Product, Record, Type as TypeTrait, TypeGroup, TypeVariable, Unit,
-        Variant,
-    },
+use macros::{LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes, SubstType};
+use syntax::types::{
+    Bool, Fun, Mu, Nat, Product, Record, Type as TypeTrait, TypeGroup, TypeVariable, Unit, Variant,
 };
 
-#[derive(LatexFmt, LangDisplay, NoNorm, NoKinds, NoSubtypes, Debug, Clone, PartialEq, Eq)]
+#[derive(
+    SubstType, LatexFmt, LangDisplay, NoNorm, NoKinds, NoSubtypes, Debug, Clone, PartialEq, Eq,
+)]
 #[Lang(Recursive)]
 pub enum Type {
     TypeVar(TypeVariable<Recursive>),
@@ -106,24 +103,6 @@ impl GrammarDescribe for Type {
             Bool::<Recursive>::rule(),
             Record::<Recursive>::rule(),
         ])
-    }
-}
-
-impl SubstType for Type {
-    type Lang = Recursive;
-    type Target = Self;
-    fn subst_type(self, v: &TypeVar, t: &Self) -> Self::Target {
-        match self {
-            Type::TypeVar(var) => var.subst_type(v, t),
-            Type::Unit(u) => u.subst_type(v, t).into(),
-            Type::Fun(fun) => fun.subst_type(v, t).into(),
-            Type::Mu(mu) => mu.subst_type(v, t).into(),
-            Type::Variant(var) => var.subst_type(v, t).into(),
-            Type::Product(prod) => prod.subst_type(v, t).into(),
-            Type::Nat(n) => n.subst_type(v, t).into(),
-            Type::Bool(b) => b.subst_type(v, t).into(),
-            Type::Record(rec) => rec.subst_type(v, t).into(),
-        }
     }
 }
 

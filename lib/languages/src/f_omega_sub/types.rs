@@ -1,18 +1,23 @@
 use super::FOmegaSub;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{Kindcheck, LangDisplay, LatexFmt, Normalize, Subtypecheck};
-use syntax::{
-    TypeVar,
-    subst::SubstType,
-    types::{
-        ExistsBounded, ForallBounded, Fun, Nat, OpApp, OpLambdaSub, Record, Top, Type as TypeTrait,
-        TypeGroup, TypeVariable,
-    },
+use macros::{Kindcheck, LangDisplay, LatexFmt, Normalize, SubstType, Subtypecheck};
+use syntax::types::{
+    ExistsBounded, ForallBounded, Fun, Nat, OpApp, OpLambdaSub, Record, Top, Type as TypeTrait,
+    TypeGroup, TypeVariable,
 };
 
 #[derive(
-    LatexFmt, LangDisplay, Normalize, Kindcheck, Subtypecheck, Debug, Clone, PartialEq, Eq,
+    SubstType,
+    LatexFmt,
+    LangDisplay,
+    Normalize,
+    Kindcheck,
+    Subtypecheck,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
 )]
 #[Lang(FOmegaSub)]
 pub enum Type {
@@ -118,24 +123,6 @@ impl TypeGroup for Type {
             Ok(nat)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Nat".to_owned()))
-        }
-    }
-}
-
-impl SubstType for Type {
-    type Lang = FOmegaSub;
-    type Target = Self;
-    fn subst_type(self, v: &TypeVar, ty: &Type) -> Self::Target {
-        match self {
-            Type::Var(var) => var.subst_type(v, ty),
-            Type::Top(top) => top.subst_type(v, ty).into(),
-            Type::Fun(fun) => fun.subst_type(v, ty).into(),
-            Type::Forall(forall) => forall.subst_type(v, ty).into(),
-            Type::OpLambdaSub(lam) => lam.subst_type(v, ty).into(),
-            Type::OpApp(app) => app.subst_type(v, ty).into(),
-            Type::Exists(ex) => ex.subst_type(v, ty).into(),
-            Type::Record(rec) => rec.subst_type(v, ty).into(),
-            Type::Nat(nat) => nat.subst_type(v, ty).into(),
         }
     }
 }

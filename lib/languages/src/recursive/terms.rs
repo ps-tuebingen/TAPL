@@ -1,16 +1,22 @@
-use super::{Recursive, types::Type};
-use macros::{Eval, GrammarDescribe, LangDisplay, LatexFmt, SubstTerm, Typecheck};
-use syntax::{
-    TypeVar, Var,
-    subst::SubstType,
-    terms::{
-        App, False, Fix, Fold, Fst, If, IsZero, Lambda, Let, Num, Pair, Pred, Record, RecordProj,
-        Snd, Succ, True, Unfold, Unit, Variable, Variant, VariantCase,
-    },
+use super::Recursive;
+use macros::{Eval, GrammarDescribe, LangDisplay, LatexFmt, SubstTerm, SubstType, Typecheck};
+use syntax::terms::{
+    App, False, Fix, Fold, Fst, If, IsZero, Lambda, Let, Num, Pair, Pred, Record, RecordProj, Snd,
+    Succ, True, Unfold, Unit, Variable, Variant, VariantCase,
 };
 
 #[derive(
-    SubstTerm, LatexFmt, LangDisplay, GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq,
+    SubstType,
+    SubstTerm,
+    LatexFmt,
+    LangDisplay,
+    GrammarDescribe,
+    Eval,
+    Typecheck,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
 )]
 #[Lang(Recursive)]
 pub enum Term {
@@ -39,37 +45,6 @@ pub enum Term {
 }
 
 impl syntax::terms::Term for Term {}
-
-impl SubstType for Term {
-    type Lang = Recursive;
-    type Target = Self;
-    fn subst_type(self, v: &TypeVar, ty: &Type) -> Self::Target {
-        match self {
-            Term::Variable(var) => var.subst_type(v, ty).into(),
-            Term::Lambda(lam) => lam.subst_type(v, ty).into(),
-            Term::App(app) => app.subst_type(v, ty).into(),
-            Term::Unit(u) => u.subst_type(v, ty).into(),
-            Term::Fold(fold) => fold.subst_type(v, ty).into(),
-            Term::Unfold(unfold) => unfold.subst_type(v, ty).into(),
-            Term::Variant(var) => var.subst_type(v, ty).into(),
-            Term::VariantCase(case) => case.subst_type(v, ty).into(),
-            Term::Pair(p) => p.subst_type(v, ty).into(),
-            Term::Fst(fst) => fst.subst_type(v, ty).into(),
-            Term::Snd(snd) => snd.subst_type(v, ty).into(),
-            Term::Num(num) => num.subst_type(v, ty).into(),
-            Term::Succ(succ) => succ.subst_type(v, ty).into(),
-            Term::Pred(pred) => pred.subst_type(v, ty).into(),
-            Term::IsZero(isz) => isz.subst_type(v, ty).into(),
-            Term::True(tru) => tru.subst_type(v, ty).into(),
-            Term::False(fls) => fls.subst_type(v, ty).into(),
-            Term::If(ift) => ift.subst_type(v, ty).into(),
-            Term::Fix(fix) => fix.subst_type(v, ty).into(),
-            Term::Let(lt) => lt.subst_type(v, ty).into(),
-            Term::Record(rec) => rec.subst_type(v, ty).into(),
-            Term::RecordProj(proj) => proj.subst_type(v, ty).into(),
-        }
-    }
-}
 
 impl From<Fold<Recursive>> for Term {
     fn from(fld: Fold<Recursive>) -> Term {

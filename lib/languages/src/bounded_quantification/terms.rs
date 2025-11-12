@@ -1,15 +1,21 @@
-use super::{BoundedQuantification, types::Type};
-use macros::{Eval, GrammarDescribe, LangDisplay, LatexFmt, SubstTerm, Typecheck};
-use syntax::{
-    TypeVar, Var,
-    subst::SubstType,
-    terms::{
-        App, Lambda, LambdaSub, Num, Pack, Pred, Record, RecordProj, Succ, TyApp, Unpack, Variable,
-    },
+use super::BoundedQuantification;
+use macros::{Eval, GrammarDescribe, LangDisplay, LatexFmt, SubstTerm, SubstType, Typecheck};
+use syntax::terms::{
+    App, Lambda, LambdaSub, Num, Pack, Pred, Record, RecordProj, Succ, TyApp, Unpack, Variable,
 };
 
 #[derive(
-    SubstTerm, LatexFmt, LangDisplay, GrammarDescribe, Eval, Typecheck, Clone, Debug, PartialEq, Eq,
+    SubstType,
+    SubstTerm,
+    LatexFmt,
+    LangDisplay,
+    GrammarDescribe,
+    Eval,
+    Typecheck,
+    Clone,
+    Debug,
+    PartialEq,
+    Eq,
 )]
 #[Lang(BoundedQuantification)]
 pub enum Term {
@@ -28,27 +34,6 @@ pub enum Term {
 }
 
 impl syntax::terms::Term for Term {}
-
-impl SubstType for Term {
-    type Lang = BoundedQuantification;
-    type Target = Term;
-    fn subst_type(self, v: &TypeVar, t: &Type) -> Self::Target {
-        match self {
-            Term::Variable(var) => var.subst_type(v, t).into(),
-            Term::Num(num) => num.subst_type(v, t).into(),
-            Term::Succ(succ) => succ.subst_type(v, t).into(),
-            Term::Pred(pred) => pred.subst_type(v, t).into(),
-            Term::Lambda(lam) => lam.subst_type(v, t).into(),
-            Term::App(app) => app.subst_type(v, t).into(),
-            Term::LambdaSub(lam) => lam.subst_type(v, t).into(),
-            Term::TyApp(app) => app.subst_type(v, t).into(),
-            Term::Pack(pack) => pack.subst_type(v, t).into(),
-            Term::Unpack(unpack) => unpack.subst_type(v, t).into(),
-            Term::Record(rec) => rec.subst_type(v, t).into(),
-            Term::RecordProj(proj) => proj.subst_type(v, t).into(),
-        }
-    }
-}
 
 impl From<Variable<BoundedQuantification>> for Term {
     fn from(var: Variable<BoundedQuantification>) -> Term {

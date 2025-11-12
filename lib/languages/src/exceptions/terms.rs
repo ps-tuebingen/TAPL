@@ -1,16 +1,22 @@
-use super::{Exceptions, types::Type};
-use macros::{Eval, GrammarDescribe, LangDisplay, LatexFmt, SubstTerm, Typecheck};
-use syntax::{
-    TypeVar, Var,
-    subst::SubstType,
-    terms::{
-        App, Exception, False, If, IsZero, Lambda, Num, Pred, Raise, Succ, True, Try, TryWithVal,
-        Unit, Variable,
-    },
+use super::Exceptions;
+use macros::{Eval, GrammarDescribe, LangDisplay, LatexFmt, SubstTerm, SubstType, Typecheck};
+use syntax::terms::{
+    App, Exception, False, If, IsZero, Lambda, Num, Pred, Raise, Succ, True, Try, TryWithVal, Unit,
+    Variable,
 };
 
 #[derive(
-    SubstTerm, LatexFmt, LangDisplay, GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq,
+    SubstType,
+    SubstTerm,
+    LatexFmt,
+    LangDisplay,
+    GrammarDescribe,
+    Eval,
+    Typecheck,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
 )]
 #[Lang(Exceptions)]
 pub enum Term {
@@ -32,30 +38,6 @@ pub enum Term {
 }
 
 impl syntax::terms::Term for Term {}
-
-impl SubstType for Term {
-    type Lang = Exceptions;
-    type Target = Term;
-    fn subst_type(self, v: &TypeVar, t: &Type) -> Self::Target {
-        match self {
-            Term::Variable(var) => var.subst_type(v, t).into(),
-            Term::Num(num) => num.subst_type(v, t).into(),
-            Term::True(tru) => tru.subst_type(v, t).into(),
-            Term::False(fls) => fls.subst_type(v, t).into(),
-            Term::Succ(succ) => succ.subst_type(v, t).into(),
-            Term::Pred(pred) => pred.subst_type(v, t).into(),
-            Term::IsZero(isz) => isz.subst_type(v, t).into(),
-            Term::If(ift) => ift.subst_type(v, t).into(),
-            Term::Lambda(lam) => lam.subst_type(v, t).into(),
-            Term::App(app) => app.subst_type(v, t).into(),
-            Term::Unit(u) => u.subst_type(v, t).into(),
-            Term::Exception(exc) => exc.subst_type(v, t).into(),
-            Term::Try(tryt) => tryt.subst_type(v, t).into(),
-            Term::Raise(raise) => raise.subst_type(v, t).into(),
-            Term::TryWithVal(tryval) => tryval.subst_type(v, t).into(),
-        }
-    }
-}
 
 impl From<Variable<Exceptions>> for Term {
     fn from(var: Variable<Exceptions>) -> Term {

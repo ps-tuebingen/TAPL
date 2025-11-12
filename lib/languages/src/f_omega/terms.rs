@@ -1,16 +1,22 @@
-use super::{FOmega, types::Type};
-use macros::{Eval, GrammarDescribe, LangDisplay, LatexFmt, SubstTerm, Typecheck};
-use syntax::{
-    TypeVar, Var,
-    subst::SubstType,
-    terms::{
-        App, False, Fix, If, IsZero, Lambda, Num, Pack, Pred, Record, RecordProj, Succ, True,
-        TyApp, TyLambda, Unit, Unpack, Variable,
-    },
+use super::FOmega;
+use macros::{Eval, GrammarDescribe, LangDisplay, LatexFmt, SubstTerm, SubstType, Typecheck};
+use syntax::terms::{
+    App, False, Fix, If, IsZero, Lambda, Num, Pack, Pred, Record, RecordProj, Succ, True, TyApp,
+    TyLambda, Unit, Unpack, Variable,
 };
 
 #[derive(
-    SubstTerm, LatexFmt, LangDisplay, GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq,
+    SubstType,
+    SubstTerm,
+    LatexFmt,
+    LangDisplay,
+    GrammarDescribe,
+    Eval,
+    Typecheck,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
 )]
 #[Lang(FOmega)]
 pub enum Term {
@@ -35,33 +41,6 @@ pub enum Term {
 }
 
 impl syntax::terms::Term for Term {}
-
-impl SubstType for Term {
-    type Lang = FOmega;
-    type Target = Self;
-    fn subst_type(self, v: &TypeVar, ty: &Type) -> Self {
-        match self {
-            Term::Variable(var) => var.subst_type(v, ty).into(),
-            Term::Lambda(lam) => lam.subst_type(v, ty).into(),
-            Term::App(app) => app.subst_type(v, ty).into(),
-            Term::TyLambda(lam) => lam.subst_type(v, ty).into(),
-            Term::TyApp(app) => app.subst_type(v, ty).into(),
-            Term::Pack(pack) => pack.subst_type(v, ty).into(),
-            Term::Unpack(unpack) => unpack.subst_type(v, ty).into(),
-            Term::Record(rec) => rec.subst_type(v, ty).into(),
-            Term::RecordProj(proj) => proj.subst_type(v, ty).into(),
-            Term::True(tru) => tru.subst_type(v, ty).into(),
-            Term::False(fls) => fls.subst_type(v, ty).into(),
-            Term::If(ift) => ift.subst_type(v, ty).into(),
-            Term::Unit(u) => u.subst_type(v, ty).into(),
-            Term::Fix(fix) => fix.subst_type(v, ty).into(),
-            Term::Num(num) => num.subst_type(v, ty).into(),
-            Term::Succ(s) => s.subst_type(v, ty).into(),
-            Term::Pred(p) => p.subst_type(v, ty).into(),
-            Term::IsZero(isz) => isz.subst_type(v, ty).into(),
-        }
-    }
-}
 
 impl From<Pack<FOmega>> for Term {
     fn from(pack: Pack<FOmega>) -> Term {

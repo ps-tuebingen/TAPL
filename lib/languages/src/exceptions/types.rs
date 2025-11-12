@@ -1,14 +1,12 @@
 use super::Exceptions;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes};
-use syntax::{
-    TypeVar,
-    subst::SubstType,
-    types::{Bool, Fun, Nat, Type as TypeTrait, TypeGroup, Unit},
-};
+use macros::{LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes, SubstType};
+use syntax::types::{Bool, Fun, Nat, Type as TypeTrait, TypeGroup, Unit};
 
-#[derive(LatexFmt, LangDisplay, NoNorm, NoKinds, NoSubtypes, Debug, Clone, PartialEq, Eq)]
+#[derive(
+    SubstType, LatexFmt, LangDisplay, NoNorm, NoKinds, NoSubtypes, Debug, Clone, PartialEq, Eq,
+)]
 #[Lang(Exceptions)]
 pub enum Type {
     Unit(Unit<Exceptions>),
@@ -85,19 +83,6 @@ impl From<Bool<Exceptions>> for Type {
 impl From<Fun<Exceptions>> for Type {
     fn from(fun: Fun<Exceptions>) -> Type {
         Type::Fun(fun)
-    }
-}
-
-impl SubstType for Type {
-    type Lang = Exceptions;
-    type Target = Self;
-    fn subst_type(self, v: &TypeVar, ty: &Self) -> Self::Target {
-        match self {
-            Type::Unit(u) => u.subst_type(v, ty).into(),
-            Type::Nat(n) => n.subst_type(v, ty).into(),
-            Type::Bool(b) => b.subst_type(v, ty).into(),
-            Type::Fun(f) => f.subst_type(v, ty).into(),
-        }
     }
 }
 

@@ -29,3 +29,8 @@ pub fn new_set() -> proc_macro2::TokenStream {
 pub fn lang_term() -> proc_macro2::TokenStream {
     quote! { <Self::Lang as syntax::language::Language>::Term }
 }
+
+/// <Self::Lang as Language>::Type
+pub fn lang_type() -> proc_macro2::TokenStream {
+    quote! {<Self::Lang as syntax::language::Language>::Type }
+}

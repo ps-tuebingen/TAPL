@@ -1,16 +1,22 @@
-use super::{Subtypes, types::Type};
-use macros::{Eval, GrammarDescribe, LangDisplay, LatexFmt, SubstTerm, Typecheck};
-use syntax::{
-    TypeVar, Var,
-    subst::SubstType,
-    terms::{
-        App, Assign, Cast, Cons, Deref, False, Fix, If, Lambda, Let, ListCase, Loc, Nil, Num, Pred,
-        Record, RecordProj, Ref, Succ, True, Unit, Variable, Variant, VariantCase,
-    },
+use super::Subtypes;
+use macros::{Eval, GrammarDescribe, LangDisplay, LatexFmt, SubstTerm, SubstType, Typecheck};
+use syntax::terms::{
+    App, Assign, Cast, Cons, Deref, False, Fix, If, Lambda, Let, ListCase, Loc, Nil, Num, Pred,
+    Record, RecordProj, Ref, Succ, True, Unit, Variable, Variant, VariantCase,
 };
 
 #[derive(
-    SubstTerm, LatexFmt, LangDisplay, GrammarDescribe, Eval, Typecheck, Debug, PartialEq, Eq, Clone,
+    SubstType,
+    SubstTerm,
+    LatexFmt,
+    LangDisplay,
+    GrammarDescribe,
+    Eval,
+    Typecheck,
+    Debug,
+    PartialEq,
+    Eq,
+    Clone,
 )]
 #[Lang(Subtypes)]
 pub enum Term {
@@ -41,14 +47,6 @@ pub enum Term {
 }
 
 impl syntax::terms::Term for Term {}
-
-impl SubstType for Term {
-    type Lang = Subtypes;
-    type Target = Term;
-    fn subst_type(self, _: &TypeVar, _: &Type) -> Self::Target {
-        self
-    }
-}
 
 impl From<Loc<Subtypes>> for Term {
     fn from(loc: Loc<Subtypes>) -> Term {

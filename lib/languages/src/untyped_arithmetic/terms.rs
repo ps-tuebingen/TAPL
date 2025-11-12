@@ -3,18 +3,17 @@ use check::Typecheck;
 use derivations::Derivation;
 use errors::{NoTyping, check_error::CheckError};
 use grammar::DerivationRule;
-use macros::{Eval, GrammarDescribe, LangDisplay, LatexFmt, SubstTerm};
+use macros::{Eval, GrammarDescribe, LangDisplay, LatexFmt, SubstTerm, SubstType};
 use std::collections::HashSet;
 use syntax::{
-    TypeVar, Var,
     env::Environment,
     language::Language,
-    subst::SubstType,
     terms::{False, If, IsZero, Num, Pred, Succ, True},
-    untyped::Untyped,
 };
 
-#[derive(SubstTerm, LatexFmt, LangDisplay, GrammarDescribe, Eval, Clone, Debug, PartialEq, Eq)]
+#[derive(
+    SubstType, SubstTerm, LatexFmt, LangDisplay, GrammarDescribe, Eval, Clone, Debug, PartialEq, Eq,
+)]
 #[Lang(UntypedArithmetic)]
 pub enum Term {
     True(True<UntypedArithmetic>),
@@ -27,14 +26,6 @@ pub enum Term {
 }
 
 impl syntax::terms::Term for Term {}
-
-impl SubstType for Term {
-    type Target = Self;
-    type Lang = UntypedArithmetic;
-    fn subst_type(self, _: &TypeVar, _: &Untyped<UntypedArithmetic>) -> Self::Target {
-        self
-    }
-}
 
 impl Typecheck for Term {
     type Lang = UntypedArithmetic;

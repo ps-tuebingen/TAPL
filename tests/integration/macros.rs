@@ -1,12 +1,10 @@
 use macros::{
-    Eval, GrammarDescribe, Kindcheck, LangDisplay, LatexFmt, Normalize, SubstTerm, Subtypecheck,
-    Typecheck,
+    Eval, GrammarDescribe, Kindcheck, LangDisplay, LatexFmt, Normalize, SubstTerm, SubstType,
+    Subtypecheck, Typecheck,
 };
 use std::fmt;
 use syntax::{
-    TypeVar, Var,
     language::{Language, LanguageFeatures},
-    subst::SubstType,
     terms::{False, Num, Term, True},
     types::{Bool, Nat, Top, Type, TypeGroup},
     values::{False as FalseVal, Num as NumVal, True as TrueVal, Value, ValueGroup},
@@ -16,7 +14,16 @@ use syntax::{
 struct DummyLang;
 
 #[derive(
-    SubstTerm, LatexFmt, LangDisplay, GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq,
+    SubstType,
+    SubstTerm,
+    LatexFmt,
+    LangDisplay,
+    GrammarDescribe,
+    Eval,
+    Typecheck,
+    Debug,
+    Clone,
+    PartialEq,
 )]
 #[Lang(DummyLang)]
 enum DummyTerm {
@@ -25,7 +32,9 @@ enum DummyTerm {
     False(False<DummyLang>),
 }
 
-#[derive(LatexFmt, LangDisplay, Normalize, Kindcheck, Subtypecheck, Debug, Clone, PartialEq)]
+#[derive(
+    SubstType, LatexFmt, LangDisplay, Normalize, Kindcheck, Subtypecheck, Debug, Clone, PartialEq,
+)]
 #[Lang(DummyLang)]
 enum DummyType {
     Nat(Nat<DummyLang>),
@@ -49,21 +58,6 @@ impl Value for DummyValue {
     type Term = DummyTerm;
 }
 impl ValueGroup for DummyValue {}
-
-impl SubstType for DummyType {
-    type Lang = DummyLang;
-    type Target = Self;
-    fn subst_type(self, _: &TypeVar, _: &<Self::Lang as Language>::Type) -> Self::Target {
-        self
-    }
-}
-impl SubstType for DummyTerm {
-    type Lang = DummyLang;
-    type Target = Self;
-    fn subst_type(self, _: &TypeVar, _: &<Self::Lang as Language>::Type) -> Self::Target {
-        self
-    }
-}
 
 impl Language for DummyLang {
     type Term = DummyTerm;

@@ -17,7 +17,7 @@ use check::{
 use eval::generate_eval;
 use format::{generate_display, generate_latexfmt};
 use grammar::generate_grammar_describe;
-use subst::generate_subst_term;
+use subst::{generate_subst_term, generate_subst_type};
 
 /// Derive Typecheck for Terms
 /// terms need to have the form `enum T { T1(T1),T2(T2),...}`
@@ -110,4 +110,12 @@ pub fn derive_latexfmt(input: TokenStream) -> TokenStream {
 #[proc_macro_derive(SubstTerm, attributes(Lang))]
 pub fn derive_substterm(input: TokenStream) -> TokenStream {
     generate_subst_term(input)
+}
+
+/// Derive SubstType for enums
+/// enums need to have the form `enum T { T1(T1),T2(T2),...}`
+/// where all `Ti` implement SubstTerm
+#[proc_macro_derive(SubstType, attributes(Lang))]
+pub fn derive_substtype(input: TokenStream) -> TokenStream {
+    generate_subst_type(input)
 }

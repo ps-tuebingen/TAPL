@@ -1,13 +1,19 @@
-use super::{LambdaOmega, types::Type};
-use macros::{Eval, GrammarDescribe, LangDisplay, LatexFmt, SubstTerm, Typecheck};
-use syntax::{
-    TypeVar, Var,
-    subst::SubstType,
-    terms::{App, False, Lambda, Num, True, TyApp, TyLambda, Unit, Variable},
-};
+use super::LambdaOmega;
+use macros::{Eval, GrammarDescribe, LangDisplay, LatexFmt, SubstTerm, SubstType, Typecheck};
+use syntax::terms::{App, False, Lambda, Num, True, TyApp, TyLambda, Unit, Variable};
 
 #[derive(
-    SubstTerm, LatexFmt, LangDisplay, GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq,
+    SubstType,
+    SubstTerm,
+    LatexFmt,
+    LangDisplay,
+    GrammarDescribe,
+    Eval,
+    Typecheck,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
 )]
 #[Lang(LambdaOmega)]
 pub enum Term {
@@ -23,24 +29,6 @@ pub enum Term {
 }
 
 impl syntax::terms::Term for Term {}
-
-impl SubstType for Term {
-    type Lang = LambdaOmega;
-    type Target = Self;
-    fn subst_type(self, v: &TypeVar, ty: &Type) -> Self::Target {
-        match self {
-            Term::Variable(var) => var.subst_type(v, ty).into(),
-            Term::Num(num) => num.subst_type(v, ty).into(),
-            Term::True(tru) => tru.subst_type(v, ty).into(),
-            Term::False(fls) => fls.subst_type(v, ty).into(),
-            Term::Lambda(lam) => lam.subst_type(v, ty).into(),
-            Term::App(app) => app.subst_type(v, ty).into(),
-            Term::Unit(u) => u.subst_type(v, ty).into(),
-            Term::TyLambda(tylam) => tylam.subst_type(v, ty).into(),
-            Term::TyApp(tyapp) => tyapp.subst_type(v, ty).into(),
-        }
-    }
-}
 
 impl From<Variable<LambdaOmega>> for Term {
     fn from(var: Variable<LambdaOmega>) -> Term {

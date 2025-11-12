@@ -1,16 +1,21 @@
-use super::{FOmegaSub, types::Type};
-use macros::{Eval, GrammarDescribe, LangDisplay, LatexFmt, SubstTerm, Typecheck};
-use syntax::{
-    TypeVar, Var,
-    subst::SubstType,
-    terms::{
-        App, Lambda, LambdaSub, Let, Num, Pack, Pred, Record, RecordProj, Succ, TyApp, Unpack,
-        Variable,
-    },
+use super::FOmegaSub;
+use macros::{Eval, GrammarDescribe, LangDisplay, LatexFmt, SubstTerm, SubstType, Typecheck};
+use syntax::terms::{
+    App, Lambda, LambdaSub, Let, Num, Pack, Pred, Record, RecordProj, Succ, TyApp, Unpack, Variable,
 };
 
 #[derive(
-    SubstTerm, LatexFmt, LangDisplay, GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq,
+    SubstType,
+    SubstTerm,
+    LatexFmt,
+    LangDisplay,
+    GrammarDescribe,
+    Eval,
+    Typecheck,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
 )]
 #[Lang(FOmegaSub)]
 pub enum Term {
@@ -30,29 +35,6 @@ pub enum Term {
 }
 
 impl syntax::terms::Term for Term {}
-
-impl SubstType for Term {
-    type Lang = FOmegaSub;
-    type Target = Self;
-
-    fn subst_type(self, v: &TypeVar, ty: &Type) -> Self {
-        match self {
-            Term::Variable(var) => var.subst_type(v, ty).into(),
-            Term::Lambda(lam) => lam.subst_type(v, ty).into(),
-            Term::App(app) => app.subst_type(v, ty).into(),
-            Term::LambdaSub(lam) => lam.subst_type(v, ty).into(),
-            Term::TyApp(app) => app.subst_type(v, ty).into(),
-            Term::Pack(pack) => pack.subst_type(v, ty).into(),
-            Term::Unpack(unpack) => unpack.subst_type(v, ty).into(),
-            Term::Record(rec) => rec.subst_type(v, ty).into(),
-            Term::RecordProj(proj) => proj.subst_type(v, ty).into(),
-            Term::Num(num) => num.subst_type(v, ty).into(),
-            Term::Succ(succ) => succ.subst_type(v, ty).into(),
-            Term::Pred(pred) => pred.subst_type(v, ty).into(),
-            Term::Let(lt) => lt.subst_type(v, ty).into(),
-        }
-    }
-}
 
 impl From<Let<FOmegaSub>> for Term {
     fn from(lt: Let<FOmegaSub>) -> Term {

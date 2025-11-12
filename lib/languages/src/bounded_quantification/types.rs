@@ -1,14 +1,12 @@
 use super::BoundedQuantification;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{LangDisplay, LatexFmt, NoKinds, NoNorm, Subtypecheck};
-use syntax::{
-    TypeVar,
-    subst::SubstType,
-    types::{ExistsBounded, ForallBounded, Fun, Nat, Record, Top, TypeGroup, TypeVariable},
-};
+use macros::{LangDisplay, LatexFmt, NoKinds, NoNorm, SubstType, Subtypecheck};
+use syntax::types::{ExistsBounded, ForallBounded, Fun, Nat, Record, Top, TypeGroup, TypeVariable};
 
-#[derive(LatexFmt, LangDisplay, NoNorm, NoKinds, Subtypecheck, Clone, Debug, PartialEq, Eq)]
+#[derive(
+    SubstType, LatexFmt, LangDisplay, NoNorm, NoKinds, Subtypecheck, Clone, Debug, PartialEq, Eq,
+)]
 #[Lang(BoundedQuantification)]
 pub enum Type {
     Var(TypeVariable<BoundedQuantification>),
@@ -135,21 +133,5 @@ impl From<ExistsBounded<BoundedQuantification>> for Type {
 impl From<Record<BoundedQuantification>> for Type {
     fn from(rec: Record<BoundedQuantification>) -> Type {
         Type::Record(rec)
-    }
-}
-
-impl SubstType for Type {
-    type Lang = BoundedQuantification;
-    type Target = Self;
-    fn subst_type(self, v: &TypeVar, ty: &Self) -> Self::Target {
-        match self {
-            Type::Var(var) => var.subst_type(v, ty),
-            Type::Top(t) => t.subst_type(v, ty).into(),
-            Type::Nat(n) => n.subst_type(v, ty).into(),
-            Type::Fun(f) => f.subst_type(v, ty).into(),
-            Type::Forall(f) => f.subst_type(v, ty).into(),
-            Type::Exists(e) => e.subst_type(v, ty).into(),
-            Type::Record(rec) => rec.subst_type(v, ty).into(),
-        }
     }
 }

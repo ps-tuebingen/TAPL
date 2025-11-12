@@ -1,14 +1,14 @@
 use super::Existential;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes};
-use syntax::{
-    TypeVar,
-    subst::SubstType,
-    types::{Bool, Exists, Fun, Nat, Record, Type as TypeTrait, TypeGroup, TypeVariable, Unit},
+use macros::{LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes, SubstType};
+use syntax::types::{
+    Bool, Exists, Fun, Nat, Record, Type as TypeTrait, TypeGroup, TypeVariable, Unit,
 };
 
-#[derive(LatexFmt, LangDisplay, NoNorm, NoKinds, NoSubtypes, Debug, Clone, PartialEq, Eq)]
+#[derive(
+    SubstType, LatexFmt, LangDisplay, NoNorm, NoKinds, NoSubtypes, Debug, Clone, PartialEq, Eq,
+)]
 #[Lang(Existential)]
 pub enum Type {
     Var(TypeVariable<Existential>),
@@ -72,22 +72,6 @@ impl TypeGroup for Type {
             Ok(rec)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Record".to_owned()))
-        }
-    }
-}
-
-impl SubstType for Type {
-    type Lang = Existential;
-    type Target = Self;
-    fn subst_type(self, v: &TypeVar, ty: &Type) -> Self::Target {
-        match self {
-            Type::Var(var) => var.subst_type(v, ty),
-            Type::Unit(u) => u.subst_type(v, ty).into(),
-            Type::Nat(nat) => nat.subst_type(v, ty).into(),
-            Type::Bool(b) => b.subst_type(v, ty).into(),
-            Type::Fun(fun) => fun.subst_type(v, ty).into(),
-            Type::Exists(exists) => exists.subst_type(v, ty).into(),
-            Type::Record(rec) => rec.subst_type(v, ty).into(),
         }
     }
 }

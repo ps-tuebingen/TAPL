@@ -1,14 +1,12 @@
 use super::SystemF;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes};
-use syntax::{
-    TypeVar,
-    subst::SubstType,
-    types::{Forall, Fun, Type as TypeTrait, TypeGroup, TypeVariable},
-};
+use macros::{LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes, SubstType};
+use syntax::types::{Forall, Fun, Type as TypeTrait, TypeGroup, TypeVariable};
 
-#[derive(LatexFmt, LangDisplay, NoNorm, NoKinds, NoSubtypes, Debug, Clone, PartialEq, Eq)]
+#[derive(
+    SubstType, LatexFmt, LangDisplay, NoNorm, NoKinds, NoSubtypes, Debug, Clone, PartialEq, Eq,
+)]
 #[Lang(SystemF)]
 pub enum Type {
     Var(TypeVariable<SystemF>),
@@ -44,19 +42,6 @@ impl GrammarDescribe for Type {
             Fun::<SystemF>::rule(),
             Forall::<SystemF>::rule(),
         ])
-    }
-}
-
-impl SubstType for Type {
-    type Lang = SystemF;
-    type Target = Self;
-
-    fn subst_type(self, v: &TypeVar, ty: &Type) -> Self::Target {
-        match self {
-            Type::Var(var) => var.subst_type(v, ty),
-            Type::Fun(fun) => fun.subst_type(v, ty).into(),
-            Type::Forall(forall) => forall.subst_type(v, ty).into(),
-        }
     }
 }
 

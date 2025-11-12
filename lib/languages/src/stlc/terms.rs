@@ -1,17 +1,23 @@
-use super::{Stlc, types::Type};
-use macros::{Eval, GrammarDescribe, LangDisplay, LatexFmt, SubstTerm, Typecheck};
-use syntax::{
-    TypeVar, Var,
-    subst::SubstType,
-    terms::{
-        App, Ascribe, Cons, False, Fix, Fst, Head, If, IsNil, IsZero, Lambda, Left, Let, Nil,
-        Nothing, Num, Pair, Pred, Projection, Record, RecordProj, Right, Snd, SomeCase, Something,
-        Succ, SumCase, Tail, True, Tuple, Unit, Variable, Variant, VariantCase,
-    },
+use super::Stlc;
+use macros::{Eval, GrammarDescribe, LangDisplay, LatexFmt, SubstTerm, SubstType, Typecheck};
+use syntax::terms::{
+    App, Ascribe, Cons, False, Fix, Fst, Head, If, IsNil, IsZero, Lambda, Left, Let, Nil, Nothing,
+    Num, Pair, Pred, Projection, Record, RecordProj, Right, Snd, SomeCase, Something, Succ,
+    SumCase, Tail, True, Tuple, Unit, Variable, Variant, VariantCase,
 };
 
 #[derive(
-    SubstTerm, LangDisplay, LatexFmt, GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq,
+    SubstType,
+    SubstTerm,
+    LangDisplay,
+    LatexFmt,
+    GrammarDescribe,
+    Eval,
+    Typecheck,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
 )]
 #[Lang(Stlc)]
 pub enum Term {
@@ -52,14 +58,6 @@ pub enum Term {
 }
 
 impl syntax::terms::Term for Term {}
-
-impl SubstType for Term {
-    type Lang = Stlc;
-    type Target = Term;
-    fn subst_type(self, _: &TypeVar, _: &Type) -> Self::Target {
-        self
-    }
-}
 
 impl From<Lambda<Stlc>> for Term {
     fn from(lam: Lambda<Stlc>) -> Term {

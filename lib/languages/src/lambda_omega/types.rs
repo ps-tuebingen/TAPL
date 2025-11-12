@@ -1,17 +1,16 @@
 use super::LambdaOmega;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{Kindcheck, LangDisplay, LatexFmt, NoNorm, NoSubtypes};
-use syntax::{
-    subst::SubstType,
-    types::{
-        Bool, Forall, Fun, Nat, OpApp, OpLambda, Type as TypeTrait, TypeGroup, TypeVariable, Unit,
-    },
+use macros::{Kindcheck, LangDisplay, LatexFmt, NoNorm, NoSubtypes, SubstType};
+use syntax::types::{
+    Bool, Forall, Fun, Nat, OpApp, OpLambda, Type as TypeTrait, TypeGroup, TypeVariable, Unit,
 };
 
 pub type TypeVar = String;
 
-#[derive(LatexFmt, LangDisplay, NoNorm, Kindcheck, NoSubtypes, Debug, Clone, PartialEq, Eq)]
+#[derive(
+    SubstType, LatexFmt, LangDisplay, NoNorm, Kindcheck, NoSubtypes, Debug, Clone, PartialEq, Eq,
+)]
 #[Lang(LambdaOmega)]
 pub enum Type {
     Var(TypeVariable<LambdaOmega>),
@@ -105,23 +104,6 @@ impl GrammarDescribe for Type {
             Fun::<LambdaOmega>::rule(),
             Forall::<LambdaOmega>::rule(),
         ])
-    }
-}
-
-impl SubstType for Type {
-    type Lang = LambdaOmega;
-    type Target = Self;
-    fn subst_type(self, v: &TypeVar, ty: &Type) -> Self::Target {
-        match self {
-            Type::Var(var) => var.subst_type(v, ty),
-            Type::Unit(u) => u.subst_type(v, ty).into(),
-            Type::Bool(b) => b.subst_type(v, ty).into(),
-            Type::Nat(n) => n.subst_type(v, ty).into(),
-            Type::OpLambda(oplam) => oplam.subst_type(v, ty).into(),
-            Type::OpApp(opapp) => opapp.subst_type(v, ty).into(),
-            Type::Fun(fun) => fun.subst_type(v, ty).into(),
-            Type::Forall(forall) => forall.subst_type(v, ty).into(),
-        }
     }
 }
 

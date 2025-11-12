@@ -1,14 +1,12 @@
 use super::References;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes};
-use syntax::{
-    TypeVar,
-    subst::SubstType,
-    types::{Bool, Fun, Nat, Reference, Type as TypeTrait, TypeGroup, Unit},
-};
+use macros::{LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes, SubstType};
+use syntax::types::{Bool, Fun, Nat, Reference, Type as TypeTrait, TypeGroup, Unit};
 
-#[derive(LatexFmt, LangDisplay, NoNorm, NoKinds, NoSubtypes, Debug, Clone, PartialEq, Eq)]
+#[derive(
+    SubstType, LatexFmt, LangDisplay, NoNorm, NoKinds, NoSubtypes, Debug, Clone, PartialEq, Eq,
+)]
 #[Lang(References)]
 pub enum Type {
     Unit(Unit<References>),
@@ -71,14 +69,6 @@ impl GrammarDescribe for Type {
             Fun::<References>::rule(),
             Reference::<References>::rule(),
         ])
-    }
-}
-
-impl SubstType for Type {
-    type Lang = References;
-    type Target = Self;
-    fn subst_type(self, _: &TypeVar, _: &Self) -> Self::Target {
-        self
     }
 }
 

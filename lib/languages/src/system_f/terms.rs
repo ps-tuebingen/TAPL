@@ -1,13 +1,19 @@
-use super::{SystemF, types::Type};
-use macros::{Eval, GrammarDescribe, LangDisplay, LatexFmt, SubstTerm, Typecheck};
-use syntax::{
-    TypeVar, Var,
-    subst::SubstType,
-    terms::{App, Lambda, TyApp, TyLambda, Variable},
-};
+use super::SystemF;
+use macros::{Eval, GrammarDescribe, LangDisplay, LatexFmt, SubstTerm, SubstType, Typecheck};
+use syntax::terms::{App, Lambda, TyApp, TyLambda, Variable};
 
 #[derive(
-    SubstTerm, LatexFmt, LangDisplay, GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq,
+    SubstType,
+    SubstTerm,
+    LatexFmt,
+    LangDisplay,
+    GrammarDescribe,
+    Eval,
+    Typecheck,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
 )]
 #[Lang(SystemF)]
 pub enum Term {
@@ -19,20 +25,6 @@ pub enum Term {
 }
 
 impl syntax::terms::Term for Term {}
-
-impl SubstType for Term {
-    type Lang = SystemF;
-    type Target = Self;
-    fn subst_type(self, v: &TypeVar, ty: &Type) -> Self::Target {
-        match self {
-            Term::Variable(var) => var.subst_type(v, ty).into(),
-            Term::Lambda(lam) => lam.subst_type(v, ty).into(),
-            Term::App(app) => app.subst_type(v, ty).into(),
-            Term::TyLambda(lam) => lam.subst_type(v, ty).into(),
-            Term::TyApp(app) => app.subst_type(v, ty).into(),
-        }
-    }
-}
 
 impl From<Variable<SystemF>> for Term {
     fn from(var: Variable<SystemF>) -> Term {

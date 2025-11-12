@@ -1,17 +1,15 @@
 use super::Stlc;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes};
-use syntax::{
-    TypeVar,
-    subst::SubstType,
-    types::{
-        Bool, Fun, List, Nat, Optional, Product, Record, Sum, Tuple, Type as TypeTrait, TypeGroup,
-        Unit, Variant,
-    },
+use macros::{LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes, SubstType};
+use syntax::types::{
+    Bool, Fun, List, Nat, Optional, Product, Record, Sum, Tuple, Type as TypeTrait, TypeGroup,
+    Unit, Variant,
 };
 
-#[derive(LatexFmt, LangDisplay, NoNorm, NoKinds, NoSubtypes, PartialEq, Eq, Clone, Debug)]
+#[derive(
+    SubstType, LatexFmt, LangDisplay, NoNorm, NoKinds, NoSubtypes, PartialEq, Eq, Clone, Debug,
+)]
 #[Lang(Stlc)]
 pub enum Type {
     Unit(Unit<Stlc>),
@@ -135,14 +133,6 @@ impl GrammarDescribe for Type {
             Optional::<Stlc>::rule(),
             List::<Stlc>::rule(),
         ])
-    }
-}
-
-impl SubstType for Type {
-    type Lang = Stlc;
-    type Target = Type;
-    fn subst_type(self, _: &TypeVar, _: &Type) -> Self::Target {
-        self
     }
 }
 
