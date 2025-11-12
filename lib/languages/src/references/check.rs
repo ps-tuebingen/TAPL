@@ -1,29 +1,13 @@
 use super::{References, types::Type};
-use check::{Kindcheck, Subtypecheck};
+use check::Kindcheck;
 use derivations::Derivation;
-use errors::{NoKinding, NoSubtyping, check_error::CheckError};
+use errors::{NoKinding, check_error::CheckError};
 use grammar::DerivationRule;
 use std::collections::{HashMap, HashSet};
 use syntax::{Location, Var, env::Environment};
 
 pub type Env = HashMap<Var, Type>;
 pub type StoreTy = HashMap<Location, Type>;
-
-impl Subtypecheck for Type {
-    type Lang = References;
-
-    fn check_subtype(
-        &self,
-        _: &Self,
-        _: Environment<Self::Lang>,
-    ) -> Result<Derivation<Self::Lang>, CheckError> {
-        Err(NoSubtyping::new("References").into())
-    }
-
-    fn rules() -> HashSet<DerivationRule> {
-        HashSet::new()
-    }
-}
 
 impl Kindcheck for Type {
     type Lang = References;

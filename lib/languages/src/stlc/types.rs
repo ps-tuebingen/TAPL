@@ -2,6 +2,7 @@ use super::Stlc;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
+use macros::NoSubtypes;
 use std::fmt;
 use syntax::{
     TypeVar,
@@ -12,7 +13,8 @@ use syntax::{
     },
 };
 
-#[derive(PartialEq, Eq, Clone, Debug)]
+#[derive(NoSubtypes, PartialEq, Eq, Clone, Debug)]
+#[Lang(Stlc)]
 pub enum Type {
     Unit(Unit<Stlc>),
     Fun(Fun<Stlc>),

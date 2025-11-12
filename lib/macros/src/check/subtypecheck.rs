@@ -54,7 +54,7 @@ pub fn generate_no_subtypecheck(input: TokenStream) -> TokenStream {
         impl check::Subtypecheck for #ident{
             type Lang = #lang_val;
             fn check_subtype(&self,_:&#lang_ty,_:#lang_env) -> #check_result{
-                Err(errors::NoSubtyping("#lang_val").into())
+                Err(errors::NoSubtyping::new("#lang_val").into())
             }
 
             fn rules() -> std::collections::HashSet<grammar::DerivationRule>{

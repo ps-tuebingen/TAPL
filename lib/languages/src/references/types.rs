@@ -2,6 +2,7 @@ use super::References;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
+use macros::NoSubtypes;
 use std::fmt;
 use syntax::{
     TypeVar,
@@ -9,7 +10,8 @@ use syntax::{
     types::{Bool, Fun, Nat, Reference, Type as TypeTrait, TypeGroup, Unit},
 };
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(NoSubtypes, Debug, Clone, PartialEq, Eq)]
+#[Lang(References)]
 pub enum Type {
     Unit(Unit<References>),
     Nat(Nat<References>),

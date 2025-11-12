@@ -1,7 +1,7 @@
 use super::{FOmega, types::Type};
-use check::{Kindcheck, Subtypecheck, Typecheck};
+use check::{Kindcheck, Typecheck};
 use derivations::Derivation;
-use errors::{NoSubtyping, check_error::CheckError};
+use errors::check_error::CheckError;
 use grammar::DerivationRule;
 use std::collections::HashSet;
 use syntax::{
@@ -11,22 +11,6 @@ use syntax::{
         TyApp, TyLambda, Unit, Unpack, Variable,
     },
 };
-
-impl Subtypecheck for Type {
-    type Lang = FOmega;
-
-    fn check_subtype(
-        &self,
-        _: &Type,
-        _: Environment<Self::Lang>,
-    ) -> Result<Derivation<Self::Lang>, CheckError> {
-        Err(NoSubtyping::new("F Omega").into())
-    }
-
-    fn rules() -> HashSet<DerivationRule> {
-        HashSet::new()
-    }
-}
 
 impl Kindcheck for Type {
     type Lang = FOmega;

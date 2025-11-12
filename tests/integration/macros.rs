@@ -23,6 +23,7 @@ enum DummyTerm {
     True(True<DummyLang>),
     False(False<DummyLang>),
 }
+
 #[derive(Subtypecheck, Debug, Clone, PartialEq)]
 #[Lang(DummyLang)]
 enum DummyType {
