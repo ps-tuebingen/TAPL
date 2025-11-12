@@ -21,7 +21,8 @@ members = [
     "lib/web",
     "lib/macros",
     # Other
-    "tests",
+    "tests/e2e",
+    "tests/integration",
     "xtask"
 ]
 

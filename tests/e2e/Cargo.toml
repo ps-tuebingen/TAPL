@@ -1,13 +1,8 @@
 [package]
-name = "tests"
+name = "end-to-end"
 version = "0.1.0"
 edition = "2024"
 
-[[test]]
-name="macros"
-path="macros.rs"
-
-# Language Tests
 [[test]]
 name = "untyped_arithmetic"
 path = "untyped_arithmetic.rs"
@@ -80,11 +75,6 @@ harness=false
 
 [dependencies]
 serde = {version="1.0.219", features=["derive"]}
-test_utils = { path = "../lib/test"}
-errors = { path = "../lib/errors"}
-languages = {path = "../lib/languages"}
-check = { path="../lib/check" }
-syntax = { path="../lib/syntax" }
-derivations = {path="../lib/derivations"}
-grammar = { path="../lib/grammar"}
-macros = { path = "../lib/macros" }
+test_utils = { path = "../../lib/test"}
+errors = { path = "../../lib/errors"}
+languages = {path = "../../lib/languages"}

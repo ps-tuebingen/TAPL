@@ -14,8 +14,8 @@ test: prepare
 
 .PHONY: test-fast
 test-fast: prepare
-	cargo test --all --no-fail-fast --exclude tests
-	cargo test -p tests -- --exclude-latex
+	cargo test --all --no-fail-fast --exclude end-to-end
+	cargo test -p end-to-end -- --exclude-latex
 
 .PHONY: check
 check: prepare
