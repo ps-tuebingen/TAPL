@@ -1,11 +1,21 @@
 use super::Exceptions;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes, SubstType};
+use macros::{FromVariants, LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes, SubstType};
 use syntax::types::{Bool, Fun, Nat, Type as TypeTrait, TypeGroup, Unit};
 
 #[derive(
-    SubstType, LatexFmt, LangDisplay, NoNorm, NoKinds, NoSubtypes, Debug, Clone, PartialEq, Eq,
+    FromVariants,
+    SubstType,
+    LatexFmt,
+    LangDisplay,
+    NoNorm,
+    NoKinds,
+    NoSubtypes,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
 )]
 #[Lang(Exceptions)]
 pub enum Type {
@@ -59,30 +69,6 @@ impl GrammarDescribe for Type {
             Bool::<Exceptions>::rule(),
             Fun::<Exceptions>::rule(),
         ])
-    }
-}
-
-impl From<Unit<Exceptions>> for Type {
-    fn from(u: Unit<Exceptions>) -> Type {
-        Type::Unit(u)
-    }
-}
-
-impl From<Nat<Exceptions>> for Type {
-    fn from(nat: Nat<Exceptions>) -> Type {
-        Type::Nat(nat)
-    }
-}
-
-impl From<Bool<Exceptions>> for Type {
-    fn from(b: Bool<Exceptions>) -> Type {
-        Type::Bool(b)
-    }
-}
-
-impl From<Fun<Exceptions>> for Type {
-    fn from(fun: Fun<Exceptions>) -> Type {
-        Type::Fun(fun)
     }
 }
 

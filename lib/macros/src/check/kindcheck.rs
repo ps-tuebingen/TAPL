@@ -25,20 +25,21 @@ pub fn generate_kindcheck(input: TokenStream) -> TokenStream {
     });
 
     let output = quote! {
-            impl check::Kindcheck for #ident{
-                type Lang = #lang_val;
-                fn check_kind(&self,env:#lang_env) -> #check_result{
-                    match self{
-                        #(#check_variants)*
-                    }
-                }
-
-                fn rules() -> #rule_set{
-                    #new_set
-                    #(#rule_variants)*
-                    rules
+        #[automatically_derived]
+        impl check::Kindcheck for #ident{
+            type Lang = #lang_val;
+            fn check_kind(&self,env:#lang_env) -> #check_result{
+                match self{
+                    #(#check_variants)*
                 }
             }
+
+            fn rules() -> #rule_set{
+                #new_set
+                #(#rule_variants)*
+                rules
+            }
+        }
     };
     output.into()
 }
@@ -51,6 +52,7 @@ pub fn generate_no_kindcheck(input: TokenStream) -> TokenStream {
     let check_result = check_result();
 
     let output = quote! {
+        #[automatically_derived]
         impl check::Kindcheck for #ident {
             type Lang = #lang_val;
             fn check_kind(&self,env:#lang_env) -> #check_result{

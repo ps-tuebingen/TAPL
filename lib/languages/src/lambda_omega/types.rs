@@ -1,7 +1,7 @@
 use super::LambdaOmega;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{Kindcheck, LangDisplay, LatexFmt, NoNorm, NoSubtypes, SubstType};
+use macros::{FromVariants, Kindcheck, LangDisplay, LatexFmt, NoNorm, NoSubtypes, SubstType};
 use syntax::types::{
     Bool, Forall, Fun, Nat, OpApp, OpLambda, Type as TypeTrait, TypeGroup, TypeVariable, Unit,
 };
@@ -9,7 +9,17 @@ use syntax::types::{
 pub type TypeVar = String;
 
 #[derive(
-    SubstType, LatexFmt, LangDisplay, NoNorm, Kindcheck, NoSubtypes, Debug, Clone, PartialEq, Eq,
+    FromVariants,
+    SubstType,
+    LatexFmt,
+    LangDisplay,
+    NoNorm,
+    Kindcheck,
+    NoSubtypes,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
 )]
 #[Lang(LambdaOmega)]
 pub enum Type {
@@ -104,46 +114,5 @@ impl GrammarDescribe for Type {
             Fun::<LambdaOmega>::rule(),
             Forall::<LambdaOmega>::rule(),
         ])
-    }
-}
-
-impl From<TypeVariable<LambdaOmega>> for Type {
-    fn from(var: TypeVariable<LambdaOmega>) -> Type {
-        Type::Var(var)
-    }
-}
-impl From<Unit<LambdaOmega>> for Type {
-    fn from(u: Unit<LambdaOmega>) -> Type {
-        Type::Unit(u)
-    }
-}
-impl From<Nat<LambdaOmega>> for Type {
-    fn from(n: Nat<LambdaOmega>) -> Type {
-        Type::Nat(n)
-    }
-}
-impl From<Bool<LambdaOmega>> for Type {
-    fn from(b: Bool<LambdaOmega>) -> Type {
-        Type::Bool(b)
-    }
-}
-impl From<OpLambda<LambdaOmega>> for Type {
-    fn from(lam: OpLambda<LambdaOmega>) -> Type {
-        Type::OpLambda(lam)
-    }
-}
-impl From<OpApp<LambdaOmega>> for Type {
-    fn from(app: OpApp<LambdaOmega>) -> Type {
-        Type::OpApp(app)
-    }
-}
-impl From<Fun<LambdaOmega>> for Type {
-    fn from(fun: Fun<LambdaOmega>) -> Type {
-        Type::Fun(fun)
-    }
-}
-impl From<Forall<LambdaOmega>> for Type {
-    fn from(forall: Forall<LambdaOmega>) -> Type {
-        Type::Forall(forall)
     }
 }

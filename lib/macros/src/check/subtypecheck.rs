@@ -25,6 +25,7 @@ pub fn generate_subtypecheck(input: TokenStream) -> TokenStream {
     let lang_env = lang_env();
     let check_result = check_result();
     let output = quote! {
+        #[automatically_derived]
         impl check::Subtypecheck for #ident{
             type Lang = #lang_val;
             fn check_subtype(&self,sup:&#lang_ty,env:#lang_env) -> #check_result {
@@ -53,6 +54,7 @@ pub fn generate_no_subtypecheck(input: TokenStream) -> TokenStream {
     let check_result = check_result();
 
     let output = quote! {
+        #[automatically_derived]
         impl check::Subtypecheck for #ident{
             type Lang = #lang_val;
             fn check_subtype(&self,_:&#lang_ty,_:#lang_env) -> #check_result{

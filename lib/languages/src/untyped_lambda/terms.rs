@@ -3,7 +3,7 @@ use check::Typecheck;
 use derivations::Derivation;
 use errors::{NoTyping, check_error::CheckError};
 use grammar::DerivationRule;
-use macros::{Eval, GrammarDescribe, LangDisplay, LatexFmt, SubstTerm, SubstType};
+use macros::{Eval, FromVariants, GrammarDescribe, LangDisplay, LatexFmt, SubstTerm, SubstType};
 use std::collections::HashSet;
 use syntax::{
     env::Environment,
@@ -12,7 +12,17 @@ use syntax::{
 };
 
 #[derive(
-    SubstType, SubstTerm, LatexFmt, LangDisplay, GrammarDescribe, Eval, Debug, Clone, PartialEq, Eq,
+    FromVariants,
+    SubstType,
+    SubstTerm,
+    LatexFmt,
+    LangDisplay,
+    GrammarDescribe,
+    Eval,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
 )]
 #[Lang(UntypedLambda)]
 pub enum Term {
@@ -32,23 +42,5 @@ impl Typecheck for Term {
 
     fn rules() -> HashSet<DerivationRule> {
         HashSet::new()
-    }
-}
-
-impl From<Variable<UntypedLambda>> for Term {
-    fn from(var: Variable<UntypedLambda>) -> Term {
-        Term::Var(var)
-    }
-}
-
-impl From<UntypedLambdaT<UntypedLambda>> for Term {
-    fn from(lam: UntypedLambdaT<UntypedLambda>) -> Term {
-        Term::Lambda(lam)
-    }
-}
-
-impl From<App<UntypedLambda>> for Term {
-    fn from(app: App<UntypedLambda>) -> Term {
-        Term::App(app)
     }
 }

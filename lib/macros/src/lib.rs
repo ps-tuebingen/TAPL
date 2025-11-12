@@ -4,6 +4,7 @@ use proc_macro::TokenStream;
 mod check;
 mod eval;
 mod format;
+mod from;
 mod grammar;
 pub(crate) mod literals;
 mod subst;
@@ -16,6 +17,7 @@ use check::{
 };
 use eval::generate_eval;
 use format::{generate_display, generate_latexfmt};
+use from::generate_from_variants;
 use grammar::generate_grammar_describe;
 use subst::{generate_subst_term, generate_subst_type};
 
@@ -118,4 +120,12 @@ pub fn derive_substterm(input: TokenStream) -> TokenStream {
 #[proc_macro_derive(SubstType, attributes(Lang))]
 pub fn derive_substtype(input: TokenStream) -> TokenStream {
     generate_subst_type(input)
+}
+
+/// Derive From<> for enums
+/// enums must have the form `enum T { T1(T1),T2(T2),....}`
+/// each implementation is then `T::Ti(ti)`
+#[proc_macro_derive(FromVariants, attributes(Lang))]
+pub fn derive_from_variants(input: TokenStream) -> TokenStream {
+    generate_from_variants(input)
 }

@@ -1,12 +1,13 @@
 use super::{FOmega, terms::Term};
 use errors::ValueMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{LangDisplay, LatexFmt};
+use macros::{FromVariants, LangDisplay, LatexFmt};
 use syntax::values::{
     False, Lambda, Num, Pack, Record, True, TyLambda, Unit, Value as ValueTrait, ValueGroup,
 };
 
-#[derive(LatexFmt, LangDisplay, Debug, Clone, PartialEq, Eq)]
+#[derive(FromVariants, LatexFmt, LangDisplay, Debug, Clone, PartialEq, Eq)]
+#[Lang(FOmega)]
 pub enum Value {
     Lambda(Lambda<FOmega>),
     TyLambda(TyLambda<FOmega>),
@@ -105,47 +106,5 @@ impl From<Value> for Term {
             Value::Unit(u) => u.into_term(),
             Value::Num(num) => num.into_term(),
         }
-    }
-}
-
-impl From<Pack<FOmega>> for Value {
-    fn from(pack: Pack<FOmega>) -> Value {
-        Value::Pack(pack)
-    }
-}
-impl From<TyLambda<FOmega>> for Value {
-    fn from(lam: TyLambda<FOmega>) -> Value {
-        Value::TyLambda(lam)
-    }
-}
-impl From<Lambda<FOmega>> for Value {
-    fn from(lam: Lambda<FOmega>) -> Value {
-        Value::Lambda(lam)
-    }
-}
-impl From<Unit<FOmega>> for Value {
-    fn from(u: Unit<FOmega>) -> Value {
-        Value::Unit(u)
-    }
-}
-impl From<True<FOmega>> for Value {
-    fn from(tru: True<FOmega>) -> Value {
-        Value::True(tru)
-    }
-}
-impl From<False<FOmega>> for Value {
-    fn from(fls: False<FOmega>) -> Value {
-        Value::False(fls)
-    }
-}
-impl From<Num<FOmega>> for Value {
-    fn from(num: Num<FOmega>) -> Value {
-        Value::Num(num)
-    }
-}
-
-impl From<Record<FOmega>> for Value {
-    fn from(rec: Record<FOmega>) -> Value {
-        Value::Record(rec)
     }
 }

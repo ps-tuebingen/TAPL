@@ -1,12 +1,13 @@
 use super::{Recursive, terms::Term};
 use errors::ValueMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{LangDisplay, LatexFmt};
+use macros::{FromVariants, LangDisplay, LatexFmt};
 use syntax::values::{
     False, Fold, Lambda, Num, Pair, Record, True, Unit, Value as ValueTrait, ValueGroup, Variant,
 };
 
-#[derive(LatexFmt, LangDisplay, Debug, Clone, PartialEq, Eq)]
+#[derive(FromVariants, LatexFmt, LangDisplay, Debug, Clone, PartialEq, Eq)]
+#[Lang(Recursive)]
 pub enum Value {
     True(True<Recursive>),
     False(False<Recursive>),
@@ -119,54 +120,5 @@ impl GrammarDescribe for Value {
             Record::<Recursive>::rule(),
             Variant::<Recursive>::rule(),
         ])
-    }
-}
-
-impl From<Fold<Recursive>> for Value {
-    fn from(fld: Fold<Recursive>) -> Value {
-        Value::Fold(fld)
-    }
-}
-
-impl From<Lambda<Recursive>> for Value {
-    fn from(lam: Lambda<Recursive>) -> Value {
-        Value::Lambda(lam)
-    }
-}
-impl From<Unit<Recursive>> for Value {
-    fn from(u: Unit<Recursive>) -> Value {
-        Value::Unit(u)
-    }
-}
-impl From<True<Recursive>> for Value {
-    fn from(tru: True<Recursive>) -> Value {
-        Value::True(tru)
-    }
-}
-impl From<False<Recursive>> for Value {
-    fn from(fls: False<Recursive>) -> Value {
-        Value::False(fls)
-    }
-}
-impl From<Num<Recursive>> for Value {
-    fn from(num: Num<Recursive>) -> Value {
-        Value::Num(num)
-    }
-}
-impl From<Pair<Recursive>> for Value {
-    fn from(pair: Pair<Recursive>) -> Value {
-        Value::Pair(pair)
-    }
-}
-
-impl From<Record<Recursive>> for Value {
-    fn from(rec: Record<Recursive>) -> Value {
-        Value::Record(rec)
-    }
-}
-
-impl From<Variant<Recursive>> for Value {
-    fn from(var: Variant<Recursive>) -> Value {
-        Value::Variant(var)
     }
 }

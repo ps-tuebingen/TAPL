@@ -1,11 +1,21 @@
 use super::TypedArithmetic;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes, SubstType};
+use macros::{FromVariants, LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes, SubstType};
 use syntax::types::{Bool, Nat, Type as TypeTrait, TypeGroup};
 
 #[derive(
-    SubstType, LatexFmt, LangDisplay, NoNorm, NoKinds, NoSubtypes, Debug, PartialEq, Eq, Clone,
+    FromVariants,
+    SubstType,
+    LatexFmt,
+    LangDisplay,
+    NoNorm,
+    NoKinds,
+    NoSubtypes,
+    Debug,
+    PartialEq,
+    Eq,
+    Clone,
 )]
 #[Lang(TypedArithmetic)]
 pub enum Type {
@@ -40,17 +50,5 @@ impl GrammarDescribe for Type {
             Nat::<TypedArithmetic>::rule(),
             Bool::<TypedArithmetic>::rule(),
         ])
-    }
-}
-
-impl From<Nat<TypedArithmetic>> for Type {
-    fn from(n: Nat<TypedArithmetic>) -> Type {
-        Type::Nat(n)
-    }
-}
-
-impl From<Bool<TypedArithmetic>> for Type {
-    fn from(b: Bool<TypedArithmetic>) -> Type {
-        Type::Bool(b)
     }
 }

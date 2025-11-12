@@ -1,11 +1,14 @@
 use super::Existential;
-use macros::{Eval, GrammarDescribe, LangDisplay, LatexFmt, SubstTerm, SubstType, Typecheck};
+use macros::{
+    Eval, FromVariants, GrammarDescribe, LangDisplay, LatexFmt, SubstTerm, SubstType, Typecheck,
+};
 use syntax::terms::{
     App, False, Fix, If, IsZero, Lambda, Num, Pack, Pred, Record, RecordProj, Succ, True, Unit,
     Unpack, Variable,
 };
 
 #[derive(
+    FromVariants,
     SubstType,
     SubstTerm,
     LatexFmt,
@@ -39,98 +42,3 @@ pub enum Term {
 }
 
 impl syntax::terms::Term for Term {}
-
-impl From<Pack<Existential>> for Term {
-    fn from(pack: Pack<Existential>) -> Term {
-        Term::Pack(pack)
-    }
-}
-
-impl From<Unpack<Existential>> for Term {
-    fn from(unp: Unpack<Existential>) -> Term {
-        Term::Unpack(unp)
-    }
-}
-impl From<Lambda<Existential>> for Term {
-    fn from(lam: Lambda<Existential>) -> Term {
-        Term::Lambda(lam)
-    }
-}
-
-impl From<Unit<Existential>> for Term {
-    fn from(u: Unit<Existential>) -> Term {
-        Term::Unit(u)
-    }
-}
-
-impl From<True<Existential>> for Term {
-    fn from(tru: True<Existential>) -> Term {
-        Term::True(tru)
-    }
-}
-
-impl From<False<Existential>> for Term {
-    fn from(fls: False<Existential>) -> Term {
-        Term::False(fls)
-    }
-}
-
-impl From<Num<Existential>> for Term {
-    fn from(num: Num<Existential>) -> Term {
-        Term::Num(num)
-    }
-}
-
-impl From<Record<Existential>> for Term {
-    fn from(rec: Record<Existential>) -> Term {
-        Term::Record(rec)
-    }
-}
-
-impl From<Variable<Existential>> for Term {
-    fn from(var: Variable<Existential>) -> Term {
-        Term::Variable(var)
-    }
-}
-
-impl From<App<Existential>> for Term {
-    fn from(app: App<Existential>) -> Term {
-        Term::App(app)
-    }
-}
-
-impl From<If<Existential>> for Term {
-    fn from(ift: If<Existential>) -> Term {
-        Term::If(ift)
-    }
-}
-
-impl From<Pred<Existential>> for Term {
-    fn from(pred: Pred<Existential>) -> Term {
-        Term::Pred(pred)
-    }
-}
-
-impl From<Succ<Existential>> for Term {
-    fn from(succ: Succ<Existential>) -> Term {
-        Term::Succ(succ)
-    }
-}
-
-impl From<IsZero<Existential>> for Term {
-    fn from(isz: IsZero<Existential>) -> Term {
-        Term::IsZero(isz)
-    }
-}
-
-impl From<RecordProj<Existential>> for Term {
-    fn from(proj: RecordProj<Existential>) -> Term {
-        Term::RecordProj(proj)
-    }
-}
-
-impl From<Fix<Existential>> for Term {
-    fn from(fix: Fix<Existential>) -> Term {
-        Term::Fix(fix)
-    }
-}

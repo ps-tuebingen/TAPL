@@ -1,11 +1,21 @@
 use super::SystemF;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes, SubstType};
+use macros::{FromVariants, LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes, SubstType};
 use syntax::types::{Forall, Fun, Type as TypeTrait, TypeGroup, TypeVariable};
 
 #[derive(
-    SubstType, LatexFmt, LangDisplay, NoNorm, NoKinds, NoSubtypes, Debug, Clone, PartialEq, Eq,
+    FromVariants,
+    SubstType,
+    LatexFmt,
+    LangDisplay,
+    NoNorm,
+    NoKinds,
+    NoSubtypes,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
 )]
 #[Lang(SystemF)]
 pub enum Type {
@@ -42,23 +52,5 @@ impl GrammarDescribe for Type {
             Fun::<SystemF>::rule(),
             Forall::<SystemF>::rule(),
         ])
-    }
-}
-
-impl From<TypeVariable<SystemF>> for Type {
-    fn from(v: TypeVariable<SystemF>) -> Type {
-        Type::Var(v)
-    }
-}
-
-impl From<Fun<SystemF>> for Type {
-    fn from(fun: Fun<SystemF>) -> Type {
-        Type::Fun(fun)
-    }
-}
-
-impl From<Forall<SystemF>> for Type {
-    fn from(forall: Forall<SystemF>) -> Type {
-        Type::Forall(forall)
     }
 }

@@ -1,13 +1,14 @@
 use super::{Stlc, terms::Term};
 use errors::ValueMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{LangDisplay, LatexFmt};
+use macros::{FromVariants, LangDisplay, LatexFmt};
 use syntax::values::{
     Cons, False, Lambda, Left, Nil, Nothing, Num, Pair, Record, Right, Something, True, Tuple,
     Unit, Value as ValueTrait, ValueGroup, Variant,
 };
 
-#[derive(LatexFmt, LangDisplay, Debug, Clone, PartialEq, Eq)]
+#[derive(FromVariants, LatexFmt, LangDisplay, Debug, Clone, PartialEq, Eq)]
+#[Lang(Stlc)]
 pub enum Value {
     Lambda(Lambda<Stlc>),
     Unit(Unit<Stlc>),
@@ -186,81 +187,5 @@ impl From<Value> for Term {
             Value::Nil(nil) => nil.into_term(),
             Value::Cons(cons) => cons.into_term(),
         }
-    }
-}
-
-impl From<Lambda<Stlc>> for Value {
-    fn from(lam: Lambda<Stlc>) -> Value {
-        Value::Lambda(lam)
-    }
-}
-impl From<Unit<Stlc>> for Value {
-    fn from(u: Unit<Stlc>) -> Value {
-        Value::Unit(u)
-    }
-}
-impl From<True<Stlc>> for Value {
-    fn from(tru: True<Stlc>) -> Value {
-        Value::True(tru)
-    }
-}
-impl From<False<Stlc>> for Value {
-    fn from(fls: False<Stlc>) -> Value {
-        Value::False(fls)
-    }
-}
-impl From<Num<Stlc>> for Value {
-    fn from(num: Num<Stlc>) -> Value {
-        Value::Num(num)
-    }
-}
-impl From<Pair<Stlc>> for Value {
-    fn from(pair: Pair<Stlc>) -> Value {
-        Value::Pair(pair)
-    }
-}
-impl From<Tuple<Stlc>> for Value {
-    fn from(tup: Tuple<Stlc>) -> Value {
-        Value::Tuple(tup)
-    }
-}
-impl From<Record<Stlc>> for Value {
-    fn from(rec: Record<Stlc>) -> Value {
-        Value::Record(rec)
-    }
-}
-impl From<Left<Stlc>> for Value {
-    fn from(lft: Left<Stlc>) -> Value {
-        Value::Left(lft)
-    }
-}
-impl From<Right<Stlc>> for Value {
-    fn from(right: Right<Stlc>) -> Value {
-        Value::Right(right)
-    }
-}
-impl From<Variant<Stlc>> for Value {
-    fn from(var: Variant<Stlc>) -> Value {
-        Value::Variant(var)
-    }
-}
-impl From<Nothing<Stlc>> for Value {
-    fn from(not: Nothing<Stlc>) -> Value {
-        Value::Nothing(not)
-    }
-}
-impl From<Something<Stlc>> for Value {
-    fn from(some: Something<Stlc>) -> Value {
-        Value::Something(some)
-    }
-}
-impl From<Nil<Stlc>> for Value {
-    fn from(nil: Nil<Stlc>) -> Value {
-        Value::Nil(nil)
-    }
-}
-impl From<Cons<Stlc>> for Value {
-    fn from(cons: Cons<Stlc>) -> Value {
-        Value::Cons(cons)
     }
 }

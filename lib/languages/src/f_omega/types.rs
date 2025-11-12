@@ -1,14 +1,24 @@
 use super::FOmega;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{Kindcheck, LangDisplay, LatexFmt, NoSubtypes, Normalize, SubstType};
+use macros::{FromVariants, Kindcheck, LangDisplay, LatexFmt, NoSubtypes, Normalize, SubstType};
 use syntax::types::{
     Bool, Exists, Forall, Fun, Nat, OpApp, OpLambda, Record, Type as TypeTrait, TypeGroup,
     TypeVariable, Unit,
 };
 
 #[derive(
-    SubstType, LatexFmt, LangDisplay, Normalize, Kindcheck, NoSubtypes, Debug, Clone, PartialEq, Eq,
+    FromVariants,
+    SubstType,
+    LatexFmt,
+    LangDisplay,
+    Normalize,
+    Kindcheck,
+    NoSubtypes,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
 )]
 #[Lang(FOmega)]
 pub enum Type {
@@ -118,56 +128,5 @@ impl TypeGroup for Type {
         } else {
             Err(TypeMismatch::new(self.to_string(), "Nat".to_owned()))
         }
-    }
-}
-
-impl From<TypeVariable<FOmega>> for Type {
-    fn from(var: TypeVariable<FOmega>) -> Type {
-        Type::Var(var)
-    }
-}
-impl From<OpLambda<FOmega>> for Type {
-    fn from(oplam: OpLambda<FOmega>) -> Type {
-        Type::OpLambda(oplam)
-    }
-}
-impl From<Fun<FOmega>> for Type {
-    fn from(fun: Fun<FOmega>) -> Type {
-        Type::Fun(fun)
-    }
-}
-impl From<OpApp<FOmega>> for Type {
-    fn from(opapp: OpApp<FOmega>) -> Type {
-        Type::OpApp(opapp)
-    }
-}
-impl From<Forall<FOmega>> for Type {
-    fn from(forall: Forall<FOmega>) -> Type {
-        Type::Forall(forall)
-    }
-}
-impl From<Exists<FOmega>> for Type {
-    fn from(exists: Exists<FOmega>) -> Type {
-        Type::Exists(exists)
-    }
-}
-impl From<Record<FOmega>> for Type {
-    fn from(rec: Record<FOmega>) -> Type {
-        Type::Record(rec)
-    }
-}
-impl From<Bool<FOmega>> for Type {
-    fn from(b: Bool<FOmega>) -> Type {
-        Type::Bool(b)
-    }
-}
-impl From<Unit<FOmega>> for Type {
-    fn from(u: Unit<FOmega>) -> Type {
-        Type::Unit(u)
-    }
-}
-impl From<Nat<FOmega>> for Type {
-    fn from(n: Nat<FOmega>) -> Type {
-        Type::Nat(n)
     }
 }

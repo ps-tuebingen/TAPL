@@ -1,10 +1,11 @@
 use super::{SystemF, terms::Term};
 use errors::ValueMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{LangDisplay, LatexFmt};
+use macros::{FromVariants, LangDisplay, LatexFmt};
 use syntax::values::{Lambda, TyLambda, Value as ValueTrait, ValueGroup};
 
-#[derive(LatexFmt, LangDisplay, Debug, PartialEq, Eq, Clone)]
+#[derive(FromVariants, LatexFmt, LangDisplay, Debug, PartialEq, Eq, Clone)]
+#[Lang(SystemF)]
 pub enum Value {
     Lambda(Lambda<SystemF>),
     TyLambda(TyLambda<SystemF>),
@@ -45,17 +46,5 @@ impl From<Value> for Term {
 impl GrammarDescribe for Value {
     fn grammar() -> Grammar {
         Grammar::value(vec![Lambda::<SystemF>::rule(), TyLambda::<SystemF>::rule()])
-    }
-}
-
-impl From<Lambda<SystemF>> for Value {
-    fn from(lam: Lambda<SystemF>) -> Value {
-        Value::Lambda(lam)
-    }
-}
-
-impl From<TyLambda<SystemF>> for Value {
-    fn from(tylam: TyLambda<SystemF>) -> Value {
-        Value::TyLambda(tylam)
     }
 }

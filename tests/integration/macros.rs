@@ -1,6 +1,6 @@
 use macros::{
-    Eval, GrammarDescribe, Kindcheck, LangDisplay, LatexFmt, Normalize, SubstTerm, SubstType,
-    Subtypecheck, Typecheck,
+    Eval, FromVariants, GrammarDescribe, Kindcheck, LangDisplay, LatexFmt, Normalize, SubstTerm,
+    SubstType, Subtypecheck, Typecheck,
 };
 use std::fmt;
 use syntax::{
@@ -14,6 +14,7 @@ use syntax::{
 struct DummyLang;
 
 #[derive(
+    FromVariants,
     SubstType,
     SubstTerm,
     LatexFmt,
@@ -33,7 +34,16 @@ enum DummyTerm {
 }
 
 #[derive(
-    SubstType, LatexFmt, LangDisplay, Normalize, Kindcheck, Subtypecheck, Debug, Clone, PartialEq,
+    FromVariants,
+    SubstType,
+    LatexFmt,
+    LangDisplay,
+    Normalize,
+    Kindcheck,
+    Subtypecheck,
+    Debug,
+    Clone,
+    PartialEq,
 )]
 #[Lang(DummyLang)]
 enum DummyType {
@@ -41,7 +51,8 @@ enum DummyType {
     Bool(Bool<DummyLang>),
     Top(Top<DummyLang>),
 }
-#[derive(LatexFmt, LangDisplay, Clone, Debug)]
+#[derive(FromVariants, LatexFmt, LangDisplay, Clone, Debug)]
+#[Lang(DummyLang)]
 enum DummyValue {
     Num(NumVal<DummyLang>),
     True(TrueVal<DummyLang>),
@@ -76,64 +87,10 @@ impl Language for DummyLang {
 impl From<DummyValue> for DummyTerm {
     fn from(val: DummyValue) -> DummyTerm {
         match val {
+            DummyValue::Num(n) => DummyTerm::Num(n.into()),
             DummyValue::True(t) => DummyTerm::True(t.into()),
             DummyValue::False(f) => DummyTerm::False(f.into()),
-            DummyValue::Num(n) => DummyTerm::Num(n.into()),
         }
-    }
-}
-
-impl From<Num<DummyLang>> for DummyTerm {
-    fn from(num: Num<DummyLang>) -> DummyTerm {
-        DummyTerm::Num(num)
-    }
-}
-
-impl From<True<DummyLang>> for DummyTerm {
-    fn from(t: True<DummyLang>) -> DummyTerm {
-        DummyTerm::True(t)
-    }
-}
-
-impl From<False<DummyLang>> for DummyTerm {
-    fn from(f: False<DummyLang>) -> DummyTerm {
-        DummyTerm::False(f)
-    }
-}
-
-impl From<Nat<DummyLang>> for DummyType {
-    fn from(nat: Nat<DummyLang>) -> DummyType {
-        DummyType::Nat(nat)
-    }
-}
-
-impl From<Bool<DummyLang>> for DummyType {
-    fn from(b: Bool<DummyLang>) -> DummyType {
-        DummyType::Bool(b)
-    }
-}
-
-impl From<Top<DummyLang>> for DummyType {
-    fn from(t: Top<DummyLang>) -> DummyType {
-        DummyType::Top(t)
-    }
-}
-
-impl From<NumVal<DummyLang>> for DummyValue {
-    fn from(num: NumVal<DummyLang>) -> DummyValue {
-        DummyValue::Num(num)
-    }
-}
-
-impl From<TrueVal<DummyLang>> for DummyValue {
-    fn from(t: TrueVal<DummyLang>) -> DummyValue {
-        DummyValue::True(t)
-    }
-}
-
-impl From<FalseVal<DummyLang>> for DummyValue {
-    fn from(f: FalseVal<DummyLang>) -> DummyValue {
-        DummyValue::False(f)
     }
 }
 

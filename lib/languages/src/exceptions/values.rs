@@ -1,12 +1,13 @@
 use super::{Exceptions, terms::Term};
 use errors::ValueMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{LangDisplay, LatexFmt};
+use macros::{FromVariants, LangDisplay, LatexFmt};
 use syntax::values::{
     Exception, False, Lambda, Num, Raise, True, Unit, Value as ValueTrait, ValueGroup,
 };
 
-#[derive(LatexFmt, LangDisplay, Debug, Clone, PartialEq, Eq)]
+#[derive(LatexFmt, FromVariants, LangDisplay, Debug, Clone, PartialEq, Eq)]
+#[Lang(Exceptions)]
 pub enum Value {
     Lambda(Lambda<Exceptions>),
     Num(Num<Exceptions>),
@@ -97,47 +98,5 @@ impl From<Value> for Term {
             Value::Exception(exc) => exc.into_term(),
             Value::Raise(raise) => raise.into_term(),
         }
-    }
-}
-
-impl From<Lambda<Exceptions>> for Value {
-    fn from(lam: Lambda<Exceptions>) -> Value {
-        Value::Lambda(lam)
-    }
-}
-
-impl From<Num<Exceptions>> for Value {
-    fn from(num: Num<Exceptions>) -> Value {
-        Value::Num(num)
-    }
-}
-
-impl From<Unit<Exceptions>> for Value {
-    fn from(unit: Unit<Exceptions>) -> Value {
-        Value::Unit(unit)
-    }
-}
-
-impl From<True<Exceptions>> for Value {
-    fn from(tru: True<Exceptions>) -> Value {
-        Value::True(tru)
-    }
-}
-
-impl From<False<Exceptions>> for Value {
-    fn from(fls: False<Exceptions>) -> Value {
-        Value::False(fls)
-    }
-}
-
-impl From<Exception<Exceptions>> for Value {
-    fn from(exc: Exception<Exceptions>) -> Value {
-        Value::Exception(exc)
-    }
-}
-
-impl From<Raise<Exceptions>> for Value {
-    fn from(raise: Raise<Exceptions>) -> Value {
-        Value::Raise(raise)
     }
 }

@@ -1,10 +1,11 @@
 use super::{FOmegaSub, terms::Term};
 use errors::ValueMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{LangDisplay, LatexFmt};
+use macros::{FromVariants, LangDisplay, LatexFmt};
 use syntax::values::{Lambda, LambdaSub, Num, Pack, Record, Value as ValueTrait, ValueGroup};
 
-#[derive(LatexFmt, LangDisplay, Debug, Clone, PartialEq, Eq)]
+#[derive(FromVariants, LatexFmt, LangDisplay, Debug, Clone, PartialEq, Eq)]
+#[Lang(FOmegaSub)]
 pub enum Value {
     Lambda(Lambda<FOmegaSub>),
     LambdaSub(LambdaSub<FOmegaSub>),
@@ -81,33 +82,5 @@ impl From<Value> for Term {
             Value::Record(rec) => rec.into_term(),
             Value::Num(num) => num.into_term(),
         }
-    }
-}
-
-impl From<Pack<FOmegaSub>> for Value {
-    fn from(pack: Pack<FOmegaSub>) -> Value {
-        Value::Pack(pack)
-    }
-}
-impl From<LambdaSub<FOmegaSub>> for Value {
-    fn from(lam: LambdaSub<FOmegaSub>) -> Value {
-        Value::LambdaSub(lam)
-    }
-}
-
-impl From<Lambda<FOmegaSub>> for Value {
-    fn from(lam: Lambda<FOmegaSub>) -> Value {
-        Value::Lambda(lam)
-    }
-}
-impl From<Num<FOmegaSub>> for Value {
-    fn from(num: Num<FOmegaSub>) -> Value {
-        Value::Num(num)
-    }
-}
-
-impl From<Record<FOmegaSub>> for Value {
-    fn from(rec: Record<FOmegaSub>) -> Value {
-        Value::Record(rec)
     }
 }

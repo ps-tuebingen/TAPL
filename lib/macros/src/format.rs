@@ -15,6 +15,7 @@ pub fn generate_display(input: TokenStream) -> TokenStream {
     });
 
     let output = quote! {
+        #[automatically_derived]
         impl ::std::fmt::Display for #ident{
             fn fmt(&self,f:&mut ::std::fmt::Formatter) -> ::std::fmt::Result{
                 match self{
@@ -35,6 +36,7 @@ pub fn generate_latexfmt(input: TokenStream) -> TokenStream {
         quote! {Self::#ident(inner) => inner.to_latex(conf),}
     });
     let output = quote! {
+        #[automatically_derived]
         impl latex::LatexFmt for #ident{
             fn to_latex(&self,conf:&mut latex::LatexConfig) -> String{
                 match self{

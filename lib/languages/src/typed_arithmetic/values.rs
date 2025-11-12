@@ -1,10 +1,11 @@
 use super::{TypedArithmetic, terms::Term};
 use errors::ValueMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{LangDisplay, LatexFmt};
+use macros::{FromVariants, LangDisplay, LatexFmt};
 use syntax::values::{False, Num, True, Value as ValueTrait, ValueGroup};
 
-#[derive(LatexFmt, LangDisplay, Debug, Clone, PartialEq, Eq)]
+#[derive(FromVariants, LatexFmt, LangDisplay, Debug, Clone, PartialEq, Eq)]
+#[Lang(TypedArithmetic)]
 pub enum Value {
     True(True<TypedArithmetic>),
     False(False<TypedArithmetic>),
@@ -57,21 +58,5 @@ impl From<Value> for Term {
             Value::False(fls) => fls.into_term(),
             Value::Num(num) => num.into_term(),
         }
-    }
-}
-
-impl From<True<TypedArithmetic>> for Value {
-    fn from(tru: True<TypedArithmetic>) -> Value {
-        Value::True(tru)
-    }
-}
-impl From<False<TypedArithmetic>> for Value {
-    fn from(fls: False<TypedArithmetic>) -> Value {
-        Value::False(fls)
-    }
-}
-impl From<Num<TypedArithmetic>> for Value {
-    fn from(num: Num<TypedArithmetic>) -> Value {
-        Value::Num(num)
     }
 }

@@ -1,14 +1,24 @@
 use super::Stlc;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes, SubstType};
+use macros::{FromVariants, LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes, SubstType};
 use syntax::types::{
     Bool, Fun, List, Nat, Optional, Product, Record, Sum, Tuple, Type as TypeTrait, TypeGroup,
     Unit, Variant,
 };
 
 #[derive(
-    SubstType, LatexFmt, LangDisplay, NoNorm, NoKinds, NoSubtypes, PartialEq, Eq, Clone, Debug,
+    FromVariants,
+    SubstType,
+    LatexFmt,
+    LangDisplay,
+    NoNorm,
+    NoKinds,
+    NoSubtypes,
+    PartialEq,
+    Eq,
+    Clone,
+    Debug,
 )]
 #[Lang(Stlc)]
 pub enum Type {
@@ -133,71 +143,5 @@ impl GrammarDescribe for Type {
             Optional::<Stlc>::rule(),
             List::<Stlc>::rule(),
         ])
-    }
-}
-
-impl From<Unit<Stlc>> for Type {
-    fn from(u: Unit<Stlc>) -> Type {
-        Type::Unit(u)
-    }
-}
-
-impl From<Fun<Stlc>> for Type {
-    fn from(fun: Fun<Stlc>) -> Type {
-        Type::Fun(fun)
-    }
-}
-
-impl From<Bool<Stlc>> for Type {
-    fn from(b: Bool<Stlc>) -> Type {
-        Type::Bool(b)
-    }
-}
-
-impl From<Nat<Stlc>> for Type {
-    fn from(n: Nat<Stlc>) -> Type {
-        Type::Nat(n)
-    }
-}
-
-impl From<Product<Stlc>> for Type {
-    fn from(prod: Product<Stlc>) -> Type {
-        Type::Prod(prod)
-    }
-}
-
-impl From<Tuple<Stlc>> for Type {
-    fn from(tup: Tuple<Stlc>) -> Type {
-        Type::Tup(tup)
-    }
-}
-
-impl From<Record<Stlc>> for Type {
-    fn from(rec: Record<Stlc>) -> Type {
-        Type::Record(rec)
-    }
-}
-
-impl From<Sum<Stlc>> for Type {
-    fn from(sum: Sum<Stlc>) -> Type {
-        Type::Sum(sum)
-    }
-}
-
-impl From<Variant<Stlc>> for Type {
-    fn from(var: Variant<Stlc>) -> Type {
-        Type::Variant(var)
-    }
-}
-
-impl From<Optional<Stlc>> for Type {
-    fn from(opt: Optional<Stlc>) -> Type {
-        Type::Optional(opt)
-    }
-}
-
-impl From<List<Stlc>> for Type {
-    fn from(ls: List<Stlc>) -> Type {
-        Type::List(ls)
     }
 }

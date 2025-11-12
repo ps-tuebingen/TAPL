@@ -26,6 +26,7 @@ pub fn generate_normalize(input: TokenStream) -> TokenStream {
     });
 
     let output = quote! {
+        #[automatically_derived]
         impl check::Normalize for #ident{
             type Lang = #lang_val;
             fn normalize(self,env:#lang_env) -> derivations::Derivation<Self::Lang>{
@@ -53,6 +54,7 @@ pub fn generate_no_normalize(input: TokenStream) -> TokenStream {
     let rule_set = rule_set();
 
     let output = quote! {
+        #[automatically_derived]
         impl check::Normalize for #ident{
             type Lang = #lang_val;
 

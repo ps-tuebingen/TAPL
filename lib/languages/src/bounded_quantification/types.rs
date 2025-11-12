@@ -1,11 +1,21 @@
 use super::BoundedQuantification;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{LangDisplay, LatexFmt, NoKinds, NoNorm, SubstType, Subtypecheck};
+use macros::{FromVariants, LangDisplay, LatexFmt, NoKinds, NoNorm, SubstType, Subtypecheck};
 use syntax::types::{ExistsBounded, ForallBounded, Fun, Nat, Record, Top, TypeGroup, TypeVariable};
 
 #[derive(
-    SubstType, LatexFmt, LangDisplay, NoNorm, NoKinds, Subtypecheck, Clone, Debug, PartialEq, Eq,
+    SubstType,
+    LatexFmt,
+    FromVariants,
+    LangDisplay,
+    NoNorm,
+    NoKinds,
+    Subtypecheck,
+    Clone,
+    Debug,
+    PartialEq,
+    Eq,
 )]
 #[Lang(BoundedQuantification)]
 pub enum Type {
@@ -92,46 +102,5 @@ impl GrammarDescribe for Type {
             ExistsBounded::<BoundedQuantification>::rule(),
             Record::<BoundedQuantification>::rule(),
         ])
-    }
-}
-
-impl From<TypeVariable<BoundedQuantification>> for Type {
-    fn from(v: TypeVariable<BoundedQuantification>) -> Type {
-        Type::Var(v)
-    }
-}
-impl From<Top<BoundedQuantification>> for Type {
-    fn from(t: Top<BoundedQuantification>) -> Type {
-        Type::Top(t)
-    }
-}
-
-impl From<Nat<BoundedQuantification>> for Type {
-    fn from(nat: Nat<BoundedQuantification>) -> Type {
-        Type::Nat(nat)
-    }
-}
-
-impl From<Fun<BoundedQuantification>> for Type {
-    fn from(fun: Fun<BoundedQuantification>) -> Type {
-        Type::Fun(fun)
-    }
-}
-
-impl From<ForallBounded<BoundedQuantification>> for Type {
-    fn from(forall: ForallBounded<BoundedQuantification>) -> Type {
-        Type::Forall(forall)
-    }
-}
-
-impl From<ExistsBounded<BoundedQuantification>> for Type {
-    fn from(exists: ExistsBounded<BoundedQuantification>) -> Type {
-        Type::Exists(exists)
-    }
-}
-
-impl From<Record<BoundedQuantification>> for Type {
-    fn from(rec: Record<BoundedQuantification>) -> Type {
-        Type::Record(rec)
     }
 }

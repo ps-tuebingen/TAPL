@@ -1,14 +1,24 @@
 use super::Subtypes;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{LangDisplay, LatexFmt, NoKinds, NoNorm, SubstType, Subtypecheck};
+use macros::{FromVariants, LangDisplay, LatexFmt, NoKinds, NoNorm, SubstType, Subtypecheck};
 use syntax::types::{
     Bool, Bot, Fun, List, Nat, Record, Reference, Sink, Source, Top, Type as TypeTrait, TypeGroup,
     Unit, Variant,
 };
 
 #[derive(
-    SubstType, LatexFmt, LangDisplay, NoNorm, NoKinds, Subtypecheck, Debug, Clone, PartialEq, Eq,
+    FromVariants,
+    SubstType,
+    LatexFmt,
+    LangDisplay,
+    NoNorm,
+    NoKinds,
+    Subtypecheck,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
 )]
 #[Lang(Subtypes)]
 pub enum Type {
@@ -142,74 +152,5 @@ impl GrammarDescribe for Type {
             Unit::<Subtypes>::rule(),
             Bool::<Subtypes>::rule(),
         ])
-    }
-}
-
-impl From<Source<Subtypes>> for Type {
-    fn from(src: Source<Subtypes>) -> Type {
-        Type::Source(src)
-    }
-}
-impl From<Sink<Subtypes>> for Type {
-    fn from(sink: Sink<Subtypes>) -> Type {
-        Type::Sink(sink)
-    }
-}
-
-impl From<Reference<Subtypes>> for Type {
-    fn from(reft: Reference<Subtypes>) -> Type {
-        Type::Ref(reft)
-    }
-}
-impl From<Bot<Subtypes>> for Type {
-    fn from(b: Bot<Subtypes>) -> Type {
-        Type::Bot(b)
-    }
-}
-impl From<Top<Subtypes>> for Type {
-    fn from(t: Top<Subtypes>) -> Type {
-        Type::Top(t)
-    }
-}
-
-impl From<Unit<Subtypes>> for Type {
-    fn from(u: Unit<Subtypes>) -> Type {
-        Type::Unit(u)
-    }
-}
-
-impl From<Fun<Subtypes>> for Type {
-    fn from(fun: Fun<Subtypes>) -> Type {
-        Type::Fun(fun)
-    }
-}
-
-impl From<Bool<Subtypes>> for Type {
-    fn from(b: Bool<Subtypes>) -> Type {
-        Type::Bool(b)
-    }
-}
-
-impl From<Nat<Subtypes>> for Type {
-    fn from(n: Nat<Subtypes>) -> Type {
-        Type::Nat(n)
-    }
-}
-
-impl From<Record<Subtypes>> for Type {
-    fn from(rec: Record<Subtypes>) -> Type {
-        Type::Record(rec)
-    }
-}
-
-impl From<Variant<Subtypes>> for Type {
-    fn from(var: Variant<Subtypes>) -> Type {
-        Type::Variant(var)
-    }
-}
-
-impl From<List<Subtypes>> for Type {
-    fn from(ls: List<Subtypes>) -> Type {
-        Type::List(ls)
     }
 }

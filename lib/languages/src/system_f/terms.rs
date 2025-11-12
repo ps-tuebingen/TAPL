@@ -1,8 +1,11 @@
 use super::SystemF;
-use macros::{Eval, GrammarDescribe, LangDisplay, LatexFmt, SubstTerm, SubstType, Typecheck};
+use macros::{
+    Eval, FromVariants, GrammarDescribe, LangDisplay, LatexFmt, SubstTerm, SubstType, Typecheck,
+};
 use syntax::terms::{App, Lambda, TyApp, TyLambda, Variable};
 
 #[derive(
+    FromVariants,
     SubstType,
     SubstTerm,
     LatexFmt,
@@ -25,29 +28,3 @@ pub enum Term {
 }
 
 impl syntax::terms::Term for Term {}
-
-impl From<Variable<SystemF>> for Term {
-    fn from(var: Variable<SystemF>) -> Term {
-        Term::Variable(var)
-    }
-}
-impl From<Lambda<SystemF>> for Term {
-    fn from(lam: Lambda<SystemF>) -> Term {
-        Term::Lambda(lam)
-    }
-}
-impl From<App<SystemF>> for Term {
-    fn from(app: App<SystemF>) -> Term {
-        Term::App(app)
-    }
-}
-impl From<TyLambda<SystemF>> for Term {
-    fn from(tylam: TyLambda<SystemF>) -> Term {
-        Term::TyLambda(tylam)
-    }
-}
-impl From<TyApp<SystemF>> for Term {
-    fn from(tyapp: TyApp<SystemF>) -> Term {
-        Term::TyApp(tyapp)
-    }
-}

@@ -1,13 +1,23 @@
 use super::Existential;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes, SubstType};
+use macros::{FromVariants, LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes, SubstType};
 use syntax::types::{
     Bool, Exists, Fun, Nat, Record, Type as TypeTrait, TypeGroup, TypeVariable, Unit,
 };
 
 #[derive(
-    SubstType, LatexFmt, LangDisplay, NoNorm, NoKinds, NoSubtypes, Debug, Clone, PartialEq, Eq,
+    FromVariants,
+    SubstType,
+    LatexFmt,
+    LangDisplay,
+    NoNorm,
+    NoKinds,
+    NoSubtypes,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
 )]
 #[Lang(Existential)]
 pub enum Type {
@@ -87,46 +97,5 @@ impl GrammarDescribe for Type {
             Exists::<Existential>::rule(),
             Record::<Existential>::rule(),
         ])
-    }
-}
-
-impl From<Exists<Existential>> for Type {
-    fn from(ex: Exists<Existential>) -> Type {
-        Type::Exists(ex)
-    }
-}
-
-impl From<TypeVariable<Existential>> for Type {
-    fn from(v: TypeVariable<Existential>) -> Type {
-        Type::Var(v)
-    }
-}
-impl From<Unit<Existential>> for Type {
-    fn from(u: Unit<Existential>) -> Type {
-        Type::Unit(u)
-    }
-}
-
-impl From<Fun<Existential>> for Type {
-    fn from(fun: Fun<Existential>) -> Type {
-        Type::Fun(fun)
-    }
-}
-
-impl From<Bool<Existential>> for Type {
-    fn from(b: Bool<Existential>) -> Type {
-        Type::Bool(b)
-    }
-}
-
-impl From<Nat<Existential>> for Type {
-    fn from(n: Nat<Existential>) -> Type {
-        Type::Nat(n)
-    }
-}
-
-impl From<Record<Existential>> for Type {
-    fn from(rec: Record<Existential>) -> Type {
-        Type::Record(rec)
     }
 }

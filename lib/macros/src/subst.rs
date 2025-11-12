@@ -18,6 +18,7 @@ pub fn generate_subst_term(input: TokenStream) -> TokenStream {
     });
 
     let output = quote! {
+        #[automatically_derived]
         impl syntax::subst::SubstTerm for #ident{
             type Lang = #lang_val;
             type Target = Self;
@@ -44,6 +45,7 @@ pub fn generate_subst_type(input: TokenStream) -> TokenStream {
     });
 
     let output = quote! {
+        #[automatically_derived]
         impl syntax::subst::SubstType for #ident{
             type Lang = #lang_val;
             type Target = Self;

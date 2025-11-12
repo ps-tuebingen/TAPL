@@ -1,10 +1,11 @@
 use super::{BoundedQuantification, terms::Term};
 use errors::ValueMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{LangDisplay, LatexFmt};
+use macros::{FromVariants, LangDisplay, LatexFmt};
 use syntax::values::{Lambda, LambdaSub, Num, Pack, Record, Value as ValueTrait, ValueGroup};
 
-#[derive(LatexFmt, LangDisplay, Debug, Clone, PartialEq, Eq)]
+#[derive(LatexFmt, FromVariants, LangDisplay, Debug, Clone, PartialEq, Eq)]
+#[Lang(BoundedQuantification)]
 pub enum Value {
     Lambda(Lambda<BoundedQuantification>),
     LambdaSub(LambdaSub<BoundedQuantification>),
@@ -81,35 +82,5 @@ impl From<Value> for Term {
             Value::Num(num) => num.into_term(),
             Value::Record(rec) => rec.into_term(),
         }
-    }
-}
-
-impl From<Lambda<BoundedQuantification>> for Value {
-    fn from(lam: Lambda<BoundedQuantification>) -> Value {
-        Value::Lambda(lam)
-    }
-}
-
-impl From<Num<BoundedQuantification>> for Value {
-    fn from(num: Num<BoundedQuantification>) -> Value {
-        Value::Num(num)
-    }
-}
-
-impl From<LambdaSub<BoundedQuantification>> for Value {
-    fn from(lam: LambdaSub<BoundedQuantification>) -> Value {
-        Value::LambdaSub(lam)
-    }
-}
-
-impl From<Pack<BoundedQuantification>> for Value {
-    fn from(pack: Pack<BoundedQuantification>) -> Value {
-        Value::Pack(pack)
-    }
-}
-
-impl From<Record<BoundedQuantification>> for Value {
-    fn from(rec: Record<BoundedQuantification>) -> Value {
-        Value::Record(rec)
     }
 }

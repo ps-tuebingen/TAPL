@@ -1,13 +1,23 @@
 use super::Recursive;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes, SubstType};
+use macros::{FromVariants, LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes, SubstType};
 use syntax::types::{
     Bool, Fun, Mu, Nat, Product, Record, Type as TypeTrait, TypeGroup, TypeVariable, Unit, Variant,
 };
 
 #[derive(
-    SubstType, LatexFmt, LangDisplay, NoNorm, NoKinds, NoSubtypes, Debug, Clone, PartialEq, Eq,
+    FromVariants,
+    SubstType,
+    LatexFmt,
+    LangDisplay,
+    NoNorm,
+    NoKinds,
+    NoSubtypes,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
 )]
 #[Lang(Recursive)]
 pub enum Type {
@@ -103,58 +113,5 @@ impl GrammarDescribe for Type {
             Bool::<Recursive>::rule(),
             Record::<Recursive>::rule(),
         ])
-    }
-}
-
-impl From<Mu<Recursive>> for Type {
-    fn from(mu: Mu<Recursive>) -> Type {
-        Type::Mu(mu)
-    }
-}
-impl From<TypeVariable<Recursive>> for Type {
-    fn from(v: TypeVariable<Recursive>) -> Type {
-        Type::TypeVar(v)
-    }
-}
-
-impl From<Unit<Recursive>> for Type {
-    fn from(u: Unit<Recursive>) -> Type {
-        Type::Unit(u)
-    }
-}
-
-impl From<Fun<Recursive>> for Type {
-    fn from(fun: Fun<Recursive>) -> Type {
-        Type::Fun(fun)
-    }
-}
-
-impl From<Bool<Recursive>> for Type {
-    fn from(b: Bool<Recursive>) -> Type {
-        Type::Bool(b)
-    }
-}
-
-impl From<Nat<Recursive>> for Type {
-    fn from(n: Nat<Recursive>) -> Type {
-        Type::Nat(n)
-    }
-}
-
-impl From<Product<Recursive>> for Type {
-    fn from(prod: Product<Recursive>) -> Type {
-        Type::Product(prod)
-    }
-}
-
-impl From<Record<Recursive>> for Type {
-    fn from(rec: Record<Recursive>) -> Type {
-        Type::Record(rec)
-    }
-}
-
-impl From<Variant<Recursive>> for Type {
-    fn from(var: Variant<Recursive>) -> Type {
-        Type::Variant(var)
     }
 }

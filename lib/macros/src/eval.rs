@@ -25,6 +25,7 @@ pub fn generate_eval(input: TokenStream) -> TokenStream {
     });
 
     let output = quote! {
+        #[automatically_derived]
         impl eval::Eval for #ident{
             type Lang = #lang_val;
             fn eval(self, env: &mut syntax::eval_context::EvalContext<Self::Lang>) -> Result<trace::EvalTrace<Self::Lang>, errors::eval_error::EvalError> {

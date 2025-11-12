@@ -1,13 +1,14 @@
 use super::{Subtypes, terms::Term};
 use errors::ValueMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{LangDisplay, LatexFmt};
+use macros::{FromVariants, LangDisplay, LatexFmt};
 use syntax::values::{
     Cons, False, Lambda, Loc, Nil, Num, Record, True, Unit, Value as ValueTrait, ValueGroup,
     Variant,
 };
 
-#[derive(LatexFmt, LangDisplay, Debug, PartialEq, Eq, Clone)]
+#[derive(FromVariants, LatexFmt, LangDisplay, Debug, PartialEq, Eq, Clone)]
+#[Lang(Subtypes)]
 pub enum Value {
     Lambda(Lambda<Subtypes>),
     Unit(Unit<Subtypes>),
@@ -131,59 +132,5 @@ impl GrammarDescribe for Value {
             True::<Subtypes>::rule(),
             False::<Subtypes>::rule(),
         ])
-    }
-}
-
-impl From<Loc<Subtypes>> for Value {
-    fn from(loc: Loc<Subtypes>) -> Value {
-        Value::Loc(loc)
-    }
-}
-impl From<Lambda<Subtypes>> for Value {
-    fn from(lam: Lambda<Subtypes>) -> Value {
-        Value::Lambda(lam)
-    }
-}
-impl From<Unit<Subtypes>> for Value {
-    fn from(u: Unit<Subtypes>) -> Value {
-        Value::Unit(u)
-    }
-}
-impl From<True<Subtypes>> for Value {
-    fn from(tru: True<Subtypes>) -> Value {
-        Value::True(tru)
-    }
-}
-impl From<False<Subtypes>> for Value {
-    fn from(fls: False<Subtypes>) -> Value {
-        Value::False(fls)
-    }
-}
-impl From<Num<Subtypes>> for Value {
-    fn from(num: Num<Subtypes>) -> Value {
-        Value::Num(num)
-    }
-}
-
-impl From<Record<Subtypes>> for Value {
-    fn from(rec: Record<Subtypes>) -> Value {
-        Value::Record(rec)
-    }
-}
-
-impl From<Variant<Subtypes>> for Value {
-    fn from(var: Variant<Subtypes>) -> Value {
-        Value::Variant(var)
-    }
-}
-
-impl From<Nil<Subtypes>> for Value {
-    fn from(nil: Nil<Subtypes>) -> Value {
-        Value::Nil(nil)
-    }
-}
-impl From<Cons<Subtypes>> for Value {
-    fn from(cons: Cons<Subtypes>) -> Value {
-        Value::Cons(cons)
     }
 }

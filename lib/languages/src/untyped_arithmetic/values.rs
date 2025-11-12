@@ -1,10 +1,11 @@
 use super::{UntypedArithmetic, terms::Term};
 use errors::ValueMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{LangDisplay, LatexFmt};
+use macros::{FromVariants, LangDisplay, LatexFmt};
 use syntax::values::{False, Num, True, Value as ValueTrait, ValueGroup};
 
-#[derive(LatexFmt, LangDisplay, Debug, Clone, PartialEq, Eq)]
+#[derive(FromVariants, LatexFmt, LangDisplay, Debug, Clone, PartialEq, Eq)]
+#[Lang(UntypedArithmetic)]
 pub enum Value {
     True(True<UntypedArithmetic>),
     False(False<UntypedArithmetic>),
@@ -59,23 +60,5 @@ impl From<Value> for Term {
             Value::False(fls) => fls.into_term(),
             Value::Num(num) => num.into_term(),
         }
-    }
-}
-
-impl From<True<UntypedArithmetic>> for Value {
-    fn from(tru: True<UntypedArithmetic>) -> Value {
-        Value::True(tru)
-    }
-}
-
-impl From<False<UntypedArithmetic>> for Value {
-    fn from(fls: False<UntypedArithmetic>) -> Value {
-        Value::False(fls)
-    }
-}
-
-impl From<Num<UntypedArithmetic>> for Value {
-    fn from(num: Num<UntypedArithmetic>) -> Value {
-        Value::Num(num)
     }
 }

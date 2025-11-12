@@ -1,12 +1,13 @@
 use super::{Existential, terms::Term};
 use errors::ValueMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{LangDisplay, LatexFmt};
+use macros::{FromVariants, LangDisplay, LatexFmt};
 use syntax::values::{
     False, Lambda, Num, Pack, Record, True, Unit, Value as ValueTrait, ValueGroup,
 };
 
-#[derive(LatexFmt, LangDisplay, Debug, Clone, PartialEq, Eq)]
+#[derive(FromVariants, LatexFmt, LangDisplay, Debug, Clone, PartialEq, Eq)]
+#[Lang(Existential)]
 pub enum Value {
     Unit(Unit<Existential>),
     Lambda(Lambda<Existential>),
@@ -97,42 +98,5 @@ impl From<Value> for Term {
             Value::True(tru) => tru.into_term(),
             Value::False(fls) => fls.into_term(),
         }
-    }
-}
-
-impl From<Lambda<Existential>> for Value {
-    fn from(lam: Lambda<Existential>) -> Value {
-        Value::Lambda(lam)
-    }
-}
-impl From<Unit<Existential>> for Value {
-    fn from(u: Unit<Existential>) -> Value {
-        Value::Unit(u)
-    }
-}
-impl From<True<Existential>> for Value {
-    fn from(tru: True<Existential>) -> Value {
-        Value::True(tru)
-    }
-}
-impl From<False<Existential>> for Value {
-    fn from(fls: False<Existential>) -> Value {
-        Value::False(fls)
-    }
-}
-impl From<Num<Existential>> for Value {
-    fn from(num: Num<Existential>) -> Value {
-        Value::Num(num)
-    }
-}
-impl From<Record<Existential>> for Value {
-    fn from(rec: Record<Existential>) -> Value {
-        Value::Record(rec)
-    }
-}
-
-impl From<Pack<Existential>> for Value {
-    fn from(pack: Pack<Existential>) -> Value {
-        Value::Pack(pack)
     }
 }

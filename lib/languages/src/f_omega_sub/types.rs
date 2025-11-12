@@ -1,13 +1,14 @@
 use super::FOmegaSub;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{Kindcheck, LangDisplay, LatexFmt, Normalize, SubstType, Subtypecheck};
+use macros::{FromVariants, Kindcheck, LangDisplay, LatexFmt, Normalize, SubstType, Subtypecheck};
 use syntax::types::{
     ExistsBounded, ForallBounded, Fun, Nat, OpApp, OpLambdaSub, Record, Top, Type as TypeTrait,
     TypeGroup, TypeVariable,
 };
 
 #[derive(
+    FromVariants,
     SubstType,
     LatexFmt,
     LangDisplay,
@@ -124,52 +125,5 @@ impl TypeGroup for Type {
         } else {
             Err(TypeMismatch::new(self.to_string(), "Nat".to_owned()))
         }
-    }
-}
-
-impl From<Top<FOmegaSub>> for Type {
-    fn from(t: Top<FOmegaSub>) -> Type {
-        Type::Top(t)
-    }
-}
-
-impl From<TypeVariable<FOmegaSub>> for Type {
-    fn from(var: TypeVariable<FOmegaSub>) -> Type {
-        Type::Var(var)
-    }
-}
-impl From<OpLambdaSub<FOmegaSub>> for Type {
-    fn from(oplam: OpLambdaSub<FOmegaSub>) -> Type {
-        Type::OpLambdaSub(oplam)
-    }
-}
-impl From<Fun<FOmegaSub>> for Type {
-    fn from(fun: Fun<FOmegaSub>) -> Type {
-        Type::Fun(fun)
-    }
-}
-impl From<OpApp<FOmegaSub>> for Type {
-    fn from(opapp: OpApp<FOmegaSub>) -> Type {
-        Type::OpApp(opapp)
-    }
-}
-impl From<ForallBounded<FOmegaSub>> for Type {
-    fn from(forall: ForallBounded<FOmegaSub>) -> Type {
-        Type::Forall(forall)
-    }
-}
-impl From<ExistsBounded<FOmegaSub>> for Type {
-    fn from(exists: ExistsBounded<FOmegaSub>) -> Type {
-        Type::Exists(exists)
-    }
-}
-impl From<Record<FOmegaSub>> for Type {
-    fn from(rec: Record<FOmegaSub>) -> Type {
-        Type::Record(rec)
-    }
-}
-impl From<Nat<FOmegaSub>> for Type {
-    fn from(n: Nat<FOmegaSub>) -> Type {
-        Type::Nat(n)
     }
 }

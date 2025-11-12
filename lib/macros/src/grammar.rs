@@ -16,6 +16,7 @@ pub fn generate_grammar_describe(input: TokenStream) -> TokenStream {
     });
 
     let output = quote! {
+        #[automatically_derived]
         impl grammar::GrammarDescribe for #ident{
             fn grammar() -> grammar::Grammar{
                 grammar::Grammar::term(vec![

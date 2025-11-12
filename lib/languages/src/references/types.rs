@@ -1,11 +1,21 @@
 use super::References;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes, SubstType};
+use macros::{FromVariants, LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes, SubstType};
 use syntax::types::{Bool, Fun, Nat, Reference, Type as TypeTrait, TypeGroup, Unit};
 
 #[derive(
-    SubstType, LatexFmt, LangDisplay, NoNorm, NoKinds, NoSubtypes, Debug, Clone, PartialEq, Eq,
+    FromVariants,
+    SubstType,
+    LatexFmt,
+    LangDisplay,
+    NoNorm,
+    NoKinds,
+    NoSubtypes,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
 )]
 #[Lang(References)]
 pub enum Type {
@@ -69,36 +79,6 @@ impl GrammarDescribe for Type {
             Fun::<References>::rule(),
             Reference::<References>::rule(),
         ])
-    }
-}
-
-impl From<Unit<References>> for Type {
-    fn from(u: Unit<References>) -> Type {
-        Type::Unit(u)
-    }
-}
-
-impl From<Nat<References>> for Type {
-    fn from(n: Nat<References>) -> Type {
-        Type::Nat(n)
-    }
-}
-
-impl From<Fun<References>> for Type {
-    fn from(fun: Fun<References>) -> Type {
-        Type::Fun(fun)
-    }
-}
-
-impl From<Reference<References>> for Type {
-    fn from(rf: Reference<References>) -> Type {
-        Type::Ref(rf)
-    }
-}
-
-impl From<Bool<References>> for Type {
-    fn from(b: Bool<References>) -> Type {
-        Type::Bool(b)
     }
 }
 
