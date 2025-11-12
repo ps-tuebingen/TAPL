@@ -1,6 +1,6 @@
 use super::{SystemF, types::Type};
 use latex::{LatexConfig, LatexFmt};
-use macros::{Eval, GrammarDescribe, Typecheck};
+use macros::{Eval, GrammarDescribe, TermDisplay, Typecheck};
 use std::fmt;
 use syntax::{
     TypeVar, Var,
@@ -8,7 +8,7 @@ use syntax::{
     terms::{App, Lambda, TyApp, TyLambda, Variable},
 };
 
-#[derive(GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq)]
+#[derive(TermDisplay, GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq)]
 #[Lang(SystemF)]
 pub enum Term {
     Variable(Variable<SystemF>),
@@ -44,18 +44,6 @@ impl SubstTerm for Term {
             Term::App(app) => app.subst(v, t).into(),
             Term::TyLambda(lam) => lam.subst(v, t).into(),
             Term::TyApp(app) => app.subst(v, t).into(),
-        }
-    }
-}
-
-impl fmt::Display for Term {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Term::Variable(var) => var.fmt(f),
-            Term::Lambda(lam) => lam.fmt(f),
-            Term::App(app) => app.fmt(f),
-            Term::TyLambda(lam) => lam.fmt(f),
-            Term::TyApp(app) => app.fmt(f),
         }
     }
 }

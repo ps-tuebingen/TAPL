@@ -1,6 +1,6 @@
 use super::{LambdaOmega, types::Type};
 use latex::{LatexConfig, LatexFmt};
-use macros::{Eval, GrammarDescribe, Typecheck};
+use macros::{Eval, GrammarDescribe, TermDisplay, Typecheck};
 use std::fmt;
 use syntax::{
     TypeVar, Var,
@@ -8,7 +8,7 @@ use syntax::{
     terms::{App, False, Lambda, Num, True, TyApp, TyLambda, Unit, Variable},
 };
 
-#[derive(GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq)]
+#[derive(TermDisplay, GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq)]
 #[Lang(LambdaOmega)]
 pub enum Term {
     Variable(Variable<LambdaOmega>),
@@ -56,22 +56,6 @@ impl SubstTerm for Term {
             Term::Unit(u) => u.subst(v, t).into(),
             Term::TyLambda(tylam) => tylam.subst(v, t).into(),
             Term::TyApp(tyapp) => tyapp.subst(v, t).into(),
-        }
-    }
-}
-
-impl fmt::Display for Term {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Term::Variable(var) => var.fmt(f),
-            Term::Num(num) => num.fmt(f),
-            Term::True(tru) => tru.fmt(f),
-            Term::False(fls) => fls.fmt(f),
-            Term::Lambda(lam) => lam.fmt(f),
-            Term::App(app) => app.fmt(f),
-            Term::Unit(u) => u.fmt(f),
-            Term::TyLambda(tylam) => tylam.fmt(f),
-            Term::TyApp(tyapp) => tyapp.fmt(f),
         }
     }
 }

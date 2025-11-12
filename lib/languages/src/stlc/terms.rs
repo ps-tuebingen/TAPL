@@ -1,6 +1,6 @@
 use super::{Stlc, types::Type};
 use latex::{LatexConfig, LatexFmt};
-use macros::{Eval, GrammarDescribe, Typecheck};
+use macros::{Eval, GrammarDescribe, TermDisplay, Typecheck};
 use std::fmt;
 use syntax::{
     TypeVar, Var,
@@ -12,7 +12,7 @@ use syntax::{
     },
 };
 
-#[derive(GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq)]
+#[derive(TermDisplay, GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq)]
 #[Lang(Stlc)]
 pub enum Term {
     Variable(Variable<Stlc>),
@@ -100,47 +100,6 @@ impl SubstTerm for Term {
             Term::IsNil(isnil) => isnil.subst(v, t).into(),
             Term::Head(hd) => hd.subst(v, t).into(),
             Term::Tail(tl) => tl.subst(v, t).into(),
-        }
-    }
-}
-
-impl fmt::Display for Term {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Term::Variable(v) => v.fmt(f),
-            Term::Lambda(lam) => lam.fmt(f),
-            Term::App(app) => app.fmt(f),
-            Term::Unit(unit) => unit.fmt(f),
-            Term::True(tru) => tru.fmt(f),
-            Term::False(fls) => fls.fmt(f),
-            Term::If(ift) => ift.fmt(f),
-            Term::Num(num) => num.fmt(f),
-            Term::Pred(p) => p.fmt(f),
-            Term::Succ(s) => s.fmt(f),
-            Term::IsZero(isz) => isz.fmt(f),
-            Term::Ascribe(asc) => asc.fmt(f),
-            Term::Let(lt) => lt.fmt(f),
-            Term::Pair(pr) => pr.fmt(f),
-            Term::Tuple(tup) => tup.fmt(f),
-            Term::Projection(proj) => proj.fmt(f),
-            Term::Fst(proj) => proj.fmt(f),
-            Term::Snd(proj) => proj.fmt(f),
-            Term::Record(rec) => rec.fmt(f),
-            Term::RecordProj(proj) => proj.fmt(f),
-            Term::Left(lf) => lf.fmt(f),
-            Term::Right(rt) => rt.fmt(f),
-            Term::SumCase(case) => case.fmt(f),
-            Term::Variant(var) => var.fmt(f),
-            Term::VariantCase(case) => case.fmt(f),
-            Term::Nothing(not) => not.fmt(f),
-            Term::Something(some) => some.fmt(f),
-            Term::SomeCase(case) => case.fmt(f),
-            Term::Fix(fix) => fix.fmt(f),
-            Term::Nil(nil) => nil.fmt(f),
-            Term::Cons(cons) => cons.fmt(f),
-            Term::IsNil(isnil) => isnil.fmt(f),
-            Term::Head(hd) => hd.fmt(f),
-            Term::Tail(tl) => tl.fmt(f),
         }
     }
 }

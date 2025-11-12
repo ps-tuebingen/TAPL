@@ -1,6 +1,6 @@
 use super::{Subtypes, types::Type};
 use latex::{LatexConfig, LatexFmt};
-use macros::{Eval, GrammarDescribe, Typecheck};
+use macros::{Eval, GrammarDescribe, TermDisplay, Typecheck};
 use std::fmt;
 use syntax::{
     TypeVar, Var,
@@ -11,7 +11,7 @@ use syntax::{
     },
 };
 
-#[derive(GrammarDescribe, Eval, Typecheck, Debug, PartialEq, Eq, Clone)]
+#[derive(TermDisplay, GrammarDescribe, Eval, Typecheck, Debug, PartialEq, Eq, Clone)]
 #[Lang(Subtypes)]
 pub enum Term {
     Variable(Variable<Subtypes>),
@@ -110,37 +110,6 @@ impl LatexFmt for Term {
             Term::If(ift) => ift.to_latex(conf),
             Term::Let(lt) => lt.to_latex(conf),
             Term::Fix(fix) => fix.to_latex(conf),
-        }
-    }
-}
-
-impl fmt::Display for Term {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Term::Variable(var) => var.fmt(f),
-            Term::Lambda(lam) => lam.fmt(f),
-            Term::App(app) => app.fmt(f),
-            Term::Unit(unit) => unit.fmt(f),
-            Term::Record(rec) => rec.fmt(f),
-            Term::RecordProj(proj) => proj.fmt(f),
-            Term::Variant(var) => var.fmt(f),
-            Term::VariantCase(case) => case.fmt(f),
-            Term::Cast(cast) => cast.fmt(f),
-            Term::Nil(nil) => nil.fmt(f),
-            Term::Cons(cons) => cons.fmt(f),
-            Term::ListCase(case) => case.fmt(f),
-            Term::Ref(rf) => rf.fmt(f),
-            Term::Deref(deref) => deref.fmt(f),
-            Term::Assign(assign) => assign.fmt(f),
-            Term::Loc(loc) => loc.fmt(f),
-            Term::Num(num) => num.fmt(f),
-            Term::Succ(succ) => succ.fmt(f),
-            Term::Pred(pred) => pred.fmt(f),
-            Term::True(tru) => tru.fmt(f),
-            Term::False(fls) => fls.fmt(f),
-            Term::If(ift) => ift.fmt(f),
-            Term::Let(lt) => lt.fmt(f),
-            Term::Fix(fix) => fix.fmt(f),
         }
     }
 }

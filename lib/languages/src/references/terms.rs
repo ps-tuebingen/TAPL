@@ -1,6 +1,6 @@
 use super::{References, types::Type};
 use latex::{LatexConfig, LatexFmt};
-use macros::{Eval, GrammarDescribe, Typecheck};
+use macros::{Eval, GrammarDescribe, TermDisplay, Typecheck};
 use std::fmt;
 use syntax::{
     TypeVar, Var,
@@ -11,7 +11,7 @@ use syntax::{
     },
 };
 
-#[derive(GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq)]
+#[derive(TermDisplay, GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq)]
 #[Lang(References)]
 pub enum Term {
     Variable(Variable<References>),
@@ -65,30 +65,6 @@ impl SubstTerm for Term {
             Term::False(fls) => fls.subst(v, t).into(),
             Term::Fix(fix) => fix.subst(v, t).into(),
             Term::IsZero(isz) => isz.subst(v, t).into(),
-        }
-    }
-}
-
-impl fmt::Display for Term {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Term::Variable(v) => v.fmt(f),
-            Term::Num(c) => c.fmt(f),
-            Term::Succ(s) => s.fmt(f),
-            Term::Pred(p) => p.fmt(f),
-            Term::Lambda(lam) => lam.fmt(f),
-            Term::App(app) => app.fmt(f),
-            Term::Unit(u) => u.fmt(f),
-            Term::Ref(reft) => reft.fmt(f),
-            Term::Deref(dereft) => dereft.fmt(f),
-            Term::Assign(ass) => ass.fmt(f),
-            Term::Loc(loc) => loc.fmt(f),
-            Term::Let(lett) => lett.fmt(f),
-            Term::If(ift) => ift.fmt(f),
-            Term::True(tru) => tru.fmt(f),
-            Term::False(fls) => fls.fmt(f),
-            Term::Fix(fix) => fix.fmt(f),
-            Term::IsZero(isz) => isz.fmt(f),
         }
     }
 }

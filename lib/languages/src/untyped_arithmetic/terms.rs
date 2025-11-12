@@ -4,7 +4,7 @@ use derivations::Derivation;
 use errors::{NoTyping, check_error::CheckError};
 use grammar::DerivationRule;
 use latex::{LatexConfig, LatexFmt};
-use macros::{Eval, GrammarDescribe};
+use macros::{Eval, GrammarDescribe, TermDisplay};
 use std::collections::HashSet;
 use std::fmt;
 use syntax::{
@@ -16,7 +16,7 @@ use syntax::{
     untyped::Untyped,
 };
 
-#[derive(GrammarDescribe, Eval, Clone, Debug, PartialEq, Eq)]
+#[derive(TermDisplay, GrammarDescribe, Eval, Clone, Debug, PartialEq, Eq)]
 #[Lang(UntypedArithmetic)]
 pub enum Term {
     True(True<UntypedArithmetic>),
@@ -43,20 +43,6 @@ impl SubstType for Term {
     type Lang = UntypedArithmetic;
     fn subst_type(self, _: &TypeVar, _: &Untyped<UntypedArithmetic>) -> Self::Target {
         self
-    }
-}
-
-impl fmt::Display for Term {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Term::True(tru) => tru.fmt(f),
-            Term::False(fls) => fls.fmt(f),
-            Term::If(ift) => ift.fmt(f),
-            Term::Num(num) => num.fmt(f),
-            Term::Succ(succ) => succ.fmt(f),
-            Term::Pred(pred) => pred.fmt(f),
-            Term::IsZero(isz) => isz.fmt(f),
-        }
     }
 }
 

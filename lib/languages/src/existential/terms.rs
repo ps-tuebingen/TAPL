@@ -1,6 +1,6 @@
 use super::{Existential, types::Type};
 use latex::{LatexConfig, LatexFmt};
-use macros::{Eval, GrammarDescribe, Typecheck};
+use macros::{Eval, GrammarDescribe, TermDisplay, Typecheck};
 use std::fmt;
 use syntax::{
     TypeVar, Var,
@@ -11,7 +11,7 @@ use syntax::{
     },
 };
 
-#[derive(GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq)]
+#[derive(TermDisplay, GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq)]
 #[Lang(Existential)]
 pub enum Term {
     Variable(Variable<Existential>),
@@ -80,29 +80,6 @@ impl SubstType for Term {
             Term::False(fls) => fls.subst_type(v, ty).into(),
             Term::If(ift) => ift.subst_type(v, ty).into(),
             Term::Fix(fix) => fix.subst_type(v, ty).into(),
-        }
-    }
-}
-
-impl fmt::Display for Term {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Term::Variable(v) => v.fmt(f),
-            Term::Unit(u) => u.fmt(f),
-            Term::Lambda(lam) => lam.fmt(f),
-            Term::App(app) => app.fmt(f),
-            Term::Pack(pack) => pack.fmt(f),
-            Term::Unpack(unpack) => unpack.fmt(f),
-            Term::Num(num) => num.fmt(f),
-            Term::Succ(succ) => succ.fmt(f),
-            Term::Pred(pred) => pred.fmt(f),
-            Term::IsZero(isz) => isz.fmt(f),
-            Term::Record(rec) => rec.fmt(f),
-            Term::RecordProj(proj) => proj.fmt(f),
-            Term::True(tru) => tru.fmt(f),
-            Term::False(fls) => fls.fmt(f),
-            Term::If(ift) => ift.fmt(f),
-            Term::Fix(fix) => fix.fmt(f),
         }
     }
 }

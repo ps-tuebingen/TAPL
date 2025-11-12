@@ -1,6 +1,6 @@
 use super::{Recursive, types::Type};
 use latex::{LatexConfig, LatexFmt};
-use macros::{Eval, GrammarDescribe, Typecheck};
+use macros::{Eval, GrammarDescribe, TermDisplay, Typecheck};
 use std::fmt;
 use syntax::{
     TypeVar, Var,
@@ -11,7 +11,7 @@ use syntax::{
     },
 };
 
-#[derive(GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq)]
+#[derive(TermDisplay, GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq)]
 #[Lang(Recursive)]
 pub enum Term {
     Variable(Variable<Recursive>),
@@ -98,35 +98,6 @@ impl SubstTerm for Term {
             Term::Let(lt) => lt.subst(v, t).into(),
             Term::Record(rec) => rec.subst(v, t).into(),
             Term::RecordProj(proj) => proj.subst(v, t).into(),
-        }
-    }
-}
-
-impl fmt::Display for Term {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Term::Variable(v) => v.fmt(f),
-            Term::Lambda(lam) => lam.fmt(f),
-            Term::App(app) => app.fmt(f),
-            Term::Unit(u) => u.fmt(f),
-            Term::Fold(fold) => fold.fmt(f),
-            Term::Unfold(unfold) => unfold.fmt(f),
-            Term::Variant(var) => var.fmt(f),
-            Term::VariantCase(case) => case.fmt(f),
-            Term::Pair(p) => p.fmt(f),
-            Term::Fst(fst) => fst.fmt(f),
-            Term::Snd(snd) => snd.fmt(f),
-            Term::Num(num) => num.fmt(f),
-            Term::Succ(succ) => succ.fmt(f),
-            Term::Pred(pred) => pred.fmt(f),
-            Term::IsZero(isz) => isz.fmt(f),
-            Term::True(tru) => tru.fmt(f),
-            Term::False(fls) => fls.fmt(f),
-            Term::If(ift) => ift.fmt(f),
-            Term::Fix(fix) => fix.fmt(f),
-            Term::Let(lt) => lt.fmt(f),
-            Term::Record(rec) => rec.fmt(f),
-            Term::RecordProj(proj) => proj.fmt(f),
         }
     }
 }

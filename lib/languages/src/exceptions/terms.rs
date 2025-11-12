@@ -1,6 +1,6 @@
 use super::{Exceptions, types::Type};
 use latex::{LatexConfig, LatexFmt};
-use macros::{Eval, GrammarDescribe, Typecheck};
+use macros::{Eval, GrammarDescribe, TermDisplay, Typecheck};
 use std::fmt;
 use syntax::{
     TypeVar, Var,
@@ -11,7 +11,7 @@ use syntax::{
     },
 };
 
-#[derive(GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq)]
+#[derive(TermDisplay, GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq)]
 #[Lang(Exceptions)]
 pub enum Term {
     Variable(Variable<Exceptions>),
@@ -32,28 +32,6 @@ pub enum Term {
 }
 
 impl syntax::terms::Term for Term {}
-
-impl fmt::Display for Term {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Term::Variable(v) => v.fmt(f),
-            Term::Num(num) => num.fmt(f),
-            Term::True(tru) => tru.fmt(f),
-            Term::False(fls) => fls.fmt(f),
-            Term::Succ(s) => s.fmt(f),
-            Term::Pred(p) => p.fmt(f),
-            Term::IsZero(isz) => isz.fmt(f),
-            Term::If(ift) => ift.fmt(f),
-            Term::Lambda(lam) => lam.fmt(f),
-            Term::App(app) => app.fmt(f),
-            Term::Unit(u) => u.fmt(f),
-            Term::Exception(exc) => exc.fmt(f),
-            Term::Try(t) => t.fmt(f),
-            Term::Raise(r) => r.fmt(f),
-            Term::TryWithVal(t) => t.fmt(f),
-        }
-    }
-}
 
 impl LatexFmt for Term {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {

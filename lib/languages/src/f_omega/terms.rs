@@ -1,6 +1,6 @@
 use super::{FOmega, types::Type};
 use latex::{LatexConfig, LatexFmt};
-use macros::{Eval, GrammarDescribe, Typecheck};
+use macros::{Eval, GrammarDescribe, TermDisplay, Typecheck};
 use std::fmt;
 use syntax::{
     TypeVar, Var,
@@ -11,7 +11,7 @@ use syntax::{
     },
 };
 
-#[derive(GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq)]
+#[derive(TermDisplay, GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq)]
 #[Lang(FOmega)]
 pub enum Term {
     Variable(Variable<FOmega>),
@@ -86,31 +86,6 @@ impl SubstType for Term {
             Term::Succ(s) => s.subst_type(v, ty).into(),
             Term::Pred(p) => p.subst_type(v, ty).into(),
             Term::IsZero(isz) => isz.subst_type(v, ty).into(),
-        }
-    }
-}
-
-impl fmt::Display for Term {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Term::Variable(var) => var.fmt(f),
-            Term::Lambda(lam) => lam.fmt(f),
-            Term::App(app) => app.fmt(f),
-            Term::TyLambda(abs) => abs.fmt(f),
-            Term::TyApp(app) => app.fmt(f),
-            Term::Pack(pack) => pack.fmt(f),
-            Term::Unpack(unpack) => unpack.fmt(f),
-            Term::Record(rec) => rec.fmt(f),
-            Term::RecordProj(proj) => proj.fmt(f),
-            Term::True(tru) => tru.fmt(f),
-            Term::False(fls) => fls.fmt(f),
-            Term::If(ift) => ift.fmt(f),
-            Term::Unit(u) => u.fmt(f),
-            Term::Fix(fix) => fix.fmt(f),
-            Term::Num(num) => num.fmt(f),
-            Term::Succ(s) => s.fmt(f),
-            Term::Pred(p) => p.fmt(f),
-            Term::IsZero(isz) => isz.fmt(f),
         }
     }
 }

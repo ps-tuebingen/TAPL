@@ -4,7 +4,7 @@ use derivations::Derivation;
 use errors::{NoTyping, check_error::CheckError};
 use grammar::DerivationRule;
 use latex::{LatexConfig, LatexFmt};
-use macros::{Eval, GrammarDescribe};
+use macros::{Eval, GrammarDescribe, TermDisplay};
 use std::{collections::HashSet, fmt};
 use syntax::{
     TypeVar, Var,
@@ -14,7 +14,7 @@ use syntax::{
     terms::{App, UntypedLambda as UntypedLambdaT, Variable},
 };
 
-#[derive(GrammarDescribe, Eval, Debug, Clone, PartialEq, Eq)]
+#[derive(TermDisplay, GrammarDescribe, Eval, Debug, Clone, PartialEq, Eq)]
 #[Lang(UntypedLambda)]
 pub enum Term {
     Var(Variable<UntypedLambda>),
@@ -23,16 +23,6 @@ pub enum Term {
 }
 
 impl syntax::terms::Term for Term {}
-
-impl fmt::Display for Term {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Term::Var(var) => var.fmt(f),
-            Term::Lambda(lam) => lam.fmt(f),
-            Term::App(app) => app.fmt(f),
-        }
-    }
-}
 
 impl LatexFmt for Term {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {

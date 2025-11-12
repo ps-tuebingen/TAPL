@@ -1,6 +1,6 @@
 use super::{TypedArithmetic, types::Type};
 use latex::{LatexConfig, LatexFmt};
-use macros::{Eval, GrammarDescribe, Typecheck};
+use macros::{Eval, GrammarDescribe, TermDisplay, Typecheck};
 use std::fmt;
 use syntax::{
     TypeVar, Var,
@@ -8,7 +8,7 @@ use syntax::{
     terms::{False, If, IsZero, Num, Pred, Succ, True},
 };
 
-#[derive(GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq)]
+#[derive(TermDisplay, GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq)]
 #[Lang(TypedArithmetic)]
 pub enum Term {
     True(True<TypedArithmetic>),
@@ -35,20 +35,6 @@ impl SubstTerm for Term {
     type Target = Term;
     fn subst(self, _: &Var, _: &Term) -> Self::Target {
         self
-    }
-}
-
-impl fmt::Display for Term {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Term::True(tru) => tru.fmt(f),
-            Term::False(fls) => fls.fmt(f),
-            Term::If(ift) => ift.fmt(f),
-            Term::Num(num) => num.fmt(f),
-            Term::Succ(succ) => succ.fmt(f),
-            Term::Pred(pred) => pred.fmt(f),
-            Term::IsZero(isz) => isz.fmt(f),
-        }
     }
 }
 
