@@ -1,6 +1,7 @@
 use super::{Exceptions, types::Type};
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
+use macros::Typecheck;
 use std::fmt;
 use syntax::{
     TypeVar, Var,
@@ -11,7 +12,8 @@ use syntax::{
     },
 };
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Typecheck, Debug, Clone, PartialEq, Eq)]
+#[Lang(Exceptions)]
 pub enum Term {
     Var(Variable<Exceptions>),
     Num(Num<Exceptions>),

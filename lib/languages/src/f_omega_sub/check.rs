@@ -1,4 +1,4 @@
-use super::{FOmegaSub, terms::Term, types::Type};
+use super::{FOmegaSub, types::Type};
 use check::{Kindcheck, Subtypecheck, Typecheck};
 use derivations::Derivation;
 use errors::check_error::CheckError;
@@ -11,46 +11,6 @@ use syntax::{
         Variable,
     },
 };
-
-impl Typecheck for Term {
-    type Lang = FOmegaSub;
-
-    fn check(&self, env: Environment<Self::Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
-        match self {
-            Term::Var(var) => var.check(env),
-            Term::Lambda(lam) => lam.check(env),
-            Term::App(app) => app.check(env),
-            Term::LambdaSub(lam) => lam.check(env),
-            Term::TyApp(app) => app.check(env),
-            Term::Pack(pack) => pack.check(env),
-            Term::Unpack(unpack) => unpack.check(env),
-            Term::Record(rec) => rec.check(env),
-            Term::RecordProj(proj) => proj.check(env),
-            Term::Num(num) => num.check(env),
-            Term::Succ(succ) => succ.check(env),
-            Term::Pred(pred) => pred.check(env),
-            Term::Let(lt) => lt.check(env),
-        }
-    }
-
-    fn rules() -> HashSet<DerivationRule> {
-        let mut rules = HashSet::new();
-        rules.extend(Variable::<FOmegaSub>::rules());
-        rules.extend(Lambda::<FOmegaSub>::rules());
-        rules.extend(App::<FOmegaSub>::rules());
-        rules.extend(LambdaSub::<FOmegaSub>::rules());
-        rules.extend(TyApp::<FOmegaSub>::rules());
-        rules.extend(Pack::<FOmegaSub>::rules());
-        rules.extend(Unpack::<FOmegaSub>::rules());
-        rules.extend(Record::<FOmegaSub>::rules());
-        rules.extend(RecordProj::<FOmegaSub>::rules());
-        rules.extend(Num::<FOmegaSub>::rules());
-        rules.extend(Succ::<FOmegaSub>::rules());
-        rules.extend(Pred::<FOmegaSub>::rules());
-        rules.extend(Let::<FOmegaSub>::rules());
-        rules
-    }
-}
 
 impl Subtypecheck for Type {
     type Lang = FOmegaSub;

@@ -1,41 +1,10 @@
-use super::{TypedArithmetic, terms::Term, types::Type};
-use check::{Kindcheck, Subtypecheck, Typecheck};
+use super::{TypedArithmetic, types::Type};
+use check::{Kindcheck, Subtypecheck};
 use derivations::Derivation;
 use errors::{NoKinding, NoSubtyping, check_error::CheckError};
 use grammar::DerivationRule;
 use std::collections::HashSet;
-use syntax::{
-    env::Environment,
-    terms::{False, If, IsZero, Num, Pred, Succ, True},
-};
-
-impl Typecheck for Term {
-    type Lang = TypedArithmetic;
-
-    fn check(&self, env: Environment<Self::Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
-        match self {
-            Term::True(tru) => tru.check(env),
-            Term::False(fls) => fls.check(env),
-            Term::Num(num) => num.check(env),
-            Term::Succ(succ) => succ.check(env),
-            Term::Pred(pred) => pred.check(env),
-            Term::IsZero(isz) => isz.check(env),
-            Term::If(ift) => ift.check(env),
-        }
-    }
-
-    fn rules() -> HashSet<DerivationRule> {
-        let mut rules = HashSet::new();
-        rules.extend(True::<TypedArithmetic>::rules());
-        rules.extend(False::<TypedArithmetic>::rules());
-        rules.extend(If::<TypedArithmetic>::rules());
-        rules.extend(Num::<TypedArithmetic>::rules());
-        rules.extend(Succ::<TypedArithmetic>::rules());
-        rules.extend(Pred::<TypedArithmetic>::rules());
-        rules.extend(IsZero::<TypedArithmetic>::rules());
-        rules
-    }
-}
+use syntax::env::Environment;
 
 impl Subtypecheck for Type {
     type Lang = TypedArithmetic;

@@ -1,6 +1,7 @@
 use super::{LambdaOmega, types::Type};
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
+use macros::Typecheck;
 use std::fmt;
 use syntax::{
     TypeVar, Var,
@@ -8,7 +9,8 @@ use syntax::{
     terms::{App, False, Lambda, Num, True, TyApp, TyLambda, Unit, Variable},
 };
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Typecheck, Debug, Clone, PartialEq, Eq)]
+#[Lang(LambdaOmega)]
 pub enum Term {
     Var(Variable<LambdaOmega>),
     Num(Num<LambdaOmega>),

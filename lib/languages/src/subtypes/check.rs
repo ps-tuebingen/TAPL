@@ -1,4 +1,4 @@
-use super::{Subtypes, terms::Term, types::Type};
+use super::{Subtypes, types::Type};
 use check::{Kindcheck, Normalize, Subtypecheck, Typecheck};
 use derivations::{Derivation, NormalizingDerivation};
 use errors::{NoKinding, check_error::CheckError};
@@ -11,67 +11,6 @@ use syntax::{
         RecordProj, Ref, Succ, True, Unit, Variable, Variant, VariantCase,
     },
 };
-
-impl Typecheck for Term {
-    type Lang = Subtypes;
-
-    fn check(&self, env: Environment<Self::Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
-        match self {
-            Term::Var(var) => var.check(env),
-            Term::Lambda(lam) => lam.check(env),
-            Term::App(app) => app.check(env),
-            Term::Unit(unit) => unit.check(env),
-            Term::Record(rec) => rec.check(env),
-            Term::RecordProj(proj) => proj.check(env),
-            Term::Variant(var) => var.check(env),
-            Term::VariantCase(case) => case.check(env),
-            Term::Cast(cast) => cast.check(env),
-            Term::Nil(nil) => nil.check(env),
-            Term::Cons(cons) => cons.check(env),
-            Term::ListCase(case) => case.check(env),
-            Term::Ref(rf) => rf.check(env),
-            Term::Deref(deref) => deref.check(env),
-            Term::Assign(assign) => assign.check(env),
-            Term::Loc(loc) => loc.check(env),
-            Term::Num(num) => num.check(env),
-            Term::Succ(succ) => succ.check(env),
-            Term::Pred(pred) => pred.check(env),
-            Term::True(tru) => tru.check(env),
-            Term::False(fls) => fls.check(env),
-            Term::If(ift) => ift.check(env),
-            Term::Let(lt) => lt.check(env),
-            Term::Fix(fix) => fix.check(env),
-        }
-    }
-
-    fn rules() -> HashSet<DerivationRule> {
-        let mut rules = HashSet::new();
-        rules.extend(Variable::<Subtypes>::rules());
-        rules.extend(Lambda::<Subtypes>::rules());
-        rules.extend(App::<Subtypes>::rules());
-        rules.extend(Unit::<Subtypes>::rules());
-        rules.extend(Record::<Subtypes>::rules());
-        rules.extend(RecordProj::<Subtypes>::rules());
-        rules.extend(Variant::<Subtypes>::rules());
-        rules.extend(VariantCase::<Subtypes>::rules());
-        rules.extend(Cast::<Subtypes>::rules());
-        rules.extend(Nil::<Subtypes>::rules());
-        rules.extend(Cons::<Subtypes>::rules());
-        rules.extend(Ref::<Subtypes>::rules());
-        rules.extend(Deref::<Subtypes>::rules());
-        rules.extend(Assign::<Subtypes>::rules());
-        rules.extend(Loc::<Subtypes>::rules());
-        rules.extend(Num::<Subtypes>::rules());
-        rules.extend(Succ::<Subtypes>::rules());
-        rules.extend(Pred::<Subtypes>::rules());
-        rules.extend(True::<Subtypes>::rules());
-        rules.extend(False::<Subtypes>::rules());
-        rules.extend(If::<Subtypes>::rules());
-        rules.extend(Let::<Subtypes>::rules());
-        rules.extend(Fix::<Subtypes>::rules());
-        rules
-    }
-}
 
 impl Subtypecheck for Type {
     type Lang = Subtypes;

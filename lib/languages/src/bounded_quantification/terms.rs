@@ -1,6 +1,7 @@
 use super::{BoundedQuantification, types::Type};
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
+use macros::Typecheck;
 use std::fmt;
 use syntax::{
     TypeVar, Var,
@@ -10,7 +11,8 @@ use syntax::{
     },
 };
 
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Typecheck, Clone, Debug, PartialEq, Eq)]
+#[Lang(BoundedQuantification)]
 pub enum Term {
     Var(Variable<BoundedQuantification>),
     Num(Num<BoundedQuantification>),

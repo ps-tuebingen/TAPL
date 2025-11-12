@@ -1,11 +1,15 @@
+use check::Normalize;
+use derivations::{Derivation, NormalizingDerivation};
+use grammar::DerivationRule;
 use macros::Typecheck;
-use std::fmt;
+use std::{collections::HashSet, fmt};
 use syntax::{
     TypeVar, Var,
+    env::Environment,
     language::{Language, LanguageFeatures},
     subst::{SubstTerm, SubstType},
-    terms::{Num, Term},
-    types::{Nat, Type, TypeGroup},
+    terms::{False, Num, Term, True},
+    types::{Bool, Nat, Type, TypeGroup},
     values::{Value, ValueGroup},
 };
 
@@ -16,6 +20,8 @@ enum DummyLang {}
 #[Lang(DummyLang)]
 enum DummyTerm {
     Num(Num<DummyLang>),
+    True(True<DummyLang>),
+    False(False<DummyLang>),
 }
 #[derive(Debug, Clone, PartialEq)]
 struct DummyType;
@@ -70,6 +76,17 @@ impl Language for DummyLang {
     }
 }
 
+impl Normalize for DummyType {
+    type Lang = DummyLang;
+    fn normalize(self, _: Environment<Self::Lang>) -> Derivation<Self::Lang> {
+        NormalizingDerivation::empty(self).into()
+    }
+
+    fn rules() -> HashSet<DerivationRule> {
+        HashSet::new()
+    }
+}
+
 impl From<DummyValue> for DummyTerm {
     fn from(_: DummyValue) -> DummyTerm {
         DummyTerm::Num(Num::new(1))
@@ -82,8 +99,26 @@ impl From<Num<DummyLang>> for DummyTerm {
     }
 }
 
+impl From<True<DummyLang>> for DummyTerm {
+    fn from(t: True<DummyLang>) -> DummyTerm {
+        DummyTerm::True(t)
+    }
+}
+
+impl From<False<DummyLang>> for DummyTerm {
+    fn from(f: False<DummyLang>) -> DummyTerm {
+        DummyTerm::False(f)
+    }
+}
+
 impl From<Nat<DummyLang>> for DummyType {
     fn from(_: Nat<DummyLang>) -> DummyType {
+        DummyType
+    }
+}
+
+impl From<Bool<DummyLang>> for DummyType {
+    fn from(_: Bool<DummyLang>) -> DummyType {
         DummyType
     }
 }

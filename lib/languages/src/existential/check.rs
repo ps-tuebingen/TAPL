@@ -1,62 +1,10 @@
-use super::{Existential, terms::Term, types::Type};
-use check::{Kindcheck, Subtypecheck, Typecheck};
+use super::{Existential, types::Type};
+use check::{Kindcheck, Subtypecheck};
 use derivations::Derivation;
 use errors::{NoKinding, NoSubtyping, check_error::CheckError};
 use grammar::DerivationRule;
 use std::collections::HashSet;
-use syntax::{
-    env::Environment,
-    terms::{
-        App, False, Fix, If, IsZero, Lambda, Num, Pack, Pred, Record, RecordProj, Succ, True, Unit,
-        Unpack, Variable,
-    },
-};
-
-impl Typecheck for Term {
-    type Lang = Existential;
-
-    fn check(&self, env: Environment<Self::Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
-        match self {
-            Term::Var(v) => v.check(env),
-            Term::Unit(u) => u.check(env),
-            Term::Lambda(lam) => lam.check(env),
-            Term::App(app) => app.check(env),
-            Term::Pack(pack) => pack.check(env),
-            Term::Unpack(unpack) => unpack.check(env),
-            Term::Num(num) => num.check(env),
-            Term::Succ(succ) => succ.check(env),
-            Term::Pred(pred) => pred.check(env),
-            Term::IsZero(isz) => isz.check(env),
-            Term::Record(rec) => rec.check(env),
-            Term::RecordProj(proj) => proj.check(env),
-            Term::True(tru) => tru.check(env),
-            Term::False(fls) => fls.check(env),
-            Term::If(ift) => ift.check(env),
-            Term::Fix(fix) => fix.check(env),
-        }
-    }
-
-    fn rules() -> HashSet<DerivationRule> {
-        let mut rules = HashSet::new();
-        rules.extend(Variable::<Existential>::rules());
-        rules.extend(Unit::<Existential>::rules());
-        rules.extend(Lambda::<Existential>::rules());
-        rules.extend(App::<Existential>::rules());
-        rules.extend(Pack::<Existential>::rules());
-        rules.extend(Unpack::<Existential>::rules());
-        rules.extend(Num::<Existential>::rules());
-        rules.extend(Succ::<Existential>::rules());
-        rules.extend(Pred::<Existential>::rules());
-        rules.extend(IsZero::<Existential>::rules());
-        rules.extend(Record::<Existential>::rules());
-        rules.extend(RecordProj::<Existential>::rules());
-        rules.extend(True::<Existential>::rules());
-        rules.extend(False::<Existential>::rules());
-        rules.extend(If::<Existential>::rules());
-        rules.extend(Fix::<Existential>::rules());
-        rules
-    }
-}
+use syntax::env::Environment;
 
 impl Subtypecheck for Type {
     type Lang = Existential;

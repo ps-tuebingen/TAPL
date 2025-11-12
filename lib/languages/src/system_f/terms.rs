@@ -1,6 +1,7 @@
 use super::{SystemF, types::Type};
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
+use macros::Typecheck;
 use std::fmt;
 use syntax::{
     TypeVar, Var,
@@ -8,7 +9,8 @@ use syntax::{
     terms::{App, Lambda, TyApp, TyLambda, Variable},
 };
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Typecheck, Debug, Clone, PartialEq, Eq)]
+#[Lang(SystemF)]
 pub enum Term {
     Var(Variable<SystemF>),
     Lambda(Lambda<SystemF>),

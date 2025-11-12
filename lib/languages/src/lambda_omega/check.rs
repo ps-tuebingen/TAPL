@@ -1,4 +1,4 @@
-use super::{LambdaOmega, terms::Term, types::Type};
+use super::{LambdaOmega, types::Type};
 use check::{Kindcheck, Subtypecheck, Typecheck};
 use derivations::Derivation;
 use errors::{NoSubtyping, check_error::CheckError};
@@ -8,38 +8,6 @@ use syntax::{
     env::Environment,
     terms::{App, False, Lambda, Num, True, TyApp, TyLambda, Unit, Variable},
 };
-
-impl Typecheck for Term {
-    type Lang = LambdaOmega;
-
-    fn check(&self, env: Environment<Self::Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
-        match self {
-            Term::Var(var) => var.check(env),
-            Term::Num(num) => num.check(env),
-            Term::True(tru) => tru.check(env),
-            Term::False(fls) => fls.check(env),
-            Term::Lambda(lam) => lam.check(env),
-            Term::App(app) => app.check(env),
-            Term::Unit(u) => u.check(env),
-            Term::TyLambda(tylam) => tylam.check(env),
-            Term::TyApp(tyapp) => tyapp.check(env),
-        }
-    }
-
-    fn rules() -> HashSet<DerivationRule> {
-        let mut rules = HashSet::new();
-        rules.extend(Variable::<LambdaOmega>::rules());
-        rules.extend(Num::<LambdaOmega>::rules());
-        rules.extend(True::<LambdaOmega>::rules());
-        rules.extend(False::<LambdaOmega>::rules());
-        rules.extend(Lambda::<LambdaOmega>::rules());
-        rules.extend(App::<LambdaOmega>::rules());
-        rules.extend(Unit::<LambdaOmega>::rules());
-        rules.extend(TyLambda::<LambdaOmega>::rules());
-        rules.extend(TyApp::<LambdaOmega>::rules());
-        rules
-    }
-}
 
 impl Subtypecheck for Type {
     type Lang = LambdaOmega;

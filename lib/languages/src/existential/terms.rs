@@ -1,6 +1,7 @@
 use super::{Existential, types::Type};
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
+use macros::Typecheck;
 use std::fmt;
 use syntax::{
     TypeVar, Var,
@@ -11,7 +12,8 @@ use syntax::{
     },
 };
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Typecheck, Debug, Clone, PartialEq, Eq)]
+#[Lang(Existential)]
 pub enum Term {
     Var(Variable<Existential>),
     Unit(Unit<Existential>),

@@ -1,69 +1,13 @@
-use super::{References, terms::Term, types::Type};
-use check::{Kindcheck, Subtypecheck, Typecheck};
+use super::{References, types::Type};
+use check::{Kindcheck, Subtypecheck};
 use derivations::Derivation;
 use errors::{NoKinding, NoSubtyping, check_error::CheckError};
 use grammar::DerivationRule;
-use std::collections::HashMap;
-use std::collections::HashSet;
-use syntax::{
-    Location, Var,
-    env::Environment,
-    terms::{
-        App, Assign, Deref, False, Fix, If, IsZero, Lambda, Let, Loc, Num, Pred, Ref, Succ, True,
-        Unit, Variable,
-    },
-};
+use std::collections::{HashMap, HashSet};
+use syntax::{Location, Var, env::Environment};
 
 pub type Env = HashMap<Var, Type>;
 pub type StoreTy = HashMap<Location, Type>;
-
-impl Typecheck for Term {
-    type Lang = References;
-
-    fn check(&self, env: Environment<Self::Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
-        match self {
-            Term::Var(var) => var.check(env),
-            Term::Num(c) => c.check(env),
-            Term::Succ(s) => s.check(env),
-            Term::Pred(p) => p.check(env),
-            Term::Lambda(lam) => lam.check(env),
-            Term::App(app) => app.check(env),
-            Term::Unit(u) => u.check(env),
-            Term::Ref(reft) => reft.check(env),
-            Term::Deref(dereft) => dereft.check(env),
-            Term::Assign(ass) => ass.check(env),
-            Term::Loc(loc) => loc.check(env),
-            Term::Let(lett) => lett.check(env),
-            Term::If(ift) => ift.check(env),
-            Term::True(tru) => tru.check(env),
-            Term::False(fls) => fls.check(env),
-            Term::Fix(fix) => fix.check(env),
-            Term::IsZero(isz) => isz.check(env),
-        }
-    }
-
-    fn rules() -> HashSet<DerivationRule> {
-        let mut rules = HashSet::new();
-        rules.extend(Variable::<References>::rules());
-        rules.extend(Num::<References>::rules());
-        rules.extend(Succ::<References>::rules());
-        rules.extend(Pred::<References>::rules());
-        rules.extend(Lambda::<References>::rules());
-        rules.extend(App::<References>::rules());
-        rules.extend(Unit::<References>::rules());
-        rules.extend(Ref::<References>::rules());
-        rules.extend(Deref::<References>::rules());
-        rules.extend(Assign::<References>::rules());
-        rules.extend(Loc::<References>::rules());
-        rules.extend(Let::<References>::rules());
-        rules.extend(If::<References>::rules());
-        rules.extend(True::<References>::rules());
-        rules.extend(False::<References>::rules());
-        rules.extend(Fix::<References>::rules());
-        rules.extend(IsZero::<References>::rules());
-        rules
-    }
-}
 
 impl Subtypecheck for Type {
     type Lang = References;
@@ -94,7 +38,7 @@ impl Kindcheck for Type {
 
 #[cfg(test)]
 mod check_tests {
-    use super::{Environment, Term};
+    use super::{super::Term, Environment};
     use check::Typecheck;
     use syntax::{
         terms::{App, Assign, Deref, Lambda, Loc, Num, Ref, Unit, Variable},

@@ -1,6 +1,7 @@
 use super::{TypedArithmetic, types::Type};
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
+use macros::Typecheck;
 use std::fmt;
 use syntax::{
     TypeVar, Var,
@@ -8,7 +9,8 @@ use syntax::{
     terms::{False, If, IsZero, Num, Pred, Succ, True},
 };
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Typecheck, Debug, Clone, PartialEq, Eq)]
+#[Lang(TypedArithmetic)]
 pub enum Term {
     True(True<TypedArithmetic>),
     False(False<TypedArithmetic>),

@@ -13,6 +13,7 @@ derivations = { path="../derivations" }
 trace = { path="../trace" }
 latex = { path="../latex"}
 grammar = { path="../grammar"}
+macros = { path="../macros" }
 
 pest={version="2.7.15"}
 pest_derive={version="2.7.15"}

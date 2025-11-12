@@ -1,18 +1,19 @@
 use super::{FOmega, types::Type};
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
+use macros::Typecheck;
 use std::fmt;
 use syntax::{
-    TypeVar,
+    TypeVar, Var,
     subst::{SubstTerm, SubstType},
     terms::{
         App, False, Fix, If, IsZero, Lambda, Num, Pack, Pred, Record, RecordProj, Succ, True,
         TyApp, TyLambda, Unit, Unpack, Variable,
     },
 };
-pub type Var = String;
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Typecheck, Debug, Clone, PartialEq, Eq)]
+#[Lang(FOmega)]
 pub enum Term {
     Var(Variable<FOmega>),
     Lambda(Lambda<FOmega>),

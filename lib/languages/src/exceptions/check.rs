@@ -1,60 +1,10 @@
-use super::{Exceptions, terms::Term, types::Type};
-use check::{Kindcheck, Subtypecheck, Typecheck};
+use super::{Exceptions, types::Type};
+use check::{Kindcheck, Subtypecheck};
 use derivations::Derivation;
 use errors::{NoKinding, NoSubtyping, check_error::CheckError};
 use grammar::DerivationRule;
 use std::collections::HashSet;
-use syntax::{
-    env::Environment,
-    terms::{
-        App, Exception, False, If, IsZero, Lambda, Num, Pred, Raise, Succ, True, Try, TryWithVal,
-        Unit, Variable,
-    },
-};
-
-impl Typecheck for Term {
-    type Lang = Exceptions;
-
-    fn check(&self, env: Environment<Self::Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
-        match self {
-            Term::Var(v) => v.check(env),
-            Term::Num(num) => num.check(env),
-            Term::True(tru) => tru.check(env),
-            Term::False(fls) => fls.check(env),
-            Term::Succ(s) => s.check(env),
-            Term::Pred(p) => p.check(env),
-            Term::IsZero(isz) => isz.check(env),
-            Term::If(ift) => ift.check(env),
-            Term::Lambda(lam) => lam.check(env),
-            Term::App(app) => app.check(env),
-            Term::Unit(u) => u.check(env),
-            Term::Exception(exc) => exc.check(env),
-            Term::Try(t) => t.check(env),
-            Term::Raise(r) => r.check(env),
-            Term::TryWithVal(t) => t.check(env),
-        }
-    }
-
-    fn rules() -> HashSet<DerivationRule> {
-        let mut rules = HashSet::new();
-        rules.extend(Variable::<Exceptions>::rules());
-        rules.extend(Num::<Exceptions>::rules());
-        rules.extend(True::<Exceptions>::rules());
-        rules.extend(False::<Exceptions>::rules());
-        rules.extend(Succ::<Exceptions>::rules());
-        rules.extend(Pred::<Exceptions>::rules());
-        rules.extend(IsZero::<Exceptions>::rules());
-        rules.extend(If::<Exceptions>::rules());
-        rules.extend(Lambda::<Exceptions>::rules());
-        rules.extend(App::<Exceptions>::rules());
-        rules.extend(Unit::<Exceptions>::rules());
-        rules.extend(Exception::<Exceptions>::rules());
-        rules.extend(Try::<Exceptions>::rules());
-        rules.extend(Raise::<Exceptions>::rules());
-        rules.extend(TryWithVal::<Exceptions>::rules());
-        rules
-    }
-}
+use syntax::env::Environment;
 
 impl Subtypecheck for Type {
     type Lang = Exceptions;

@@ -1,6 +1,7 @@
 use super::{Subtypes, types::Type};
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
+use macros::Typecheck;
 use std::fmt;
 use syntax::{
     TypeVar, Var,
@@ -11,7 +12,8 @@ use syntax::{
     },
 };
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Typecheck, Debug, PartialEq, Eq, Clone)]
+#[Lang(Subtypes)]
 pub enum Term {
     Var(Variable<Subtypes>),
     Lambda(Lambda<Subtypes>),
