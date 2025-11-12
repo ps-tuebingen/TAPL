@@ -1,5 +1,5 @@
 use crate::{
-    literals::{check_result, lang_env},
+    literals::{check_result, lang_env, new_set, rule_set},
     utils::{get_enum_variants, get_lang_attr, get_variant_type_name, map_variants},
 };
 use proc_macro::TokenStream;
@@ -11,6 +11,8 @@ pub fn generate_kindcheck(input: TokenStream) -> TokenStream {
     let ident = derive_input.ident;
     let lang_val = get_lang_attr(&derive_input.attrs);
     let lang_env = lang_env();
+    let rule_set = rule_set();
+    let new_set = new_set();
     let check_result = check_result();
     let variants = get_enum_variants(&derive_input.data);
     let check_variants = map_variants(&variants, |var| {
@@ -31,8 +33,8 @@ pub fn generate_kindcheck(input: TokenStream) -> TokenStream {
                     }
                 }
 
-                fn rules() -> std::collections::HashSet<grammar::DerivationRule>{
-                    let mut rules = std::collections::HashSet::new();
+                fn rules() -> #rule_set{
+                    #new_set
                     #(#rule_variants)*
                     rules
                 }

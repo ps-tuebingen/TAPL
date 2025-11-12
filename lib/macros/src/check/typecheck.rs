@@ -1,5 +1,5 @@
 use crate::{
-    literals::{check_result, lang_env},
+    literals::{check_result, lang_env, new_set, rule_set},
     utils::{get_enum_variants, get_lang_attr, get_variant_type_name, map_variants},
 };
 use proc_macro::TokenStream;
@@ -9,6 +9,8 @@ use syn::{DeriveInput, parse_macro_input};
 pub fn generate_typecheck(input: TokenStream) -> TokenStream {
     let derive_input: DeriveInput = parse_macro_input!(input);
     let ident = derive_input.ident;
+    let rule_set = rule_set();
+    let new_set = new_set();
     let lang_val = get_lang_attr(&derive_input.attrs);
     let variants = get_enum_variants(&derive_input.data);
     let check_variants = map_variants(&variants, |var| {
@@ -30,8 +32,8 @@ pub fn generate_typecheck(input: TokenStream) -> TokenStream {
                 #(#check_variants)*
                 }
             }
-            fn rules() -> ::std::collections::HashSet<grammar::DerivationRule>{
-                let mut rules = ::std::collections::HashSet::new();
+            fn rules() -> #rule_set {
+                #new_set
                 #(#rule_variants)*
                 rules
             }

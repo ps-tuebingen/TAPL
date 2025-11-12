@@ -6,6 +6,7 @@ pub(crate) mod literals;
 pub(crate) mod utils;
 use check::{
     kindcheck::{generate_kindcheck, generate_no_kindcheck},
+    normalize::{generate_no_normalize, generate_normalize},
     subtypecheck::{generate_no_subtypecheck, generate_subtypecheck},
     typecheck::generate_typecheck,
 };
@@ -46,4 +47,14 @@ pub fn derive_kindcheck(input: TokenStream) -> TokenStream {
 #[proc_macro_derive(NoKinds, attributes(Lang))]
 pub fn derive_no_kindcheck(input: TokenStream) -> TokenStream {
     generate_no_kindcheck(input)
+}
+
+#[proc_macro_derive(Normalize, attributes(Lang))]
+pub fn derive_normalize(input: TokenStream) -> TokenStream {
+    generate_normalize(input)
+}
+
+#[proc_macro_derive(NoNorm, attributes(Lang))]
+pub fn derive_no_normalize(input: TokenStream) -> TokenStream {
+    generate_no_normalize(input)
 }

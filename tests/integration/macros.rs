@@ -1,11 +1,7 @@
-use check::Normalize;
-use derivations::{Derivation, NormalizingDerivation};
-use grammar::DerivationRule;
-use macros::{Kindcheck, Subtypecheck, Typecheck};
-use std::{collections::HashSet, fmt};
+use macros::{Kindcheck, Normalize, Subtypecheck, Typecheck};
+use std::fmt;
 use syntax::{
     TypeVar, Var,
-    env::Environment,
     language::{Language, LanguageFeatures},
     subst::{SubstTerm, SubstType},
     terms::{False, Num, Term, True},
@@ -24,7 +20,7 @@ enum DummyTerm {
     False(False<DummyLang>),
 }
 
-#[derive(Kindcheck, Subtypecheck, Debug, Clone, PartialEq)]
+#[derive(Normalize, Kindcheck, Subtypecheck, Debug, Clone, PartialEq)]
 #[Lang(DummyLang)]
 enum DummyType {
     Nat(Nat<DummyLang>),
@@ -79,17 +75,6 @@ impl Language for DummyLang {
 
     fn features() -> LanguageFeatures {
         LanguageFeatures::default()
-    }
-}
-
-impl Normalize for DummyType {
-    type Lang = DummyLang;
-    fn normalize(self, _: Environment<Self::Lang>) -> Derivation<Self::Lang> {
-        NormalizingDerivation::empty(self).into()
-    }
-
-    fn rules() -> HashSet<DerivationRule> {
-        HashSet::new()
     }
 }
 

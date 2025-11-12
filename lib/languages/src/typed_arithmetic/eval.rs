@@ -46,11 +46,6 @@ impl Normalize for Type {
     }
 
     fn rules() -> HashSet<DerivationRule> {
-        &(&(&(&(&(&True::<TypedArithmetic>::rules() | &False::<TypedArithmetic>::rules())
-            | &If::<TypedArithmetic>::rules())
-            | &Num::<TypedArithmetic>::rules())
-            | &Succ::<TypedArithmetic>::rules())
-            | &Pred::<TypedArithmetic>::rules())
-            | &IsZero::<TypedArithmetic>::rules()
+        HashSet::new()
     }
 }
