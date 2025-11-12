@@ -1,12 +1,9 @@
-use super::{Recursive, terms::Term, types::Type};
-use check::Normalize;
-use derivations::{Derivation, NormalizingDerivation};
+use super::{Recursive, terms::Term};
 use errors::eval_error::EvalError;
 use eval::Eval;
 use grammar::DerivationRule;
 use std::collections::HashSet;
 use syntax::{
-    env::Environment,
     eval_context::EvalContext,
     terms::{
         App, False, Fix, Fold, Fst, If, IsZero, Lambda, Let, Num, Pair, Pred, Record, RecordProj,
@@ -69,16 +66,5 @@ impl Eval for Term {
         rules.extend(Record::<Recursive>::rules());
         rules.extend(RecordProj::<Recursive>::rules());
         rules
-    }
-}
-
-impl Normalize for Type {
-    type Lang = Recursive;
-    fn normalize(self, _: Environment<Self::Lang>) -> Derivation<Self::Lang> {
-        NormalizingDerivation::empty(self).into()
-    }
-
-    fn rules() -> HashSet<DerivationRule> {
-        HashSet::new()
     }
 }

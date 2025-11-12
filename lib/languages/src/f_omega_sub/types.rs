@@ -2,7 +2,7 @@ use super::FOmegaSub;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
-use macros::{Kindcheck, Subtypecheck};
+use macros::{Kindcheck, Normalize, Subtypecheck};
 use std::fmt;
 use syntax::{
     TypeVar,
@@ -13,7 +13,7 @@ use syntax::{
     },
 };
 
-#[derive(Kindcheck, Subtypecheck, Debug, Clone, PartialEq, Eq)]
+#[derive(Normalize, Kindcheck, Subtypecheck, Debug, Clone, PartialEq, Eq)]
 #[Lang(FOmegaSub)]
 pub enum Type {
     Var(TypeVariable<FOmegaSub>),

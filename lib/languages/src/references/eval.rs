@@ -1,12 +1,9 @@
-use super::{References, terms::Term, types::Type};
-use check::Normalize;
-use derivations::{Derivation, NormalizingDerivation};
+use super::{References, terms::Term};
 use errors::eval_error::EvalError;
 use eval::Eval;
 use grammar::DerivationRule;
 use std::collections::HashSet;
 use syntax::{
-    env::Environment,
     eval_context::EvalContext,
     terms::{
         App, Assign, Deref, False, Fix, If, IsZero, Lambda, Let, Loc, Num, Pred, Ref, Succ, True,
@@ -59,17 +56,6 @@ impl Eval for Term {
         rules.extend(Fix::<References>::rules());
         rules.extend(IsZero::<References>::rules());
         rules
-    }
-}
-
-impl Normalize for Type {
-    type Lang = References;
-    fn normalize(self, _: Environment<Self::Lang>) -> Derivation<Self::Lang> {
-        NormalizingDerivation::empty(self).into()
-    }
-
-    fn rules() -> HashSet<DerivationRule> {
-        HashSet::new()
     }
 }
 

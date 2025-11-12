@@ -42,18 +42,23 @@ pub fn derive_kindcheck(input: TokenStream) -> TokenStream {
     generate_kindcheck(input)
 }
 
-/// Derive Subtypecheck for Types with no Kinds
+/// Derive Kindcheck for Types with no Kinds
 /// this always throws an error when the kinds are checked
 #[proc_macro_derive(NoKinds, attributes(Lang))]
 pub fn derive_no_kindcheck(input: TokenStream) -> TokenStream {
     generate_no_kindcheck(input)
 }
 
+/// Derive Normalize for Types
+/// types need to have the form `enum T { Ty1(Ty1),Ty2(Ty2),...}`
+/// where all `Tyi` implement Normalize
 #[proc_macro_derive(Normalize, attributes(Lang))]
 pub fn derive_normalize(input: TokenStream) -> TokenStream {
     generate_normalize(input)
 }
 
+/// Derive Normalize for Types with no normalizing
+/// this always returns the argument when normalizing
 #[proc_macro_derive(NoNorm, attributes(Lang))]
 pub fn derive_no_normalize(input: TokenStream) -> TokenStream {
     generate_no_normalize(input)

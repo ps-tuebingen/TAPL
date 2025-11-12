@@ -1,20 +1,16 @@
 use super::BoundedQuantification;
-use check::Normalize;
-use derivations::{Derivation, NormalizingDerivation};
 use errors::TypeMismatch;
-use grammar::{DerivationRule, Grammar, GrammarDescribe, GrammarRuleDescribe};
+use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
-use macros::{NoKinds, Subtypecheck};
-use std::collections::HashSet;
+use macros::{NoKinds, NoNorm, Subtypecheck};
 use std::fmt;
 use syntax::{
     TypeVar,
-    env::Environment,
     subst::SubstType,
     types::{ExistsBounded, ForallBounded, Fun, Nat, Record, Top, TypeGroup, TypeVariable},
 };
 
-#[derive(NoKinds, Subtypecheck, Clone, Debug, PartialEq, Eq)]
+#[derive(NoNorm, NoKinds, Subtypecheck, Clone, Debug, PartialEq, Eq)]
 #[Lang(BoundedQuantification)]
 pub enum Type {
     Var(TypeVariable<BoundedQuantification>),
@@ -157,16 +153,6 @@ impl SubstType for Type {
             Type::Exists(e) => e.subst_type(v, ty).into(),
             Type::Record(rec) => rec.subst_type(v, ty).into(),
         }
-    }
-}
-impl Normalize for Type {
-    type Lang = BoundedQuantification;
-    fn normalize(self, _: Environment<BoundedQuantification>) -> Derivation<Self::Lang> {
-        NormalizingDerivation::empty(self).into()
-    }
-
-    fn rules() -> HashSet<DerivationRule> {
-        HashSet::new()
     }
 }
 

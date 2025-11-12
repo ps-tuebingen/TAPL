@@ -2,7 +2,7 @@ use super::LambdaOmega;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
-use macros::{Kindcheck, NoSubtypes};
+use macros::{Kindcheck, NoNorm, NoSubtypes};
 use std::fmt;
 use syntax::{
     subst::SubstType,
@@ -13,7 +13,7 @@ use syntax::{
 
 pub type TypeVar = String;
 
-#[derive(Kindcheck, NoSubtypes, Debug, Clone, PartialEq, Eq)]
+#[derive(NoNorm, Kindcheck, NoSubtypes, Debug, Clone, PartialEq, Eq)]
 #[Lang(LambdaOmega)]
 pub enum Type {
     Var(TypeVariable<LambdaOmega>),

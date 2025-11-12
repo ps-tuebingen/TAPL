@@ -2,7 +2,7 @@ use super::TypedArithmetic;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
-use macros::{NoKinds, NoSubtypes};
+use macros::{NoKinds, NoNorm, NoSubtypes};
 use std::fmt;
 use syntax::{
     TypeVar,
@@ -10,7 +10,7 @@ use syntax::{
     types::{Bool, Nat, Type as TypeTrait, TypeGroup},
 };
 
-#[derive(NoKinds, NoSubtypes, Debug, PartialEq, Eq, Clone)]
+#[derive(NoNorm, NoKinds, NoSubtypes, Debug, PartialEq, Eq, Clone)]
 #[Lang(TypedArithmetic)]
 pub enum Type {
     Nat(Nat<TypedArithmetic>),

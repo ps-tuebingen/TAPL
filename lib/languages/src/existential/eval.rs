@@ -1,12 +1,9 @@
-use super::{Existential, terms::Term, types::Type};
-use check::Normalize;
-use derivations::{Derivation, NormalizingDerivation};
+use super::{Existential, terms::Term};
 use errors::eval_error::EvalError;
 use eval::Eval;
 use grammar::DerivationRule;
 use std::collections::HashSet;
 use syntax::{
-    env::Environment,
     eval_context::EvalContext,
     terms::{
         App, False, Fix, If, IsZero, Lambda, Num, Pack, Pred, Record, RecordProj, Succ, True, Unit,
@@ -57,16 +54,5 @@ impl Eval for Term {
         rules.extend(If::<Existential>::rules());
         rules.extend(Fix::<Existential>::rules());
         rules
-    }
-}
-
-impl Normalize for Type {
-    type Lang = Existential;
-    fn normalize(self, _: Environment<Self::Lang>) -> Derivation<Self::Lang> {
-        NormalizingDerivation::empty(self).into()
-    }
-
-    fn rules() -> HashSet<DerivationRule> {
-        HashSet::new()
     }
 }

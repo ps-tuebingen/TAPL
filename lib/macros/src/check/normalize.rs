@@ -50,6 +50,7 @@ pub fn generate_no_normalize(input: TokenStream) -> TokenStream {
     let ident = derive_input.ident;
     let lang_val = get_lang_attr(&derive_input.attrs);
     let lang_env = lang_env();
+    let rule_set = rule_set();
 
     let output = quote! {
         impl check::Normalize for #ident{
@@ -59,7 +60,7 @@ pub fn generate_no_normalize(input: TokenStream) -> TokenStream {
                 derivations::NormalizingDerivation::empty(self).into()
             }
 
-            fn rules() {
+            fn rules() -> #rule_set {
                 std::collections::HashSet::new()
             }
         }

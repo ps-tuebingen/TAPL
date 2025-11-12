@@ -1,12 +1,9 @@
-use super::{TypedArithmetic, terms::Term, types::Type};
-use check::Normalize;
-use derivations::{Derivation, NormalizingDerivation};
+use super::{TypedArithmetic, terms::Term};
 use errors::eval_error::EvalError;
 use eval::Eval;
 use grammar::DerivationRule;
 use std::collections::HashSet;
 use syntax::{
-    env::Environment,
     eval_context::EvalContext,
     terms::{False, If, IsZero, Num, Pred, Succ, True},
 };
@@ -36,16 +33,5 @@ impl Eval for Term {
         rules.extend(Pred::<TypedArithmetic>::rules());
         rules.extend(IsZero::<TypedArithmetic>::rules());
         rules
-    }
-}
-
-impl Normalize for Type {
-    type Lang = TypedArithmetic;
-    fn normalize(self, _: Environment<Self::Lang>) -> Derivation<Self::Lang> {
-        NormalizingDerivation::empty(self).into()
-    }
-
-    fn rules() -> HashSet<DerivationRule> {
-        HashSet::new()
     }
 }

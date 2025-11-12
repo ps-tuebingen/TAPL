@@ -1,12 +1,9 @@
-use super::{LambdaOmega, terms::Term, types::Type};
-use check::Normalize;
-use derivations::{Derivation, NormalizingDerivation};
+use super::{LambdaOmega, terms::Term};
 use errors::eval_error::EvalError;
 use eval::Eval;
 use grammar::DerivationRule;
 use std::collections::HashSet;
 use syntax::{
-    env::Environment,
     eval_context::EvalContext,
     terms::{App, False, Lambda, Num, True, TyApp, TyLambda, Unit, Variable},
 };
@@ -40,16 +37,5 @@ impl Eval for Term {
         rules.extend(TyLambda::<LambdaOmega>::rules());
         rules.extend(TyApp::<LambdaOmega>::rules());
         rules
-    }
-}
-
-impl Normalize for Type {
-    type Lang = LambdaOmega;
-    fn normalize(self, _: Environment<Self::Lang>) -> Derivation<Self::Lang> {
-        NormalizingDerivation::empty(self).into()
-    }
-
-    fn rules() -> HashSet<DerivationRule> {
-        HashSet::new()
     }
 }

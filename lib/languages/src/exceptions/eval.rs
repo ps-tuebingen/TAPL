@@ -1,12 +1,9 @@
-use super::{Exceptions, terms::Term, types::Type};
-use check::Normalize;
-use derivations::{Derivation, NormalizingDerivation};
+use super::{Exceptions, terms::Term};
 use errors::eval_error::EvalError;
 use eval::Eval;
 use grammar::DerivationRule;
 use std::collections::HashSet;
 use syntax::{
-    env::Environment,
     eval_context::EvalContext,
     terms::{
         App, Exception, False, If, IsZero, Lambda, Num, Pred, Raise, Succ, True, Try, TryWithVal,
@@ -55,17 +52,6 @@ impl Eval for Term {
         rules.extend(Raise::<Exceptions>::rules());
         rules.extend(TryWithVal::<Exceptions>::rules());
         rules
-    }
-}
-
-impl Normalize for Type {
-    type Lang = Exceptions;
-    fn normalize(self, _: Environment<Self::Lang>) -> Derivation<Self::Lang> {
-        NormalizingDerivation::empty(self).into()
-    }
-
-    fn rules() -> HashSet<DerivationRule> {
-        HashSet::new()
     }
 }
 

@@ -2,7 +2,7 @@ use super::Exceptions;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
-use macros::{NoKinds, NoSubtypes};
+use macros::{NoKinds, NoNorm, NoSubtypes};
 use std::fmt;
 use syntax::{
     TypeVar,
@@ -10,7 +10,7 @@ use syntax::{
     types::{Bool, Fun, Nat, Type as TypeTrait, TypeGroup, Unit},
 };
 
-#[derive(NoKinds, NoSubtypes, Debug, Clone, PartialEq, Eq)]
+#[derive(NoNorm, NoKinds, NoSubtypes, Debug, Clone, PartialEq, Eq)]
 #[Lang(Exceptions)]
 pub enum Type {
     Unit(Unit<Exceptions>),

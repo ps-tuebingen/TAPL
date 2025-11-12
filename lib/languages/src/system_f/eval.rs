@@ -1,12 +1,9 @@
-use super::{SystemF, terms::Term, types::Type};
-use check::Normalize;
-use derivations::{Derivation, NormalizingDerivation};
+use super::{SystemF, terms::Term};
 use errors::eval_error::EvalError;
 use eval::Eval;
 use grammar::DerivationRule;
 use std::collections::HashSet;
 use syntax::{
-    env::Environment,
     eval_context::EvalContext,
     terms::{App, Lambda, TyApp, TyLambda, Variable},
 };
@@ -33,16 +30,5 @@ impl Eval for Term {
         rules.extend(TyLambda::<SystemF>::rules());
         rules.extend(TyApp::<SystemF>::rules());
         rules
-    }
-}
-
-impl Normalize for Type {
-    type Lang = SystemF;
-    fn normalize(self, _: Environment<Self::Lang>) -> Derivation<Self::Lang> {
-        NormalizingDerivation::empty(self).into()
-    }
-
-    fn rules() -> HashSet<DerivationRule> {
-        HashSet::new()
     }
 }
