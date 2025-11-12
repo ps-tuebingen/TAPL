@@ -2,6 +2,7 @@ extern crate proc_macro;
 use proc_macro::TokenStream;
 
 mod check;
+mod eval;
 pub(crate) mod literals;
 pub(crate) mod utils;
 use check::{
@@ -10,6 +11,7 @@ use check::{
     subtypecheck::{generate_no_subtypecheck, generate_subtypecheck},
     typecheck::generate_typecheck,
 };
+use eval::generate_eval;
 
 /// Derive Typecheck for Terms
 /// terms need to have the form `enum T { T1(T1),T2(T2),...}`
@@ -62,4 +64,12 @@ pub fn derive_normalize(input: TokenStream) -> TokenStream {
 #[proc_macro_derive(NoNorm, attributes(Lang))]
 pub fn derive_no_normalize(input: TokenStream) -> TokenStream {
     generate_no_normalize(input)
+}
+
+/// Derive Eval for Terms
+/// Terms need to have the form `enum Term { T1(T1),T2(T2),... }`
+/// where each `Ti` has `Eval` implemneted
+#[proc_macro_derive(Eval, attributes(Lang))]
+pub fn derive_eval(input: TokenStream) -> TokenStream {
+    generate_eval(input)
 }

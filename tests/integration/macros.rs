@@ -1,4 +1,4 @@
-use macros::{Kindcheck, Normalize, Subtypecheck, Typecheck};
+use macros::{Eval, Kindcheck, Normalize, Subtypecheck, Typecheck};
 use std::fmt;
 use syntax::{
     TypeVar, Var,
@@ -6,13 +6,13 @@ use syntax::{
     subst::{SubstTerm, SubstType},
     terms::{False, Num, Term, True},
     types::{Bool, Nat, Top, Type, TypeGroup},
-    values::{Value, ValueGroup},
+    values::{False as FalseVal, Num as NumVal, True as TrueVal, Value, ValueGroup},
 };
 
 #[derive(Debug, Clone, PartialEq)]
 struct DummyLang;
 
-#[derive(Typecheck, Debug, Clone, PartialEq)]
+#[derive(Eval, Typecheck, Debug, Clone, PartialEq)]
 #[Lang(DummyLang)]
 enum DummyTerm {
     Num(Num<DummyLang>),
@@ -28,7 +28,11 @@ enum DummyType {
     Top(Top<DummyLang>),
 }
 #[derive(Clone, Debug)]
-struct DummyValue;
+enum DummyValue {
+    Num(NumVal<DummyLang>),
+    True(TrueVal<DummyLang>),
+    False(FalseVal<DummyLang>),
+}
 
 impl Term for DummyTerm {}
 impl Type for DummyType {}
@@ -79,8 +83,12 @@ impl Language for DummyLang {
 }
 
 impl From<DummyValue> for DummyTerm {
-    fn from(_: DummyValue) -> DummyTerm {
-        DummyTerm::Num(Num::new(1))
+    fn from(val: DummyValue) -> DummyTerm {
+        match val {
+            DummyValue::True(t) => DummyTerm::True(t.into()),
+            DummyValue::False(f) => DummyTerm::False(f.into()),
+            DummyValue::Num(n) => DummyTerm::Num(n.into()),
+        }
     }
 }
 
@@ -117,6 +125,24 @@ impl From<Bool<DummyLang>> for DummyType {
 impl From<Top<DummyLang>> for DummyType {
     fn from(t: Top<DummyLang>) -> DummyType {
         DummyType::Top(t)
+    }
+}
+
+impl From<NumVal<DummyLang>> for DummyValue {
+    fn from(num: NumVal<DummyLang>) -> DummyValue {
+        DummyValue::Num(num)
+    }
+}
+
+impl From<TrueVal<DummyLang>> for DummyValue {
+    fn from(t: TrueVal<DummyLang>) -> DummyValue {
+        DummyValue::True(t)
+    }
+}
+
+impl From<FalseVal<DummyLang>> for DummyValue {
+    fn from(f: FalseVal<DummyLang>) -> DummyValue {
+        DummyValue::False(f)
     }
 }
 
