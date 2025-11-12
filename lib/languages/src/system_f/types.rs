@@ -2,7 +2,7 @@ use super::SystemF;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
-use macros::NoSubtypes;
+use macros::{NoKinds, NoSubtypes};
 use std::fmt;
 use syntax::{
     TypeVar,
@@ -10,7 +10,7 @@ use syntax::{
     types::{Forall, Fun, Type as TypeTrait, TypeGroup, TypeVariable},
 };
 
-#[derive(NoSubtypes, Debug, Clone, PartialEq, Eq)]
+#[derive(NoKinds, NoSubtypes, Debug, Clone, PartialEq, Eq)]
 #[Lang(SystemF)]
 pub enum Type {
     Var(TypeVariable<SystemF>),

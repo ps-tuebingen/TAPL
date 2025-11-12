@@ -4,7 +4,7 @@ use derivations::{Derivation, NormalizingDerivation};
 use errors::TypeMismatch;
 use grammar::{DerivationRule, Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
-use macros::Subtypecheck;
+use macros::{NoKinds, Subtypecheck};
 use std::collections::HashSet;
 use std::fmt;
 use syntax::{
@@ -14,7 +14,7 @@ use syntax::{
     types::{ExistsBounded, ForallBounded, Fun, Nat, Record, Top, TypeGroup, TypeVariable},
 };
 
-#[derive(Subtypecheck, Clone, Debug, PartialEq, Eq)]
+#[derive(NoKinds, Subtypecheck, Clone, Debug, PartialEq, Eq)]
 #[Lang(BoundedQuantification)]
 pub enum Type {
     Var(TypeVariable<BoundedQuantification>),

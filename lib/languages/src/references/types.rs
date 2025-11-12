@@ -2,7 +2,7 @@ use super::References;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
-use macros::NoSubtypes;
+use macros::{NoKinds, NoSubtypes};
 use std::fmt;
 use syntax::{
     TypeVar,
@@ -10,7 +10,7 @@ use syntax::{
     types::{Bool, Fun, Nat, Reference, Type as TypeTrait, TypeGroup, Unit},
 };
 
-#[derive(NoSubtypes, Debug, Clone, PartialEq, Eq)]
+#[derive(NoKinds, NoSubtypes, Debug, Clone, PartialEq, Eq)]
 #[Lang(References)]
 pub enum Type {
     Unit(Unit<References>),
@@ -135,5 +135,88 @@ impl From<Reference<References>> for Type {
 impl From<Bool<References>> for Type {
     fn from(b: Bool<References>) -> Type {
         Type::Bool(b)
+    }
+}
+
+#[cfg(test)]
+mod check_tests {
+    use super::super::Term;
+    use check::Typecheck;
+    use syntax::{
+        env::Environment,
+        terms::{App, Assign, Deref, Lambda, Loc, Num, Ref, Unit, Variable},
+        types::{Reference, Unit as UnitTy},
+    };
+
+    #[test]
+    fn check1() {
+        let term: Term = App::new(
+            Lambda::new(
+                "x",
+                Reference::new(UnitTy::new()),
+                Deref::new(Variable::new("x")),
+            ),
+            App::new(
+                Lambda::new("y", UnitTy::new(), Ref::new(Variable::new("y"))),
+                Unit::new(),
+            ),
+        )
+        .into();
+        let result = term.check(Default::default()).unwrap();
+        let expected = UnitTy::new().into();
+        assert_eq!(result.ret_ty(), expected)
+    }
+
+    #[test]
+    fn check2() {
+        let term: Term = App::new(
+            Lambda::new(
+                "x",
+                Reference::new(UnitTy::new()),
+                Assign::new(Variable::new("x"), Deref::new(Variable::new("x"))),
+            ),
+            Ref::new(Unit::new()),
+        )
+        .into();
+        let result = term.check(Default::default()).unwrap();
+        let expected = UnitTy::new().into();
+        assert_eq!(result.ret_ty(), expected)
+    }
+
+    #[test]
+    fn check_fail() {
+        let term: Term = App::seq(
+            Assign::new(
+                Ref::new(Unit::new()),
+                App::new(
+                    Lambda::new("x", UnitTy::new(), Variable::new("x")),
+                    Unit::new(),
+                ),
+            ),
+            Deref::new(Num::new(0)),
+        )
+        .into();
+        let result = term.check(Default::default());
+        assert!(result.is_err())
+    }
+
+    #[test]
+    fn check_store() {
+        let term: Term = App::seq(
+            Assign::new(
+                Ref::new(Unit::new()),
+                App::new(
+                    Lambda::new("x", UnitTy::new(), Variable::new("x")),
+                    Unit::new(),
+                ),
+            ),
+            Deref::new(Loc::new(0)),
+        )
+        .into();
+        let mut env = Environment::default();
+        env.add_loc(0, UnitTy::new().into());
+        let result = term.check(env).unwrap();
+        let expected = UnitTy::new().into();
+        assert_eq!(result.ret_ty(), expected)
     }
 }

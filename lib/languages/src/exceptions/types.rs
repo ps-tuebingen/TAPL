@@ -2,7 +2,7 @@ use super::Exceptions;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
-use macros::NoSubtypes;
+use macros::{NoKinds, NoSubtypes};
 use std::fmt;
 use syntax::{
     TypeVar,
@@ -10,7 +10,7 @@ use syntax::{
     types::{Bool, Fun, Nat, Type as TypeTrait, TypeGroup, Unit},
 };
 
-#[derive(NoSubtypes, Debug, Clone, PartialEq, Eq)]
+#[derive(NoKinds, NoSubtypes, Debug, Clone, PartialEq, Eq)]
 #[Lang(Exceptions)]
 pub enum Type {
     Unit(Unit<Exceptions>),
@@ -122,5 +122,26 @@ impl LatexFmt for Type {
             Type::Bool(b) => b.to_latex(conf),
             Type::Fun(fun) => fun.to_latex(conf),
         }
+    }
+}
+
+#[cfg(test)]
+mod type_tests {
+    use super::super::terms::term_tests::{example_term1, example_term2};
+    use check::Typecheck;
+    use syntax::types::Unit;
+
+    #[test]
+    fn check1() {
+        let result = example_term1().check(Default::default()).unwrap();
+        let expected = Unit::new().into();
+        assert_eq!(result.ret_ty(), expected)
+    }
+
+    #[test]
+    fn check2() {
+        let result = example_term2().check(Default::default()).unwrap();
+        let expected = Unit::new().into();
+        assert_eq!(result.ret_ty(), expected)
     }
 }

@@ -2,7 +2,7 @@ use super::Recursive;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
-use macros::NoSubtypes;
+use macros::{NoKinds, NoSubtypes};
 use std::fmt;
 use syntax::{
     subst::SubstType,
@@ -14,7 +14,7 @@ use syntax::{
 
 pub type TypeVar = String;
 
-#[derive(NoSubtypes, Debug, Clone, PartialEq, Eq)]
+#[derive(NoKinds, NoSubtypes, Debug, Clone, PartialEq, Eq)]
 #[Lang(Recursive)]
 pub enum Type {
     TypeVar(TypeVariable<Recursive>),

@@ -2,7 +2,7 @@ use super::Subtypes;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
-use macros::Subtypecheck;
+use macros::{NoKinds, Subtypecheck};
 use std::fmt;
 use syntax::{
     TypeVar,
@@ -13,7 +13,7 @@ use syntax::{
     },
 };
 
-#[derive(Subtypecheck, Debug, Clone, PartialEq, Eq)]
+#[derive(NoKinds, Subtypecheck, Debug, Clone, PartialEq, Eq)]
 #[Lang(Subtypes)]
 pub enum Type {
     Top(Top<Subtypes>),

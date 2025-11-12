@@ -10,26 +10,39 @@ use check::{
     typecheck::generate_typecheck,
 };
 
+/// Derive Typecheck for Terms
+/// terms need to have the form `enum T { T1(T1),T2(T2),...}`
+/// where all `Ti` implement Typecheck already
 #[proc_macro_derive(Typecheck, attributes(Lang))]
 pub fn derive_check(input: TokenStream) -> TokenStream {
     generate_typecheck(input)
 }
 
+//// Derive Subtypecheck for Types
+/// types need to have the form `enum T { Ty1(Ty1),Ty2(Ty2),...}`
+/// where all `Tyi` implement Subtypecheck
 #[proc_macro_derive(Subtypecheck, attributes(Lang))]
 pub fn derive_subcheck(input: TokenStream) -> TokenStream {
     generate_subtypecheck(input)
 }
 
+/// Derive Subtypecheck for Types with no subtyping
+/// this always throws an error when the subtypes are checked
 #[proc_macro_derive(NoSubtypes, attributes(Lang))]
 pub fn derive_no_subcheck(input: TokenStream) -> TokenStream {
     generate_no_subtypecheck(input)
 }
 
+/// Derive Kindchecking for Types
+/// types need to have the form `enum T { Ty1(Ty1),Ty2(Ty2),...}`
+/// where all `Tyi` implement Kindhcheck
 #[proc_macro_derive(Kindcheck, attributes(Lang))]
 pub fn derive_kindcheck(input: TokenStream) -> TokenStream {
     generate_kindcheck(input)
 }
 
+/// Derive Subtypecheck for Types with no Kinds
+/// this always throws an error when the kinds are checked
 #[proc_macro_derive(NoKinds, attributes(Lang))]
 pub fn derive_no_kindcheck(input: TokenStream) -> TokenStream {
     generate_no_kindcheck(input)
