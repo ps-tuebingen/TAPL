@@ -1,11 +1,13 @@
 use super::{Recursive, terms::Term};
 use errors::ValueMismatch;
-use macros::{FromVariants, GrammarDescribe, LangDisplay, LatexFmt};
+use macros::{FromVariants, GrammarDescribe, IntoTerm, LangDisplay, LatexFmt};
 use syntax::values::{
     False, Fold, Lambda, Num, Pair, Record, True, Unit, Value as ValueTrait, ValueGroup, Variant,
 };
 
-#[derive(GrammarDescribe, FromVariants, LatexFmt, LangDisplay, Debug, Clone, PartialEq, Eq)]
+#[derive(
+    IntoTerm, GrammarDescribe, FromVariants, LatexFmt, LangDisplay, Debug, Clone, PartialEq, Eq,
+)]
 #[Lang(Recursive)]
 pub enum Value {
     True(True<Recursive>),
@@ -86,22 +88,6 @@ impl ValueGroup for Value {
             Ok(var)
         } else {
             Err(ValueMismatch::new(self.to_string(), "Variant".to_owned()))
-        }
-    }
-}
-
-impl From<Value> for Term {
-    fn from(v: Value) -> Term {
-        match v {
-            Value::Unit(u) => u.into_term(),
-            Value::True(tru) => tru.into_term(),
-            Value::False(fls) => fls.into_term(),
-            Value::Num(num) => num.into_term(),
-            Value::Lambda(lam) => lam.into_term(),
-            Value::Fold(fld) => fld.into_term(),
-            Value::Pair(pr) => pr.into_term(),
-            Value::Record(rec) => rec.into_term(),
-            Value::Variant(var) => var.into_term(),
         }
     }
 }

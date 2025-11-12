@@ -1,6 +1,6 @@
 use macros::{
-    Eval, FromVariants, GrammarDescribe, Kindcheck, LangDisplay, LatexFmt, Normalize, SubstTerm,
-    SubstType, Subtypecheck, Typecheck,
+    Eval, FromVariants, GrammarDescribe, IntoTerm, Kindcheck, LangDisplay, LatexFmt, Normalize,
+    SubstTerm, SubstType, Subtypecheck, Typecheck,
 };
 use std::fmt;
 use syntax::{
@@ -52,7 +52,7 @@ enum DummyType {
     Bool(Bool<DummyLang>),
     Top(Top<DummyLang>),
 }
-#[derive(GrammarDescribe, FromVariants, LatexFmt, LangDisplay, Clone, Debug)]
+#[derive(IntoTerm, GrammarDescribe, FromVariants, LatexFmt, LangDisplay, Clone, Debug)]
 #[Lang(DummyLang)]
 enum DummyValue {
     Num(NumVal<DummyLang>),
@@ -82,16 +82,6 @@ impl Language for DummyLang {
 
     fn features() -> LanguageFeatures {
         LanguageFeatures::default()
-    }
-}
-
-impl From<DummyValue> for DummyTerm {
-    fn from(val: DummyValue) -> DummyTerm {
-        match val {
-            DummyValue::Num(n) => DummyTerm::Num(n.into()),
-            DummyValue::True(t) => DummyTerm::True(t.into()),
-            DummyValue::False(f) => DummyTerm::False(f.into()),
-        }
     }
 }
 

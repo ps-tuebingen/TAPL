@@ -1,12 +1,14 @@
 use super::{Stlc, terms::Term};
 use errors::ValueMismatch;
-use macros::{FromVariants, GrammarDescribe, LangDisplay, LatexFmt};
+use macros::{FromVariants, GrammarDescribe, IntoTerm, LangDisplay, LatexFmt};
 use syntax::values::{
     Cons, False, Lambda, Left, Nil, Nothing, Num, Pair, Record, Right, Something, True, Tuple,
     Unit, Value as ValueTrait, ValueGroup, Variant,
 };
 
-#[derive(GrammarDescribe, FromVariants, LatexFmt, LangDisplay, Debug, Clone, PartialEq, Eq)]
+#[derive(
+    IntoTerm, GrammarDescribe, FromVariants, LatexFmt, LangDisplay, Debug, Clone, PartialEq, Eq,
+)]
 #[Lang(Stlc)]
 pub enum Value {
     Lambda(Lambda<Stlc>),
@@ -141,28 +143,6 @@ impl ValueGroup for Value {
             Ok(cons)
         } else {
             Err(ValueMismatch::new(self.to_string(), "Cons".to_owned()))
-        }
-    }
-}
-
-impl From<Value> for Term {
-    fn from(v: Value) -> Term {
-        match v {
-            Value::Lambda(lam) => lam.into_term(),
-            Value::Unit(u) => u.into_term(),
-            Value::True(tru) => tru.into_term(),
-            Value::False(fls) => fls.into_term(),
-            Value::Num(num) => num.into_term(),
-            Value::Pair(pair) => pair.into_term(),
-            Value::Tuple(tup) => tup.into_term(),
-            Value::Record(rec) => rec.into_term(),
-            Value::Left(lft) => lft.into_term(),
-            Value::Right(right) => right.into_term(),
-            Value::Variant(var) => var.into_term(),
-            Value::Nothing(not) => not.into_term(),
-            Value::Something(some) => some.into_term(),
-            Value::Nil(nil) => nil.into_term(),
-            Value::Cons(cons) => cons.into_term(),
         }
     }
 }

@@ -1,9 +1,11 @@
 use super::{References, terms::Term};
 use errors::ValueMismatch;
-use macros::{FromVariants, GrammarDescribe, LangDisplay, LatexFmt};
+use macros::{FromVariants, GrammarDescribe, IntoTerm, LangDisplay, LatexFmt};
 use syntax::values::{False, Lambda, Loc, Num, True, Unit, Value as ValueTrait, ValueGroup};
 
-#[derive(GrammarDescribe, FromVariants, LatexFmt, LangDisplay, Debug, Clone, PartialEq, Eq)]
+#[derive(
+    IntoTerm, GrammarDescribe, FromVariants, LatexFmt, LangDisplay, Debug, Clone, PartialEq, Eq,
+)]
 #[Lang(References)]
 pub enum Value {
     Lambda(Lambda<References>),
@@ -57,19 +59,6 @@ impl ValueGroup for Value {
             Ok(fls)
         } else {
             Err(ValueMismatch::new(self.to_string(), "False".to_owned()))
-        }
-    }
-}
-
-impl From<Value> for Term {
-    fn from(val: Value) -> Term {
-        match val {
-            Value::Lambda(lam) => lam.into_term(),
-            Value::Num(num) => num.into_term(),
-            Value::Unit(u) => u.into_term(),
-            Value::Loc(loc) => loc.into_term(),
-            Value::True(tru) => tru.into_term(),
-            Value::False(fls) => fls.into_term(),
         }
     }
 }

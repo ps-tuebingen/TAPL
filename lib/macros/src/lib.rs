@@ -17,7 +17,7 @@ use check::{
 };
 use eval::generate_eval;
 use format::{generate_display, generate_latexfmt};
-use from::generate_from_variants;
+use from::{generate_from_variants, generate_into_term};
 use grammar::generate_grammar_describe;
 use subst::{generate_subst_term, generate_subst_type};
 
@@ -128,4 +128,12 @@ pub fn derive_substtype(input: TokenStream) -> TokenStream {
 #[proc_macro_derive(FromVariants, attributes(Lang))]
 pub fn derive_from_variants(input: TokenStream) -> TokenStream {
     generate_from_variants(input)
+}
+
+/// Derive `From<Value> for Term` for values
+/// values must have the form `enum T { T1(T1),T2(T2),....}`
+/// and each `Ti` must implement `Into<Term>`
+#[proc_macro_derive(IntoTerm, attributes(Lang))]
+pub fn derive_into_term(input: TokenStream) -> TokenStream {
+    generate_into_term(input)
 }

@@ -1,9 +1,11 @@
 use super::{SystemF, terms::Term};
 use errors::ValueMismatch;
-use macros::{FromVariants, GrammarDescribe, LangDisplay, LatexFmt};
+use macros::{FromVariants, GrammarDescribe, IntoTerm, LangDisplay, LatexFmt};
 use syntax::values::{Lambda, TyLambda, Value as ValueTrait, ValueGroup};
 
-#[derive(GrammarDescribe, FromVariants, LatexFmt, LangDisplay, Debug, PartialEq, Eq, Clone)]
+#[derive(
+    IntoTerm, GrammarDescribe, FromVariants, LatexFmt, LangDisplay, Debug, PartialEq, Eq, Clone,
+)]
 #[Lang(SystemF)]
 pub enum Value {
     Lambda(Lambda<SystemF>),
@@ -29,15 +31,6 @@ impl ValueGroup for Value {
             Ok(lam)
         } else {
             Err(ValueMismatch::new(self.to_string(), "TyLambda".to_owned()))
-        }
-    }
-}
-
-impl From<Value> for Term {
-    fn from(v: Value) -> Term {
-        match v {
-            Value::Lambda(lam) => lam.into_term(),
-            Value::TyLambda(tylam) => tylam.into_term(),
         }
     }
 }

@@ -1,9 +1,11 @@
 use super::{UntypedArithmetic, terms::Term};
 use errors::ValueMismatch;
-use macros::{FromVariants, GrammarDescribe, LangDisplay, LatexFmt};
+use macros::{FromVariants, GrammarDescribe, IntoTerm, LangDisplay, LatexFmt};
 use syntax::values::{False, Num, True, Value as ValueTrait, ValueGroup};
 
-#[derive(GrammarDescribe, FromVariants, LatexFmt, LangDisplay, Debug, Clone, PartialEq, Eq)]
+#[derive(
+    IntoTerm, GrammarDescribe, FromVariants, LatexFmt, LangDisplay, Debug, Clone, PartialEq, Eq,
+)]
 #[Lang(UntypedArithmetic)]
 pub enum Value {
     True(True<UntypedArithmetic>),
@@ -38,16 +40,6 @@ impl ValueGroup for Value {
             Ok(num)
         } else {
             Err(ValueMismatch::new(self.to_string(), "Number".to_owned()))
-        }
-    }
-}
-
-impl From<Value> for Term {
-    fn from(v: Value) -> Term {
-        match v {
-            Value::True(tru) => tru.into_term(),
-            Value::False(fls) => fls.into_term(),
-            Value::Num(num) => num.into_term(),
         }
     }
 }

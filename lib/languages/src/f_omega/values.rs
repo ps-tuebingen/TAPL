@@ -1,11 +1,13 @@
 use super::{FOmega, terms::Term};
 use errors::ValueMismatch;
-use macros::{FromVariants, GrammarDescribe, LangDisplay, LatexFmt};
+use macros::{FromVariants, GrammarDescribe, IntoTerm, LangDisplay, LatexFmt};
 use syntax::values::{
     False, Lambda, Num, Pack, Record, True, TyLambda, Unit, Value as ValueTrait, ValueGroup,
 };
 
-#[derive(GrammarDescribe, FromVariants, LatexFmt, LangDisplay, Debug, Clone, PartialEq, Eq)]
+#[derive(
+    IntoTerm, GrammarDescribe, FromVariants, LatexFmt, LangDisplay, Debug, Clone, PartialEq, Eq,
+)]
 #[Lang(FOmega)]
 pub enum Value {
     Lambda(Lambda<FOmega>),
@@ -74,21 +76,6 @@ impl ValueGroup for Value {
             Ok(num)
         } else {
             Err(ValueMismatch::new(self.to_string(), "Number".to_owned()))
-        }
-    }
-}
-
-impl From<Value> for Term {
-    fn from(val: Value) -> Term {
-        match val {
-            Value::Lambda(lam) => lam.into_term(),
-            Value::TyLambda(tylam) => tylam.into_term(),
-            Value::Pack(pack) => pack.into_term(),
-            Value::Record(rec) => rec.into_term(),
-            Value::True(tru) => tru.into_term(),
-            Value::False(fls) => fls.into_term(),
-            Value::Unit(u) => u.into_term(),
-            Value::Num(num) => num.into_term(),
         }
     }
 }

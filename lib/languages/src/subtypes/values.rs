@@ -1,12 +1,14 @@
 use super::{Subtypes, terms::Term};
 use errors::ValueMismatch;
-use macros::{FromVariants, GrammarDescribe, LangDisplay, LatexFmt};
+use macros::{FromVariants, GrammarDescribe, IntoTerm, LangDisplay, LatexFmt};
 use syntax::values::{
     Cons, False, Lambda, Loc, Nil, Num, Record, True, Unit, Value as ValueTrait, ValueGroup,
     Variant,
 };
 
-#[derive(GrammarDescribe, FromVariants, LatexFmt, LangDisplay, Debug, PartialEq, Eq, Clone)]
+#[derive(
+    IntoTerm, GrammarDescribe, FromVariants, LatexFmt, LangDisplay, Debug, PartialEq, Eq, Clone,
+)]
 #[Lang(Subtypes)]
 pub enum Value {
     Lambda(Lambda<Subtypes>),
@@ -96,23 +98,6 @@ impl ValueGroup for Value {
             Ok(fls)
         } else {
             Err(ValueMismatch::new(self.to_string(), "False".to_owned()))
-        }
-    }
-}
-
-impl From<Value> for Term {
-    fn from(val: Value) -> Term {
-        match val {
-            Value::Lambda(lam) => lam.into_term(),
-            Value::Unit(u) => u.into_term(),
-            Value::Record(rec) => rec.into_term(),
-            Value::Variant(var) => var.into_term(),
-            Value::Nil(nil) => nil.into_term(),
-            Value::Cons(cons) => cons.into_term(),
-            Value::Loc(loc) => loc.into_term(),
-            Value::Num(num) => num.into_term(),
-            Value::True(tru) => tru.into_term(),
-            Value::False(fls) => fls.into_term(),
         }
     }
 }
