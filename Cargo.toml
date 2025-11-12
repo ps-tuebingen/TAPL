@@ -19,6 +19,7 @@ members = [
     "lib/driver",
     "lib/test",
     "lib/web",
+    "lib/macros",
     # Other
     "tests",
     "xtask"
