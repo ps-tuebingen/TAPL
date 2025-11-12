@@ -2,15 +2,14 @@ use super::BoundedQuantification;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
-use macros::{NoKinds, NoNorm, Subtypecheck};
-use std::fmt;
+use macros::{LangDisplay, NoKinds, NoNorm, Subtypecheck};
 use syntax::{
     TypeVar,
     subst::SubstType,
     types::{ExistsBounded, ForallBounded, Fun, Nat, Record, Top, TypeGroup, TypeVariable},
 };
 
-#[derive(NoNorm, NoKinds, Subtypecheck, Clone, Debug, PartialEq, Eq)]
+#[derive(LangDisplay, NoNorm, NoKinds, Subtypecheck, Clone, Debug, PartialEq, Eq)]
 #[Lang(BoundedQuantification)]
 pub enum Type {
     Var(TypeVariable<BoundedQuantification>),
@@ -152,20 +151,6 @@ impl SubstType for Type {
             Type::Forall(f) => f.subst_type(v, ty).into(),
             Type::Exists(e) => e.subst_type(v, ty).into(),
             Type::Record(rec) => rec.subst_type(v, ty).into(),
-        }
-    }
-}
-
-impl fmt::Display for Type {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Type::Var(v) => v.fmt(f),
-            Type::Top(t) => t.fmt(f),
-            Type::Nat(n) => n.fmt(f),
-            Type::Fun(fun) => fun.fmt(f),
-            Type::Forall(forall) => forall.fmt(f),
-            Type::Exists(e) => e.fmt(f),
-            Type::Record(rec) => rec.fmt(f),
         }
     }
 }

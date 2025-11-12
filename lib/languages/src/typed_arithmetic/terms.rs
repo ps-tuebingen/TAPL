@@ -1,14 +1,13 @@
 use super::{TypedArithmetic, types::Type};
 use latex::{LatexConfig, LatexFmt};
-use macros::{Eval, GrammarDescribe, TermDisplay, Typecheck};
-use std::fmt;
+use macros::{Eval, GrammarDescribe, LangDisplay, Typecheck};
 use syntax::{
     TypeVar, Var,
     subst::{SubstTerm, SubstType},
     terms::{False, If, IsZero, Num, Pred, Succ, True},
 };
 
-#[derive(TermDisplay, GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq)]
+#[derive(LangDisplay, GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq)]
 #[Lang(TypedArithmetic)]
 pub enum Term {
     True(True<TypedArithmetic>),

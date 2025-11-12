@@ -2,7 +2,7 @@ use super::FOmega;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
-use macros::{Kindcheck, NoSubtypes, Normalize};
+use macros::{Kindcheck, LangDisplay, NoSubtypes, Normalize};
 use std::fmt;
 use syntax::{
     TypeVar,
@@ -13,7 +13,7 @@ use syntax::{
     },
 };
 
-#[derive(Normalize, Kindcheck, NoSubtypes, Debug, Clone, PartialEq, Eq)]
+#[derive(LangDisplay, Normalize, Kindcheck, NoSubtypes, Debug, Clone, PartialEq, Eq)]
 #[Lang(FOmega)]
 pub enum Type {
     Var(TypeVariable<FOmega>),
@@ -140,23 +140,6 @@ impl SubstType for Type {
             Type::Bool(b) => b.subst_type(v, ty).into(),
             Type::Unit(u) => u.subst_type(v, ty).into(),
             Type::Nat(nat) => nat.subst_type(v, ty).into(),
-        }
-    }
-}
-
-impl fmt::Display for Type {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Type::Var(var) => var.fmt(f),
-            Type::OpLambda(lambda) => lambda.fmt(f),
-            Type::Fun(fun) => fun.fmt(f),
-            Type::OpApp(app) => app.fmt(f),
-            Type::Forall(forall) => forall.fmt(f),
-            Type::Exists(ex) => ex.fmt(f),
-            Type::Record(rec) => rec.fmt(f),
-            Type::Bool(b) => b.fmt(f),
-            Type::Unit(u) => u.fmt(f),
-            Type::Nat(nat) => nat.fmt(f),
         }
     }
 }

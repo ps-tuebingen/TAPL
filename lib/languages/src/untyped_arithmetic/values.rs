@@ -2,10 +2,10 @@ use super::{UntypedArithmetic, terms::Term};
 use errors::ValueMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
-use std::fmt;
+use macros::LangDisplay;
 use syntax::values::{False, Num, True, Value as ValueTrait, ValueGroup};
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(LangDisplay, Debug, Clone, PartialEq, Eq)]
 pub enum Value {
     True(True<UntypedArithmetic>),
     False(False<UntypedArithmetic>),
@@ -50,16 +50,6 @@ impl GrammarDescribe for Value {
             False::<UntypedArithmetic>::rule(),
             Num::<UntypedArithmetic>::rule(),
         ])
-    }
-}
-
-impl fmt::Display for Value {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Value::True(tru) => tru.fmt(f),
-            Value::False(fls) => fls.fmt(f),
-            Value::Num(num) => num.fmt(f),
-        }
     }
 }
 

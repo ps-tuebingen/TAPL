@@ -2,7 +2,7 @@ use super::LambdaOmega;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
-use macros::{Kindcheck, NoNorm, NoSubtypes};
+use macros::{Kindcheck, LangDisplay, NoNorm, NoSubtypes};
 use std::fmt;
 use syntax::{
     subst::SubstType,
@@ -13,7 +13,7 @@ use syntax::{
 
 pub type TypeVar = String;
 
-#[derive(NoNorm, Kindcheck, NoSubtypes, Debug, Clone, PartialEq, Eq)]
+#[derive(LangDisplay, NoNorm, Kindcheck, NoSubtypes, Debug, Clone, PartialEq, Eq)]
 #[Lang(LambdaOmega)]
 pub enum Type {
     Var(TypeVariable<LambdaOmega>),
@@ -107,21 +107,6 @@ impl GrammarDescribe for Type {
             Fun::<LambdaOmega>::rule(),
             Forall::<LambdaOmega>::rule(),
         ])
-    }
-}
-
-impl fmt::Display for Type {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Type::Var(var) => var.fmt(f),
-            Type::Unit(u) => u.fmt(f),
-            Type::Bool(b) => b.fmt(f),
-            Type::Nat(n) => n.fmt(f),
-            Type::OpLambda(oplam) => oplam.fmt(f),
-            Type::OpApp(opapp) => opapp.fmt(f),
-            Type::Fun(fun) => fun.fmt(f),
-            Type::Forall(forall) => forall.fmt(f),
-        }
     }
 }
 

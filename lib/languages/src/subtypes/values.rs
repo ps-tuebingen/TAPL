@@ -2,13 +2,14 @@ use super::{Subtypes, terms::Term};
 use errors::ValueMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
+use macros::LangDisplay;
 use std::fmt;
 use syntax::values::{
     Cons, False, Lambda, Loc, Nil, Num, Record, True, Unit, Value as ValueTrait, ValueGroup,
     Variant,
 };
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(LangDisplay, Debug, PartialEq, Eq, Clone)]
 pub enum Value {
     Lambda(Lambda<Subtypes>),
     Unit(Unit<Subtypes>),
@@ -132,23 +133,6 @@ impl GrammarDescribe for Value {
             True::<Subtypes>::rule(),
             False::<Subtypes>::rule(),
         ])
-    }
-}
-
-impl fmt::Display for Value {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Value::Lambda(lam) => lam.fmt(f),
-            Value::Unit(u) => u.fmt(f),
-            Value::Record(rec) => rec.fmt(f),
-            Value::Variant(var) => var.fmt(f),
-            Value::Nil(nil) => nil.fmt(f),
-            Value::Cons(cons) => cons.fmt(f),
-            Value::Loc(loc) => loc.fmt(f),
-            Value::Num(num) => num.fmt(f),
-            Value::True(tru) => tru.fmt(f),
-            Value::False(fls) => fls.fmt(f),
-        }
     }
 }
 

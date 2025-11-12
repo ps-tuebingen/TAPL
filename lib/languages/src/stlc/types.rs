@@ -2,7 +2,7 @@ use super::Stlc;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
-use macros::{NoKinds, NoNorm, NoSubtypes};
+use macros::{LangDisplay, NoKinds, NoNorm, NoSubtypes};
 use std::fmt;
 use syntax::{
     TypeVar,
@@ -13,7 +13,7 @@ use syntax::{
     },
 };
 
-#[derive(NoNorm, NoKinds, NoSubtypes, PartialEq, Eq, Clone, Debug)]
+#[derive(LangDisplay, NoNorm, NoKinds, NoSubtypes, PartialEq, Eq, Clone, Debug)]
 #[Lang(Stlc)]
 pub enum Type {
     Unit(Unit<Stlc>),
@@ -137,24 +137,6 @@ impl GrammarDescribe for Type {
             Optional::<Stlc>::rule(),
             List::<Stlc>::rule(),
         ])
-    }
-}
-
-impl fmt::Display for Type {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Type::Unit(u) => u.fmt(f),
-            Type::Fun(fun) => fun.fmt(f),
-            Type::Bool(b) => b.fmt(f),
-            Type::Nat(n) => n.fmt(f),
-            Type::Prod(prod) => prod.fmt(f),
-            Type::Tup(tup) => tup.fmt(f),
-            Type::Record(recs) => recs.fmt(f),
-            Type::Sum(sum) => sum.fmt(f),
-            Type::Variant(vars) => vars.fmt(f),
-            Type::Optional(option) => option.fmt(f),
-            Type::List(list) => list.fmt(f),
-        }
     }
 }
 

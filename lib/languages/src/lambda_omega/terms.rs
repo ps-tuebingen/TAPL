@@ -1,14 +1,13 @@
 use super::{LambdaOmega, types::Type};
 use latex::{LatexConfig, LatexFmt};
-use macros::{Eval, GrammarDescribe, TermDisplay, Typecheck};
-use std::fmt;
+use macros::{Eval, GrammarDescribe, LangDisplay, Typecheck};
 use syntax::{
     TypeVar, Var,
     subst::{SubstTerm, SubstType},
     terms::{App, False, Lambda, Num, True, TyApp, TyLambda, Unit, Variable},
 };
 
-#[derive(TermDisplay, GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq)]
+#[derive(LangDisplay, GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq)]
 #[Lang(LambdaOmega)]
 pub enum Term {
     Variable(Variable<LambdaOmega>),

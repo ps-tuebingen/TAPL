@@ -1,4 +1,4 @@
-use macros::{Eval, GrammarDescribe, Kindcheck, Normalize, Subtypecheck, TermDisplay, Typecheck};
+use macros::{Eval, GrammarDescribe, Kindcheck, LangDisplay, Normalize, Subtypecheck, Typecheck};
 use std::fmt;
 use syntax::{
     TypeVar, Var,
@@ -12,7 +12,7 @@ use syntax::{
 #[derive(Debug, Clone, PartialEq)]
 struct DummyLang;
 
-#[derive(TermDisplay, GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq)]
+#[derive(LangDisplay, GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq)]
 #[Lang(DummyLang)]
 enum DummyTerm {
     Num(Num<DummyLang>),
@@ -20,14 +20,14 @@ enum DummyTerm {
     False(False<DummyLang>),
 }
 
-#[derive(Normalize, Kindcheck, Subtypecheck, Debug, Clone, PartialEq)]
+#[derive(LangDisplay, Normalize, Kindcheck, Subtypecheck, Debug, Clone, PartialEq)]
 #[Lang(DummyLang)]
 enum DummyType {
     Nat(Nat<DummyLang>),
     Bool(Bool<DummyLang>),
     Top(Top<DummyLang>),
 }
-#[derive(Clone, Debug)]
+#[derive(LangDisplay, Clone, Debug)]
 enum DummyValue {
     Num(NumVal<DummyLang>),
     True(TrueVal<DummyLang>),
@@ -147,18 +147,6 @@ impl From<FalseVal<DummyLang>> for DummyValue {
 }
 
 impl fmt::Display for DummyLang {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        f.write_str("dummy")
-    }
-}
-
-impl fmt::Display for DummyType {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        f.write_str("dummy")
-    }
-}
-
-impl fmt::Display for DummyValue {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.write_str("dummy")
     }

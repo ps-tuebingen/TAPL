@@ -4,8 +4,8 @@ use derivations::Derivation;
 use errors::{NoTyping, check_error::CheckError};
 use grammar::DerivationRule;
 use latex::{LatexConfig, LatexFmt};
-use macros::{Eval, GrammarDescribe, TermDisplay};
-use std::{collections::HashSet, fmt};
+use macros::{Eval, GrammarDescribe, LangDisplay};
+use std::collections::HashSet;
 use syntax::{
     TypeVar, Var,
     env::Environment,
@@ -14,7 +14,7 @@ use syntax::{
     terms::{App, UntypedLambda as UntypedLambdaT, Variable},
 };
 
-#[derive(TermDisplay, GrammarDescribe, Eval, Debug, Clone, PartialEq, Eq)]
+#[derive(LangDisplay, GrammarDescribe, Eval, Debug, Clone, PartialEq, Eq)]
 #[Lang(UntypedLambda)]
 pub enum Term {
     Var(Variable<UntypedLambda>),

@@ -2,12 +2,13 @@ use super::{FOmega, terms::Term};
 use errors::ValueMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
+use macros::LangDisplay;
 use std::fmt;
 use syntax::values::{
     False, Lambda, Num, Pack, Record, True, TyLambda, Unit, Value as ValueTrait, ValueGroup,
 };
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(LangDisplay, Debug, Clone, PartialEq, Eq)]
 pub enum Value {
     Lambda(Lambda<FOmega>),
     TyLambda(TyLambda<FOmega>),
@@ -105,21 +106,6 @@ impl From<Value> for Term {
             Value::False(fls) => fls.into_term(),
             Value::Unit(u) => u.into_term(),
             Value::Num(num) => num.into_term(),
-        }
-    }
-}
-
-impl fmt::Display for Value {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Value::Lambda(lam) => lam.fmt(f),
-            Value::TyLambda(tylam) => tylam.fmt(f),
-            Value::Pack(pack) => pack.fmt(f),
-            Value::Record(rec) => rec.fmt(f),
-            Value::True(tru) => tru.fmt(f),
-            Value::False(fls) => fls.fmt(f),
-            Value::Unit(u) => u.fmt(f),
-            Value::Num(num) => num.fmt(f),
         }
     }
 }

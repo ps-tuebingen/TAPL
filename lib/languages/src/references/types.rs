@@ -2,7 +2,7 @@ use super::References;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
-use macros::{NoKinds, NoNorm, NoSubtypes};
+use macros::{LangDisplay, NoKinds, NoNorm, NoSubtypes};
 use std::fmt;
 use syntax::{
     TypeVar,
@@ -10,7 +10,7 @@ use syntax::{
     types::{Bool, Fun, Nat, Reference, Type as TypeTrait, TypeGroup, Unit},
 };
 
-#[derive(NoNorm, NoKinds, NoSubtypes, Debug, Clone, PartialEq, Eq)]
+#[derive(LangDisplay, NoNorm, NoKinds, NoSubtypes, Debug, Clone, PartialEq, Eq)]
 #[Lang(References)]
 pub enum Type {
     Unit(Unit<References>),
@@ -81,18 +81,6 @@ impl SubstType for Type {
     type Target = Self;
     fn subst_type(self, _: &TypeVar, _: &Self) -> Self::Target {
         self
-    }
-}
-
-impl fmt::Display for Type {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Type::Unit(u) => u.fmt(f),
-            Type::Nat(n) => n.fmt(f),
-            Type::Bool(b) => b.fmt(f),
-            Type::Fun(fun) => fun.fmt(f),
-            Type::Ref(rf) => rf.fmt(f),
-        }
     }
 }
 

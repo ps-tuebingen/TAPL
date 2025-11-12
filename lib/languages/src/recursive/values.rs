@@ -2,12 +2,12 @@ use super::{Recursive, terms::Term};
 use errors::ValueMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
-use std::fmt;
+use macros::LangDisplay;
 use syntax::values::{
     False, Fold, Lambda, Num, Pair, Record, True, Unit, Value as ValueTrait, ValueGroup, Variant,
 };
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(LangDisplay, Debug, Clone, PartialEq, Eq)]
 pub enum Value {
     True(True<Recursive>),
     False(False<Recursive>),
@@ -120,22 +120,6 @@ impl GrammarDescribe for Value {
             Record::<Recursive>::rule(),
             Variant::<Recursive>::rule(),
         ])
-    }
-}
-
-impl fmt::Display for Value {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Value::Unit(u) => u.fmt(f),
-            Value::True(tru) => tru.fmt(f),
-            Value::False(fls) => fls.fmt(f),
-            Value::Num(num) => num.fmt(f),
-            Value::Lambda(lam) => lam.fmt(f),
-            Value::Fold(fld) => fld.fmt(f),
-            Value::Pair(pr) => pr.fmt(f),
-            Value::Record(rec) => rec.fmt(f),
-            Value::Variant(var) => var.fmt(f),
-        }
     }
 }
 

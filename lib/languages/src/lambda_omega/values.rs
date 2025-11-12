@@ -2,10 +2,10 @@ use super::{LambdaOmega, terms::Term};
 use errors::ValueMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
-use std::fmt;
+use macros::LangDisplay;
 use syntax::values::{False, Lambda, Num, True, TyLambda, Unit, Value as ValueTrait, ValueGroup};
 
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(LangDisplay, Clone, Debug, PartialEq, Eq)]
 pub enum Value {
     Unit(Unit<LambdaOmega>),
     True(True<LambdaOmega>),
@@ -84,19 +84,6 @@ impl From<Value> for Term {
             Value::True(tru) => tru.into_term(),
             Value::False(fls) => fls.into_term(),
             Value::Num(num) => num.into_term(),
-        }
-    }
-}
-
-impl fmt::Display for Value {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Value::Lambda(lam) => lam.fmt(f),
-            Value::TyLambda(tylam) => tylam.fmt(f),
-            Value::Unit(u) => u.fmt(f),
-            Value::True(tru) => tru.fmt(f),
-            Value::False(fls) => fls.fmt(f),
-            Value::Num(num) => num.fmt(f),
         }
     }
 }

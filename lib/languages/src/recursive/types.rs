@@ -2,7 +2,7 @@ use super::Recursive;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
-use macros::{NoKinds, NoNorm, NoSubtypes};
+use macros::{LangDisplay, NoKinds, NoNorm, NoSubtypes};
 use std::fmt;
 use syntax::{
     subst::SubstType,
@@ -14,7 +14,7 @@ use syntax::{
 
 pub type TypeVar = String;
 
-#[derive(NoNorm, NoKinds, NoSubtypes, Debug, Clone, PartialEq, Eq)]
+#[derive(LangDisplay, NoNorm, NoKinds, NoSubtypes, Debug, Clone, PartialEq, Eq)]
 #[Lang(Recursive)]
 pub enum Type {
     TypeVar(TypeVariable<Recursive>),
@@ -109,22 +109,6 @@ impl GrammarDescribe for Type {
             Bool::<Recursive>::rule(),
             Record::<Recursive>::rule(),
         ])
-    }
-}
-
-impl fmt::Display for Type {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Type::TypeVar(v) => v.fmt(f),
-            Type::Unit(u) => u.fmt(f),
-            Type::Fun(fun) => fun.fmt(f),
-            Type::Mu(mu) => mu.fmt(f),
-            Type::Variant(var) => var.fmt(f),
-            Type::Product(prod) => prod.fmt(f),
-            Type::Nat(n) => n.fmt(f),
-            Type::Bool(b) => b.fmt(f),
-            Type::Record(rec) => rec.fmt(f),
-        }
     }
 }
 

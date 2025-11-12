@@ -2,7 +2,7 @@ use super::FOmegaSub;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
-use macros::{Kindcheck, Normalize, Subtypecheck};
+use macros::{Kindcheck, LangDisplay, Normalize, Subtypecheck};
 use std::fmt;
 use syntax::{
     TypeVar,
@@ -13,7 +13,7 @@ use syntax::{
     },
 };
 
-#[derive(Normalize, Kindcheck, Subtypecheck, Debug, Clone, PartialEq, Eq)]
+#[derive(LangDisplay, Normalize, Kindcheck, Subtypecheck, Debug, Clone, PartialEq, Eq)]
 #[Lang(FOmegaSub)]
 pub enum Type {
     Var(TypeVariable<FOmegaSub>),
@@ -136,22 +136,6 @@ impl SubstType for Type {
             Type::Exists(ex) => ex.subst_type(v, ty).into(),
             Type::Record(rec) => rec.subst_type(v, ty).into(),
             Type::Nat(nat) => nat.subst_type(v, ty).into(),
-        }
-    }
-}
-
-impl fmt::Display for Type {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Type::Var(var) => var.fmt(f),
-            Type::Top(top) => top.fmt(f),
-            Type::Fun(fun) => fun.fmt(f),
-            Type::Forall(forall) => forall.fmt(f),
-            Type::OpLambdaSub(lam) => lam.fmt(f),
-            Type::OpApp(app) => app.fmt(f),
-            Type::Exists(ex) => ex.fmt(f),
-            Type::Record(rec) => rec.fmt(f),
-            Type::Nat(nat) => nat.fmt(f),
         }
     }
 }

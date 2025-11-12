@@ -2,15 +2,14 @@ use super::SystemF;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
-use macros::{NoKinds, NoNorm, NoSubtypes};
-use std::fmt;
+use macros::{LangDisplay, NoKinds, NoNorm, NoSubtypes};
 use syntax::{
     TypeVar,
     subst::SubstType,
     types::{Forall, Fun, Type as TypeTrait, TypeGroup, TypeVariable},
 };
 
-#[derive(NoNorm, NoKinds, NoSubtypes, Debug, Clone, PartialEq, Eq)]
+#[derive(LangDisplay, NoNorm, NoKinds, NoSubtypes, Debug, Clone, PartialEq, Eq)]
 #[Lang(SystemF)]
 pub enum Type {
     Var(TypeVariable<SystemF>),
@@ -46,16 +45,6 @@ impl GrammarDescribe for Type {
             Fun::<SystemF>::rule(),
             Forall::<SystemF>::rule(),
         ])
-    }
-}
-
-impl fmt::Display for Type {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Type::Var(var) => var.fmt(f),
-            Type::Fun(fun) => fun.fmt(f),
-            Type::Forall(forall) => forall.fmt(f),
-        }
     }
 }
 

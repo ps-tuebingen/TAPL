@@ -2,15 +2,14 @@ use super::Exceptions;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
-use macros::{NoKinds, NoNorm, NoSubtypes};
-use std::fmt;
+use macros::{LangDisplay, NoKinds, NoNorm, NoSubtypes};
 use syntax::{
     TypeVar,
     subst::SubstType,
     types::{Bool, Fun, Nat, Type as TypeTrait, TypeGroup, Unit},
 };
 
-#[derive(NoNorm, NoKinds, NoSubtypes, Debug, Clone, PartialEq, Eq)]
+#[derive(LangDisplay, NoNorm, NoKinds, NoSubtypes, Debug, Clone, PartialEq, Eq)]
 #[Lang(Exceptions)]
 pub enum Type {
     Unit(Unit<Exceptions>),
@@ -99,17 +98,6 @@ impl SubstType for Type {
             Type::Nat(n) => n.subst_type(v, ty).into(),
             Type::Bool(b) => b.subst_type(v, ty).into(),
             Type::Fun(f) => f.subst_type(v, ty).into(),
-        }
-    }
-}
-
-impl fmt::Display for Type {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Type::Unit(u) => u.fmt(f),
-            Type::Nat(n) => n.fmt(f),
-            Type::Bool(b) => b.fmt(f),
-            Type::Fun(fun) => fun.fmt(f),
         }
     }
 }

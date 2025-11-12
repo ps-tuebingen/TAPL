@@ -1,10 +1,10 @@
 use super::{UntypedLambda, terms::Term};
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
+use macros::LangDisplay;
 use syntax::values::{UntypedLambda as UntypedLambdaVal, Value as ValueTrait, ValueGroup};
 
-use std::fmt;
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(LangDisplay, Debug, Clone, PartialEq, Eq)]
 pub enum Value {
     Lambda(UntypedLambdaVal<UntypedLambda>),
 }
@@ -19,14 +19,6 @@ impl ValueGroup for Value {}
 impl GrammarDescribe for Value {
     fn grammar() -> Grammar {
         Grammar::value(vec![UntypedLambdaVal::<UntypedLambda>::rule()])
-    }
-}
-
-impl fmt::Display for Value {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Value::Lambda(lam) => lam.fmt(f),
-        }
     }
 }
 

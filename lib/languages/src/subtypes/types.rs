@@ -2,8 +2,7 @@ use super::Subtypes;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
-use macros::{NoKinds, NoNorm, Subtypecheck};
-use std::fmt;
+use macros::{LangDisplay, NoKinds, NoNorm, Subtypecheck};
 use syntax::{
     TypeVar,
     subst::SubstType,
@@ -13,7 +12,7 @@ use syntax::{
     },
 };
 
-#[derive(NoNorm, NoKinds, Subtypecheck, Debug, Clone, PartialEq, Eq)]
+#[derive(LangDisplay, NoNorm, NoKinds, Subtypecheck, Debug, Clone, PartialEq, Eq)]
 #[Lang(Subtypes)]
 pub enum Type {
     Top(Top<Subtypes>),
@@ -154,25 +153,6 @@ impl SubstType for Type {
     type Target = Self;
     fn subst_type(self, _: &TypeVar, _: &Type) -> Self::Target {
         self
-    }
-}
-
-impl fmt::Display for Type {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Type::Top(top) => top.fmt(f),
-            Type::Bot(bot) => bot.fmt(f),
-            Type::Fun(fun) => fun.fmt(f),
-            Type::Record(rec) => rec.fmt(f),
-            Type::Variant(variant) => variant.fmt(f),
-            Type::List(list) => list.fmt(f),
-            Type::Ref(refty) => refty.fmt(f),
-            Type::Source(src) => src.fmt(f),
-            Type::Sink(snk) => snk.fmt(f),
-            Type::Nat(nat) => nat.fmt(f),
-            Type::Unit(unit) => unit.fmt(f),
-            Type::Bool(b) => b.fmt(f),
-        }
     }
 }
 

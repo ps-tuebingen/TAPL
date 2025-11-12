@@ -2,7 +2,7 @@ use super::Existential;
 use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
-use macros::{NoKinds, NoNorm, NoSubtypes};
+use macros::{LangDisplay, NoKinds, NoNorm, NoSubtypes};
 use std::fmt;
 use syntax::{
     TypeVar,
@@ -10,7 +10,7 @@ use syntax::{
     types::{Bool, Exists, Fun, Nat, Record, Type as TypeTrait, TypeGroup, TypeVariable, Unit},
 };
 
-#[derive(NoNorm, NoKinds, NoSubtypes, Debug, Clone, PartialEq, Eq)]
+#[derive(LangDisplay, NoNorm, NoKinds, NoSubtypes, Debug, Clone, PartialEq, Eq)]
 #[Lang(Existential)]
 pub enum Type {
     Var(TypeVariable<Existential>),
@@ -105,20 +105,6 @@ impl GrammarDescribe for Type {
             Exists::<Existential>::rule(),
             Record::<Existential>::rule(),
         ])
-    }
-}
-
-impl fmt::Display for Type {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Type::Var(v) => v.fmt(f),
-            Type::Unit(u) => u.fmt(f),
-            Type::Nat(nat) => nat.fmt(f),
-            Type::Bool(b) => b.fmt(f),
-            Type::Fun(fun) => fun.fmt(f),
-            Type::Exists(exists) => exists.fmt(f),
-            Type::Record(rec) => rec.fmt(f),
-        }
     }
 }
 

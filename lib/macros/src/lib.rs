@@ -14,7 +14,7 @@ use check::{
     typecheck::generate_typecheck,
 };
 use eval::generate_eval;
-use format::generate_term_display;
+use format::generate_display;
 use grammar::generate_grammar_describe;
 
 /// Derive Typecheck for Terms
@@ -86,7 +86,10 @@ pub fn derive_grammar_describe(input: TokenStream) -> TokenStream {
     generate_grammar_describe(input)
 }
 
-#[proc_macro_derive(TermDisplay, attributes(Lang))]
-pub fn derive_term_display(input: TokenStream) -> TokenStream {
-    generate_term_display(input)
+/// Derive fmt::Display for enums
+/// enums must have the form `enum T { T1(T1),T2(T2),...}`
+/// implementation calls `fmt` on all variants
+#[proc_macro_derive(LangDisplay, attributes(Lang))]
+pub fn derive_display(input: TokenStream) -> TokenStream {
+    generate_display(input)
 }

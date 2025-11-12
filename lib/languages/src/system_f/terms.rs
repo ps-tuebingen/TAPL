@@ -1,14 +1,13 @@
 use super::{SystemF, types::Type};
 use latex::{LatexConfig, LatexFmt};
-use macros::{Eval, GrammarDescribe, TermDisplay, Typecheck};
-use std::fmt;
+use macros::{Eval, GrammarDescribe, LangDisplay, Typecheck};
 use syntax::{
     TypeVar, Var,
     subst::{SubstTerm, SubstType},
     terms::{App, Lambda, TyApp, TyLambda, Variable},
 };
 
-#[derive(TermDisplay, GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq)]
+#[derive(LangDisplay, GrammarDescribe, Eval, Typecheck, Debug, Clone, PartialEq, Eq)]
 #[Lang(SystemF)]
 pub enum Term {
     Variable(Variable<SystemF>),

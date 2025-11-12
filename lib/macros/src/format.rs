@@ -3,7 +3,7 @@ use proc_macro::TokenStream;
 use quote::quote;
 use syn::{DeriveInput, parse_macro_input};
 
-pub fn generate_term_display(input: TokenStream) -> TokenStream {
+pub fn generate_display(input: TokenStream) -> TokenStream {
     let derive_input: DeriveInput = parse_macro_input!(input);
     let ident = derive_input.ident;
     let variants = get_enum_variants(&derive_input.data);
