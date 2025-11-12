@@ -1,12 +1,11 @@
 use super::{Existential, terms::Term};
 use errors::ValueMismatch;
-use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{FromVariants, LangDisplay, LatexFmt};
+use macros::{FromVariants, GrammarDescribe, LangDisplay, LatexFmt};
 use syntax::values::{
     False, Lambda, Num, Pack, Record, True, Unit, Value as ValueTrait, ValueGroup,
 };
 
-#[derive(FromVariants, LatexFmt, LangDisplay, Debug, Clone, PartialEq, Eq)]
+#[derive(GrammarDescribe, FromVariants, LatexFmt, LangDisplay, Debug, Clone, PartialEq, Eq)]
 #[Lang(Existential)]
 pub enum Value {
     Unit(Unit<Existential>),
@@ -70,20 +69,6 @@ impl ValueGroup for Value {
         } else {
             Err(ValueMismatch::new(self.to_string(), "False".to_owned()))
         }
-    }
-}
-
-impl GrammarDescribe for Value {
-    fn grammar() -> Grammar {
-        Grammar::value(vec![
-            Unit::<Existential>::rule(),
-            Lambda::<Existential>::rule(),
-            Pack::<Existential>::rule(),
-            Num::<Existential>::rule(),
-            Record::<Existential>::rule(),
-            True::<Existential>::rule(),
-            False::<Existential>::rule(),
-        ])
     }
 }
 

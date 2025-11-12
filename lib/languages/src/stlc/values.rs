@@ -1,13 +1,12 @@
 use super::{Stlc, terms::Term};
 use errors::ValueMismatch;
-use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{FromVariants, LangDisplay, LatexFmt};
+use macros::{FromVariants, GrammarDescribe, LangDisplay, LatexFmt};
 use syntax::values::{
     Cons, False, Lambda, Left, Nil, Nothing, Num, Pair, Record, Right, Something, True, Tuple,
     Unit, Value as ValueTrait, ValueGroup, Variant,
 };
 
-#[derive(FromVariants, LatexFmt, LangDisplay, Debug, Clone, PartialEq, Eq)]
+#[derive(GrammarDescribe, FromVariants, LatexFmt, LangDisplay, Debug, Clone, PartialEq, Eq)]
 #[Lang(Stlc)]
 pub enum Value {
     Lambda(Lambda<Stlc>),
@@ -143,28 +142,6 @@ impl ValueGroup for Value {
         } else {
             Err(ValueMismatch::new(self.to_string(), "Cons".to_owned()))
         }
-    }
-}
-
-impl GrammarDescribe for Value {
-    fn grammar() -> Grammar {
-        Grammar::value(vec![
-            Lambda::<Stlc>::rule(),
-            Unit::<Stlc>::rule(),
-            True::<Stlc>::rule(),
-            False::<Stlc>::rule(),
-            Num::<Stlc>::rule(),
-            Pair::<Stlc>::rule(),
-            Tuple::<Stlc>::rule(),
-            Record::<Stlc>::rule(),
-            Left::<Stlc>::rule(),
-            Right::<Stlc>::rule(),
-            Variant::<Stlc>::rule(),
-            Nothing::<Stlc>::rule(),
-            Something::<Stlc>::rule(),
-            Nil::<Stlc>::rule(),
-            Cons::<Stlc>::rule(),
-        ])
     }
 }
 

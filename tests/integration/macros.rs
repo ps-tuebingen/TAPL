@@ -34,6 +34,7 @@ enum DummyTerm {
 }
 
 #[derive(
+    GrammarDescribe,
     FromVariants,
     SubstType,
     LatexFmt,
@@ -51,7 +52,7 @@ enum DummyType {
     Bool(Bool<DummyLang>),
     Top(Top<DummyLang>),
 }
-#[derive(FromVariants, LatexFmt, LangDisplay, Clone, Debug)]
+#[derive(GrammarDescribe, FromVariants, LatexFmt, LangDisplay, Clone, Debug)]
 #[Lang(DummyLang)]
 enum DummyValue {
     Num(NumVal<DummyLang>),

@@ -1,7 +1,8 @@
 use super::LambdaOmega;
 use errors::TypeMismatch;
-use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{FromVariants, Kindcheck, LangDisplay, LatexFmt, NoNorm, NoSubtypes, SubstType};
+use macros::{
+    FromVariants, GrammarDescribe, Kindcheck, LangDisplay, LatexFmt, NoNorm, NoSubtypes, SubstType,
+};
 use syntax::types::{
     Bool, Forall, Fun, Nat, OpApp, OpLambda, Type as TypeTrait, TypeGroup, TypeVariable, Unit,
 };
@@ -9,6 +10,7 @@ use syntax::types::{
 pub type TypeVar = String;
 
 #[derive(
+    GrammarDescribe,
     FromVariants,
     SubstType,
     LatexFmt,
@@ -99,20 +101,5 @@ impl TypeGroup for Type {
         } else {
             Err(TypeMismatch::new(self.to_string(), "Universal".to_owned()))
         }
-    }
-}
-
-impl GrammarDescribe for Type {
-    fn grammar() -> Grammar {
-        Grammar::ty(vec![
-            TypeVariable::<LambdaOmega>::rule(),
-            Unit::<LambdaOmega>::rule(),
-            Bool::<LambdaOmega>::rule(),
-            Nat::<LambdaOmega>::rule(),
-            OpLambda::<LambdaOmega>::rule(),
-            OpApp::<LambdaOmega>::rule(),
-            Fun::<LambdaOmega>::rule(),
-            Forall::<LambdaOmega>::rule(),
-        ])
     }
 }

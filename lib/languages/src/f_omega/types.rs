@@ -1,13 +1,16 @@
 use super::FOmega;
 use errors::TypeMismatch;
-use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{FromVariants, Kindcheck, LangDisplay, LatexFmt, NoSubtypes, Normalize, SubstType};
+use macros::{
+    FromVariants, GrammarDescribe, Kindcheck, LangDisplay, LatexFmt, NoSubtypes, Normalize,
+    SubstType,
+};
 use syntax::types::{
     Bool, Exists, Forall, Fun, Nat, OpApp, OpLambda, Record, Type as TypeTrait, TypeGroup,
     TypeVariable, Unit,
 };
 
 #[derive(
+    GrammarDescribe,
     FromVariants,
     SubstType,
     LatexFmt,
@@ -35,23 +38,6 @@ pub enum Type {
 }
 
 impl TypeTrait for Type {}
-
-impl GrammarDescribe for Type {
-    fn grammar() -> Grammar {
-        Grammar::ty(vec![
-            TypeVariable::<FOmega>::rule(),
-            Fun::<FOmega>::rule(),
-            Forall::<FOmega>::rule(),
-            OpLambda::<FOmega>::rule(),
-            OpApp::<FOmega>::rule(),
-            Exists::<FOmega>::rule(),
-            Record::<FOmega>::rule(),
-            Bool::<FOmega>::rule(),
-            Unit::<FOmega>::rule(),
-            Nat::<FOmega>::rule(),
-        ])
-    }
-}
 
 impl TypeGroup for Type {
     type Lang = FOmega;

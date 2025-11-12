@@ -1,10 +1,12 @@
 use super::References;
 use errors::TypeMismatch;
-use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{FromVariants, LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes, SubstType};
+use macros::{
+    FromVariants, GrammarDescribe, LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes, SubstType,
+};
 use syntax::types::{Bool, Fun, Nat, Reference, Type as TypeTrait, TypeGroup, Unit};
 
 #[derive(
+    GrammarDescribe,
     FromVariants,
     SubstType,
     LatexFmt,
@@ -67,18 +69,6 @@ impl TypeGroup for Type {
         } else {
             Err(TypeMismatch::new(self.to_string(), "Reference".to_owned()))
         }
-    }
-}
-
-impl GrammarDescribe for Type {
-    fn grammar() -> Grammar {
-        Grammar::ty(vec![
-            Unit::<References>::rule(),
-            Nat::<References>::rule(),
-            Bool::<References>::rule(),
-            Fun::<References>::rule(),
-            Reference::<References>::rule(),
-        ])
     }
 }
 

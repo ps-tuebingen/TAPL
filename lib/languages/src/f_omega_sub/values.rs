@@ -1,10 +1,9 @@
 use super::{FOmegaSub, terms::Term};
 use errors::ValueMismatch;
-use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{FromVariants, LangDisplay, LatexFmt};
+use macros::{FromVariants, GrammarDescribe, LangDisplay, LatexFmt};
 use syntax::values::{Lambda, LambdaSub, Num, Pack, Record, Value as ValueTrait, ValueGroup};
 
-#[derive(FromVariants, LatexFmt, LangDisplay, Debug, Clone, PartialEq, Eq)]
+#[derive(GrammarDescribe, FromVariants, LatexFmt, LangDisplay, Debug, Clone, PartialEq, Eq)]
 #[Lang(FOmegaSub)]
 pub enum Value {
     Lambda(Lambda<FOmegaSub>),
@@ -17,18 +16,6 @@ pub enum Value {
 impl ValueTrait for Value {
     type Lang = FOmegaSub;
     type Term = Term;
-}
-
-impl GrammarDescribe for Value {
-    fn grammar() -> Grammar {
-        Grammar::value(vec![
-            Lambda::<FOmegaSub>::rule(),
-            LambdaSub::<FOmegaSub>::rule(),
-            Pack::<FOmegaSub>::rule(),
-            Record::<FOmegaSub>::rule(),
-            Num::<FOmegaSub>::rule(),
-        ])
-    }
 }
 
 impl ValueGroup for Value {

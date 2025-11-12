@@ -1,13 +1,12 @@
 use super::{Subtypes, terms::Term};
 use errors::ValueMismatch;
-use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{FromVariants, LangDisplay, LatexFmt};
+use macros::{FromVariants, GrammarDescribe, LangDisplay, LatexFmt};
 use syntax::values::{
     Cons, False, Lambda, Loc, Nil, Num, Record, True, Unit, Value as ValueTrait, ValueGroup,
     Variant,
 };
 
-#[derive(FromVariants, LatexFmt, LangDisplay, Debug, PartialEq, Eq, Clone)]
+#[derive(GrammarDescribe, FromVariants, LatexFmt, LangDisplay, Debug, PartialEq, Eq, Clone)]
 #[Lang(Subtypes)]
 pub enum Value {
     Lambda(Lambda<Subtypes>),
@@ -115,22 +114,5 @@ impl From<Value> for Term {
             Value::True(tru) => tru.into_term(),
             Value::False(fls) => fls.into_term(),
         }
-    }
-}
-
-impl GrammarDescribe for Value {
-    fn grammar() -> Grammar {
-        Grammar::value(vec![
-            Lambda::<Subtypes>::rule(),
-            Unit::<Subtypes>::rule(),
-            Record::<Subtypes>::rule(),
-            Variant::<Subtypes>::rule(),
-            Nil::<Subtypes>::rule(),
-            Cons::<Subtypes>::rule(),
-            Loc::<Subtypes>::rule(),
-            Num::<Subtypes>::rule(),
-            True::<Subtypes>::rule(),
-            False::<Subtypes>::rule(),
-        ])
     }
 }

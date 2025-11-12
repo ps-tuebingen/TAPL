@@ -1,12 +1,11 @@
 use super::{Exceptions, terms::Term};
 use errors::ValueMismatch;
-use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{FromVariants, LangDisplay, LatexFmt};
+use macros::{FromVariants, GrammarDescribe, LangDisplay, LatexFmt};
 use syntax::values::{
     Exception, False, Lambda, Num, Raise, True, Unit, Value as ValueTrait, ValueGroup,
 };
 
-#[derive(LatexFmt, FromVariants, LangDisplay, Debug, Clone, PartialEq, Eq)]
+#[derive(GrammarDescribe, LatexFmt, FromVariants, LangDisplay, Debug, Clone, PartialEq, Eq)]
 #[Lang(Exceptions)]
 pub enum Value {
     Lambda(Lambda<Exceptions>),
@@ -70,20 +69,6 @@ impl ValueGroup for Value {
         } else {
             Err(ValueMismatch::new(self.to_string(), "Number".to_owned()))
         }
-    }
-}
-
-impl GrammarDescribe for Value {
-    fn grammar() -> Grammar {
-        Grammar::value(vec![
-            Lambda::<Exceptions>::rule(),
-            Unit::<Exceptions>::rule(),
-            True::<Exceptions>::rule(),
-            False::<Exceptions>::rule(),
-            Num::<Exceptions>::rule(),
-            Exception::<Exceptions>::rule(),
-            Raise::<Exceptions>::rule(),
-        ])
     }
 }
 

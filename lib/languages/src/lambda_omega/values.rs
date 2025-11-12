@@ -1,10 +1,9 @@
 use super::{LambdaOmega, terms::Term};
 use errors::ValueMismatch;
-use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{FromVariants, LangDisplay, LatexFmt};
+use macros::{FromVariants, GrammarDescribe, LangDisplay, LatexFmt};
 use syntax::values::{False, Lambda, Num, True, TyLambda, Unit, Value as ValueTrait, ValueGroup};
 
-#[derive(FromVariants, LatexFmt, LangDisplay, Clone, Debug, PartialEq, Eq)]
+#[derive(GrammarDescribe, FromVariants, LatexFmt, LangDisplay, Clone, Debug, PartialEq, Eq)]
 #[Lang(LambdaOmega)]
 pub enum Value {
     Unit(Unit<LambdaOmega>),
@@ -59,19 +58,6 @@ impl ValueGroup for Value {
         } else {
             Err(ValueMismatch::new(self.to_string(), "TyLambda".to_owned()))
         }
-    }
-}
-
-impl GrammarDescribe for Value {
-    fn grammar() -> Grammar {
-        Grammar::value(vec![
-            Lambda::<LambdaOmega>::rule(),
-            TyLambda::<LambdaOmega>::rule(),
-            Unit::<LambdaOmega>::rule(),
-            True::<LambdaOmega>::rule(),
-            False::<LambdaOmega>::rule(),
-            Num::<LambdaOmega>::rule(),
-        ])
     }
 }
 

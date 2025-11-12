@@ -1,10 +1,12 @@
 use super::BoundedQuantification;
 use errors::TypeMismatch;
-use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{FromVariants, LangDisplay, LatexFmt, NoKinds, NoNorm, SubstType, Subtypecheck};
+use macros::{
+    FromVariants, GrammarDescribe, LangDisplay, LatexFmt, NoKinds, NoNorm, SubstType, Subtypecheck,
+};
 use syntax::types::{ExistsBounded, ForallBounded, Fun, Nat, Record, Top, TypeGroup, TypeVariable};
 
 #[derive(
+    GrammarDescribe,
     SubstType,
     LatexFmt,
     FromVariants,
@@ -88,19 +90,5 @@ impl TypeGroup for Type {
         } else {
             Err(TypeMismatch::new(self.to_string(), "Record".to_owned()))
         }
-    }
-}
-
-impl GrammarDescribe for Type {
-    fn grammar() -> Grammar {
-        Grammar::ty(vec![
-            TypeVariable::<BoundedQuantification>::rule(),
-            Top::<BoundedQuantification>::rule(),
-            Nat::<BoundedQuantification>::rule(),
-            Fun::<BoundedQuantification>::rule(),
-            ForallBounded::<BoundedQuantification>::rule(),
-            ExistsBounded::<BoundedQuantification>::rule(),
-            Record::<BoundedQuantification>::rule(),
-        ])
     }
 }

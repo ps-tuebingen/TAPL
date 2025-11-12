@@ -1,10 +1,9 @@
 use super::{UntypedArithmetic, terms::Term};
 use errors::ValueMismatch;
-use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{FromVariants, LangDisplay, LatexFmt};
+use macros::{FromVariants, GrammarDescribe, LangDisplay, LatexFmt};
 use syntax::values::{False, Num, True, Value as ValueTrait, ValueGroup};
 
-#[derive(FromVariants, LatexFmt, LangDisplay, Debug, Clone, PartialEq, Eq)]
+#[derive(GrammarDescribe, FromVariants, LatexFmt, LangDisplay, Debug, Clone, PartialEq, Eq)]
 #[Lang(UntypedArithmetic)]
 pub enum Value {
     True(True<UntypedArithmetic>),
@@ -40,16 +39,6 @@ impl ValueGroup for Value {
         } else {
             Err(ValueMismatch::new(self.to_string(), "Number".to_owned()))
         }
-    }
-}
-
-impl GrammarDescribe for Value {
-    fn grammar() -> Grammar {
-        Grammar::value(vec![
-            True::<UntypedArithmetic>::rule(),
-            False::<UntypedArithmetic>::rule(),
-            Num::<UntypedArithmetic>::rule(),
-        ])
     }
 }
 

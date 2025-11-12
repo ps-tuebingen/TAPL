@@ -1,10 +1,12 @@
 use super::SystemF;
 use errors::TypeMismatch;
-use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{FromVariants, LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes, SubstType};
+use macros::{
+    FromVariants, GrammarDescribe, LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes, SubstType,
+};
 use syntax::types::{Forall, Fun, Type as TypeTrait, TypeGroup, TypeVariable};
 
 #[derive(
+    GrammarDescribe,
     FromVariants,
     SubstType,
     LatexFmt,
@@ -42,15 +44,5 @@ impl TypeGroup for Type {
         } else {
             Err(TypeMismatch::new(self.to_string(), "Universal".to_owned()))
         }
-    }
-}
-
-impl GrammarDescribe for Type {
-    fn grammar() -> Grammar {
-        Grammar::ty(vec![
-            TypeVariable::<SystemF>::rule(),
-            Fun::<SystemF>::rule(),
-            Forall::<SystemF>::rule(),
-        ])
     }
 }

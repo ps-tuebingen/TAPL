@@ -1,13 +1,15 @@
 use super::Stlc;
 use errors::TypeMismatch;
-use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{FromVariants, LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes, SubstType};
+use macros::{
+    FromVariants, GrammarDescribe, LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes, SubstType,
+};
 use syntax::types::{
     Bool, Fun, List, Nat, Optional, Product, Record, Sum, Tuple, Type as TypeTrait, TypeGroup,
     Unit, Variant,
 };
 
 #[derive(
+    GrammarDescribe,
     FromVariants,
     SubstType,
     LatexFmt,
@@ -125,23 +127,5 @@ impl TypeGroup for Type {
         } else {
             Err(TypeMismatch::new(self.to_string(), "List".to_owned()))
         }
-    }
-}
-
-impl GrammarDescribe for Type {
-    fn grammar() -> Grammar {
-        Grammar::ty(vec![
-            Unit::<Stlc>::rule(),
-            Fun::<Stlc>::rule(),
-            Bool::<Stlc>::rule(),
-            Nat::<Stlc>::rule(),
-            Product::<Stlc>::rule(),
-            Tuple::<Stlc>::rule(),
-            Record::<Stlc>::rule(),
-            Sum::<Stlc>::rule(),
-            Variant::<Stlc>::rule(),
-            Optional::<Stlc>::rule(),
-            List::<Stlc>::rule(),
-        ])
     }
 }

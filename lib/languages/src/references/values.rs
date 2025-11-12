@@ -1,10 +1,9 @@
 use super::{References, terms::Term};
 use errors::ValueMismatch;
-use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{FromVariants, LangDisplay, LatexFmt};
+use macros::{FromVariants, GrammarDescribe, LangDisplay, LatexFmt};
 use syntax::values::{False, Lambda, Loc, Num, True, Unit, Value as ValueTrait, ValueGroup};
 
-#[derive(FromVariants, LatexFmt, LangDisplay, Debug, Clone, PartialEq, Eq)]
+#[derive(GrammarDescribe, FromVariants, LatexFmt, LangDisplay, Debug, Clone, PartialEq, Eq)]
 #[Lang(References)]
 pub enum Value {
     Lambda(Lambda<References>),
@@ -72,18 +71,5 @@ impl From<Value> for Term {
             Value::True(tru) => tru.into_term(),
             Value::False(fls) => fls.into_term(),
         }
-    }
-}
-
-impl GrammarDescribe for Value {
-    fn grammar() -> Grammar {
-        Grammar::value(vec![
-            Lambda::<References>::rule(),
-            Num::<References>::rule(),
-            Unit::<References>::rule(),
-            Loc::<References>::rule(),
-            True::<References>::rule(),
-            False::<References>::rule(),
-        ])
     }
 }

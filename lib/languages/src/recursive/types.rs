@@ -1,12 +1,14 @@
 use super::Recursive;
 use errors::TypeMismatch;
-use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{FromVariants, LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes, SubstType};
+use macros::{
+    FromVariants, GrammarDescribe, LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes, SubstType,
+};
 use syntax::types::{
     Bool, Fun, Mu, Nat, Product, Record, Type as TypeTrait, TypeGroup, TypeVariable, Unit, Variant,
 };
 
 #[derive(
+    GrammarDescribe,
     FromVariants,
     SubstType,
     LatexFmt,
@@ -97,21 +99,5 @@ impl TypeGroup for Type {
         } else {
             Err(TypeMismatch::new(self.to_string(), "Record".to_owned()))
         }
-    }
-}
-
-impl GrammarDescribe for Type {
-    fn grammar() -> Grammar {
-        Grammar::ty(vec![
-            TypeVariable::<Recursive>::rule(),
-            Unit::<Recursive>::rule(),
-            Fun::<Recursive>::rule(),
-            Mu::<Recursive>::rule(),
-            Variant::<Recursive>::rule(),
-            Product::<Recursive>::rule(),
-            Nat::<Recursive>::rule(),
-            Bool::<Recursive>::rule(),
-            Record::<Recursive>::rule(),
-        ])
     }
 }

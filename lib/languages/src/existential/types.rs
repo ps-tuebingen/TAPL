@@ -1,12 +1,14 @@
 use super::Existential;
 use errors::TypeMismatch;
-use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{FromVariants, LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes, SubstType};
+use macros::{
+    FromVariants, GrammarDescribe, LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes, SubstType,
+};
 use syntax::types::{
     Bool, Exists, Fun, Nat, Record, Type as TypeTrait, TypeGroup, TypeVariable, Unit,
 };
 
 #[derive(
+    GrammarDescribe,
     FromVariants,
     SubstType,
     LatexFmt,
@@ -83,19 +85,5 @@ impl TypeGroup for Type {
         } else {
             Err(TypeMismatch::new(self.to_string(), "Record".to_owned()))
         }
-    }
-}
-
-impl GrammarDescribe for Type {
-    fn grammar() -> Grammar {
-        Grammar::ty(vec![
-            TypeVariable::<Existential>::rule(),
-            Unit::<Existential>::rule(),
-            Nat::<Existential>::rule(),
-            Bool::<Existential>::rule(),
-            Fun::<Existential>::rule(),
-            Exists::<Existential>::rule(),
-            Record::<Existential>::rule(),
-        ])
     }
 }
