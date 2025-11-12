@@ -1,7 +1,7 @@
 use check::Normalize;
 use derivations::{Derivation, NormalizingDerivation};
 use grammar::DerivationRule;
-use macros::Typecheck;
+use macros::{Subtypecheck, Typecheck};
 use std::{collections::HashSet, fmt};
 use syntax::{
     TypeVar, Var,
@@ -9,12 +9,12 @@ use syntax::{
     language::{Language, LanguageFeatures},
     subst::{SubstTerm, SubstType},
     terms::{False, Num, Term, True},
-    types::{Bool, Nat, Type, TypeGroup},
+    types::{Bool, Nat, Top, Type, TypeGroup},
     values::{Value, ValueGroup},
 };
 
 #[derive(Debug, Clone, PartialEq)]
-enum DummyLang {}
+struct DummyLang;
 
 #[derive(Typecheck, Debug, Clone, PartialEq)]
 #[Lang(DummyLang)]
@@ -23,8 +23,13 @@ enum DummyTerm {
     True(True<DummyLang>),
     False(False<DummyLang>),
 }
-#[derive(Debug, Clone, PartialEq)]
-struct DummyType;
+#[derive(Subtypecheck, Debug, Clone, PartialEq)]
+#[Lang(DummyLang)]
+enum DummyType {
+    Nat(Nat<DummyLang>),
+    Bool(Bool<DummyLang>),
+    Top(Top<DummyLang>),
+}
 #[derive(Clone, Debug)]
 struct DummyValue;
 
@@ -112,14 +117,20 @@ impl From<False<DummyLang>> for DummyTerm {
 }
 
 impl From<Nat<DummyLang>> for DummyType {
-    fn from(_: Nat<DummyLang>) -> DummyType {
-        DummyType
+    fn from(nat: Nat<DummyLang>) -> DummyType {
+        DummyType::Nat(nat)
     }
 }
 
 impl From<Bool<DummyLang>> for DummyType {
-    fn from(_: Bool<DummyLang>) -> DummyType {
-        DummyType
+    fn from(b: Bool<DummyLang>) -> DummyType {
+        DummyType::Bool(b)
+    }
+}
+
+impl From<Top<DummyLang>> for DummyType {
+    fn from(t: Top<DummyLang>) -> DummyType {
+        DummyType::Top(t)
     }
 }
 

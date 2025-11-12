@@ -35,3 +35,10 @@ pub fn get_variant_type_name(var: &Variant) -> Ident {
         _ => panic!("Only type paths are supported in enum variants"),
     }
 }
+
+pub fn map_variants<F>(variants: &[Variant], f: F) -> Vec<proc_macro2::TokenStream>
+where
+    F: Fn(&Variant) -> proc_macro2::TokenStream,
+{
+    variants.iter().map(|var| f(var)).collect()
+}
