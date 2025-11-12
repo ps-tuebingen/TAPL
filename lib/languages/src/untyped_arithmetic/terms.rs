@@ -4,6 +4,7 @@ use derivations::Derivation;
 use errors::{NoTyping, check_error::CheckError};
 use grammar::{DerivationRule, Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
+use macros::Eval;
 use std::collections::HashSet;
 use std::fmt;
 use syntax::{
@@ -15,7 +16,8 @@ use syntax::{
     untyped::Untyped,
 };
 
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Eval, Clone, Debug, PartialEq, Eq)]
+#[Lang(UntypedArithmetic)]
 pub enum Term {
     True(True<UntypedArithmetic>),
     False(False<UntypedArithmetic>),

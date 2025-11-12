@@ -1,7 +1,7 @@
 use super::{FOmegaSub, types::Type};
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
-use macros::Typecheck;
+use macros::{Eval, Typecheck};
 use std::fmt;
 use syntax::{
     TypeVar, Var,
@@ -12,7 +12,7 @@ use syntax::{
     },
 };
 
-#[derive(Typecheck, Debug, Clone, PartialEq, Eq)]
+#[derive(Eval, Typecheck, Debug, Clone, PartialEq, Eq)]
 #[Lang(FOmegaSub)]
 pub enum Term {
     Var(Variable<FOmegaSub>),

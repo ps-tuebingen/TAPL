@@ -4,6 +4,7 @@ use derivations::Derivation;
 use errors::{NoTyping, check_error::CheckError};
 use grammar::{DerivationRule, Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
+use macros::Eval;
 use std::{collections::HashSet, fmt};
 use syntax::{
     TypeVar,
@@ -15,7 +16,8 @@ use syntax::{
 
 pub type Var = String;
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Eval, Debug, Clone, PartialEq, Eq)]
+#[Lang(UntypedLambda)]
 pub enum Term {
     Var(Variable<UntypedLambda>),
     Lambda(UntypedLambdaT<UntypedLambda>),

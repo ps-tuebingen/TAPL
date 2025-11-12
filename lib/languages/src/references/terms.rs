@@ -1,7 +1,8 @@
 use super::{References, types::Type};
+use eval::Eval;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
-use macros::Typecheck;
+use macros::{Eval, Typecheck};
 use std::fmt;
 use syntax::{
     TypeVar, Var,
@@ -12,7 +13,7 @@ use syntax::{
     },
 };
 
-#[derive(Typecheck, Debug, Clone, PartialEq, Eq)]
+#[derive(Eval, Typecheck, Debug, Clone, PartialEq, Eq)]
 #[Lang(References)]
 pub enum Term {
     Var(Variable<References>),
@@ -297,5 +298,68 @@ mod term_tests {
         ))
         .into();
         assert_eq!(result, expected)
+    }
+}
+
+#[cfg(test)]
+mod check_tests {
+    use super::{Eval, References, Term};
+    use syntax::{
+        terms::{App, Assign, Deref, Lambda, Loc, Ref, Unit, Variable},
+        types::{Reference, Unit as UnitTy},
+        values::Unit as UnitVal,
+    };
+
+    #[test]
+    fn eval1() {
+        let term: Term = App::new(
+            Lambda::new(
+                "x",
+                Reference::new(UnitTy::new()),
+                Deref::new(Variable::new("x")),
+            ),
+            App::new(
+                Lambda::new("y", UnitTy::new(), Ref::new(Variable::new("y"))),
+                Unit::new(),
+            ),
+        )
+        .into();
+        let result = term.eval(&mut Default::default()).unwrap();
+        let expected = UnitVal::new().into();
+        assert_eq!(result.val(), expected)
+    }
+
+    #[test]
+    fn eval2() {
+        let term: Term = App::new(
+            Lambda::new(
+                "x",
+                Reference::new(UnitTy::new()),
+                Assign::new(Variable::new("x"), Deref::new(Variable::new("x"))),
+            ),
+            Ref::new(Unit::new()),
+        )
+        .into();
+        let result = term.eval(&mut Default::default()).unwrap();
+        let expected = UnitVal::new().into();
+        assert_eq!(result.val(), expected)
+    }
+
+    #[test]
+    fn eval_store() {
+        let term: Term = App::<References>::seq(
+            Assign::new(
+                Ref::new(Unit::new()),
+                App::new(
+                    Lambda::new("x", UnitTy::new(), Variable::new("x")),
+                    Unit::new(),
+                ),
+            ),
+            Deref::new(Loc::new(0)),
+        )
+        .into();
+        let result = term.eval(&mut Default::default()).unwrap();
+        let expected = UnitVal::new().into();
+        assert_eq!(result.val(), expected)
     }
 }

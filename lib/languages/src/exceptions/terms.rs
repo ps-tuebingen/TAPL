@@ -1,7 +1,7 @@
 use super::{Exceptions, types::Type};
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use latex::{LatexConfig, LatexFmt};
-use macros::Typecheck;
+use macros::{Eval, Typecheck};
 use std::fmt;
 use syntax::{
     TypeVar, Var,
@@ -12,7 +12,7 @@ use syntax::{
     },
 };
 
-#[derive(Typecheck, Debug, Clone, PartialEq, Eq)]
+#[derive(Eval, Typecheck, Debug, Clone, PartialEq, Eq)]
 #[Lang(Exceptions)]
 pub enum Term {
     Var(Variable<Exceptions>),
@@ -260,5 +260,25 @@ pub mod term_tests {
             Lambda::<Exceptions>::new("x", UnitTy::new(), Unit::new()),
         )
         .into()
+    }
+}
+#[cfg(test)]
+mod eval_tests {
+    use super::super::terms::term_tests::{example_term1, example_term2};
+    use eval::Eval;
+    use syntax::values::Unit;
+
+    #[test]
+    fn eval1() {
+        let result = example_term1().eval_start().unwrap();
+        let expected = Unit::new().into();
+        assert_eq!(result.val(), expected)
+    }
+
+    #[test]
+    fn eval2() {
+        let result = example_term2().eval_start().unwrap();
+        let expected = Unit::new().into();
+        assert_eq!(result.val(), expected)
     }
 }
