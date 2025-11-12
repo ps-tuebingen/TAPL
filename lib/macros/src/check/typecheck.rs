@@ -17,7 +17,7 @@ pub fn generate_typecheck(input: TokenStream) -> TokenStream {
     });
     let rule_variants = map_variants(&variants, |var| {
         let ty_name = get_variant_type_name(var);
-        quote! { rules.extend(#ty_name::<#lang_val>::rules()); }
+        quote! { rules.extend(<#ty_name::<#lang_val> as check::Typecheck>::rules()); }
     });
     let lang_env = lang_env();
     let check_result = check_result();

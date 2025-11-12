@@ -1,7 +1,7 @@
 use check::Normalize;
 use derivations::{Derivation, NormalizingDerivation};
 use grammar::DerivationRule;
-use macros::{Subtypecheck, Typecheck};
+use macros::{Kindcheck, Subtypecheck, Typecheck};
 use std::{collections::HashSet, fmt};
 use syntax::{
     TypeVar, Var,
@@ -24,7 +24,7 @@ enum DummyTerm {
     False(False<DummyLang>),
 }
 
-#[derive(Subtypecheck, Debug, Clone, PartialEq)]
+#[derive(Kindcheck, Subtypecheck, Debug, Clone, PartialEq)]
 #[Lang(DummyLang)]
 enum DummyType {
     Nat(Nat<DummyLang>),
