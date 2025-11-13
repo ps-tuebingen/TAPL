@@ -21,14 +21,14 @@ where
 
         let bound_res = self.bound_term.check(env.clone())?;
         let bound_ty = bound_res.ret_ty();
-        let bound_norm = if features.normalizing {
+        let bound_norm = if features.normalizing() {
             let bound_norm_deriv = bound_ty.normalize(env.clone());
             bound_norm_deriv.ret_ty()
         } else {
             bound_ty
         };
 
-        if features.kinded {
+        if features.kinded() {
             let bound_res = bound_norm.check_kind(env.clone())?.into_kind()?;
             bound_res.ret_kind().into_star()?;
             premises.push(bound_res.into());
@@ -45,7 +45,7 @@ where
                 .cloned()
                 .ok_or_else(|| UndefinedLabel::new(&pt.label))?;
             let var_norm;
-            if features.normalizing {
+            if features.normalizing() {
                 let var_norm_deriv = var_ty.normalize(env.clone());
                 var_norm = var_norm_deriv.ret_ty();
                 premises.push(var_norm_deriv);
@@ -53,7 +53,7 @@ where
                 var_norm = var_ty;
             }
 
-            if features.kinded {
+            if features.kinded() {
                 premises.push(var_norm.check_kind(env.clone())?);
             }
 
@@ -62,7 +62,7 @@ where
             let rhs_res = pt.rhs.check(rhs_env.clone())?;
             let rhs_ty = rhs_res.ret_ty();
             let rhs_norm;
-            if features.normalizing {
+            if features.normalizing() {
                 let rhs_norm_deriv = rhs_ty.normalize(rhs_env);
                 rhs_norm = rhs_norm_deriv.ret_ty();
                 premises.push(rhs_norm_deriv);
@@ -70,7 +70,7 @@ where
                 rhs_norm = rhs_ty;
             }
 
-            if features.kinded {
+            if features.kinded() {
                 let rhs_res = rhs_norm.check_kind(env.clone())?.into_kind()?;
 
                 match rhs_knd {

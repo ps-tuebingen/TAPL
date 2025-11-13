@@ -24,14 +24,14 @@ where
         let features = Lang::features();
         let mut premises = vec![];
 
-        let sup_norm = if features.normalizing {
+        let sup_norm = if features.normalizing() {
             let sup_norm_deriv = self.sup_ty.clone().normalize(env.clone());
             sup_norm_deriv.ret_ty()
         } else {
             self.sup_ty.clone()
         };
 
-        if features.kinded {
+        if features.kinded() {
             let sup_res = sup_norm.check_kind(env.clone())?.into_kind()?;
             env.add_tyvar_kind(self.var.clone(), sup_res.ret_kind());
             premises.push(sup_res.into());
@@ -43,7 +43,7 @@ where
         premises.push(term_res);
 
         let term_norm;
-        if features.normalizing {
+        if features.normalizing() {
             let term_norm_deriv = term_ty.normalize(env.clone());
             term_norm = term_norm_deriv.ret_ty();
             premises.push(term_norm_deriv);

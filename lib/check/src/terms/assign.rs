@@ -30,7 +30,7 @@ where
         premises.push(lhs_res);
 
         let lhs_norm;
-        if features.normalizing {
+        if features.normalizing() {
             let lhs_norm_deriv = lhs_ty.normalize(env.clone());
             lhs_norm = lhs_norm_deriv.ret_ty();
             premises.push(lhs_norm_deriv);
@@ -38,7 +38,7 @@ where
             lhs_norm = lhs_ty;
         }
 
-        if features.kinded {
+        if features.kinded() {
             let lhs_res = lhs_norm.check_kind(env.clone())?.into_kind()?;
             lhs_res.ret_kind().into_star()?;
             premises.push(lhs_res.into());
@@ -49,14 +49,14 @@ where
         let rhs_ty = rhs_res.ret_ty();
 
         let rhs_norm;
-        if features.normalizing {
+        if features.normalizing() {
             let rhs_norm_deriv = rhs_ty.normalize(env.clone());
             rhs_norm = rhs_norm_deriv.ret_ty();
             premises.push(rhs_norm_deriv);
         } else {
             rhs_norm = rhs_ty;
         }
-        if features.kinded {
+        if features.kinded() {
             let rhs_res = rhs_norm.check_kind(env.clone())?.into_kind()?;
             rhs_res.ret_kind().into_star()?;
             premises.push(rhs_res.into());

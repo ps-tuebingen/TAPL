@@ -23,7 +23,7 @@ where
         premises.push(bound_res);
 
         let bound_norm;
-        if features.normalizing {
+        if features.normalizing() {
             let bound_norm_deriv = bound_ty.normalize(env.clone());
             bound_norm = bound_norm_deriv.ret_ty();
             premises.push(bound_norm_deriv);
@@ -43,7 +43,7 @@ where
             premises.push(in_res);
 
             let in_norm;
-            if features.normalizing {
+            if features.normalizing() {
                 let in_norm_deriv = in_ty.normalize(env.clone());
                 in_norm = in_norm_deriv.ret_ty();
                 premises.push(in_norm_deriv);
@@ -59,7 +59,7 @@ where
                 return Err(NameMismatch::new(&bound_bound.var, &self.ty_name).into());
             }
 
-            if features.kinded {
+            if features.kinded() {
                 let sup_res = bound_bound.sup_ty.check_kind(env.clone())?.into_kind()?;
                 env.add_tyvar_kind(self.ty_name.clone(), sup_res.ret_kind());
                 premises.push(sup_res.into());
@@ -73,7 +73,7 @@ where
             premises.push(inner_res);
 
             let inner_norm;
-            if features.normalizing {
+            if features.normalizing() {
                 let inner_norm_deriv = inner_ty.normalize(env.clone());
                 inner_norm = inner_norm_deriv.ret_ty();
                 premises.push(inner_norm_deriv);
@@ -91,6 +91,6 @@ where
 
     fn rules() -> HashSet<DerivationRule> {
         let features = Lang::features();
-        HashSet::from([DerivationRule::check_unpack(features.subtyped)])
+        HashSet::from([DerivationRule::check_unpack(features.subtyped())])
     }
 }

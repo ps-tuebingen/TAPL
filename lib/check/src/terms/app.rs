@@ -32,7 +32,7 @@ where
         premises.push(fun_res);
 
         let fun_norm;
-        if features.normalizing {
+        if features.normalizing() {
             let fun_norm_deriv = fun_ty.normalize(env.clone());
             fun_norm = fun_norm_deriv.ret_ty();
             premises.push(fun_norm_deriv);
@@ -40,7 +40,7 @@ where
             fun_norm = fun_ty;
         }
 
-        if features.kinded {
+        if features.kinded() {
             let knd_res = fun_norm.check_kind(env.clone())?.into_kind()?;
             knd_res.ret_kind().into_star()?;
             premises.push(knd_res.into());
@@ -52,7 +52,7 @@ where
         premises.push(arg_res);
 
         let arg_norm;
-        if features.normalizing {
+        if features.normalizing() {
             let arg_norm_deriv = arg_ty.normalize(env.clone());
             arg_norm = arg_norm_deriv.ret_ty();
             premises.push(arg_norm_deriv);
@@ -60,13 +60,13 @@ where
             arg_norm = arg_ty;
         }
 
-        if features.kinded {
+        if features.kinded() {
             let knd_res = arg_norm.check_kind(env.clone())?.into_kind()?;
             knd_res.ret_kind().into_star()?;
             premises.push(knd_res.into());
         }
 
-        if features.subtyped {
+        if features.subtyped() {
             let arg_sub_deriv = arg_norm.check_subtype(&(*fun.from), env.clone())?;
             premises.push(arg_sub_deriv);
         }

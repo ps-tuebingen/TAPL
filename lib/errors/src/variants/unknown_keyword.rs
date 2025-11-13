@@ -6,8 +6,8 @@ pub struct UnknownKeyword {
 }
 
 impl UnknownKeyword {
-    pub fn new(kw: &str) -> UnknownKeyword {
-        UnknownKeyword { kw: kw.to_owned() }
+    #[must_use] pub fn new(kw: &str) -> Self {
+        Self { kw: kw.to_owned() }
     }
 }
 

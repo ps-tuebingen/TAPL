@@ -30,7 +30,7 @@ where
         let mut premises = vec![];
 
         let ty_norm;
-        if features.normalizing {
+        if features.normalizing() {
             let norm_deriv = self.ty.clone().normalize(env.clone());
             ty_norm = norm_deriv.ret_ty();
             premises.push(norm_deriv);
@@ -40,7 +40,7 @@ where
 
         let mu_ty = ty_norm.into_mu()?;
         env.add_tyvar_kind(mu_ty.var.clone(), Kind::Star);
-        if features.kinded {
+        if features.kinded() {
             let mu_res = mu_ty.ty.check_kind(env.clone())?.into_kind()?;
             mu_res.ret_kind().into_star()?;
             premises.push(mu_res.into());
@@ -55,7 +55,7 @@ where
         premises.push(term_res);
 
         let term_norm;
-        if features.normalizing {
+        if features.normalizing() {
             let term_norm_deriv = term_ty.normalize(env.clone());
             term_norm = term_norm_deriv.ret_ty();
             premises.push(term_norm_deriv);
@@ -63,7 +63,7 @@ where
             term_norm = term_ty;
         }
 
-        if features.kinded {
+        if features.kinded() {
             let term_res = term_norm.check_kind(env.clone())?.into_kind()?;
             term_res.ret_kind().into_star()?;
             premises.push(term_res.into());

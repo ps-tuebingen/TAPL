@@ -7,11 +7,11 @@ pub struct Toml {
 }
 
 impl Toml {
-    pub fn new<E>(src: &str, err: E) -> Toml
+    pub fn new<E>(src: &str, err: E) -> Self
     where
         E: std::error::Error,
     {
-        Toml {
+        Self {
             source: src.to_owned(),
             msg: err.to_string(),
         }

@@ -36,7 +36,7 @@ where
 
         let sup_norm;
         let self_sup_norm;
-        if features.normalizing {
+        if features.normalizing() {
             let sup_norm_deriv = sup.clone().normalize(env.clone());
             let self_sup_norm_deriv = self.sup.clone().normalize(env.clone());
             sup_norm = sup_norm_deriv.ret_ty();

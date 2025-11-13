@@ -28,7 +28,7 @@ where
         let ex_norm;
         let cont_norm;
         let err_norm;
-        if features.normalizing {
+        if features.normalizing() {
             let ex_norm_deriv = self.exception_ty.clone().normalize(env.clone());
             let cont_norm_deriv = self.cont_ty.clone().normalize(env.clone());
             let err_norm_deriv = err_ty.normalize(env.clone());
@@ -44,7 +44,7 @@ where
             err_norm = err_ty;
         }
 
-        if features.kinded {
+        if features.kinded() {
             let ex_res = ex_norm.check_kind(env.clone())?.into_kind()?;
             let cont_res = self.cont_ty.check_kind(env.clone())?;
             let err_res = err_norm.check_kind(env.clone())?.into_kind()?;

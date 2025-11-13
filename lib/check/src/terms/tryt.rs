@@ -24,7 +24,7 @@ where
         premises.push(term_res);
 
         let ty_norm;
-        if features.normalizing {
+        if features.normalizing() {
             let ty_norm_deriv = term_ty.normalize(env.clone());
             ty_norm = ty_norm_deriv.ret_ty();
             premises.push(ty_norm_deriv);
@@ -37,7 +37,7 @@ where
         premises.push(handler_res);
 
         let handler_norm;
-        if features.normalizing {
+        if features.normalizing() {
             let handler_norm_deriv = handler_ty.normalize(env.clone());
             handler_norm = handler_norm_deriv.ret_ty();
             premises.push(handler_norm_deriv);
@@ -47,7 +47,7 @@ where
 
         ty_norm.check_equal(&handler_norm)?;
 
-        if features.kinded {
+        if features.kinded() {
             let term_res = ty_norm.check_kind(env.clone())?.into_kind()?;
             let handler_res = handler_norm.check_kind(env.clone())?.into_kind()?;
             term_res.ret_kind().check_equal(&handler_res.ret_kind())?;

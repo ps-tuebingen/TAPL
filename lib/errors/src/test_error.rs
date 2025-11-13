@@ -13,9 +13,9 @@ impl TestError {}
 impl fmt::Display for TestError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            TestError::DirAccess(da) => da.fmt(f),
-            TestError::FileAccess(fa) => fa.fmt(f),
-            TestError::Toml(t) => t.fmt(f),
+            Self::DirAccess(da) => da.fmt(f),
+            Self::FileAccess(fa) => fa.fmt(f),
+            Self::Toml(t) => t.fmt(f),
         }
     }
 }
@@ -23,19 +23,19 @@ impl fmt::Display for TestError {
 impl std::error::Error for TestError {}
 
 impl From<DirAccess> for TestError {
-    fn from(da: DirAccess) -> TestError {
-        TestError::DirAccess(da)
+    fn from(da: DirAccess) -> Self {
+        Self::DirAccess(da)
     }
 }
 
 impl From<FileAccess> for TestError {
-    fn from(fa: FileAccess) -> TestError {
-        TestError::FileAccess(fa)
+    fn from(fa: FileAccess) -> Self {
+        Self::FileAccess(fa)
     }
 }
 
 impl From<Toml> for TestError {
-    fn from(t: Toml) -> TestError {
-        TestError::Toml(t)
+    fn from(t: Toml) -> Self {
+        Self::Toml(t)
     }
 }

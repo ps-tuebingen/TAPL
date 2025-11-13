@@ -7,8 +7,8 @@ pub struct TypeMismatch {
 }
 
 impl TypeMismatch {
-    pub fn new(found: String, expected: String) -> TypeMismatch {
-        TypeMismatch { found, expected }
+    #[must_use] pub const fn new(found: String, expected: String) -> Self {
+        Self { found, expected }
     }
 }
 

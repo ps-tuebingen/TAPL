@@ -28,7 +28,7 @@ where
             premises.push(term_derivation);
 
             let t_norm;
-            if features.normalizing {
+            if features.normalizing() {
                 let t_norm_res = term_ty.normalize(env.clone());
                 t_norm = t_norm_res.ret_ty();
                 premises.push(t_norm_res);
@@ -36,7 +36,7 @@ where
                 t_norm = term_ty;
             }
 
-            if features.kinded {
+            if features.kinded() {
                 let ty_derivation = t_norm.check_kind(env.clone())?.into_kind()?;
                 match knd {
                     None => {

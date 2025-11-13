@@ -6,8 +6,8 @@ pub struct UndefinedLanguage {
 }
 
 impl UndefinedLanguage {
-    pub fn new(lang: &str) -> UndefinedLanguage {
-        UndefinedLanguage {
+    #[must_use] pub fn new(lang: &str) -> Self {
+        Self {
             lang: lang.to_owned(),
         }
     }

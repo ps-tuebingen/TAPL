@@ -7,8 +7,8 @@ pub struct AddEventHandler {
 }
 
 impl AddEventHandler {
-    pub fn new(id: &str, event: &str) -> AddEventHandler {
-        AddEventHandler {
+    #[must_use] pub fn new(id: &str, event: &str) -> Self {
+        Self {
             id: id.to_owned(),
             event: event.to_owned(),
         }

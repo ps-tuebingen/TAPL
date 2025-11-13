@@ -23,7 +23,7 @@ where
         premises.push(bound_res);
 
         let bound_norm;
-        if features.normalizing {
+        if features.normalizing() {
             let bound_norm_deriv = bound_ty.normalize(env.clone());
             bound_norm = bound_norm_deriv.ret_ty();
             premises.push(bound_norm_deriv);
@@ -31,7 +31,7 @@ where
             bound_norm = bound_ty;
         }
 
-        if features.kinded {
+        if features.kinded() {
             premises.push(bound_norm.check_kind(env.clone())?);
         }
 
@@ -41,7 +41,7 @@ where
         premises.push(in_res);
 
         let in_norm;
-        if features.normalizing {
+        if features.normalizing() {
             let in_norm_deriv = in_ty.normalize(env.clone());
             in_norm = in_norm_deriv.ret_ty();
             premises.push(in_norm_deriv);
@@ -49,7 +49,7 @@ where
             in_norm = in_ty;
         }
 
-        if features.kinded {
+        if features.kinded() {
             premises.push(in_norm.check_kind(env.clone())?);
         }
 

@@ -6,8 +6,8 @@ pub struct UndefinedExample {
 }
 
 impl UndefinedExample {
-    pub fn new(ind: usize) -> UndefinedExample {
-        UndefinedExample { ind }
+    #[must_use] pub const fn new(ind: usize) -> Self {
+        Self { ind }
     }
 }
 

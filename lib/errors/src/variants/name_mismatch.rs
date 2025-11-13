@@ -7,8 +7,8 @@ pub struct NameMismatch {
 }
 
 impl NameMismatch {
-    pub fn new(found: &str, expected: &str) -> NameMismatch {
-        NameMismatch {
+    #[must_use] pub fn new(found: &str, expected: &str) -> Self {
+        Self {
             found: found.to_owned(),
             expected: expected.to_owned(),
         }

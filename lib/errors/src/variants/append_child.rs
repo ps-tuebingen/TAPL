@@ -7,8 +7,8 @@ pub struct AppendChild {
 }
 
 impl AppendChild {
-    pub fn new(parent: &str, child: &str) -> AppendChild {
-        AppendChild {
+    #[must_use] pub fn new(parent: &str, child: &str) -> Self {
+        Self {
             parent_id: parent.to_owned(),
             child_id: child.to_owned(),
         }

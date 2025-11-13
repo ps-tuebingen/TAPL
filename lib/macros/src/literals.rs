@@ -20,17 +20,17 @@ pub fn rule_set() -> proc_macro2::TokenStream {
     quote! { ::std::collections::HashSet<grammar::DerivationRule> }
 }
 
-/// let mut rules = HashSet::new();
+/// `let mut rules = HashSet::new();`
 pub fn new_set() -> proc_macro2::TokenStream {
     quote! {let mut rules = ::std::collections::HashSet::new();}
 }
 
-/// <Self::Lang as Language>::Term
+/// `<Self::Lang as Language>::Term`
 pub fn lang_term() -> proc_macro2::TokenStream {
     quote! { <Self::Lang as syntax::language::Language>::Term }
 }
 
-/// <Self::Lang as Language>::Type
+/// `<Self::Lang as Language>::Type`
 pub fn lang_type() -> proc_macro2::TokenStream {
     quote! {<Self::Lang as syntax::language::Language>::Type }
 }

@@ -26,7 +26,7 @@ where
         premises.push(term_res);
 
         let ty_norm;
-        if features.normalizing {
+        if features.normalizing() {
             let ty_norm_deriv = term_ty.normalize(env.clone());
             ty_norm = ty_norm_deriv.ret_ty();
             premises.push(ty_norm_deriv);
@@ -34,7 +34,7 @@ where
             ty_norm = term_ty;
         }
 
-        if features.kinded {
+        if features.kinded() {
             let ty_res = ty_norm.check_kind(env.clone())?.into_kind()?;
             ty_res.ret_kind().into_star()?;
             premises.push(ty_res.into());

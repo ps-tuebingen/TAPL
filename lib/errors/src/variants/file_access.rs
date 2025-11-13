@@ -7,11 +7,11 @@ pub struct FileAccess {
 }
 
 impl FileAccess {
-    pub fn new<T>(tried: &str, t: T) -> FileAccess
+    pub fn new<T>(tried: &str, t: T) -> Self
     where
         T: fmt::Display,
     {
-        FileAccess {
+        Self {
             tried: tried.to_owned(),
             msg: t.to_string(),
         }

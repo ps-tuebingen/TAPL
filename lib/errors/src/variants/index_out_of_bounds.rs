@@ -7,8 +7,8 @@ pub struct IndexOutOfBounds {
 }
 
 impl IndexOutOfBounds {
-    pub fn new(tried: usize, len: usize) -> IndexOutOfBounds {
-        IndexOutOfBounds { tried, len }
+    #[must_use] pub const fn new(tried: usize, len: usize) -> Self {
+        Self { tried, len }
     }
 }
 

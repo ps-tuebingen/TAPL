@@ -13,11 +13,11 @@ pub enum EvalError {
 impl fmt::Display for EvalError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            EvalError::ValueMismatch(vm) => vm.fmt(f),
-            EvalError::UndefinedLocation(ul) => ul.fmt(f),
-            EvalError::IndexOutOfBounds(err) => err.fmt(f),
-            EvalError::UndefinedLabel(err) => err.fmt(f),
-            EvalError::FreeVariable(err) => err.fmt(f),
+            Self::ValueMismatch(vm) => vm.fmt(f),
+            Self::UndefinedLocation(ul) => ul.fmt(f),
+            Self::IndexOutOfBounds(err) => err.fmt(f),
+            Self::UndefinedLabel(err) => err.fmt(f),
+            Self::FreeVariable(err) => err.fmt(f),
         }
     }
 }
@@ -25,31 +25,31 @@ impl fmt::Display for EvalError {
 impl std::error::Error for EvalError {}
 
 impl From<ValueMismatch> for EvalError {
-    fn from(err: ValueMismatch) -> EvalError {
-        EvalError::ValueMismatch(err)
+    fn from(err: ValueMismatch) -> Self {
+        Self::ValueMismatch(err)
     }
 }
 
 impl From<UndefinedLocation> for EvalError {
-    fn from(err: UndefinedLocation) -> EvalError {
-        EvalError::UndefinedLocation(err)
+    fn from(err: UndefinedLocation) -> Self {
+        Self::UndefinedLocation(err)
     }
 }
 
 impl From<IndexOutOfBounds> for EvalError {
-    fn from(err: IndexOutOfBounds) -> EvalError {
-        EvalError::IndexOutOfBounds(err)
+    fn from(err: IndexOutOfBounds) -> Self {
+        Self::IndexOutOfBounds(err)
     }
 }
 
 impl From<UndefinedLabel> for EvalError {
-    fn from(err: UndefinedLabel) -> EvalError {
-        EvalError::UndefinedLabel(err)
+    fn from(err: UndefinedLabel) -> Self {
+        Self::UndefinedLabel(err)
     }
 }
 
 impl From<FreeVariable> for EvalError {
-    fn from(err: FreeVariable) -> EvalError {
-        EvalError::FreeVariable(err)
+    fn from(err: FreeVariable) -> Self {
+        Self::FreeVariable(err)
     }
 }

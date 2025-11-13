@@ -6,8 +6,8 @@ pub struct ElementNotFound {
 }
 
 impl ElementNotFound {
-    pub fn new(id: &str) -> ElementNotFound {
-        ElementNotFound { id: id.to_owned() }
+    #[must_use] pub fn new(id: &str) -> Self {
+        Self { id: id.to_owned() }
     }
 }
 

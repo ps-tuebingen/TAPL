@@ -6,8 +6,8 @@ pub struct DuplicateDefinition {
 }
 
 impl DuplicateDefinition {
-    pub fn new(name: &str) -> DuplicateDefinition {
-        DuplicateDefinition {
+    #[must_use] pub fn new(name: &str) -> Self {
+        Self {
             name: name.to_owned(),
         }
     }

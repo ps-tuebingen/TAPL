@@ -6,8 +6,8 @@ pub struct UndefinedLocation {
 }
 
 impl UndefinedLocation {
-    pub fn new(loc: usize) -> UndefinedLocation {
-        UndefinedLocation { loc }
+    #[must_use] pub const fn new(loc: usize) -> Self {
+        Self { loc }
     }
 }
 

@@ -33,7 +33,7 @@ where
         premises.push(inner_res);
 
         let inner_norm;
-        if features.normalizing {
+        if features.normalizing() {
             let inner_norm_deriv = inner_ty.normalize(env.clone());
             inner_norm = inner_norm_deriv.ret_ty();
             premises.push(inner_norm_deriv);
@@ -41,7 +41,7 @@ where
             inner_norm = inner_ty;
         }
 
-        if features.kinded {
+        if features.kinded() {
             let inner_res = inner_norm.check_kind(env.clone())?.into_kind()?;
             inner_res.ret_kind().into_star()?;
             premises.push(inner_res.into());

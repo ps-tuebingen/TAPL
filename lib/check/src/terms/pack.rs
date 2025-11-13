@@ -25,7 +25,7 @@ where
         let mut premises = vec![];
 
         let outer_norm;
-        if features.normalizing {
+        if features.normalizing() {
             let outer_norm_deriv = self.outer_ty.clone().normalize(env.clone());
             outer_norm = outer_norm_deriv.ret_ty();
             premises.push(outer_norm_deriv);
@@ -40,7 +40,7 @@ where
             premises.push(term_res);
 
             let ty_norm;
-            if features.normalizing {
+            if features.normalizing() {
                 let ty_norm_deriv = term_ty.normalize(env.clone());
                 ty_norm = ty_norm_deriv.ret_ty();
                 premises.push(ty_norm_deriv);
@@ -48,7 +48,7 @@ where
                 ty_norm = term_ty;
             }
 
-            if features.kinded {
+            if features.kinded() {
                 let term_res = ty_norm.check_kind(env.clone())?.into_kind()?;
                 let outer_res = outer_exists.ty.check_kind(env.clone())?.into_kind()?;
                 let inner_res = self.inner_ty.check_kind(env.clone())?.into_kind()?;
@@ -65,7 +65,7 @@ where
                     .subst_type(&outer_exists.var, &self.inner_ty),
             );
             let outer_subst_norm;
-            if features.normalizing {
+            if features.normalizing() {
                 let outer_subst_norm_deriv = outer_subst.normalize(env.clone());
                 outer_subst_norm = outer_subst_norm_deriv.ret_ty();
                 premises.push(outer_subst_norm_deriv);
@@ -80,7 +80,7 @@ where
             Ok(deriv.into())
         } else if let Ok(outer_bound) = outer_norm.clone().into_exists_bounded() {
             let sup_norm;
-            if features.normalizing {
+            if features.normalizing() {
                 let sup_norm_deriv = outer_bound.sup_ty.clone().normalize(env.clone());
                 sup_norm = sup_norm_deriv.ret_ty();
                 premises.push(sup_norm_deriv);
@@ -88,7 +88,7 @@ where
                 sup_norm = Rc::unwrap_or_clone(outer_bound.sup_ty.clone());
             }
 
-            if features.kinded {
+            if features.kinded() {
                 let sup_res = sup_norm.check_kind(env.clone())?.into_kind()?;
                 env.add_tyvar_kind(outer_bound.var.clone(), sup_res.ret_kind());
                 premises.push(sup_res.into());
@@ -103,7 +103,7 @@ where
             let term_ty = term_res.ret_ty();
             premises.push(term_res);
 
-            if features.kinded {
+            if features.kinded() {
                 let term_res = term_ty.check_kind(env.clone())?.into_kind()?;
                 let outer_res = outer_bound.ty.check_kind(env.clone())?.into_kind()?;
                 term_res.ret_kind().check_equal(&outer_res.ret_kind())?;
@@ -113,7 +113,7 @@ where
 
             let outer_subst = outer_bound.ty.subst_type(&outer_bound.var, &self.inner_ty);
 
-            if features.subtyped {
+            if features.subtyped() {
                 let sup_deriv = term_ty.check_subtype(&outer_subst, env.clone())?;
                 premises.push(sup_deriv);
             }
@@ -128,6 +128,6 @@ where
 
     fn rules() -> HashSet<DerivationRule> {
         let features = Lang::features();
-        HashSet::from([DerivationRule::check_pack(features.subtyped)])
+        HashSet::from([DerivationRule::check_pack(features.subtyped())])
     }
 }

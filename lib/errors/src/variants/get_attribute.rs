@@ -7,8 +7,8 @@ pub struct GetAttribute {
 }
 
 impl GetAttribute {
-    pub fn new(id: &str, attr: &str) -> GetAttribute {
-        GetAttribute {
+    #[must_use] pub fn new(id: &str, attr: &str) -> Self {
+        Self {
             element_id: id.to_owned(),
             attribute: attr.to_owned(),
         }

@@ -24,7 +24,7 @@ where
         premises.push(bound_res);
 
         let bound_norm;
-        if features.normalizing {
+        if features.normalizing() {
             let bound_norm_deriv = bound_ty.normalize(env.clone());
             bound_norm = bound_norm_deriv.ret_ty();
             premises.push(bound_norm_deriv);
@@ -32,7 +32,7 @@ where
             bound_norm = bound_ty;
         }
 
-        if features.kinded {
+        if features.kinded() {
             let bound_res = bound_norm.check_kind(env.clone())?.into_kind()?;
             bound_res.ret_kind().into_star()?;
             premises.push(bound_res.into());
@@ -46,7 +46,7 @@ where
         premises.push(some_res);
 
         let some_norm;
-        if features.normalizing {
+        if features.normalizing() {
             let some_norm_deriv = some_ty.normalize(some_env.clone());
             some_norm = some_norm_deriv.ret_ty();
             premises.push(some_norm_deriv);
@@ -59,7 +59,7 @@ where
         premises.push(none_res);
 
         let none_norm;
-        if features.normalizing {
+        if features.normalizing() {
             let none_norm_res = none_ty.normalize(env.clone());
             none_norm = none_norm_res.ret_ty();
             premises.push(none_norm_res);
@@ -67,7 +67,7 @@ where
             none_norm = none_ty;
         }
 
-        if features.kinded {
+        if features.kinded() {
             let some_res = some_norm.check_kind(some_env)?.into_kind()?;
             let none_res = none_norm.check_kind(env.clone())?.into_kind()?;
             some_res.ret_kind().check_equal(&none_res.ret_kind())?;

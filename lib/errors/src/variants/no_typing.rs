@@ -6,8 +6,8 @@ pub struct NoTyping {
 }
 
 impl NoTyping {
-    pub fn new(lang: &str) -> NoTyping {
-        NoTyping {
+    #[must_use] pub fn new(lang: &str) -> Self {
+        Self {
             lang: lang.to_owned(),
         }
     }

@@ -22,7 +22,7 @@ where
         let mut premises = vec![];
 
         let ty_norm;
-        if features.normalizing {
+        if features.normalizing() {
             let ty_norm_deriv = self.ty.clone().normalize(env.clone());
             ty_norm = ty_norm_deriv.ret_ty();
             premises.push(ty_norm_deriv);
@@ -30,7 +30,7 @@ where
             ty_norm = self.ty.clone();
         }
 
-        if features.kinded {
+        if features.kinded() {
             premises.push(ty_norm.check_kind(env.clone())?);
         }
 

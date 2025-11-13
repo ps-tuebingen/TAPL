@@ -26,20 +26,20 @@ pub enum CheckError {
 impl fmt::Display for CheckError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            CheckError::EmptyCase(ec) => ec.fmt(f),
-            CheckError::NotASubtype(ns) => ns.fmt(f),
-            CheckError::KindMismatch(km) => km.fmt(f),
-            CheckError::TypeMismatch(tm) => tm.fmt(f),
-            CheckError::UndefinedLocation(ul) => ul.fmt(f),
-            CheckError::IndexOutOfBounds(io) => io.fmt(f),
-            CheckError::FreeTypeVariable(fv) => fv.fmt(f),
-            CheckError::UndefinedLabel(ul) => ul.fmt(f),
-            CheckError::NameMismatch(nm) => nm.fmt(f),
-            CheckError::FreeVariable(fv) => fv.fmt(f),
-            CheckError::UnexpectedDerivation(ud) => ud.fmt(f),
-            CheckError::NoSubtyping(ns) => ns.fmt(f),
-            CheckError::NoTyping(nt) => nt.fmt(f),
-            CheckError::NoKinding(nk) => nk.fmt(f),
+            Self::EmptyCase(ec) => ec.fmt(f),
+            Self::NotASubtype(ns) => ns.fmt(f),
+            Self::KindMismatch(km) => km.fmt(f),
+            Self::TypeMismatch(tm) => tm.fmt(f),
+            Self::UndefinedLocation(ul) => ul.fmt(f),
+            Self::IndexOutOfBounds(io) => io.fmt(f),
+            Self::FreeTypeVariable(fv) => fv.fmt(f),
+            Self::UndefinedLabel(ul) => ul.fmt(f),
+            Self::NameMismatch(nm) => nm.fmt(f),
+            Self::FreeVariable(fv) => fv.fmt(f),
+            Self::UnexpectedDerivation(ud) => ud.fmt(f),
+            Self::NoSubtyping(ns) => ns.fmt(f),
+            Self::NoTyping(nt) => nt.fmt(f),
+            Self::NoKinding(nk) => nk.fmt(f),
         }
     }
 }
@@ -47,85 +47,85 @@ impl fmt::Display for CheckError {
 impl std::error::Error for CheckError {}
 
 impl From<EmptyCase> for CheckError {
-    fn from(err: EmptyCase) -> CheckError {
-        CheckError::EmptyCase(err)
+    fn from(err: EmptyCase) -> Self {
+        Self::EmptyCase(err)
     }
 }
 
 impl From<NotASubtype> for CheckError {
-    fn from(err: NotASubtype) -> CheckError {
-        CheckError::NotASubtype(err)
+    fn from(err: NotASubtype) -> Self {
+        Self::NotASubtype(err)
     }
 }
 
 impl From<KindMismatch> for CheckError {
-    fn from(err: KindMismatch) -> CheckError {
-        CheckError::KindMismatch(err)
+    fn from(err: KindMismatch) -> Self {
+        Self::KindMismatch(err)
     }
 }
 
 impl From<TypeMismatch> for CheckError {
-    fn from(err: TypeMismatch) -> CheckError {
-        CheckError::TypeMismatch(err)
+    fn from(err: TypeMismatch) -> Self {
+        Self::TypeMismatch(err)
     }
 }
 
 impl From<UndefinedLocation> for CheckError {
-    fn from(err: UndefinedLocation) -> CheckError {
-        CheckError::UndefinedLocation(err)
+    fn from(err: UndefinedLocation) -> Self {
+        Self::UndefinedLocation(err)
     }
 }
 
 impl From<IndexOutOfBounds> for CheckError {
-    fn from(err: IndexOutOfBounds) -> CheckError {
-        CheckError::IndexOutOfBounds(err)
+    fn from(err: IndexOutOfBounds) -> Self {
+        Self::IndexOutOfBounds(err)
     }
 }
 
 impl From<FreeTypeVariable> for CheckError {
-    fn from(err: FreeTypeVariable) -> CheckError {
-        CheckError::FreeTypeVariable(err)
+    fn from(err: FreeTypeVariable) -> Self {
+        Self::FreeTypeVariable(err)
     }
 }
 
 impl From<UndefinedLabel> for CheckError {
-    fn from(err: UndefinedLabel) -> CheckError {
-        CheckError::UndefinedLabel(err)
+    fn from(err: UndefinedLabel) -> Self {
+        Self::UndefinedLabel(err)
     }
 }
 
 impl From<NameMismatch> for CheckError {
-    fn from(err: NameMismatch) -> CheckError {
-        CheckError::NameMismatch(err)
+    fn from(err: NameMismatch) -> Self {
+        Self::NameMismatch(err)
     }
 }
 
 impl From<FreeVariable> for CheckError {
-    fn from(err: FreeVariable) -> CheckError {
-        CheckError::FreeVariable(err)
+    fn from(err: FreeVariable) -> Self {
+        Self::FreeVariable(err)
     }
 }
 
 impl From<UnexpectedDerivation> for CheckError {
-    fn from(err: UnexpectedDerivation) -> CheckError {
-        CheckError::UnexpectedDerivation(err)
+    fn from(err: UnexpectedDerivation) -> Self {
+        Self::UnexpectedDerivation(err)
     }
 }
 
 impl From<NoSubtyping> for CheckError {
-    fn from(err: NoSubtyping) -> CheckError {
-        CheckError::NoSubtyping(err)
+    fn from(err: NoSubtyping) -> Self {
+        Self::NoSubtyping(err)
     }
 }
 
 impl From<NoTyping> for CheckError {
-    fn from(err: NoTyping) -> CheckError {
-        CheckError::NoTyping(err)
+    fn from(err: NoTyping) -> Self {
+        Self::NoTyping(err)
     }
 }
 
 impl From<NoKinding> for CheckError {
-    fn from(err: NoKinding) -> CheckError {
-        CheckError::NoKinding(err)
+    fn from(err: NoKinding) -> Self {
+        Self::NoKinding(err)
     }
 }

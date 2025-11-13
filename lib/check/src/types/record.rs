@@ -30,7 +30,7 @@ where
         let mut premises = vec![];
 
         let sup_norm;
-        if features.normalizing {
+        if features.normalizing() {
             let sup_norm_deriv = sup.clone().normalize(env.clone());
             sup_norm = sup_norm_deriv.ret_ty();
             premises.push(sup_norm_deriv);

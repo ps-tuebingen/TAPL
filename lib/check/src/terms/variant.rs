@@ -28,7 +28,7 @@ where
         let mut premises = vec![];
 
         let ty_norm;
-        if features.normalizing {
+        if features.normalizing() {
             let ty_norm_deriv = self.ty.clone().normalize(env.clone());
             ty_norm = ty_norm_deriv.ret_ty();
             premises.push(ty_norm_deriv);
@@ -39,7 +39,7 @@ where
         let term_res = self.term.check(env.clone())?;
         let term_ty = term_res.ret_ty();
         let term_ty_norm;
-        if features.normalizing {
+        if features.normalizing() {
             let term_ty_norm_deriv = term_ty.normalize(env.clone());
             term_ty_norm = term_ty_norm_deriv.ret_ty();
             premises.push(term_ty_norm_deriv);
@@ -54,7 +54,7 @@ where
             .cloned()
             .ok_or_else(|| UndefinedLabel::new(&self.label))?;
 
-        if features.kinded {
+        if features.kinded() {
             let term_res = term_ty_norm.check_kind(env.clone())?.into_kind()?;
             let lb_res = lb_ty.check_kind(env.clone())?.into_kind()?;
             lb_res.ret_kind().check_equal(&term_res.ret_kind())?;

@@ -41,7 +41,7 @@ where
         let other_sup_norm;
         let self_sup_norm;
         let self_norm;
-        if features.normalizing {
+        if features.normalizing() {
             let other_sup_norm_deriv = other_forall.sup_ty.normalize(env.clone());
             other_sup_norm = other_sup_norm_deriv.ret_ty();
             let self_sup_norm_deriv = self.sup_ty.clone().normalize(env.clone());

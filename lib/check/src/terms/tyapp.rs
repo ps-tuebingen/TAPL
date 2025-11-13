@@ -29,7 +29,7 @@ where
 
         let fun_norm;
         let arg_norm;
-        if features.normalizing {
+        if features.normalizing() {
             let fun_norm_deriv = fun_ty.normalize(env.clone());
             let arg_norm_deriv = self.arg.clone().normalize(env.clone());
             fun_norm = fun_norm_deriv.ret_ty();
@@ -42,7 +42,7 @@ where
         }
 
         if let Ok(forall) = fun_norm.clone().into_forall() {
-            if features.kinded {
+            if features.kinded() {
                 let arg_res = arg_norm.check_kind(env.clone())?.into_kind()?;
                 forall.kind.check_equal(&arg_res.ret_kind())?;
                 premises.push(arg_res.into());
@@ -53,7 +53,7 @@ where
             let deriv = TypingDerivation::tyapp(conc, premises);
             Ok(deriv.into())
         } else if let Ok(forall) = fun_norm.clone().into_forall_bounded() {
-            if features.kinded {
+            if features.kinded() {
                 let arg_res = arg_norm.check_kind(env.clone())?.into_kind()?;
                 let sup_res = forall.sup_ty.check_kind(env.clone())?.into_kind()?;
                 sup_res.ret_kind().check_equal(&arg_res.ret_kind())?;
@@ -70,6 +70,6 @@ where
 
     fn rules() -> HashSet<DerivationRule> {
         let features = Lang::features();
-        HashSet::from([DerivationRule::check_ty_app(features.subtyped)])
+        HashSet::from([DerivationRule::check_ty_app(features.subtyped())])
     }
 }

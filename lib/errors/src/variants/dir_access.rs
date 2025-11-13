@@ -7,11 +7,11 @@ pub struct DirAccess {
 }
 
 impl DirAccess {
-    pub fn new<E>(tried: &str, err: E) -> DirAccess
+    pub fn new<E>(tried: &str, err: E) -> Self
     where
         E: fmt::Display,
     {
-        DirAccess {
+        Self {
             tried: tried.to_owned(),
             msg: err.to_string(),
         }

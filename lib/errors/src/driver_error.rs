@@ -20,17 +20,17 @@ pub enum DriverError {
 impl fmt::Display for DriverError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            DriverError::Parse(err) => err.fmt(f),
-            DriverError::Check(err) => err.fmt(f),
-            DriverError::Eval(err) => err.fmt(f),
-            DriverError::UndefinedLanguage(ul) => ul.fmt(f),
-            DriverError::UndefinedFormatMethod(method) => {
+            Self::Parse(err) => err.fmt(f),
+            Self::Check(err) => err.fmt(f),
+            Self::Eval(err) => err.fmt(f),
+            Self::UndefinedLanguage(ul) => ul.fmt(f),
+            Self::UndefinedFormatMethod(method) => {
                 write!(f, "Undefined Format Method {method}")
             }
-            DriverError::UndefinedCommand(cmd) => write!(f, "{cmd} is not a valid command"),
-            DriverError::EmptyInput => f.write_str("No source provided, use --input or --file"),
-            DriverError::FileAccess(fa) => fa.fmt(f),
-            DriverError::NoTyping(nt) => nt.fmt(f),
+            Self::UndefinedCommand(cmd) => write!(f, "{cmd} is not a valid command"),
+            Self::EmptyInput => f.write_str("No source provided, use --input or --file"),
+            Self::FileAccess(fa) => fa.fmt(f),
+            Self::NoTyping(nt) => nt.fmt(f),
         }
     }
 }
@@ -38,35 +38,35 @@ impl fmt::Display for DriverError {
 impl std::error::Error for DriverError {}
 
 impl From<ParserError> for DriverError {
-    fn from(err: ParserError) -> DriverError {
-        DriverError::Parse(err)
+    fn from(err: ParserError) -> Self {
+        Self::Parse(err)
     }
 }
 
 impl From<CheckError> for DriverError {
-    fn from(err: CheckError) -> DriverError {
-        DriverError::Check(err)
+    fn from(err: CheckError) -> Self {
+        Self::Check(err)
     }
 }
 
 impl From<EvalError> for DriverError {
-    fn from(err: EvalError) -> DriverError {
-        DriverError::Eval(err)
+    fn from(err: EvalError) -> Self {
+        Self::Eval(err)
     }
 }
 
 impl From<FileAccess> for DriverError {
-    fn from(err: FileAccess) -> DriverError {
-        DriverError::FileAccess(err)
+    fn from(err: FileAccess) -> Self {
+        Self::FileAccess(err)
     }
 }
 impl From<UndefinedLanguage> for DriverError {
-    fn from(err: UndefinedLanguage) -> DriverError {
-        DriverError::UndefinedLanguage(err)
+    fn from(err: UndefinedLanguage) -> Self {
+        Self::UndefinedLanguage(err)
     }
 }
 impl From<NoTyping> for DriverError {
-    fn from(err: NoTyping) -> DriverError {
-        DriverError::NoTyping(err)
+    fn from(err: NoTyping) -> Self {
+        Self::NoTyping(err)
     }
 }

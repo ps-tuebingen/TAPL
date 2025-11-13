@@ -157,17 +157,16 @@ pub trait TypeGroup: Type {
     fn into_nat(self) -> Result<Nat<Self::Lang>, TypeMismatch> {
         Err(TypeMismatch::new(self.to_string(), "Nat".to_owned()))
     }
+
     /// Turn `Self` into [`Bool`]
     /// # Errors
     /// returns an error if `Self` is a different Type
-
     fn into_bool(self) -> Result<Bool<Self::Lang>, TypeMismatch> {
         Err(TypeMismatch::new(self.to_string(), "Bool".to_owned()))
     }
     /// Turn `Self` into [`Unit`]
     /// # Errors
     /// returns an error if `Self` is a different Type
-
     fn into_unit(self) -> Result<Unit<Self::Lang>, TypeMismatch> {
         Err(TypeMismatch::new(self.to_string(), "Unit".to_owned()))
     }

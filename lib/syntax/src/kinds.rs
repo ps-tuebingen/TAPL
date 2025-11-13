@@ -1,17 +1,26 @@
 use errors::KindMismatch;
 use std::{fmt, rc::Rc};
 
+/// Kinds
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Kind {
+    /// The star kind
     Star,
+    /// An arrow kind
     Arrow(Rc<Kind>, Rc<Kind>),
 }
 
 impl Kind {
-    #[must_use] pub fn abs(self) -> Self {
+    /// Abstract `self`
+    /// That is `self` -> * => `self`
+    #[must_use]
+    pub fn abs(self) -> Self {
         Self::Arrow(Rc::new(Self::Star), Rc::new(self))
     }
 
+    /// Convert `self` to [`Kind::Star`]
+    /// # Errors
+    /// Returns an error if `self` is an arrow kind
     pub fn into_star(self) -> Result<Self, KindMismatch> {
         if self == Self::Star {
             Ok(self)
@@ -20,6 +29,9 @@ impl Kind {
         }
     }
 
+    /// Convert `self` into [`Kind::Arrow`]
+    /// # Errors
+    /// returns an error if `self` is a star kind
     pub fn into_arrow(self) -> Result<(Self, Self), KindMismatch> {
         if let Self::Arrow(from, to) = self {
             Ok((Rc::unwrap_or_clone(from), Rc::unwrap_or_clone(to)))
@@ -31,6 +43,9 @@ impl Kind {
         }
     }
 
+    /// Assert `self` and `other` are equal
+    /// # Errors
+    /// Returns an error if `self != other`
     pub fn check_equal(&self, other: &Self) -> Result<(), KindMismatch> {
         if *self == *other {
             Ok(())

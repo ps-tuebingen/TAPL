@@ -108,7 +108,7 @@ where
         HashSet::from([
             DerivationRule::norm_cong(|sym| vec![sym, Symbol::brack(Symbol::Type)].into()),
             DerivationRule::norm_cong(|sym| vec![Symbol::Type, Symbol::brack(sym)].into()),
-            DerivationRule::norm_ap(features.subtyped),
+            DerivationRule::norm_ap(features.subtyped()),
         ])
     }
 }

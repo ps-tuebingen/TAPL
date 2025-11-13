@@ -25,7 +25,7 @@ where
         let mut premises = vec![];
 
         let annot_norm;
-        if features.normalizing {
+        if features.normalizing() {
             let ty_norm_deriv = self.ty.clone().normalize(env.clone());
             annot_norm = ty_norm_deriv.ret_ty();
             premises.push(ty_norm_deriv);
@@ -38,7 +38,7 @@ where
         premises.push(hd_res);
 
         let hd_norm;
-        if features.normalizing {
+        if features.normalizing() {
             let hd_norm_deriv = hd_ty.normalize(env.clone());
             hd_norm = hd_norm_deriv.ret_ty();
             premises.push(hd_norm_deriv);
@@ -48,7 +48,7 @@ where
 
         hd_norm.check_equal(&annot_norm)?;
 
-        if features.kinded {
+        if features.kinded() {
             let hd_res = hd_norm.check_kind(env.clone())?.into_kind()?;
             hd_res.ret_kind().into_star()?;
             premises.push(hd_res.into());
@@ -59,7 +59,7 @@ where
         premises.push(tl_res);
 
         let tail_ty_norm;
-        if features.normalizing {
+        if features.normalizing() {
             let tl_norm_deriv = tl_ty.normalize(env.clone());
             tail_ty_norm = tl_norm_deriv.ret_ty();
             premises.push(tl_norm_deriv);
@@ -67,7 +67,7 @@ where
             tail_ty_norm = tl_ty;
         }
 
-        if features.kinded {
+        if features.kinded() {
             let tl_res = tail_ty_norm.check_kind(env.clone())?.into_kind()?;
             tl_res.ret_kind().into_star()?;
             premises.push(tl_res.into());

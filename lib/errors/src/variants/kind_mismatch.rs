@@ -7,8 +7,8 @@ pub struct KindMismatch {
 }
 
 impl KindMismatch {
-    pub fn new(found: String, expected: String) -> KindMismatch {
-        KindMismatch { found, expected }
+    #[must_use] pub const fn new(found: String, expected: String) -> Self {
+        Self { found, expected }
     }
 }
 

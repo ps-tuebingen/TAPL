@@ -53,7 +53,7 @@ where
 
     fn rules() -> HashSet<DerivationRule> {
         let features = Lang::features();
-        let ty_var = if features.subtyped {
+        let ty_var = if features.subtyped() {
             Symbol::less_colon_sep(Symbol::Typevariable, Symbol::sub(Symbol::Type, 1))
         } else {
             Symbol::double_colon_sep(Symbol::Typevariable, Symbol::Kind)

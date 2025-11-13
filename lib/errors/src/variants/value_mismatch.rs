@@ -7,8 +7,8 @@ pub struct ValueMismatch {
 }
 
 impl ValueMismatch {
-    pub fn new(found: String, expected: String) -> ValueMismatch {
-        ValueMismatch { found, expected }
+    #[must_use] pub const fn new(found: String, expected: String) -> Self {
+        Self { found, expected }
     }
 }
 

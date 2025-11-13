@@ -33,7 +33,7 @@ where
 
         let right_norm;
         let sum_norm;
-        if features.normalizing {
+        if features.normalizing() {
             let right_norm_deriv = right_ty.normalize(env.clone());
             let sum_norm_deriv = self.ty.clone().normalize(env.clone());
             sum_norm = sum_norm_deriv.ret_ty();
@@ -48,7 +48,7 @@ where
         let sum_ty = sum_norm.into_sum()?;
         sum_ty.right.check_equal(&right_norm)?;
 
-        if features.kinded {
+        if features.kinded() {
             let right_res = right_norm.check_kind(env.clone())?.into_kind()?;
             let sum_res = sum_ty.check_kind(env.clone())?.into_kind()?;
             right_res.ret_kind().check_equal(&sum_res.ret_kind())?;

@@ -24,7 +24,7 @@ where
 
         let ty_norm;
         let asc_norm;
-        if features.normalizing {
+        if features.normalizing() {
             let ty_norm_deriv = term_ty.normalize(env.clone());
             let asc_norm_deriv = self.ty.clone().normalize(env.clone());
             ty_norm = ty_norm_deriv.ret_ty();
@@ -36,7 +36,7 @@ where
             asc_norm = self.ty.clone();
         }
 
-        if features.kinded {
+        if features.kinded() {
             let ty_norm_res = ty_norm.check_kind(env.clone())?.into_kind()?;
             let ty_res = self.ty.check_kind(env.clone())?.into_kind()?;
             ty_norm_res.ret_kind().check_equal(&ty_res.ret_kind())?;

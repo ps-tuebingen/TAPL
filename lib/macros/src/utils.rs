@@ -30,20 +30,21 @@ pub fn get_enum_variants(data: &Data) -> Vec<Variant> {
 /// this assumes the variant has the form `Name(Type<Type2>)`
 /// returns `Type`
 pub fn get_variant_type_name(var: &Variant) -> Ident {
-    let fields = match var.fields {
-        Fields::Unnamed(FieldsUnnamed { ref unnamed, .. }) => unnamed,
-        _ => panic!("Enum variants that are not tuples are not supported"),
+    let Fields::Unnamed(FieldsUnnamed { ref unnamed, .. }) = var.fields else {
+        panic!("Enum variants that are not tuples are not supported")
     };
-    if fields.len() != 1 {
-        panic!("Tuple variants with more than one field are not supported")
-    }
-    match &fields.first().unwrap().ty {
+    assert!(
+        unnamed.len() == 1,
+        "Tuple variants with more than one field are not supported"
+    );
+
+    match &unnamed.first().unwrap().ty {
         Type::Path(TypePath { path, .. }) => path.segments.first().unwrap().ident.clone(),
         _ => panic!("Only type paths are supported in enum variants"),
     }
 }
 
-/// Map over enum variants returning a Vec of TokenStream
+/// Map over enum variants returning a Vec of `TokenStream`
 pub fn map_variants<F>(variants: &[Variant], f: F) -> Vec<proc_macro2::TokenStream>
 where
     F: Fn(&Variant) -> proc_macro2::TokenStream,

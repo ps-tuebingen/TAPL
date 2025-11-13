@@ -6,8 +6,8 @@ pub struct FreeTypeVariable {
 }
 
 impl FreeTypeVariable {
-    pub fn new(var: &str) -> FreeTypeVariable {
-        FreeTypeVariable {
+    #[must_use] pub fn new(var: &str) -> Self {
+        Self {
             var: var.to_owned(),
         }
     }

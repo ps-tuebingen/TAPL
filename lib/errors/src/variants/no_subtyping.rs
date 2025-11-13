@@ -6,8 +6,8 @@ pub struct NoSubtyping {
 }
 
 impl NoSubtyping {
-    pub fn new(lang: &str) -> NoSubtyping {
-        NoSubtyping {
+    #[must_use] pub fn new(lang: &str) -> Self {
+        Self {
             lang: lang.to_owned(),
         }
     }

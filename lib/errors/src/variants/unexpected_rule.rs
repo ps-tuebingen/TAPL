@@ -6,8 +6,8 @@ pub struct UnexpectedRule {
     expected: String,
 }
 impl UnexpectedRule {
-    pub fn new(found: &str, expected: &str) -> UnexpectedRule {
-        UnexpectedRule {
+    #[must_use] pub fn new(found: &str, expected: &str) -> Self {
+        Self {
             found: found.to_owned(),
             expected: expected.to_owned(),
         }

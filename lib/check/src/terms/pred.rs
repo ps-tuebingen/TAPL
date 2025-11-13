@@ -32,7 +32,7 @@ where
         premises.push(inner_res);
 
         let inner_norm;
-        if features.normalizing {
+        if features.normalizing() {
             let inner_norm_deriv = inner_ty.normalize(env.clone());
             inner_norm = inner_norm_deriv.ret_ty();
             premises.push(inner_norm_deriv);

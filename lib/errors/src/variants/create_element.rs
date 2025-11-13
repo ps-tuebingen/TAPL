@@ -6,8 +6,8 @@ pub struct CreateElement {
 }
 
 impl CreateElement {
-    pub fn new(ty: &str) -> CreateElement {
-        CreateElement { ty: ty.to_owned() }
+    #[must_use] pub fn new(ty: &str) -> Self {
+        Self { ty: ty.to_owned() }
     }
 }
 
