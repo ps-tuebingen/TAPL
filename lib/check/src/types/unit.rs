@@ -28,7 +28,7 @@ impl<Lang> Subtypecheck for Unit<Lang>
 where
     Lang: Language,
     Top<Lang>: Into<Lang::Type>,
-    Unit<Lang>: Into<Lang::Type>,
+    Self: Into<Lang::Type>,
 {
     type Lang = Lang;
     fn check_subtype(

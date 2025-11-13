@@ -20,7 +20,7 @@ where
     type Lang = T::Lang;
     type Target = Rc<T::Target>;
     fn subst(self, v: &Var, t: &<Self::Lang as Language>::Term) -> Self::Target {
-        Rc::new(Rc::unwrap_or_clone(self).subst(v, t))
+        Rc::new(Self::unwrap_or_clone(self).subst(v, t))
     }
 }
 
@@ -31,6 +31,6 @@ where
     type Target = Rc<T::Target>;
     type Lang = T::Lang;
     fn subst_type(self, v: &TypeVar, ty: &<Self::Lang as Language>::Type) -> Self::Target {
-        Rc::new(Rc::unwrap_or_clone(self).subst_type(v, ty))
+        Rc::new(Self::unwrap_or_clone(self).subst_type(v, ty))
     }
 }

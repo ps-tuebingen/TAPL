@@ -12,10 +12,10 @@ where
     type LeftRecArg = Lang::Term;
     const RULE: Rule = Rule::cast;
 
-    fn from_pair(p: Pair<'_, Rule>, t: Self::LeftRecArg) -> Result<Cast<Lang>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, t: Self::LeftRecArg) -> Result<Self, ParserError> {
         let mut inner = pair_to_n_inner(p, vec!["Cast Type"])?;
         let ty_rule = inner.remove(0);
         let ty = Lang::Type::from_pair(ty_rule, ())?;
-        Ok(Cast::new(t, ty))
+        Ok(Self::new(t, ty))
     }
 }

@@ -28,7 +28,7 @@ impl ValueTrait for Value {
 
 impl ValueGroup for Value {
     fn into_true(self) -> Result<True<Recursive>, ValueMismatch> {
-        if let Value::True(tru) = self {
+        if let Self::True(tru) = self {
             Ok(tru)
         } else {
             Err(ValueMismatch::new(self.to_string(), "True".to_owned()))
@@ -36,7 +36,7 @@ impl ValueGroup for Value {
     }
 
     fn into_false(self) -> Result<False<Recursive>, ValueMismatch> {
-        if let Value::False(fls) = self {
+        if let Self::False(fls) = self {
             Ok(fls)
         } else {
             Err(ValueMismatch::new(self.to_string(), "False".to_owned()))
@@ -44,7 +44,7 @@ impl ValueGroup for Value {
     }
 
     fn into_num(self) -> Result<Num<Recursive>, ValueMismatch> {
-        if let Value::Num(num) = self {
+        if let Self::Num(num) = self {
             Ok(num)
         } else {
             Err(ValueMismatch::new(self.to_string(), "Number".to_owned()))
@@ -52,7 +52,7 @@ impl ValueGroup for Value {
     }
 
     fn into_lambda(self) -> Result<Lambda<Recursive>, ValueMismatch> {
-        if let Value::Lambda(lam) = self {
+        if let Self::Lambda(lam) = self {
             Ok(lam)
         } else {
             Err(ValueMismatch::new(self.to_string(), "Lambda".to_owned()))
@@ -60,7 +60,7 @@ impl ValueGroup for Value {
     }
 
     fn into_fold(self) -> Result<Fold<Recursive>, ValueMismatch> {
-        if let Value::Fold(fld) = self {
+        if let Self::Fold(fld) = self {
             Ok(fld)
         } else {
             Err(ValueMismatch::new(self.to_string(), "Fold".to_owned()))
@@ -68,7 +68,7 @@ impl ValueGroup for Value {
     }
 
     fn into_pair(self) -> Result<Pair<Recursive>, ValueMismatch> {
-        if let Value::Pair(pair) = self {
+        if let Self::Pair(pair) = self {
             Ok(pair)
         } else {
             Err(ValueMismatch::new(self.to_string(), "Pair".to_owned()))
@@ -76,7 +76,7 @@ impl ValueGroup for Value {
     }
 
     fn into_record(self) -> Result<Record<Recursive>, ValueMismatch> {
-        if let Value::Record(rec) = self {
+        if let Self::Record(rec) = self {
             Ok(rec)
         } else {
             Err(ValueMismatch::new(self.to_string(), "Record".to_owned()))
@@ -84,7 +84,7 @@ impl ValueGroup for Value {
     }
 
     fn into_variant(self) -> Result<Variant<Recursive>, ValueMismatch> {
-        if let Value::Variant(var) = self {
+        if let Self::Variant(var) = self {
             Ok(var)
         } else {
             Err(ValueMismatch::new(self.to_string(), "Variant".to_owned()))

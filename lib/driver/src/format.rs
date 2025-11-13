@@ -20,30 +20,28 @@ impl FormatMethod {
         T: Formattable,
     {
         match self {
-            FormatMethod::Simple => t.to_string(),
-            FormatMethod::LatexBusStripped => t.to_latex(&mut LatexConfig::new()),
-            FormatMethod::LatexBusDoc => t.to_document(&mut LatexConfig::new()),
-            FormatMethod::LatexFracStripped => t.to_latex(&mut LatexConfig::new_frac()),
-            FormatMethod::LatexFracDoc => t.to_document(&mut LatexConfig::new_frac()),
-            FormatMethod::Debug => format!("{t:?}"),
+            Self::Simple => t.to_string(),
+            Self::LatexBusStripped => t.to_latex(&mut LatexConfig::new()),
+            Self::LatexBusDoc => t.to_document(&mut LatexConfig::new()),
+            Self::LatexFracStripped => t.to_latex(&mut LatexConfig::new_frac()),
+            Self::LatexFracDoc => t.to_document(&mut LatexConfig::new_frac()),
+            Self::Debug => format!("{t:?}"),
         }
     }
 }
 
 impl FromStr for FormatMethod {
     type Err = DriverError;
-    fn from_str(s: &str) -> Result<FormatMethod, DriverError> {
+    fn from_str(s: &str) -> Result<Self, DriverError> {
         let s = s.replace(['-', '_'], "");
         match s.to_lowercase().trim() {
-            "print" | "simple" => Ok(FormatMethod::Simple),
-            "latex" | "buss" | "latexbuss" => Ok(FormatMethod::LatexBusDoc),
-            "latexstripped" | "bussstripped" => Ok(FormatMethod::LatexBusStripped),
-            "frac" | "fracarray" => Ok(FormatMethod::LatexFracDoc),
-            "fracstripped" | "fracarraystripped" | "latexfrac" => {
-                Ok(FormatMethod::LatexFracStripped)
-            }
-            "debug" | "dbg" => Ok(FormatMethod::Debug),
-            _ => Err(DriverError::UndefinedFormatMethod(s.to_owned())),
+            "print" | "simple" => Ok(Self::Simple),
+            "latex" | "buss" | "latexbuss" => Ok(Self::LatexBusDoc),
+            "latexstripped" | "bussstripped" => Ok(Self::LatexBusStripped),
+            "frac" | "fracarray" => Ok(Self::LatexFracDoc),
+            "fracstripped" | "fracarraystripped" | "latexfrac" => Ok(Self::LatexFracStripped),
+            "debug" | "dbg" => Ok(Self::Debug),
+            _ => Err(DriverError::UndefinedFormatMethod(s.clone())),
         }
     }
 }
@@ -51,12 +49,12 @@ impl FromStr for FormatMethod {
 impl fmt::Display for FormatMethod {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            FormatMethod::Simple => f.write_str("simple"),
-            FormatMethod::LatexBusStripped => f.write_str("buss-stripped"),
-            FormatMethod::LatexBusDoc => f.write_str("buss"),
-            FormatMethod::LatexFracStripped => f.write_str("frac-stripped"),
-            FormatMethod::LatexFracDoc => f.write_str("frac"),
-            FormatMethod::Debug => f.write_str("debug"),
+            Self::Simple => f.write_str("simple"),
+            Self::LatexBusStripped => f.write_str("buss-stripped"),
+            Self::LatexBusDoc => f.write_str("buss"),
+            Self::LatexFracStripped => f.write_str("frac-stripped"),
+            Self::LatexFracDoc => f.write_str("frac"),
+            Self::Debug => f.write_str("debug"),
         }
     }
 }

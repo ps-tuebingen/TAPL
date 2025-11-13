@@ -17,7 +17,7 @@ impl<Lang> Eval for Tail<Lang>
 where
     Lang: Language,
     Lang::Term: Term + Eval<Lang = Lang>,
-    Tail<Lang>: Into<Lang::Term>,
+    Self: Into<Lang::Term>,
 {
     type Lang = Lang;
 
@@ -27,8 +27,8 @@ where
         let cons_val = term_val.clone().into_cons()?;
 
         let val = *cons_val.head;
-        let last_step = EvalStep::tail(Tail::new(term_val, self.ty.clone()), val.clone());
-        let mut steps = term_res.congruence(&move |t| Tail::new(t, self.ty.clone()).into());
+        let last_step = EvalStep::tail(Self::new(term_val, self.ty.clone()), val.clone());
+        let mut steps = term_res.congruence(&move |t| Self::new(t, self.ty.clone()).into());
         steps.push(last_step);
         Ok(EvalTrace::<Lang>::new(steps, val))
     }

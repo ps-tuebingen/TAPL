@@ -31,7 +31,7 @@ impl TypeTrait for Type {}
 impl TypeGroup for Type {
     type Lang = SystemF;
     fn into_fun(self) -> Result<Fun<Self::Lang>, TypeMismatch> {
-        if let Type::Fun(fun) = self {
+        if let Self::Fun(fun) = self {
             Ok(fun)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Function".to_owned()))
@@ -39,7 +39,7 @@ impl TypeGroup for Type {
     }
 
     fn into_forall(self) -> Result<Forall<Self::Lang>, TypeMismatch> {
-        if let Type::Forall(forall) = self {
+        if let Self::Forall(forall) = self {
             Ok(forall)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Universal".to_owned()))

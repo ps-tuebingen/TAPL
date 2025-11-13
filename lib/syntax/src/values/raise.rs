@@ -16,13 +16,13 @@ impl<Lang> Raise<Lang>
 where
     Lang: Language,
 {
-    pub fn new<V1, Ty1, Ty2>(v: V1, cont_ty: Ty1, ex_ty: Ty2) -> Raise<Lang>
+    pub fn new<V1, Ty1, Ty2>(v: V1, cont_ty: Ty1, ex_ty: Ty2) -> Self
     where
         V1: Into<Lang::Value>,
         Ty1: Into<Lang::Type>,
         Ty2: Into<Lang::Type>,
     {
-        Raise {
+        Self {
             val: Box::new(v.into()),
             cont_ty: cont_ty.into(),
             exception_ty: ex_ty.into(),
@@ -43,8 +43,8 @@ impl<Lang> From<Raise<Lang>> for RaiseT<Lang>
 where
     Lang: Language,
 {
-    fn from(r: Raise<Lang>) -> RaiseT<Lang> {
-        RaiseT::new(*r.val, r.exception_ty, r.cont_ty)
+    fn from(r: Raise<Lang>) -> Self {
+        Self::new(*r.val, r.exception_ty, r.cont_ty)
     }
 }
 

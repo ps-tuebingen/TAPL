@@ -19,11 +19,11 @@ impl<Lang> Projection<Lang>
 where
     Lang: Language,
 {
-    pub fn new<T1>(t: T1, ind: usize) -> Projection<Lang>
+    pub fn new<T1>(t: T1, ind: usize) -> Self
     where
         T1: Into<Lang::Term>,
     {
-        Projection {
+        Self {
             term: Rc::new(t.into()),
             index: ind,
         }
@@ -39,7 +39,7 @@ where
     type Target = Self;
     type Lang = Lang;
     fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
-        Projection {
+        Self {
             term: self.term.subst(v, t),
             index: self.index,
         }
@@ -53,7 +53,7 @@ where
     type Target = Self;
     type Lang = Lang;
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
-        Projection {
+        Self {
             term: self.term.subst_type(v, ty),
             index: self.index,
         }

@@ -14,7 +14,7 @@ impl<Lang> Eval for Variant<Lang>
 where
     Lang: Language,
     Lang::Term: Eval<Lang = Lang>,
-    Variant<Lang>: Into<Lang::Term>,
+    Self: Into<Lang::Term>,
     VariantVal<Lang>: Into<Lang::Value>,
 {
     type Lang = Lang;
@@ -25,7 +25,7 @@ where
         let val = VariantVal::<Lang>::new(&self.label, term_val, self.ty.clone());
 
         let steps =
-            term_res.congruence(&move |t| Variant::new(&self.label, t, self.ty.clone()).into());
+            term_res.congruence(&move |t| Self::new(&self.label, t, self.ty.clone()).into());
         Ok(EvalTrace::new(steps, val))
     }
 

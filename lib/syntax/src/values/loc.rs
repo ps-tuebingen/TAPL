@@ -15,8 +15,8 @@ impl<Lang> Loc<Lang>
 where
     Lang: Language,
 {
-    pub fn new(loc: usize) -> Loc<Lang> {
-        Loc {
+    #[must_use] pub const fn new(loc: usize) -> Self {
+        Self {
             loc,
             phantom: PhantomData,
         }
@@ -36,8 +36,8 @@ impl<Lang> From<Loc<Lang>> for LocT<Lang>
 where
     Lang: Language,
 {
-    fn from(loc: Loc<Lang>) -> LocT<Lang> {
-        LocT::new(loc.loc)
+    fn from(loc: Loc<Lang>) -> Self {
+        Self::new(loc.loc)
     }
 }
 

@@ -14,8 +14,8 @@ impl<Lang> Bool<Lang>
 where
     Lang: Language,
 {
-    pub fn new() -> Bool<Lang> {
-        Bool {
+    #[must_use] pub const fn new() -> Self {
+        Self {
             phantom: PhantomData,
         }
     }
@@ -25,8 +25,8 @@ impl<Lang> Default for Bool<Lang>
 where
     Lang: Language,
 {
-    fn default() -> Bool<Lang> {
-        Bool::new()
+    fn default() -> Self {
+        Self::new()
     }
 }
 

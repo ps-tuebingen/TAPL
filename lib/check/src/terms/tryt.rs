@@ -30,7 +30,7 @@ where
             premises.push(ty_norm_deriv);
         } else {
             ty_norm = term_ty;
-        };
+        }
 
         let handler_res = self.handler.check(env.clone())?;
         let handler_ty = handler_res.ret_ty();

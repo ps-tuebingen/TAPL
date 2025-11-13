@@ -19,12 +19,12 @@ impl<Lang> Assign<Lang>
 where
     Lang: Language,
 {
-    pub fn new<T1, T2>(lhs: T1, rhs: T2) -> Assign<Lang>
+    pub fn new<T1, T2>(lhs: T1, rhs: T2) -> Self
     where
         T1: Into<Lang::Term>,
         T2: Into<Lang::Term>,
     {
-        Assign {
+        Self {
             lhs: Rc::new(lhs.into()),
             rhs: Rc::new(rhs.into()),
         }
@@ -40,7 +40,7 @@ where
     type Target = Self;
     type Lang = Lang;
     fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
-        Assign {
+        Self {
             lhs: self.lhs.subst(v, t),
             rhs: self.rhs.subst(v, t),
         }
@@ -54,7 +54,7 @@ where
     type Target = Self;
     type Lang = Lang;
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
-        Assign {
+        Self {
             lhs: self.lhs.subst_type(v, ty),
             rhs: self.rhs.subst_type(v, ty),
         }

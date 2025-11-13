@@ -19,7 +19,7 @@ where
     Lang: Language,
     TypeVariable<Lang>: Into<Lang::Type>,
     Top<Lang>: Into<Lang::Type>,
-    OpLambda<Lang>: Into<Lang::Type>,
+    Self: Into<Lang::Type>,
     Lang::Type: Subtypecheck<Lang = Lang> + TypeGroup<Lang = Lang>,
 {
     type Lang = Lang;
@@ -79,7 +79,7 @@ where
     type Lang = Lang;
     fn normalize(self, env: Environment<Self::Lang>) -> Derivation<Self::Lang> {
         let body_norm = self.body.clone().normalize(env);
-        let self_norm = OpLambda {
+        let self_norm = Self {
             var: self.var.clone(),
             annot: self.annot.clone(),
             body: Rc::new(body_norm.ret_ty()),

@@ -18,8 +18,8 @@ impl<Lang> False<Lang>
 where
     Lang: Language,
 {
-    pub fn new() -> False<Lang> {
-        False {
+    #[must_use] pub const fn new() -> Self {
+        Self {
             phantom: PhantomData,
         }
     }
@@ -29,8 +29,8 @@ impl<Lang> Default for False<Lang>
 where
     Lang: Language,
 {
-    fn default() -> False<Lang> {
-        False::new()
+    fn default() -> Self {
+        Self::new()
     }
 }
 
@@ -54,7 +54,7 @@ where
     type Target = Self;
     type Lang = Lang;
     fn subst_type(self, _: &TypeVar, _: &<Lang as Language>::Type) -> Self::Target {
-        False {
+        Self {
             phantom: PhantomData,
         }
     }

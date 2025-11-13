@@ -26,7 +26,7 @@ impl ValueTrait for Value {
 
 impl ValueGroup for Value {
     fn into_true(self) -> Result<True<Exceptions>, ValueMismatch> {
-        if let Value::True(tru) = self {
+        if let Self::True(tru) = self {
             Ok(tru)
         } else {
             Err(ValueMismatch::new(self.to_string(), "True".to_owned()))
@@ -34,7 +34,7 @@ impl ValueGroup for Value {
     }
 
     fn into_false(self) -> Result<False<Exceptions>, ValueMismatch> {
-        if let Value::False(fls) = self {
+        if let Self::False(fls) = self {
             Ok(fls)
         } else {
             Err(ValueMismatch::new(self.to_string(), "False".to_owned()))
@@ -42,7 +42,7 @@ impl ValueGroup for Value {
     }
 
     fn into_exception(self) -> Result<Exception<Exceptions>, ValueMismatch> {
-        if let Value::Exception(ex) = self {
+        if let Self::Exception(ex) = self {
             Ok(ex)
         } else {
             Err(ValueMismatch::new(self.to_string(), "Exception".to_owned()))
@@ -50,7 +50,7 @@ impl ValueGroup for Value {
     }
 
     fn into_lambda(self) -> Result<Lambda<Exceptions>, ValueMismatch> {
-        if let Value::Lambda(lam) = self {
+        if let Self::Lambda(lam) = self {
             Ok(lam)
         } else {
             Err(ValueMismatch::new(self.to_string(), "Lambda".to_owned()))
@@ -58,7 +58,7 @@ impl ValueGroup for Value {
     }
 
     fn into_raise(self) -> Result<Raise<Exceptions>, ValueMismatch> {
-        if let Value::Raise(raise) = self {
+        if let Self::Raise(raise) = self {
             Ok(raise)
         } else {
             Err(ValueMismatch::new(self.to_string(), "Raise".to_owned()))
@@ -66,7 +66,7 @@ impl ValueGroup for Value {
     }
 
     fn into_num(self) -> Result<Num<Exceptions>, ValueMismatch> {
-        if let Value::Num(num) = self {
+        if let Self::Num(num) = self {
             Ok(num)
         } else {
             Err(ValueMismatch::new(self.to_string(), "Number".to_owned()))

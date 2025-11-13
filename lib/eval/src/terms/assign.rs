@@ -19,7 +19,7 @@ where
     Lang: Language,
     Lang::Term: Term + Eval<Lang = Lang>,
     UnitVal<Lang>: Into<Lang::Value>,
-    Assign<Lang>: Into<Lang::Term>,
+    Self: Into<Lang::Term>,
     Unit<Lang>: Into<Lang::Term>,
 {
     type Lang = Lang;
@@ -35,12 +35,12 @@ where
         let rhs_t: Lang::Term = rhs_val.clone().into();
 
         let mut steps = lhs_res
-            .congruence(&move |t| Assign::new(t, Rc::unwrap_or_clone(self.rhs.clone())).into());
-        steps
-            .extend(rhs_res.congruence(&move |t| {
-                Assign::new(Rc::unwrap_or_clone(self.lhs.clone()), t).into()
-            }));
-        env.save_location(lhs_loc.loc, rhs_val.clone());
+            .congruence(&move |t| Self::new(t, Rc::unwrap_or_clone(self.rhs.clone())).into());
+        steps.extend(
+            rhs_res
+                .congruence(&move |t| Self::new(Rc::unwrap_or_clone(self.lhs.clone()), t).into()),
+        );
+        env.save_location(lhs_loc.loc, rhs_val);
 
         steps.push(EvalStep::assign(lhs_t, rhs_t));
         Ok(EvalTrace::new(steps, UnitVal::<Lang>::new()))

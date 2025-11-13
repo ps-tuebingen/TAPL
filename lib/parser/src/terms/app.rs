@@ -15,6 +15,6 @@ where
 
     fn from_pair(p: Pair<'_, Rule>, fun: Self::LeftRecArg) -> Result<Self, ParserError> {
         let arg = Lang::Term::from_pair(p, ())?;
-        Ok(App::new(fun, arg))
+        Ok(Self::new(fun, arg))
     }
 }

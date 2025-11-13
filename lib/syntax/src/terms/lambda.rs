@@ -20,12 +20,12 @@ impl<Lang> Lambda<Lang>
 where
     Lang: Language,
 {
-    pub fn new<T, Ty>(v: &str, ty: Ty, t: T) -> Lambda<Lang>
+    pub fn new<T, Ty>(v: &str, ty: Ty, t: T) -> Self
     where
         T: Into<Lang::Term>,
         Ty: Into<Lang::Type>,
     {
-        Lambda {
+        Self {
             var: v.to_owned(),
             annot: ty.into(),
             body: Rc::new(t.into()),
@@ -47,7 +47,7 @@ where
         if *v == self.var {
             self
         } else {
-            Lambda {
+            Self {
                 var: self.var,
                 annot: self.annot,
                 body: self.body.subst(v, t),
@@ -63,7 +63,7 @@ where
     type Target = Self;
     type Lang = Lang;
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
-        Lambda {
+        Self {
             var: self.var,
             annot: self.annot.subst_type(v, ty),
             body: self.body.subst_type(v, ty),

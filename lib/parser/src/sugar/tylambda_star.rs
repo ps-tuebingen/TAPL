@@ -34,12 +34,12 @@ where
 
     const RULE: Rule = Rule::ty_lambda_star_term;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Self, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
         let mut inner = pair_to_n_inner(p, vec!["Type Variable", "Type Abstraction Body"])?;
         let var = inner.remove(0).as_str().trim().to_owned();
         let term_rule = inner.remove(0);
         let term = Lang::Term::from_pair(term_rule, ())?;
-        Ok(TyLambdaStar { var, term })
+        Ok(Self { var, term })
     }
 }
 
@@ -49,7 +49,7 @@ where
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
 {
-    fn from(ts: TyLambdaStar<Lang>) -> TyLambda<Lang> {
-        TyLambda::new(&ts.var, Kind::Star, ts.term)
+    fn from(ts: TyLambdaStar<Lang>) -> Self {
+        Self::new(&ts.var, Kind::Star, ts.term)
     }
 }

@@ -15,8 +15,8 @@ impl<Lang> From<DefinitionValue<Lang>> for Definition<Lang>
 where
     Lang: Language,
 {
-    fn from(def: DefinitionValue<Lang>) -> Definition<Lang> {
-        Definition {
+    fn from(def: DefinitionValue<Lang>) -> Self {
+        Self {
             name: def.name,
             annot: def.annot,
             body: def.body.into(),

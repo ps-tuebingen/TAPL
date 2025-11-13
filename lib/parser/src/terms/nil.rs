@@ -13,10 +13,10 @@ where
 
     const RULE: Rule = Rule::nil_term;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Nil<Lang>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
         let ty_pair = pair_to_n_inner(p, vec!["Nil Type"])?.remove(0);
         let ty = Lang::Type::from_pair(ty_pair, ())?;
 
-        Ok(Nil::new(ty))
+        Ok(Self::new(ty))
     }
 }

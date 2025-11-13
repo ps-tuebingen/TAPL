@@ -13,13 +13,13 @@ where
 
     const RULE: Rule = Rule::ref_term;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Ref<Lang>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
         let mut inner_rules = pair_to_n_inner(p, vec!["Ref Term"])?;
         let term_rule = inner_rules.remove(0);
         let term = Lang::Term::from_pair(
             pair_to_n_inner(term_rule, vec!["Ref Argument"])?.remove(0),
             (),
         )?;
-        Ok(Ref::new(term))
+        Ok(Self::new(term))
     }
 }

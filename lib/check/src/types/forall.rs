@@ -40,7 +40,7 @@ where
     fn normalize(self, mut env: Environment<Self::Lang>) -> Derivation<Self::Lang> {
         env.add_tyvar_kind(self.var.clone(), self.kind.clone());
         let ty_norm = self.ty.clone().normalize(env);
-        let self_norm = Forall {
+        let self_norm = Self {
             var: self.var.clone(),
             kind: self.kind.clone(),
             ty: Rc::new(ty_norm.ret_ty()),

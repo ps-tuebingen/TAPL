@@ -19,12 +19,12 @@ impl<Lang> Left<Lang>
 where
     Lang: Language,
 {
-    pub fn new<L, Typ>(left_t: L, ty: Typ) -> Left<Lang>
+    pub fn new<L, Typ>(left_t: L, ty: Typ) -> Self
     where
         L: Into<Lang::Term>,
         Typ: Into<Lang::Type>,
     {
-        Left {
+        Self {
             left_term: Rc::new(left_t.into()),
             ty: ty.into(),
         }
@@ -40,7 +40,7 @@ where
     type Target = Self;
     type Lang = Lang;
     fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
-        Left {
+        Self {
             left_term: self.left_term.subst(v, t),
             ty: self.ty,
         }
@@ -54,7 +54,7 @@ where
     type Target = Self;
     type Lang = Lang;
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
-        Left {
+        Self {
             left_term: self.left_term.subst_type(v, ty),
             ty: self.ty.subst_type(v, ty),
         }

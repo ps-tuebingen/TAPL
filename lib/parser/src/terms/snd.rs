@@ -14,6 +14,6 @@ where
     const RULE: Rule = Rule::fst_term;
 
     fn from_pair(_: Pair<'_, Rule>, t: Self::LeftRecArg) -> Result<Self, ParserError> {
-        Ok(Snd::new(t))
+        Ok(Self::new(t))
     }
 }

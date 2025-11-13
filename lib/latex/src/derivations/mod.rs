@@ -17,12 +17,12 @@ where
 {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         match self {
-            Derivation::TypingDerivation(deriv) => deriv.to_latex(conf),
-            Derivation::DefinitionDerivation(deriv) => deriv.to_latex(conf),
-            Derivation::ProgramDerivation(deriv) => deriv.to_latex(conf),
-            Derivation::SubtypeDerivation(deriv) => deriv.to_latex(conf),
-            Derivation::NormalizingDerivation(deriv) => deriv.to_latex(conf),
-            Derivation::KindingDerivation(deriv) => deriv.to_latex(conf),
+            Self::TypingDerivation(deriv) => deriv.to_latex(conf),
+            Self::DefinitionDerivation(deriv) => deriv.to_latex(conf),
+            Self::ProgramDerivation(deriv) => deriv.to_latex(conf),
+            Self::SubtypeDerivation(deriv) => deriv.to_latex(conf),
+            Self::NormalizingDerivation(deriv) => deriv.to_latex(conf),
+            Self::KindingDerivation(deriv) => deriv.to_latex(conf),
         }
     }
 }

@@ -24,13 +24,13 @@ where
         let features = Lang::features();
         let mut premises = vec![];
 
-        let ty_norm;
+        let annot_norm;
         if features.normalizing {
             let ty_norm_deriv = self.ty.clone().normalize(env.clone());
-            ty_norm = ty_norm_deriv.ret_ty();
+            annot_norm = ty_norm_deriv.ret_ty();
             premises.push(ty_norm_deriv);
         } else {
-            ty_norm = self.ty.clone();
+            annot_norm = self.ty.clone();
         }
 
         let hd_res = self.head.check(env.clone())?;
@@ -46,7 +46,7 @@ where
             hd_norm = hd_ty;
         }
 
-        hd_norm.check_equal(&ty_norm)?;
+        hd_norm.check_equal(&annot_norm)?;
 
         if features.kinded {
             let hd_res = hd_norm.check_kind(env.clone())?.into_kind()?;
@@ -58,25 +58,25 @@ where
         let tl_ty = tl_res.ret_ty();
         premises.push(tl_res);
 
-        let tl_norm;
+        let tail_ty_norm;
         if features.normalizing {
             let tl_norm_deriv = tl_ty.normalize(env.clone());
-            tl_norm = tl_norm_deriv.ret_ty();
+            tail_ty_norm = tl_norm_deriv.ret_ty();
             premises.push(tl_norm_deriv);
         } else {
-            tl_norm = tl_ty;
+            tail_ty_norm = tl_ty;
         }
 
         if features.kinded {
-            let tl_res = tl_norm.check_kind(env.clone())?.into_kind()?;
+            let tl_res = tail_ty_norm.check_kind(env.clone())?.into_kind()?;
             tl_res.ret_kind().into_star()?;
             premises.push(tl_res.into());
         }
 
-        let list_ty: Lang::Type = List::new(ty_norm).into();
-        tl_norm.check_equal(&list_ty)?;
+        let list_ty: Lang::Type = List::new(annot_norm).into();
+        tail_ty_norm.check_equal(&list_ty)?;
 
-        let conc = TypingConclusion::new(env, self.clone(), list_ty.clone());
+        let conc = TypingConclusion::new(env, self.clone(), list_ty);
         let deriv = TypingDerivation::cons(conc, premises);
         Ok(deriv.into())
     }

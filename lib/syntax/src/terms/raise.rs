@@ -20,13 +20,13 @@ impl<Lang> Raise<Lang>
 where
     Lang: Language,
 {
-    pub fn new<E, Ty1, Ty2>(ex: E, ex_ty: Ty1, cont_ty: Ty2) -> Raise<Lang>
+    pub fn new<E, Ty1, Ty2>(ex: E, ex_ty: Ty1, cont_ty: Ty2) -> Self
     where
         E: Into<Lang::Term>,
         Ty1: Into<Lang::Type>,
         Ty2: Into<Lang::Type>,
     {
-        Raise {
+        Self {
             exception: Rc::new(ex.into()),
             exception_ty: ex_ty.into(),
             cont_ty: cont_ty.into(),
@@ -43,7 +43,7 @@ where
     type Target = Self;
     type Lang = Lang;
     fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
-        Raise {
+        Self {
             exception: self.exception.subst(v, t),
             exception_ty: self.exception_ty,
             cont_ty: self.cont_ty,
@@ -58,7 +58,7 @@ where
     type Target = Self;
     type Lang = Lang;
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
-        Raise {
+        Self {
             exception: self.exception.subst_type(v, ty),
             exception_ty: self.exception_ty.subst_type(v, ty),
             cont_ty: self.cont_ty.subst_type(v, ty),

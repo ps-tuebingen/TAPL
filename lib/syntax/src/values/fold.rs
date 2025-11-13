@@ -15,12 +15,12 @@ impl<Lang> Fold<Lang>
 where
     Lang: Language,
 {
-    pub fn new<Ty1, V1>(ty: Ty1, v: V1) -> Fold<Lang>
+    pub fn new<Ty1, V1>(ty: Ty1, v: V1) -> Self
     where
         Ty1: Into<Lang::Type>,
         V1: Into<Lang::Value>,
     {
-        Fold {
+        Self {
             ty: ty.into(),
             val: Box::new(v.into()),
         }
@@ -40,8 +40,8 @@ impl<Lang> From<Fold<Lang>> for FoldT<Lang>
 where
     Lang: Language,
 {
-    fn from(fld: Fold<Lang>) -> FoldT<Lang> {
-        FoldT::new(*fld.val, fld.ty)
+    fn from(fld: Fold<Lang>) -> Self {
+        Self::new(*fld.val, fld.ty)
     }
 }
 

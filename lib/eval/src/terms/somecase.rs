@@ -18,7 +18,7 @@ impl<Lang> Eval for SomeCase<Lang>
 where
     Lang: Language,
     Lang::Term: Term + Eval<Lang = Lang> + From<Lang::Value>,
-    SomeCase<Lang>: Into<Lang::Term>,
+    Self: Into<Lang::Term>,
 {
     type Lang = Lang;
 
@@ -32,7 +32,7 @@ where
                 .clone()
                 .subst(&self.some_var, &((*some_val.val).into()));
             let next_step = EvalStep::somecase_some(
-                SomeCase::new(
+                Self::new(
                     bound_val,
                     Rc::unwrap_or_clone(self.none_term.clone()),
                     &self.some_var,
@@ -47,7 +47,7 @@ where
             (some_steps, some_val)
         } else if bound_val.clone().into_nothing().is_ok() {
             let next_step = EvalStep::somecase_none(
-                SomeCase::new(
+                Self::new(
                     bound_val,
                     Rc::unwrap_or_clone(self.none_term.clone()),
                     &self.some_var,
@@ -65,7 +65,7 @@ where
         };
 
         let mut steps = bound_res.congruence(&move |t| {
-            SomeCase::new(
+            Self::new(
                 t,
                 Rc::unwrap_or_clone(self.none_term.clone()),
                 &self.some_var,

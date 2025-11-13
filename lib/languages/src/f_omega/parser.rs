@@ -25,7 +25,7 @@ impl GroupParse for Term {
                 .with_false()
                 .with_unit()
                 .with_zero()
-                .from_pair(p)?),
+                .from_pair(&p)?),
 
             Rule::paren_term => Self::from_pair(pair_to_n_inner(p, vec!["Term"])?.remove(0), ()),
             Rule::lambda_term => Ok(Lambda::from_pair(p, ())?.into()),
@@ -48,7 +48,7 @@ impl GroupParse for Term {
         }
     }
 
-    fn from_pair_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Self, ParserError> {
+    fn from_pair_leftrec(p: Pair<'_, Rule>, t: Self) -> Result<Self, ParserError> {
         match p.as_rule() {
             Rule::tyapp => Ok(TyApp::from_pair(p, t)?.into()),
             Rule::record_proj => Ok(RecordProj::from_pair(p, t)?.into()),
@@ -62,13 +62,13 @@ impl GroupParse for Term {
 
 impl GroupParse for Type {
     const RULE: Rule = Rule::r#type;
-    fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Type, ParserError> {
+    fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Self, ParserError> {
         match p.as_rule() {
             Rule::const_type => Ok(StringTy::<FOmega>::new()
                 .with_bool()
                 .with_unit()
                 .with_nat()
-                .from_pair(p)?),
+                .from_pair(&p)?),
             Rule::paren_type => Self::from_pair(pair_to_n_inner(p, vec!["Type"])?.remove(0), ()),
             Rule::forall_kinded_type => Ok(Forall::from_pair(p, ())?.into()),
             Rule::forall_unbounded_type => {
@@ -87,7 +87,7 @@ impl GroupParse for Type {
             ),
         }
     }
-    fn from_pair_leftrec(p: Pair<'_, Rule>, ty: Type) -> Result<Type, ParserError> {
+    fn from_pair_leftrec(p: Pair<'_, Rule>, ty: Self) -> Result<Self, ParserError> {
         match p.as_rule() {
             Rule::fun_type => Ok(Fun::from_pair(p, ty)?.into()),
             Rule::op_app_type => Ok(OpApp::from_pair(p, ty)?.into()),

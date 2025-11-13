@@ -16,11 +16,11 @@ impl<Lang> TyLambda<Lang>
 where
     Lang: Language,
 {
-    pub fn new<T1>(v: &str, knd: Kind, t: T1) -> TyLambda<Lang>
+    pub fn new<T1>(v: &str, knd: Kind, t: T1) -> Self
     where
         T1: Into<Lang::Term>,
     {
-        TyLambda {
+        Self {
             var: v.to_owned(),
             annot: knd,
             term: t.into(),
@@ -40,8 +40,8 @@ impl<Lang> From<TyLambda<Lang>> for TyLambdaT<Lang>
 where
     Lang: Language,
 {
-    fn from(tylam: TyLambda<Lang>) -> TyLambdaT<Lang> {
-        TyLambdaT::new(&tylam.var, tylam.annot, tylam.term)
+    fn from(tylam: TyLambda<Lang>) -> Self {
+        Self::new(&tylam.var, tylam.annot, tylam.term)
     }
 }
 

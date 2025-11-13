@@ -18,8 +18,8 @@ impl<Lang> Untyped<Lang>
 where
     Lang: Language,
 {
-    pub fn new() -> Untyped<Lang> {
-        Untyped {
+    #[must_use] pub const fn new() -> Self {
+        Self {
             phantom: PhantomData,
         }
     }
@@ -58,8 +58,8 @@ impl<Lang> Default for Untyped<Lang>
 where
     Lang: Language,
 {
-    fn default() -> Untyped<Lang> {
-        Untyped::new()
+    fn default() -> Self {
+        Self::new()
     }
 }
 
@@ -67,8 +67,8 @@ impl<Lang> From<Fun<Lang>> for Untyped<Lang>
 where
     Lang: Language,
 {
-    fn from(_: Fun<Lang>) -> Untyped<Lang> {
-        Untyped::new()
+    fn from(_: Fun<Lang>) -> Self {
+        Self::new()
     }
 }
 
@@ -76,8 +76,8 @@ impl<Lang> From<Bool<Lang>> for Untyped<Lang>
 where
     Lang: Language,
 {
-    fn from(_: Bool<Lang>) -> Untyped<Lang> {
-        Untyped::new()
+    fn from(_: Bool<Lang>) -> Self {
+        Self::new()
     }
 }
 
@@ -85,7 +85,7 @@ impl<Lang> From<Nat<Lang>> for Untyped<Lang>
 where
     Lang: Language,
 {
-    fn from(_: Nat<Lang>) -> Untyped<Lang> {
-        Untyped::new()
+    fn from(_: Nat<Lang>) -> Self {
+        Self::new()
     }
 }

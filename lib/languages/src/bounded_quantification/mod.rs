@@ -20,7 +20,7 @@ impl Language for BoundedQuantification {
     type Type = Type;
     type Value = Value;
 
-    fn describe(&self) -> &str {
+    fn describe(&self) -> &'static str {
         "System F with Bounded Quantification"
     }
 

@@ -19,12 +19,12 @@ impl<Lang> TyApp<Lang>
 where
     Lang: Language,
 {
-    pub fn new<T1, Typ>(t: T1, ty: Typ) -> TyApp<Lang>
+    pub fn new<T1, Typ>(t: T1, ty: Typ) -> Self
     where
         T1: Into<Lang::Term>,
         Typ: Into<Lang::Type>,
     {
-        TyApp {
+        Self {
             fun: Rc::new(t.into()),
             arg: ty.into(),
         }
@@ -40,7 +40,7 @@ where
     type Target = Self;
     type Lang = Lang;
     fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
-        TyApp {
+        Self {
             fun: self.fun.subst(v, t),
             arg: self.arg,
         }
@@ -54,7 +54,7 @@ where
     type Target = Self;
     type Lang = Lang;
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
-        TyApp {
+        Self {
             fun: self.fun.subst_type(v, ty),
             arg: self.arg.subst_type(v, ty),
         }

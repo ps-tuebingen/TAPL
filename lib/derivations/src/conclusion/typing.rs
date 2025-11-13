@@ -15,12 +15,12 @@ impl<Lang> TypingConclusion<Lang>
 where
     Lang: Language,
 {
-    pub fn new<T1, Ty1>(env: Environment<Lang>, term: T1, ty: Ty1) -> TypingConclusion<Lang>
+    pub fn new<T1, Ty1>(env: Environment<Lang>, term: T1, ty: Ty1) -> Self
     where
         T1: Into<Lang::Term>,
         Ty1: Into<Lang::Type>,
     {
-        TypingConclusion {
+        Self {
             env,
             term: term.into(),
             ty: ty.into(),

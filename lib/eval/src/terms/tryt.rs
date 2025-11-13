@@ -17,7 +17,7 @@ impl<Lang> Eval for Try<Lang>
 where
     Lang: Language,
     Lang::Term: Term + Eval<Lang = Lang>,
-    Try<Lang>: Into<Lang::Term>,
+    Self: Into<Lang::Term>,
 {
     type Lang = Lang;
 
@@ -26,7 +26,7 @@ where
         let term_val = term_res.val();
         let (res_steps, res_val) = if term_val.clone().into_exception().is_ok() {
             let next_step = EvalStep::try_catch(
-                Try::new(term_val.clone(), Rc::unwrap_or_clone(self.handler.clone())),
+                Self::new(term_val, Rc::unwrap_or_clone(self.handler.clone())),
                 Rc::unwrap_or_clone(self.handler.clone()),
             );
             let handler_res = self.handler.clone().eval(env)?;
@@ -36,14 +36,14 @@ where
             (handler_steps, handler_val)
         } else {
             let next_step = EvalStep::try_succ(
-                Try::new(term_val.clone(), Rc::unwrap_or_clone(self.handler.clone())),
+                Self::new(term_val.clone(), Rc::unwrap_or_clone(self.handler.clone())),
                 term_val.clone(),
             );
             (vec![next_step], term_val)
         };
 
         let mut steps = term_res
-            .congruence(&move |t| Try::new(t, Rc::unwrap_or_clone(self.handler.clone())).into());
+            .congruence(&move |t| Self::new(t, Rc::unwrap_or_clone(self.handler.clone())).into());
         steps.extend(res_steps);
         Ok(EvalTrace::<Lang>::new(steps, res_val))
     }

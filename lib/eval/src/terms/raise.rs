@@ -17,7 +17,7 @@ impl<Lang> Eval for Raise<Lang>
 where
     Lang: Language,
     Lang::Term: Term + Eval<Lang = Lang>,
-    Raise<Lang>: Into<Lang::Term>,
+    Self: Into<Lang::Term>,
     RaiseVal<Lang>: Into<Lang::Value>,
 {
     type Lang = Lang;
@@ -29,7 +29,7 @@ where
             RaiseVal::<Lang>::new(exc_val, self.cont_ty.clone(), self.exception_ty.clone());
 
         let steps = exc_res.congruence(&move |t| {
-            Raise::new(t, self.cont_ty.clone(), self.exception_ty.clone()).into()
+            Self::new(t, self.cont_ty.clone(), self.exception_ty.clone()).into()
         });
         Ok(EvalTrace::new(steps, raise_val))
     }

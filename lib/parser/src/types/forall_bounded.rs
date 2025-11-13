@@ -13,10 +13,7 @@ where
 
     const RULE: Rule = Rule::forall_bounded_type;
 
-    fn from_pair(
-        p: Pair<'_, Rule>,
-        _: Self::LeftRecArg,
-    ) -> Result<ForallBounded<Lang>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
         let mut inner = pair_to_n_inner(
             p,
             vec!["Forall Variable", "Forall Super Type", "Forall Body"],
@@ -30,6 +27,6 @@ where
         let body_rule = inner.remove(0);
         let body_ty = Lang::Type::from_pair(body_rule, ())?;
 
-        Ok(ForallBounded::new(var, super_ty, body_ty))
+        Ok(Self::new(var, super_ty, body_ty))
     }
 }

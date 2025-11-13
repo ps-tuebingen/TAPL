@@ -13,7 +13,7 @@ where
 
     const RULE: Rule = Rule::try_term;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Try<Lang>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
         let mut inner = pair_to_n_inner(p, vec!["Try Term", "With Term"])?;
 
         let tryt_rule = inner.remove(0);
@@ -21,6 +21,6 @@ where
         let with_rule = inner.remove(0);
         let witht = Lang::Term::from_pair(with_rule, ())?;
 
-        Ok(Try::new(try_t, witht))
+        Ok(Self::new(try_t, witht))
     }
 }

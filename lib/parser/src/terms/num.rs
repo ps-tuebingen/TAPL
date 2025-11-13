@@ -13,10 +13,10 @@ where
 
     const RULE: Rule = Rule::number;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Self, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
         let num = p.as_str().trim().parse::<i64>().map_err(|_| {
             <UnknownKeyword as Into<ParserError>>::into(UnknownKeyword::new(p.as_str()))
         })?;
-        Ok(Num::new(num))
+        Ok(Self::new(num))
     }
 }

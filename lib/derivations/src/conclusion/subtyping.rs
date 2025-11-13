@@ -15,15 +15,15 @@ impl<Lang> SubtypeConclusion<Lang>
 where
     Lang: Language,
 {
-    pub fn new<Ty1, Ty2>(env: Environment<Lang>, sub: Ty1, sup: Ty2) -> SubtypeConclusion<Lang>
+    pub fn new<Ty1, Ty2>(env: Environment<Lang>, sub_ty: Ty1, super_ty: Ty2) -> Self
     where
         Ty1: Into<Lang::Type>,
         Ty2: Into<Lang::Type>,
     {
-        SubtypeConclusion {
+        Self {
             env,
-            sub: sub.into(),
-            sup: sup.into(),
+            sub: sub_ty.into(),
+            sup: super_ty.into(),
         }
     }
 }

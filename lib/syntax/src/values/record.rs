@@ -14,11 +14,11 @@ impl<Lang> Record<Lang>
 where
     Lang: Language,
 {
-    pub fn new<V1>(recs: HashMap<Label, V1>) -> Record<Lang>
+    #[must_use] pub fn new<V1>(recs: HashMap<Label, V1>) -> Self
     where
         V1: Into<Lang::Value>,
     {
-        Record {
+        Self {
             records: recs.into_iter().map(|(lb, t)| (lb, t.into())).collect(),
         }
     }
@@ -37,8 +37,8 @@ impl<Lang> From<Record<Lang>> for RecordT<Lang>
 where
     Lang: Language,
 {
-    fn from(rec: Record<Lang>) -> RecordT<Lang> {
-        RecordT::new(rec.records)
+    fn from(rec: Record<Lang>) -> Self {
+        Self::new(rec.records)
     }
 }
 

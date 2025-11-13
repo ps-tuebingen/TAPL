@@ -20,11 +20,11 @@ where
         self.conc.right.clone()
     }
 
-    pub fn empty<Ty>(ty: Ty) -> NormalizingDerivation<Lang>
+    pub fn empty<Ty>(ty: Ty) -> Self
     where
         Ty: Into<Lang::Type> + Clone,
     {
-        NormalizingDerivation {
+        Self {
             conc: NormalizingConclusion::new(ty.clone(), ty),
             label: NormalizingRule::Refl,
             premises: vec![],
@@ -35,12 +35,12 @@ where
         from: Ty1,
         to: Ty2,
         prem: Vec<Derivation<Lang>>,
-    ) -> NormalizingDerivation<Lang>
+    ) -> Self
     where
         Ty1: Into<Lang::Type>,
         Ty2: Into<Lang::Type>,
     {
-        NormalizingDerivation {
+        Self {
             conc: NormalizingConclusion::new(from, to),
             label: NormalizingRule::Cong,
             premises: prem,
@@ -51,12 +51,12 @@ where
         from: Ty1,
         to: Ty2,
         premises: Vec<Derivation<Lang>>,
-    ) -> NormalizingDerivation<Lang>
+    ) -> Self
     where
         Ty1: Into<Lang::Type>,
         Ty2: Into<Lang::Type>,
     {
-        NormalizingDerivation {
+        Self {
             conc: NormalizingConclusion::new(from, to),
             label: NormalizingRule::OpApp,
             premises,
@@ -69,7 +69,7 @@ where
     Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        for prem in self.premises.iter() {
+        for prem in &self.premises {
             writeln!(f, "{prem}")?;
             writeln!(f,)?;
         }
@@ -82,7 +82,7 @@ impl<Lang> From<NormalizingDerivation<Lang>> for Derivation<Lang>
 where
     Lang: Language,
 {
-    fn from(deriv: NormalizingDerivation<Lang>) -> Derivation<Lang> {
-        Derivation::NormalizingDerivation(deriv)
+    fn from(deriv: NormalizingDerivation<Lang>) -> Self {
+        Self::NormalizingDerivation(deriv)
     }
 }

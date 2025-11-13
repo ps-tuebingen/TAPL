@@ -13,9 +13,9 @@ where
 
     const RULE: Rule = Rule::deref_term;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Deref<Lang>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
         let term_rule = pair_to_n_inner(p, vec!["Deref Term"])?.remove(0);
         let term = Lang::Term::from_pair(term_rule, ())?;
-        Ok(Deref::new(term))
+        Ok(Self::new(term))
     }
 }

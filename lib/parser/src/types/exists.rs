@@ -15,7 +15,7 @@ where
     type LeftRecArg = ();
 
     const RULE: Rule = Rule::exists_kinded_type;
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Exists<Lang>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
         let mut inner = pair_to_n_inner(p, vec!["Exists Variable", "Exists kind", "Exists Type"])?;
         let start_rule = inner.remove(0);
         let mut start_inner = pair_to_n_inner(start_rule, vec!["Exists Variable"])?;
@@ -25,6 +25,6 @@ where
         let kind = Kind::from_pair(kind_rule, ())?;
         let ty_rule = inner.remove(0);
         let inner_ty = Lang::Type::from_pair(ty_rule, ())?;
-        Ok(Exists::new(var, kind, inner_ty))
+        Ok(Self::new(var, kind, inner_ty))
     }
 }

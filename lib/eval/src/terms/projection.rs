@@ -17,7 +17,7 @@ impl<Lang> Eval for Projection<Lang>
 where
     Lang: Language,
     Lang::Term: Term + Eval<Lang = Lang>,
-    Projection<Lang>: Into<Lang::Term>,
+    Self: Into<Lang::Term>,
 {
     type Lang = Lang;
 
@@ -29,10 +29,10 @@ where
             .vals
             .get(self.index)
             .cloned()
-            .ok_or(IndexOutOfBounds::new(self.index, tup_val.vals.len()))?;
+            .ok_or_else(|| IndexOutOfBounds::new(self.index, tup_val.vals.len()))?;
 
-        let mut steps = term_res.congruence(&move |t| Projection::new(t, self.index).into());
-        let last_step = EvalStep::projection(Projection::new(term_val, self.index), val.clone());
+        let mut steps = term_res.congruence(&move |t| Self::new(t, self.index).into());
+        let last_step = EvalStep::projection(Self::new(term_val, self.index), val.clone());
         steps.push(last_step);
 
         Ok(EvalTrace::<Lang>::new(steps, val))

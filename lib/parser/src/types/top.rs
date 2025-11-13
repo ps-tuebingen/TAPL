@@ -16,9 +16,9 @@ where
 
     const RULE: Rule = Rule::top_type;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Self, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
         let kind_rule = pair_to_n_inner(p, vec!["Kind"])?.remove(0);
         let kind = Kind::from_pair(kind_rule, ())?;
-        Ok(Top::new(kind))
+        Ok(Self::new(kind))
     }
 }

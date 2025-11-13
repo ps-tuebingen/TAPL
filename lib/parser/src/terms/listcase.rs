@@ -13,7 +13,7 @@ where
 
     const RULE: Rule = Rule::listcase_term;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<ListCase<Lang>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
         let mut inner = pair_to_n_inner(
             p,
             vec![
@@ -24,14 +24,14 @@ where
         )?;
         let bound_rule = inner.remove(0);
         let bound_term = Lang::Term::from_pair(bound_rule, ())?;
-        let pt_fst_pair = inner.remove(0);
-        let pt_rst_pair = inner.remove(0);
-        let (nil_pair, cons_pair) = match (pt_fst_pair.as_rule(), pt_rst_pair.as_rule()) {
-            (Rule::nil_pattern, Rule::cons_pattern) => (pt_fst_pair, pt_rst_pair),
-            (Rule::cons_pattern, Rule::nil_pattern) => (pt_rst_pair, pt_fst_pair),
+        let pair_nil_pt = inner.remove(0);
+        let pair_cons_pt = inner.remove(0);
+        let (nil_pair, cons_pair) = match (pair_nil_pt.as_rule(), pair_cons_pt.as_rule()) {
+            (Rule::nil_pattern, Rule::cons_pattern) => (pair_nil_pt, pair_cons_pt),
+            (Rule::cons_pattern, Rule::nil_pattern) => (pair_cons_pt, pair_nil_pt),
             _ => {
                 return Err(UnexpectedRule::new(
-                    &format!("{:?}", pt_fst_pair.as_rule()),
+                    &format!("{:?}", pair_nil_pt.as_rule()),
                     "List Patterns",
                 )
                 .into());
@@ -49,8 +49,6 @@ where
         let tail_var = cons_inner.remove(0).as_str().trim();
         let cons_rhs = Lang::Term::from_pair(cons_inner.remove(0), ())?;
 
-        Ok(ListCase::new(
-            bound_term, nil_rhs, head_var, tail_var, cons_rhs,
-        ))
+        Ok(Self::new(bound_term, nil_rhs, head_var, tail_var, cons_rhs))
     }
 }

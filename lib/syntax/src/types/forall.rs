@@ -16,11 +16,11 @@ impl<Lang> Forall<Lang>
 where
     Lang: Language,
 {
-    pub fn new<Ty1>(v: &str, knd: Kind, ty: Ty1) -> Forall<Lang>
+    pub fn new<Ty1>(v: &str, knd: Kind, ty: Ty1) -> Self
     where
         Ty1: Into<Lang::Type>,
     {
-        Forall {
+        Self {
             var: v.to_owned(),
             kind: knd,
             ty: Rc::new(ty.into()),
@@ -40,7 +40,7 @@ where
         if *v == self.var {
             self
         } else {
-            Forall {
+            Self {
                 var: self.var,
                 kind: self.kind,
                 ty: self.ty.subst_type(v, ty),

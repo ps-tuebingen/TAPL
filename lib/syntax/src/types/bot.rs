@@ -14,8 +14,8 @@ impl<Lang> Bot<Lang>
 where
     Lang: Language,
 {
-    pub fn new() -> Bot<Lang> {
-        Bot {
+    #[must_use] pub const fn new() -> Self {
+        Self {
             kind: Kind::Star,
             phantom: PhantomData,
         }
@@ -26,8 +26,8 @@ impl<Lang> Default for Bot<Lang>
 where
     Lang: Language,
 {
-    fn default() -> Bot<Lang> {
-        Bot::new()
+    fn default() -> Self {
+        Self::new()
     }
 }
 

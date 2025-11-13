@@ -15,11 +15,11 @@ impl<Lang> Exception<Lang>
 where
     Lang: Language,
 {
-    pub fn new<Ty1>(ty: Ty1) -> Exception<Lang>
+    pub fn new<Ty1>(ty: Ty1) -> Self
     where
         Ty1: Into<Lang::Type>,
     {
-        Exception {
+        Self {
             ty: ty.into(),
             phantom: PhantomData,
         }
@@ -39,8 +39,8 @@ impl<Lang> From<Exception<Lang>> for ExceptionT<Lang>
 where
     Lang: Language,
 {
-    fn from(ex: Exception<Lang>) -> ExceptionT<Lang> {
-        ExceptionT::new(ex.ty)
+    fn from(ex: Exception<Lang>) -> Self {
+        Self::new(ex.ty)
     }
 }
 

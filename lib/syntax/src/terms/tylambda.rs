@@ -21,11 +21,11 @@ impl<Lang> TyLambda<Lang>
 where
     Lang: Language,
 {
-    pub fn new<T1>(v: &str, knd: Kind, t: T1) -> TyLambda<Lang>
+    pub fn new<T1>(v: &str, knd: Kind, t: T1) -> Self
     where
         T1: Into<Lang::Term>,
     {
-        TyLambda {
+        Self {
             var: v.into(),
             annot: knd,
             term: Rc::new(t.into()),
@@ -42,7 +42,7 @@ where
     type Target = Self;
     type Lang = Lang;
     fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
-        TyLambda {
+        Self {
             var: self.var,
             annot: self.annot,
             term: self.term.subst(v, t),
@@ -60,7 +60,7 @@ where
         if *v == self.var {
             self
         } else {
-            TyLambda {
+            Self {
                 var: self.var,
                 annot: self.annot,
                 term: self.term.subst_type(v, ty),

@@ -20,7 +20,7 @@ impl Language for Stlc {
     type Type = Type;
     type Value = Value;
 
-    fn describe(&self) -> &str {
+    fn describe(&self) -> &'static str {
         "Simply-Typed Lambda Calculus"
     }
 

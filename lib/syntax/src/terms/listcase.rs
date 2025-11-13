@@ -22,13 +22,13 @@ impl<Lang> ListCase<Lang>
 where
     Lang: Language,
 {
-    pub fn new<T1, T2, T3>(bound: T1, nil: T2, hd: &str, tl: &str, cons: T3) -> ListCase<Lang>
+    pub fn new<T1, T2, T3>(bound: T1, nil: T2, hd: &str, tl: &str, cons: T3) -> Self
     where
         T1: Into<Lang::Term>,
         T2: Into<Lang::Term>,
         T3: Into<Lang::Term>,
     {
-        ListCase {
+        Self {
             bound_term: Rc::new(bound.into()),
             nil_rhs: Rc::new(nil.into()),
             cons_fst: hd.to_owned(),
@@ -50,7 +50,7 @@ where
         let bound_subst = self.bound_term.subst(v, t);
         let nil_subst = self.nil_rhs.subst(v, t);
         if *v == self.cons_fst || *v == self.cons_rst {
-            ListCase {
+            Self {
                 bound_term: bound_subst,
                 nil_rhs: nil_subst,
                 cons_fst: self.cons_fst,
@@ -58,7 +58,7 @@ where
                 cons_rhs: self.cons_rhs,
             }
         } else {
-            ListCase {
+            Self {
                 bound_term: bound_subst,
                 nil_rhs: nil_subst,
                 cons_fst: self.cons_fst,
@@ -76,7 +76,7 @@ where
     type Target = Self;
     type Lang = Lang;
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
-        ListCase {
+        Self {
             bound_term: self.bound_term.subst_type(v, ty),
             nil_rhs: self.nil_rhs.subst_type(v, ty),
             cons_fst: self.cons_fst,

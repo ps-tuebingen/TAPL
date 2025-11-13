@@ -15,8 +15,8 @@ pub struct LanguageFeatures {
 }
 
 impl LanguageFeatures {
-    pub fn new() -> LanguageFeatures {
-        LanguageFeatures {
+    #[must_use] pub const fn new() -> Self {
+        Self {
             typed: false,
             kinded: false,
             subtyped: false,
@@ -25,27 +25,27 @@ impl LanguageFeatures {
         }
     }
 
-    pub fn with_eval(mut self) -> Self {
+    #[must_use] pub const fn with_eval(mut self) -> Self {
         self.evaluating = true;
         self
     }
 
-    pub fn with_typed(mut self) -> Self {
+    #[must_use] pub const fn with_typed(mut self) -> Self {
         self.typed = true;
         self
     }
 
-    pub fn with_subtyped(mut self) -> Self {
+    #[must_use] pub const fn with_subtyped(mut self) -> Self {
         self.subtyped = true;
         self
     }
 
-    pub fn with_kinded(mut self) -> Self {
+    #[must_use] pub const fn with_kinded(mut self) -> Self {
         self.kinded = true;
         self
     }
 
-    pub fn with_normalizing(mut self) -> Self {
+    #[must_use] pub const fn with_normalizing(mut self) -> Self {
         self.normalizing = true;
         self
     }
@@ -64,7 +64,7 @@ pub trait Language: fmt::Display + fmt::Debug + Clone + PartialEq {
 }
 
 impl Default for LanguageFeatures {
-    fn default() -> LanguageFeatures {
-        LanguageFeatures::new()
+    fn default() -> Self {
+        Self::new()
     }
 }

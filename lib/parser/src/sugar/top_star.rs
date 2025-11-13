@@ -19,6 +19,7 @@ where
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
 {
+    #[must_use]
     pub fn to_top(self) -> Top<Lang>
 where {
         self.into()
@@ -35,8 +36,8 @@ where
 
     const RULE: Rule = Rule::top_type_star;
 
-    fn from_pair(_: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<TopStar<Lang>, ParserError> {
-        Ok(TopStar {
+    fn from_pair(_: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
+        Ok(Self {
             phantom: PhantomData,
         })
     }
@@ -48,7 +49,7 @@ where
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
 {
-    fn from(_: TopStar<Lang>) -> Top<Lang> {
-        Top::new_star()
+    fn from(_: TopStar<Lang>) -> Self {
+        Self::new_star()
     }
 }

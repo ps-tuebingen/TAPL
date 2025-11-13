@@ -45,7 +45,7 @@ where
         let tup = tup_ty
             .tys
             .get(self.index)
-            .ok_or(IndexOutOfBounds::new(self.index, tup_ty.tys.len()))
+            .ok_or_else(|| IndexOutOfBounds::new(self.index, tup_ty.tys.len()))
             .cloned()?;
         let conc = TypingConclusion::new(env, self.clone(), tup);
         let deriv = TypingDerivation::projection(conc, premises);

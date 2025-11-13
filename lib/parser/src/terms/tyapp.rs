@@ -13,9 +13,9 @@ where
 
     const RULE: Rule = Rule::tyapp;
 
-    fn from_pair(p: Pair<'_, Rule>, t: Self::LeftRecArg) -> Result<TyApp<Lang>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, t: Self::LeftRecArg) -> Result<Self, ParserError> {
         let ty_rule = pair_to_n_inner(p, vec!["Type"])?.remove(0);
         let ty = Lang::Type::from_pair(ty_rule, ())?;
-        Ok(TyApp::new(t, ty))
+        Ok(Self::new(t, ty))
     }
 }

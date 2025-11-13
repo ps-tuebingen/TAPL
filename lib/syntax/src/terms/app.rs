@@ -20,21 +20,21 @@ impl<Lang> App<Lang>
 where
     Lang: Language,
 {
-    pub fn new<F: Into<Lang::Term>, A: Into<Lang::Term>>(f: F, a: A) -> App<Lang> {
-        App {
+    pub fn new<F: Into<Lang::Term>, A: Into<Lang::Term>>(f: F, a: A) -> Self {
+        Self {
             fun: Rc::new(f.into()),
             arg: Rc::new(a.into()),
         }
     }
 
-    pub fn seq<T1, T2>(t1: T1, t2: T2) -> App<Lang>
+    pub fn seq<T1, T2>(t1: T1, t2: T2) -> Self
     where
         T1: Into<Lang::Term>,
         T2: Into<Lang::Term>,
         Lambda<Lang>: Into<Lang::Term>,
         UnitTy<Lang>: Into<Lang::Type>,
     {
-        App {
+        Self {
             fun: Rc::new(Lambda::new("_", UnitTy::new(), t2).into()),
             arg: Rc::new(t1.into()),
         }
@@ -50,7 +50,7 @@ where
     type Target = Self;
     type Lang = Lang;
     fn subst(self, v: &Var, t: &Lang::Term) -> Self::Target {
-        App {
+        Self {
             fun: self.fun.subst(v, t),
             arg: self.arg.subst(v, t),
         }
@@ -63,7 +63,7 @@ where
     type Target = Self;
     type Lang = Lang;
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
-        App {
+        Self {
             fun: self.fun.subst_type(v, ty),
             arg: self.arg.subst_type(v, ty),
         }

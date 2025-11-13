@@ -13,7 +13,7 @@ where
 
     const RULE: Rule = Rule::if_term;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<If<Lang>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
         let mut inner = pair_to_n_inner(p, vec!["If Condition", "Then Term", "Else Term"])?;
 
         let ift_rule = inner.remove(0);
@@ -22,6 +22,6 @@ where
         let thent = Lang::Term::from_pair(thent_rule, ())?;
         let elset_rule = inner.remove(0);
         let elset = Lang::Term::from_pair(elset_rule, ())?;
-        Ok(If::new(ift, thent, elset))
+        Ok(Self::new(ift, thent, elset))
     }
 }

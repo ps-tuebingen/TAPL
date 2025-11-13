@@ -28,13 +28,13 @@ where
         left_t: T2,
         right_v: &str,
         right_t: T3,
-    ) -> SumCase<Lang>
+    ) -> Self
     where
         T1: Into<Lang::Term>,
         T2: Into<Lang::Term>,
         T3: Into<Lang::Term>,
     {
-        SumCase {
+        Self {
             bound_term: Rc::new(bound.into()),
             left_var: left_v.to_owned(),
             left_term: Rc::new(left_t.into()),
@@ -64,7 +64,7 @@ where
         } else {
             self.right_term.subst(v, t)
         };
-        SumCase {
+        Self {
             bound_term: bound_subst,
             left_var: self.left_var,
             left_term,
@@ -81,7 +81,7 @@ where
     type Target = Self;
     type Lang = Lang;
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
-        SumCase {
+        Self {
             bound_term: self.bound_term.subst_type(v, ty),
             left_var: self.left_var,
             left_term: self.left_term.subst_type(v, ty),

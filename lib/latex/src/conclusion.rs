@@ -36,9 +36,9 @@ where
         conf.include_envs = false;
         let sub_str = self.sub.to_latex(conf);
         conf.include_envs = false;
-        let sup_str = self.sup.to_latex(conf);
+        let super_str = self.sup.to_latex(conf);
 
-        format!("{env_start} {env_str} \\vdash {sub_str} <: {sup_str} {env_end}")
+        format!("{env_start} {env_str} \\vdash {sub_str} <: {super_str} {env_end}")
     }
 }
 

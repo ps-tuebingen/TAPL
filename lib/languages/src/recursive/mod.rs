@@ -20,7 +20,7 @@ impl Language for Recursive {
     type Type = Type;
     type Value = Value;
 
-    fn describe(&self) -> &str {
+    fn describe(&self) -> &'static str {
         "STLC with Recursive Types"
     }
 

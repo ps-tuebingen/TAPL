@@ -15,8 +15,8 @@ pub struct Grammar {
 
 impl Grammar {
     /// create a term grammar with given alternatives
-    pub fn term(alternatives: Vec<GrammarRule>) -> Grammar {
-        Grammar {
+    #[must_use] pub fn term(alternatives: Vec<GrammarRule>) -> Self {
+        Self {
             symbol: Symbol::Term,
             description: "Term".to_owned(),
             alternatives,
@@ -24,8 +24,8 @@ impl Grammar {
     }
 
     /// create a type grammar with given alternatives
-    pub fn ty(alternatives: Vec<GrammarRule>) -> Grammar {
-        Grammar {
+    #[must_use] pub fn ty(alternatives: Vec<GrammarRule>) -> Self {
+        Self {
             symbol: Symbol::Type,
             description: "Type".to_owned(),
             alternatives,
@@ -33,8 +33,8 @@ impl Grammar {
     }
 
     /// Crate a value grammar with given alternatives
-    pub fn value(alternatives: Vec<GrammarRule>) -> Grammar {
-        Grammar {
+    #[must_use] pub fn value(alternatives: Vec<GrammarRule>) -> Self {
+        Self {
             symbol: Symbol::Value,
             description: "Value".to_owned(),
             alternatives,
@@ -45,7 +45,7 @@ impl Grammar {
 impl fmt::Display for Grammar {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "{}::=\t\t\t{}", self.symbol, self.description)?;
-        for alt in self.alternatives.iter() {
+        for alt in &self.alternatives {
             writeln!(f, "| {alt}",)?;
         }
         Ok(())

@@ -20,12 +20,12 @@ impl<Lang> Let<Lang>
 where
     Lang: Language,
 {
-    pub fn new<T1, T2>(v: &str, bound: T1, int: T2) -> Let<Lang>
+    pub fn new<T1, T2>(v: &str, bound: T1, int: T2) -> Self
     where
         T1: Into<Lang::Term>,
         T2: Into<Lang::Term>,
     {
-        Let {
+        Self {
             var: v.to_owned(),
             bound_term: Rc::new(bound.into()),
             in_term: Rc::new(int.into()),
@@ -44,7 +44,7 @@ where
         if *v == self.var {
             self
         } else {
-            Let {
+            Self {
                 var: self.var,
                 bound_term: self.bound_term.subst(v, t),
                 in_term: self.in_term.subst(v, t),
@@ -60,7 +60,7 @@ where
     type Target = Self;
     type Lang = Lang;
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
-        Let {
+        Self {
             var: self.var,
             bound_term: self.bound_term.subst_type(v, ty),
             in_term: self.in_term.subst_type(v, ty),

@@ -20,7 +20,7 @@ impl ValueTrait for Value {
 
 impl ValueGroup for Value {
     fn into_true(self) -> Result<True<UntypedArithmetic>, ValueMismatch> {
-        if let Value::True(tru) = self {
+        if let Self::True(tru) = self {
             Ok(tru)
         } else {
             Err(ValueMismatch::new(self.to_string(), "True".to_owned()))
@@ -28,7 +28,7 @@ impl ValueGroup for Value {
     }
 
     fn into_false(self) -> Result<False<UntypedArithmetic>, ValueMismatch> {
-        if let Value::False(fls) = self {
+        if let Self::False(fls) = self {
             Ok(fls)
         } else {
             Err(ValueMismatch::new(self.to_string(), "False".to_owned()))
@@ -36,7 +36,7 @@ impl ValueGroup for Value {
     }
 
     fn into_num(self) -> Result<Num<UntypedArithmetic>, ValueMismatch> {
-        if let Value::Num(num) = self {
+        if let Self::Num(num) = self {
             Ok(num)
         } else {
             Err(ValueMismatch::new(self.to_string(), "Number".to_owned()))

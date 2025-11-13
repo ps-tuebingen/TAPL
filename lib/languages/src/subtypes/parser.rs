@@ -24,7 +24,7 @@ impl GroupParse for Term {
                 .with_true()
                 .with_false()
                 .with_zero()
-                .from_pair(p)?),
+                .from_pair(&p)?),
             Rule::variable => Ok(Variable::from_pair(p, ())?.into()),
             Rule::number => Ok(Num::from_pair(p, ())?.into()),
             Rule::lambda_term => Ok(Lambda::from_pair(p, ())?.into()),
@@ -45,7 +45,7 @@ impl GroupParse for Term {
             r => Err(UnexpectedRule::new(&format!("{r:?}"), "Non Left-recursive term").into()),
         }
     }
-    fn from_pair_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Self, ParserError> {
+    fn from_pair_leftrec(p: Pair<'_, Rule>, t: Self) -> Result<Self, ParserError> {
         match p.as_rule() {
             Rule::record_proj => Ok(RecordProj::from_pair(p, t)?.into()),
             Rule::assign => Ok(Assign::from_pair(p, t)?.into()),
@@ -58,14 +58,14 @@ impl GroupParse for Term {
 }
 impl GroupParse for Type {
     const RULE: Rule = Rule::r#type;
-    fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Type, ParserError> {
+    fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Self, ParserError> {
         match p.as_rule() {
             Rule::const_type => Ok(StringTy::<Subtypes>::new()
                 .with_bot()
                 .with_nat()
                 .with_unit()
                 .with_bool()
-                .from_pair(p)?),
+                .from_pair(&p)?),
             Rule::top_type_star => Ok(TopStar::from_pair(p, ())?.to_top().into()),
             Rule::top_type => Ok(Top::from_pair(p, ())?.into()),
             Rule::record_type => Ok(RecordTy::from_pair(p, ())?.into()),
@@ -82,7 +82,7 @@ impl GroupParse for Type {
             .into()),
         }
     }
-    fn from_pair_leftrec(p: Pair<'_, Rule>, ty: Type) -> Result<Type, ParserError> {
+    fn from_pair_leftrec(p: Pair<'_, Rule>, ty: Self) -> Result<Self, ParserError> {
         match p.as_rule() {
             Rule::fun_type => Ok(Fun::from_pair(p, ty)?.into()),
             r => Err(UnexpectedRule::new(&format!("{r:?}"), "Left Recursive Type").into()),

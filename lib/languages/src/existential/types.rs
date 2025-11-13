@@ -37,7 +37,7 @@ impl TypeTrait for Type {}
 impl TypeGroup for Type {
     type Lang = Existential;
     fn into_unit(self) -> Result<Unit<Existential>, TypeMismatch> {
-        if let Type::Unit(u) = self {
+        if let Self::Unit(u) = self {
             Ok(u)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Unit".to_owned()))
@@ -45,7 +45,7 @@ impl TypeGroup for Type {
     }
 
     fn into_nat(self) -> Result<Nat<Existential>, TypeMismatch> {
-        if let Type::Nat(nat) = self {
+        if let Self::Nat(nat) = self {
             Ok(nat)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Nat".to_owned()))
@@ -53,7 +53,7 @@ impl TypeGroup for Type {
     }
 
     fn into_bool(self) -> Result<Bool<Existential>, TypeMismatch> {
-        if let Type::Bool(b) = self {
+        if let Self::Bool(b) = self {
             Ok(b)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Bool".to_owned()))
@@ -61,7 +61,7 @@ impl TypeGroup for Type {
     }
 
     fn into_fun(self) -> Result<Fun<Existential>, TypeMismatch> {
-        if let Type::Fun(fun) = self {
+        if let Self::Fun(fun) = self {
             Ok(fun)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Function".to_owned()))
@@ -69,7 +69,7 @@ impl TypeGroup for Type {
     }
 
     fn into_exists(self) -> Result<Exists<Existential>, TypeMismatch> {
-        if let Type::Exists(ex) = self {
+        if let Self::Exists(ex) = self {
             Ok(ex)
         } else {
             Err(TypeMismatch::new(
@@ -80,7 +80,7 @@ impl TypeGroup for Type {
     }
 
     fn into_record(self) -> Result<Record<Existential>, TypeMismatch> {
-        if let Type::Record(rec) = self {
+        if let Self::Record(rec) = self {
             Ok(rec)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Record".to_owned()))

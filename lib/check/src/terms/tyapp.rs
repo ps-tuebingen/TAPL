@@ -49,7 +49,7 @@ where
             }
 
             let ty = forall.ty.subst_type(&forall.var, &arg_norm);
-            let conc = TypingConclusion::new(env.clone(), self.clone(), Rc::unwrap_or_clone(ty));
+            let conc = TypingConclusion::new(env, self.clone(), Rc::unwrap_or_clone(ty));
             let deriv = TypingDerivation::tyapp(conc, premises);
             Ok(deriv.into())
         } else if let Ok(forall) = fun_norm.clone().into_forall_bounded() {

@@ -13,9 +13,9 @@ where
 
     const RULE: Rule = Rule::op_app_type;
 
-    fn from_pair(p: Pair<'_, Rule>, ty: Self::LeftRecArg) -> Result<OpApp<Lang>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, ty: Self::LeftRecArg) -> Result<Self, ParserError> {
         let arg_rule = pair_to_n_inner(p, vec!["Type"])?.remove(0);
         let arg = Lang::Type::from_pair(arg_rule, ())?;
-        Ok(OpApp::new(ty, arg))
+        Ok(Self::new(ty, arg))
     }
 }

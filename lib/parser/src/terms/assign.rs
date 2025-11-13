@@ -13,9 +13,9 @@ where
 
     const RULE: Rule = Rule::assign;
 
-    fn from_pair(p: Pair<'_, Rule>, t: Self::LeftRecArg) -> Result<Assign<Lang>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, t: Self::LeftRecArg) -> Result<Self, ParserError> {
         let term_rule = pair_to_n_inner(p, vec!["Assign Right hand side"])?.remove(0);
         let rhs = Lang::Term::from_pair(term_rule, ())?;
-        Ok(Assign::new(t, rhs))
+        Ok(Self::new(t, rhs))
     }
 }

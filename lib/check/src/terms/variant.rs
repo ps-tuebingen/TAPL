@@ -52,7 +52,7 @@ where
             .variants
             .get(&self.label)
             .cloned()
-            .ok_or(UndefinedLabel::new(&self.label))?;
+            .ok_or_else(|| UndefinedLabel::new(&self.label))?;
 
         if features.kinded {
             let term_res = term_ty_norm.check_kind(env.clone())?.into_kind()?;
@@ -64,7 +64,8 @@ where
         lb_ty.check_equal(&term_ty_norm)?;
 
         let conc = TypingConclusion::new(env, self.clone(), ty_norm);
-        let deriv = TypingDerivation::variant(conc, term_res);
+        premises.push(term_res);
+        let deriv = TypingDerivation::variant(conc, premises);
         Ok(deriv.into())
     }
 

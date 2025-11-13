@@ -31,12 +31,13 @@ where
         let arg_val: Lang::Value = arg_res.val();
 
         let body_subst = lam.body.subst(&lam.var, &arg_val.clone().into());
-        let next_step = EvalStep::app_abs(App::new(fun_val, arg_val), body_subst.clone());
+        let next_step = EvalStep::app_abs(Self::new(fun_val, arg_val), body_subst.clone());
 
-        let mut steps =
-            fun_res.congruence(&move |t| App::new(t, Rc::unwrap_or_clone(self.arg.clone())).into());
+        let mut steps = fun_res
+            .congruence(&move |t| Self::new(t, Rc::unwrap_or_clone(self.arg.clone())).into());
         steps.extend(
-            arg_res.congruence(&move |t| App::new(Rc::unwrap_or_clone(self.fun.clone()), t).into()),
+            arg_res
+                .congruence(&move |t| Self::new(Rc::unwrap_or_clone(self.fun.clone()), t).into()),
         );
         steps.push(next_step);
 

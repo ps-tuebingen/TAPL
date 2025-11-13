@@ -21,24 +21,24 @@ impl<Lang> LambdaSub<Lang>
 where
     Lang: Language,
 {
-    pub fn new<Ty, T>(v: &str, sup: Ty, bod: T) -> LambdaSub<Lang>
+    pub fn new<Ty, T>(v: &str, sup: Ty, bod: T) -> Self
     where
         Ty: Into<Lang::Type>,
         T: Into<Lang::Term>,
     {
-        LambdaSub {
+        Self {
             var: v.to_owned(),
             sup_ty: sup.into(),
             body: Rc::new(bod.into()),
         }
     }
 
-    pub fn new_unbounded<T>(v: &str, bod: T) -> LambdaSub<Lang>
+    pub fn new_unbounded<T>(v: &str, bod: T) -> Self
     where
         T: Into<Lang::Term>,
         Top<Lang>: Into<Lang::Type>,
     {
-        LambdaSub {
+        Self {
             var: v.to_owned(),
             sup_ty: Top::new_star().into(),
             body: Rc::new(bod.into()),
@@ -58,7 +58,7 @@ where
         if *v == self.var {
             self
         } else {
-            LambdaSub {
+            Self {
                 var: self.var,
                 sup_ty: self.sup_ty,
                 body: self.body.subst(v, t),
@@ -76,13 +76,13 @@ where
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         let sup_subst = self.sup_ty.subst_type(v, ty);
         if *v == self.var {
-            LambdaSub {
+            Self {
                 var: self.var,
                 sup_ty: sup_subst,
                 body: self.body,
             }
         } else {
-            LambdaSub {
+            Self {
                 var: self.var,
                 sup_ty: sup_subst,
                 body: self.body.subst_type(v, ty),

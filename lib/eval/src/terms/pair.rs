@@ -14,7 +14,7 @@ impl<Lang> Eval for Pair<Lang>
 where
     Lang: Language,
     Lang::Term: Term + Eval<Lang = Lang>,
-    Pair<Lang>: Into<Lang::Term>,
+    Self: Into<Lang::Term>,
     PairVal<Lang>: Into<Lang::Value>,
 {
     type Lang = Lang;
@@ -26,9 +26,9 @@ where
         let snd_val = snd_res.val();
 
         let fst_steps = fst_res
-            .congruence(&move |t| Pair::new(t, Rc::unwrap_or_clone(self.snd.clone())).into());
+            .congruence(&move |t| Self::new(t, Rc::unwrap_or_clone(self.snd.clone())).into());
         let snd_steps = snd_res
-            .congruence(&move |t| Pair::new(Rc::unwrap_or_clone(self.fst.clone()), t).into());
+            .congruence(&move |t| Self::new(Rc::unwrap_or_clone(self.fst.clone()), t).into());
         let mut steps = fst_steps;
         steps.extend(snd_steps);
         let val = PairVal::<Lang>::new(fst_val, snd_val);

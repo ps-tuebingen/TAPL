@@ -16,24 +16,24 @@ impl<Lang> ExistsBounded<Lang>
 where
     Lang: Language,
 {
-    pub fn new<Ty1, Ty2>(v: &str, sup: Ty1, ty: Ty2) -> ExistsBounded<Lang>
+    pub fn new<Ty1, Ty2>(v: &str, sup: Ty1, ty: Ty2) -> Self
     where
         Ty1: Into<Lang::Type>,
         Ty2: Into<Lang::Type>,
     {
-        ExistsBounded {
+        Self {
             var: v.to_owned(),
             sup_ty: Rc::new(sup.into()),
             ty: Rc::new(ty.into()),
         }
     }
 
-    pub fn new_unbounded<Ty1>(v: &str, knd: Kind, ty: Ty1) -> ExistsBounded<Lang>
+    pub fn new_unbounded<Ty1>(v: &str, knd: Kind, ty: Ty1) -> Self
     where
         Ty1: Into<Lang::Type>,
         Top<Lang>: Into<Lang::Type>,
     {
-        ExistsBounded {
+        Self {
             var: v.to_owned(),
             sup_ty: Rc::new(Top::new(knd).into()),
             ty: Rc::new(ty.into()),
@@ -53,13 +53,13 @@ where
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         let sup_subst = self.sup_ty.subst_type(v, ty);
         if *v == self.var {
-            ExistsBounded {
+            Self {
                 var: self.var,
                 sup_ty: sup_subst,
                 ty: self.ty,
             }
         } else {
-            ExistsBounded {
+            Self {
                 var: self.var,
                 sup_ty: sup_subst,
                 ty: self.ty.subst_type(v, ty),

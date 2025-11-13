@@ -13,7 +13,7 @@ where
 
     const RULE: Rule = Rule::op_lambda_type;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<OpLambdaSub<Lang>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
         let mut inner = pair_to_n_inner(
             p,
             vec!["Op Lambda Var", "Op Lambda Annot", "Op Lambda Body"],
@@ -23,6 +23,6 @@ where
         let ty = Lang::Type::from_pair(ty_rule, ())?;
         let body_rule = inner.remove(0);
         let body = Lang::Type::from_pair(body_rule, ())?;
-        Ok(OpLambdaSub::new(var, ty, body))
+        Ok(Self::new(var, ty, body))
     }
 }

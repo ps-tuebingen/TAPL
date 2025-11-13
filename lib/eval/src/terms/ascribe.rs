@@ -12,15 +12,15 @@ use trace::{EvalStep, EvalTrace};
 impl<Lang> Eval for Ascribe<Lang>
 where
     Lang: Language,
-    Lang::Term: Term + Eval<Lang = Lang> + From<Ascribe<Lang>> + From<Lang::Value>,
+    Lang::Term: Term + Eval<Lang = Lang> + From<Self> + From<Lang::Value>,
 {
     type Lang = Lang;
 
     fn eval(self, env: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         let inner_res = self.term.clone().eval(env)?;
         let val = inner_res.val();
-        let last_step = EvalStep::ascribe(Ascribe::new(val.clone(), self.ty.clone()), val.clone());
-        let mut steps = inner_res.congruence(&move |t| Ascribe::new(t, self.ty.clone()).into());
+        let last_step = EvalStep::ascribe(Self::new(val.clone(), self.ty.clone()), val.clone());
+        let mut steps = inner_res.congruence(&move |t| Self::new(t, self.ty.clone()).into());
         steps.push(last_step);
         Ok(EvalTrace::<Lang>::new(steps, val))
     }

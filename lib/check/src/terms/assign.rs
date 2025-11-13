@@ -63,7 +63,7 @@ where
         }
         lhs_ref.ty.check_equal(&rhs_norm)?;
 
-        let conc = TypingConclusion::new(env.clone(), self.clone(), UnitTy::<Lang>::new());
+        let conc = TypingConclusion::new(env, self.clone(), UnitTy::<Lang>::new());
         let deriv = TypingDerivation::assign(conc, premises);
         Ok(deriv.into())
     }

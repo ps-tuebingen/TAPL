@@ -11,7 +11,7 @@ where
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         let mut def_strs = vec![];
         let old_inc = conf.include_envs;
-        for def in self.def_derivations.iter() {
+        for def in &self.def_derivations {
             def_strs.push(def.to_latex(conf));
             conf.include_envs = old_inc;
         }

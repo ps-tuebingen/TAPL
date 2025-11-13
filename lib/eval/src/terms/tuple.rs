@@ -14,7 +14,7 @@ impl<Lang> Eval for Tuple<Lang>
 where
     Lang: Language,
     Lang::Term: Term + Eval<Lang = Lang>,
-    Tuple<Lang>: Into<Lang::Term>,
+    Self: Into<Lang::Term>,
     TupleVal<Lang>: Into<Lang::Value>,
 {
     type Lang = Lang;
@@ -32,7 +32,7 @@ where
             steps.extend(term_res.congruence(&move |t| {
                 let mut cong_mut = cong_vals.clone();
                 cong_mut[ind] = t;
-                Tuple::new(cong_mut).into()
+                Self::new(cong_mut).into()
             }));
 
             old_terms[ind] = val.into();

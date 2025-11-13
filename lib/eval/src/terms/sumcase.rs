@@ -18,7 +18,7 @@ impl<Lang> Eval for SumCase<Lang>
 where
     Lang: Language,
     Lang::Term: Term + Eval<Lang = Lang> + From<Lang::Value>,
-    SumCase<Lang>: Into<Lang::Term>,
+    Self: Into<Lang::Term>,
 {
     type Lang = Lang;
 
@@ -32,7 +32,7 @@ where
                 .clone()
                 .subst(&self.left_var, &((*left_val.left_val).into()));
             let next_step = EvalStep::sumcase_left(
-                SumCase::new(
+                Self::new(
                     bound_val,
                     &self.left_var,
                     Rc::unwrap_or_clone(self.left_term.clone()),
@@ -52,7 +52,7 @@ where
                 .clone()
                 .subst(&self.right_var, &((*right_val.right_val).into()));
             let next_step = EvalStep::sumcase_right(
-                SumCase::new(
+                Self::new(
                     bound_val,
                     &self.left_var,
                     Rc::unwrap_or_clone(self.left_term.clone()),
@@ -71,7 +71,7 @@ where
         };
 
         let mut steps = bound_res.congruence(&move |t| {
-            SumCase::new(
+            Self::new(
                 t,
                 &self.left_var,
                 Rc::unwrap_or_clone(self.left_term.clone()),

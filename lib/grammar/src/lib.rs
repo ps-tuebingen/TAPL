@@ -64,27 +64,27 @@ impl fmt::Display for LanguageGrammar {
 impl fmt::Display for LanguageRules {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "Typing Rules")?;
-        for rule in self.typing.iter() {
+        for rule in &self.typing {
             writeln!(f, "{rule}")?;
         }
 
         writeln!(f, "Subtyping Rules")?;
-        for rule in self.subtyping.iter() {
+        for rule in &self.subtyping {
             writeln!(f, "{rule}")?;
         }
 
         writeln!(f, "Kinding Rules")?;
-        for rule in self.kinding.iter() {
+        for rule in &self.kinding {
             writeln!(f, "{rule}")?;
         }
 
         writeln!(f, "Normalizing Rules")?;
-        for rule in self.normalizing.iter() {
+        for rule in &self.normalizing {
             writeln!(f, "{rule}")?;
         }
 
         writeln!(f, "Evaluation Rules")?;
-        for rule in self.eval.iter() {
+        for rule in &self.eval {
             writeln!(f, "{rule}")?;
         }
         Ok(())

@@ -13,7 +13,7 @@ where
 
     const RULE: Rule = Rule::raise_term;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Raise<Lang>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
         let mut inner = pair_to_n_inner(
             p,
             vec![
@@ -28,6 +28,6 @@ where
         let ex_ty = Lang::Type::from_pair(ex_ty_rule, ())?;
         let catch_rule = inner.remove(0);
         let catch_term = Lang::Term::from_pair(catch_rule, ())?;
-        Ok(Raise::new(catch_term, cont_ty, ex_ty))
+        Ok(Self::new(catch_term, cont_ty, ex_ty))
     }
 }

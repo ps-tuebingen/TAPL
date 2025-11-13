@@ -12,7 +12,7 @@ impl<Lang> Subtypecheck for TypeVariable<Lang>
 where
     Lang: Language,
     Top<Lang>: Into<Lang::Type>,
-    TypeVariable<Lang>: Into<Lang::Type>,
+    Self: Into<Lang::Type>,
     Lang::Type: Normalize<Lang = Lang>,
 {
     type Lang = Lang;
@@ -76,7 +76,8 @@ where
 {
     type Lang = Lang;
     fn normalize(self, env: Environment<Self::Lang>) -> Derivation<Self::Lang> {
-        NormalizingDerivation::empty(env.get_tyvar_super(&self.v).unwrap_or(self.into())).into()
+        NormalizingDerivation::empty(env.get_tyvar_super(&self.v).unwrap_or_else(|_| self.into()))
+            .into()
     }
 
     fn rules() -> HashSet<DerivationRule> {

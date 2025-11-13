@@ -15,11 +15,11 @@ impl<Lang> Record<Lang>
 where
     Lang: Language,
 {
-    pub fn new<Ty1>(recs: HashMap<Label, Ty1>) -> Record<Lang>
+    #[must_use] pub fn new<Ty1>(recs: HashMap<Label, Ty1>) -> Self
     where
         Ty1: Into<Lang::Type>,
     {
-        Record {
+        Self {
             records: recs.into_iter().map(|(lb, ty)| (lb, ty.into())).collect(),
         }
     }
@@ -35,7 +35,7 @@ where
     type Target = Self;
     type Lang = Lang;
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
-        Record {
+        Self {
             records: self
                 .records
                 .into_iter()

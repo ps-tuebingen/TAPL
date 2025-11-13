@@ -13,7 +13,7 @@ where
 
     const RULE: Rule = Rule::variable;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Self, ParserError> {
-        Ok(Variable::new(p.as_str().trim()))
+    fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
+        Ok(Self::new(p.as_str().trim()))
     }
 }

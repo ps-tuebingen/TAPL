@@ -14,7 +14,7 @@ impl<Lang> Eval for Pack<Lang>
 where
     Lang: Language,
     Lang::Term: Term + Eval<Lang = Lang>,
-    Pack<Lang>: Into<Lang::Term>,
+    Self: Into<Lang::Term>,
     PackVal<Lang>: Into<Lang::Value>,
 {
     type Lang = Lang;
@@ -26,7 +26,7 @@ where
         let val = PackVal::<Lang>::new(self.inner_ty.clone(), term_val, self.outer_ty.clone());
 
         let steps = term_res.congruence(&move |t| {
-            Pack::new(self.inner_ty.clone(), t, self.outer_ty.clone()).into()
+            Self::new(self.inner_ty.clone(), t, self.outer_ty.clone()).into()
         });
 
         Ok(EvalTrace::new(steps, val))

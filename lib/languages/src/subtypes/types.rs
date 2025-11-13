@@ -41,14 +41,14 @@ impl TypeTrait for Type {}
 impl TypeGroup for Type {
     type Lang = Subtypes;
     fn into_unit(self) -> Result<Unit<Subtypes>, TypeMismatch> {
-        if let Type::Unit(u) = self {
+        if let Self::Unit(u) = self {
             Ok(u)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Unit".to_owned()))
         }
     }
     fn into_top(self) -> Result<Top<Subtypes>, TypeMismatch> {
-        if let Type::Top(top) = self {
+        if let Self::Top(top) = self {
             Ok(top)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Top".to_owned()))
@@ -56,7 +56,7 @@ impl TypeGroup for Type {
     }
 
     fn into_bot(self) -> Result<Bot<Subtypes>, TypeMismatch> {
-        if let Type::Bot(bot) = self {
+        if let Self::Bot(bot) = self {
             Ok(bot)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Bot".to_owned()))
@@ -64,7 +64,7 @@ impl TypeGroup for Type {
     }
 
     fn into_fun(self) -> Result<Fun<Subtypes>, TypeMismatch> {
-        if let Type::Fun(fun) = self {
+        if let Self::Fun(fun) = self {
             Ok(fun)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Function".to_owned()))
@@ -72,7 +72,7 @@ impl TypeGroup for Type {
     }
 
     fn into_record(self) -> Result<Record<Subtypes>, TypeMismatch> {
-        if let Type::Record(rec) = self {
+        if let Self::Record(rec) = self {
             Ok(rec)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Record".to_owned()))
@@ -80,7 +80,7 @@ impl TypeGroup for Type {
     }
 
     fn into_variant(self) -> Result<Variant<Subtypes>, TypeMismatch> {
-        if let Type::Variant(var) = self {
+        if let Self::Variant(var) = self {
             Ok(var)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Variant".to_owned()))
@@ -88,7 +88,7 @@ impl TypeGroup for Type {
     }
 
     fn into_list(self) -> Result<List<Subtypes>, TypeMismatch> {
-        if let Type::List(list) = self {
+        if let Self::List(list) = self {
             Ok(list)
         } else {
             Err(TypeMismatch::new(self.to_string(), "List".to_owned()))
@@ -96,7 +96,7 @@ impl TypeGroup for Type {
     }
 
     fn into_ref(self) -> Result<Reference<Subtypes>, TypeMismatch> {
-        if let Type::Ref(reft) = self {
+        if let Self::Ref(reft) = self {
             Ok(reft)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Reference".to_owned()))
@@ -104,7 +104,7 @@ impl TypeGroup for Type {
     }
 
     fn into_source(self) -> Result<Source<Subtypes>, TypeMismatch> {
-        if let Type::Source(src) = self {
+        if let Self::Source(src) = self {
             Ok(src)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Source".to_owned()))
@@ -112,7 +112,7 @@ impl TypeGroup for Type {
     }
 
     fn into_sink(self) -> Result<Sink<Subtypes>, TypeMismatch> {
-        if let Type::Sink(sink) = self {
+        if let Self::Sink(sink) = self {
             Ok(sink)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Sink".to_owned()))
@@ -120,7 +120,7 @@ impl TypeGroup for Type {
     }
 
     fn into_nat(self) -> Result<Nat<Subtypes>, TypeMismatch> {
-        if let Type::Nat(nat) = self {
+        if let Self::Nat(nat) = self {
             Ok(nat)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Nat".to_owned()))
@@ -128,7 +128,7 @@ impl TypeGroup for Type {
     }
 
     fn into_bool(self) -> Result<Bool<Subtypes>, TypeMismatch> {
-        if let Type::Bool(b) = self {
+        if let Self::Bool(b) = self {
             Ok(b)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Bool".to_owned()))

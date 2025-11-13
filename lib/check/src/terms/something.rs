@@ -40,7 +40,7 @@ where
             ty_res.ret_kind().into_star()?;
             premises.push(ty_res.into());
         }
-        let conc = TypingConclusion::new(env, self.clone(), Optional::new(ty_norm.clone()));
+        let conc = TypingConclusion::new(env, self.clone(), Optional::new(ty_norm));
         let deriv = TypingDerivation::something(conc, premises);
         Ok(deriv.into())
     }

@@ -18,7 +18,7 @@ where
     type Lang = Lang;
 
     fn check(&self, env: Environment<Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
-        let conc = TypingConclusion::new(env.clone(), self.clone(), Nat::new());
+        let conc = TypingConclusion::new(env, self.clone(), Nat::new());
         Ok(TypingDerivation::num(conc).into())
     }
 

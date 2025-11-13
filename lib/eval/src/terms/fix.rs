@@ -28,7 +28,7 @@ where
         let term_val = term_res.val();
         let lam_val = term_val.into_lambda()?;
 
-        let mut steps = term_res.congruence(&move |t| Fix::new(t).into());
+        let mut steps = term_res.congruence(&move |t| Self::new(t).into());
 
         let body_subst = lam_val.body.subst(&lam_val.var, &self.into());
         let body_res = body_subst.eval(env)?;

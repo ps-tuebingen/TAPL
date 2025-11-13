@@ -8,30 +8,30 @@ pub enum Kind {
 }
 
 impl Kind {
-    pub fn abs(self) -> Kind {
-        Kind::Arrow(Rc::new(Kind::Star), Rc::new(self))
+    #[must_use] pub fn abs(self) -> Self {
+        Self::Arrow(Rc::new(Self::Star), Rc::new(self))
     }
 
-    pub fn into_star(self) -> Result<Kind, KindMismatch> {
-        if let Kind::Star = self {
+    pub fn into_star(self) -> Result<Self, KindMismatch> {
+        if self == Self::Star {
             Ok(self)
         } else {
-            Err(KindMismatch::new(self.to_string(), Kind::Star.to_string()))
+            Err(KindMismatch::new(self.to_string(), Self::Star.to_string()))
         }
     }
 
-    pub fn into_arrow(self) -> Result<(Kind, Kind), KindMismatch> {
-        if let Kind::Arrow(from, to) = self {
+    pub fn into_arrow(self) -> Result<(Self, Self), KindMismatch> {
+        if let Self::Arrow(from, to) = self {
             Ok((Rc::unwrap_or_clone(from), Rc::unwrap_or_clone(to)))
         } else {
             Err(KindMismatch::new(
                 self.to_string(),
-                Kind::Arrow(Rc::new(Kind::Star), Rc::new(Kind::Star)).to_string(),
+                Self::Arrow(Rc::new(Self::Star), Rc::new(Self::Star)).to_string(),
             ))
         }
     }
 
-    pub fn check_equal(&self, other: &Kind) -> Result<(), KindMismatch> {
+    pub fn check_equal(&self, other: &Self) -> Result<(), KindMismatch> {
         if *self == *other {
             Ok(())
         } else {
@@ -46,8 +46,8 @@ impl Kind {
 impl fmt::Display for Kind {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Kind::Star => f.write_str("*"),
-            Kind::Arrow(from, to) => write!(f, "({from}) => ({to})"),
+            Self::Star => f.write_str("*"),
+            Self::Arrow(from, to) => write!(f, "({from}) => ({to})"),
         }
     }
 }

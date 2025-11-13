@@ -15,11 +15,11 @@ impl<Lang> UntypedLambda<Lang>
 where
     Lang: Language,
 {
-    pub fn new<T1>(v: &str, bd: T1) -> UntypedLambda<Lang>
+    pub fn new<T1>(v: &str, bd: T1) -> Self
     where
         T1: Into<Lang::Term>,
     {
-        UntypedLambda {
+        Self {
             var: v.to_owned(),
             body: bd.into(),
         }
@@ -39,8 +39,8 @@ impl<Lang> From<UntypedLambda<Lang>> for UntypedLambdaT<Lang>
 where
     Lang: Language,
 {
-    fn from(lam: UntypedLambda<Lang>) -> UntypedLambdaT<Lang> {
-        UntypedLambdaT::new(&lam.var, lam.body)
+    fn from(lam: UntypedLambda<Lang>) -> Self {
+        Self::new(&lam.var, lam.body)
     }
 }
 

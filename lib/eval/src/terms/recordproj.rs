@@ -17,7 +17,7 @@ impl<Lang> Eval for RecordProj<Lang>
 where
     Lang: Language,
     Lang::Term: Term + Eval<Lang = Lang>,
-    RecordProj<Lang>: Into<Lang::Term>,
+    Self: Into<Lang::Term>,
 {
     type Lang = Lang;
 
@@ -29,12 +29,11 @@ where
             .records
             .get(&self.label)
             .cloned()
-            .ok_or(UndefinedLabel::new(&self.label))?;
+            .ok_or_else(|| UndefinedLabel::new(&self.label))?;
 
-        let last_step =
-            EvalStep::recordproj(RecordProj::new(val.clone(), &self.label), val.clone());
+        let last_step = EvalStep::recordproj(Self::new(val.clone(), &self.label), val.clone());
 
-        let mut steps = term_res.congruence(&move |t| RecordProj::new(t, &self.label).into());
+        let mut steps = term_res.congruence(&move |t| Self::new(t, &self.label).into());
         steps.push(last_step);
         Ok(EvalTrace::<Lang>::new(steps, val))
     }

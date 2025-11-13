@@ -30,7 +30,7 @@ impl TypeTrait for Type {}
 impl TypeGroup for Type {
     type Lang = TypedArithmetic;
     fn into_nat(self) -> Result<Nat<TypedArithmetic>, TypeMismatch> {
-        if let Type::Nat(nat) = self {
+        if let Self::Nat(nat) = self {
             Ok(nat)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Nat".to_owned()))
@@ -38,7 +38,7 @@ impl TypeGroup for Type {
     }
 
     fn into_bool(self) -> Result<Bool<TypedArithmetic>, TypeMismatch> {
-        if let Type::Bool(b) = self {
+        if let Self::Bool(b) = self {
             Ok(b)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Bool".to_owned()))

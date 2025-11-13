@@ -42,7 +42,7 @@ impl TypeTrait for Type {}
 impl TypeGroup for Type {
     type Lang = FOmega;
     fn into_fun(self) -> Result<Fun<FOmega>, TypeMismatch> {
-        if let Type::Fun(fun) = self {
+        if let Self::Fun(fun) = self {
             Ok(fun)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Function".to_owned()))
@@ -50,7 +50,7 @@ impl TypeGroup for Type {
     }
 
     fn into_forall(self) -> Result<Forall<FOmega>, TypeMismatch> {
-        if let Type::Forall(forall) = self {
+        if let Self::Forall(forall) = self {
             Ok(forall)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Universal".to_owned()))
@@ -58,7 +58,7 @@ impl TypeGroup for Type {
     }
 
     fn into_oplambda(self) -> Result<OpLambda<FOmega>, TypeMismatch> {
-        if let Type::OpLambda(lam) = self {
+        if let Self::OpLambda(lam) = self {
             Ok(lam)
         } else {
             Err(TypeMismatch::new(self.to_string(), "OpLambda".to_owned()))
@@ -66,7 +66,7 @@ impl TypeGroup for Type {
     }
 
     fn into_opapp(self) -> Result<OpApp<FOmega>, TypeMismatch> {
-        if let Type::OpApp(app) = self {
+        if let Self::OpApp(app) = self {
             Ok(app)
         } else {
             Err(TypeMismatch::new(self.to_string(), "OpApp".to_owned()))
@@ -74,7 +74,7 @@ impl TypeGroup for Type {
     }
 
     fn into_exists(self) -> Result<Exists<FOmega>, TypeMismatch> {
-        if let Type::Exists(ex) = self {
+        if let Self::Exists(ex) = self {
             Ok(ex)
         } else {
             Err(TypeMismatch::new(
@@ -85,7 +85,7 @@ impl TypeGroup for Type {
     }
 
     fn into_record(self) -> Result<Record<FOmega>, TypeMismatch> {
-        if let Type::Record(rec) = self {
+        if let Self::Record(rec) = self {
             Ok(rec)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Record".to_owned()))
@@ -93,7 +93,7 @@ impl TypeGroup for Type {
     }
 
     fn into_bool(self) -> Result<Bool<FOmega>, TypeMismatch> {
-        if let Type::Bool(b) = self {
+        if let Self::Bool(b) = self {
             Ok(b)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Bool".to_owned()))
@@ -101,7 +101,7 @@ impl TypeGroup for Type {
     }
 
     fn into_unit(self) -> Result<Unit<FOmega>, TypeMismatch> {
-        if let Type::Unit(u) = self {
+        if let Self::Unit(u) = self {
             Ok(u)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Unit".to_owned()))
@@ -109,7 +109,7 @@ impl TypeGroup for Type {
     }
 
     fn into_nat(self) -> Result<Nat<FOmega>, TypeMismatch> {
-        if let Type::Nat(nat) = self {
+        if let Self::Nat(nat) = self {
             Ok(nat)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Nat".to_owned()))

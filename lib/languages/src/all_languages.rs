@@ -26,70 +26,78 @@ pub enum AllLanguages {
 }
 
 impl AllLanguages {
+    /// Describe the language
+    #[must_use]
     pub fn describe(&self) -> &str {
         match self {
-            AllLanguages::UntypedArithmetic => UntypedArithmetic.describe(),
-            AllLanguages::UntypedLambda => UntypedLambda.describe(),
-            AllLanguages::TypedArithmetic => TypedArithmetic.describe(),
-            AllLanguages::Stlc => Stlc.describe(),
-            AllLanguages::Exceptions => Exceptions.describe(),
-            AllLanguages::References => References.describe(),
-            AllLanguages::Existential => Existential.describe(),
-            AllLanguages::Recursive => Recursive.describe(),
-            AllLanguages::Subtypes => Subtypes.describe(),
-            AllLanguages::SystemF => SystemF.describe(),
-            AllLanguages::BoundedQuantification => BoundedQuantification.describe(),
-            AllLanguages::LambdaOmega => LambdaOmega.describe(),
-            AllLanguages::FOmega => FOmega.describe(),
-            AllLanguages::FOmegaSub => FOmegaSub.describe(),
+            Self::UntypedArithmetic => UntypedArithmetic.describe(),
+            Self::UntypedLambda => UntypedLambda.describe(),
+            Self::TypedArithmetic => TypedArithmetic.describe(),
+            Self::Stlc => Stlc.describe(),
+            Self::Exceptions => Exceptions.describe(),
+            Self::References => References.describe(),
+            Self::Existential => Existential.describe(),
+            Self::Recursive => Recursive.describe(),
+            Self::Subtypes => Subtypes.describe(),
+            Self::SystemF => SystemF.describe(),
+            Self::BoundedQuantification => BoundedQuantification.describe(),
+            Self::LambdaOmega => LambdaOmega.describe(),
+            Self::FOmega => FOmega.describe(),
+            Self::FOmegaSub => FOmegaSub.describe(),
         }
     }
 
+    /// Get the language grammar
+    #[must_use]
     pub fn grammars(&self) -> LanguageGrammar {
         match self {
-            AllLanguages::UntypedArithmetic => UntypedArithmetic::grammars(),
-            AllLanguages::UntypedLambda => UntypedLambda::grammars(),
-            AllLanguages::TypedArithmetic => TypedArithmetic::grammars(),
-            AllLanguages::Stlc => Stlc::grammars(),
-            AllLanguages::Exceptions => Exceptions::grammars(),
-            AllLanguages::References => References::grammars(),
-            AllLanguages::Existential => Existential::grammars(),
-            AllLanguages::Recursive => Recursive::grammars(),
-            AllLanguages::Subtypes => Subtypes::grammars(),
-            AllLanguages::SystemF => SystemF::grammars(),
-            AllLanguages::BoundedQuantification => BoundedQuantification::grammars(),
-            AllLanguages::LambdaOmega => LambdaOmega::grammars(),
-            AllLanguages::FOmega => FOmega::grammars(),
-            AllLanguages::FOmegaSub => FOmegaSub::grammars(),
+            Self::UntypedArithmetic => UntypedArithmetic::grammars(),
+            Self::UntypedLambda => UntypedLambda::grammars(),
+            Self::TypedArithmetic => TypedArithmetic::grammars(),
+            Self::Stlc => Stlc::grammars(),
+            Self::Exceptions => Exceptions::grammars(),
+            Self::References => References::grammars(),
+            Self::Existential => Existential::grammars(),
+            Self::Recursive => Recursive::grammars(),
+            Self::Subtypes => Subtypes::grammars(),
+            Self::SystemF => SystemF::grammars(),
+            Self::BoundedQuantification => BoundedQuantification::grammars(),
+            Self::LambdaOmega => LambdaOmega::grammars(),
+            Self::FOmega => FOmega::grammars(),
+            Self::FOmegaSub => FOmegaSub::grammars(),
         }
     }
+
+    /// Get language rules of the language
+    #[must_use]
     pub fn rules(&self) -> LanguageRules {
         match self {
-            AllLanguages::UntypedArithmetic => UntypedArithmetic::rules(),
-            AllLanguages::UntypedLambda => UntypedLambda::rules(),
-            AllLanguages::TypedArithmetic => TypedArithmetic::rules(),
-            AllLanguages::Stlc => Stlc::rules(),
-            AllLanguages::Exceptions => Exceptions::rules(),
-            AllLanguages::References => References::rules(),
-            AllLanguages::Existential => Existential::rules(),
-            AllLanguages::Recursive => Recursive::rules(),
-            AllLanguages::Subtypes => Subtypes::rules(),
-            AllLanguages::SystemF => SystemF::rules(),
-            AllLanguages::BoundedQuantification => BoundedQuantification::rules(),
-            AllLanguages::LambdaOmega => LambdaOmega::rules(),
-            AllLanguages::FOmega => FOmega::rules(),
-            AllLanguages::FOmegaSub => FOmegaSub::rules(),
+            Self::UntypedArithmetic => UntypedArithmetic::rules(),
+            Self::UntypedLambda => UntypedLambda::rules(),
+            Self::TypedArithmetic => TypedArithmetic::rules(),
+            Self::Stlc => Stlc::rules(),
+            Self::Exceptions => Exceptions::rules(),
+            Self::References => References::rules(),
+            Self::Existential => Existential::rules(),
+            Self::Recursive => Recursive::rules(),
+            Self::Subtypes => Subtypes::rules(),
+            Self::SystemF => SystemF::rules(),
+            Self::BoundedQuantification => BoundedQuantification::rules(),
+            Self::LambdaOmega => LambdaOmega::rules(),
+            Self::FOmega => FOmega::rules(),
+            Self::FOmegaSub => FOmegaSub::rules(),
         }
     }
 
-    pub fn is_typed(&self) -> bool {
-        !matches!(
-            self,
-            AllLanguages::UntypedArithmetic | AllLanguages::UntypedLambda
-        )
+    /// Is the language typed
+    #[must_use]
+    pub const fn is_typed(&self) -> bool {
+        !matches!(self, Self::UntypedArithmetic | Self::UntypedLambda)
     }
 
-    pub fn name(&self) -> &'static str {
+    /// Get the language name
+    #[must_use]
+    pub const fn name(&self) -> &'static str {
         match self {
             Self::UntypedArithmetic => "UntypedArithmetic",
             Self::UntypedLambda => "UntypedLambda",
@@ -113,20 +121,20 @@ impl FromStr for AllLanguages {
     type Err = UndefinedLanguage;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_lowercase().trim() {
-            "untyped-arithmetic" => Ok(AllLanguages::UntypedArithmetic),
-            "untyped-lambda" => Ok(AllLanguages::UntypedLambda),
-            "typed-arithmetic" => Ok(AllLanguages::TypedArithmetic),
-            "stlc" => Ok(AllLanguages::Stlc),
-            "references" => Ok(AllLanguages::References),
-            "exceptions" => Ok(AllLanguages::Exceptions),
-            "subtypes" => Ok(AllLanguages::Subtypes),
-            "recursive" => Ok(AllLanguages::Recursive),
-            "existential" => Ok(AllLanguages::Existential),
-            "system-f" => Ok(AllLanguages::SystemF),
-            "bounded-quantification" => Ok(AllLanguages::BoundedQuantification),
-            "lambda-omega" => Ok(AllLanguages::LambdaOmega),
-            "f-omega" => Ok(AllLanguages::FOmega),
-            "f-omega-sub" => Ok(AllLanguages::FOmegaSub),
+            "untyped-arithmetic" => Ok(Self::UntypedArithmetic),
+            "untyped-lambda" => Ok(Self::UntypedLambda),
+            "typed-arithmetic" => Ok(Self::TypedArithmetic),
+            "stlc" => Ok(Self::Stlc),
+            "references" => Ok(Self::References),
+            "exceptions" => Ok(Self::Exceptions),
+            "subtypes" => Ok(Self::Subtypes),
+            "recursive" => Ok(Self::Recursive),
+            "existential" => Ok(Self::Existential),
+            "system-f" => Ok(Self::SystemF),
+            "bounded-quantification" => Ok(Self::BoundedQuantification),
+            "lambda-omega" => Ok(Self::LambdaOmega),
+            "f-omega" => Ok(Self::FOmega),
+            "f-omega-sub" => Ok(Self::FOmegaSub),
             _ => Err(UndefinedLanguage::new(s)),
         }
     }

@@ -19,12 +19,12 @@ impl<Lang> Unfold<Lang>
 where
     Lang: Language,
 {
-    pub fn new<T1, Ty1>(ty: Ty1, t: T1) -> Unfold<Lang>
+    pub fn new<T1, Ty1>(ty: Ty1, t: T1) -> Self
     where
         T1: Into<Lang::Term>,
         Ty1: Into<Lang::Type>,
     {
-        Unfold {
+        Self {
             ty: ty.into(),
             term: Rc::new(t.into()),
         }
@@ -40,7 +40,7 @@ where
     type Target = Self;
     type Lang = Lang;
     fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
-        Unfold {
+        Self {
             ty: self.ty,
             term: self.term.subst(v, t),
         }
@@ -54,7 +54,7 @@ where
     type Target = Self;
     type Lang = Lang;
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
-        Unfold {
+        Self {
             ty: self.ty.subst_type(v, ty),
             term: self.term.subst_type(v, ty),
         }

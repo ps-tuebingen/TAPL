@@ -15,7 +15,7 @@ impl<Lang> Eval for ListCase<Lang>
 where
     Lang: Language,
     Lang::Term: Eval<Lang = Lang> + From<Lang::Value>,
-    ListCase<Lang>: Into<Lang::Term>,
+    Self: Into<Lang::Term>,
 {
     type Lang = Lang;
 
@@ -25,7 +25,7 @@ where
 
         let (res_steps, val) = if bound_val.clone().into_nil().is_ok() {
             let next_step = EvalStep::listcase_nil(
-                ListCase::new(
+                Self::new(
                     bound_val,
                     Rc::unwrap_or_clone(self.nil_rhs.clone()),
                     &self.cons_fst,
@@ -46,7 +46,7 @@ where
                 .subst(&self.cons_fst, &((*cons.head).into()))
                 .subst(&self.cons_rst, &((*cons.tail).into()));
             let next_step = EvalStep::listcase_cons(
-                ListCase::new(
+                Self::new(
                     bound_val,
                     Rc::unwrap_or_clone(self.nil_rhs.clone()),
                     &self.cons_fst,
@@ -65,7 +65,7 @@ where
         };
 
         let mut steps = bound_res.congruence(&move |t| {
-            ListCase::new(
+            Self::new(
                 t,
                 Rc::unwrap_or_clone(self.nil_rhs.clone()),
                 &self.cons_fst,

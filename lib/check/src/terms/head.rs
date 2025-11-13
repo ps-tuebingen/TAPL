@@ -42,8 +42,7 @@ where
 
         let list_ty = term_norm.into_list()?;
 
-        let conc =
-            TypingConclusion::new(env.clone(), self.clone(), Rc::unwrap_or_clone(list_ty.ty));
+        let conc = TypingConclusion::new(env, self.clone(), Rc::unwrap_or_clone(list_ty.ty));
         let deriv = TypingDerivation::head(conc, premises);
         Ok(deriv.into())
     }

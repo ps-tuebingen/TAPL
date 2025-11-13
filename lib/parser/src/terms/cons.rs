@@ -13,7 +13,7 @@ where
 
     const RULE: Rule = Rule::cons_term;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Cons<Lang>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
         let mut inner = pair_to_n_inner(
             p,
             vec!["Cons Type", "First Const Argument", "Second Cons Argument"],
@@ -28,6 +28,6 @@ where
         let snd_pair = inner.remove(0);
         let snd = Lang::Term::from_pair(snd_pair, ())?;
 
-        Ok(Cons::new(fst, snd, ty))
+        Ok(Self::new(fst, snd, ty))
     }
 }

@@ -34,7 +34,7 @@ impl GroupParse for Term {
         }
     }
 
-    fn from_pair_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Self, ParserError> {
+    fn from_pair_leftrec(p: Pair<'_, Rule>, t: Self) -> Result<Self, ParserError> {
         match p.as_rule() {
             Rule::record_proj => Ok(RecordProj::from_pair(p, t)?.into()),
             Rule::tyapp => Ok(TyApp::from_pair(p, t)?.into()),
@@ -51,7 +51,7 @@ impl GroupParse for Type {
         match p.as_rule() {
             Rule::const_type => Ok(StringTy::<BoundedQuantification>::new()
                 .with_nat()
-                .from_pair(p)?),
+                .from_pair(&p)?),
             Rule::top_type_star | Rule::top_type => Ok(Top::new_star().into()),
             Rule::forall_bounded_type => Ok(ForallBounded::from_pair(p, ())?.into()),
             Rule::forall_unbounded_type => Ok(ForallUnbounded::from_pair(p, ())?
@@ -68,7 +68,7 @@ impl GroupParse for Type {
         }
     }
 
-    fn from_pair_leftrec(p: Pair<'_, Rule>, ty: Type) -> Result<Type, ParserError> {
+    fn from_pair_leftrec(p: Pair<'_, Rule>, ty: Self) -> Result<Self, ParserError> {
         match p.as_rule() {
             Rule::fun_type => Ok(Fun::from_pair(p, ty)?.into()),
             r => Err(UnexpectedRule::new(&format!("{r:?}"), "Function Type").into()),

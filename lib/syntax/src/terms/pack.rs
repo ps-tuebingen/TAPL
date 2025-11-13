@@ -20,13 +20,13 @@ impl<Lang> Pack<Lang>
 where
     Lang: Language,
 {
-    pub fn new<Ty1, Ty2, T1>(inner: Ty1, t: T1, outer: Ty2) -> Pack<Lang>
+    pub fn new<Ty1, Ty2, T1>(inner: Ty1, t: T1, outer: Ty2) -> Self
     where
         Ty1: Into<Lang::Type>,
         Ty2: Into<Lang::Type>,
         T1: Into<Lang::Term>,
     {
-        Pack {
+        Self {
             inner_ty: inner.into(),
             term: Rc::new(t.into()),
             outer_ty: outer.into(),
@@ -43,7 +43,7 @@ where
     type Target = Self;
     type Lang = Lang;
     fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
-        Pack {
+        Self {
             inner_ty: self.inner_ty,
             term: self.term.subst(v, t),
             outer_ty: self.outer_ty,
@@ -58,7 +58,7 @@ where
     type Target = Self;
     type Lang = Lang;
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
-        Pack {
+        Self {
             inner_ty: self.inner_ty.subst_type(v, ty),
             term: self.term.subst_type(v, ty),
             outer_ty: self.outer_ty.subst_type(v, ty),

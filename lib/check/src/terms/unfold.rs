@@ -53,7 +53,7 @@ where
         ty_norm.check_equal(&term_ty_norm)?;
         let mu_ty = term_ty_norm.clone().into_mu()?;
         let ty = mu_ty.ty.subst_type(&mu_ty.var, &term_ty_norm);
-        let conc = TypingConclusion::new(env.clone(), self.clone(), Rc::unwrap_or_clone(ty));
+        let conc = TypingConclusion::new(env, self.clone(), Rc::unwrap_or_clone(ty));
         let deriv = TypingDerivation::unfold(conc, premises);
         Ok(deriv.into())
     }

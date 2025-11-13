@@ -18,11 +18,11 @@ impl<Lang> Ref<Lang>
 where
     Lang: Language,
 {
-    pub fn new<T1>(t: T1) -> Ref<Lang>
+    pub fn new<T1>(t: T1) -> Self
     where
         T1: Into<Lang::Term>,
     {
-        Ref {
+        Self {
             term: Rc::new(t.into()),
         }
     }
@@ -37,7 +37,7 @@ where
     type Target = Self;
     type Lang = Lang;
     fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
-        Ref {
+        Self {
             term: self.term.subst(v, t),
         }
     }
@@ -50,7 +50,7 @@ where
     type Target = Self;
     type Lang = Lang;
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
-        Ref {
+        Self {
             term: self.term.subst_type(v, ty),
         }
     }

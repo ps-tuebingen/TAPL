@@ -17,14 +17,14 @@ pub struct ConclusionRule {
 }
 
 impl ConclusionRule {
-    pub fn new<S1, S2, S3, S4>(env: S1, input: S2, separator: S3, output: S4) -> ConclusionRule
+    pub fn new<S1, S2, S3, S4>(env: S1, input: S2, separator: S3, output: S4) -> Self
     where
         S1: Into<Symbol>,
         S2: Into<Symbol>,
         S3: Into<Symbol>,
         S4: Into<Symbol>,
     {
-        ConclusionRule {
+        Self {
             env: env.into(),
             input: input.into(),
             separator: separator.into(),
@@ -34,49 +34,50 @@ impl ConclusionRule {
 
     /// Create a typing conclusion with input and output
     /// Gamma |-> input : output
-    pub fn typing<S1, S2>(input: S1, output: S2) -> ConclusionRule
+    pub fn typing<S1, S2>(input: S1, output: S2) -> Self
     where
         S1: Into<Symbol>,
         S2: Into<Symbol>,
     {
-        ConclusionRule::new(SpecialChar::Gamma, input, SpecialChar::Colon, output)
+        Self::new(SpecialChar::Gamma, input, SpecialChar::Colon, output)
     }
 
     /// Create a subtyping conclusion with input and output
     /// Gamma |-> input <: output
-    pub fn subtyping<S1, S2>(input: S1, output: S2) -> ConclusionRule
+    pub fn subtyping<S1, S2>(input: S1, output: S2) -> Self
     where
         S1: Into<Symbol>,
         S2: Into<Symbol>,
     {
-        ConclusionRule::new(SpecialChar::Gamma, input, SpecialChar::LessColon, output)
+        Self::new(SpecialChar::Gamma, input, SpecialChar::LessColon, output)
     }
 
     ///Create kinding conclusion with input and output
     ///Gamma |-> input :: output
-    pub fn kinding<S1, S2>(input: S1, output: S2) -> ConclusionRule
+    pub fn kinding<S1, S2>(input: S1, output: S2) -> Self
     where
         S1: Into<Symbol>,
         S2: Into<Symbol>,
     {
-        ConclusionRule::new(SpecialChar::Gamma, input, SpecialChar::DoubleColon, output)
+        Self::new(SpecialChar::Gamma, input, SpecialChar::DoubleColon, output)
     }
 
-    pub fn eval<S1, S2>(input: S1, output: S2) -> ConclusionRule
+    pub fn eval<S1, S2>(input: S1, output: S2) -> Self
     where
         S1: Into<Symbol>,
         S2: Into<Symbol>,
     {
-        ConclusionRule::new(SpecialChar::Gamma, input, SpecialChar::Mapsto, output)
+        Self::new(SpecialChar::Gamma, input, SpecialChar::Mapsto, output)
     }
 
     /// Change the environment of `self`
     /// env |-> self.input self.separator self.output
-    pub fn with_env<S>(self, env: S) -> ConclusionRule
+    #[must_use]
+    pub fn with_env<S>(self, env: S) -> Self
     where
         S: Into<Symbol>,
     {
-        ConclusionRule {
+        Self {
             env: env.into(),
             input: self.input,
             separator: self.separator,
@@ -85,11 +86,11 @@ impl ConclusionRule {
     }
 
     /// conclusion for input in Gamma
-    pub fn lookup_env<S>(input: S) -> ConclusionRule
+    pub fn lookup_env<S>(input: S) -> Self
     where
         S: Into<Symbol>,
     {
-        ConclusionRule::new(
+        Self::new(
             SpecialChar::Empty,
             input,
             SpecialChar::Element,

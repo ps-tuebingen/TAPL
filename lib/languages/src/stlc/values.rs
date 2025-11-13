@@ -35,7 +35,7 @@ impl ValueTrait for Value {
 
 impl ValueGroup for Value {
     fn into_lambda(self) -> Result<Lambda<Stlc>, ValueMismatch> {
-        if let Value::Lambda(lam) = self {
+        if let Self::Lambda(lam) = self {
             Ok(lam)
         } else {
             Err(ValueMismatch::new(self.to_string(), "Lambda".to_owned()))
@@ -43,7 +43,7 @@ impl ValueGroup for Value {
     }
 
     fn into_true(self) -> Result<True<Stlc>, ValueMismatch> {
-        if let Value::True(tru) = self {
+        if let Self::True(tru) = self {
             Ok(tru)
         } else {
             Err(ValueMismatch::new(self.to_string(), "True".to_owned()))
@@ -51,7 +51,7 @@ impl ValueGroup for Value {
     }
 
     fn into_false(self) -> Result<False<Stlc>, ValueMismatch> {
-        if let Value::False(fls) = self {
+        if let Self::False(fls) = self {
             Ok(fls)
         } else {
             Err(ValueMismatch::new(self.to_string(), "False".to_owned()))
@@ -59,7 +59,7 @@ impl ValueGroup for Value {
     }
 
     fn into_num(self) -> Result<Num<Stlc>, ValueMismatch> {
-        if let Value::Num(num) = self {
+        if let Self::Num(num) = self {
             Ok(num)
         } else {
             Err(ValueMismatch::new(self.to_string(), "Number".to_owned()))
@@ -67,7 +67,7 @@ impl ValueGroup for Value {
     }
 
     fn into_pair(self) -> Result<Pair<Stlc>, ValueMismatch> {
-        if let Value::Pair(pair) = self {
+        if let Self::Pair(pair) = self {
             Ok(pair)
         } else {
             Err(ValueMismatch::new(self.to_string(), "Pair".to_owned()))
@@ -75,7 +75,7 @@ impl ValueGroup for Value {
     }
 
     fn into_tuple(self) -> Result<Tuple<Stlc>, ValueMismatch> {
-        if let Value::Tuple(tup) = self {
+        if let Self::Tuple(tup) = self {
             Ok(tup)
         } else {
             Err(ValueMismatch::new(self.to_string(), "Tuple".to_owned()))
@@ -83,7 +83,7 @@ impl ValueGroup for Value {
     }
 
     fn into_record(self) -> Result<Record<Stlc>, ValueMismatch> {
-        if let Value::Record(rec) = self {
+        if let Self::Record(rec) = self {
             Ok(rec)
         } else {
             Err(ValueMismatch::new(self.to_string(), "Record".to_owned()))
@@ -91,7 +91,7 @@ impl ValueGroup for Value {
     }
 
     fn into_left(self) -> Result<Left<Stlc>, ValueMismatch> {
-        if let Value::Left(lft) = self {
+        if let Self::Left(lft) = self {
             Ok(lft)
         } else {
             Err(ValueMismatch::new(self.to_string(), "Left".to_owned()))
@@ -99,7 +99,7 @@ impl ValueGroup for Value {
     }
 
     fn into_right(self) -> Result<Right<Stlc>, ValueMismatch> {
-        if let Value::Right(right) = self {
+        if let Self::Right(right) = self {
             Ok(right)
         } else {
             Err(ValueMismatch::new(self.to_string(), "Right".to_owned()))
@@ -107,7 +107,7 @@ impl ValueGroup for Value {
     }
 
     fn into_variant(self) -> Result<Variant<Stlc>, ValueMismatch> {
-        if let Value::Variant(var) = self {
+        if let Self::Variant(var) = self {
             Ok(var)
         } else {
             Err(ValueMismatch::new(self.to_string(), "Variant".to_owned()))
@@ -115,7 +115,7 @@ impl ValueGroup for Value {
     }
 
     fn into_nothing(self) -> Result<Nothing<Stlc>, ValueMismatch> {
-        if let Value::Nothing(not) = self {
+        if let Self::Nothing(not) = self {
             Ok(not)
         } else {
             Err(ValueMismatch::new(self.to_string(), "Nothing".to_owned()))
@@ -123,7 +123,7 @@ impl ValueGroup for Value {
     }
 
     fn into_something(self) -> Result<Something<Stlc>, ValueMismatch> {
-        if let Value::Something(somet) = self {
+        if let Self::Something(somet) = self {
             Ok(somet)
         } else {
             Err(ValueMismatch::new(self.to_string(), "Something".to_owned()))
@@ -131,7 +131,7 @@ impl ValueGroup for Value {
     }
 
     fn into_nil(self) -> Result<Nil<Stlc>, ValueMismatch> {
-        if let Value::Nil(nil) = self {
+        if let Self::Nil(nil) = self {
             Ok(nil)
         } else {
             Err(ValueMismatch::new(self.to_string(), "Nil".to_owned()))
@@ -139,7 +139,7 @@ impl ValueGroup for Value {
     }
 
     fn into_cons(self) -> Result<Cons<Stlc>, ValueMismatch> {
-        if let Value::Cons(cons) = self {
+        if let Self::Cons(cons) = self {
             Ok(cons)
         } else {
             Err(ValueMismatch::new(self.to_string(), "Cons".to_owned()))

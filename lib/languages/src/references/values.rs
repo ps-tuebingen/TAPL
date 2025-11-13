@@ -23,7 +23,7 @@ impl ValueTrait for Value {
 
 impl ValueGroup for Value {
     fn into_lambda(self) -> Result<Lambda<References>, ValueMismatch> {
-        if let Value::Lambda(lam) = self {
+        if let Self::Lambda(lam) = self {
             Ok(lam)
         } else {
             Err(ValueMismatch::new(self.to_string(), "Lambda".to_owned()))
@@ -31,7 +31,7 @@ impl ValueGroup for Value {
     }
 
     fn into_num(self) -> Result<Num<References>, ValueMismatch> {
-        if let Value::Num(num) = self {
+        if let Self::Num(num) = self {
             Ok(num)
         } else {
             Err(ValueMismatch::new(self.to_string(), "Number".to_owned()))
@@ -39,7 +39,7 @@ impl ValueGroup for Value {
     }
 
     fn into_loc(self) -> Result<Loc<References>, ValueMismatch> {
-        if let Value::Loc(loc) = self {
+        if let Self::Loc(loc) = self {
             Ok(loc)
         } else {
             Err(ValueMismatch::new(self.to_string(), "Location".to_owned()))
@@ -47,7 +47,7 @@ impl ValueGroup for Value {
     }
 
     fn into_true(self) -> Result<True<References>, ValueMismatch> {
-        if let Value::True(tru) = self {
+        if let Self::True(tru) = self {
             Ok(tru)
         } else {
             Err(ValueMismatch::new(self.to_string(), "True".to_owned()))
@@ -55,7 +55,7 @@ impl ValueGroup for Value {
     }
 
     fn into_false(self) -> Result<False<References>, ValueMismatch> {
-        if let Value::False(fls) = self {
+        if let Self::False(fls) = self {
             Ok(fls)
         } else {
             Err(ValueMismatch::new(self.to_string(), "False".to_owned()))

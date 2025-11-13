@@ -13,7 +13,7 @@ where
 
     const RULE: Rule = Rule::unpack_term;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Unpack<Lang>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
         let mut inner = pair_to_n_inner(
             p,
             vec![
@@ -30,6 +30,6 @@ where
 
         let unpack_rule = inner.remove(0);
         let unpack_term = Lang::Term::from_pair(unpack_rule, ())?;
-        Ok(Unpack::new(ty_name, term_name, pack_term, unpack_term))
+        Ok(Self::new(ty_name, term_name, pack_term, unpack_term))
     }
 }

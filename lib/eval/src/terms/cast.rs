@@ -12,7 +12,7 @@ impl<Lang> Eval for Cast<Lang>
 where
     Lang: Language,
     Lang::Term: Eval<Lang = Lang>,
-    Cast<Lang>: Into<Lang::Term>,
+    Self: Into<Lang::Term>,
 {
     type Lang = Lang;
 
@@ -20,7 +20,7 @@ where
         let inner_res = self.term.eval(env)?;
         let inner_val = inner_res.val();
         let last_step = EvalStep::cast(self.ty.clone(), inner_val.clone());
-        let mut steps = inner_res.congruence(&move |t| Cast::new(t, self.ty.clone()).into());
+        let mut steps = inner_res.congruence(&move |t| Self::new(t, self.ty.clone()).into());
         steps.push(last_step);
         Ok(EvalTrace::<Lang>::new(steps, inner_val))
     }

@@ -21,7 +21,7 @@ where
 
         let mut recs = HashMap::new();
         let mut rec_knd = None;
-        for (lb, t) in self.records.iter() {
+        for (lb, t) in &self.records {
             let term_res = t.check(env.clone())?;
             let ty = term_res.ret_ty();
             premises.push(term_res);

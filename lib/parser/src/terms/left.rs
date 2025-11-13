@@ -13,7 +13,7 @@ where
 
     const RULE: Rule = Rule::left_term;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Left<Lang>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
         let mut inner = pair_to_n_inner(p, vec!["Inl Argument", "Inl Type"])?;
 
         let arg_pair = inner.remove(0);
@@ -25,6 +25,6 @@ where
         let ty_pair = inner.remove(0);
         let ty = Lang::Type::from_pair(ty_pair, ())?;
 
-        Ok(Left::new(arg_term, ty))
+        Ok(Self::new(arg_term, ty))
     }
 }

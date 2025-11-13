@@ -14,11 +14,11 @@ impl<Lang> Sink<Lang>
 where
     Lang: Language,
 {
-    pub fn new<Ty1>(ty: Ty1) -> Sink<Lang>
+    pub fn new<Ty1>(ty: Ty1) -> Self
     where
         Ty1: Into<Lang::Type>,
     {
-        Sink {
+        Self {
             ty: Rc::new(ty.into()),
         }
     }
@@ -34,7 +34,7 @@ where
     type Target = Self;
     type Lang = Lang;
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
-        Sink {
+        Self {
             ty: self.ty.subst_type(v, ty),
         }
     }

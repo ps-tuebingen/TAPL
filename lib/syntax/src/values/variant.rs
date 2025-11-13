@@ -16,12 +16,12 @@ impl<Lang> Variant<Lang>
 where
     Lang: Language,
 {
-    pub fn new<V, Ty>(lb: &str, val: V, ty: Ty) -> Variant<Lang>
+    pub fn new<V, Ty>(lb: &str, val: V, ty: Ty) -> Self
     where
         V: Into<Lang::Value>,
         Ty: Into<Lang::Type>,
     {
-        Variant {
+        Self {
             label: lb.to_owned(),
             val: Box::new(val.into()),
             ty: ty.into(),
@@ -42,8 +42,8 @@ impl<Lang> From<Variant<Lang>> for VariantT<Lang>
 where
     Lang: Language,
 {
-    fn from(var: Variant<Lang>) -> VariantT<Lang> {
-        VariantT::new(&var.label, *var.val, var.ty)
+    fn from(var: Variant<Lang>) -> Self {
+        Self::new(&var.label, *var.val, var.ty)
     }
 }
 

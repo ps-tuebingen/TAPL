@@ -14,20 +14,20 @@ impl<Lang> Variant<Lang>
 where
     Lang: Language,
 {
-    pub fn new<Ty1>(vars: HashMap<Label, Ty1>) -> Variant<Lang>
+    #[must_use] pub fn new<Ty1>(vars: HashMap<Label, Ty1>) -> Self
     where
         Ty1: Into<Lang::Type>,
     {
-        Variant {
+        Self {
             variants: vars.into_iter().map(|(lb, ty)| (lb, ty.into())).collect(),
         }
     }
 
-    pub fn new_single<Ty1>(lb: &str, ty: Ty1) -> Variant<Lang>
+    pub fn new_single<Ty1>(lb: &str, ty: Ty1) -> Self
     where
         Ty1: Into<Lang::Type>,
     {
-        Variant {
+        Self {
             variants: HashMap::from([(lb.to_owned(), ty.into())]),
         }
     }
@@ -42,7 +42,7 @@ where
     type Lang = Lang;
     type Target = Self;
     fn subst_type(self, v: &TypeVar, ty: &<Self::Lang as Language>::Type) -> Self::Target {
-        Variant {
+        Self {
             variants: self
                 .variants
                 .into_iter()

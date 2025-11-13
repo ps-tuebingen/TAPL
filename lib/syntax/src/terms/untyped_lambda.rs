@@ -19,11 +19,11 @@ impl<Lang> UntypedLambda<Lang>
 where
     Lang: Language,
 {
-    pub fn new<T1>(v: &str, t: T1) -> UntypedLambda<Lang>
+    pub fn new<T1>(v: &str, t: T1) -> Self
     where
         T1: Into<Lang::Term>,
     {
-        UntypedLambda {
+        Self {
             var: v.to_owned(),
             body: Rc::new(t.into()),
         }
@@ -42,7 +42,7 @@ where
         if *v == self.var {
             self
         } else {
-            UntypedLambda {
+            Self {
                 var: self.var,
                 body: self.body.subst(v, t),
             }
@@ -57,7 +57,7 @@ where
     type Target = Self;
     type Lang = Lang;
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
-        UntypedLambda {
+        Self {
             var: self.var,
             body: self.body.subst_type(v, ty),
         }

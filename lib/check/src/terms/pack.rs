@@ -57,7 +57,7 @@ where
                 premises.push(term_res.into());
                 premises.push(outer_res.into());
                 premises.push(inner_res.into());
-            };
+            }
 
             let outer_subst = Rc::unwrap_or_clone(
                 outer_exists

@@ -12,7 +12,7 @@ where
     type LeftRecArg = ();
     const RULE: Rule = Rule::sumcase_term;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<SumCase<Lang>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
         let mut inner = pair_to_n_inner(
             p,
             vec![
@@ -27,7 +27,7 @@ where
         let snd_rule = inner.remove(0);
         let (left_var, right_var, left_term, right_term) =
             pairs_to_sum_patterns::<Lang>(fst_rule, snd_rule)?;
-        Ok(SumCase::new(
+        Ok(Self::new(
             bound_term, &left_var, left_term, &right_var, right_term,
         ))
     }

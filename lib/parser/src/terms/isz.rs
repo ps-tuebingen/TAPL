@@ -13,11 +13,11 @@ where
 
     const RULE: Rule = Rule::iszero_term;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<IsZero<Lang>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
         let mut inner = pair_to_n_inner(p, vec!["IsZero Argument"])?;
         let term_rule = inner.remove(0);
         let term_inner = pair_to_n_inner(term_rule, vec!["Prim Term Inner"])?.remove(0);
         let term = Lang::Term::from_pair(term_inner, ())?;
-        Ok(IsZero::new(term))
+        Ok(Self::new(term))
     }
 }

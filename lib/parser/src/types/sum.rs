@@ -12,7 +12,7 @@ where
     type LeftRecArg = ();
     const RULE: Rule = Rule::sum_type;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Sum<Lang>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
         let mut inner = pair_to_n_inner(p, vec!["First Sum Type", "Second Sum Type"])?;
 
         let fst_pair = inner.remove(0);
@@ -21,6 +21,6 @@ where
         let snd_pair = inner.remove(0);
         let snd_ty = Lang::Type::from_pair(snd_pair, ())?;
 
-        Ok(Sum::new(fst_ty, snd_ty))
+        Ok(Self::new(fst_ty, snd_ty))
     }
 }

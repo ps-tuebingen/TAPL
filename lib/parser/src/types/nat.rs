@@ -13,8 +13,8 @@ where
 
     const RULE: Rule = Rule::const_type;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Nat<Lang>, ParserError> {
-        let nat = Nat::new();
+    fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
+        let nat = Self::new();
         let p_str = p.as_str().trim().to_lowercase();
         if p_str == nat.to_string().to_lowercase() {
             Ok(nat)

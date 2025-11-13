@@ -16,13 +16,13 @@ impl<Lang> Lambda<Lang>
 where
     Lang: Language,
 {
-    pub fn new<Ty, T>(v: &str, ty: Ty, bd: T) -> Lambda<Lang>
+    pub fn new<Ty, T>(v: &str, ty: Ty, bd: T) -> Self
     where
         T: Into<Lang::Term>,
         Ty: Into<Lang::Type>,
         Lang: Language,
     {
-        Lambda {
+        Self {
             var: v.to_owned(),
             annot: ty.into(),
             body: bd.into(),
@@ -43,8 +43,8 @@ impl<Lang> From<Lambda<Lang>> for LambdaT<Lang>
 where
     Lang: Language,
 {
-    fn from(lam: Lambda<Lang>) -> LambdaT<Lang> {
-        LambdaT::new(&lam.var, lam.annot, lam.body)
+    fn from(lam: Lambda<Lang>) -> Self {
+        Self::new(&lam.var, lam.annot, lam.body)
     }
 }
 

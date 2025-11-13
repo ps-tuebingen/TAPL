@@ -20,13 +20,13 @@ impl<Lang> Cons<Lang>
 where
     Lang: Language,
 {
-    pub fn new<H, Tl, Typ>(h: H, tl: Tl, ty: Typ) -> Cons<Lang>
+    pub fn new<H, Tl, Typ>(h: H, tl: Tl, ty: Typ) -> Self
     where
         H: Into<Lang::Term>,
         Tl: Into<Lang::Term>,
         Typ: Into<Lang::Type>,
     {
-        Cons {
+        Self {
             head: Rc::new(h.into()),
             tail: Rc::new(tl.into()),
             ty: ty.into(),
@@ -43,7 +43,7 @@ where
     type Target = Self;
     type Lang = Lang;
     fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
-        Cons {
+        Self {
             head: self.head.subst(v, t),
             tail: self.tail.subst(v, t),
             ty: self.ty,
@@ -58,7 +58,7 @@ where
     type Target = Self;
     type Lang = Lang;
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
-        Cons {
+        Self {
             head: self.head.subst_type(v, ty),
             tail: self.tail.subst_type(v, ty),
             ty: self.ty.subst_type(v, ty),

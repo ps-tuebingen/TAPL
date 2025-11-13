@@ -23,7 +23,7 @@ impl GroupParse for Term {
         }
     }
 
-    fn from_pair_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Self, ParserError> {
+    fn from_pair_leftrec(p: Pair<'_, Rule>, t: Self) -> Result<Self, ParserError> {
         match p.as_rule() {
             Rule::term => Ok(App::<UntypedLambda>::from_pair(p, t)?.into()),
             _ => Err(UnexpectedRule::new(&format!("{:?}", p.as_rule()), "Aplication").into()),

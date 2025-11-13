@@ -15,8 +15,8 @@ impl<Lang> DefinitionDerivation<Lang>
 where
     Lang: Language,
 {
-    pub fn new(name: &str, body_derivation: TypingDerivation<Lang>) -> DefinitionDerivation<Lang> {
-        DefinitionDerivation {
+    pub fn new(name: &str, body_derivation: TypingDerivation<Lang>) -> Self {
+        Self {
             name: name.to_owned(),
             body_derivation,
         }

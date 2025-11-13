@@ -15,13 +15,13 @@ impl<Lang> Cons<Lang>
 where
     Lang: Language,
 {
-    pub fn new<V1, V2, Typ>(hd: V1, tl: V2, ty: Typ) -> Cons<Lang>
+    pub fn new<V1, V2, Typ>(hd: V1, tl: V2, ty: Typ) -> Self
     where
         V1: Into<Lang::Value>,
         V2: Into<Lang::Value>,
         Typ: Into<Lang::Type>,
     {
-        Cons {
+        Self {
             head: Box::new(hd.into()),
             tail: Box::new(tl.into()),
             ty: ty.into(),
@@ -42,8 +42,8 @@ impl<Lang> From<Cons<Lang>> for ConsT<Lang>
 where
     Lang: Language,
 {
-    fn from(c: Cons<Lang>) -> ConsT<Lang> {
-        ConsT::new(*c.head, *c.tail, c.ty)
+    fn from(c: Cons<Lang>) -> Self {
+        Self::new(*c.head, *c.tail, c.ty)
     }
 }
 

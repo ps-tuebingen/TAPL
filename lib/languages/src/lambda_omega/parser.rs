@@ -13,13 +13,13 @@ use syntax::{
 impl GroupParse for Term {
     const RULE: Rule = Rule::term;
 
-    fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Term, ParserError> {
+    fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Self, ParserError> {
         match p.as_rule() {
             Rule::const_term => Ok(StringTerm::<LambdaOmega>::new()
                 .with_unit()
                 .with_true()
                 .with_false()
-                .from_pair(p)?),
+                .from_pair(&p)?),
             Rule::lambda_term => Ok(Lambda::from_pair(p, ())?.into()),
             Rule::ty_lambda_kinded_term => Ok(TyLambda::from_pair(p, ())?.into()),
             Rule::paren_term => Self::from_pair(pair_to_n_inner(p, vec!["Term"])?.remove(0), ()),
@@ -29,7 +29,7 @@ impl GroupParse for Term {
         }
     }
 
-    fn from_pair_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, ParserError> {
+    fn from_pair_leftrec(p: Pair<'_, Rule>, t: Self) -> Result<Self, ParserError> {
         match p.as_rule() {
             Rule::tyapp => Ok(TyApp::from_pair(p, t)?.into()),
             Rule::term => Ok(App::from_pair(p, t)?.into()),
@@ -40,13 +40,13 @@ impl GroupParse for Term {
 impl GroupParse for Type {
     const RULE: Rule = Rule::r#type;
 
-    fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Type, ParserError> {
+    fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Self, ParserError> {
         match p.as_rule() {
             Rule::const_type => Ok(StringTy::<LambdaOmega>::new()
                 .with_unit()
                 .with_nat()
                 .with_bool()
-                .from_pair(p)?),
+                .from_pair(&p)?),
             Rule::forall_unbounded_type => {
                 Ok(ForallUnbounded::from_pair(p, ())?.to_forall_kinded().into())
             }
@@ -58,7 +58,7 @@ impl GroupParse for Type {
         }
     }
 
-    fn from_pair_leftrec(p: Pair<'_, Rule>, ty: Type) -> Result<Type, ParserError> {
+    fn from_pair_leftrec(p: Pair<'_, Rule>, ty: Self) -> Result<Self, ParserError> {
         match p.as_rule() {
             Rule::fun_type => Ok(Fun::from_pair(p, ty)?.into()),
             Rule::r#type => Ok(OpApp::from_pair(p, ty)?.into()),

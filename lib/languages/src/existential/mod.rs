@@ -20,7 +20,7 @@ impl Language for Existential {
     type Type = Type;
     type Value = Value;
 
-    fn describe(&self) -> &str {
+    fn describe(&self) -> &'static str {
         "STLC with Existential Types"
     }
 

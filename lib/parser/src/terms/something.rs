@@ -13,12 +13,12 @@ where
 
     const RULE: Rule = Rule::some_term;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Something<Lang>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
         let arg_pair = pair_to_n_inner(p, vec!["Something Argument"])?.remove(0);
         let arg = Lang::Term::from_pair(
             pair_to_n_inner(arg_pair, vec!["Something Inner"])?.remove(0),
             (),
         )?;
-        Ok(Something::new(arg))
+        Ok(Self::new(arg))
     }
 }

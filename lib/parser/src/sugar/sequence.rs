@@ -43,9 +43,9 @@ where
 
     const RULE: Rule = Rule::sequence;
 
-    fn from_pair(p: Pair<'_, Rule>, t: Self::LeftRecArg) -> Result<Sequence<Lang>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, t: Self::LeftRecArg) -> Result<Self, ParserError> {
         let term_rule = pair_to_n_inner(p, vec!["Sequence Second Term"])?.remove(0);
         let term = Lang::Term::from_pair(term_rule, ())?;
-        Ok(Sequence { fst: t, snd: term })
+        Ok(Self { fst: t, snd: term })
     }
 }

@@ -13,7 +13,7 @@ impl GroupParse for Term {
                 .with_true()
                 .with_false()
                 .with_zero()
-                .from_pair(p)?),
+                .from_pair(&p)?),
             Rule::if_term => Ok(If::from_pair(p, ())?.into()),
             Rule::number => Ok(Num::from_pair(p, ())?.into()),
             Rule::succ_term => Ok(Succ::from_pair(p, ())?.into()),
@@ -26,7 +26,7 @@ impl GroupParse for Term {
         }
     }
 
-    fn from_pair_leftrec(p: Pair<'_, Rule>, _: Term) -> Result<Self, ParserError> {
+    fn from_pair_leftrec(p: Pair<'_, Rule>, _: Self) -> Result<Self, ParserError> {
         Err(UnexpectedRule::new(&format!("{:?}", p.as_rule()), "Non Left-Recursive Term").into())
     }
 }
@@ -39,7 +39,7 @@ impl GroupParse for Type {
             Rule::const_type => Ok(StringTy::<TypedArithmetic>::new()
                 .with_nat()
                 .with_bool()
-                .from_pair(p)?),
+                .from_pair(&p)?),
             _ => Err(
                 UnexpectedRule::new(&format!("{:?}", p.as_rule()), "Non Left-Recursive Type")
                     .into(),
@@ -47,7 +47,7 @@ impl GroupParse for Type {
         }
     }
 
-    fn from_pair_leftrec(p: Pair<'_, Rule>, _: Type) -> Result<Self, ParserError> {
+    fn from_pair_leftrec(p: Pair<'_, Rule>, _: Self) -> Result<Self, ParserError> {
         Err(UnexpectedRule::new(&format!("{:?}", p.as_rule()), "Non Left-Recursive Type").into())
     }
 }

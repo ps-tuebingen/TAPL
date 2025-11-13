@@ -13,10 +13,7 @@ where
 
     const RULE: Rule = Rule::exists_bounded_type;
 
-    fn from_pair(
-        p: Pair<'_, Rule>,
-        _: Self::LeftRecArg,
-    ) -> Result<ExistsBounded<Lang>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
         let mut inner = pair_to_n_inner(
             p,
             vec!["Exists Variable", "Exists Super Type", "Exists Type"],
@@ -31,6 +28,6 @@ where
         let ty_rule = inner.remove(0);
         let ty = Lang::Type::from_pair(ty_rule, ())?;
 
-        Ok(ExistsBounded::new(var, sup_ty, ty))
+        Ok(Self::new(var, sup_ty, ty))
     }
 }

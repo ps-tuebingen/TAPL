@@ -15,12 +15,12 @@ impl<Lang> Pair<Lang>
 where
     Lang: Language,
 {
-    pub fn new<V1, V2>(fst: V1, snd: V2) -> Pair<Lang>
+    pub fn new<V1, V2>(fst: V1, snd: V2) -> Self
     where
         V1: Into<Lang::Value>,
         V2: Into<Lang::Value>,
     {
-        Pair {
+        Self {
             fst: Box::new(fst.into()),
             snd: Box::new(snd.into()),
         }
@@ -40,8 +40,8 @@ impl<Lang> From<Pair<Lang>> for PairT<Lang>
 where
     Lang: Language,
 {
-    fn from(p: Pair<Lang>) -> PairT<Lang> {
-        PairT::new(*p.fst, *p.snd)
+    fn from(p: Pair<Lang>) -> Self {
+        Self::new(*p.fst, *p.snd)
     }
 }
 

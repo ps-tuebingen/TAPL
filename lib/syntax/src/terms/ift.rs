@@ -20,13 +20,13 @@ impl<Lang> If<Lang>
 where
     Lang: Language,
 {
-    pub fn new<T1, T2, T3>(cond: T1, th: T2, els: T3) -> If<Lang>
+    pub fn new<T1, T2, T3>(cond: T1, th: T2, els: T3) -> Self
     where
         T1: Into<Lang::Term>,
         T2: Into<Lang::Term>,
         T3: Into<Lang::Term>,
     {
-        If {
+        Self {
             if_cond: Rc::new(cond.into()),
             then_term: Rc::new(th.into()),
             else_term: Rc::new(els.into()),
@@ -43,7 +43,7 @@ where
     type Target = Self;
     type Lang = Lang;
     fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
-        If {
+        Self {
             if_cond: self.if_cond.subst(v, t),
             then_term: self.then_term.subst(v, t),
             else_term: self.else_term.subst(v, t),
@@ -58,7 +58,7 @@ where
     type Target = Self;
     type Lang = Lang;
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
-        If {
+        Self {
             if_cond: self.if_cond.subst_type(v, ty),
             then_term: self.then_term.subst_type(v, ty),
             else_term: self.else_term.subst_type(v, ty),

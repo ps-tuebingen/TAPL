@@ -13,7 +13,7 @@ impl<Lang> Subtypecheck for Record<Lang>
 where
     Lang: Language,
     Top<Lang>: Into<Lang::Type>,
-    Record<Lang>: Into<Lang::Type>,
+    Self: Into<Lang::Type>,
     Lang::Type: Subtypecheck<Lang = Lang> + Normalize<Lang = Lang> + TypeGroup<Lang = Lang>,
 {
     type Lang = Lang;
@@ -39,8 +39,11 @@ where
         }
 
         let sup_rec = sup_norm.into_record()?;
-        for (lb, ty) in sup_rec.records.iter() {
-            let sub_ty = self.records.get(lb).ok_or(UndefinedLabel::new(lb))?;
+        for (lb, ty) in &sup_rec.records {
+            let sub_ty = self
+                .records
+                .get(lb)
+                .ok_or_else(|| UndefinedLabel::new(lb))?;
             premises.push(sub_ty.check_subtype(ty, env.clone())?);
         }
         Ok(SubtypeDerivation::record(env, self.clone(), sup.clone(), premises).into())
@@ -60,7 +63,7 @@ where
     type Lang = Lang;
     fn check_kind(&self, env: Environment<Self::Lang>) -> Result<Derivation<Lang>, CheckError> {
         let mut rec_res = vec![];
-        for (_, t) in self.records.iter() {
+        for t in self.records.values() {
             let ty_res = t.check_kind(env.clone())?;
             rec_res.push(ty_res);
         }
@@ -82,12 +85,12 @@ where
     fn normalize(self, env: Environment<Self::Lang>) -> Derivation<Self::Lang> {
         let mut premises = vec![];
         let mut recs_norm = HashMap::new();
-        for (lb, ty) in self.records.iter() {
+        for (lb, ty) in &self.records {
             let ty_norm = ty.clone().normalize(env.clone());
             recs_norm.insert(lb.clone(), ty_norm.ret_ty());
-            premises.push(ty_norm)
+            premises.push(ty_norm);
         }
-        let self_norm = Record { records: recs_norm };
+        let self_norm = Self { records: recs_norm };
         NormalizingDerivation::cong(self, self_norm, premises).into()
     }
 

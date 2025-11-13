@@ -42,8 +42,7 @@ where
             premises.push(ty_res.into());
         }
 
-        let conc =
-            TypingConclusion::new(env.clone(), self.clone(), List::new(ty_norm.clone()).into());
+        let conc = TypingConclusion::new(env, self.clone(), List::new(ty_norm).into());
         let deriv = TypingDerivation::nil(conc, premises);
         Ok(deriv.into())
     }

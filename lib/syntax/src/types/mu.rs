@@ -15,11 +15,11 @@ impl<Lang> Mu<Lang>
 where
     Lang: Language,
 {
-    pub fn new<Ty1>(v: &str, ty: Ty1) -> Mu<Lang>
+    pub fn new<Ty1>(v: &str, ty: Ty1) -> Self
     where
         Ty1: Into<Lang::Type>,
     {
-        Mu {
+        Self {
             var: v.to_owned(),
             ty: Rc::new(ty.into()),
         }
@@ -38,7 +38,7 @@ where
         if *v == self.var {
             self
         } else {
-            Mu {
+            Self {
                 var: self.var,
                 ty: self.ty.subst_type(v, ty),
             }

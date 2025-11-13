@@ -14,7 +14,7 @@ impl GroupParse for Term {
                 .with_true()
                 .with_false()
                 .with_zero()
-                .from_pair(p)?),
+                .from_pair(&p)?),
             Rule::if_term => Ok(If::<UntypedArithmetic>::from_pair(p, ())?.into()),
             Rule::number => Ok(Num::<UntypedArithmetic>::from_pair(p, ())?.into()),
             Rule::succ_term => Ok(Succ::<UntypedArithmetic>::from_pair(p, ())?.into()),
@@ -27,7 +27,7 @@ impl GroupParse for Term {
         }
     }
 
-    fn from_pair_leftrec(p: Pair<'_, Rule>, _: Term) -> Result<Self, ParserError> {
+    fn from_pair_leftrec(p: Pair<'_, Rule>, _: Self) -> Result<Self, ParserError> {
         Err(UnexpectedRule::new(&format!("{:?}", p.as_rule()), "Non Left-Recursive Term").into())
     }
 }

@@ -13,9 +13,9 @@ where
 
     const RULE: Rule = Rule::none_term;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Nothing<Lang>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
         let ty_pair = pair_to_n_inner(p, vec!["Nothing Type"])?.remove(0);
         let ty = Lang::Type::from_pair(ty_pair, ())?;
-        Ok(Nothing::new(ty))
+        Ok(Self::new(ty))
     }
 }

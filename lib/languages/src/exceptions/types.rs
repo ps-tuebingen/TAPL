@@ -32,14 +32,14 @@ impl TypeTrait for Type {}
 impl TypeGroup for Type {
     type Lang = Exceptions;
     fn into_unit(self) -> Result<Unit<Exceptions>, TypeMismatch> {
-        if let Type::Unit(u) = self {
+        if let Self::Unit(u) = self {
             Ok(u)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Unit".to_owned()))
         }
     }
     fn into_nat(self) -> Result<Nat<Exceptions>, TypeMismatch> {
-        if let Type::Nat(n) = self {
+        if let Self::Nat(n) = self {
             Ok(n)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Nat".to_owned()))
@@ -47,7 +47,7 @@ impl TypeGroup for Type {
     }
 
     fn into_bool(self) -> Result<Bool<Exceptions>, TypeMismatch> {
-        if let Type::Bool(b) = self {
+        if let Self::Bool(b) = self {
             Ok(b)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Bool".to_owned()))
@@ -55,7 +55,7 @@ impl TypeGroup for Type {
     }
 
     fn into_fun(self) -> Result<Fun<Exceptions>, TypeMismatch> {
-        if let Type::Fun(fun) = self {
+        if let Self::Fun(fun) = self {
             Ok(fun)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Function".to_owned()))

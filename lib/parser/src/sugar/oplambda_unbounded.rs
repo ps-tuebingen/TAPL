@@ -45,12 +45,12 @@ where
 
     const RULE: Rule = Rule::op_lambda_star_type;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Self, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
         let mut inner = pair_to_n_inner(p, vec!["Type Variable", "Type Abstraction Body"])?;
         let var = inner.remove(0).as_str().trim().to_owned();
         let ty_rule = inner.remove(0);
         let body = Lang::Type::from_pair(ty_rule, ())?;
-        Ok(OpLambdaUnbounded { var, body })
+        Ok(Self { var, body })
     }
 }
 
@@ -60,8 +60,8 @@ where
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
 {
-    fn from(ou: OpLambdaUnbounded<Lang>) -> OpLambda<Lang> {
-        OpLambda::new(&ou.var, Kind::Star, ou.body)
+    fn from(ou: OpLambdaUnbounded<Lang>) -> Self {
+        Self::new(&ou.var, Kind::Star, ou.body)
     }
 }
 
@@ -72,7 +72,7 @@ where
     Lang::Type: GroupParse,
     Top<Lang>: Into<Lang::Type>,
 {
-    fn from(ou: OpLambdaUnbounded<Lang>) -> OpLambdaSub<Lang> {
-        OpLambdaSub::new(&ou.var, Top::new_star(), ou.body)
+    fn from(ou: OpLambdaUnbounded<Lang>) -> Self {
+        Self::new(&ou.var, Top::new_star(), ou.body)
     }
 }

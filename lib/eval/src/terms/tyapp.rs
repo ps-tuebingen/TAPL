@@ -15,7 +15,7 @@ impl<Lang> Eval for TyApp<Lang>
 where
     Lang: Language,
     Lang::Term: Eval<Lang = Lang>,
-    TyApp<Lang>: Into<Lang::Term>,
+    Self: Into<Lang::Term>,
 {
     type Lang = Lang;
 
@@ -25,7 +25,7 @@ where
         let (res_steps, res_val) = if let Ok(tylam) = fun_val.clone().into_tylambda() {
             let term_subst = tylam.term.subst_type(&tylam.var, &self.arg);
             let next_step =
-                EvalStep::tyappabs(TyApp::new(fun_val, self.arg.clone()), term_subst.clone());
+                EvalStep::tyappabs(Self::new(fun_val, self.arg.clone()), term_subst.clone());
             let term_res = term_subst.eval(env)?;
             let term_val = term_res.val();
             let mut steps = term_res.steps;
@@ -34,7 +34,7 @@ where
         } else if let Ok(lamsub) = fun_val.clone().into_lambdasub() {
             let term_subst = lamsub.term.subst_type(&lamsub.var, &self.arg);
             let next_step =
-                EvalStep::tyappabs_sub(TyApp::new(fun_val, self.arg.clone()), term_subst.clone());
+                EvalStep::tyappabs_sub(Self::new(fun_val, self.arg.clone()), term_subst.clone());
             let term_res = term_subst.eval(env)?;
             let term_val = term_res.val();
             let mut steps = term_res.steps;
@@ -46,7 +46,7 @@ where
             );
         };
 
-        let mut steps = fun_res.congruence(&move |t| TyApp::new(t, self.arg.clone()).into());
+        let mut steps = fun_res.congruence(&move |t| Self::new(t, self.arg.clone()).into());
         steps.extend(res_steps);
         Ok(EvalTrace::<Lang>::new(steps, res_val))
     }

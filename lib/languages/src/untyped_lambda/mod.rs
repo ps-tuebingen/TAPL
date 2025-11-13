@@ -14,10 +14,10 @@ pub struct UntypedLambda;
 
 impl Language for UntypedLambda {
     type Term = Term;
-    type Type = Untyped<UntypedLambda>;
+    type Type = Untyped<Self>;
     type Value = Value;
 
-    fn describe(&self) -> &str {
+    fn describe(&self) -> &'static str {
         "Untyped Lambda Calculus"
     }
 
@@ -30,16 +30,16 @@ impl LanguageDescribe for UntypedLambda {
     fn rules() -> LanguageRules {
         LanguageRules {
             typing: <Term as ::check::Typecheck>::rules(),
-            subtyping: <Untyped<UntypedLambda> as ::check::Subtypecheck>::rules(),
-            kinding: <Untyped<UntypedLambda> as ::check::Kindcheck>::rules(),
-            normalizing: <Untyped<UntypedLambda> as ::check::Normalize>::rules(),
+            subtyping: <Untyped<Self> as ::check::Subtypecheck>::rules(),
+            kinding: <Untyped<Self> as ::check::Kindcheck>::rules(),
+            normalizing: <Untyped<Self> as ::check::Normalize>::rules(),
             eval: <Term as ::eval::Eval>::rules(),
         }
     }
     fn grammars() -> LanguageGrammar {
         LanguageGrammar {
             term_grammar: Term::grammar(),
-            type_grammar: Untyped::<UntypedLambda>::grammar(),
+            type_grammar: Untyped::<Self>::grammar(),
             value_grammar: Value::grammar(),
             include_kinds: false,
         }

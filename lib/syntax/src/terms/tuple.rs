@@ -18,12 +18,12 @@ impl<Lang> Tuple<Lang>
 where
     Lang: Language,
 {
-    pub fn new<T1>(ts: Vec<T1>) -> Tuple<Lang>
+    pub fn new<T1>(ts: Vec<T1>) -> Self
     where
         T1: Into<Lang::Term>,
     {
-        Tuple {
-            terms: ts.into_iter().map(|t| t.into()).collect(),
+        Self {
+            terms: ts.into_iter().map(std::convert::Into::into).collect(),
         }
     }
 }
@@ -37,7 +37,7 @@ where
     type Target = Self;
     type Lang = Lang;
     fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
-        Tuple {
+        Self {
             terms: self.terms.into_iter().map(|t1| t1.subst(v, t)).collect(),
         }
     }
@@ -50,7 +50,7 @@ where
     type Target = Self;
     type Lang = Lang;
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
-        Tuple {
+        Self {
             terms: self
                 .terms
                 .into_iter()
@@ -65,7 +65,7 @@ where
     Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let mut ts: Vec<String> = self.terms.iter().map(|t| t.to_string()).collect();
+        let mut ts: Vec<String> = self.terms.iter().map(std::string::ToString::to_string).collect();
         ts.sort();
         write!(f, "( {} )", ts.join(", "))
     }

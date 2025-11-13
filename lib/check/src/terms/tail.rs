@@ -56,7 +56,7 @@ where
         HashSet::from([DerivationRule::check_cong(
             term,
             list_ty.clone(),
-            list_ty.clone(),
+            list_ty,
             "T-Tail",
         )])
     }

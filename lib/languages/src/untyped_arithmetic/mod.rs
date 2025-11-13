@@ -14,10 +14,10 @@ pub struct UntypedArithmetic;
 
 impl Language for UntypedArithmetic {
     type Term = Term;
-    type Type = Untyped<UntypedArithmetic>;
+    type Type = Untyped<Self>;
     type Value = Value;
 
-    fn describe(&self) -> &str {
+    fn describe(&self) -> &'static str {
         "Untyped Arithmetic Expressions"
     }
 
@@ -30,16 +30,16 @@ impl LanguageDescribe for UntypedArithmetic {
     fn rules() -> LanguageRules {
         LanguageRules {
             typing: <Term as ::check::Typecheck>::rules(),
-            subtyping: <Untyped<UntypedArithmetic> as ::check::Subtypecheck>::rules(),
-            kinding: <Untyped<UntypedArithmetic> as ::check::Kindcheck>::rules(),
-            normalizing: <Untyped<UntypedArithmetic> as ::check::Normalize>::rules(),
+            subtyping: <Untyped<Self> as ::check::Subtypecheck>::rules(),
+            kinding: <Untyped<Self> as ::check::Kindcheck>::rules(),
+            normalizing: <Untyped<Self> as ::check::Normalize>::rules(),
             eval: <Term as ::eval::Eval>::rules(),
         }
     }
     fn grammars() -> LanguageGrammar {
         LanguageGrammar {
             term_grammar: Term::grammar(),
-            type_grammar: Untyped::<UntypedArithmetic>::grammar(),
+            type_grammar: Untyped::<Self>::grammar(),
             value_grammar: Value::grammar(),
             include_kinds: false,
         }

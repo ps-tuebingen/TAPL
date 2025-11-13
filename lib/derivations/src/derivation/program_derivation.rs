@@ -15,11 +15,11 @@ impl<Lang> ProgramDerivation<Lang>
 where
     Lang: Language,
 {
-    pub fn new(
+    pub const fn new(
         main_derivation: TypingDerivation<Lang>,
         def_derivations: Vec<DefinitionDerivation<Lang>>,
-    ) -> ProgramDerivation<Lang> {
-        ProgramDerivation {
+    ) -> Self {
+        Self {
             def_derivations,
             main_derivation,
         }
@@ -31,7 +31,7 @@ where
 
     pub fn tys(&self) -> HashMap<String, Lang::Type> {
         let mut tys = HashMap::new();
-        for df_deriv in self.def_derivations.iter() {
+        for df_deriv in &self.def_derivations {
             tys.insert(df_deriv.name.clone(), df_deriv.ret_ty());
         }
 
@@ -45,7 +45,7 @@ where
     Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        for def_deriv in self.def_derivations.iter() {
+        for def_deriv in &self.def_derivations {
             writeln!(f, "{def_deriv}")?;
         }
         write!(f, "{}", self.main_derivation)

@@ -21,13 +21,13 @@ impl<Lang> SomeCase<Lang>
 where
     Lang: Language,
 {
-    pub fn new<T1, T2, T3>(bound: T1, none: T2, v: &str, some: T3) -> SomeCase<Lang>
+    pub fn new<T1, T2, T3>(bound: T1, none: T2, v: &str, some: T3) -> Self
     where
         T1: Into<Lang::Term>,
         T2: Into<Lang::Term>,
         T3: Into<Lang::Term>,
     {
-        SomeCase {
+        Self {
             bound_term: Rc::new(bound.into()),
             none_term: Rc::new(none.into()),
             some_var: v.to_owned(),
@@ -46,14 +46,14 @@ where
     type Lang = Lang;
     fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
         if *v == self.some_var {
-            SomeCase {
+            Self {
                 bound_term: self.bound_term.subst(v, t),
                 none_term: self.none_term.subst(v, t),
                 some_var: self.some_var,
                 some_term: self.some_term,
             }
         } else {
-            SomeCase {
+            Self {
                 bound_term: self.bound_term.subst(v, t),
                 none_term: self.none_term.subst(v, t),
                 some_var: self.some_var,
@@ -70,7 +70,7 @@ where
     type Target = Self;
     type Lang = Lang;
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
-        SomeCase {
+        Self {
             bound_term: self.bound_term.subst_type(v, ty),
             none_term: self.none_term.subst_type(v, ty),
             some_var: self.some_var,

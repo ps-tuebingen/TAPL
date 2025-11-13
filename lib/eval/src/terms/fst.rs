@@ -18,7 +18,7 @@ impl<Lang> Eval for Fst<Lang>
 where
     Lang: Language,
     Lang::Term: Term + Eval<Lang = Lang>,
-    Fst<Lang>: Into<Lang::Term>,
+    Self: Into<Lang::Term>,
     Pair<Lang>: Into<Lang::Term>,
 {
     type Lang = Lang;
@@ -29,7 +29,7 @@ where
         let pair_val = term_val.clone().into_pair()?;
 
         let last_step = EvalStep::fst(term_val, *pair_val.snd);
-        let mut steps = term_res.congruence(&move |t| Fst::new(t).into());
+        let mut steps = term_res.congruence(&move |t| Self::new(t).into());
         steps.push(last_step);
         Ok(EvalTrace::<Lang>::new(steps, *pair_val.fst))
     }

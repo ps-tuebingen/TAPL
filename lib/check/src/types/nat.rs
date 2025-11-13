@@ -13,7 +13,7 @@ impl<Lang> Subtypecheck for Nat<Lang>
 where
     Lang: Language,
     Top<Lang>: Into<Lang::Type>,
-    Nat<Lang>: Into<Lang::Type>,
+    Self: Into<Lang::Type>,
 {
     type Lang = Lang;
     fn check_subtype(

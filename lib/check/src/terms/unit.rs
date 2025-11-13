@@ -15,7 +15,7 @@ where
     type Lang = Lang;
 
     fn check(&self, env: Environment<Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
-        let conc = TypingConclusion::new(env.clone(), self.clone(), UnitTy::<Lang>::new());
+        let conc = TypingConclusion::new(env, self.clone(), UnitTy::<Lang>::new());
         let deriv = TypingDerivation::unit(conc);
         Ok(deriv.into())
     }

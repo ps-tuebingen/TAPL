@@ -17,7 +17,7 @@ impl<Lang> Eval for Something<Lang>
 where
     Lang: Language,
     Lang::Term: Term + Eval<Lang = Lang>,
-    Something<Lang>: Into<Lang::Term>,
+    Self: Into<Lang::Term>,
     SomethingVal<Lang>: Into<Lang::Value>,
 {
     type Lang = Lang;
@@ -26,7 +26,7 @@ where
         let term_res = self.term.eval(env)?;
         let term_val = term_res.val();
         let val = SomethingVal::<Lang>::new(term_val);
-        let steps = term_res.congruence(&move |t| Something::new(t).into());
+        let steps = term_res.congruence(&move |t| Self::new(t).into());
         Ok(EvalTrace::new(steps, val))
     }
 

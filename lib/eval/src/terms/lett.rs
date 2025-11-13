@@ -17,7 +17,7 @@ impl<Lang> Eval for Let<Lang>
 where
     Lang: Language,
     Lang::Term: Term + Eval<Lang = Lang> + From<Lang::Value>,
-    Let<Lang>: Into<Lang::Term>,
+    Self: Into<Lang::Term>,
 {
     type Lang = Lang;
 
@@ -30,7 +30,7 @@ where
             .clone()
             .subst(&self.var, &bound_val.clone().into());
         let subst_step = EvalStep::lett(
-            Let::new(
+            Self::new(
                 &self.var,
                 bound_val,
                 Rc::unwrap_or_clone(self.in_term.clone()),
@@ -39,7 +39,7 @@ where
         );
 
         let mut steps = bound_res.congruence(&move |t| {
-            Let::new(&self.var, t, Rc::unwrap_or_clone(self.in_term.clone())).into()
+            Self::new(&self.var, t, Rc::unwrap_or_clone(self.in_term.clone())).into()
         });
         steps.push(subst_step);
         let term_res = term_subst.eval(env)?;

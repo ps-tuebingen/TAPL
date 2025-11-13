@@ -16,19 +16,17 @@ where
 
     const RULE: Rule = Rule::variantcase_term;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<VariantCase<Lang>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
         let mut inner = p.into_inner();
-        let bound_rule = inner
-            .next()
-            .ok_or(<MissingInput as Into<ParserError>>::into(
-                MissingInput::new("Case Bound Term"),
-            ))?;
+        let bound_rule = inner.next().ok_or_else(|| {
+            <MissingInput as Into<ParserError>>::into(MissingInput::new("Case Bound Term"))
+        })?;
         let bound_term = Lang::Term::from_pair(bound_rule, ())?;
         let mut patterns = vec![];
         for pattern_rule in inner {
             patterns.push(VariantPattern::<Lang>::from_pair(pattern_rule, ())?);
         }
-        Ok(VariantCase::new(bound_term, patterns))
+        Ok(Self::new(bound_term, patterns))
     }
 }
 
@@ -42,10 +40,7 @@ where
 
     const RULE: Rule = Rule::variant_pattern;
 
-    fn from_pair(
-        p: Pair<'_, Rule>,
-        _: Self::LeftRecArg,
-    ) -> Result<VariantPattern<Lang>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
         let mut inner = pair_to_n_inner(
             p,
             vec![
@@ -58,6 +53,6 @@ where
         let var = inner.remove(0).as_str().trim();
         let term_rule = inner.remove(0);
         let term = Lang::Term::from_pair(term_rule, ())?;
-        Ok(VariantPattern::new(label, var, term))
+        Ok(Self::new(label, var, term))
     }
 }

@@ -13,7 +13,7 @@ use syntax::{
 impl<Lang> Subtypecheck for Fun<Lang>
 where
     Lang: Language,
-    Fun<Lang>: Into<Lang::Type>,
+    Self: Into<Lang::Type>,
     Top<Lang>: Into<Lang::Type>,
     Lang::Type: Subtypecheck<Lang = Lang> + TypeGroup<Lang = Lang>,
 {
@@ -50,7 +50,7 @@ where
         let from_kind = from_res.ret_kind();
         if from_kind != Kind::Star {
             return Err(KindMismatch::new(from_kind.to_string(), Kind::Star.to_string()).into());
-        };
+        }
 
         let to_res = self.to.check_kind(env)?.into_kind()?;
         let to_kind = to_res.ret_kind();
@@ -75,7 +75,7 @@ where
     fn normalize(self, env: Environment<Self::Lang>) -> Derivation<Self::Lang> {
         let from_norm = self.from.clone().normalize(env.clone());
         let to_norm = self.to.clone().normalize(env);
-        let self_norm = Fun {
+        let self_norm = Self {
             from: Rc::new(from_norm.ret_ty()),
             to: Rc::new(to_norm.ret_ty()),
         };

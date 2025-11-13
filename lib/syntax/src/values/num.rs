@@ -15,8 +15,8 @@ impl<Lang> Num<Lang>
 where
     Lang: Language,
 {
-    pub fn new(i: i64) -> Num<Lang> {
-        Num {
+    #[must_use] pub const fn new(i: i64) -> Self {
+        Self {
             num: i,
             phantom: PhantomData,
         }
@@ -36,8 +36,8 @@ impl<Lang> From<Num<Lang>> for NumT<Lang>
 where
     Lang: Language,
 {
-    fn from(n: Num<Lang>) -> NumT<Lang> {
-        NumT::new(n.num)
+    fn from(n: Num<Lang>) -> Self {
+        Self::new(n.num)
     }
 }
 

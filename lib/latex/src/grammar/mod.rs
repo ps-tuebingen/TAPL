@@ -20,7 +20,7 @@ impl LatexFmt for Grammar {
 
         let mut alt_strs = vec![];
 
-        for alt in self.alternatives.iter() {
+        for alt in &self.alternatives {
             alt_strs.push(format!("&\\mid &{}\\\\", alt.to_latex(conf)));
         }
 
@@ -55,7 +55,7 @@ impl LatexFmt for LanguageGrammar {
         let kind_grammar = if self.include_kinds {
             Kind::grammar().to_latex(conf)
         } else {
-            "".to_owned()
+            String::new()
         };
 
         format!(
@@ -68,7 +68,7 @@ impl LatexFmt for LanguageRules {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         fn format_vec(rules: &HashSet<DerivationRule>, conf: &mut LatexConfig) -> String {
             let mut strs = vec![];
-            for rule in rules.iter() {
+            for rule in rules {
                 strs.push(rule.to_latex(conf));
                 conf.include_envs = true;
             }
@@ -77,31 +77,31 @@ impl LatexFmt for LanguageRules {
 
         let mut ty_str = format_vec(&self.typing, conf);
         if !ty_str.is_empty() {
-            ty_str = format!("Typing\n{ty_str}")
+            ty_str = format!("Typing\n{ty_str}");
         }
         conf.include_envs = true;
 
         let mut subty_str = format_vec(&self.subtyping, conf);
         if !subty_str.is_empty() {
-            subty_str = format!("Subtyping\n{subty_str}")
+            subty_str = format!("Subtyping\n{subty_str}");
         }
         conf.include_envs = true;
 
         let mut kind_str = format_vec(&self.kinding, conf);
         if !kind_str.is_empty() {
-            kind_str = format!("Kinding\n{kind_str}")
+            kind_str = format!("Kinding\n{kind_str}");
         }
         conf.include_envs = true;
 
         let mut norm_str = format_vec(&self.normalizing, conf);
         if !norm_str.is_empty() {
-            norm_str = format!("Normalizing\n{kind_str}")
+            norm_str = format!("Normalizing\n{kind_str}");
         }
         conf.include_envs = true;
 
         let mut eval_str = format_vec(&self.eval, conf);
         if !eval_str.is_empty() {
-            eval_str = format!("Evaluation\n{eval_str}")
+            eval_str = format!("Evaluation\n{eval_str}");
         }
         conf.include_envs = true;
 

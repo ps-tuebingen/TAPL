@@ -45,17 +45,14 @@ where
 
     const RULE: Rule = Rule::forall_unbounded_type;
 
-    fn from_pair(
-        p: Pair<'_, Rule>,
-        _: Self::LeftRecArg,
-    ) -> Result<ForallUnbounded<Lang>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
         let mut inner = pair_to_n_inner(p, vec!["Forall Variable", "Forall Body"])?;
         let var_rule = inner.remove(0);
         let mut var_inner = pair_to_n_inner(var_rule, vec!["Forall Variable"])?;
         let var = var_inner.remove(0).as_str().trim().to_owned();
         let body_rule = inner.remove(0);
         let body_ty = Lang::Type::from_pair(body_rule, ())?;
-        Ok(ForallUnbounded { var, body_ty })
+        Ok(Self { var, body_ty })
     }
 }
 
@@ -66,8 +63,8 @@ where
     Lang::Type: GroupParse,
     Top<Lang>: Into<Lang::Type>,
 {
-    fn from(fu: ForallUnbounded<Lang>) -> ForallBounded<Lang> {
-        ForallBounded::new_unbounded(&fu.var, fu.body_ty)
+    fn from(fu: ForallUnbounded<Lang>) -> Self {
+        Self::new_unbounded(&fu.var, fu.body_ty)
     }
 }
 
@@ -77,7 +74,7 @@ where
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
 {
-    fn from(fu: ForallUnbounded<Lang>) -> Forall<Lang> {
-        Forall::new(&fu.var, Kind::Star, fu.body_ty)
+    fn from(fu: ForallUnbounded<Lang>) -> Self {
+        Self::new(&fu.var, Kind::Star, fu.body_ty)
     }
 }

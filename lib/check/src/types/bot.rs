@@ -8,7 +8,7 @@ use syntax::{env::Environment, language::Language, types::Bot};
 impl<Lang> Subtypecheck for Bot<Lang>
 where
     Lang: Language,
-    Bot<Lang>: Into<Lang::Type>,
+    Self: Into<Lang::Type>,
 {
     type Lang = Lang;
     fn check_subtype(

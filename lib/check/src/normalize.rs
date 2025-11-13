@@ -4,9 +4,14 @@ use std::collections::HashSet;
 use std::rc::Rc;
 use syntax::{env::Environment, language::Language};
 
+/// Trait for normalizing Types
 pub trait Normalize {
+    /// the language types belong to
     type Lang: Language;
+    /// Normalize a given term in a given envrionment
     fn normalize(self, env: Environment<Self::Lang>) -> Derivation<Self::Lang>;
+    /// Rules used to normalize `Self`
+    /// for most types this is empty
     fn rules() -> HashSet<DerivationRule>;
 }
 
@@ -16,7 +21,7 @@ where
 {
     type Lang = T::Lang;
     fn normalize(self, env: Environment<Self::Lang>) -> Derivation<Self::Lang> {
-        Rc::unwrap_or_clone(self).normalize(env)
+        Self::unwrap_or_clone(self).normalize(env)
     }
 
     fn rules() -> HashSet<DerivationRule> {

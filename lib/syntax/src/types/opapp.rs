@@ -15,12 +15,12 @@ impl<Lang> OpApp<Lang>
 where
     Lang: Language,
 {
-    pub fn new<Ty1, Ty2>(fun: Ty1, arg: Ty2) -> OpApp<Lang>
+    pub fn new<Ty1, Ty2>(fun: Ty1, arg: Ty2) -> Self
     where
         Ty1: Into<Lang::Type>,
         Ty2: Into<Lang::Type>,
     {
-        OpApp {
+        Self {
             fun: Rc::new(fun.into()),
             arg: Rc::new(arg.into()),
         }
@@ -36,7 +36,7 @@ where
     type Target = Self;
     type Lang = Lang;
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
-        OpApp {
+        Self {
             fun: self.fun.subst_type(v, ty),
             arg: self.arg.subst_type(v, ty),
         }

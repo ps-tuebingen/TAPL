@@ -22,12 +22,12 @@ impl<Lang> Unpack<Lang>
 where
     Lang: Language,
 {
-    pub fn new<T1, T2>(tyn: &str, tn: &str, bound: T1, int: T2) -> Unpack<Lang>
+    pub fn new<T1, T2>(tyn: &str, tn: &str, bound: T1, int: T2) -> Self
     where
         T1: Into<Lang::Term>,
         T2: Into<Lang::Term>,
     {
-        Unpack {
+        Self {
             ty_name: tyn.to_owned(),
             term_name: tn.to_owned(),
             bound_term: Rc::new(bound.into()),
@@ -46,14 +46,14 @@ where
     type Lang = Lang;
     fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
         if *v == self.term_name {
-            Unpack {
+            Self {
                 ty_name: self.ty_name,
                 term_name: self.term_name,
                 bound_term: self.bound_term.subst(v, t),
                 in_term: self.in_term,
             }
         } else {
-            Unpack {
+            Self {
                 ty_name: self.ty_name,
                 term_name: self.term_name,
                 bound_term: self.bound_term.subst(v, t),
@@ -73,14 +73,14 @@ where
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         let bound_subst = self.bound_term.subst_type(v, ty);
         if *v == self.ty_name {
-            Unpack {
+            Self {
                 ty_name: self.ty_name,
                 term_name: self.term_name,
                 bound_term: bound_subst,
                 in_term: self.in_term,
             }
         } else {
-            Unpack {
+            Self {
                 ty_name: self.ty_name,
                 term_name: self.term_name,
                 bound_term: bound_subst,

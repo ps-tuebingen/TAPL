@@ -16,18 +16,18 @@ impl<Lang> OpLambda<Lang>
 where
     Lang: Language,
 {
-    pub fn new<Ty1>(var: &str, knd: Kind, ty: Ty1) -> OpLambda<Lang>
+    pub fn new<Ty1>(var: &str, knd: Kind, ty: Ty1) -> Self
     where
         Ty1: Into<Lang::Type>,
     {
-        OpLambda {
+        Self {
             var: var.to_owned(),
             annot: knd,
             body: Rc::new(ty.into()),
         }
     }
 
-    pub fn to_oplambda_unbounded(self) -> OpLambdaSub<Lang>
+    #[must_use] pub fn to_oplambda_unbounded(self) -> OpLambdaSub<Lang>
     where
         Top<Lang>: Into<Lang::Type>,
     {
@@ -47,7 +47,7 @@ where
         if *v == self.var {
             self
         } else {
-            OpLambda {
+            Self {
                 var: self.var,
                 annot: self.annot,
                 body: self.body.subst_type(v, ty),

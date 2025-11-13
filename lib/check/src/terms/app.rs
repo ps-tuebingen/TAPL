@@ -38,7 +38,7 @@ where
             premises.push(fun_norm_deriv);
         } else {
             fun_norm = fun_ty;
-        };
+        }
 
         if features.kinded {
             let knd_res = fun_norm.check_kind(env.clone())?.into_kind()?;
@@ -71,8 +71,7 @@ where
             premises.push(arg_sub_deriv);
         }
 
-        let deriv_conc =
-            TypingConclusion::new(env.clone(), self.clone(), Rc::unwrap_or_clone(fun.to));
+        let deriv_conc = TypingConclusion::new(env, self.clone(), Rc::unwrap_or_clone(fun.to));
         let deriv = TypingDerivation::app(deriv_conc, premises);
         Ok(deriv.into())
     }

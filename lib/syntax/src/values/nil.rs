@@ -14,11 +14,11 @@ impl<Lang> Nil<Lang>
 where
     Lang: Language,
 {
-    pub fn new<Ty>(ty: Ty) -> Nil<Lang>
+    pub fn new<Ty>(ty: Ty) -> Self
     where
         Ty: Into<Lang::Type>,
     {
-        Nil { ty: ty.into() }
+        Self { ty: ty.into() }
     }
 }
 
@@ -35,8 +35,8 @@ impl<Lang> From<Nil<Lang>> for NilT<Lang>
 where
     Lang: Language,
 {
-    fn from(nil: Nil<Lang>) -> NilT<Lang> {
-        NilT::new(nil.ty)
+    fn from(nil: Nil<Lang>) -> Self {
+        Self::new(nil.ty)
     }
 }
 

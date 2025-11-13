@@ -34,98 +34,84 @@ where
 {
     pub fn ret_ty(&self) -> Lang::Type {
         match self {
-            Derivation::DefinitionDerivation(deriv) => deriv.ret_ty(),
-            Derivation::TypingDerivation(typ) => typ.ret_ty(),
-            Derivation::SubtypeDerivation(sub) => sub.ret_ty(),
-            Derivation::ProgramDerivation(deriv) => deriv.ret_ty(),
-            Derivation::NormalizingDerivation(deriv) => deriv.ret_ty(),
-            Derivation::KindingDerivation(deriv) => deriv.ret_ty(),
+            Self::DefinitionDerivation(deriv) => deriv.ret_ty(),
+            Self::TypingDerivation(typ) => typ.ret_ty(),
+            Self::SubtypeDerivation(sub) => sub.ret_ty(),
+            Self::ProgramDerivation(deriv) => deriv.ret_ty(),
+            Self::NormalizingDerivation(deriv) => deriv.ret_ty(),
+            Self::KindingDerivation(deriv) => deriv.ret_ty(),
         }
     }
 
+    /// Turn `Self` into [`DefinitionDerivation`]
+    /// # Errors
+    /// Returns an error if `Self` is a different derivation
     pub fn into_def(self) -> Result<DefinitionDerivation<Lang>, UnexpectedDerivation> {
         let exp = "Definition Derivation";
         match self {
-            Derivation::DefinitionDerivation(deriv) => Ok(deriv),
-            Derivation::TypingDerivation(_) => {
-                Err(UnexpectedDerivation::new("Typing Derivation", exp))
-            }
-            Derivation::ProgramDerivation(_) => {
-                Err(UnexpectedDerivation::new("Program Derivation", exp))
-            }
-            Derivation::SubtypeDerivation(_) => {
-                Err(UnexpectedDerivation::new("Subtype Derivation", exp))
-            }
-            Derivation::NormalizingDerivation(_) => {
+            Self::DefinitionDerivation(deriv) => Ok(deriv),
+            Self::TypingDerivation(_) => Err(UnexpectedDerivation::new("Typing Derivation", exp)),
+            Self::ProgramDerivation(_) => Err(UnexpectedDerivation::new("Program Derivation", exp)),
+            Self::SubtypeDerivation(_) => Err(UnexpectedDerivation::new("Subtype Derivation", exp)),
+            Self::NormalizingDerivation(_) => {
                 Err(UnexpectedDerivation::new("Normalizing Derivation", exp))
             }
-            Derivation::KindingDerivation(_) => {
-                Err(UnexpectedDerivation::new("Kinding Derivation", exp))
-            }
+            Self::KindingDerivation(_) => Err(UnexpectedDerivation::new("Kinding Derivation", exp)),
         }
     }
 
+    /// Turn `Self` into [`TypingDerivation`]
+    /// # Errors
+    /// Returns an error if `Self` is a different derivation
     pub fn into_ty(self) -> Result<TypingDerivation<Lang>, UnexpectedDerivation> {
         let exp = "Typing Derivation";
         match self {
-            Derivation::TypingDerivation(deriv) => Ok(deriv),
-            Derivation::DefinitionDerivation(_) => {
+            Self::TypingDerivation(deriv) => Ok(deriv),
+            Self::DefinitionDerivation(_) => {
                 Err(UnexpectedDerivation::new("Definition Derivation", exp))
             }
-            Derivation::ProgramDerivation(_) => {
-                Err(UnexpectedDerivation::new("Program Derivation", exp))
-            }
-            Derivation::SubtypeDerivation(_) => {
-                Err(UnexpectedDerivation::new("Subtype Derivation", exp))
-            }
-            Derivation::NormalizingDerivation(_) => {
+            Self::ProgramDerivation(_) => Err(UnexpectedDerivation::new("Program Derivation", exp)),
+            Self::SubtypeDerivation(_) => Err(UnexpectedDerivation::new("Subtype Derivation", exp)),
+            Self::NormalizingDerivation(_) => {
                 Err(UnexpectedDerivation::new("Normalizing Derivation", exp))
             }
-            Derivation::KindingDerivation(_) => {
-                Err(UnexpectedDerivation::new("Kinding Derivation", exp))
-            }
+            Self::KindingDerivation(_) => Err(UnexpectedDerivation::new("Kinding Derivation", exp)),
         }
     }
 
+    /// Turn `Self` into [`ProgramDerivation`]
+    /// # Errors
+    /// Returns an error if `Self` is a different derivation
     pub fn into_prog(self) -> Result<ProgramDerivation<Lang>, UnexpectedDerivation> {
         let exp = "Program Derivation";
         match self {
-            Derivation::ProgramDerivation(deriv) => Ok(deriv),
-            Derivation::TypingDerivation(_) => {
-                Err(UnexpectedDerivation::new("Typing Derivation", exp))
-            }
-            Derivation::DefinitionDerivation(_) => {
+            Self::ProgramDerivation(deriv) => Ok(deriv),
+            Self::TypingDerivation(_) => Err(UnexpectedDerivation::new("Typing Derivation", exp)),
+            Self::DefinitionDerivation(_) => {
                 Err(UnexpectedDerivation::new("Definition Derivation", exp))
             }
-            Derivation::SubtypeDerivation(_) => {
-                Err(UnexpectedDerivation::new("Subtype Derivation", exp))
-            }
-            Derivation::NormalizingDerivation(_) => {
+            Self::SubtypeDerivation(_) => Err(UnexpectedDerivation::new("Subtype Derivation", exp)),
+            Self::NormalizingDerivation(_) => {
                 Err(UnexpectedDerivation::new("Normalizing Derivation", exp))
             }
-            Derivation::KindingDerivation(_) => {
-                Err(UnexpectedDerivation::new("Kinding Derivation", exp))
-            }
+            Self::KindingDerivation(_) => Err(UnexpectedDerivation::new("Kinding Derivation", exp)),
         }
     }
 
+    /// Turn `Self` into [`KindingDerivation`]
+    /// # Errors
+    /// Returns an error if `Self` is a different derivation
     pub fn into_kind(self) -> Result<KindingDerivation<Lang>, UnexpectedDerivation> {
         let exp = "Kinding Derivation";
         match self {
-            Derivation::KindingDerivation(deriv) => Ok(deriv),
-            Derivation::TypingDerivation(_) => {
-                Err(UnexpectedDerivation::new("Typing Derivation", exp))
-            }
-            Derivation::SubtypeDerivation(_) => {
-                Err(UnexpectedDerivation::new("Subtype Derivation", exp))
-            }
-            Derivation::NormalizingDerivation(_) => {
+            Self::KindingDerivation(deriv) => Ok(deriv),
+            Self::TypingDerivation(_) => Err(UnexpectedDerivation::new("Typing Derivation", exp)),
+            Self::SubtypeDerivation(_) => Err(UnexpectedDerivation::new("Subtype Derivation", exp)),
+            Self::NormalizingDerivation(_) => {
                 Err(UnexpectedDerivation::new("Normalizing Derivation", exp))
             }
-            Derivation::ProgramDerivation(_) => {
-                Err(UnexpectedDerivation::new("Program Derivation", exp))
-            }
-            Derivation::DefinitionDerivation(_) => {
+            Self::ProgramDerivation(_) => Err(UnexpectedDerivation::new("Program Derivation", exp)),
+            Self::DefinitionDerivation(_) => {
                 Err(UnexpectedDerivation::new("Definition Derivation", exp))
             }
         }
@@ -136,8 +122,8 @@ impl<Lang> From<TypingDerivation<Lang>> for Derivation<Lang>
 where
     Lang: Language,
 {
-    fn from(deriv: TypingDerivation<Lang>) -> Derivation<Lang> {
-        Derivation::TypingDerivation(deriv)
+    fn from(deriv: TypingDerivation<Lang>) -> Self {
+        Self::TypingDerivation(deriv)
     }
 }
 
@@ -145,8 +131,8 @@ impl<Lang> From<ProgramDerivation<Lang>> for Derivation<Lang>
 where
     Lang: Language,
 {
-    fn from(deriv: ProgramDerivation<Lang>) -> Derivation<Lang> {
-        Derivation::ProgramDerivation(deriv)
+    fn from(deriv: ProgramDerivation<Lang>) -> Self {
+        Self::ProgramDerivation(deriv)
     }
 }
 
@@ -154,8 +140,8 @@ impl<Lang> From<DefinitionDerivation<Lang>> for Derivation<Lang>
 where
     Lang: Language,
 {
-    fn from(deriv: DefinitionDerivation<Lang>) -> Derivation<Lang> {
-        Derivation::DefinitionDerivation(deriv)
+    fn from(deriv: DefinitionDerivation<Lang>) -> Self {
+        Self::DefinitionDerivation(deriv)
     }
 }
 
@@ -165,12 +151,12 @@ where
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Derivation::TypingDerivation(deriv) => deriv.fmt(f),
-            Derivation::ProgramDerivation(deriv) => deriv.fmt(f),
-            Derivation::DefinitionDerivation(deriv) => deriv.fmt(f),
-            Derivation::SubtypeDerivation(deriv) => deriv.fmt(f),
-            Derivation::NormalizingDerivation(deriv) => deriv.fmt(f),
-            Derivation::KindingDerivation(deriv) => deriv.fmt(f),
+            Self::TypingDerivation(deriv) => deriv.fmt(f),
+            Self::ProgramDerivation(deriv) => deriv.fmt(f),
+            Self::DefinitionDerivation(deriv) => deriv.fmt(f),
+            Self::SubtypeDerivation(deriv) => deriv.fmt(f),
+            Self::NormalizingDerivation(deriv) => deriv.fmt(f),
+            Self::KindingDerivation(deriv) => deriv.fmt(f),
         }
     }
 }

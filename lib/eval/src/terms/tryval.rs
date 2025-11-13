@@ -18,7 +18,7 @@ where
     Lang: Language,
     Lang::Term: Term + Eval<Lang = Lang> + From<Lang::Value>,
     Lang::Value: Into<Lang::Term>,
-    TryWithVal<Lang>: Into<Lang::Term>,
+    Self: Into<Lang::Term>,
     Raise<Lang>: Into<Lang::Value>,
     App<Lang>: Into<Lang::Term>,
 {
@@ -31,7 +31,7 @@ where
             let raise_term: Lang::Term = (*raise.val).into();
             let next_term = App::new(Rc::unwrap_or_clone(self.handler.clone()), raise_term).into();
             let next_step = EvalStep::tryval_catch(
-                TryWithVal::new(term_val, Rc::unwrap_or_clone(self.handler.clone())),
+                Self::new(term_val, Rc::unwrap_or_clone(self.handler.clone())),
                 next_term.clone(),
             );
             let next_res = next_term.eval(env)?;
@@ -41,15 +41,14 @@ where
             (steps, next_val)
         } else {
             let next_step = EvalStep::tryval_succ(
-                TryWithVal::new(term_val.clone(), Rc::unwrap_or_clone(self.handler.clone())),
+                Self::new(term_val.clone(), Rc::unwrap_or_clone(self.handler.clone())),
                 term_val.clone(),
             );
             (vec![next_step], term_val)
         };
 
-        let mut steps = term_res.congruence(&move |t| {
-            TryWithVal::new(t, Rc::unwrap_or_clone(self.handler.clone())).into()
-        });
+        let mut steps = term_res
+            .congruence(&move |t| Self::new(t, Rc::unwrap_or_clone(self.handler.clone())).into());
         steps.extend(res_steps);
         Ok(EvalTrace::<Lang>::new(steps, res_val))
     }

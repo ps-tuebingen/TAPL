@@ -17,586 +17,589 @@ where
     Lang: Language,
 {
     pub fn ret_ty(&self) -> Lang::Type {
-        self.conc.ty().clone()
+        self.conc.ty()
     }
 
-    pub fn app(
+    pub const fn app(
         conc: TypingConclusion<Lang>,
         premises: Vec<Derivation<Lang>>,
-    ) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    ) -> Self {
+        Self {
             conc,
             label: TypingRule::App,
             premises,
         }
     }
 
-    pub fn ascribe(
+    pub const fn ascribe(
         conc: TypingConclusion<Lang>,
         prem: Vec<Derivation<Lang>>,
-    ) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    ) -> Self {
+        Self {
             conc,
             label: TypingRule::Ascribe,
             premises: prem,
         }
     }
 
-    pub fn assign(
+    pub const fn assign(
         conc: TypingConclusion<Lang>,
         premises: Vec<Derivation<Lang>>,
-    ) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    ) -> Self {
+        Self {
             conc,
             label: TypingRule::Assign,
             premises,
         }
     }
 
-    pub fn cast(
+    pub const fn cast(
         conc: TypingConclusion<Lang>,
         prem: Vec<Derivation<Lang>>,
-    ) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    ) -> Self {
+        Self {
             conc,
             label: TypingRule::Cast,
             premises: prem,
         }
     }
 
-    pub fn cons(
+    pub const fn cons(
         conc: TypingConclusion<Lang>,
         premises: Vec<Derivation<Lang>>,
-    ) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    ) -> Self {
+        Self {
             conc,
             label: TypingRule::Cons,
             premises,
         }
     }
 
-    pub fn deref(
+    pub const fn deref(
         conc: TypingConclusion<Lang>,
         premises: Vec<Derivation<Lang>>,
-    ) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    ) -> Self {
+        Self {
             conc,
             label: TypingRule::Deref,
             premises,
         }
     }
 
-    pub fn exception(
+    pub const fn exception(
         conc: TypingConclusion<Lang>,
         premises: Vec<Derivation<Lang>>,
-    ) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    ) -> Self {
+        Self {
             conc,
             label: TypingRule::Exception,
             premises,
         }
     }
 
-    pub fn fix(
+    pub const fn fix(
         conc: TypingConclusion<Lang>,
         premises: Vec<Derivation<Lang>>,
-    ) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    ) -> Self {
+        Self {
             conc,
             label: TypingRule::Fix,
             premises,
         }
     }
 
-    pub fn fls(conc: TypingConclusion<Lang>) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    pub const fn fls(conc: TypingConclusion<Lang>) -> Self {
+        Self {
             conc,
             label: TypingRule::False,
             premises: vec![],
         }
     }
 
-    pub fn fold(
+    pub const fn fold(
         conc: TypingConclusion<Lang>,
         premises: Vec<Derivation<Lang>>,
-    ) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    ) -> Self {
+        Self {
             conc,
             label: TypingRule::Fold,
             premises,
         }
     }
 
-    pub fn fst(
+    pub const fn fst(
         conc: TypingConclusion<Lang>,
         premises: Vec<Derivation<Lang>>,
-    ) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    ) -> Self {
+        Self {
             conc,
             label: TypingRule::Fst,
             premises,
         }
     }
 
-    pub fn head(
+    pub const fn head(
         conc: TypingConclusion<Lang>,
         premises: Vec<Derivation<Lang>>,
-    ) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    ) -> Self {
+        Self {
             conc,
             label: TypingRule::Head,
             premises,
         }
     }
 
-    pub fn ift(
+    pub const fn ift(
         conc: TypingConclusion<Lang>,
         premises: Vec<Derivation<Lang>>,
-    ) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    ) -> Self {
+        Self {
             conc,
             label: TypingRule::If,
             premises,
         }
     }
 
-    pub fn isnil(
+    pub const fn isnil(
         conc: TypingConclusion<Lang>,
         premises: Vec<Derivation<Lang>>,
-    ) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    ) -> Self {
+        Self {
             conc,
             label: TypingRule::IsNil,
             premises,
         }
     }
 
-    pub fn iszero(
+    pub const fn iszero(
         conc: TypingConclusion<Lang>,
         premises: Vec<Derivation<Lang>>,
-    ) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    ) -> Self {
+        Self {
             conc,
             label: TypingRule::IsZero,
             premises,
         }
     }
 
-    pub fn lambda(
+    pub const fn lambda(
         conc: TypingConclusion<Lang>,
         premises: Vec<Derivation<Lang>>,
-    ) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    ) -> Self {
+        Self {
             conc,
             label: TypingRule::Lambda,
             premises,
         }
     }
 
-    pub fn lambdasub(
+    pub const fn lambdasub(
         conc: TypingConclusion<Lang>,
         premises: Vec<Derivation<Lang>>,
-    ) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    ) -> Self {
+        Self {
             conc,
             label: TypingRule::LambdaSub,
             premises,
         }
     }
 
-    pub fn left(
+    pub const fn left(
         conc: TypingConclusion<Lang>,
         premises: Vec<Derivation<Lang>>,
-    ) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    ) -> Self {
+        Self {
             conc,
             label: TypingRule::Left,
             premises,
         }
     }
 
-    pub fn lett(
+    pub const fn lett(
         conc: TypingConclusion<Lang>,
         premises: Vec<Derivation<Lang>>,
-    ) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    ) -> Self {
+        Self {
             conc,
             label: TypingRule::Let,
             premises,
         }
     }
 
-    pub fn listcase(
+    pub const fn listcase(
         conc: TypingConclusion<Lang>,
         premises: Vec<Derivation<Lang>>,
-    ) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    ) -> Self {
+        Self {
             conc,
             label: TypingRule::ListCase,
             premises,
         }
     }
 
-    pub fn loc(
+    pub const fn loc(
         conc: TypingConclusion<Lang>,
         premises: Vec<Derivation<Lang>>,
-    ) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    ) -> Self {
+        Self {
             conc,
             label: TypingRule::Loc,
             premises,
         }
     }
 
-    pub fn nil(
+    pub const fn nil(
         conc: TypingConclusion<Lang>,
         premises: Vec<Derivation<Lang>>,
-    ) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    ) -> Self {
+        Self {
             conc,
             label: TypingRule::Nil,
             premises,
         }
     }
 
-    pub fn nothing(
+    pub const fn nothing(
         conc: TypingConclusion<Lang>,
         premises: Vec<Derivation<Lang>>,
-    ) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    ) -> Self {
+        Self {
             conc,
             label: TypingRule::Nothing,
             premises,
         }
     }
 
-    pub fn num(conc: TypingConclusion<Lang>) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    pub const fn num(conc: TypingConclusion<Lang>) -> Self {
+        Self {
             conc,
             label: TypingRule::Num,
             premises: vec![],
         }
     }
 
-    pub fn pack(
+    pub const fn pack(
         conc: TypingConclusion<Lang>,
         premises: Vec<Derivation<Lang>>,
-    ) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    ) -> Self {
+        Self {
             conc,
             label: TypingRule::Pack,
             premises,
         }
     }
 
-    pub fn pack_bound(
+    pub const fn pack_bound(
         conc: TypingConclusion<Lang>,
         premises: Vec<Derivation<Lang>>,
-    ) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    ) -> Self {
+        Self {
             conc,
             label: TypingRule::PackBound,
             premises,
         }
     }
 
-    pub fn pair(
+    pub const fn pair(
         conc: TypingConclusion<Lang>,
         premises: Vec<Derivation<Lang>>,
-    ) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    ) -> Self {
+        Self {
             conc,
             label: TypingRule::Pair,
             premises,
         }
     }
 
-    pub fn pred(
+    pub const fn pred(
         conc: TypingConclusion<Lang>,
         premises: Vec<Derivation<Lang>>,
-    ) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    ) -> Self {
+        Self {
             conc,
             label: TypingRule::Pred,
             premises,
         }
     }
 
-    pub fn projection(
+    pub const fn projection(
         conc: TypingConclusion<Lang>,
         premises: Vec<Derivation<Lang>>,
-    ) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    ) -> Self {
+        Self {
             conc,
             label: TypingRule::Projection,
             premises,
         }
     }
 
-    pub fn raise(
+    pub const fn raise(
         conc: TypingConclusion<Lang>,
         premises: Vec<Derivation<Lang>>,
-    ) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    ) -> Self {
+        Self {
             conc,
             label: TypingRule::Raise,
             premises,
         }
     }
-    pub fn record(
+    pub const fn record(
         conc: TypingConclusion<Lang>,
         prems: Vec<Derivation<Lang>>,
-    ) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    ) -> Self {
+        Self {
             conc,
             label: TypingRule::Record,
             premises: prems,
         }
     }
 
-    pub fn recordproj(
+    pub const fn recordproj(
         conc: TypingConclusion<Lang>,
         premises: Vec<Derivation<Lang>>,
-    ) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    ) -> Self {
+        Self {
             conc,
             label: TypingRule::RecordProj,
             premises,
         }
     }
 
-    pub fn reft(
+    pub const fn reft(
         conc: TypingConclusion<Lang>,
         premises: Vec<Derivation<Lang>>,
-    ) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    ) -> Self {
+        Self {
             conc,
             label: TypingRule::Ref,
             premises,
         }
     }
 
-    pub fn right(
+    pub const fn right(
         conc: TypingConclusion<Lang>,
         premises: Vec<Derivation<Lang>>,
-    ) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    ) -> Self {
+        Self {
             conc,
             label: TypingRule::Right,
             premises,
         }
     }
 
-    pub fn snd(
+    pub const fn snd(
         conc: TypingConclusion<Lang>,
         premises: Vec<Derivation<Lang>>,
-    ) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    ) -> Self {
+        Self {
             conc,
             label: TypingRule::Snd,
             premises,
         }
     }
 
-    pub fn somecase(
+    pub const fn somecase(
         conc: TypingConclusion<Lang>,
         premises: Vec<Derivation<Lang>>,
-    ) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    ) -> Self {
+        Self {
             conc,
             label: TypingRule::SomeCase,
             premises,
         }
     }
 
-    pub fn something(
+    pub const fn something(
         conc: TypingConclusion<Lang>,
         premises: Vec<Derivation<Lang>>,
-    ) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    ) -> Self {
+        Self {
             conc,
             label: TypingRule::Something,
             premises,
         }
     }
 
-    pub fn succ(
+    pub const fn succ(
         conc: TypingConclusion<Lang>,
         premises: Vec<Derivation<Lang>>,
-    ) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    ) -> Self {
+        Self {
             conc,
             label: TypingRule::Succ,
             premises,
         }
     }
 
-    pub fn sumcase(
+    pub const fn sumcase(
         conc: TypingConclusion<Lang>,
         premises: Vec<Derivation<Lang>>,
-    ) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    ) -> Self {
+        Self {
             conc,
             label: TypingRule::SumCase,
             premises,
         }
     }
 
-    pub fn tail(
+    pub const fn tail(
         conc: TypingConclusion<Lang>,
         premises: Vec<Derivation<Lang>>,
-    ) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    ) -> Self {
+        Self {
             conc,
             label: TypingRule::Tail,
             premises,
         }
     }
 
-    pub fn tru(conc: TypingConclusion<Lang>) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    pub const fn tru(conc: TypingConclusion<Lang>) -> Self {
+        Self {
             conc,
             label: TypingRule::True,
             premises: vec![],
         }
     }
 
-    pub fn tryt(
+    pub const fn tryt(
         conc: TypingConclusion<Lang>,
         premises: Vec<Derivation<Lang>>,
-    ) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    ) -> Self {
+        Self {
             conc,
             label: TypingRule::Try,
             premises,
         }
     }
 
-    pub fn try_val(
+    pub const fn try_val(
         conc: TypingConclusion<Lang>,
         premises: Vec<Derivation<Lang>>,
-    ) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    ) -> Self {
+        Self {
             conc,
             label: TypingRule::TryVal,
             premises,
         }
     }
 
-    pub fn tuple(
+    pub const fn tuple(
         conc: TypingConclusion<Lang>,
         term_derivs: Vec<Derivation<Lang>>,
-    ) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    ) -> Self {
+        Self {
             conc,
             label: TypingRule::Tuple,
             premises: term_derivs,
         }
     }
 
-    pub fn tyapp(
+    pub const fn tyapp(
         conc: TypingConclusion<Lang>,
         premises: Vec<Derivation<Lang>>,
-    ) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    ) -> Self {
+        Self {
             conc,
             label: TypingRule::TyApp,
             premises,
         }
     }
 
-    pub fn tyapp_bounded(
+    pub const fn tyapp_bounded(
         conc: TypingConclusion<Lang>,
         premises: Vec<Derivation<Lang>>,
-    ) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    ) -> Self {
+        Self {
             conc,
             label: TypingRule::TyAppBounded,
             premises,
         }
     }
 
-    pub fn tylambda(
+    pub const fn tylambda(
         conc: TypingConclusion<Lang>,
         premises: Vec<Derivation<Lang>>,
-    ) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    ) -> Self {
+        Self {
             conc,
             label: TypingRule::TyLambda,
             premises,
         }
     }
 
-    pub fn unfold(
+    pub const fn unfold(
         conc: TypingConclusion<Lang>,
         premises: Vec<Derivation<Lang>>,
-    ) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    ) -> Self {
+        Self {
             conc,
             label: TypingRule::Unfold,
             premises,
         }
     }
 
-    pub fn unit(conc: TypingConclusion<Lang>) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    pub const fn unit(conc: TypingConclusion<Lang>) -> Self {
+        Self {
             conc,
             label: TypingRule::Unit,
             premises: vec![],
         }
     }
 
-    pub fn unpack(
+    pub const fn unpack(
         conc: TypingConclusion<Lang>,
         premises: Vec<Derivation<Lang>>,
-    ) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    ) -> Self {
+        Self {
             conc,
             label: TypingRule::Unpack,
             premises,
         }
     }
 
-    pub fn unpack_bounded(
+    pub const fn unpack_bounded(
         conc: TypingConclusion<Lang>,
         premises: Vec<Derivation<Lang>>,
-    ) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    ) -> Self {
+        Self {
             conc,
             label: TypingRule::UnpackBounded,
             premises,
         }
     }
 
-    pub fn var(conc: TypingConclusion<Lang>) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    pub const fn var(conc: TypingConclusion<Lang>) -> Self {
+        Self {
             conc,
             label: TypingRule::Variable,
             premises: vec![],
         }
     }
 
-    pub fn variant(conc: TypingConclusion<Lang>, prem: Derivation<Lang>) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    pub const fn variant(
+        conc: TypingConclusion<Lang>,
+        premises: Vec<Derivation<Lang>>,
+    ) -> Self {
+        Self {
             conc,
             label: TypingRule::Variant,
-            premises: vec![prem],
+            premises,
         }
     }
 
-    pub fn variantcase(
+    pub const fn variantcase(
         conc: TypingConclusion<Lang>,
         premises: Vec<Derivation<Lang>>,
-    ) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    ) -> Self {
+        Self {
             conc,
             label: TypingRule::VariantCase,
             premises,
         }
     }
 
-    pub fn untyped_lambda(conc: TypingConclusion<Lang>) -> TypingDerivation<Lang> {
-        TypingDerivation {
+    pub const fn untyped_lambda(conc: TypingConclusion<Lang>) -> Self {
+        Self {
             conc,
             label: TypingRule::Empty,
             premises: vec![],
@@ -609,7 +612,7 @@ where
     Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        for prem in self.premises.iter() {
+        for prem in &self.premises {
             writeln!(f, "{prem}")?;
             writeln!(f,)?;
         }

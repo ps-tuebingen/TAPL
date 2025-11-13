@@ -14,11 +14,11 @@ impl<Lang> Something<Lang>
 where
     Lang: Language,
 {
-    pub fn new<V1>(v: V1) -> Something<Lang>
+    pub fn new<V1>(v: V1) -> Self
     where
         V1: Into<Lang::Value>,
     {
-        Something {
+        Self {
             val: Box::new(v.into()),
         }
     }
@@ -37,8 +37,8 @@ impl<Lang> From<Something<Lang>> for SomethingT<Lang>
 where
     Lang: Language,
 {
-    fn from(something: Something<Lang>) -> SomethingT<Lang> {
-        SomethingT::new(*something.val)
+    fn from(something: Something<Lang>) -> Self {
+        Self::new(*something.val)
     }
 }
 

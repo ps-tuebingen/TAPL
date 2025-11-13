@@ -13,7 +13,7 @@ where
 
     const RULE: Rule = Rule::ty_lambda_kinded_term;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<TyLambda<Lang>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
         let mut inner = pair_to_n_inner(
             p,
             vec!["TyLambda Variable", "TyLambda Kind", "TyLambda Term"],
@@ -23,6 +23,6 @@ where
         let kind = Kind::from_pair(kind_rule, ())?;
         let term_rule = inner.remove(0);
         let term = Lang::Term::from_pair(term_rule, ())?;
-        Ok(TyLambda::new(var, kind, term))
+        Ok(Self::new(var, kind, term))
     }
 }

@@ -13,7 +13,7 @@ where
 
     const RULE: Rule = Rule::program;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Self, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
         let inner = p.into_inner();
         let mut defs = vec![];
         let mut main = None;
@@ -21,11 +21,10 @@ where
         for n in inner {
             if n.as_rule() == Rule::EOI {
                 if let Some(mn) = main {
-                    return Ok(Program::new(mn, defs));
-                } else {
-                    return Err(UndefinedMain.into());
+                    return Ok(Self::new(mn, defs));
                 }
-            };
+                return Err(UndefinedMain.into());
+            }
             let def_rule = pair_to_n_inner(n, vec!["Definition"])?.remove(0);
             match def_rule.as_rule() {
                 Rule::top_level_def => {

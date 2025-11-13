@@ -14,11 +14,11 @@ impl<Lang> KindingConclusion<Lang>
 where
     Lang: Language,
 {
-    pub fn new<Ty>(ty: Ty, knd: Kind) -> KindingConclusion<Lang>
+    pub fn new<Ty>(ty: Ty, knd: Kind) -> Self
     where
         Ty: Into<Lang::Type>,
     {
-        KindingConclusion {
+        Self {
             ty: ty.into(),
             kind: knd,
         }

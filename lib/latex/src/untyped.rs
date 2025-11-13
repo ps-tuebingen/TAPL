@@ -6,6 +6,6 @@ where
     Lang: Language,
 {
     fn to_latex(&self, _: &mut LatexConfig) -> String {
-        "".to_owned()
+        String::new()
     }
 }

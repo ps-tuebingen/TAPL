@@ -16,7 +16,7 @@ use syntax::{
 impl<Lang> Subtypecheck for ForallBounded<Lang>
 where
     Lang: Language,
-    ForallBounded<Lang>: Into<Lang::Type>,
+    Self: Into<Lang::Type>,
     Top<Lang>: Into<Lang::Type>,
     Lang::Type: Normalize<Lang = Lang> + TypeGroup<Lang = Lang> + Subtypecheck<Lang = Lang>,
 {
@@ -105,7 +105,7 @@ where
     fn normalize(self, mut env: Environment<Self::Lang>) -> Derivation<Self::Lang> {
         env.add_tyvar_super(self.var.clone(), Rc::unwrap_or_clone(self.ty.clone()));
         let ty_norm = self.ty.clone().normalize(env);
-        let self_norm = ForallBounded {
+        let self_norm = Self {
             var: self.var.clone(),
             sup_ty: self.sup_ty.clone(),
             ty: Rc::new(ty_norm.ret_ty()),

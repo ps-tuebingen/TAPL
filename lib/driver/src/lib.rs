@@ -25,23 +25,29 @@ use format::FormatMethod;
 pub struct Driver;
 
 impl Driver {
+    /// Parse command line arguments and run the given command
+    /// # Errors
+    /// Returns an error if arguments are malformed or there is an error running the command
     pub fn run_cli(&self) -> Result<(), DriverError> {
         let args = <Args as clap::Parser>::parse();
         let input = if matches!(args.cmd, Command::Grammar) {
-            "".to_owned()
+            String::new()
         } else {
             args.source.get_source()?
         };
         let res = dispatch_run(&args.lang, self, &args.method(), &args.cmd, input)?;
-        match args.out_file {
-            None => {
+        args.out_file.map_or_else(
+            || {
                 println!("{res}");
                 Ok(())
-            }
-            Some(out) => self.write_to_file(res, out),
-        }
+            },
+            |out| self.write_to_file(&res, out),
+        )
     }
 
+    /// Run a given command on an input and given language, then format the result
+    /// # Errors
+    /// Returns an error if the ran command returns an error
     pub fn run_format<L>(
         &self,
         method: &FormatMethod,
@@ -62,6 +68,9 @@ impl Driver {
         }
     }
 
+    /// Run a given command on an input and given language
+    /// # Errors
+    /// returns an error if the command returns an error
     pub fn run_lang(
         &self,
         input: String,
@@ -72,6 +81,10 @@ impl Driver {
         dispatch_run(lang, self, method, cmd, input).map_err(|err| err.to_string())
     }
 
+    /// Runs parsing, checking and evaluating for a given input and language
+    /// # Errors
+    /// returns an error if any of the steps return an error
+    #[must_use]
     pub fn run_all_lang(
         &self,
         input: String,
@@ -92,13 +105,16 @@ impl Driver {
             Err(err) => return (None, None, None, Some(err.to_string())),
         };
 
-        let eval_res = match dispatch_run(lang, self, method, &Command::Check, input.clone()) {
+        let eval_res = match dispatch_run(lang, self, method, &Command::Check, input) {
             Ok(v) => v,
             Err(err) => return (None, None, None, Some(err.to_string())),
         };
         (Some(parse_res), Some(check_res), Some(eval_res), None)
     }
 
+    /// Parses an input for a given language
+    /// # Errors
+    /// Returns an error if parsing returns an error
     pub fn parse<L>(&self, input: String) -> Result<Program<L>, DriverError>
     where
         L: Language,
@@ -109,6 +125,9 @@ impl Driver {
         Ok(parsed)
     }
 
+    /// Parses an input for a given language and formats it with a given method
+    /// # Errors
+    /// Returns an error if parsing returns an error
     pub fn parse_format<L>(
         &self,
         input: String,
@@ -123,6 +142,9 @@ impl Driver {
         Ok(method.format(&parsed))
     }
 
+    /// Checks a given input for a given language
+    /// # Errors
+    /// Returns an error if either parsing or checking returns an error
     pub fn check<L>(&self, input: String) -> Result<Derivation<L>, DriverError>
     where
         L: Language,
@@ -134,6 +156,9 @@ impl Driver {
         Ok(checked)
     }
 
+    /// Checks a given input for a given language and formats it with a given message
+    /// # Errors
+    /// Returns an error if parsing or checking returns an error
     pub fn check_format<L>(
         &self,
         input: String,
@@ -148,6 +173,9 @@ impl Driver {
         Ok(method.format(&checked))
     }
 
+    /// Evaluates a given input for a given language
+    /// # Errors
+    /// Returns an error if either parsing or evaluating returns an error
     pub fn eval<L>(&self, input: String) -> Result<EvalTrace<L>, DriverError>
     where
         L: Language,
@@ -159,6 +187,9 @@ impl Driver {
         Ok(evaled)
     }
 
+    /// Evalutate and format an input for a given language with given method
+    /// # Errors
+    /// Returns an error if either parsing or evaluating returns an error
     pub fn eval_format<L>(
         &self,
         input: String,
@@ -174,6 +205,8 @@ impl Driver {
         Ok(method.format(&evaled))
     }
 
+    /// Format grammar for a given language with a given method
+    #[must_use]
     pub fn grammar_format<L>(&self, method: &FormatMethod) -> String
     where
         L: LanguageDescribe,
@@ -181,7 +214,10 @@ impl Driver {
         method.format(&L::grammars())
     }
 
-    pub fn write_to_file(&self, res: String, path: PathBuf) -> Result<(), DriverError> {
+    /// Write a formatted result to a given file
+    /// # Errors
+    /// returns an error if there is an error with file handling
+    pub fn write_to_file(&self, res: &str, path: PathBuf) -> Result<(), DriverError> {
         let mut file =
             File::create(path).map_err(|err| FileAccess::new("open file for writing", err))?;
         file.write_all(res.as_bytes())
@@ -190,6 +226,9 @@ impl Driver {
     }
 }
 
+/// run a command with a given formatmethod and command for a specific language
+/// # Errors
+/// returns an error if any of the steps in the command returns an error
 pub fn dispatch_run(
     lang: &AllLanguages,
     driver: &Driver,

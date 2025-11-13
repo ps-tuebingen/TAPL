@@ -19,11 +19,11 @@ impl<Lang> EvalTrace<Lang>
 where
     Lang: Language,
 {
-    pub fn new<V1>(steps: Vec<EvalStep<Lang>>, val: V1) -> EvalTrace<Lang>
+    pub fn new<V1>(steps: Vec<EvalStep<Lang>>, val: V1) -> Self
     where
         V1: Into<Lang::Value>,
     {
-        EvalTrace {
+        Self {
             steps,
             val: val.into(),
         }
@@ -46,7 +46,7 @@ where
     Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        for step in self.steps.iter() {
+        for step in &self.steps {
             writeln!(f, "{step}")?;
         }
         writeln!(f)?;

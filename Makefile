@@ -22,6 +22,10 @@ check: prepare
 	cargo fmt --all
 	cargo clippy --all -- -D warnings
 
+.PHONY: check-more
+check-more:
+	cargo clippy --all-targets --all-features -- -W clippy::all -W clippy::pedantic -W clippy::nursery -A clippy::used_underscore_binding
+
 .PHONY: clean
 clean:
 	find -name "*.aux" -delete

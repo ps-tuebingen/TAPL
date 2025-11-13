@@ -19,11 +19,11 @@ impl<Lang> RecordProj<Lang>
 where
     Lang: Language,
 {
-    pub fn new<T1>(t: T1, lb: &str) -> RecordProj<Lang>
+    pub fn new<T1>(t: T1, lb: &str) -> Self
     where
         T1: Into<Lang::Term>,
     {
-        RecordProj {
+        Self {
             record: Rc::new(t.into()),
             label: lb.to_owned(),
         }
@@ -39,7 +39,7 @@ where
     type Target = Self;
     type Lang = Lang;
     fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
-        RecordProj {
+        Self {
             record: self.record.subst(v, t),
             label: self.label,
         }
@@ -53,7 +53,7 @@ where
     type Target = Self;
     type Lang = Lang;
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
-        RecordProj {
+        Self {
             record: self.record.subst_type(v, ty),
             label: self.label,
         }

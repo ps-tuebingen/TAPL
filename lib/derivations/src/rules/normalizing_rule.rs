@@ -10,9 +10,9 @@ pub enum NormalizingRule {
 impl fmt::Display for NormalizingRule {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            NormalizingRule::Refl => f.write_str("Norm-Refl"),
-            NormalizingRule::Cong => f.write_str("Norm-Cong"),
-            NormalizingRule::OpApp => f.write_str("Norm-AppAbs"),
+            Self::Refl => f.write_str("Norm-Refl"),
+            Self::Cong => f.write_str("Norm-Cong"),
+            Self::OpApp => f.write_str("Norm-AppAbs"),
         }
     }
 }

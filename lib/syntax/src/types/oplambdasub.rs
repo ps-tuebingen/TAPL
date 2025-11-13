@@ -16,24 +16,24 @@ impl<Lang> OpLambdaSub<Lang>
 where
     Lang: Language,
 {
-    pub fn new<Ty1, Ty2>(var: &str, sup: Ty1, ty: Ty2) -> OpLambdaSub<Lang>
+    pub fn new<Ty1, Ty2>(var: &str, sup: Ty1, ty: Ty2) -> Self
     where
         Ty1: Into<Lang::Type>,
         Ty2: Into<Lang::Type>,
     {
-        OpLambdaSub {
+        Self {
             var: var.to_owned(),
             sup: Rc::new(sup.into()),
             body: Rc::new(ty.into()),
         }
     }
 
-    pub fn new_unbounded<Ty1>(var: &str, knd: Kind, ty: Ty1) -> OpLambdaSub<Lang>
+    pub fn new_unbounded<Ty1>(var: &str, knd: Kind, ty: Ty1) -> Self
     where
         Ty1: Into<Lang::Type>,
         Top<Lang>: Into<Lang::Type>,
     {
-        OpLambdaSub {
+        Self {
             var: var.to_owned(),
             sup: Rc::new(Top::new(knd).into()),
             body: Rc::new(ty.into()),
@@ -52,13 +52,13 @@ where
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         let sup_subst = self.sup.subst_type(v, ty);
         if *v == self.var {
-            OpLambdaSub {
+            Self {
                 var: self.var,
                 sup: sup_subst,
                 body: self.body,
             }
         } else {
-            OpLambdaSub {
+            Self {
                 var: self.var,
                 sup: sup_subst,
                 body: self.body.subst_type(v, ty),

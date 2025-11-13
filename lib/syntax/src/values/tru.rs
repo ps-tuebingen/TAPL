@@ -14,8 +14,8 @@ impl<Lang> True<Lang>
 where
     Lang: Language,
 {
-    pub fn new() -> True<Lang> {
-        True {
+    #[must_use] pub const fn new() -> Self {
+        Self {
             phantom: PhantomData,
         }
     }
@@ -25,8 +25,8 @@ impl<Lang> Default for True<Lang>
 where
     Lang: Language,
 {
-    fn default() -> True<Lang> {
-        True::new()
+    fn default() -> Self {
+        Self::new()
     }
 }
 
@@ -43,8 +43,8 @@ impl<Lang> From<True<Lang>> for TrueT<Lang>
 where
     Lang: Language,
 {
-    fn from(_: True<Lang>) -> TrueT<Lang> {
-        TrueT::new()
+    fn from(_: True<Lang>) -> Self {
+        Self::new()
     }
 }
 

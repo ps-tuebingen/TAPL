@@ -30,7 +30,7 @@ impl ValueTrait for Value {
 
 impl ValueGroup for Value {
     fn into_lambda(self) -> Result<Lambda<Subtypes>, ValueMismatch> {
-        if let Value::Lambda(lam) = self {
+        if let Self::Lambda(lam) = self {
             Ok(lam)
         } else {
             Err(ValueMismatch::new(self.to_string(), "Lambda".to_owned()))
@@ -38,7 +38,7 @@ impl ValueGroup for Value {
     }
 
     fn into_record(self) -> Result<Record<Subtypes>, ValueMismatch> {
-        if let Value::Record(rec) = self {
+        if let Self::Record(rec) = self {
             Ok(rec)
         } else {
             Err(ValueMismatch::new(self.to_string(), "Record".to_owned()))
@@ -46,7 +46,7 @@ impl ValueGroup for Value {
     }
 
     fn into_variant(self) -> Result<Variant<Subtypes>, ValueMismatch> {
-        if let Value::Variant(var) = self {
+        if let Self::Variant(var) = self {
             Ok(var)
         } else {
             Err(ValueMismatch::new(self.to_string(), "Variant".to_owned()))
@@ -54,7 +54,7 @@ impl ValueGroup for Value {
     }
 
     fn into_nil(self) -> Result<Nil<Subtypes>, ValueMismatch> {
-        if let Value::Nil(nil) = self {
+        if let Self::Nil(nil) = self {
             Ok(nil)
         } else {
             Err(ValueMismatch::new(self.to_string(), "Nil".to_owned()))
@@ -62,7 +62,7 @@ impl ValueGroup for Value {
     }
 
     fn into_cons(self) -> Result<Cons<Subtypes>, ValueMismatch> {
-        if let Value::Cons(cons) = self {
+        if let Self::Cons(cons) = self {
             Ok(cons)
         } else {
             Err(ValueMismatch::new(self.to_string(), "Cons".to_owned()))
@@ -70,7 +70,7 @@ impl ValueGroup for Value {
     }
 
     fn into_loc(self) -> Result<Loc<Subtypes>, ValueMismatch> {
-        if let Value::Loc(loc) = self {
+        if let Self::Loc(loc) = self {
             Ok(loc)
         } else {
             Err(ValueMismatch::new(self.to_string(), "Location".to_owned()))
@@ -78,7 +78,7 @@ impl ValueGroup for Value {
     }
 
     fn into_num(self) -> Result<Num<Subtypes>, ValueMismatch> {
-        if let Value::Num(num) = self {
+        if let Self::Num(num) = self {
             Ok(num)
         } else {
             Err(ValueMismatch::new(self.to_string(), "Number".to_owned()))
@@ -86,7 +86,7 @@ impl ValueGroup for Value {
     }
 
     fn into_true(self) -> Result<True<Subtypes>, ValueMismatch> {
-        if let Value::True(tru) = self {
+        if let Self::True(tru) = self {
             Ok(tru)
         } else {
             Err(ValueMismatch::new(self.to_string(), "True".to_owned()))
@@ -94,7 +94,7 @@ impl ValueGroup for Value {
     }
 
     fn into_false(self) -> Result<False<Subtypes>, ValueMismatch> {
-        if let Value::False(fls) = self {
+        if let Self::False(fls) = self {
             Ok(fls)
         } else {
             Err(ValueMismatch::new(self.to_string(), "False".to_owned()))

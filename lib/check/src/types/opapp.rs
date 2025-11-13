@@ -83,10 +83,7 @@ where
         let fun_norm = fun_norm_deriv.ret_ty();
         premises.push(fun_norm_deriv);
         if let Ok(oplam) = fun_norm.clone().into_oplambda() {
-            let oplam_deriv = oplam
-                .body
-                .subst_type(&oplam.var, &self.arg)
-                .normalize(env.clone());
+            let oplam_deriv = oplam.body.subst_type(&oplam.var, &self.arg).normalize(env);
             let body_norm = oplam_deriv.ret_ty();
             premises.push(oplam_deriv);
             NormalizingDerivation::opapp(self, body_norm, premises).into()
@@ -97,7 +94,7 @@ where
             NormalizingDerivation::opapp(self, body_norm, premises).into()
         } else {
             let arg_deriv = self.arg.clone().normalize(env);
-            let body_norm = OpApp {
+            let body_norm = Self {
                 fun: Rc::new(fun_norm),
                 arg: Rc::new(arg_deriv.ret_ty()),
             };

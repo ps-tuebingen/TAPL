@@ -1,6 +1,6 @@
 use crate::format::FormatMethod;
 use clap::Parser;
-use errors::driver_error::DriverError;
+use errors::{FileAccess, driver_error::DriverError};
 use languages::AllLanguages;
 use std::{fmt, fs::read_to_string, path::PathBuf, str::FromStr};
 
@@ -16,11 +16,9 @@ pub struct Args {
 }
 
 impl Args {
+    #[must_use]
     pub fn method(&self) -> FormatMethod {
-        match self.out_method {
-            Some(mthd) => mthd,
-            None => FormatMethod::Simple,
-        }
+        self.out_method.unwrap_or(FormatMethod::Simple)
     }
 }
 
@@ -36,10 +34,10 @@ impl FromStr for Command {
     type Err = DriverError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_lowercase().trim() {
-            "parse" => Ok(Command::Parse),
-            "eval" | "evaluate" => Ok(Command::Evaluate),
-            "check" | "typecheck" => Ok(Command::Check),
-            "grammar" => Ok(Command::Grammar),
+            "parse" => Ok(Self::Parse),
+            "eval" | "evaluate" => Ok(Self::Evaluate),
+            "check" | "typecheck" => Ok(Self::Check),
+            "grammar" => Ok(Self::Grammar),
             _ => Err(DriverError::UndefinedCommand(
                 "Not a valid command".to_owned(),
             )),
@@ -49,10 +47,10 @@ impl FromStr for Command {
 impl fmt::Display for Command {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Command::Parse => f.write_str("parse"),
-            Command::Evaluate => f.write_str("evaluate"),
-            Command::Check => f.write_str("check"),
-            Command::Grammar => f.write_str("grammar"),
+            Self::Parse => f.write_str("parse"),
+            Self::Evaluate => f.write_str("evaluate"),
+            Self::Check => f.write_str("check"),
+            Self::Grammar => f.write_str("grammar"),
         }
     }
 }
@@ -69,13 +67,18 @@ pub struct Source {
 }
 
 impl Source {
+    /// Get the source string specified in the command line
+    /// either the passed literal string or the read file
+    /// # Errors
+    /// Returns an error if either no source was provided or the file could not be read
     pub fn get_source(&self) -> Result<String, DriverError> {
         if let Some(ref src) = self.input {
             return Ok(src.clone());
         }
 
         if let Some(ref path) = self.file {
-            let contents = read_to_string(path).expect("Could not read input file");
+            let contents =
+                read_to_string(path).map_err(|err| FileAccess::new("read source file", err))?;
             return Ok(contents);
         }
 

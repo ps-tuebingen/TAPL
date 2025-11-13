@@ -37,12 +37,12 @@ where
 
     const RULE: Rule = Rule::ty_lambda_star_term;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Self, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
         let mut inner = pair_to_n_inner(p, vec!["Type Variable", "Type Abstraction Body"])?;
         let var = inner.remove(0).as_str().trim().to_owned();
         let body_rule = inner.remove(0);
         let body = Lang::Term::from_pair(body_rule, ())?;
-        Ok(LambdaSubStar { var, body })
+        Ok(Self { var, body })
     }
 }
 
@@ -53,7 +53,7 @@ where
     Lang::Type: GroupParse,
     Top<Lang>: Into<Lang::Type>,
 {
-    fn from(ls: LambdaSubStar<Lang>) -> LambdaSub<Lang> {
-        LambdaSub::new_unbounded(&ls.var, ls.body)
+    fn from(ls: LambdaSubStar<Lang>) -> Self {
+        Self::new_unbounded(&ls.var, ls.body)
     }
 }

@@ -76,7 +76,7 @@ where
 
         then_norm.check_equal(&else_norm)?;
 
-        let conc = TypingConclusion::new(env.clone(), self.clone(), then_norm);
+        let conc = TypingConclusion::new(env, self.clone(), then_norm);
         let deriv = TypingDerivation::ift(conc, premises);
         Ok(deriv.into())
     }

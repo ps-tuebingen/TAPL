@@ -19,7 +19,7 @@ impl ValueTrait for Value {
 
 impl ValueGroup for Value {
     fn into_lambda(self) -> Result<Lambda<SystemF>, ValueMismatch> {
-        if let Value::Lambda(lam) = self {
+        if let Self::Lambda(lam) = self {
             Ok(lam)
         } else {
             Err(ValueMismatch::new(self.to_string(), "Lambda".to_owned()))
@@ -27,7 +27,7 @@ impl ValueGroup for Value {
     }
 
     fn into_tylambda(self) -> Result<TyLambda<SystemF>, ValueMismatch> {
-        if let Value::TyLambda(lam) = self {
+        if let Self::TyLambda(lam) = self {
             Ok(lam)
         } else {
             Err(ValueMismatch::new(self.to_string(), "TyLambda".to_owned()))

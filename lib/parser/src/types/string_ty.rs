@@ -6,15 +6,21 @@ use syntax::{
     types::{Bool, Bot, Nat, Unit},
 };
 
+/// Helper struct to parse primitive types
+/// each field is `None` when `Lang` does not include the given type and `Some` when it does
 pub struct StringTy<Lang>
 where
     Lang: Language,
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
 {
+    /// [`Nat`]
     nat: Option<Lang::Type>,
+    /// [`Bool`]
     bool: Option<Lang::Type>,
+    /// [`Unit`]
     unit: Option<Lang::Type>,
+    /// [`Bot`]
     bot: Option<Lang::Type>,
 }
 
@@ -24,8 +30,10 @@ where
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
 {
-    pub fn new() -> StringTy<Lang> {
-        StringTy {
+    /// Create `Self` with no allowed types
+    #[must_use]
+    pub const fn new() -> Self {
+        Self {
             nat: None,
             bool: None,
             unit: None,
@@ -33,11 +41,13 @@ where
         }
     }
 
-    pub fn with_bot(self) -> StringTy<Lang>
+    /// Add [`Bot`] to allowed types
+    #[must_use]
+    pub fn with_bot(self) -> Self
     where
         Bot<Lang>: Into<Lang::Type>,
     {
-        StringTy {
+        Self {
             bot: Some(Bot::new().into()),
             bool: self.bool,
             unit: self.unit,
@@ -45,11 +55,13 @@ where
         }
     }
 
-    pub fn with_nat(self) -> StringTy<Lang>
+    /// add [`Nat`] to allowed types
+    #[must_use]
+    pub fn with_nat(self) -> Self
     where
         Nat<Lang>: Into<Lang::Type>,
     {
-        StringTy {
+        Self {
             bot: self.bot,
             nat: Some(Nat::new().into()),
             bool: self.bool,
@@ -57,11 +69,13 @@ where
         }
     }
 
-    pub fn with_bool(self) -> StringTy<Lang>
+    /// Add [`Bool`] to allowed types
+    #[must_use]
+    pub fn with_bool(self) -> Self
     where
         Bool<Lang>: Into<Lang::Type>,
     {
-        StringTy {
+        Self {
             bot: self.bot,
             nat: self.nat,
             bool: Some(Bool::new().into()),
@@ -69,11 +83,13 @@ where
         }
     }
 
-    pub fn with_unit(self) -> StringTy<Lang>
+    /// Add [`Unit`] to allowed types
+    #[must_use]
+    pub fn with_unit(self) -> Self
     where
         Unit<Lang>: Into<Lang::Type>,
     {
-        StringTy {
+        Self {
             bot: self.bot,
             nat: self.nat,
             bool: self.bool,
@@ -81,37 +97,18 @@ where
         }
     }
 
-    pub fn from_pair(self, p: Pair<'_, Rule>) -> Result<Lang::Type, ParserError> {
+    /// Parse a string type from a pair
+    /// behaves like [`crate::Parse::from_pair`] but requires `self` to already be configured
+    /// # Errors
+    /// returns an error if the parsed value does not correspond to a primitive type
+    /// or when `self` does not allow this type
+    pub fn from_pair(self, p: &Pair<'_, Rule>) -> Result<Lang::Type, ParserError> {
         let err = UnknownKeyword::new(p.as_str()).into();
         match p.as_str().to_lowercase().trim() {
-            "bot" => {
-                if let Some(b) = self.bot {
-                    Ok(b)
-                } else {
-                    Err(err)
-                }
-            }
-            "nat" => {
-                if let Some(n) = self.nat {
-                    Ok(n)
-                } else {
-                    Err(err)
-                }
-            }
-            "bool" => {
-                if let Some(b) = self.bool {
-                    Ok(b)
-                } else {
-                    Err(err)
-                }
-            }
-            "unit" => {
-                if let Some(u) = self.unit {
-                    Ok(u)
-                } else {
-                    Err(err)
-                }
-            }
+            "bot" => self.bot.map_or_else(|| Err(err), Ok),
+            "nat" => self.nat.map_or_else(|| Err(err), Ok),
+            "bool" => self.bool.map_or_else(|| Err(err), Ok),
+            "unit" => self.unit.map_or_else(|| Err(err), Ok),
             _ => Err(err),
         }
     }
@@ -123,7 +120,7 @@ where
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
 {
-    fn default() -> StringTy<Lang> {
-        StringTy::new()
+    fn default() -> Self {
+        Self::new()
     }
 }

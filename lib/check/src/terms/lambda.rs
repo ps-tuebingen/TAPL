@@ -40,7 +40,7 @@ where
             premises.push(body_norm_deriv);
         } else {
             body_norm = body_ty;
-        };
+        }
 
         if features.kinded {
             premises.push(body_norm.check_kind(env.clone())?);

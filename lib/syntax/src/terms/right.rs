@@ -19,12 +19,12 @@ impl<Lang> Right<Lang>
 where
     Lang: Language,
 {
-    pub fn new<T1, Ty1>(right_t: T1, ty: Ty1) -> Right<Lang>
+    pub fn new<T1, Ty1>(right_t: T1, ty: Ty1) -> Self
     where
         T1: Into<Lang::Term>,
         Ty1: Into<Lang::Type>,
     {
-        Right {
+        Self {
             right_term: Rc::new(right_t.into()),
             ty: ty.into(),
         }
@@ -40,7 +40,7 @@ where
     type Target = Self;
     type Lang = Lang;
     fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
-        Right {
+        Self {
             right_term: self.right_term.subst(v, t),
             ty: self.ty,
         }
@@ -54,7 +54,7 @@ where
     type Target = Self;
     type Lang = Lang;
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
-        Right {
+        Self {
             right_term: self.right_term.subst_type(v, ty),
             ty: self.ty.subst_type(v, ty),
         }

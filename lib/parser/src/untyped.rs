@@ -10,10 +10,10 @@ where
 {
     const RULE: Rule = Rule::r#type;
     fn from_pair_nonrec(_: Pair<'_, Rule>) -> Result<Self, ParserError> {
-        Ok(Untyped::new())
+        Ok(Self::new())
     }
 
     fn from_pair_leftrec(_: Pair<'_, Rule>, _: Self) -> Result<Self, ParserError> {
-        Ok(Untyped::new())
+        Ok(Self::new())
     }
 }

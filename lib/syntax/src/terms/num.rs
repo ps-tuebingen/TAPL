@@ -19,8 +19,8 @@ impl<Lang> Num<Lang>
 where
     Lang: Language,
 {
-    pub fn new(num: i64) -> Num<Lang> {
-        Num {
+    #[must_use] pub const fn new(num: i64) -> Self {
+        Self {
             num,
             phantom: PhantomData,
         }

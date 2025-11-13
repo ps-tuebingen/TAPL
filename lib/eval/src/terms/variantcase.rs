@@ -15,7 +15,7 @@ impl<Lang> Eval for VariantCase<Lang>
 where
     Lang: Language,
     Lang::Term: Eval<Lang = Lang> + From<Lang::Value>,
-    VariantCase<Lang>: Into<Lang::Term>,
+    Self: Into<Lang::Term>,
 {
     type Lang = Lang;
 
@@ -29,19 +29,18 @@ where
             .clone()
             .into_iter()
             .find(|pt| *pt.label == var_val.label)
-            .ok_or(UndefinedLabel::new(&var_val.label))?;
+            .ok_or_else(|| UndefinedLabel::new(&var_val.label))?;
         let rhs_subst = matching
             .rhs
             .subst(&matching.bound_var, &((*var_val.val).into()));
         let next_step = EvalStep::variantcase(
-            VariantCase::new(bound_val, self.patterns.clone()),
+            Self::new(bound_val, self.patterns.clone()),
             Rc::unwrap_or_clone(rhs_subst.clone()),
         );
         let rhs_res = rhs_subst.eval(env)?;
         let val = rhs_res.val();
 
-        let mut steps =
-            bound_res.congruence(&move |t| VariantCase::new(t, self.patterns.clone()).into());
+        let mut steps = bound_res.congruence(&move |t| Self::new(t, self.patterns.clone()).into());
         steps.push(next_step);
         steps.extend(rhs_res.steps);
         Ok(EvalTrace::<Lang>::new(steps, val))

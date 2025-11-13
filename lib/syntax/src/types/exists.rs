@@ -16,18 +16,18 @@ impl<Lang> Exists<Lang>
 where
     Lang: Language,
 {
-    pub fn new<Ty1>(v: &str, knd: Kind, ty: Ty1) -> Exists<Lang>
+    pub fn new<Ty1>(v: &str, knd: Kind, ty: Ty1) -> Self
     where
         Ty1: Into<Lang::Type>,
     {
-        Exists {
+        Self {
             var: v.to_owned(),
             kind: knd,
             ty: Rc::new(ty.into()),
         }
     }
 
-    pub fn to_exists_bounded(self) -> ExistsBounded<Lang>
+    #[must_use] pub fn to_exists_bounded(self) -> ExistsBounded<Lang>
     where
         Top<Lang>: Into<Lang::Type>,
     {
@@ -48,7 +48,7 @@ where
         if *v == self.var {
             self
         } else {
-            Exists {
+            Self {
                 var: self.var,
                 kind: self.kind,
                 ty: self.ty.subst_type(v, ty),

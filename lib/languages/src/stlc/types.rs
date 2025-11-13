@@ -42,7 +42,7 @@ impl TypeTrait for Type {}
 impl TypeGroup for Type {
     type Lang = Stlc;
     fn into_unit(self) -> Result<Unit<Stlc>, TypeMismatch> {
-        if let Type::Unit(u) = self {
+        if let Self::Unit(u) = self {
             Ok(u)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Unit".to_owned()))
@@ -50,7 +50,7 @@ impl TypeGroup for Type {
     }
 
     fn into_fun(self) -> Result<Fun<Stlc>, TypeMismatch> {
-        if let Type::Fun(fun) = self {
+        if let Self::Fun(fun) = self {
             Ok(fun)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Function".to_owned()))
@@ -58,7 +58,7 @@ impl TypeGroup for Type {
     }
 
     fn into_bool(self) -> Result<Bool<Stlc>, TypeMismatch> {
-        if let Type::Bool(b) = self {
+        if let Self::Bool(b) = self {
             Ok(b)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Bool".to_owned()))
@@ -66,7 +66,7 @@ impl TypeGroup for Type {
     }
 
     fn into_nat(self) -> Result<Nat<Stlc>, TypeMismatch> {
-        if let Type::Nat(n) = self {
+        if let Self::Nat(n) = self {
             Ok(n)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Nat".to_owned()))
@@ -74,7 +74,7 @@ impl TypeGroup for Type {
     }
 
     fn into_product(self) -> Result<Product<Stlc>, TypeMismatch> {
-        if let Type::Prod(prod) = self {
+        if let Self::Prod(prod) = self {
             Ok(prod)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Product".to_owned()))
@@ -82,7 +82,7 @@ impl TypeGroup for Type {
     }
 
     fn into_tuple(self) -> Result<Tuple<Stlc>, TypeMismatch> {
-        if let Type::Tup(tup) = self {
+        if let Self::Tup(tup) = self {
             Ok(tup)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Tuple".to_owned()))
@@ -90,7 +90,7 @@ impl TypeGroup for Type {
     }
 
     fn into_record(self) -> Result<Record<Stlc>, TypeMismatch> {
-        if let Type::Record(rec) = self {
+        if let Self::Record(rec) = self {
             Ok(rec)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Record".to_owned()))
@@ -98,7 +98,7 @@ impl TypeGroup for Type {
     }
 
     fn into_sum(self) -> Result<Sum<Stlc>, TypeMismatch> {
-        if let Type::Sum(sum) = self {
+        if let Self::Sum(sum) = self {
             Ok(sum)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Sum".to_owned()))
@@ -106,7 +106,7 @@ impl TypeGroup for Type {
     }
 
     fn into_variant(self) -> Result<Variant<Stlc>, TypeMismatch> {
-        if let Type::Variant(var) = self {
+        if let Self::Variant(var) = self {
             Ok(var)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Variant".to_owned()))
@@ -114,7 +114,7 @@ impl TypeGroup for Type {
     }
 
     fn into_optional(self) -> Result<Optional<Stlc>, TypeMismatch> {
-        if let Type::Optional(opt) = self {
+        if let Self::Optional(opt) = self {
             Ok(opt)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Option".to_owned()))
@@ -122,7 +122,7 @@ impl TypeGroup for Type {
     }
 
     fn into_list(self) -> Result<List<Stlc>, TypeMismatch> {
-        if let Type::List(list) = self {
+        if let Self::List(list) = self {
             Ok(list)
         } else {
             Err(TypeMismatch::new(self.to_string(), "List".to_owned()))

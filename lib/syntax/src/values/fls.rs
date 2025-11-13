@@ -14,8 +14,8 @@ impl<Lang> False<Lang>
 where
     Lang: Language,
 {
-    pub fn new() -> False<Lang> {
-        False {
+    #[must_use] pub const fn new() -> Self {
+        Self {
             phantom: PhantomData,
         }
     }
@@ -25,8 +25,8 @@ impl<Lang> Default for False<Lang>
 where
     Lang: Language,
 {
-    fn default() -> False<Lang> {
-        False::new()
+    fn default() -> Self {
+        Self::new()
     }
 }
 
@@ -43,8 +43,8 @@ impl<Lang> From<False<Lang>> for FalseT<Lang>
 where
     Lang: Language,
 {
-    fn from(_: False<Lang>) -> FalseT<Lang> {
-        FalseT::new()
+    fn from(_: False<Lang>) -> Self {
+        Self::new()
     }
 }
 

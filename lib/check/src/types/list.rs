@@ -16,7 +16,7 @@ impl<Lang> Subtypecheck for List<Lang>
 where
     Lang: Language,
     Top<Lang>: Into<Lang::Type>,
-    List<Lang>: Into<Lang::Type>,
+    Self: Into<Lang::Type>,
     Lang::Type: Subtypecheck<Lang = Lang> + TypeGroup<Lang = Lang>,
 {
     type Lang = Lang;

@@ -55,7 +55,7 @@ where
         }
 
         ex_norm.check_equal(&err_norm)?;
-        let conc = TypingConclusion::new(env, self.clone(), cont_norm.clone());
+        let conc = TypingConclusion::new(env, self.clone(), cont_norm);
         let deriv = TypingDerivation::raise(conc, premises);
         Ok(deriv.into())
     }

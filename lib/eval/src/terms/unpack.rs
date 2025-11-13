@@ -19,7 +19,7 @@ impl<Lang> Eval for Unpack<Lang>
 where
     Lang: Language,
     Lang::Term: Term + Eval<Lang = Lang> + From<Lang::Value>,
-    Unpack<Lang>: Into<Lang::Term>,
+    Self: Into<Lang::Term>,
 {
     type Lang = Lang;
 
@@ -33,7 +33,7 @@ where
             .subst_type(&self.ty_name, &pack_val.inner_ty)
             .subst(&self.term_name, &((*pack_val.val).into()));
         let next_step = EvalStep::unpackpack(
-            Unpack::new(
+            Self::new(
                 &self.ty_name,
                 &self.term_name,
                 term_val,
@@ -45,7 +45,7 @@ where
         let val = in_res.val();
 
         let mut steps = term_res.congruence(&move |t| {
-            Unpack::new(
+            Self::new(
                 &self.ty_name,
                 &self.term_name,
                 t,

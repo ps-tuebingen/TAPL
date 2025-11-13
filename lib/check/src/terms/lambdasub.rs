@@ -37,7 +37,7 @@ where
             premises.push(sup_res.into());
         }
 
-        env.add_tyvar_super(self.var.clone(), sup_norm.clone());
+        env.add_tyvar_super(self.var.clone(), sup_norm);
         let term_res = self.body.check(env.clone())?;
         let term_ty = term_res.ret_ty();
         premises.push(term_res);

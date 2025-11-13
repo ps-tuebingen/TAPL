@@ -16,9 +16,8 @@ impl<Lang> Subtypecheck for Sink<Lang>
 where
     Lang: Language,
     Top<Lang>: Into<Lang::Type>,
-    Sink<Lang>: Into<Lang::Type>,
-    Lang::Type: Subtypecheck<Lang = Lang>,
-    Lang::Type: TypeGroup<Lang = Lang>,
+    Self: Into<Lang::Type>,
+    Lang::Type: Subtypecheck<Lang = Lang> + TypeGroup<Lang = Lang>,
 {
     type Lang = Lang;
     fn check_subtype(

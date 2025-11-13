@@ -19,8 +19,8 @@ impl<Lang> Environment<Lang>
 where
     Lang: Language,
 {
-    pub fn new() -> Environment<Lang> {
-        Environment {
+    #[must_use] pub fn new() -> Self {
+        Self {
             var_bindings: HashMap::new(),
             definitions: HashMap::new(),
             tyvar_bindings: HashMap::new(),
@@ -87,8 +87,8 @@ impl<Lang> Default for Environment<Lang>
 where
     Lang: Language,
 {
-    fn default() -> Environment<Lang> {
-        Environment::new()
+    fn default() -> Self {
+        Self::new()
     }
 }
 
@@ -97,23 +97,23 @@ where
     Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        for (var, ty) in self.var_bindings.iter() {
+        for (var, ty) in &self.var_bindings {
             write!(f, "{var} : {ty},")?;
         }
 
-        for (nm, ty) in self.definitions.iter() {
+        for (nm, ty) in &self.definitions {
             write!(f, "{nm} : {ty},")?;
         }
 
-        for (var, knd) in self.tyvar_bindings.iter() {
+        for (var, knd) in &self.tyvar_bindings {
             write!(f, "{var} :: {knd}")?;
         }
 
-        for (var, sup) in self.tyvar_super.iter() {
+        for (var, sup) in &self.tyvar_super {
             write!(f, "{var} <: {sup}")?;
         }
 
-        for (loc, ty) in self.location_bindings.iter() {
+        for (loc, ty) in &self.location_bindings {
             write!(f, "{loc} : {ty}")?;
         }
         Ok(())

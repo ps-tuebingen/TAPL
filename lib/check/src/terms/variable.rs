@@ -15,7 +15,7 @@ where
 
     fn check(&self, env: Environment<Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
         let ty = env.get_var(&self.var)?;
-        let conc = TypingConclusion::new(env.clone(), self.clone(), ty);
+        let conc = TypingConclusion::new(env, self.clone(), ty);
         let deriv = TypingDerivation::var(conc);
         Ok(deriv.into())
     }

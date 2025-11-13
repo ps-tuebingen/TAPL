@@ -35,14 +35,14 @@ impl syntax::types::Type for Type {}
 impl TypeGroup for Type {
     type Lang = BoundedQuantification;
     fn into_variable(self) -> Result<TypeVariable<BoundedQuantification>, TypeMismatch> {
-        if let Type::Var(var) = self {
+        if let Self::Var(var) = self {
             Ok(var)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Variable".to_owned()))
         }
     }
     fn into_top(self) -> Result<Top<BoundedQuantification>, TypeMismatch> {
-        if let Type::Top(top) = self {
+        if let Self::Top(top) = self {
             Ok(top)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Top".to_owned()))
@@ -50,7 +50,7 @@ impl TypeGroup for Type {
     }
 
     fn into_nat(self) -> Result<Nat<BoundedQuantification>, TypeMismatch> {
-        if let Type::Nat(n) = self {
+        if let Self::Nat(n) = self {
             Ok(n)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Nat".to_owned()))
@@ -58,7 +58,7 @@ impl TypeGroup for Type {
     }
 
     fn into_fun(self) -> Result<Fun<BoundedQuantification>, TypeMismatch> {
-        if let Type::Fun(fun) = self {
+        if let Self::Fun(fun) = self {
             Ok(fun)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Function".to_owned()))
@@ -66,7 +66,7 @@ impl TypeGroup for Type {
     }
 
     fn into_forall_bounded(self) -> Result<ForallBounded<BoundedQuantification>, TypeMismatch> {
-        if let Type::Forall(forall) = self {
+        if let Self::Forall(forall) = self {
             Ok(forall)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Universal".to_owned()))
@@ -74,7 +74,7 @@ impl TypeGroup for Type {
     }
 
     fn into_exists_bounded(self) -> Result<ExistsBounded<BoundedQuantification>, TypeMismatch> {
-        if let Type::Exists(ex) = self {
+        if let Self::Exists(ex) = self {
             Ok(ex)
         } else {
             Err(TypeMismatch::new(
@@ -85,7 +85,7 @@ impl TypeGroup for Type {
     }
 
     fn into_record(self) -> Result<Record<BoundedQuantification>, TypeMismatch> {
-        if let Type::Record(rec) = self {
+        if let Self::Record(rec) = self {
             Ok(rec)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Record".to_owned()))

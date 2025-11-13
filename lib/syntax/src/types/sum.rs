@@ -15,12 +15,12 @@ impl<Lang> Sum<Lang>
 where
     Lang: Language,
 {
-    pub fn new<Ty1, Ty2>(l: Ty1, r: Ty2) -> Sum<Lang>
+    pub fn new<Ty1, Ty2>(l: Ty1, r: Ty2) -> Self
     where
         Ty1: Into<Lang::Type>,
         Ty2: Into<Lang::Type>,
     {
-        Sum {
+        Self {
             left: Rc::new(l.into()),
             right: Rc::new(r.into()),
         }
@@ -37,7 +37,7 @@ where
     type Lang = Lang;
     type Target = Self;
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
-        Sum {
+        Self {
             left: self.left.subst_type(v, ty),
             right: self.right.subst_type(v, ty),
         }

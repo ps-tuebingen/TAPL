@@ -39,14 +39,14 @@ impl TypeTrait for Type {}
 impl TypeGroup for Type {
     type Lang = Recursive;
     fn into_unit(self) -> Result<Unit<Recursive>, TypeMismatch> {
-        if let Type::Unit(u) = self {
+        if let Self::Unit(u) = self {
             Ok(u)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Unit".to_owned()))
         }
     }
     fn into_fun(self) -> Result<Fun<Recursive>, TypeMismatch> {
-        if let Type::Fun(fun) = self {
+        if let Self::Fun(fun) = self {
             Ok(fun)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Function".to_owned()))
@@ -54,7 +54,7 @@ impl TypeGroup for Type {
     }
 
     fn into_mu(self) -> Result<Mu<Recursive>, TypeMismatch> {
-        if let Type::Mu(mu) = self {
+        if let Self::Mu(mu) = self {
             Ok(mu)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Mu".to_owned()))
@@ -62,7 +62,7 @@ impl TypeGroup for Type {
     }
 
     fn into_variant(self) -> Result<Variant<Recursive>, TypeMismatch> {
-        if let Type::Variant(var) = self {
+        if let Self::Variant(var) = self {
             Ok(var)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Variant".to_owned()))
@@ -70,7 +70,7 @@ impl TypeGroup for Type {
     }
 
     fn into_product(self) -> Result<Product<Recursive>, TypeMismatch> {
-        if let Type::Product(prod) = self {
+        if let Self::Product(prod) = self {
             Ok(prod)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Product".to_owned()))
@@ -78,7 +78,7 @@ impl TypeGroup for Type {
     }
 
     fn into_nat(self) -> Result<Nat<Recursive>, TypeMismatch> {
-        if let Type::Nat(nat) = self {
+        if let Self::Nat(nat) = self {
             Ok(nat)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Nat".to_owned()))
@@ -86,7 +86,7 @@ impl TypeGroup for Type {
     }
 
     fn into_bool(self) -> Result<Bool<Recursive>, TypeMismatch> {
-        if let Type::Bool(b) = self {
+        if let Self::Bool(b) = self {
             Ok(b)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Bool".to_owned()))
@@ -94,7 +94,7 @@ impl TypeGroup for Type {
     }
 
     fn into_record(self) -> Result<Record<Recursive>, TypeMismatch> {
-        if let Type::Record(rec) = self {
+        if let Self::Record(rec) = self {
             Ok(rec)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Record".to_owned()))

@@ -48,10 +48,7 @@ where
 
     const RULE: Rule = Rule::exists_unbounded_type;
 
-    fn from_pair(
-        p: Pair<'_, Rule>,
-        _: Self::LeftRecArg,
-    ) -> Result<ExistsUnbounded<Lang>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
         let mut inner = pair_to_n_inner(p, vec!["Exists Variable", "Exists Type"])?;
         let var_rule = inner.remove(0);
         let mut var_inner = pair_to_n_inner(var_rule, vec!["Exists Variable"])?;
@@ -59,7 +56,7 @@ where
         let body_rule = inner.remove(0);
         let body_ty = Lang::Type::from_pair(body_rule, ())?;
 
-        Ok(ExistsUnbounded { var, body_ty })
+        Ok(Self { var, body_ty })
     }
 }
 
@@ -70,8 +67,8 @@ where
     Lang::Type: GroupParse,
     Top<Lang>: Into<Lang::Type>,
 {
-    fn from(eu: ExistsUnbounded<Lang>) -> ExistsBounded<Lang> {
-        ExistsBounded::new_unbounded(&eu.var, Kind::Star, eu.body_ty)
+    fn from(eu: ExistsUnbounded<Lang>) -> Self {
+        Self::new_unbounded(&eu.var, Kind::Star, eu.body_ty)
     }
 }
 
@@ -81,7 +78,7 @@ where
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
 {
-    fn from(eu: ExistsUnbounded<Lang>) -> Exists<Lang> {
-        Exists::new(&eu.var, Kind::Star, eu.body_ty)
+    fn from(eu: ExistsUnbounded<Lang>) -> Self {
+        Self::new(&eu.var, Kind::Star, eu.body_ty)
     }
 }

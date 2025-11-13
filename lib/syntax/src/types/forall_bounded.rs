@@ -16,24 +16,24 @@ impl<Lang> ForallBounded<Lang>
 where
     Lang: Language,
 {
-    pub fn new<Ty1, Ty2>(v: &str, sup: Ty1, ty: Ty2) -> ForallBounded<Lang>
+    pub fn new<Ty1, Ty2>(v: &str, sup: Ty1, ty: Ty2) -> Self
     where
         Ty1: Into<Lang::Type>,
         Ty2: Into<Lang::Type>,
     {
-        ForallBounded {
+        Self {
             var: v.to_owned(),
             sup_ty: Rc::new(sup.into()),
             ty: Rc::new(ty.into()),
         }
     }
 
-    pub fn new_unbounded<Typ>(v: &str, ty: Typ) -> ForallBounded<Lang>
+    pub fn new_unbounded<Typ>(v: &str, ty: Typ) -> Self
     where
         Typ: Into<Lang::Type>,
         Top<Lang>: Into<Lang::Type>,
     {
-        ForallBounded {
+        Self {
             var: v.to_owned(),
             sup_ty: Rc::new(Top::new_star().into()),
             ty: Rc::new(ty.into()),
@@ -52,13 +52,13 @@ where
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
         let sup_subst = self.sup_ty.subst_type(v, ty);
         if *v == self.var {
-            ForallBounded {
+            Self {
                 var: self.var,
                 sup_ty: sup_subst,
                 ty: self.ty,
             }
         } else {
-            ForallBounded {
+            Self {
                 var: self.var,
                 sup_ty: sup_subst,
                 ty: self.ty.subst_type(v, ty),

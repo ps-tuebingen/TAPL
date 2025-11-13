@@ -38,7 +38,7 @@ impl GroupParse for Term {
             Rule::unpack_term => Ok(Unpack::from_pair(p, ())?.into()),
             Rule::record_term => Ok(Record::from_pair(p, ())?.into()),
             Rule::variable => Ok(Variable::from_pair(p, ())?.into()),
-            Rule::const_term => Ok(StringTerm::<FOmegaSub>::new().with_zero().from_pair(p)?),
+            Rule::const_term => Ok(StringTerm::<FOmegaSub>::new().with_zero().from_pair(&p)?),
             Rule::number => Ok(Num::from_pair(p, ())?.into()),
             _ => Err(
                 UnexpectedRule::new(&format!("{:?}", p.as_rule()), "Non Left-Recursive Term")
@@ -46,7 +46,7 @@ impl GroupParse for Term {
             ),
         }
     }
-    fn from_pair_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Self, ParserError> {
+    fn from_pair_leftrec(p: Pair<'_, Rule>, t: Self) -> Result<Self, ParserError> {
         match p.as_rule() {
             Rule::tyapp => Ok(TyApp::from_pair(p, t)?.into()),
             Rule::record_proj => Ok(RecordProj::from_pair(p, t)?.into()),
@@ -60,10 +60,10 @@ impl GroupParse for Term {
 
 impl GroupParse for Type {
     const RULE: Rule = Rule::r#type;
-    fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Type, ParserError> {
+    fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Self, ParserError> {
         match p.as_rule() {
             Rule::paren_type => Self::from_pair(pair_to_n_inner(p, vec!["Type"])?.remove(0), ()),
-            Rule::const_type => Ok(StringTy::<FOmegaSub>::new().with_nat().from_pair(p)?),
+            Rule::const_type => Ok(StringTy::<FOmegaSub>::new().with_nat().from_pair(&p)?),
             Rule::top_type => Ok(Top::from_pair(p, ())?.into()),
             Rule::forall_bounded_type => Ok(ForallBounded::from_pair(p, ())?.into()),
             Rule::forall_unbounded_type => Ok(ForallUnbounded::from_pair(p, ())?
@@ -87,7 +87,7 @@ impl GroupParse for Type {
             ),
         }
     }
-    fn from_pair_leftrec(p: Pair<'_, Rule>, ty: Type) -> Result<Type, ParserError> {
+    fn from_pair_leftrec(p: Pair<'_, Rule>, ty: Self) -> Result<Self, ParserError> {
         match p.as_rule() {
             Rule::fun_type => Ok(Fun::from_pair(p, ty)?.into()),
             Rule::op_app_type => Ok(OpApp::from_pair(p, ty)?.into()),

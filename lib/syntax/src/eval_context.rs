@@ -14,18 +14,18 @@ impl<Lang> EvalContext<Lang>
 where
     Lang: Language,
 {
-    pub fn new() -> EvalContext<Lang> {
-        EvalContext {
+    #[must_use] pub fn new() -> Self {
+        Self {
             locs: HashMap::new(),
             defs: HashMap::new(),
         }
     }
 
-    pub fn from_prog(prog: &Program<Lang>) -> EvalContext<Lang>
+    pub fn from_prog(prog: &Program<Lang>) -> Self
     where
         Lang: Language,
     {
-        EvalContext {
+        Self {
             locs: HashMap::new(),
             defs: prog
                 .definitions
@@ -35,7 +35,7 @@ where
         }
     }
 
-    pub fn fresh_location(&self) -> Location {
+    #[must_use] pub fn fresh_location(&self) -> Location {
         let mut new_loc = 0;
         while self.locs.contains_key(&new_loc) {
             new_loc += 1;
@@ -67,7 +67,7 @@ impl<Lang> Default for EvalContext<Lang>
 where
     Lang: Language,
 {
-    fn default() -> EvalContext<Lang> {
-        EvalContext::new()
+    fn default() -> Self {
+        Self::new()
     }
 }

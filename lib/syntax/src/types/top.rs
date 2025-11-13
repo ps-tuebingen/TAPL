@@ -15,15 +15,15 @@ impl<Lang> Top<Lang>
 where
     Lang: Language,
 {
-    pub fn new(knd: Kind) -> Top<Lang> {
-        Top {
+    #[must_use] pub const fn new(knd: Kind) -> Self {
+        Self {
             kind: knd,
             phantom: PhantomData,
         }
     }
 
-    pub fn new_star() -> Top<Lang> {
-        Top {
+    #[must_use] pub const fn new_star() -> Self {
+        Self {
             kind: Kind::Star,
             phantom: PhantomData,
         }

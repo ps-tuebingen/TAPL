@@ -42,7 +42,7 @@ where
     };
 
     let mut prem_strs = vec![];
-    for prem in deriv.premises.iter() {
+    for prem in &deriv.premises {
         prem_strs.push(prem.to_latex(conf));
         conf.include_envs = false;
     }
@@ -62,7 +62,7 @@ where
     let (env_start, env_end) = conf.mathenv_strs();
     let mut prem_strs = vec![];
 
-    for prem in deriv.premises.iter() {
+    for prem in &deriv.premises {
         conf.include_envs = false;
         prem_strs.push(format!("\\displaystyle {}", prem.to_latex(conf)));
     }

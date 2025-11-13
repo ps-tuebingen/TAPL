@@ -38,12 +38,12 @@ where
         let mut rhs_tys = vec![];
         let mut rhs_knd = None;
 
-        for pt in self.patterns.iter() {
+        for pt in &self.patterns {
             let var_ty = bound_var
                 .variants
                 .get(&pt.label)
                 .cloned()
-                .ok_or(UndefinedLabel::new(&pt.label))?;
+                .ok_or_else(|| UndefinedLabel::new(&pt.label))?;
             let var_norm;
             if features.normalizing {
                 let var_norm_deriv = var_ty.normalize(env.clone());
@@ -83,7 +83,7 @@ where
                 }
                 premises.push(rhs_res.into());
             }
-            rhs_tys.push(rhs_norm)
+            rhs_tys.push(rhs_norm);
         }
 
         if rhs_tys.is_empty() {

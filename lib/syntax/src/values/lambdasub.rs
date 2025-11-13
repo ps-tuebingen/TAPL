@@ -16,12 +16,12 @@ impl<Lang> LambdaSub<Lang>
 where
     Lang: Language,
 {
-    pub fn new<Ty, T>(v: &str, sup: Ty, t: T) -> LambdaSub<Lang>
+    pub fn new<Ty, T>(v: &str, sup: Ty, t: T) -> Self
     where
         Ty: Into<Lang::Type>,
         T: Into<Lang::Term>,
     {
-        LambdaSub {
+        Self {
             var: v.to_owned(),
             sup_ty: sup.into(),
             term: t.into(),
@@ -42,8 +42,8 @@ impl<Lang> From<LambdaSub<Lang>> for LambdaSubT<Lang>
 where
     Lang: Language,
 {
-    fn from(lam: LambdaSub<Lang>) -> LambdaSubT<Lang> {
-        LambdaSubT::new(&lam.var, lam.sup_ty, lam.term)
+    fn from(lam: LambdaSub<Lang>) -> Self {
+        Self::new(&lam.var, lam.sup_ty, lam.term)
     }
 }
 

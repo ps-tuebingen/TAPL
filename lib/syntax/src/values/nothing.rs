@@ -14,11 +14,11 @@ impl<Lang> Nothing<Lang>
 where
     Lang: Language,
 {
-    pub fn new<Ty>(ty: Ty) -> Nothing<Lang>
+    pub fn new<Ty>(ty: Ty) -> Self
     where
         Ty: Into<Lang::Type>,
     {
-        Nothing { ty: ty.into() }
+        Self { ty: ty.into() }
     }
 }
 
@@ -35,8 +35,8 @@ impl<Lang> From<Nothing<Lang>> for NothingT<Lang>
 where
     Lang: Language,
 {
-    fn from(not: Nothing<Lang>) -> NothingT<Lang> {
-        NothingT::new(not.ty)
+    fn from(not: Nothing<Lang>) -> Self {
+        Self::new(not.ty)
     }
 }
 

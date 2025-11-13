@@ -18,11 +18,11 @@ impl<Lang> Nothing<Lang>
 where
     Lang: Language,
 {
-    pub fn new<Typ>(ty: Typ) -> Nothing<Lang>
+    pub fn new<Typ>(ty: Typ) -> Self
     where
         Typ: Into<Lang::Type>,
     {
-        Nothing { ty: ty.into() }
+        Self { ty: ty.into() }
     }
 }
 
@@ -46,7 +46,7 @@ where
     type Target = Self;
     type Lang = Lang;
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
-        Nothing {
+        Self {
             ty: self.ty.subst_type(v, ty),
         }
     }

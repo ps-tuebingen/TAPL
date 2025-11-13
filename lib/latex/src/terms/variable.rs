@@ -6,7 +6,7 @@ where
     Lang: Language,
     Lang::Term: LatexFmt,
 {
-    fn to_latex(&self, _conf: &mut LatexConfig) -> String {
-        format!("\\text{{ {} }}", self.var.to_latex(_conf))
+    fn to_latex(&self, conf: &mut LatexConfig) -> String {
+        format!("\\text{{ {} }}", self.var.to_latex(conf))
     }
 }

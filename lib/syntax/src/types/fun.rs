@@ -15,12 +15,12 @@ impl<Lang> Fun<Lang>
 where
     Lang: Language,
 {
-    pub fn new<Ty1, Ty2>(from: Ty1, to: Ty2) -> Fun<Lang>
+    pub fn new<Ty1, Ty2>(from: Ty1, to: Ty2) -> Self
     where
         Ty1: Into<Lang::Type>,
         Ty2: Into<Lang::Type>,
     {
-        Fun {
+        Self {
             from: Rc::new(from.into()),
             to: Rc::new(to.into()),
         }
@@ -36,7 +36,7 @@ where
     type Target = Self;
     type Lang = Lang;
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
-        Fun {
+        Self {
             from: self.from.subst_type(v, ty),
             to: self.to.subst_type(v, ty),
         }

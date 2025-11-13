@@ -18,7 +18,7 @@ impl GroupParse for Term {
                 .with_unit()
                 .with_true()
                 .with_false()
-                .from_pair(p)?),
+                .from_pair(&p)?),
             Rule::number => Ok(Num::from_pair(p, ())?.into()),
             Rule::variable => Ok(Variable::new(p.as_str().trim()).into()),
             Rule::lambda_term => Ok(Lambda::from_pair(p, ())?.into()),
@@ -52,7 +52,7 @@ impl GroupParse for Type {
                 .with_unit()
                 .with_nat()
                 .with_bool()
-                .from_pair(p)?),
+                .from_pair(&p)?),
             Rule::paren_type => Self::from_pair(pair_to_n_inner(p, vec!["Type"])?.remove(0), ()),
             r => Err(UnexpectedRule::new(&format!("{r:?}"), "Non Left-Recursive Type").into()),
         }

@@ -15,12 +15,12 @@ impl<Lang> Product<Lang>
 where
     Lang: Language,
 {
-    pub fn new<Ty1, Ty2>(fst: Ty1, snd: Ty2) -> Product<Lang>
+    pub fn new<Ty1, Ty2>(fst: Ty1, snd: Ty2) -> Self
     where
         Ty1: Into<Lang::Type>,
         Ty2: Into<Lang::Type>,
     {
-        Product {
+        Self {
             fst: Rc::new(fst.into()),
             snd: Rc::new(snd.into()),
         }
@@ -38,7 +38,7 @@ where
     type Lang = Lang;
 
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
-        Product {
+        Self {
             fst: self.fst.subst_type(v, ty),
             snd: self.snd.subst_type(v, ty),
         }

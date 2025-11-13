@@ -14,7 +14,7 @@ impl<Lang> Subtypecheck for ExistsBounded<Lang>
 where
     Lang: Language,
     Top<Lang>: Into<Lang::Type>,
-    ExistsBounded<Lang>: Into<Lang::Type>,
+    Self: Into<Lang::Type>,
     Lang::Type: Normalize<Lang = Lang> + TypeGroup<Lang = Lang> + Subtypecheck<Lang = Lang>,
 {
     type Lang = Lang;

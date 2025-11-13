@@ -14,10 +14,10 @@ where
 
     fn check(&self, mut env: Environment<Lang>) -> Result<Derivation<Lang>, CheckError> {
         let mut derivs = vec![];
-        for def in self.definitions.iter() {
+        for def in &self.definitions {
             env.add_definition(def.name.clone(), def.annot.clone());
         }
-        for def in self.definitions.iter() {
+        for def in &self.definitions {
             let def_res = def.check(env.clone())?;
             derivs.push(def_res.into_def()?);
         }

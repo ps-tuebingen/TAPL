@@ -13,14 +13,14 @@ use syntax::{
 
 impl GroupParse for Term {
     const RULE: Rule = Rule::term;
-    fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Term, ParserError> {
+    fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Self, ParserError> {
         match p.as_rule() {
             Rule::const_term => Ok(StringTerm::<Stlc>::new()
                 .with_true()
                 .with_false()
                 .with_zero()
                 .with_unit()
-                .from_pair(p)?),
+                .from_pair(&p)?),
             Rule::variable => Ok(Variable::from_pair(p, ())?.into()),
             Rule::lambda_term => Ok(Lambda::from_pair(p, ())?.into()),
             Rule::some_term => Ok(Something::from_pair(p, ())?.into()),
@@ -52,7 +52,7 @@ impl GroupParse for Term {
             r => Err(UnexpectedRule::new(&format!("{r:?}"), "Non Left-Recursive Term").into()),
         }
     }
-    fn from_pair_leftrec(p: Pair<'_, Rule>, t: Term) -> Result<Term, ParserError> {
+    fn from_pair_leftrec(p: Pair<'_, Rule>, t: Self) -> Result<Self, ParserError> {
         match p.as_rule() {
             Rule::ascription => Ok(Ascribe::from_pair(p, t)?.into()),
             Rule::projection => Ok(Projection::from_pair(p, t)?.into()),
@@ -69,13 +69,13 @@ impl GroupParse for Term {
 
 impl GroupParse for Type {
     const RULE: Rule = Rule::r#type;
-    fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Type, ParserError> {
+    fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Self, ParserError> {
         match p.as_rule() {
             Rule::const_type => Ok(StringTy::<Stlc>::new()
                 .with_bool()
                 .with_nat()
                 .with_unit()
-                .from_pair(p)?),
+                .from_pair(&p)?),
             Rule::paren_type => Self::from_pair(pair_to_n_inner(p, vec!["Type"])?.remove(0), ()),
             Rule::prod_type => Ok(Product::from_pair(p, ())?.into()),
             Rule::record_type => Ok(RecordTy::from_pair(p, ())?.into()),
@@ -87,7 +87,7 @@ impl GroupParse for Type {
         }
     }
 
-    fn from_pair_leftrec(p: Pair<'_, Rule>, ty: Type) -> Result<Type, ParserError> {
+    fn from_pair_leftrec(p: Pair<'_, Rule>, ty: Self) -> Result<Self, ParserError> {
         match p.as_rule() {
             Rule::fun_type => Ok(Fun::from_pair(p, ty)?.into()),
             _ => Err(

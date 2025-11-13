@@ -33,14 +33,14 @@ impl TypeTrait for Type {}
 impl TypeGroup for Type {
     type Lang = References;
     fn into_unit(self) -> Result<Unit<References>, TypeMismatch> {
-        if let Type::Unit(u) = self {
+        if let Self::Unit(u) = self {
             Ok(u)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Unit".to_owned()))
         }
     }
     fn into_nat(self) -> Result<Nat<References>, TypeMismatch> {
-        if let Type::Nat(nat) = self {
+        if let Self::Nat(nat) = self {
             Ok(nat)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Unit".to_owned()))
@@ -48,7 +48,7 @@ impl TypeGroup for Type {
     }
 
     fn into_fun(self) -> Result<Fun<References>, TypeMismatch> {
-        if let Type::Fun(fun) = self {
+        if let Self::Fun(fun) = self {
             Ok(fun)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Function".to_owned()))
@@ -56,7 +56,7 @@ impl TypeGroup for Type {
     }
 
     fn into_bool(self) -> Result<Bool<References>, TypeMismatch> {
-        if let Type::Bool(b) = self {
+        if let Self::Bool(b) = self {
             Ok(b)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Bool".to_owned()))
@@ -64,7 +64,7 @@ impl TypeGroup for Type {
     }
 
     fn into_ref(self) -> Result<Reference<References>, TypeMismatch> {
-        if let Type::Ref(reft) = self {
+        if let Self::Ref(reft) = self {
             Ok(reft)
         } else {
             Err(TypeMismatch::new(self.to_string(), "Reference".to_owned()))

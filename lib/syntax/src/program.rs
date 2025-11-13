@@ -7,12 +7,15 @@ use crate::{
 use errors::DuplicateDefinition;
 use std::fmt;
 
+/// A Program in a given language
 #[derive(Debug, Clone)]
 pub struct Program<Lang>
 where
     Lang: Language,
 {
+    /// top-level definitions
     pub definitions: Vec<Definition<Lang>>,
+    /// the `main` definition of the program
     pub main: Lang::Term,
 }
 
@@ -20,16 +23,20 @@ impl<Lang> Program<Lang>
 where
     Lang: Language,
 {
-    pub fn new<T>(main: T, definitions: Vec<Definition<Lang>>) -> Program<Lang>
+    /// Create a new `Self` with given main Term and list of definitions
+    pub fn new<T>(main: T, definitions: Vec<Definition<Lang>>) -> Self
     where
         T: Into<<Lang as Language>::Term>,
     {
-        Program {
+        Self {
             definitions,
             main: main.into(),
         }
     }
 
+    /// Add a given definition to `Self`
+    /// # Errors
+    /// Returns an error if the definition already exists
     pub fn add_definition(&mut self, def: Definition<Lang>) -> Result<(), DuplicateDefinition> {
         if self.definitions.iter().any(|df| df.name == def.name) {
             Err(DuplicateDefinition::new(&def.name))
@@ -44,11 +51,11 @@ impl<Lang> SubstTerm for Program<Lang>
 where
     Lang: Language,
 {
-    type Target = Program<Lang>;
+    type Target = Self;
     type Lang = Lang;
 
     fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
-        Program {
+        Self {
             definitions: self
                 .definitions
                 .into_iter()
@@ -63,11 +70,11 @@ impl<Lang> SubstTerm for Definition<Lang>
 where
     Lang: Language,
 {
-    type Target = Definition<Lang>;
+    type Target = Self;
     type Lang = Lang;
 
     fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
-        Definition {
+        Self {
             name: self.name,
             annot: self.annot,
             body: self.body.subst(v, t),
@@ -79,11 +86,11 @@ impl<Lang> SubstType for Program<Lang>
 where
     Lang: Language,
 {
-    type Target = Program<Lang>;
+    type Target = Self;
     type Lang = Lang;
 
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
-        Program {
+        Self {
             definitions: self
                 .definitions
                 .into_iter()
@@ -98,11 +105,11 @@ impl<Lang> SubstType for Definition<Lang>
 where
     Lang: Language,
 {
-    type Target = Definition<Lang>;
+    type Target = Self;
     type Lang = Lang;
 
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
-        Definition {
+        Self {
             name: self.name,
             annot: self.annot.subst_type(v, ty),
             body: self.body.subst_type(v, ty),
@@ -120,7 +127,7 @@ where
             "{}\n\n def main := {};",
             self.definitions
                 .iter()
-                .map(|def| def.to_string())
+                .map(std::string::ToString::to_string)
                 .collect::<Vec<String>>()
                 .join("\n\n"),
             self.main

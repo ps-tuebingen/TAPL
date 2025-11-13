@@ -15,12 +15,12 @@ impl<Lang> Definition<Lang>
 where
     Lang: Language,
 {
-    pub fn new<T, Ty>(name: &str, annot: Ty, body: T) -> Definition<Lang>
+    pub fn new<T, Ty>(name: &str, annot: Ty, body: T) -> Self
     where
         T: Into<Lang::Term>,
         Ty: Into<Lang::Type>,
     {
-        Definition {
+        Self {
             name: name.to_owned(),
             annot: annot.into(),
             body: body.into(),

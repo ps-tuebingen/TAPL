@@ -17,7 +17,7 @@ impl<Lang> Eval for Cons<Lang>
 where
     Lang: Language,
     Lang::Term: Term + Eval<Lang = Lang>,
-    Cons<Lang>: Into<Lang::Term>,
+    Self: Into<Lang::Term>,
     ConsVal<Lang>: Into<Lang::Value>,
 {
     type Lang = Lang;
@@ -33,11 +33,11 @@ where
 
         let ty_ = self.ty.clone();
         let mut steps = hd_res.congruence(&move |t| {
-            Cons::new(t, Rc::unwrap_or_clone(self.tail.clone()), ty_.clone()).into()
+            Self::new(t, Rc::unwrap_or_clone(self.tail.clone()), ty_.clone()).into()
         });
 
         steps.extend(tail_res.congruence(&move |t| {
-            Cons::new(Rc::unwrap_or_clone(self.head.clone()), t, self.ty.clone()).into()
+            Self::new(Rc::unwrap_or_clone(self.head.clone()), t, self.ty.clone()).into()
         }));
         Ok(EvalTrace::<Lang>::new(steps, val))
     }

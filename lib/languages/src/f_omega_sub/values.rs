@@ -22,7 +22,7 @@ impl ValueTrait for Value {
 
 impl ValueGroup for Value {
     fn into_lambda(self) -> Result<Lambda<FOmegaSub>, ValueMismatch> {
-        if let Value::Lambda(lam) = self {
+        if let Self::Lambda(lam) = self {
             Ok(lam)
         } else {
             Err(ValueMismatch::new(self.to_string(), "Lambda".to_owned()))
@@ -30,7 +30,7 @@ impl ValueGroup for Value {
     }
 
     fn into_lambdasub(self) -> Result<LambdaSub<FOmegaSub>, ValueMismatch> {
-        if let Value::LambdaSub(lam) = self {
+        if let Self::LambdaSub(lam) = self {
             Ok(lam)
         } else {
             Err(ValueMismatch::new(self.to_string(), "LambdaSub".to_owned()))
@@ -38,7 +38,7 @@ impl ValueGroup for Value {
     }
 
     fn into_pack(self) -> Result<Pack<FOmegaSub>, ValueMismatch> {
-        if let Value::Pack(pack) = self {
+        if let Self::Pack(pack) = self {
             Ok(pack)
         } else {
             Err(ValueMismatch::new(self.to_string(), "Package".to_owned()))
@@ -46,7 +46,7 @@ impl ValueGroup for Value {
     }
 
     fn into_record(self) -> Result<Record<FOmegaSub>, ValueMismatch> {
-        if let Value::Record(rec) = self {
+        if let Self::Record(rec) = self {
             Ok(rec)
         } else {
             Err(ValueMismatch::new(self.to_string(), "Record".to_owned()))
@@ -54,7 +54,7 @@ impl ValueGroup for Value {
     }
 
     fn into_num(self) -> Result<Num<FOmegaSub>, ValueMismatch> {
-        if let Value::Num(num) = self {
+        if let Self::Num(num) = self {
             Ok(num)
         } else {
             Err(ValueMismatch::new(self.to_string(), "Number".to_owned()))

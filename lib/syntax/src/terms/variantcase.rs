@@ -19,11 +19,11 @@ impl<Lang> VariantCase<Lang>
 where
     Lang: Language,
 {
-    pub fn new<T1>(bound: T1, pts: Vec<VariantPattern<Lang>>) -> VariantCase<Lang>
+    pub fn new<T1>(bound: T1, pts: Vec<VariantPattern<Lang>>) -> Self
     where
         T1: Into<Lang::Term>,
     {
-        VariantCase {
+        Self {
             bound_term: Rc::new(bound.into()),
             patterns: pts,
         }
@@ -44,11 +44,11 @@ impl<Lang> VariantPattern<Lang>
 where
     Lang: Language,
 {
-    pub fn new<T1>(lb: &str, bound: &str, rhs: T1) -> VariantPattern<Lang>
+    pub fn new<T1>(lb: &str, bound: &str, rhs: T1) -> Self
     where
         T1: Into<Lang::Term>,
     {
-        VariantPattern {
+        Self {
             label: lb.to_owned(),
             bound_var: bound.to_owned(),
             rhs: Rc::new(rhs.into()),
@@ -65,7 +65,7 @@ where
     type Target = Self;
     type Lang = Lang;
     fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
-        VariantCase {
+        Self {
             bound_term: self.bound_term.subst(v, t),
             patterns: self.patterns.into_iter().map(|pt| pt.subst(v, t)).collect(),
         }
@@ -79,7 +79,7 @@ where
     type Target = Self;
     type Lang = Lang;
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
-        VariantCase {
+        Self {
             bound_term: self.bound_term.subst_type(v, ty),
             patterns: self
                 .patterns
@@ -98,13 +98,9 @@ where
     type Lang = Lang;
     fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
         if *v == self.bound_var {
-            VariantPattern {
-                label: self.label,
-                bound_var: self.bound_var,
-                rhs: self.rhs,
-            }
+            self
         } else {
-            VariantPattern {
+            Self {
                 label: self.label,
                 bound_var: self.bound_var,
                 rhs: self.rhs.subst(v, t),
@@ -120,7 +116,7 @@ where
     type Target = Self;
     type Lang = Lang;
     fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
-        VariantPattern {
+        Self {
             label: self.label,
             bound_var: self.bound_var,
             rhs: self.rhs.subst_type(v, ty),
@@ -141,7 +137,7 @@ where
             "case {} of {{ {} }}",
             self.bound_term,
             pts.iter()
-                .map(|pt| pt.to_string())
+                .map(std::string::ToString::to_string)
                 .collect::<Vec<String>>()
                 .join("| ")
         )

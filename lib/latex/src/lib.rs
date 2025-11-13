@@ -18,22 +18,25 @@ pub struct LatexConfig {
 }
 
 impl LatexConfig {
-    pub fn new() -> LatexConfig {
-        LatexConfig::default()
+    #[must_use]
+    pub fn new() -> Self {
+        Self::default()
     }
 
-    pub fn new_frac() -> LatexConfig {
-        LatexConfig {
+    #[must_use]
+    pub const fn new_frac() -> Self {
+        Self {
             include_envs: true,
             use_frac_array: true,
         }
     }
 
+    #[must_use]
     pub fn mathenv_strs(&self) -> (String, String) {
         if self.include_envs {
             ("\\[".to_owned(), "\\]".to_owned())
         } else {
-            ("".to_owned(), "".to_owned())
+            (String::new(), String::new())
         }
     }
 }
@@ -41,7 +44,7 @@ impl LatexConfig {
 pub trait LatexFmt {
     fn to_latex(&self, conf: &mut LatexConfig) -> String;
     fn to_document(&self, conf: &mut LatexConfig) -> String {
-        let mut out = "".to_owned();
+        let mut out = String::new();
         out += "\\documentclass{article}\n";
         out += "\\usepackage{bussproofs}\n";
         out += "\\usepackage{amsmath}\n";
@@ -55,13 +58,13 @@ pub trait LatexFmt {
 impl LatexFmt for String {
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         let (start, end) = conf.mathenv_strs();
-        format!("{}\\text{{{}}}{}", start, self.replace("_", "\\_"), end)
+        format!("{}\\text{{{}}}{}", start, self.replace('_', "\\_"), end)
     }
 }
 
 impl Default for LatexConfig {
-    fn default() -> LatexConfig {
-        LatexConfig {
+    fn default() -> Self {
+        Self {
             include_envs: true,
             use_frac_array: false,
         }

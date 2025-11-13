@@ -17,7 +17,7 @@ impl<Lang> Eval for Pred<Lang>
 where
     Lang: Language,
     Lang::Term: Term + Eval<Lang = Lang>,
-    Pred<Lang>: Into<Lang::Term>,
+    Self: Into<Lang::Term>,
     NumT<Lang>: Into<Lang::Term>,
     Num<Lang>: Into<Lang::Value>,
 {
@@ -28,7 +28,7 @@ where
         let term_val = term_res.val();
         let num = term_val.into_num()?;
         let val = Num::<Lang>::new(num.num - 1);
-        let mut steps = term_res.congruence(&move |t| Pred::new(t).into());
+        let mut steps = term_res.congruence(&move |t| Self::new(t).into());
         let last_step = EvalStep::pred(num.num);
         steps.push(last_step);
         Ok(EvalTrace::new(steps, val))

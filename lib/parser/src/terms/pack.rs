@@ -13,7 +13,7 @@ where
 
     const RULE: Rule = Rule::pack_term;
 
-    fn from_pair(p: Pair<'_, Rule>, _: Self::LeftRecArg) -> Result<Pack<Lang>, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
         let mut inner = pair_to_n_inner(p, vec!["Packed Type", "Packed Term", "Pack Type"])?;
         let packed_rule = inner.remove(0);
         let packed_ty = Lang::Type::from_pair(packed_rule, ())?;
@@ -24,6 +24,6 @@ where
         let pack_rule = inner.remove(0);
         let pack_ty = Lang::Type::from_pair(pack_rule, ())?;
 
-        Ok(Pack::new(packed_ty, term, pack_ty))
+        Ok(Self::new(packed_ty, term, pack_ty))
     }
 }

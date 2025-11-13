@@ -15,12 +15,12 @@ impl<Lang> Right<Lang>
 where
     Lang: Language,
 {
-    pub fn new<V1, Ty1>(val: V1, ty: Ty1) -> Right<Lang>
+    pub fn new<V1, Ty1>(val: V1, ty: Ty1) -> Self
     where
         V1: Into<Lang::Value>,
         Ty1: Into<Lang::Type>,
     {
-        Right {
+        Self {
             right_val: Box::new(val.into()),
             ty: ty.into(),
         }
@@ -40,8 +40,8 @@ impl<Lang> From<Right<Lang>> for RightT<Lang>
 where
     Lang: Language,
 {
-    fn from(right: Right<Lang>) -> RightT<Lang> {
-        RightT::new(*right.right_val, right.ty)
+    fn from(right: Right<Lang>) -> Self {
+        Self::new(*right.right_val, right.ty)
     }
 }
 

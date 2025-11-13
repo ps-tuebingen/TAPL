@@ -12,7 +12,7 @@ impl<Lang> Eval for If<Lang>
 where
     Lang: Language,
     Lang::Term: Eval<Lang = Lang>,
-    If<Lang>: Into<Lang::Term>,
+    Self: Into<Lang::Term>,
 {
     type Lang = Lang;
 
@@ -22,7 +22,7 @@ where
         let (next_step, branch_res) = if cond_val.clone().into_true().is_ok() {
             (
                 EvalStep::if_true(
-                    If::new(
+                    Self::new(
                         cond_val,
                         Rc::unwrap_or_clone(self.then_term.clone()),
                         Rc::unwrap_or_clone(self.else_term.clone()),
@@ -34,7 +34,7 @@ where
         } else if cond_val.clone().into_false().is_ok() {
             (
                 EvalStep::if_false(
-                    If::new(
+                    Self::new(
                         cond_val,
                         Rc::unwrap_or_clone(self.then_term.clone()),
                         Rc::unwrap_or_clone(self.else_term.clone()),
@@ -51,7 +51,7 @@ where
         let branch_val = branch_res.val();
 
         let mut steps = cond_res.congruence(&move |t| {
-            If::new(
+            Self::new(
                 t,
                 Rc::unwrap_or_clone(self.then_term.clone()),
                 Rc::unwrap_or_clone(self.else_term.clone()),

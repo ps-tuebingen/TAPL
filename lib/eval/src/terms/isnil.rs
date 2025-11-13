@@ -17,7 +17,7 @@ impl<Lang> Eval for IsNil<Lang>
 where
     Lang: Language,
     Lang::Term: Term + Eval<Lang = Lang>,
-    IsNil<Lang>: Into<Lang::Term>,
+    Self: Into<Lang::Term>,
     True<Lang>: Into<Lang::Value>,
     TrueT<Lang>: Into<Lang::Term>,
     False<Lang>: Into<Lang::Value>,
@@ -37,7 +37,7 @@ where
         } else {
             return Err(ValueMismatch::new(term_val.to_string(), "List".to_owned()).into());
         };
-        let mut steps = term_res.congruence(&move |t| IsNil::new(t, self.ty.clone()).into());
+        let mut steps = term_res.congruence(&move |t| Self::new(t, self.ty.clone()).into());
         steps.push(step);
         Ok(EvalTrace::<Lang>::new(steps, val))
     }

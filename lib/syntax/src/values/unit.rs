@@ -14,8 +14,8 @@ impl<Lang> Unit<Lang>
 where
     Lang: Language,
 {
-    pub fn new() -> Unit<Lang> {
-        Unit {
+    #[must_use] pub const fn new() -> Self {
+        Self {
             phantom: PhantomData,
         }
     }
@@ -25,8 +25,8 @@ impl<Lang> Default for Unit<Lang>
 where
     Lang: Language,
 {
-    fn default() -> Unit<Lang> {
-        Unit::new()
+    fn default() -> Self {
+        Self::new()
     }
 }
 
@@ -43,8 +43,8 @@ impl<Lang> From<Unit<Lang>> for UnitT<Lang>
 where
     Lang: Language,
 {
-    fn from(_: Unit<Lang>) -> UnitT<Lang> {
-        UnitT::new()
+    fn from(_: Unit<Lang>) -> Self {
+        Self::new()
     }
 }
 

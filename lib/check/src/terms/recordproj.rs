@@ -22,9 +22,9 @@ where
         let features = Lang::features();
         let mut premises = vec![];
 
-        let term_res = self.record.check(env.clone())?;
-        let term_ty = term_res.ret_ty();
-        premises.push(term_res);
+        let term_checked = self.record.check(env.clone())?;
+        let term_ty = term_checked.ret_ty();
+        premises.push(term_checked);
 
         let ty_norm;
         if features.normalizing {
@@ -39,25 +39,25 @@ where
             premises.push(ty_norm.check_kind(env.clone())?);
         }
 
-        let term_rec = match ty_norm.clone().into_variable() {
+        let rec_type = match ty_norm.clone().into_variable() {
             Ok(v) => env.get_tyvar_super(&v.v)?,
             Err(_) => ty_norm,
         };
 
         let term_rec_norm;
         if features.normalizing {
-            let term_rec_norm_deriv = term_rec.normalize(env.clone());
+            let term_rec_norm_deriv = rec_type.normalize(env.clone());
             term_rec_norm = term_rec_norm_deriv.ret_ty();
             premises.push(term_rec_norm_deriv);
         } else {
-            term_rec_norm = term_rec;
+            term_rec_norm = rec_type;
         }
 
         let rec_ty = term_rec_norm.into_record()?;
         let ty = rec_ty
             .records
             .get(&self.label)
-            .ok_or(UndefinedLabel::new(&self.label))
+            .ok_or_else(|| UndefinedLabel::new(&self.label))
             .cloned()?;
 
         let conc = TypingConclusion::new(env, self.clone(), ty);

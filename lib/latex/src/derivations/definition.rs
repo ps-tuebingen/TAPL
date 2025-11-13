@@ -11,9 +11,9 @@ where
     fn to_latex(&self, conf: &mut LatexConfig) -> String {
         let (mut env_start, mut env_end) = conf.mathenv_strs();
         if !conf.use_frac_array && conf.include_envs {
-            env_start = "\\begin{prooftree}".to_owned();
-            env_end = "\\end{prooftree}".to_owned();
-        };
+            "\\begin{prooftree}".clone_into(&mut env_start);
+            "\\end{prooftree}".clone_into(&mut env_end);
+        }
 
         conf.include_envs = false;
         let body_str = self.body_derivation.to_latex(conf);

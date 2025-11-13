@@ -14,12 +14,12 @@ impl<Lang> Tuple<Lang>
 where
     Lang: Language,
 {
-    pub fn new<V1>(vals: Vec<V1>) -> Tuple<Lang>
+    pub fn new<V1>(vals: Vec<V1>) -> Self
     where
         V1: Into<Lang::Value>,
     {
-        Tuple {
-            vals: vals.into_iter().map(|v| v.into()).collect(),
+        Self {
+            vals: vals.into_iter().map(std::convert::Into::into).collect(),
         }
     }
 }
@@ -37,8 +37,8 @@ impl<Lang> From<Tuple<Lang>> for TupleT<Lang>
 where
     Lang: Language,
 {
-    fn from(tup: Tuple<Lang>) -> TupleT<Lang> {
-        TupleT::new(tup.vals)
+    fn from(tup: Tuple<Lang>) -> Self {
+        Self::new(tup.vals)
     }
 }
 
@@ -47,7 +47,7 @@ where
     Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let mut ts: Vec<String> = self.vals.iter().map(|t| t.to_string()).collect();
+        let mut ts: Vec<String> = self.vals.iter().map(std::string::ToString::to_string).collect();
         ts.sort();
         write!(f, "( {} )", ts.join(", "))
     }

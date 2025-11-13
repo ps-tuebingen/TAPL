@@ -23,11 +23,11 @@ where
 impl<Lang> Normalize for Untyped<Lang>
 where
     Lang: Language,
-    Untyped<Lang>: Into<Lang::Type>,
+    Self: Into<Lang::Type>,
 {
     type Lang = Lang;
     fn normalize(self, _: Environment<Lang>) -> Derivation<Self::Lang> {
-        NormalizingDerivation::empty(Untyped::new()).into()
+        NormalizingDerivation::empty(Self::new()).into()
     }
 
     fn rules() -> HashSet<DerivationRule> {

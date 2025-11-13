@@ -34,7 +34,7 @@ where
             premises.push(ty_norm.check_kind(env.clone())?);
         }
 
-        let conc = TypingConclusion::new(env.clone(), self.clone(), ty_norm);
+        let conc = TypingConclusion::new(env, self.clone(), ty_norm);
         let deriv = TypingDerivation::exception(conc, premises);
         Ok(deriv.into())
     }

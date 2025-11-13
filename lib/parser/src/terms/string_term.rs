@@ -6,15 +6,22 @@ use syntax::{
     terms::{False, Num, True, Unit},
 };
 
+/// Helper struct to parse primitive types (unit,zero,...)
+/// if a field is present it can be parsed, otherwise it returns an error
+/// each language needs to configure depending on the available terms
 pub struct StringTerm<Lang>
 where
     Lang: Language,
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
 {
+    /// `Lang` contains [`Unit`]
     unit: Option<Lang::Term>,
+    /// `Lang` contains [`Num`] (0)
     zero: Option<Lang::Term>,
+    /// `Lang` contains [`False`]
     fls: Option<Lang::Term>,
+    /// `Lang` contains [`True`]
     tru: Option<Lang::Term>,
 }
 
@@ -24,8 +31,10 @@ where
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
 {
-    pub fn new() -> StringTerm<Lang> {
-        StringTerm {
+    /// Create a new `Self` with no terms added
+    #[must_use]
+    pub const fn new() -> Self {
+        Self {
             unit: None,
             zero: None,
             fls: None,
@@ -33,11 +42,13 @@ where
         }
     }
 
-    pub fn with_unit(self) -> StringTerm<Lang>
+    /// Add [`Unit`] to `Self`
+    #[must_use]
+    pub fn with_unit(self) -> Self
     where
         Unit<Lang>: Into<Lang::Term>,
     {
-        StringTerm {
+        Self {
             unit: Some(Unit::new().into()),
             zero: self.zero,
             fls: self.fls,
@@ -45,11 +56,13 @@ where
         }
     }
 
-    pub fn with_zero(self) -> StringTerm<Lang>
+    /// Add [`Num`](0) to `Self`
+    #[must_use]
+    pub fn with_zero(self) -> Self
     where
         Num<Lang>: Into<Lang::Term>,
     {
-        StringTerm {
+        Self {
             unit: self.unit,
             zero: Some(Num::new(0).into()),
             fls: self.fls,
@@ -57,11 +70,13 @@ where
         }
     }
 
-    pub fn with_false(self) -> StringTerm<Lang>
+    /// Add [`False`] to `Self`
+    #[must_use]
+    pub fn with_false(self) -> Self
     where
         False<Lang>: Into<Lang::Term>,
     {
-        StringTerm {
+        Self {
             unit: self.unit,
             zero: self.zero,
             fls: Some(False::new().into()),
@@ -69,11 +84,13 @@ where
         }
     }
 
-    pub fn with_true(self) -> StringTerm<Lang>
+    /// Add [`True`] to `Self`
+    #[must_use]
+    pub fn with_true(self) -> Self
     where
         True<Lang>: Into<Lang::Term>,
     {
-        StringTerm {
+        Self {
             unit: self.unit,
             zero: self.zero,
             fls: self.fls,
@@ -81,37 +98,18 @@ where
         }
     }
 
-    pub fn from_pair(self, p: Pair<'_, Rule>) -> Result<Lang::Term, ParserError> {
+    /// Parse a string term from a pair
+    /// similar to [`crate::Parse::from_pair`] but requires self to be configured first
+    /// # Errors
+    /// returns an error if the pair does not correspond to a primitive term
+    /// or if the term is not part of `Self`
+    pub fn from_pair(self, p: &Pair<'_, Rule>) -> Result<Lang::Term, ParserError> {
         let err = UnknownKeyword::new(p.as_str()).into();
         match p.as_str().to_lowercase().trim() {
-            "unit" => {
-                if let Some(u) = self.unit {
-                    Ok(u)
-                } else {
-                    Err(err)
-                }
-            }
-            "zero" => {
-                if let Some(z) = self.zero {
-                    Ok(z)
-                } else {
-                    Err(err)
-                }
-            }
-            "false" => {
-                if let Some(f) = self.fls {
-                    Ok(f)
-                } else {
-                    Err(err)
-                }
-            }
-            "true" => {
-                if let Some(t) = self.tru {
-                    Ok(t)
-                } else {
-                    Err(err)
-                }
-            }
+            "unit" => self.unit.map_or_else(|| Err(err), Ok),
+            "zero" => self.zero.map_or_else(|| Err(err), Ok),
+            "false" => self.fls.map_or_else(|| Err(err), Ok),
+            "true" => self.tru.map_or_else(|| Err(err), Ok),
             _ => Err(err),
         }
     }
@@ -123,7 +121,7 @@ where
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
 {
-    fn default() -> StringTerm<Lang> {
-        StringTerm::new()
+    fn default() -> Self {
+        Self::new()
     }
 }

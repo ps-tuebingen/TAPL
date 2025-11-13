@@ -7,23 +7,23 @@ impl LatexFmt for Symbol {
         conf.include_envs = false;
 
         let sym_str = match self {
-            Symbol::Many(sym) => format!("\\overline{{ {} }}", sym.to_latex(conf)),
-            Symbol::Str(s) => s.to_latex(conf),
-            Symbol::Int(i) => i.to_string(),
-            Symbol::Keyword(kw) => kw.to_latex(conf),
-            Symbol::SpecialChar(ch) => ch.to_latex(conf),
-            Symbol::Term => "t".to_owned(),
-            Symbol::Type => "\\tau".to_owned(),
-            Symbol::Kind => "\\kappa".to_owned(),
-            Symbol::Value => "v".to_owned(),
-            Symbol::Variable => "x".to_owned(),
-            Symbol::Typevariable => "X".to_owned(),
-            Symbol::Label => "\\text{{label}}".to_owned(),
-            Symbol::Location => "l".to_owned(),
-            Symbol::Subscript { sym, ind } => {
+            Self::Many(sym) => format!("\\overline{{ {} }}", sym.to_latex(conf)),
+            Self::Str(s) => s.to_latex(conf),
+            Self::Int(i) => i.to_string(),
+            Self::Keyword(kw) => kw.to_latex(conf),
+            Self::SpecialChar(ch) => ch.to_latex(conf),
+            Self::Term => "t".to_owned(),
+            Self::Type => "\\tau".to_owned(),
+            Self::Kind => "\\kappa".to_owned(),
+            Self::Value => "v".to_owned(),
+            Self::Variable => "x".to_owned(),
+            Self::Typevariable => "X".to_owned(),
+            Self::Label => "\\text{{label}}".to_owned(),
+            Self::Location => "l".to_owned(),
+            Self::Subscript { sym, ind } => {
                 format!("{}_{{{}}}", sym.to_latex(conf), ind.to_latex(conf))
             }
-            Symbol::Seq(syms) => syms
+            Self::Seq(syms) => syms
                 .iter()
                 .map(|sym| sym.to_latex(conf))
                 .collect::<Vec<_>>()

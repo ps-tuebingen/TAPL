@@ -30,7 +30,7 @@ fn derivation_to_frac_array(deriv: &DerivationRule, conf: &mut LatexConfig) -> S
     conf.include_envs = false;
 
     let mut premise_strs = Vec::with_capacity(deriv.premises.len());
-    for prem in deriv.premises.iter() {
+    for prem in &deriv.premises {
         premise_strs.push(prem.to_latex(conf));
     }
     let cs = (0..=premise_strs.len()).map(|_| "c").collect::<Vec<_>>();
@@ -53,7 +53,7 @@ fn derivation_to_buss(deriv: &DerivationRule, conf: &mut LatexConfig) -> String 
     conf.include_envs = false;
 
     let mut premise_strs = Vec::with_capacity(deriv.premises.len());
-    for prem in deriv.premises.iter() {
+    for prem in &deriv.premises {
         premise_strs.push(format!("\\AxiomC{{${}$}}", prem.to_latex(conf)));
         conf.include_envs = false;
     }
