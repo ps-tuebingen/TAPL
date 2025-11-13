@@ -26,3 +26,14 @@ where
         }
     }
 }
+
+pub fn buss_conc(conc_formatted: &str, num_premises: usize) -> String {
+    match num_premises {
+        0 | 1 => format!("\\UnaryInfC{{${conc_formatted}$}}",),
+        2 => format!("\\BinaryInfC{{${conc_formatted}$}}",),
+        3 => format!("\\TrinaryInfC{{${conc_formatted}$}}",),
+        4 => format!("\\QuaternaryInfC{{${conc_formatted}$}}",),
+        5 => format!("\\QuinaryInfC{{${conc_formatted}$}}",),
+        _ => panic!("Derivations with more than 5 premises are not supported"),
+    }
+}

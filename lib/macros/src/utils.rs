@@ -48,5 +48,5 @@ pub fn map_variants<F>(variants: &[Variant], f: F) -> Vec<proc_macro2::TokenStre
 where
     F: Fn(&Variant) -> proc_macro2::TokenStream,
 {
-    variants.iter().map(|var| f(var)).collect()
+    variants.iter().map(f).collect()
 }

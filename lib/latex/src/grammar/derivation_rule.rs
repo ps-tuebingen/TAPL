@@ -68,8 +68,7 @@ fn derivation_to_buss(deriv: &DerivationRule, conf: &mut LatexConfig) -> String 
 
     let mut conc_str = deriv.conclusion.to_latex(conf);
     conc_str = match deriv.premises.len() {
-        0 => format!("\\UnaryInfC{{${conc_str}$}}",),
-        1 => format!("\\UnaryInfC{{${conc_str}$}}",),
+        0 | 1 => format!("\\UnaryInfC{{${conc_str}$}}",),
         2 => format!("\\BinaryInfC{{${conc_str}$}}",),
         3 => format!("\\TrinaryInfC{{${conc_str}$}}",),
         4 => format!("\\QuaternaryInfC{{${conc_str}$}}",),

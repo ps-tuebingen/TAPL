@@ -1,3 +1,4 @@
+use super::buss_conc;
 use crate::{LatexConfig, LatexFmt};
 use derivations::KindingDerivation;
 use syntax::language::Language;
@@ -30,16 +31,7 @@ where
     };
 
     conf.include_envs = false;
-    let mut conc_str = deriv.conc.to_latex(conf);
-    conc_str = match deriv.premises.len() {
-        0 => format!("\\UnaryInfC{{${conc_str}$}}",),
-        1 => format!("\\UnaryInfC{{${conc_str}$}}",),
-        2 => format!("\\BinaryInfC{{${conc_str}$}}",),
-        3 => format!("\\TrinaryInfC{{${conc_str}$}}",),
-        4 => format!("\\QuaternaryInfC{{${conc_str}$}}",),
-        5 => format!("\\QuinaryInfC{{${conc_str}$}}",),
-        _ => panic!("Derivations with more than 5 premises are not supported"),
-    };
+    let conc_str = buss_conc(&deriv.conc.to_latex(conf), deriv.premises.len());
 
     let label_str = format!("\\RightLabel{{ {} }}\n", deriv.label);
 

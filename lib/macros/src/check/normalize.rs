@@ -19,7 +19,7 @@ pub fn generate_normalize(input: TokenStream) -> TokenStream {
         quote! {Self::#ident(inner) => inner.normalize(env),}
     });
     let rule_variants = map_variants(&variants, |var| {
-        let ty_name = get_variant_type_name(&var);
+        let ty_name = get_variant_type_name(var);
         quote! {
             rules.extend(<#ty_name::<#lang_val> as check::Normalize>::rules());
         }

@@ -9,7 +9,7 @@ pub fn generate_grammar_describe(input: TokenStream) -> TokenStream {
     let lang_val = get_lang_attr(&derive_input.attrs);
     let variants = get_enum_variants(&derive_input.data);
     let variant_rules = map_variants(&variants, |var| {
-        let ty_name = get_variant_type_name(&var);
+        let ty_name = get_variant_type_name(var);
         quote! {
             <#ty_name::<#lang_val> as grammar::GrammarRuleDescribe>::rule(),
         }

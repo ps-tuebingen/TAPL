@@ -31,7 +31,6 @@ fn generate_from(
             }
         }
     }
-    .into()
 }
 
 pub fn generate_into_term(input: TokenStream) -> TokenStream {

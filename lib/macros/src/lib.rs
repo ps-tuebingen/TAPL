@@ -29,7 +29,7 @@ pub fn derive_check(input: TokenStream) -> TokenStream {
     generate_typecheck(input)
 }
 
-//// Derive Subtypecheck for Types
+/// Derive Subtypecheck for Types
 /// types need to have the form `enum T { Ty1(Ty1),Ty2(Ty2),...}`
 /// where all `Tyi` implement Subtypecheck
 #[proc_macro_derive(Subtypecheck, attributes(Lang))]
@@ -83,7 +83,7 @@ pub fn derive_eval(input: TokenStream) -> TokenStream {
 }
 
 /// Derive Grammar Describe for Terms
-//// Terms need to have the form `enum Term { T1(T1),T2(T2),... }`
+/// Terms need to have the form `enum Term { T1(T1),T2(T2),... }`
 /// where each `Ti` has `RuleDescribe` implemneted
 #[proc_macro_derive(GrammarDescribe, attributes(Lang))]
 pub fn derive_grammar_describe(input: TokenStream) -> TokenStream {

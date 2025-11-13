@@ -5,7 +5,7 @@ pub fn lang_ty() -> proc_macro2::TokenStream {
     quote! {<Self::Lang as syntax::language::Language>::Type}
 }
 
-//// `Environment<Self::Lang>`
+/// `Environment<Self::Lang>`
 pub fn lang_env() -> proc_macro2::TokenStream {
     quote! {syntax::env::Environment<Self::Lang>}
 }

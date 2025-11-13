@@ -68,7 +68,7 @@ impl fmt::Display for SpecialChar {
             SpecialChar::Comma => f.write_str(","),
             SpecialChar::Equals => f.write_str("="),
             SpecialChar::Plus => f.write_str("+"),
-            SpecialChar::Times => f.write_str("*"),
+            SpecialChar::Times => f.write_str("x"),
             SpecialChar::Empty => f.write_str(""),
             SpecialChar::Arrow => f.write_str("->"),
             SpecialChar::DoubleArrow => f.write_str("=>"),
