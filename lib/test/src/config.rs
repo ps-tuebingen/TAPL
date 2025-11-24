@@ -59,10 +59,10 @@ impl TestConfig {
 
     /// Updates `self` based on a given language's features
     pub fn update_features(&mut self, features: &LanguageFeatures) {
-        if !features.typed {
+        if !features.typed() {
             self.exclusions.insert(KEY_CHECK.to_owned(), true);
         }
-        if !features.evaluating {
+        if !features.evaluating() {
             self.exclusions.insert(KEY_EVAL.to_owned(), true);
         }
     }
