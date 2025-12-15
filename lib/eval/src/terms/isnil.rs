@@ -32,13 +32,13 @@ where
             let last_step = EvalStep::isnil_true(self.ty.clone(), self.span);
             (last_step, True::new(self.span).into())
         } else if term_val.clone().into_cons().is_ok() {
-            let last_step = EvalStep::isnil_false(self.ty.clone(),self.span);
+            let last_step = EvalStep::isnil_false(self.ty.clone(), self.span);
             (last_step, False::new(self.span).into())
         } else {
             return Err(ValueMismatch::new(term_val.to_string(), "List".to_owned()).into());
         };
         let mut steps =
-            term_res.congruence(&move |t| Self::new(t, self.ty.clone(), self.span.into());
+            term_res.congruence(&move |t| Self::new(t, self.ty.clone(), self.span).into());
         steps.push(step);
         Ok(EvalTrace::<Lang>::new(steps, val))
     }

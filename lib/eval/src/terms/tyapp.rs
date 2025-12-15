@@ -24,8 +24,10 @@ where
         let fun_val = fun_res.val();
         let (res_steps, res_val) = if let Ok(tylam) = fun_val.clone().into_tylambda() {
             let term_subst = tylam.term.subst_type(&tylam.var, &self.arg);
-            let next_step =
-                EvalStep::tyappabs(Self::new(fun_val, self.arg.clone()), term_subst.clone());
+            let next_step = EvalStep::tyappabs(
+                Self::new(fun_val, self.arg.clone(), self.span),
+                term_subst.clone(),
+            );
             let term_res = term_subst.eval(env)?;
             let term_val = term_res.val();
             let mut steps = term_res.steps;
@@ -33,8 +35,10 @@ where
             (steps, term_val)
         } else if let Ok(lamsub) = fun_val.clone().into_lambdasub() {
             let term_subst = lamsub.term.subst_type(&lamsub.var, &self.arg);
-            let next_step =
-                EvalStep::tyappabs_sub(Self::new(fun_val, self.arg.clone()), term_subst.clone());
+            let next_step = EvalStep::tyappabs_sub(
+                Self::new(fun_val, self.arg.clone(), self.span),
+                term_subst.clone(),
+            );
             let term_res = term_subst.eval(env)?;
             let term_val = term_res.val();
             let mut steps = term_res.steps;
@@ -46,7 +50,8 @@ where
             );
         };
 
-        let mut steps = fun_res.congruence(&move |t| Self::new(t, self.arg.clone()).into());
+        let mut steps =
+            fun_res.congruence(&move |t| Self::new(t, self.arg.clone(), self.span).into());
         steps.extend(res_steps);
         Ok(EvalTrace::<Lang>::new(steps, res_val))
     }

@@ -23,10 +23,15 @@ where
         let term_res = self.term.eval(env)?;
         let term_val = term_res.val();
 
-        let val = PackVal::<Lang>::new(self.inner_ty.clone(), term_val, self.outer_ty.clone());
+        let val = PackVal::<Lang>::new(
+            self.inner_ty.clone(),
+            term_val,
+            self.outer_ty.clone(),
+            self.span,
+        );
 
         let steps = term_res.congruence(&move |t| {
-            Self::new(self.inner_ty.clone(), t, self.outer_ty.clone()).into()
+            Self::new(self.inner_ty.clone(), t, self.outer_ty.clone(), self.span).into()
         });
 
         Ok(EvalTrace::new(steps, val))

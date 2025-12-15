@@ -24,7 +24,7 @@ where
     fn eval(self, _: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         Ok(EvalTrace::<Lang>::new(
             vec![],
-            ExceptionVal::new(self.ty).into(),
+            ExceptionVal::new(self.ty, self.span).into(),
         ))
     }
     fn rules() -> HashSet<DerivationRule> {

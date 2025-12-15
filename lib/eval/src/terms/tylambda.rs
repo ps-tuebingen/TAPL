@@ -21,7 +21,12 @@ where
     fn eval(self, _: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         Ok(EvalTrace::new(
             vec![],
-            TyLambdaVal::new(&self.var, self.annot, Rc::unwrap_or_clone(self.term)),
+            TyLambdaVal::new(
+                &self.var,
+                self.annot,
+                Rc::unwrap_or_clone(self.term),
+                self.span,
+            ),
         ))
     }
 

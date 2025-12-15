@@ -31,8 +31,9 @@ where
             .cloned()
             .ok_or_else(|| IndexOutOfBounds::new(self.index, tup_val.vals.len()))?;
 
-        let mut steps = term_res.congruence(&move |t| Self::new(t, self.index).into());
-        let last_step = EvalStep::projection(Self::new(term_val, self.index), val.clone());
+        let mut steps = term_res.congruence(&move |t| Self::new(t, self.index, self.span).into());
+        let last_step =
+            EvalStep::projection(Self::new(term_val, self.index, self.span), val.clone());
         steps.push(last_step);
 
         Ok(EvalTrace::<Lang>::new(steps, val))

@@ -21,7 +21,12 @@ where
     fn eval(self, _: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         Ok(EvalTrace::new(
             vec![],
-            LambdaSubVal::<Lang>::new(&self.var, self.sup_ty, Rc::unwrap_or_clone(self.body)),
+            LambdaSubVal::<Lang>::new(
+                &self.var,
+                self.sup_ty,
+                Rc::unwrap_or_clone(self.body),
+                self.span,
+            ),
         ))
     }
 

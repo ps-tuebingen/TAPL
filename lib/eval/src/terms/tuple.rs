@@ -32,12 +32,12 @@ where
             steps.extend(term_res.congruence(&move |t| {
                 let mut cong_mut = cong_vals.clone();
                 cong_mut[ind] = t;
-                Self::new(cong_mut).into()
+                Self::new(cong_mut, self.span).into()
             }));
 
             old_terms[ind] = val.into();
         }
-        let val = TupleVal::<Lang>::new(vals);
+        let val = TupleVal::<Lang>::new(vals, self.span);
         Ok(EvalTrace::new(steps, val))
     }
 

@@ -26,6 +26,7 @@ where
                         cond_val,
                         Rc::unwrap_or_clone(self.then_term.clone()),
                         Rc::unwrap_or_clone(self.else_term.clone()),
+                        self.span,
                     ),
                     Rc::unwrap_or_clone(self.then_term.clone()),
                 ),
@@ -38,6 +39,7 @@ where
                         cond_val,
                         Rc::unwrap_or_clone(self.then_term.clone()),
                         Rc::unwrap_or_clone(self.else_term.clone()),
+                        self.span,
                     ),
                     Rc::unwrap_or_clone(self.else_term.clone()),
                 ),
@@ -55,6 +57,7 @@ where
                 t,
                 Rc::unwrap_or_clone(self.then_term.clone()),
                 Rc::unwrap_or_clone(self.else_term.clone()),
+                self.span,
             )
             .into()
         });

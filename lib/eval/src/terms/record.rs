@@ -34,13 +34,13 @@ where
                     .congruence(&move |t| {
                         let mut recs_mut = rule_recs.clone();
                         recs_mut.insert(lb_clone.clone(), t);
-                        Self::new(recs_mut).into()
+                        Self::new(recs_mut, self.span).into()
                     })
                     .into_iter(),
             );
             old_recs.insert(lb, val.into());
         }
-        let val = RecordVal::<Lang>::new::<<Self::Lang as Language>::Value>(records);
+        let val = RecordVal::<Lang>::new::<<Self::Lang as Language>::Value>(records, self.span);
         Ok(EvalTrace::new(steps, val))
     }
 

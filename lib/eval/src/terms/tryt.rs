@@ -26,7 +26,11 @@ where
         let term_val = term_res.val();
         let (res_steps, res_val) = if term_val.clone().into_exception().is_ok() {
             let next_step = EvalStep::try_catch(
-                Self::new(term_val, Rc::unwrap_or_clone(self.handler.clone())),
+                Self::new(
+                    term_val,
+                    Rc::unwrap_or_clone(self.handler.clone()),
+                    self.span,
+                ),
                 Rc::unwrap_or_clone(self.handler.clone()),
             );
             let handler_res = self.handler.clone().eval(env)?;
@@ -36,14 +40,19 @@ where
             (handler_steps, handler_val)
         } else {
             let next_step = EvalStep::try_succ(
-                Self::new(term_val.clone(), Rc::unwrap_or_clone(self.handler.clone())),
+                Self::new(
+                    term_val.clone(),
+                    Rc::unwrap_or_clone(self.handler.clone()),
+                    self.span,
+                ),
                 term_val.clone(),
             );
             (vec![next_step], term_val)
         };
 
-        let mut steps = term_res
-            .congruence(&move |t| Self::new(t, Rc::unwrap_or_clone(self.handler.clone())).into());
+        let mut steps = term_res.congruence(&move |t| {
+            Self::new(t, Rc::unwrap_or_clone(self.handler.clone()), self.span).into()
+        });
         steps.extend(res_steps);
         Ok(EvalTrace::<Lang>::new(steps, res_val))
     }

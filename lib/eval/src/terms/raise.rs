@@ -25,11 +25,21 @@ where
     fn eval(self, env: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         let exc_res = self.exception.eval(env)?;
         let exc_val = exc_res.val();
-        let raise_val =
-            RaiseVal::<Lang>::new(exc_val, self.cont_ty.clone(), self.exception_ty.clone());
+        let raise_val = RaiseVal::<Lang>::new(
+            exc_val,
+            self.cont_ty.clone(),
+            self.exception_ty.clone(),
+            self.span,
+        );
 
         let steps = exc_res.congruence(&move |t| {
-            Self::new(t, self.cont_ty.clone(), self.exception_ty.clone()).into()
+            Self::new(
+                t,
+                self.cont_ty.clone(),
+                self.exception_ty.clone(),
+                self.span,
+            )
+            .into()
         });
         Ok(EvalTrace::new(steps, raise_val))
     }

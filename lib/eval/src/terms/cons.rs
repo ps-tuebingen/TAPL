@@ -29,15 +29,27 @@ where
         let tail_res = self.tail.clone().eval(env)?;
         let tail_val = tail_res.val();
 
-        let val = ConsVal::<Lang>::new(hd_val, tail_val, self.ty.clone()).into();
+        let val = ConsVal::<Lang>::new(hd_val, tail_val, self.ty.clone(), self.span).into();
 
         let ty_ = self.ty.clone();
         let mut steps = hd_res.congruence(&move |t| {
-            Self::new(t, Rc::unwrap_or_clone(self.tail.clone()), ty_.clone()).into()
+            Self::new(
+                t,
+                Rc::unwrap_or_clone(self.tail.clone()),
+                ty_.clone(),
+                self.span,
+            )
+            .into()
         });
 
         steps.extend(tail_res.congruence(&move |t| {
-            Self::new(Rc::unwrap_or_clone(self.head.clone()), t, self.ty.clone()).into()
+            Self::new(
+                Rc::unwrap_or_clone(self.head.clone()),
+                t,
+                self.ty.clone(),
+                self.span,
+            )
+            .into()
         }));
         Ok(EvalTrace::<Lang>::new(steps, val))
     }

@@ -38,6 +38,7 @@ where
                     Rc::unwrap_or_clone(self.left_term.clone()),
                     &self.right_var,
                     Rc::unwrap_or_clone(self.right_term.clone()),
+                    self.span,
                 ),
                 Rc::unwrap_or_clone(left_subst.clone()),
             );
@@ -58,6 +59,7 @@ where
                     Rc::unwrap_or_clone(self.left_term.clone()),
                     &self.right_var,
                     Rc::unwrap_or_clone(self.right_term.clone()),
+                    self.span,
                 ),
                 Rc::unwrap_or_clone(right_subst.clone()),
             );
@@ -77,6 +79,7 @@ where
                 Rc::unwrap_or_clone(self.left_term.clone()),
                 &self.right_var,
                 Rc::unwrap_or_clone(self.right_term.clone()),
+                self.span,
             )
             .into()
         });

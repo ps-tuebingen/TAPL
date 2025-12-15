@@ -16,7 +16,7 @@ where
     /// saves the type parameter
     phantom: PhantomData<Lang>,
     /// Source location
-    span: Span,
+    pub span: Span,
 }
 
 impl<Lang> False<Lang>

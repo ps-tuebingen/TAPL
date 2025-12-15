@@ -43,7 +43,7 @@ where
         env.save_location(lhs_loc.loc, rhs_val);
 
         steps.push(EvalStep::assign(lhs_t, rhs_t));
-        Ok(EvalTrace::new(steps, UnitVal::<Lang>::new()))
+        Ok(EvalTrace::new(steps, UnitVal::<Lang>::new(self.span)))
     }
 
     fn rules() -> HashSet<DerivationRule> {

@@ -9,7 +9,6 @@ use std::collections::HashSet;
 use syntax::{
     eval_context::EvalContext,
     language::Language,
-    span::Spanned,
     terms::{Fst, Pair, Term},
     values::ValueGroup,
 };
@@ -29,8 +28,8 @@ where
         let term_val = term_res.val();
         let pair_val = term_val.clone().into_pair()?;
 
-        let last_step = EvalStep::fst(term_val, *pair_val.snd, self.span());
-        let mut steps = term_res.congruence(&move |t| Self::new(t, self.span()).into());
+        let last_step = EvalStep::fst(term_val, *pair_val.snd, self.span);
+        let mut steps = term_res.congruence(&move |t| Self::new(t, self.span).into());
         steps.push(last_step);
         Ok(EvalTrace::<Lang>::new(steps, *pair_val.fst))
     }

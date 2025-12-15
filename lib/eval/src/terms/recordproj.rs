@@ -31,9 +31,10 @@ where
             .cloned()
             .ok_or_else(|| UndefinedLabel::new(&self.label))?;
 
-        let last_step = EvalStep::recordproj(Self::new(val.clone(), &self.label), val.clone());
+        let last_step =
+            EvalStep::recordproj(Self::new(val.clone(), &self.label, self.span), val.clone());
 
-        let mut steps = term_res.congruence(&move |t| Self::new(t, &self.label).into());
+        let mut steps = term_res.congruence(&move |t| Self::new(t, &self.label, self.span).into());
         steps.push(last_step);
         Ok(EvalTrace::<Lang>::new(steps, val))
     }

@@ -25,8 +25,8 @@ where
     fn eval(self, env: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         let right_res = self.right_term.eval(env)?;
         let right_val = right_res.val();
-        let val = RightVal::<Lang>::new(right_val, self.ty.clone());
-        let steps = right_res.congruence(&move |t| Self::new(t, self.ty.clone()).into());
+        let val = RightVal::<Lang>::new(right_val, self.ty.clone(), self.span);
+        let steps = right_res.congruence(&move |t| Self::new(t, self.ty.clone(), self.span).into());
         Ok(EvalTrace::new(steps, val))
     }
 

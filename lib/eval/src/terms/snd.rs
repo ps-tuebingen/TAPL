@@ -27,8 +27,8 @@ where
         let pair_val = term_val.clone().into_pair()?;
         let val = *pair_val.snd;
 
-        let mut steps = term_res.congruence(&move |t| Self::new(t).into());
-        let last_step = EvalStep::snd(Self::new(term_val), val.clone());
+        let mut steps = term_res.congruence(&move |t| Self::new(t, self.span).into());
+        let last_step = EvalStep::snd(Self::new(term_val, self.span), val.clone());
         steps.push(last_step);
         Ok(EvalTrace::<Lang>::new(steps, val))
     }

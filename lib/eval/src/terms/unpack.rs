@@ -38,6 +38,7 @@ where
                 &self.term_name,
                 term_val,
                 Rc::unwrap_or_clone(self.in_term.clone()),
+                self.span,
             ),
             Rc::unwrap_or_clone(in_subst.clone()),
         );
@@ -50,6 +51,7 @@ where
                 &self.term_name,
                 t,
                 Rc::unwrap_or_clone(self.in_term.clone()),
+                self.span,
             )
             .into()
         });

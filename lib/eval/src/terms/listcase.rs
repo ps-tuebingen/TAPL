@@ -31,6 +31,7 @@ where
                     &self.cons_fst,
                     &self.cons_rst,
                     Rc::unwrap_or_clone(self.cons_rhs.clone()),
+                    self.span,
                 ),
                 Rc::unwrap_or_clone(self.nil_rhs.clone()),
             );
@@ -52,6 +53,7 @@ where
                     &self.cons_fst,
                     &self.cons_rst,
                     Rc::unwrap_or_clone(self.cons_rhs.clone()),
+                    self.span,
                 ),
                 Rc::unwrap_or_clone(cons_subst.clone()),
             );
@@ -71,6 +73,7 @@ where
                 &self.cons_fst,
                 &self.cons_rst,
                 Rc::unwrap_or_clone(self.cons_rhs.clone()),
+                self.span,
             )
             .into()
         });

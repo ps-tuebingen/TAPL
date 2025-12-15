@@ -19,7 +19,10 @@ where
     type Lang = Lang;
 
     fn eval(self, _: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
-        Ok(EvalTrace::<Lang>::new(vec![], NilVal::<Lang>::new(self.ty)))
+        Ok(EvalTrace::<Lang>::new(
+            vec![],
+            NilVal::<Lang>::new(self.ty, self.span),
+        ))
     }
 
     fn rules() -> HashSet<DerivationRule> {

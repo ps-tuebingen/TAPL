@@ -27,8 +27,10 @@ where
         let cons_val = term_val.clone().into_cons()?;
 
         let val = *cons_val.head;
-        let last_step = EvalStep::tail(Self::new(term_val, self.ty.clone()), val.clone());
-        let mut steps = term_res.congruence(&move |t| Self::new(t, self.ty.clone()).into());
+        let last_step =
+            EvalStep::tail(Self::new(term_val, self.ty.clone(), self.span), val.clone());
+        let mut steps =
+            term_res.congruence(&move |t| Self::new(t, self.ty.clone(), self.span).into());
         steps.push(last_step);
         Ok(EvalTrace::<Lang>::new(steps, val))
     }

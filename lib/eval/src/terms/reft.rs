@@ -29,9 +29,9 @@ where
         let fresh_loc = env.fresh_location();
         env.save_location(fresh_loc, term_val.clone());
 
-        let mut steps = term_res.congruence(&move |t| Self::new(t).into());
-        let val = Loc::new(fresh_loc);
-        let last_step = EvalStep::reft(Self::new(term_val), fresh_loc);
+        let mut steps = term_res.congruence(&move |t| Self::new(t, self.span).into());
+        let val = Loc::new(fresh_loc, self.span);
+        let last_step = EvalStep::reft(Self::new(term_val, self.span), fresh_loc);
         steps.push(last_step);
 
         Ok(EvalTrace::new(steps, val))

@@ -29,7 +29,7 @@ where
         let inner_res = self.term.eval(env)?;
         let val = inner_res.val();
         let num = val.clone().into_num()?;
-        let mut steps = inner_res.congruence(&move |t| Self::new(t).into());
+        let mut steps = inner_res.congruence(&move |t| Self::new(t, self.span).into());
         if num.num == 0 {
             steps.push(EvalStep::iszero_true(Self::new(val, self.span)));
             Ok(EvalTrace::new(steps, True::new(self.span)))

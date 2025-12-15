@@ -22,10 +22,10 @@ where
     fn eval(self, env: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         let term_res = self.term.eval(env)?;
         let term_val = term_res.val();
-        let val = VariantVal::<Lang>::new(&self.label, term_val, self.ty.clone());
+        let val = VariantVal::<Lang>::new(&self.label, term_val, self.ty.clone(), self.span);
 
-        let steps =
-            term_res.congruence(&move |t| Self::new(&self.label, t, self.ty.clone()).into());
+        let steps = term_res
+            .congruence(&move |t| Self::new(&self.label, t, self.ty.clone(), self.span).into());
         Ok(EvalTrace::new(steps, val))
     }
 

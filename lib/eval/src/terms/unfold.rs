@@ -26,9 +26,12 @@ where
         let term_val = term_res.val();
         let term_fold = term_val.clone().into_fold()?;
 
-        let last_step =
-            EvalStep::unfoldfold(Self::new(self.ty.clone(), term_val), *term_fold.val.clone());
-        let mut steps = term_res.congruence(&move |t| Self::new(self.ty.clone(), t).into());
+        let last_step = EvalStep::unfoldfold(
+            Self::new(self.ty.clone(), term_val, self.span),
+            *term_fold.val.clone(),
+        );
+        let mut steps =
+            term_res.congruence(&move |t| Self::new(self.ty.clone(), t, self.span).into());
         steps.push(last_step);
         Ok(EvalTrace::<Lang>::new(steps, *term_fold.val))
     }

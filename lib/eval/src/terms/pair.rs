@@ -25,13 +25,15 @@ where
         let snd_res = self.snd.clone().eval(env)?;
         let snd_val = snd_res.val();
 
-        let fst_steps = fst_res
-            .congruence(&move |t| Self::new(t, Rc::unwrap_or_clone(self.snd.clone())).into());
-        let snd_steps = snd_res
-            .congruence(&move |t| Self::new(Rc::unwrap_or_clone(self.fst.clone()), t).into());
+        let fst_steps = fst_res.congruence(&move |t| {
+            Self::new(t, Rc::unwrap_or_clone(self.snd.clone()), self.span).into()
+        });
+        let snd_steps = snd_res.congruence(&move |t| {
+            Self::new(Rc::unwrap_or_clone(self.fst.clone()), t, self.span).into()
+        });
         let mut steps = fst_steps;
         steps.extend(snd_steps);
-        let val = PairVal::<Lang>::new(fst_val, snd_val);
+        let val = PairVal::<Lang>::new(fst_val, snd_val, self.span);
         Ok(EvalTrace::new(steps, val))
     }
 

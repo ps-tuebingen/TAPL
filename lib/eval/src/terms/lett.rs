@@ -34,12 +34,19 @@ where
                 &self.var,
                 bound_val,
                 Rc::unwrap_or_clone(self.in_term.clone()),
+                self.span,
             ),
             Rc::unwrap_or_clone(term_subst.clone()),
         );
 
         let mut steps = bound_res.congruence(&move |t| {
-            Self::new(&self.var, t, Rc::unwrap_or_clone(self.in_term.clone())).into()
+            Self::new(
+                &self.var,
+                t,
+                Rc::unwrap_or_clone(self.in_term.clone()),
+                self.span,
+            )
+            .into()
         });
         steps.push(subst_step);
         let term_res = term_subst.eval(env)?;
