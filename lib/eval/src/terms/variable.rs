@@ -22,7 +22,7 @@ where
         let mut term_res = body.clone().eval(ctx)?;
         term_res
             .steps
-            .insert(0, EvalStep::subst_var(&self.var, body));
+            .insert(0, EvalStep::subst_var(&self.var, body, self.span));
         Ok(term_res)
     }
 

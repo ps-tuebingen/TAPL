@@ -31,11 +31,11 @@ where
         let num = val.clone().into_num()?;
         let mut steps = inner_res.congruence(&move |t| Self::new(t).into());
         if num.num == 0 {
-            steps.push(EvalStep::iszero_true(Self::new(val)));
-            Ok(EvalTrace::new(steps, True::new()))
+            steps.push(EvalStep::iszero_true(Self::new(val, self.span)));
+            Ok(EvalTrace::new(steps, True::new(self.span)))
         } else {
-            steps.push(EvalStep::iszero_false(Self::new(val)));
-            Ok(EvalTrace::new(steps, False::new()))
+            steps.push(EvalStep::iszero_false(Self::new(val, self.span)));
+            Ok(EvalTrace::new(steps, False::new(self.span)))
         }
     }
 

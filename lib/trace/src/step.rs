@@ -3,6 +3,7 @@ use std::fmt;
 use syntax::{
     Location, Var,
     language::Language,
+    span::{Span, Spanned},
     terms::{Assign, Cast, Deref, False, IsNil, Loc, Num, Pair, Pred, Succ, True, Unit, Variable},
     types::Type,
     values::Value,
@@ -67,42 +68,44 @@ where
     /// v1:=v2 -> unit
     pub fn assign<V1, V2>(lhs: V1, rhs: V2) -> Self
     where
-        V1: Into<Lang::Term>,
-        V2: Into<Lang::Term>,
+        V1: Into<Lang::Term> + Spanned,
+        V2: Into<Lang::Term> + Spanned,
         Unit<Lang>: Into<Lang::Term>,
         Assign<Lang>: Into<Lang::Term>,
     {
+        let ass = Assign::new(lhs, rhs);
+        let span = ass.span();
         Self {
-            source: Assign::new(lhs, rhs).into(),
+            source: ass.into(),
             rule: EvaluationRule::Assign,
-            target: Unit::new().into(),
+            target: Unit::new(span).into(),
         }
     }
 
     /// Cast evaluation rule
     /// v as T -> v
-    pub fn cast<Ty, V>(ty: Ty, val: V) -> Self
+    pub fn cast<Ty, V>(ty: Ty, val: V, span: Span) -> Self
     where
         Ty: Type + Into<Lang::Type>,
         V: Value + Into<Lang::Term>,
         Cast<Lang>: Into<Lang::Term>,
     {
         Self {
-            source: Cast::new(val.clone(), ty).into(),
+            source: Cast::new(val.clone(), ty, span).into(),
             rule: EvaluationRule::Cast,
             target: val.into(),
         }
     }
 
     // Dereference evaluation rule
-    pub fn deref<V1, V2>(loc_val: V1, env_val: V2) -> Self
+    pub fn deref<V1, V2>(loc_val: V1, env_val: V2, span: Span) -> Self
     where
         V2: Into<Lang::Term>,
         V1: Into<Lang::Term>,
         Deref<Lang>: Into<Lang::Term>,
     {
         Self {
-            source: Deref::new(loc_val).into(),
+            source: Deref::new(loc_val, span).into(),
             rule: EvaluationRule::Deref,
             target: env_val.into(),
         }
@@ -122,14 +125,14 @@ where
     }
 
     /// Tuple first evaluation rule
-    pub fn fst<T1, T2>(f: T1, s: T2) -> Self
+    pub fn fst<T1, T2>(f: T1, s: T2, span: Span) -> Self
     where
         T1: Into<Lang::Term> + Clone,
         T2: Into<Lang::Term>,
         Pair<Lang>: Into<Lang::Term>,
     {
         Self {
-            source: Pair::new(f.clone(), s).into(),
+            source: Pair::new(f.clone(), s, span).into(),
             rule: EvaluationRule::Fst,
             target: f.into(),
         }
@@ -175,56 +178,58 @@ where
     }
 
     /// is-nil for nil rule
-    pub fn isnil_true<Ty>(ty: Ty) -> Self
+    pub fn isnil_true<Ty>(ty: Ty, span: Span) -> Self
     where
         Ty: Type + Into<Lang::Type>,
         True<Lang>: Into<Lang::Term>,
         IsNil<Lang>: Into<Lang::Term>,
     {
         Self {
-            source: IsNil::new(True::new(), ty).into(),
+            source: IsNil::new(True::new(span), ty, span).into(),
             rule: EvaluationRule::IsNilTrue,
-            target: True::new().into(),
+            target: True::new(span).into(),
         }
     }
 
     /// is-nil for cons rule
-    pub fn isnil_false<Ty>(ty: Ty) -> Self
+    pub fn isnil_false<Ty>(ty: Ty, span: Span) -> Self
     where
         Ty: Type + Into<Lang::Type>,
         IsNil<Lang>: Into<Lang::Term>,
         False<Lang>: Into<Lang::Term>,
     {
         Self {
-            source: IsNil::new(False::new(), ty).into(),
+            source: IsNil::new(False::new(span), ty, span).into(),
             rule: EvaluationRule::IsNilFalse,
-            target: False::new().into(),
+            target: False::new(span).into(),
         }
     }
 
     /// is zero for zero rule
     pub fn iszero_true<T1>(source: T1) -> Self
     where
-        T1: Into<Lang::Term>,
+        T1: Into<Lang::Term> + Spanned,
         True<Lang>: Into<Lang::Term>,
     {
+        let span = source.span();
         Self {
             source: source.into(),
             rule: EvaluationRule::IsZeroTrue,
-            target: True::new().into(),
+            target: True::new(span).into(),
         }
     }
 
     /// is-zero for nonzero rule
     pub fn iszero_false<T1>(source: T1) -> Self
     where
-        T1: Into<Lang::Term>,
+        T1: Into<Lang::Term> + Spanned,
         False<Lang>: Into<Lang::Term>,
     {
+        let span = source.span();
         Self {
             source: source.into(),
             rule: EvaluationRule::IsZeroFalse,
-            target: False::new().into(),
+            target: False::new(span).into(),
         }
     }
 
@@ -269,15 +274,15 @@ where
 
     /// predecessor evaluation rule
     #[must_use]
-    pub fn pred(num: i64) -> Self
+    pub fn pred(num: i64, span: Span) -> Self
     where
         Pred<Lang>: Into<Lang::Term>,
         Num<Lang>: Into<Lang::Term>,
     {
         Self {
-            source: Pred::new(Num::new(num)).into(),
+            source: Pred::new(Num::new(num, span), span).into(),
             rule: EvaluationRule::Pred,
-            target: Num::new(num - 1).into(),
+            target: Num::new(num - 1, span).into(),
         }
     }
 
@@ -311,12 +316,13 @@ where
     pub fn reft<T1>(source: T1, loc: Location) -> Self
     where
         Loc<Lang>: Into<Lang::Term>,
-        T1: Into<Lang::Term>,
+        T1: Into<Lang::Term> + Spanned,
     {
+        let span = source.span();
         Self {
             source: source.into(),
             rule: EvaluationRule::Ref,
-            target: Loc::new(loc).into(),
+            target: Loc::new(loc, span).into(),
         }
     }
 
@@ -361,15 +367,15 @@ where
 
     /// successor evaluation rule
     #[must_use]
-    pub fn succ(num: i64) -> Self
+    pub fn succ(num: i64, span: Span) -> Self
     where
         Succ<Lang>: Into<Lang::Term>,
         Num<Lang>: Into<Lang::Term>,
     {
         Self {
-            source: Succ::new(Num::new(num)).into(),
+            source: Succ::new(Num::new(num, span), span).into(),
             rule: EvaluationRule::Succ,
-            target: Num::new(num).into(),
+            target: Num::new(num, span).into(),
         }
     }
 
@@ -530,13 +536,13 @@ where
     }
 
     /// substitute variable (from environment)
-    pub fn subst_var<T>(var: &Var, body: T) -> Self
+    pub fn subst_var<T>(var: &Var, body: T, span: Span) -> Self
     where
         T: Into<Lang::Term>,
         Variable<Lang>: Into<Lang::Term>,
     {
         Self {
-            source: Variable::new(var).into(),
+            source: Variable::new(var, span).into(),
             rule: EvaluationRule::SubstName,
             target: body.into(),
         }

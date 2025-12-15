@@ -27,9 +27,9 @@ where
         let term_res = self.term.eval(env)?;
         let term_val = term_res.val();
         let num = term_val.into_num()?;
-        let val = Num::<Lang>::new(num.num - 1);
-        let mut steps = term_res.congruence(&move |t| Self::new(t).into());
-        let last_step = EvalStep::pred(num.num);
+        let val = Num::<Lang>::new(num.num - 1, self.span);
+        let mut steps = term_res.congruence(&move |t| Self::new(t, self.span).into());
+        let last_step = EvalStep::pred(num.num, self.span);
         steps.push(last_step);
         Ok(EvalTrace::new(steps, val))
     }

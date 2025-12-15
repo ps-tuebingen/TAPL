@@ -27,10 +27,10 @@ where
         let term_res = self.term.eval(env)?;
         let term_val = term_res.val();
         let num = term_val.into_num()?;
-        let last_step = EvalStep::succ(num.num);
-        let mut steps = term_res.congruence(&move |t| Self::new(t).into());
+        let last_step = EvalStep::succ(num.num, self.span);
+        let mut steps = term_res.congruence(&move |t| Self::new(t, self.span).into());
         steps.push(last_step);
-        let val = Num::<Lang>::new(num.num + 1);
+        let val = Num::<Lang>::new(num.num + 1, self.span);
         Ok(EvalTrace::new(steps, val))
     }
 

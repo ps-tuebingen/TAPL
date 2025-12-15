@@ -19,8 +19,9 @@ where
     fn eval(self, env: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         let inner_res = self.term.eval(env)?;
         let inner_val = inner_res.val();
-        let last_step = EvalStep::cast(self.ty.clone(), inner_val.clone());
-        let mut steps = inner_res.congruence(&move |t| Self::new(t, self.ty.clone()).into());
+        let last_step = EvalStep::cast(self.ty.clone(), inner_val.clone(), self.span());
+        let mut steps =
+            inner_res.congruence(&move |t| Self::new(t, self.ty.clone(), self.span()).into());
         steps.push(last_step);
         Ok(EvalTrace::<Lang>::new(steps, inner_val))
     }

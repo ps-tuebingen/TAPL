@@ -8,6 +8,7 @@ use std::collections::HashSet;
 use syntax::{
     eval_context::EvalContext,
     language::Language,
+    span::Spanned,
     terms::{Deref, Term},
     values::ValueGroup,
 };
@@ -27,8 +28,8 @@ where
         let loc_val = term_val.clone().into_loc()?;
 
         let loc_val = env.get_location(loc_val.loc)?;
-        let last_step = EvalStep::deref(term_val, loc_val.clone());
-        let mut steps = term_res.congruence(&move |t| Self::new(t).into());
+        let last_step = EvalStep::deref(term_val, loc_val.clone(), self.span());
+        let mut steps = term_res.congruence(&move |t| Self::new(t, t.span()).into());
         steps.push(last_step);
         Ok(EvalTrace::<Lang>::new(steps, loc_val))
     }
