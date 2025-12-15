@@ -7,7 +7,8 @@ pub struct UnexpectedDerivation {
 }
 
 impl UnexpectedDerivation {
-    #[must_use] pub fn new(found: &str, expected: &str) -> Self {
+    #[must_use]
+    pub fn new(found: &str, expected: &str) -> Self {
         Self {
             found: found.to_owned(),
             expected: expected.to_owned(),

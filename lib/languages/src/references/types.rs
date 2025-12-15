@@ -78,6 +78,7 @@ mod check_tests {
     use check::Typecheck;
     use syntax::{
         env::Environment,
+        span::Span,
         terms::{App, Assign, Deref, Lambda, Loc, Num, Ref, Unit, Variable},
         types::{Reference, Unit as UnitTy},
     };
@@ -88,11 +89,17 @@ mod check_tests {
             Lambda::new(
                 "x",
                 Reference::new(UnitTy::new()),
-                Deref::new(Variable::new("x")),
+                Deref::new(Variable::new("x", Span::default()), Span::default()),
+                Span::default(),
             ),
             App::new(
-                Lambda::new("y", UnitTy::new(), Ref::new(Variable::new("y"))),
-                Unit::new(),
+                Lambda::new(
+                    "y",
+                    UnitTy::new(),
+                    Ref::new(Variable::new("y", Span::default()), Span::default()),
+                    Span::default(),
+                ),
+                Unit::new(Span::default()),
             ),
         )
         .into();
@@ -107,9 +114,13 @@ mod check_tests {
             Lambda::new(
                 "x",
                 Reference::new(UnitTy::new()),
-                Assign::new(Variable::new("x"), Deref::new(Variable::new("x"))),
+                Assign::new(
+                    Variable::new("x", Span::default()),
+                    Deref::new(Variable::new("x", Span::default()), Span::default()),
+                ),
+                Span::default(),
             ),
-            Ref::new(Unit::new()),
+            Ref::new(Unit::new(Span::default()), Span::default()),
         )
         .into();
         let result = term.check(Default::default()).unwrap();
@@ -121,13 +132,18 @@ mod check_tests {
     fn check_fail() {
         let term: Term = App::seq(
             Assign::new(
-                Ref::new(Unit::new()),
+                Ref::new(Unit::new(Span::default()), Span::default()),
                 App::new(
-                    Lambda::new("x", UnitTy::new(), Variable::new("x")),
-                    Unit::new(),
+                    Lambda::new(
+                        "x",
+                        UnitTy::new(),
+                        Variable::new("x", Span::default()),
+                        Span::default(),
+                    ),
+                    Unit::new(Span::default()),
                 ),
             ),
-            Deref::new(Num::new(0)),
+            Deref::new(Num::new(0, Span::default()), Span::default()),
         )
         .into();
         let result = term.check(Default::default());
@@ -138,13 +154,18 @@ mod check_tests {
     fn check_store() {
         let term: Term = App::seq(
             Assign::new(
-                Ref::new(Unit::new()),
+                Ref::new(Unit::new(Span::default()), Span::default()),
                 App::new(
-                    Lambda::new("x", UnitTy::new(), Variable::new("x")),
-                    Unit::new(),
+                    Lambda::new(
+                        "x",
+                        UnitTy::new(),
+                        Variable::new("x", Span::default()),
+                        Span::default(),
+                    ),
+                    Unit::new(Span::default()),
                 ),
             ),
-            Deref::new(Loc::new(0)),
+            Deref::new(Loc::new(0, Span::default()), Span::default()),
         )
         .into();
         let mut env = Environment::default();

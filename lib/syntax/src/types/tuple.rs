@@ -49,7 +49,11 @@ where
     Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let mut tys: Vec<String> = self.tys.iter().map(std::string::ToString::to_string).collect();
+        let mut tys: Vec<String> = self
+            .tys
+            .iter()
+            .map(std::string::ToString::to_string)
+            .collect();
         tys.sort();
         write!(f, "({})", tys.join(", "))
     }

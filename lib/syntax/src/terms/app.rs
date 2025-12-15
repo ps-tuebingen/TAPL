@@ -40,7 +40,7 @@ where
         }
     }
 
-    /// Construct a sequence `t1;t2` as `(\_:Unit.t2) t1)
+    /// Construct a sequence `t1;t2` as `(\_:Unit.t2) t1)`
     pub fn seq<T1, T2>(t1: T1, t2: T2) -> Self
     where
         T1: Spanned + Into<Lang::Term>,

@@ -20,10 +20,7 @@ where
         self.conc.ty()
     }
 
-    pub const fn app(
-        conc: TypingConclusion<Lang>,
-        premises: Vec<Derivation<Lang>>,
-    ) -> Self {
+    pub const fn app(conc: TypingConclusion<Lang>, premises: Vec<Derivation<Lang>>) -> Self {
         Self {
             conc,
             label: TypingRule::App,
@@ -31,10 +28,7 @@ where
         }
     }
 
-    pub const fn ascribe(
-        conc: TypingConclusion<Lang>,
-        prem: Vec<Derivation<Lang>>,
-    ) -> Self {
+    pub const fn ascribe(conc: TypingConclusion<Lang>, prem: Vec<Derivation<Lang>>) -> Self {
         Self {
             conc,
             label: TypingRule::Ascribe,
@@ -42,10 +36,7 @@ where
         }
     }
 
-    pub const fn assign(
-        conc: TypingConclusion<Lang>,
-        premises: Vec<Derivation<Lang>>,
-    ) -> Self {
+    pub const fn assign(conc: TypingConclusion<Lang>, premises: Vec<Derivation<Lang>>) -> Self {
         Self {
             conc,
             label: TypingRule::Assign,
@@ -53,10 +44,7 @@ where
         }
     }
 
-    pub const fn cast(
-        conc: TypingConclusion<Lang>,
-        prem: Vec<Derivation<Lang>>,
-    ) -> Self {
+    pub const fn cast(conc: TypingConclusion<Lang>, prem: Vec<Derivation<Lang>>) -> Self {
         Self {
             conc,
             label: TypingRule::Cast,
@@ -64,10 +52,7 @@ where
         }
     }
 
-    pub const fn cons(
-        conc: TypingConclusion<Lang>,
-        premises: Vec<Derivation<Lang>>,
-    ) -> Self {
+    pub const fn cons(conc: TypingConclusion<Lang>, premises: Vec<Derivation<Lang>>) -> Self {
         Self {
             conc,
             label: TypingRule::Cons,
@@ -75,10 +60,7 @@ where
         }
     }
 
-    pub const fn deref(
-        conc: TypingConclusion<Lang>,
-        premises: Vec<Derivation<Lang>>,
-    ) -> Self {
+    pub const fn deref(conc: TypingConclusion<Lang>, premises: Vec<Derivation<Lang>>) -> Self {
         Self {
             conc,
             label: TypingRule::Deref,
@@ -86,10 +68,7 @@ where
         }
     }
 
-    pub const fn exception(
-        conc: TypingConclusion<Lang>,
-        premises: Vec<Derivation<Lang>>,
-    ) -> Self {
+    pub const fn exception(conc: TypingConclusion<Lang>, premises: Vec<Derivation<Lang>>) -> Self {
         Self {
             conc,
             label: TypingRule::Exception,
@@ -97,10 +76,7 @@ where
         }
     }
 
-    pub const fn fix(
-        conc: TypingConclusion<Lang>,
-        premises: Vec<Derivation<Lang>>,
-    ) -> Self {
+    pub const fn fix(conc: TypingConclusion<Lang>, premises: Vec<Derivation<Lang>>) -> Self {
         Self {
             conc,
             label: TypingRule::Fix,
@@ -116,10 +92,7 @@ where
         }
     }
 
-    pub const fn fold(
-        conc: TypingConclusion<Lang>,
-        premises: Vec<Derivation<Lang>>,
-    ) -> Self {
+    pub const fn fold(conc: TypingConclusion<Lang>, premises: Vec<Derivation<Lang>>) -> Self {
         Self {
             conc,
             label: TypingRule::Fold,
@@ -127,10 +100,7 @@ where
         }
     }
 
-    pub const fn fst(
-        conc: TypingConclusion<Lang>,
-        premises: Vec<Derivation<Lang>>,
-    ) -> Self {
+    pub const fn fst(conc: TypingConclusion<Lang>, premises: Vec<Derivation<Lang>>) -> Self {
         Self {
             conc,
             label: TypingRule::Fst,
@@ -138,10 +108,7 @@ where
         }
     }
 
-    pub const fn head(
-        conc: TypingConclusion<Lang>,
-        premises: Vec<Derivation<Lang>>,
-    ) -> Self {
+    pub const fn head(conc: TypingConclusion<Lang>, premises: Vec<Derivation<Lang>>) -> Self {
         Self {
             conc,
             label: TypingRule::Head,
@@ -149,10 +116,7 @@ where
         }
     }
 
-    pub const fn ift(
-        conc: TypingConclusion<Lang>,
-        premises: Vec<Derivation<Lang>>,
-    ) -> Self {
+    pub const fn ift(conc: TypingConclusion<Lang>, premises: Vec<Derivation<Lang>>) -> Self {
         Self {
             conc,
             label: TypingRule::If,
@@ -160,10 +124,7 @@ where
         }
     }
 
-    pub const fn isnil(
-        conc: TypingConclusion<Lang>,
-        premises: Vec<Derivation<Lang>>,
-    ) -> Self {
+    pub const fn isnil(conc: TypingConclusion<Lang>, premises: Vec<Derivation<Lang>>) -> Self {
         Self {
             conc,
             label: TypingRule::IsNil,
@@ -171,10 +132,7 @@ where
         }
     }
 
-    pub const fn iszero(
-        conc: TypingConclusion<Lang>,
-        premises: Vec<Derivation<Lang>>,
-    ) -> Self {
+    pub const fn iszero(conc: TypingConclusion<Lang>, premises: Vec<Derivation<Lang>>) -> Self {
         Self {
             conc,
             label: TypingRule::IsZero,
@@ -182,10 +140,7 @@ where
         }
     }
 
-    pub const fn lambda(
-        conc: TypingConclusion<Lang>,
-        premises: Vec<Derivation<Lang>>,
-    ) -> Self {
+    pub const fn lambda(conc: TypingConclusion<Lang>, premises: Vec<Derivation<Lang>>) -> Self {
         Self {
             conc,
             label: TypingRule::Lambda,
@@ -193,10 +148,7 @@ where
         }
     }
 
-    pub const fn lambdasub(
-        conc: TypingConclusion<Lang>,
-        premises: Vec<Derivation<Lang>>,
-    ) -> Self {
+    pub const fn lambdasub(conc: TypingConclusion<Lang>, premises: Vec<Derivation<Lang>>) -> Self {
         Self {
             conc,
             label: TypingRule::LambdaSub,
@@ -204,10 +156,7 @@ where
         }
     }
 
-    pub const fn left(
-        conc: TypingConclusion<Lang>,
-        premises: Vec<Derivation<Lang>>,
-    ) -> Self {
+    pub const fn left(conc: TypingConclusion<Lang>, premises: Vec<Derivation<Lang>>) -> Self {
         Self {
             conc,
             label: TypingRule::Left,
@@ -215,10 +164,7 @@ where
         }
     }
 
-    pub const fn lett(
-        conc: TypingConclusion<Lang>,
-        premises: Vec<Derivation<Lang>>,
-    ) -> Self {
+    pub const fn lett(conc: TypingConclusion<Lang>, premises: Vec<Derivation<Lang>>) -> Self {
         Self {
             conc,
             label: TypingRule::Let,
@@ -226,10 +172,7 @@ where
         }
     }
 
-    pub const fn listcase(
-        conc: TypingConclusion<Lang>,
-        premises: Vec<Derivation<Lang>>,
-    ) -> Self {
+    pub const fn listcase(conc: TypingConclusion<Lang>, premises: Vec<Derivation<Lang>>) -> Self {
         Self {
             conc,
             label: TypingRule::ListCase,
@@ -237,10 +180,7 @@ where
         }
     }
 
-    pub const fn loc(
-        conc: TypingConclusion<Lang>,
-        premises: Vec<Derivation<Lang>>,
-    ) -> Self {
+    pub const fn loc(conc: TypingConclusion<Lang>, premises: Vec<Derivation<Lang>>) -> Self {
         Self {
             conc,
             label: TypingRule::Loc,
@@ -248,10 +188,7 @@ where
         }
     }
 
-    pub const fn nil(
-        conc: TypingConclusion<Lang>,
-        premises: Vec<Derivation<Lang>>,
-    ) -> Self {
+    pub const fn nil(conc: TypingConclusion<Lang>, premises: Vec<Derivation<Lang>>) -> Self {
         Self {
             conc,
             label: TypingRule::Nil,
@@ -259,10 +196,7 @@ where
         }
     }
 
-    pub const fn nothing(
-        conc: TypingConclusion<Lang>,
-        premises: Vec<Derivation<Lang>>,
-    ) -> Self {
+    pub const fn nothing(conc: TypingConclusion<Lang>, premises: Vec<Derivation<Lang>>) -> Self {
         Self {
             conc,
             label: TypingRule::Nothing,
@@ -278,10 +212,7 @@ where
         }
     }
 
-    pub const fn pack(
-        conc: TypingConclusion<Lang>,
-        premises: Vec<Derivation<Lang>>,
-    ) -> Self {
+    pub const fn pack(conc: TypingConclusion<Lang>, premises: Vec<Derivation<Lang>>) -> Self {
         Self {
             conc,
             label: TypingRule::Pack,
@@ -289,10 +220,7 @@ where
         }
     }
 
-    pub const fn pack_bound(
-        conc: TypingConclusion<Lang>,
-        premises: Vec<Derivation<Lang>>,
-    ) -> Self {
+    pub const fn pack_bound(conc: TypingConclusion<Lang>, premises: Vec<Derivation<Lang>>) -> Self {
         Self {
             conc,
             label: TypingRule::PackBound,
@@ -300,10 +228,7 @@ where
         }
     }
 
-    pub const fn pair(
-        conc: TypingConclusion<Lang>,
-        premises: Vec<Derivation<Lang>>,
-    ) -> Self {
+    pub const fn pair(conc: TypingConclusion<Lang>, premises: Vec<Derivation<Lang>>) -> Self {
         Self {
             conc,
             label: TypingRule::Pair,
@@ -311,10 +236,7 @@ where
         }
     }
 
-    pub const fn pred(
-        conc: TypingConclusion<Lang>,
-        premises: Vec<Derivation<Lang>>,
-    ) -> Self {
+    pub const fn pred(conc: TypingConclusion<Lang>, premises: Vec<Derivation<Lang>>) -> Self {
         Self {
             conc,
             label: TypingRule::Pred,
@@ -322,10 +244,7 @@ where
         }
     }
 
-    pub const fn projection(
-        conc: TypingConclusion<Lang>,
-        premises: Vec<Derivation<Lang>>,
-    ) -> Self {
+    pub const fn projection(conc: TypingConclusion<Lang>, premises: Vec<Derivation<Lang>>) -> Self {
         Self {
             conc,
             label: TypingRule::Projection,
@@ -333,20 +252,14 @@ where
         }
     }
 
-    pub const fn raise(
-        conc: TypingConclusion<Lang>,
-        premises: Vec<Derivation<Lang>>,
-    ) -> Self {
+    pub const fn raise(conc: TypingConclusion<Lang>, premises: Vec<Derivation<Lang>>) -> Self {
         Self {
             conc,
             label: TypingRule::Raise,
             premises,
         }
     }
-    pub const fn record(
-        conc: TypingConclusion<Lang>,
-        prems: Vec<Derivation<Lang>>,
-    ) -> Self {
+    pub const fn record(conc: TypingConclusion<Lang>, prems: Vec<Derivation<Lang>>) -> Self {
         Self {
             conc,
             label: TypingRule::Record,
@@ -354,10 +267,7 @@ where
         }
     }
 
-    pub const fn recordproj(
-        conc: TypingConclusion<Lang>,
-        premises: Vec<Derivation<Lang>>,
-    ) -> Self {
+    pub const fn recordproj(conc: TypingConclusion<Lang>, premises: Vec<Derivation<Lang>>) -> Self {
         Self {
             conc,
             label: TypingRule::RecordProj,
@@ -365,10 +275,7 @@ where
         }
     }
 
-    pub const fn reft(
-        conc: TypingConclusion<Lang>,
-        premises: Vec<Derivation<Lang>>,
-    ) -> Self {
+    pub const fn reft(conc: TypingConclusion<Lang>, premises: Vec<Derivation<Lang>>) -> Self {
         Self {
             conc,
             label: TypingRule::Ref,
@@ -376,10 +283,7 @@ where
         }
     }
 
-    pub const fn right(
-        conc: TypingConclusion<Lang>,
-        premises: Vec<Derivation<Lang>>,
-    ) -> Self {
+    pub const fn right(conc: TypingConclusion<Lang>, premises: Vec<Derivation<Lang>>) -> Self {
         Self {
             conc,
             label: TypingRule::Right,
@@ -387,10 +291,7 @@ where
         }
     }
 
-    pub const fn snd(
-        conc: TypingConclusion<Lang>,
-        premises: Vec<Derivation<Lang>>,
-    ) -> Self {
+    pub const fn snd(conc: TypingConclusion<Lang>, premises: Vec<Derivation<Lang>>) -> Self {
         Self {
             conc,
             label: TypingRule::Snd,
@@ -398,10 +299,7 @@ where
         }
     }
 
-    pub const fn somecase(
-        conc: TypingConclusion<Lang>,
-        premises: Vec<Derivation<Lang>>,
-    ) -> Self {
+    pub const fn somecase(conc: TypingConclusion<Lang>, premises: Vec<Derivation<Lang>>) -> Self {
         Self {
             conc,
             label: TypingRule::SomeCase,
@@ -409,10 +307,7 @@ where
         }
     }
 
-    pub const fn something(
-        conc: TypingConclusion<Lang>,
-        premises: Vec<Derivation<Lang>>,
-    ) -> Self {
+    pub const fn something(conc: TypingConclusion<Lang>, premises: Vec<Derivation<Lang>>) -> Self {
         Self {
             conc,
             label: TypingRule::Something,
@@ -420,10 +315,7 @@ where
         }
     }
 
-    pub const fn succ(
-        conc: TypingConclusion<Lang>,
-        premises: Vec<Derivation<Lang>>,
-    ) -> Self {
+    pub const fn succ(conc: TypingConclusion<Lang>, premises: Vec<Derivation<Lang>>) -> Self {
         Self {
             conc,
             label: TypingRule::Succ,
@@ -431,10 +323,7 @@ where
         }
     }
 
-    pub const fn sumcase(
-        conc: TypingConclusion<Lang>,
-        premises: Vec<Derivation<Lang>>,
-    ) -> Self {
+    pub const fn sumcase(conc: TypingConclusion<Lang>, premises: Vec<Derivation<Lang>>) -> Self {
         Self {
             conc,
             label: TypingRule::SumCase,
@@ -442,10 +331,7 @@ where
         }
     }
 
-    pub const fn tail(
-        conc: TypingConclusion<Lang>,
-        premises: Vec<Derivation<Lang>>,
-    ) -> Self {
+    pub const fn tail(conc: TypingConclusion<Lang>, premises: Vec<Derivation<Lang>>) -> Self {
         Self {
             conc,
             label: TypingRule::Tail,
@@ -461,10 +347,7 @@ where
         }
     }
 
-    pub const fn tryt(
-        conc: TypingConclusion<Lang>,
-        premises: Vec<Derivation<Lang>>,
-    ) -> Self {
+    pub const fn tryt(conc: TypingConclusion<Lang>, premises: Vec<Derivation<Lang>>) -> Self {
         Self {
             conc,
             label: TypingRule::Try,
@@ -472,10 +355,7 @@ where
         }
     }
 
-    pub const fn try_val(
-        conc: TypingConclusion<Lang>,
-        premises: Vec<Derivation<Lang>>,
-    ) -> Self {
+    pub const fn try_val(conc: TypingConclusion<Lang>, premises: Vec<Derivation<Lang>>) -> Self {
         Self {
             conc,
             label: TypingRule::TryVal,
@@ -483,10 +363,7 @@ where
         }
     }
 
-    pub const fn tuple(
-        conc: TypingConclusion<Lang>,
-        term_derivs: Vec<Derivation<Lang>>,
-    ) -> Self {
+    pub const fn tuple(conc: TypingConclusion<Lang>, term_derivs: Vec<Derivation<Lang>>) -> Self {
         Self {
             conc,
             label: TypingRule::Tuple,
@@ -494,10 +371,7 @@ where
         }
     }
 
-    pub const fn tyapp(
-        conc: TypingConclusion<Lang>,
-        premises: Vec<Derivation<Lang>>,
-    ) -> Self {
+    pub const fn tyapp(conc: TypingConclusion<Lang>, premises: Vec<Derivation<Lang>>) -> Self {
         Self {
             conc,
             label: TypingRule::TyApp,
@@ -516,10 +390,7 @@ where
         }
     }
 
-    pub const fn tylambda(
-        conc: TypingConclusion<Lang>,
-        premises: Vec<Derivation<Lang>>,
-    ) -> Self {
+    pub const fn tylambda(conc: TypingConclusion<Lang>, premises: Vec<Derivation<Lang>>) -> Self {
         Self {
             conc,
             label: TypingRule::TyLambda,
@@ -527,10 +398,7 @@ where
         }
     }
 
-    pub const fn unfold(
-        conc: TypingConclusion<Lang>,
-        premises: Vec<Derivation<Lang>>,
-    ) -> Self {
+    pub const fn unfold(conc: TypingConclusion<Lang>, premises: Vec<Derivation<Lang>>) -> Self {
         Self {
             conc,
             label: TypingRule::Unfold,
@@ -546,10 +414,7 @@ where
         }
     }
 
-    pub const fn unpack(
-        conc: TypingConclusion<Lang>,
-        premises: Vec<Derivation<Lang>>,
-    ) -> Self {
+    pub const fn unpack(conc: TypingConclusion<Lang>, premises: Vec<Derivation<Lang>>) -> Self {
         Self {
             conc,
             label: TypingRule::Unpack,
@@ -576,10 +441,7 @@ where
         }
     }
 
-    pub const fn variant(
-        conc: TypingConclusion<Lang>,
-        premises: Vec<Derivation<Lang>>,
-    ) -> Self {
+    pub const fn variant(conc: TypingConclusion<Lang>, premises: Vec<Derivation<Lang>>) -> Self {
         Self {
             conc,
             label: TypingRule::Variant,

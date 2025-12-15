@@ -28,7 +28,8 @@ impl DerivationRule {
     /// ---------------------------------------------------------
     /// Gamma |-> Term1 Term2 : Type2
     /// ```
-    #[must_use] pub fn check_ap() -> Self {
+    #[must_use]
+    pub fn check_ap() -> Self {
         let prem_fun = ConclusionRule::typing(
             Symbol::sub(Symbol::Term, 1),
             Symbol::arrow(Symbol::sub(Symbol::Type, 1), Symbol::sub(Symbol::Type, 2)),
@@ -56,7 +57,8 @@ impl DerivationRule {
     /// -----------------------------
     /// Gamma |-> Term1 := Term2 : Unit
     /// ```
-    #[must_use] pub fn check_assign() -> Self {
+    #[must_use]
+    pub fn check_assign() -> Self {
         let prem_ref = ConclusionRule::typing(
             Symbol::sub(Symbol::Term, 1),
             vec![
@@ -85,7 +87,8 @@ impl DerivationRule {
     /// -------------------------------------------------
     /// Gamma |-> Cons[Type](Term1,Term2) : List[Type]
     /// ```
-    #[must_use] pub fn check_cons() -> Self {
+    #[must_use]
+    pub fn check_cons() -> Self {
         let conclusion = ConclusionRule::typing(
             vec![
                 Keyword::Cons.into(),
@@ -118,7 +121,8 @@ impl DerivationRule {
     /// --------------------------------------
     /// Gamma |-> if Term1 { Term2 } else { Term3 } : Type
     /// ```
-    #[must_use] pub fn check_if() -> Self {
+    #[must_use]
+    pub fn check_if() -> Self {
         Self {
             premises: vec![
                 ConclusionRule::typing(Symbol::sub(Symbol::Term, 1), Keyword::Bool),
@@ -153,7 +157,8 @@ impl DerivationRule {
     /// ---------------------------------------------------
     /// Gamma |-> Lambda Variable:Type1.Term : Type1 -> Type2
     /// ```
-    #[must_use] pub fn check_lambda(bounded: bool) -> Self {
+    #[must_use]
+    pub fn check_lambda(bounded: bool) -> Self {
         let prem_env = if bounded {
             Symbol::comma_sep(
                 SpecialChar::Gamma,
@@ -208,7 +213,8 @@ impl DerivationRule {
     /// -----------------------------------------------
     /// Gamma |-> let Variable = Term1 in Term2 : Type2
     /// ```
-    #[must_use] pub fn check_let() -> Self {
+    #[must_use]
+    pub fn check_let() -> Self {
         let prem_bound =
             ConclusionRule::typing(Symbol::sub(Symbol::Term, 1), Symbol::sub(Symbol::Term, 1));
         let prem_in =
@@ -241,7 +247,8 @@ impl DerivationRule {
     /// -------------------
     /// Gamma |-> term: Type
     /// ```
-    #[must_use] pub fn check_env(term: Symbol) -> Self {
+    #[must_use]
+    pub fn check_env(term: Symbol) -> Self {
         Self {
             premises: vec![ConclusionRule::lookup_env(vec![
                 Symbol::colon_sep(term, Symbol::Type),
@@ -269,7 +276,8 @@ impl DerivationRule {
     /// ----------------------------------------------
     /// Gamma |-> {*Type1,Term} as exists {TypeVar::Kind,Type2} : exists {Typevar::Kind,Type2}
     /// ```
-    #[must_use] pub fn check_pack(bounded: bool) -> Self {
+    #[must_use]
+    pub fn check_pack(bounded: bool) -> Self {
         let ex_type = if bounded {
             vec![
                 SpecialChar::Exists.into(),
@@ -349,7 +357,8 @@ impl DerivationRule {
     /// -------------------------------------------------
     /// Gamma |-> Let {TypeVar,Var} = Term1 in Term2 : Type1
     /// ```
-    #[must_use] pub fn check_unpack(bounded: bool) -> Self {
+    #[must_use]
+    pub fn check_unpack(bounded: bool) -> Self {
         let ty_var = if bounded {
             Symbol::less_colon_sep(Symbol::Typevariable, Symbol::sub(Symbol::Type, 3))
         } else {
@@ -391,7 +400,8 @@ impl DerivationRule {
     /// ----------------------------------
     /// Gamma |-> {Term1,Term2} : Type1 x Type2
     /// ```
-    #[must_use] pub fn check_pair() -> Self {
+    #[must_use]
+    pub fn check_pair() -> Self {
         Self {
             premises: vec![
                 ConclusionRule::typing(Symbol::sub(Symbol::Term, 1), Symbol::sub(Symbol::Type, 2)),
@@ -418,7 +428,8 @@ impl DerivationRule {
     /// ----------------------------------
     /// Gamma |-> { Label_i = Term_i,... } : { Label_i : Type_i }
     /// ```
-    #[must_use] pub fn check_record() -> Self {
+    #[must_use]
+    pub fn check_record() -> Self {
         Self {
             premises: vec![ConclusionRule::typing(
                 Symbol::sub(Symbol::Label, "i"),
@@ -447,7 +458,8 @@ impl DerivationRule {
     /// ----------------------------------------------------------
     /// Gamma |-> case Term1 of { Nil => Term2 | Cons(Var1,Var2) => Term3 } : Type2
     /// ```
-    #[must_use] pub fn check_listcase() -> Self {
+    #[must_use]
+    pub fn check_listcase() -> Self {
         let prem_bound = ConclusionRule::typing(
             Symbol::sub(Symbol::Term, 1),
             vec![
@@ -509,7 +521,8 @@ impl DerivationRule {
     /// Gamma,Variable:Type1 |-> Term3 : Type2
     /// Gamma |-> case Term1 of { Nothing => Term2 | Something(Variable) => Term3 } : Type2
     /// ```
-    #[must_use] pub fn check_somecase() -> Self {
+    #[must_use]
+    pub fn check_somecase() -> Self {
         let prem_bound = ConclusionRule::typing(
             Symbol::sub(Symbol::Term, 1),
             vec![
@@ -558,7 +571,8 @@ impl DerivationRule {
     /// ------------------------------------------
     /// Gamma |-> case Term1 of { inl(Variable1) => Term2 | inr(Variable2) => Term3 } : Type3
     /// ```
-    #[must_use] pub fn check_sumcase() -> Self {
+    #[must_use]
+    pub fn check_sumcase() -> Self {
         let prem_bound = ConclusionRule::typing(
             Symbol::sub(Symbol::Term, 1),
             vec![
@@ -615,7 +629,8 @@ impl DerivationRule {
     /// ------------------------
     /// Gamma |-> case <Label_k=Term> of { Label_i => Term_i, ... } : Type
     /// ```
-    #[must_use] pub fn check_variantcase() -> Self {
+    #[must_use]
+    pub fn check_variantcase() -> Self {
         let prem_bound = ConclusionRule::typing(
             Symbol::Term,
             Symbol::angbrack(Symbol::many(Symbol::colon_sep(
@@ -661,7 +676,8 @@ impl DerivationRule {
     /// Gamma |-> Term2: Type
     /// Gamma |-> try Term1 with Term2 : Type
     /// ```
-    #[must_use] pub fn check_tryt(catch: bool) -> Self {
+    #[must_use]
+    pub fn check_tryt(catch: bool) -> Self {
         Self {
             premises: vec![
                 ConclusionRule::typing(Symbol::sub(Symbol::Term, 1), Symbol::Type),
@@ -697,7 +713,8 @@ impl DerivationRule {
     /// ---------------------------
     /// Gamma |-> ( Term1,...) : (Type1,....)
     /// ```
-    #[must_use] pub fn check_tuple() -> Self {
+    #[must_use]
+    pub fn check_tuple() -> Self {
         Self {
             premises: vec![ConclusionRule::typing(
                 Symbol::sub(Symbol::Term, "i"),
@@ -726,7 +743,8 @@ impl DerivationRule {
     /// ------------------------------------------
     /// Gamma |-> Term [Type1] : Type2[TypeVar -> Type1]
     /// ```
-    #[must_use] pub fn check_ty_app(bounded: bool) -> Self {
+    #[must_use]
+    pub fn check_ty_app(bounded: bool) -> Self {
         let premises = if bounded {
             vec![
                 ConclusionRule::typing(
@@ -785,7 +803,8 @@ impl DerivationRule {
     /// --------------------------------------
     /// Gamma |-> Lambda TypeVar::Kind.Term : Forall TypeVar::Kind.Type
     /// ```
-    #[must_use] pub fn check_ty_lambda(bounded: bool) -> Self {
+    #[must_use]
+    pub fn check_ty_lambda(bounded: bool) -> Self {
         let prem_env = if bounded {
             Symbol::comma_sep(
                 SpecialChar::Gamma,
@@ -828,7 +847,8 @@ impl DerivationRule {
     /// --------
     /// Gamma |-> unfold [mu Typevariable.Type] Term : Type[Typevariable -> Type]
     /// ```
-    #[must_use] pub fn check_unfold() -> Self {
+    #[must_use]
+    pub fn check_unfold() -> Self {
         let mu_ty = vec![
             SpecialChar::Mu.into(),
             Symbol::Typevariable,
@@ -891,7 +911,8 @@ impl DerivationRule {
     /// --------------------
     /// Gamma |-> Type<:Type
     /// ```
-    #[must_use] pub fn sub_refl() -> Self {
+    #[must_use]
+    pub fn sub_refl() -> Self {
         Self {
             premises: vec![],
             label: "S-Refl".to_owned(),
@@ -905,7 +926,8 @@ impl DerivationRule {
     /// ------------------
     /// Gamma |-> Type<:Top
     /// ```
-    #[must_use] pub fn sub_top() -> Self {
+    #[must_use]
+    pub fn sub_top() -> Self {
         Self {
             premises: vec![],
             label: "S-Top".to_owned(),
@@ -919,7 +941,8 @@ impl DerivationRule {
     /// ---------------------
     /// Gamma |-> Bot <: Type
     /// ```
-    #[must_use] pub fn sup_bot() -> Self {
+    #[must_use]
+    pub fn sup_bot() -> Self {
         Self {
             premises: vec![],
             label: "S-Bot".to_owned(),
@@ -941,7 +964,8 @@ impl DerivationRule {
     /// -------------------
     /// Gamma |-> exists TyperVar.Ty2 <: exists TypeVar.Ty3
     /// ```
-    #[must_use] pub fn sub_exists(bounded: bool) -> Self {
+    #[must_use]
+    pub fn sub_exists(bounded: bool) -> Self {
         let var_sym = if bounded {
             Symbol::less_colon_sep(Symbol::Typevariable, Symbol::sub(Symbol::Type, 1))
         } else {
@@ -988,7 +1012,8 @@ impl DerivationRule {
     /// -----------------------------------------------------------
     /// Gamma |-> forall TypeVar::Kind.Ty1 <: forall TypeVar::Kind.Ty2
     /// ```
-    #[must_use] pub fn sub_forall(bounded: bool) -> Self {
+    #[must_use]
+    pub fn sub_forall(bounded: bool) -> Self {
         let env_var = if bounded {
             Symbol::less_colon_sep(Symbol::Typevariable, Symbol::sub(Symbol::Type, 1))
         } else {
@@ -1050,7 +1075,8 @@ impl DerivationRule {
     /// ------------------------------------------
     /// Gamma |-> Ty1 -> Ty2 <: Ty3 -> Ty4
     /// ```
-    #[must_use] pub fn sub_fun() -> Self {
+    #[must_use]
+    pub fn sub_fun() -> Self {
         let conc_in = Symbol::arrow(Symbol::sub(Symbol::Type, 1), Symbol::sub(Symbol::Type, 2));
         let conc_out = Symbol::arrow(Symbol::sub(Symbol::Type, 3), Symbol::sub(Symbol::Type, 4));
         let prem_from =
@@ -1078,7 +1104,8 @@ impl DerivationRule {
     /// ----------------------------------------------
     /// Gamma |-> \Typevar::Kind.Ty1 <: \Typevar::Kind.Ty2
     /// ```
-    #[must_use] pub fn sub_oplam(bounded: bool) -> Self {
+    #[must_use]
+    pub fn sub_oplam(bounded: bool) -> Self {
         let annot = if bounded {
             Symbol::less_colon_sep(Symbol::Typevariable, Symbol::sub(Symbol::Type, 3))
         } else {
@@ -1118,7 +1145,8 @@ impl DerivationRule {
     /// -----------------------
     /// Gamma |-> {label:Type_1} <: {label:Type_2}
     /// ```
-    #[must_use] pub fn sub_rec() -> Self {
+    #[must_use]
+    pub fn sub_rec() -> Self {
         Self {
             premises: vec![ConclusionRule::subtyping(
                 Symbol::Term,
@@ -1144,7 +1172,8 @@ impl DerivationRule {
     /// -----------------------------
     /// Gamma |-> Ref[Ty1] <: Sink[Ty1]
     /// ```
-    #[must_use] pub fn sub_ref_sink() -> Self {
+    #[must_use]
+    pub fn sub_ref_sink() -> Self {
         Self {
             premises: vec![],
             label: "S-Ref-Sink".to_owned(),
@@ -1161,7 +1190,8 @@ impl DerivationRule {
     /// --------------------------------
     /// Gamma |-> Ref[Ty1] <: Source[Ty1]
     /// ```
-    #[must_use] pub fn sub_ref_source() -> Self {
+    #[must_use]
+    pub fn sub_ref_source() -> Self {
         Self {
             premises: vec![],
             label: "S-Ref-Source".to_owned(),
@@ -1178,7 +1208,8 @@ impl DerivationRule {
     /// -----------------------------
     /// Gamma |-> Typevariable <: Type
     /// ```
-    #[must_use] pub fn sub_var() -> Self {
+    #[must_use]
+    pub fn sub_var() -> Self {
         Self {
             premises: vec![ConclusionRule::lookup_env(Symbol::less_colon_sep(
                 Symbol::Typevariable,
@@ -1195,7 +1226,8 @@ impl DerivationRule {
     /// ----------------------------------------
     /// Gamma |-> <label_1:Type_i1,...label_n:Type_in> <: <label_1:Type_j1,...,label_jm>
     /// ```
-    #[must_use] pub fn sub_variant() -> Self {
+    #[must_use]
+    pub fn sub_variant() -> Self {
         Self {
             premises: vec![
                 ConclusionRule::new(SpecialChar::Empty, "n", SpecialChar::LessEq, "m"),
@@ -1244,7 +1276,8 @@ impl DerivationRule {
     /// -----------------
     /// Gamma |-> sym :: *
     /// ```
-    #[must_use] pub fn kind_prim(sym: Symbol) -> Self {
+    #[must_use]
+    pub fn kind_prim(sym: Symbol) -> Self {
         Self {
             premises: vec![],
             label: "K-Prim".to_owned(),
@@ -1259,7 +1292,8 @@ impl DerivationRule {
     /// -----------------
     /// Gamma |-> sym :: K
     /// ```
-    #[must_use] pub fn kind_any(sym: Symbol) -> Self {
+    #[must_use]
+    pub fn kind_any(sym: Symbol) -> Self {
         Self {
             premises: vec![],
             label: "K-Any".to_owned(),
@@ -1281,7 +1315,8 @@ impl DerivationRule {
     /// ----------------------------------
     /// Gamma |-> exists TypeVar::Kind1.Type :: Kind2
     /// ```
-    #[must_use] pub fn kind_exists(bounded: bool) -> Self {
+    #[must_use]
+    pub fn kind_exists(bounded: bool) -> Self {
         let prem_env_snd = if bounded {
             Symbol::less_colon_sep(Symbol::Typevariable, Symbol::sub(Symbol::Type, 1))
         } else {
@@ -1341,7 +1376,8 @@ impl DerivationRule {
     /// -----------------------------------------
     /// Gamma |-> forall TypeVar::Kind1. Ty :: Kind2
     /// ```
-    #[must_use] pub fn kind_forall(bounded: bool) -> Self {
+    #[must_use]
+    pub fn kind_forall(bounded: bool) -> Self {
         let tyvar = if bounded {
             Symbol::less_colon_sep(Symbol::Typevariable, Symbol::sub(Symbol::Type, 1))
         } else {
@@ -1394,7 +1430,8 @@ impl DerivationRule {
     /// -------------------------
     /// Gamma |-> Ty1 -> Ty2 :: *
     /// ```
-    #[must_use] pub fn kind_fun() -> Self {
+    #[must_use]
+    pub fn kind_fun() -> Self {
         let prem_from = ConclusionRule::kinding(Symbol::sub(Symbol::Type, 1), SpecialChar::Star);
         let prem_to = ConclusionRule::kinding(Symbol::sub(Symbol::Type, 2), SpecialChar::Star);
         let conclusion = ConclusionRule::kinding(
@@ -1415,7 +1452,8 @@ impl DerivationRule {
     /// ---------------------------
     /// Gamma |-> Ty1 Ty2 :: Kind1
     /// ```
-    #[must_use] pub fn kind_op_app() -> Self {
+    #[must_use]
+    pub fn kind_op_app() -> Self {
         let prem_from = ConclusionRule::kinding(
             Symbol::sub(Symbol::Type, 1),
             vec![
@@ -1451,7 +1489,8 @@ impl DerivationRule {
     /// ---------------------------------------------
     /// Gamma |-> \TypeVar::Kind3.Ty2 :: Kind1 => Kind2
     /// ```
-    #[must_use] pub fn kind_op_lam(bounded: bool) -> Self {
+    #[must_use]
+    pub fn kind_op_lam(bounded: bool) -> Self {
         let annot = if bounded {
             Symbol::less_colon_sep(Symbol::Typevariable, Symbol::sub(Symbol::Type, 1))
         } else {
@@ -1493,7 +1532,8 @@ impl DerivationRule {
     /// ------------------------------
     /// Gamma |-> { label : Term } :: *
     /// ```
-    #[must_use] pub fn kind_rec() -> Self {
+    #[must_use]
+    pub fn kind_rec() -> Self {
         Self {
             premises: vec![ConclusionRule::kinding(Symbol::Term, SpecialChar::Star)],
             label: "K-Rec".to_owned(),
@@ -1510,7 +1550,8 @@ impl DerivationRule {
     /// -------------------------------------
     /// Gamma |-> Type1 + Type2 :: *
     /// ```
-    #[must_use] pub fn kind_sum() -> Self {
+    #[must_use]
+    pub fn kind_sum() -> Self {
         Self {
             premises: vec![
                 ConclusionRule::kinding(Symbol::sub(Symbol::Type, 1), SpecialChar::Star),
@@ -1534,7 +1575,8 @@ impl DerivationRule {
     /// -----------------------------
     /// Gamma |-> TypeVariable :: Kind
     /// ```
-    #[must_use] pub fn kind_var() -> Self {
+    #[must_use]
+    pub fn kind_var() -> Self {
         Self {
             premises: vec![ConclusionRule::lookup_env(Symbol::double_colon_sep(
                 Symbol::Typevariable,
@@ -1574,7 +1616,8 @@ impl DerivationRule {
     /// ```text
     /// Gamma |-> (\Typevar::Kind.Type1) Type2 -> Type1[TypeVar -> Type2]
     /// ```
-    #[must_use] pub fn norm_ap(bounded: bool) -> Self {
+    #[must_use]
+    pub fn norm_ap(bounded: bool) -> Self {
         let annot = if bounded {
             Symbol::less_colon_sep(Symbol::Typevariable, Symbol::sub(Symbol::Type, 3))
         } else {

@@ -6,7 +6,8 @@ pub struct TriggerEvent {
 }
 
 impl TriggerEvent {
-    #[must_use] pub fn new(event: &str) -> Self {
+    #[must_use]
+    pub fn new(event: &str) -> Self {
         Self {
             event: event.to_owned(),
         }

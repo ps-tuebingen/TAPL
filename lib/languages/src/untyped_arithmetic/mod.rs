@@ -57,28 +57,46 @@ mod term_tests {
     use super::terms::Term;
     use eval::Eval;
     use syntax::{
+        span::Span,
         terms::{If, IsZero, Num, Pred, Succ},
         values::Num as NumVal,
     };
 
     #[test]
     fn eval_simple() {
-        let term: Term = Succ::new(Succ::new(Pred::new(Num::new(0)))).into();
+        let term: Term = Succ::new(
+            Succ::new(
+                Pred::new(Num::new(0, Span::default()), Span::default()),
+                Span::default(),
+            ),
+            Span::default(),
+        )
+        .into();
         let result = term.eval_start().unwrap();
-        let expected = NumVal::new(1).into();
+        let expected = NumVal::new(1, Span::default()).into();
         assert_eq!(result.val(), expected)
     }
 
     #[test]
     fn eval_complex() {
         let term: Term = If::new(
-            IsZero::new(Succ::new(Num::new(0))),
-            Pred::new(Succ::new(Num::new(0))),
-            Succ::new(Pred::new(Num::new(0))),
+            IsZero::new(
+                Succ::new(Num::new(0, Span::default()), Span::default()),
+                Span::default(),
+            ),
+            Pred::new(
+                Succ::new(Num::new(0, Span::default()), Span::default()),
+                Span::default(),
+            ),
+            Succ::new(
+                Pred::new(Num::new(0, Span::default()), Span::default()),
+                Span::default(),
+            ),
+            Span::default(),
         )
         .into();
         let result = term.eval_start().unwrap();
-        let expected = NumVal::new(0).into();
+        let expected = NumVal::new(0, Span::default()).into();
         assert_eq!(result.val(), expected)
     }
 }

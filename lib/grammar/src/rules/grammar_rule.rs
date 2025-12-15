@@ -12,7 +12,8 @@ pub struct GrammarRule {
 
 impl GrammarRule {
     /// Create a rule from a given symbol and description
-    #[must_use] pub fn new(symbol: Symbol, desc: &str) -> Self {
+    #[must_use]
+    pub fn new(symbol: Symbol, desc: &str) -> Self {
         Self {
             symbol,
             description: desc.to_owned(),

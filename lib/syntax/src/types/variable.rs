@@ -15,7 +15,8 @@ impl<Lang> TypeVariable<Lang>
 where
     Lang: Language,
 {
-    #[must_use] pub fn new(v: &str) -> Self {
+    #[must_use]
+    pub fn new(v: &str) -> Self {
         Self {
             v: v.to_owned(),
             phantom: PhantomData,

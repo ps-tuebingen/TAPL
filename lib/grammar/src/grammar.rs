@@ -15,7 +15,8 @@ pub struct Grammar {
 
 impl Grammar {
     /// create a term grammar with given alternatives
-    #[must_use] pub fn term(alternatives: Vec<GrammarRule>) -> Self {
+    #[must_use]
+    pub fn term(alternatives: Vec<GrammarRule>) -> Self {
         Self {
             symbol: Symbol::Term,
             description: "Term".to_owned(),
@@ -24,7 +25,8 @@ impl Grammar {
     }
 
     /// create a type grammar with given alternatives
-    #[must_use] pub fn ty(alternatives: Vec<GrammarRule>) -> Self {
+    #[must_use]
+    pub fn ty(alternatives: Vec<GrammarRule>) -> Self {
         Self {
             symbol: Symbol::Type,
             description: "Type".to_owned(),
@@ -33,7 +35,8 @@ impl Grammar {
     }
 
     /// Crate a value grammar with given alternatives
-    #[must_use] pub fn value(alternatives: Vec<GrammarRule>) -> Self {
+    #[must_use]
+    pub fn value(alternatives: Vec<GrammarRule>) -> Self {
         Self {
             symbol: Symbol::Value,
             description: "Value".to_owned(),

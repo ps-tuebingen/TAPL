@@ -27,7 +27,8 @@ where
         }
     }
 
-    #[must_use] pub fn to_exists_bounded(self) -> ExistsBounded<Lang>
+    #[must_use]
+    pub fn to_exists_bounded(self) -> ExistsBounded<Lang>
     where
         Top<Lang>: Into<Lang::Type>,
     {

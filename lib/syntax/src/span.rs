@@ -1,5 +1,5 @@
 /// A Source Position
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub struct Position {
     /// Source Line
     pub line: u64,
@@ -8,7 +8,7 @@ pub struct Position {
 }
 
 /// A Source Span
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub struct Span {
     /// Start position
     pub start: Position,
@@ -19,7 +19,8 @@ pub struct Span {
 impl Span {
     /// Extend `self` with `other`
     /// The new span will be `self.start` to `other.end`
-    pub fn extend(&self, other: &Span) -> Self {
+    #[must_use]
+    pub const fn extend(&self, other: &Self) -> Self {
         Self {
             start: self.start,
             end: other.end,

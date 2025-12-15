@@ -6,7 +6,8 @@ pub struct MissingInput {
 }
 
 impl MissingInput {
-    #[must_use] pub fn new(input: &str) -> Self {
+    #[must_use]
+    pub fn new(input: &str) -> Self {
         Self {
             input: input.to_owned(),
         }

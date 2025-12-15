@@ -126,6 +126,7 @@ pub fn pair_to_n_inner<'a>(
 }
 
 /// Get the [`syntax::span::Span`] from a rule
+#[must_use]
 pub fn pair_span(p: &Pair<'_, Rule>) -> Span {
     let span = p.as_span();
     let (start_line, start_col) = span.start_pos().line_col();

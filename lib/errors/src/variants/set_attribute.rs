@@ -8,7 +8,8 @@ pub struct SetAttribute {
 }
 
 impl SetAttribute {
-    #[must_use] pub fn new(id: &str, attr: &str, val: &str) -> Self {
+    #[must_use]
+    pub fn new(id: &str, attr: &str, val: &str) -> Self {
         Self {
             elem_id: id.to_owned(),
             attribute: attr.to_owned(),

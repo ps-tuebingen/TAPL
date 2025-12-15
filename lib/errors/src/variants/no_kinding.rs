@@ -6,7 +6,8 @@ pub struct NoKinding {
 }
 
 impl NoKinding {
-    #[must_use] pub fn new(lang: &str) -> Self {
+    #[must_use]
+    pub fn new(lang: &str) -> Self {
         Self {
             lang: lang.to_owned(),
         }

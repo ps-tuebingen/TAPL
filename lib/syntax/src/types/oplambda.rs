@@ -27,7 +27,8 @@ where
         }
     }
 
-    #[must_use] pub fn to_oplambda_unbounded(self) -> OpLambdaSub<Lang>
+    #[must_use]
+    pub fn to_oplambda_unbounded(self) -> OpLambdaSub<Lang>
     where
         Top<Lang>: Into<Lang::Type>,
     {

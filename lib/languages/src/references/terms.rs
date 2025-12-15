@@ -51,6 +51,7 @@ mod term_tests {
     use super::{References, Term};
     use eval::Eval;
     use syntax::{
+        span::Span,
         subst::SubstTerm,
         terms::{App, Assign, Deref, Lambda, Loc, Num, Ref, Unit, Variable},
         types::{Reference, Unit as UnitTy},
@@ -59,35 +60,54 @@ mod term_tests {
 
     fn example_term1() -> Term {
         Assign::new(
-            Ref::new(Unit::new()),
+            Ref::new(Unit::new(Span::default()), Span::default()),
             Lambda::new(
                 "x",
                 UnitTy::new(),
-                App::new(Variable::new("y"), Variable::new("x")),
+                App::new(
+                    Variable::new("y", Span::default()),
+                    Variable::new("x", Span::default()),
+                ),
+                Span::default(),
             ),
         )
         .into()
     }
 
     fn example_term2() -> Term {
-        Deref::new(App::new(
-            Lambda::new("x", UnitTy::new(), Num::new(0)),
-            Variable::new("y"),
-        ))
+        Deref::new(
+            App::new(
+                Lambda::new(
+                    "x",
+                    UnitTy::new(),
+                    Num::new(0, Span::default()),
+                    Span::default(),
+                ),
+                Variable::new("y", Span::default()),
+            ),
+            Span::default(),
+        )
         .into()
     }
 
     #[test]
     fn subst1() {
         let result = example_term1()
-            .subst(&"x".to_owned(), &Unit::new().into())
-            .subst(&"y".to_owned(), &Ref::new(Unit::new()).into());
+            .subst(&"x".to_owned(), &Unit::new(Span::default()).into())
+            .subst(
+                &"y".to_owned(),
+                &Ref::new(Unit::new(Span::default()), Span::default()).into(),
+            );
         let expected = Assign::new(
-            Ref::new(Unit::new()),
+            Ref::new(Unit::new(Span::default()), Span::default()),
             Lambda::new(
                 "x",
                 UnitTy::new(),
-                App::new(Ref::new(Unit::new()), Variable::new("x")),
+                App::new(
+                    Ref::new(Unit::new(Span::default()), Span::default()),
+                    Variable::new("x", Span::default()),
+                ),
+                Span::default(),
             ),
         )
         .into();
@@ -97,12 +117,23 @@ mod term_tests {
     #[test]
     fn subst2() {
         let result = example_term2()
-            .subst(&"x".to_owned(), &Unit::new().into())
-            .subst(&"y".to_owned(), &Ref::new(Unit::new()).into());
-        let expected = Deref::new(App::new(
-            Lambda::new("x", UnitTy::new(), Num::new(0)),
-            Ref::new(Unit::new()),
-        ))
+            .subst(&"x".to_owned(), &Unit::new(Span::default()).into())
+            .subst(
+                &"y".to_owned(),
+                &Ref::new(Unit::new(Span::default()), Span::default()).into(),
+            );
+        let expected = Deref::new(
+            App::new(
+                Lambda::new(
+                    "x",
+                    UnitTy::new(),
+                    Num::new(0, Span::default()),
+                    Span::default(),
+                ),
+                Ref::new(Unit::new(Span::default()), Span::default()),
+            ),
+            Span::default(),
+        )
         .into();
         assert_eq!(result, expected)
     }
@@ -113,16 +144,22 @@ mod term_tests {
             Lambda::new(
                 "x",
                 Reference::new(UnitTy::new()),
-                Deref::new(Variable::new("x")),
+                Deref::new(Variable::new("x", Span::default()), Span::default()),
+                Span::default(),
             ),
             App::new(
-                Lambda::new("y", UnitTy::new(), Ref::new(Variable::new("y"))),
-                Unit::new(),
+                Lambda::new(
+                    "y",
+                    UnitTy::new(),
+                    Ref::new(Variable::new("y", Span::default()), Span::default()),
+                    Span::default(),
+                ),
+                Unit::new(Span::default()),
             ),
         )
         .into();
         let result = term.eval(&mut Default::default()).unwrap();
-        let expected = UnitVal::new().into();
+        let expected = UnitVal::new(Span::default()).into();
         assert_eq!(result.val(), expected)
     }
 
@@ -132,13 +169,17 @@ mod term_tests {
             Lambda::new(
                 "x",
                 Reference::new(UnitTy::new()),
-                Assign::new(Variable::new("x"), Deref::new(Variable::new("x"))),
+                Assign::new(
+                    Variable::new("x", Span::default()),
+                    Deref::new(Variable::new("x", Span::default()), Span::default()),
+                ),
+                Span::default(),
             ),
-            Ref::new(Unit::new()),
+            Ref::new(Unit::new(Span::default()), Span::default()),
         )
         .into();
         let result = term.eval(&mut Default::default()).unwrap();
-        let expected = UnitVal::new().into();
+        let expected = UnitVal::new(Span::default()).into();
         assert_eq!(result.val(), expected)
     }
 
@@ -146,17 +187,22 @@ mod term_tests {
     fn eval_store() {
         let term: Term = App::<References>::seq(
             Assign::new(
-                Ref::new(Unit::new()),
+                Ref::new(Unit::new(Span::default()), Span::default()),
                 App::new(
-                    Lambda::new("x", UnitTy::new(), Variable::new("x")),
-                    Unit::new(),
+                    Lambda::new(
+                        "x",
+                        UnitTy::new(),
+                        Variable::new("x", Span::default()),
+                        Span::default(),
+                    ),
+                    Unit::new(Span::default()),
                 ),
             ),
-            Deref::new(Loc::new(0)),
+            Deref::new(Loc::new(0, Span::default()), Span::default()),
         )
         .into();
         let result = term.eval(&mut Default::default()).unwrap();
-        let expected = UnitVal::new().into();
+        let expected = UnitVal::new(Span::default()).into();
         assert_eq!(result.val(), expected)
     }
 }

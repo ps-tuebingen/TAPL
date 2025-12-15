@@ -6,7 +6,8 @@ pub struct RemainingInput {
 }
 
 impl RemainingInput {
-    #[must_use] pub fn new(remaining: &str) -> Self {
+    #[must_use]
+    pub fn new(remaining: &str) -> Self {
         Self {
             remaining: remaining.to_owned(),
         }

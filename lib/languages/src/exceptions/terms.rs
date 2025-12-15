@@ -48,23 +48,40 @@ impl syntax::terms::Term for Term {}
 pub mod term_tests {
     use super::{App, Exceptions, Lambda, Raise, Term, Try, TryWithVal, Unit, Variable};
     use eval::Eval;
-    use syntax::{types::Unit as UnitTy, values::Unit as UnitVal};
+    use syntax::{span::Span, types::Unit as UnitTy, values::Unit as UnitVal};
 
     pub fn example_term1() -> Term {
         Try::<Exceptions>::new(
             App::<Exceptions>::new(
-                Lambda::<Exceptions>::new("x", UnitTy::new(), Variable::<Exceptions>::new("x")),
-                Unit::<Exceptions>::new(),
+                Lambda::<Exceptions>::new(
+                    "x",
+                    UnitTy::new(),
+                    Variable::<Exceptions>::new("x", Span::default()),
+                    Span::default(),
+                ),
+                Unit::<Exceptions>::new(Span::default()),
             ),
-            Unit::<Exceptions>::new(),
+            Unit::<Exceptions>::new(Span::default()),
+            Span::default(),
         )
         .into()
     }
 
     pub fn example_term2() -> Term {
         TryWithVal::<Exceptions>::new(
-            Raise::<Exceptions>::new(Unit::<Exceptions>::new(), UnitTy::new(), UnitTy::new()),
-            Lambda::<Exceptions>::new("x", UnitTy::new(), Unit::new()),
+            Raise::<Exceptions>::new(
+                Unit::<Exceptions>::new(Span::default()),
+                UnitTy::new(),
+                UnitTy::new(),
+                Span::default(),
+            ),
+            Lambda::<Exceptions>::new(
+                "x",
+                UnitTy::new(),
+                Unit::new(Span::default()),
+                Span::default(),
+            ),
+            Span::default(),
         )
         .into()
     }
@@ -72,14 +89,14 @@ pub mod term_tests {
     #[test]
     fn eval1() {
         let result = example_term1().eval_start().unwrap();
-        let expected = UnitVal::new().into();
+        let expected = UnitVal::new(Span::default()).into();
         assert_eq!(result.val(), expected)
     }
 
     #[test]
     fn eval2() {
         let result = example_term2().eval_start().unwrap();
-        let expected = UnitVal::new().into();
+        let expected = UnitVal::new(Span::default()).into();
         assert_eq!(result.val(), expected)
     }
 }

@@ -6,7 +6,8 @@ pub struct UndefinedLabel {
 }
 
 impl UndefinedLabel {
-    #[must_use] pub fn new(lb: &str) -> Self {
+    #[must_use]
+    pub fn new(lb: &str) -> Self {
         Self {
             label: lb.to_owned(),
         }

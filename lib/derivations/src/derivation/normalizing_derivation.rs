@@ -31,11 +31,7 @@ where
         }
     }
 
-    pub fn cong<Ty1, Ty2>(
-        from: Ty1,
-        to: Ty2,
-        prem: Vec<Derivation<Lang>>,
-    ) -> Self
+    pub fn cong<Ty1, Ty2>(from: Ty1, to: Ty2, prem: Vec<Derivation<Lang>>) -> Self
     where
         Ty1: Into<Lang::Type>,
         Ty2: Into<Lang::Type>,
@@ -47,11 +43,7 @@ where
         }
     }
 
-    pub fn opapp<Ty1, Ty2>(
-        from: Ty1,
-        to: Ty2,
-        premises: Vec<Derivation<Lang>>,
-    ) -> Self
+    pub fn opapp<Ty1, Ty2>(from: Ty1, to: Ty2, premises: Vec<Derivation<Lang>>) -> Self
     where
         Ty1: Into<Lang::Type>,
         Ty2: Into<Lang::Type>,

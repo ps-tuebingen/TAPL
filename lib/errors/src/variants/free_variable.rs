@@ -6,7 +6,8 @@ pub struct FreeVariable {
 }
 
 impl FreeVariable {
-    #[must_use] pub fn new(var: &str) -> Self {
+    #[must_use]
+    pub fn new(var: &str) -> Self {
         Self {
             var: var.to_owned(),
         }

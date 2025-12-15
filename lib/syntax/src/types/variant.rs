@@ -14,7 +14,8 @@ impl<Lang> Variant<Lang>
 where
     Lang: Language,
 {
-    #[must_use] pub fn new<Ty1>(vars: HashMap<Label, Ty1>) -> Self
+    #[must_use]
+    pub fn new<Ty1>(vars: HashMap<Label, Ty1>) -> Self
     where
         Ty1: Into<Lang::Type>,
     {

@@ -106,11 +106,7 @@ where
         }
     }
 
-    pub fn fun<Ty, Deriv1, Deriv2>(
-        ty: Ty,
-        from_deriv: Deriv1,
-        to_deriv: Deriv2,
-    ) -> Self
+    pub fn fun<Ty, Deriv1, Deriv2>(ty: Ty, from_deriv: Deriv1, to_deriv: Deriv2) -> Self
     where
         Ty: Into<Lang::Type>,
         Deriv1: Into<Derivation<Lang>>,
@@ -200,7 +196,8 @@ where
         }
     }
 
-    #[must_use] pub fn var(var: &str, knd: Kind) -> Self
+    #[must_use]
+    pub fn var(var: &str, knd: Kind) -> Self
     where
         TypeVariable<Lang>: Into<Lang::Type>,
     {

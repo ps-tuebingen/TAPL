@@ -7,7 +7,8 @@ pub struct CouldNotCast {
 }
 
 impl CouldNotCast {
-    #[must_use] pub fn new(id: &str, target: &str) -> Self {
+    #[must_use]
+    pub fn new(id: &str, target: &str) -> Self {
         Self {
             id: id.to_owned(),
             target: target.to_owned(),
