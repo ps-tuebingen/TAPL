@@ -1,5 +1,4 @@
 use super::FOmega;
-use errors::TypeMismatch;
 use macros::{
     FromVariants, GrammarDescribe, Kindcheck, LangDisplay, LatexFmt, NoSubtypes, Normalize,
     SubstType,
@@ -41,78 +40,75 @@ impl TypeTrait for Type {}
 
 impl TypeGroup for Type {
     type Lang = FOmega;
-    fn into_fun(self) -> Result<Fun<FOmega>, TypeMismatch> {
+    fn into_fun(self) -> Option<Fun<FOmega>> {
         if let Self::Fun(fun) = self {
-            Ok(fun)
+            Some(fun)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Function".to_owned()))
+            None
         }
     }
 
-    fn into_forall(self) -> Result<Forall<FOmega>, TypeMismatch> {
+    fn into_forall(self) -> Option<Forall<FOmega>> {
         if let Self::Forall(forall) = self {
-            Ok(forall)
+            Some(forall)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Universal".to_owned()))
+            None
         }
     }
 
-    fn into_oplambda(self) -> Result<OpLambda<FOmega>, TypeMismatch> {
+    fn into_oplambda(self) -> Option<OpLambda<FOmega>> {
         if let Self::OpLambda(lam) = self {
-            Ok(lam)
+            Some(lam)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "OpLambda".to_owned()))
+            None
         }
     }
 
-    fn into_opapp(self) -> Result<OpApp<FOmega>, TypeMismatch> {
+    fn into_opapp(self) -> Option<OpApp<FOmega>> {
         if let Self::OpApp(app) = self {
-            Ok(app)
+            Some(app)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "OpApp".to_owned()))
+            None
         }
     }
 
-    fn into_exists(self) -> Result<Exists<FOmega>, TypeMismatch> {
+    fn into_exists(self) -> Option<Exists<FOmega>> {
         if let Self::Exists(ex) = self {
-            Ok(ex)
+            Some(ex)
         } else {
-            Err(TypeMismatch::new(
-                self.to_string(),
-                "Existential".to_owned(),
-            ))
+            None
         }
     }
 
-    fn into_record(self) -> Result<Record<FOmega>, TypeMismatch> {
+    fn into_record(self) -> Option<Record<FOmega>> {
         if let Self::Record(rec) = self {
-            Ok(rec)
+            Some(rec)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Record".to_owned()))
+            None
         }
     }
 
-    fn into_bool(self) -> Result<Bool<FOmega>, TypeMismatch> {
+    fn into_bool(self) -> Option<Bool<FOmega>> {
         if let Self::Bool(b) = self {
-            Ok(b)
+            Some(b)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Bool".to_owned()))
+            None
         }
     }
 
-    fn into_unit(self) -> Result<Unit<FOmega>, TypeMismatch> {
+    fn into_unit(self) -> Option<Unit<FOmega>> {
         if let Self::Unit(u) = self {
-            Ok(u)
+            Some(u)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Unit".to_owned()))
+            None
         }
     }
 
-    fn into_nat(self) -> Result<Nat<FOmega>, TypeMismatch> {
+    fn into_nat(self) -> Option<Nat<FOmega>> {
         if let Self::Nat(nat) = self {
-            Ok(nat)
+            Some(nat)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Nat".to_owned()))
+            None
         }
     }
 }

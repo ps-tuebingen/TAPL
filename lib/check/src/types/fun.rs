@@ -1,6 +1,6 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
 use derivations::{Derivation, KindingDerivation, NormalizingDerivation, SubtypeDerivation};
-use errors::{KindMismatch, check_error::CheckError};
+use errors::{KindMismatch, TypeMismatch, check_error::CheckError};
 use grammar::{DerivationRule, symbols::Symbol};
 use std::{collections::HashSet, rc::Rc};
 use syntax::{
@@ -23,11 +23,14 @@ where
         sup: &<Lang as Language>::Type,
         env: Environment<Self::Lang>,
     ) -> Result<Derivation<Self::Lang>, CheckError> {
-        if let Ok(top) = sup.clone().into_top() {
+        if let Some(top) = sup.clone().into_top() {
             return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind, vec![]).into());
         }
 
-        let sup_fun = sup.clone().into_fun()?;
+        let sup_fun = sup.clone().into_fun().ok_or(TypeMismatch::new(
+            sup.to_string(),
+            "Function Type".to_string(),
+        ))?;
         let from_res = sup_fun.from.check_subtype(&(*self.from), env.clone())?;
         let to_res = self.to.check_subtype(&(*sup_fun.to), env.clone())?;
         Ok(SubtypeDerivation::fun(env, self.clone(), sup.clone(), from_res, to_res).into())

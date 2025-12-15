@@ -1,5 +1,4 @@
 use super::Existential;
-use errors::TypeMismatch;
 use macros::{
     FromVariants, GrammarDescribe, LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes, SubstType,
 };
@@ -36,54 +35,51 @@ impl TypeTrait for Type {}
 
 impl TypeGroup for Type {
     type Lang = Existential;
-    fn into_unit(self) -> Result<Unit<Existential>, TypeMismatch> {
+    fn into_unit(self) -> Option<Unit<Existential>> {
         if let Self::Unit(u) = self {
-            Ok(u)
+            Some(u)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Unit".to_owned()))
+            None
         }
     }
 
-    fn into_nat(self) -> Result<Nat<Existential>, TypeMismatch> {
+    fn into_nat(self) -> Option<Nat<Existential>> {
         if let Self::Nat(nat) = self {
-            Ok(nat)
+            Some(nat)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Nat".to_owned()))
+            None
         }
     }
 
-    fn into_bool(self) -> Result<Bool<Existential>, TypeMismatch> {
+    fn into_bool(self) -> Option<Bool<Existential>> {
         if let Self::Bool(b) = self {
-            Ok(b)
+            Some(b)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Bool".to_owned()))
+            None
         }
     }
 
-    fn into_fun(self) -> Result<Fun<Existential>, TypeMismatch> {
+    fn into_fun(self) -> Option<Fun<Existential>> {
         if let Self::Fun(fun) = self {
-            Ok(fun)
+            Some(fun)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Function".to_owned()))
+            None
         }
     }
 
-    fn into_exists(self) -> Result<Exists<Existential>, TypeMismatch> {
+    fn into_exists(self) -> Option<Exists<Existential>> {
         if let Self::Exists(ex) = self {
-            Ok(ex)
+            Some(ex)
         } else {
-            Err(TypeMismatch::new(
-                self.to_string(),
-                "Existential".to_owned(),
-            ))
+            None
         }
     }
 
-    fn into_record(self) -> Result<Record<Existential>, TypeMismatch> {
+    fn into_record(self) -> Option<Record<Existential>> {
         if let Self::Record(rec) = self {
-            Ok(rec)
+            Some(rec)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Record".to_owned()))
+            None
         }
     }
 }

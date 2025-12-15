@@ -1,6 +1,6 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
-use errors::{UndefinedLabel, check_error::CheckError};
+use errors::{KindMismatch, TypeMismatch, UndefinedLabel, check_error::CheckError};
 use grammar::{
     DerivationRule,
     symbols::{Keyword, SpecialChar, Symbol},
@@ -47,7 +47,10 @@ where
             term_ty_norm = term_ty;
         }
 
-        let var_ty = ty_norm.clone().into_variant()?;
+        let var_ty = ty_norm.clone().into_variant().ok_or(TypeMismatch::new(
+            ty_norm.to_string(),
+            "Variant Type".to_string(),
+        ))?;
         let lb_ty = var_ty
             .variants
             .get(&self.label)
@@ -57,11 +60,17 @@ where
         if features.kinded() {
             let term_res = term_ty_norm.check_kind(env.clone())?.into_kind()?;
             let lb_res = lb_ty.check_kind(env.clone())?.into_kind()?;
-            lb_res.ret_kind().check_equal(&term_res.ret_kind())?;
+            let lb_knd = lb_res.ret_kind();
+            let term_knd = term_res.ret_kind();
+            if lb_knd != term_knd {
+                return Err(KindMismatch::new(lb_knd.to_string(), term_knd.to_string()).into());
+            }
             premises.push(term_res.into());
             premises.push(lb_res.into());
         }
-        lb_ty.check_equal(&term_ty_norm)?;
+        if lb_ty != term_ty_norm {
+            return Err(TypeMismatch::new(lb_ty.to_string(), term_ty_norm.to_string()).into());
+        }
 
         let conc = TypingConclusion::new(env, self.clone(), ty_norm);
         premises.push(term_res);

@@ -1,6 +1,6 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
-use errors::check_error::CheckError;
+use errors::{KindMismatch, TypeMismatch, check_error::CheckError};
 use grammar::{
     DerivationRule,
     symbols::{Keyword, SpecialChar, Symbol},
@@ -37,11 +37,18 @@ where
 
         if features.kinded() {
             let term_res = term_norm.check_kind(env.clone())?.into_kind()?;
-            term_res.ret_kind().into_star()?;
+            let term_knd = term_res.ret_kind();
+            term_knd.clone().into_star().ok_or(KindMismatch::new(
+                term_knd.to_string(),
+                "Star Kind".to_string(),
+            ))?;
             premises.push(term_res.into());
         }
 
-        let prod = term_norm.into_product()?;
+        let prod = term_norm.clone().into_product().ok_or(TypeMismatch::new(
+            term_norm.to_string(),
+            "Product Type".to_string(),
+        ))?;
 
         let conc = TypingConclusion::new(env, self.clone(), Rc::unwrap_or_clone(prod.fst));
         let deriv = TypingDerivation::fst(conc, premises);

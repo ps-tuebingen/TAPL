@@ -23,7 +23,7 @@ where
         let bound_res = self.bound_term.eval(env)?;
         let bound_val = bound_res.val();
 
-        let (res_steps, val) = if bound_val.clone().into_nil().is_ok() {
+        let (res_steps, val) = if bound_val.clone().into_nil().is_some() {
             let next_step = EvalStep::listcase_nil(
                 Self::new(
                     bound_val,
@@ -40,7 +40,7 @@ where
             let mut steps = nil_res.steps;
             steps.insert(0, next_step);
             (steps, nil_val)
-        } else if let Ok(cons) = bound_val.clone().into_cons() {
+        } else if let Some(cons) = bound_val.clone().into_cons() {
             let cons_subst = self
                 .cons_rhs
                 .clone()

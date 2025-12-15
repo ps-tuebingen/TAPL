@@ -1,6 +1,6 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
 use derivations::{Derivation, KindingDerivation, NormalizingDerivation, SubtypeDerivation};
-use errors::{NameMismatch, check_error::CheckError};
+use errors::{NameMismatch, TypeMismatch, check_error::CheckError};
 use grammar::{
     DerivationRule,
     symbols::{SpecialChar, Symbol},
@@ -28,11 +28,14 @@ where
     ) -> Result<Derivation<Self::Lang>, CheckError> {
         let features = Lang::features();
         let mut premises = vec![];
-        if let Ok(top) = sup.clone().into_top() {
+        if let Some(top) = sup.clone().into_top() {
             return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind, vec![]).into());
         }
 
-        let other_forall = sup.clone().into_forall_bounded()?;
+        let other_forall = sup.clone().into_forall_bounded().ok_or(TypeMismatch::new(
+            sup.to_string(),
+            "Bounded universal type".to_string(),
+        ))?;
 
         if self.var != other_forall.var {
             return Err(NameMismatch::new(&other_forall.var, &self.var).into());

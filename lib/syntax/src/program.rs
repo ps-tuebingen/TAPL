@@ -4,7 +4,6 @@ use crate::{
     language::Language,
     subst::{SubstTerm, SubstType},
 };
-use errors::DuplicateDefinition;
 use std::fmt;
 
 /// A Program in a given language
@@ -31,18 +30,6 @@ where
         Self {
             definitions,
             main: main.into(),
-        }
-    }
-
-    /// Add a given definition to `Self`
-    /// # Errors
-    /// Returns an error if the definition already exists
-    pub fn add_definition(&mut self, def: Definition<Lang>) -> Result<(), DuplicateDefinition> {
-        if self.definitions.iter().any(|df| df.name == def.name) {
-            Err(DuplicateDefinition::new(&def.name))
-        } else {
-            self.definitions.push(def);
-            Ok(())
         }
     }
 }

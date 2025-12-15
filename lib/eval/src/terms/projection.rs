@@ -1,5 +1,5 @@
 use crate::Eval;
-use errors::{IndexOutOfBounds, eval_error::EvalError};
+use errors::{IndexOutOfBounds, ValueMismatch, eval_error::EvalError};
 use grammar::{
     DerivationRule,
     symbols::{SpecialChar, Symbol},
@@ -24,7 +24,10 @@ where
     fn eval(self, env: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         let term_res = self.term.eval(env)?;
         let term_val = term_res.val();
-        let tup_val = term_val.clone().into_tuple()?;
+        let tup_val = term_val.clone().into_tuple().ok_or(ValueMismatch::new(
+            term_val.to_string(),
+            "Tuple Value".to_string(),
+        ))?;
         let val = tup_val
             .vals
             .get(self.index)

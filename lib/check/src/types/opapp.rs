@@ -1,6 +1,6 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
 use derivations::{Derivation, KindingDerivation, NormalizingDerivation, SubtypeDerivation};
-use errors::{KindMismatch, check_error::CheckError};
+use errors::{KindMismatch, TypeMismatch, check_error::CheckError};
 use grammar::{DerivationRule, symbols::Symbol};
 use std::{collections::HashSet, rc::Rc};
 use syntax::{
@@ -23,12 +23,17 @@ where
         sup: &<Lang as Language>::Type,
         env: Environment<Self::Lang>,
     ) -> Result<Derivation<Self::Lang>, CheckError> {
-        if let Ok(top) = sup.clone().into_top() {
+        if let Some(top) = sup.clone().into_top() {
             return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind, vec![]).into());
         }
-        let sup_op = sup.clone().into_opapp()?;
+        let sup_op = sup.clone().into_opapp().ok_or(TypeMismatch::new(
+            sup.to_string(),
+            "Operator Application".to_string(),
+        ))?;
         let fun_res = self.fun.check_subtype(&sup_op.fun, env.clone())?;
-        self.arg.check_equal(&sup_op.arg)?;
+        if self.arg != sup_op.arg {
+            return Err(TypeMismatch::new(self.arg.to_string(), sup_op.arg.to_string()).into());
+        }
         Ok(SubtypeDerivation::op_app(
             env,
             Rc::unwrap_or_clone(self.fun.clone()),
@@ -56,7 +61,10 @@ where
     fn check_kind(&self, env: Environment<Self::Lang>) -> Result<Derivation<Lang>, CheckError> {
         let fun_res = self.fun.check_kind(env.clone())?.into_kind()?;
         let fun_kind = fun_res.ret_kind();
-        let (fun_from, fun_to) = fun_kind.into_arrow()?;
+        let (fun_from, fun_to) = fun_kind.clone().into_arrow().ok_or(KindMismatch::new(
+            fun_kind.to_string(),
+            "Arrow Kind".to_string(),
+        ))?;
         let arg_res = self.arg.check_kind(env)?.into_kind()?;
         let arg_kind = arg_res.ret_kind();
         if fun_from != arg_kind {
@@ -82,12 +90,12 @@ where
         let fun_norm_deriv = self.fun.clone().normalize(env.clone());
         let fun_norm = fun_norm_deriv.ret_ty();
         premises.push(fun_norm_deriv);
-        if let Ok(oplam) = fun_norm.clone().into_oplambda() {
+        if let Some(oplam) = fun_norm.clone().into_oplambda() {
             let oplam_deriv = oplam.body.subst_type(&oplam.var, &self.arg).normalize(env);
             let body_norm = oplam_deriv.ret_ty();
             premises.push(oplam_deriv);
             NormalizingDerivation::opapp(self, body_norm, premises).into()
-        } else if let Ok(oplam) = fun_norm.clone().into_oplambdasub() {
+        } else if let Some(oplam) = fun_norm.clone().into_oplambdasub() {
             let oplam_deriv = oplam.body.subst_type(&oplam.var, &self.arg).normalize(env);
             let body_norm = oplam_deriv.ret_ty();
             premises.push(oplam_deriv);

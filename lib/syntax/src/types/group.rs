@@ -6,7 +6,6 @@ use crate::{
         Type, TypeVariable, Unit, Variant,
     },
 };
-use errors::TypeMismatch;
 
 /// Trait for type enums in a language
 /// needed to have `into_T` functions
@@ -14,174 +13,133 @@ use errors::TypeMismatch;
 pub trait TypeGroup: Type {
     /// the language these types are of
     type Lang: Language;
-    /// ensure type equality
-    /// # Errors
-    /// returns an error if `self != other`
-    fn check_equal(&self, other: &Self) -> Result<(), TypeMismatch> {
-        if self == other {
-            Ok(())
-        } else {
-            Err(TypeMismatch::new(self.to_string(), other.to_string()))
-        }
-    }
 
     /// Turn `Self` into [`TypeVariable`]
-    /// # Errors
-    /// returns an error if `Self` is a different Type
-    fn into_variable(self) -> Result<TypeVariable<Self::Lang>, TypeMismatch> {
-        Err(TypeMismatch::new(self.to_string(), "Variable".to_owned()))
+
+    fn into_variable(self) -> Option<TypeVariable<Self::Lang>> {
+        None
     }
     /// Turn `Self` into [`Fun`]
-    /// # Errors
-    /// returns an error if `Self` is a different Type
-    fn into_fun(self) -> Result<Fun<Self::Lang>, TypeMismatch> {
-        Err(TypeMismatch::new(self.to_string(), "Function".to_owned()))
+
+    fn into_fun(self) -> Option<Fun<Self::Lang>> {
+        None
     }
     /// Turn `Self` into [`Forall`]
-    /// # Errors
-    /// returns an error if `Self` is a different Type
-    fn into_forall(self) -> Result<Forall<Self::Lang>, TypeMismatch> {
-        Err(TypeMismatch::new(self.to_string(), "Universal".to_owned()))
+
+    fn into_forall(self) -> Option<Forall<Self::Lang>> {
+        None
     }
     /// Turn `Self` into [`ForallBounded`]
-    /// # Errors
-    /// returns an error if `Self` is a different Type
-    fn into_forall_bounded(self) -> Result<ForallBounded<Self::Lang>, TypeMismatch> {
-        Err(TypeMismatch::new(self.to_string(), "Universal".to_owned()))
+
+    fn into_forall_bounded(self) -> Option<ForallBounded<Self::Lang>> {
+        None
     }
     /// Turn `Self` into [`Product`]
-    /// # Errors
-    /// returns an error if `Self` is a different Type
-    fn into_product(self) -> Result<Product<Self::Lang>, TypeMismatch> {
-        Err(TypeMismatch::new(self.to_string(), "Product".to_owned()))
+
+    fn into_product(self) -> Option<Product<Self::Lang>> {
+        None
     }
     /// Turn `Self` into [`Tuple`]
-    /// # Errors
-    /// returns an error if `Self` is a different Type
-    fn into_tuple(self) -> Result<Tuple<Self::Lang>, TypeMismatch> {
-        Err(TypeMismatch::new(self.to_string(), "Tuple".to_owned()))
+
+    fn into_tuple(self) -> Option<Tuple<Self::Lang>> {
+        None
     }
     /// Turn `Self` into [`Record`]
-    /// # Errors
-    /// returns an error if `Self` is a different Type
-    fn into_record(self) -> Result<Record<Self::Lang>, TypeMismatch> {
-        Err(TypeMismatch::new(self.to_string(), "Record".to_owned()))
+
+    fn into_record(self) -> Option<Record<Self::Lang>> {
+        None
     }
     /// Turn `Self` into [`Variant`]
-    /// # Errors
-    /// returns an error if `Self` is a different Type
-    fn into_variant(self) -> Result<Variant<Self::Lang>, TypeMismatch> {
-        Err(TypeMismatch::new(self.to_string(), "Variant".to_owned()))
+
+    fn into_variant(self) -> Option<Variant<Self::Lang>> {
+        None
     }
     /// Turn `Self` into [`Sum`]
-    /// # Errors
-    /// returns an error if `Self` is a different Type
-    fn into_sum(self) -> Result<Sum<Self::Lang>, TypeMismatch> {
-        Err(TypeMismatch::new(self.to_string(), "Sum".to_owned()))
+
+    fn into_sum(self) -> Option<Sum<Self::Lang>> {
+        None
     }
     /// Turn `Self` into [`Optional`]
-    /// # Errors
-    /// returns an error if `Self` is a different Type
-    fn into_optional(self) -> Result<Optional<Self::Lang>, TypeMismatch> {
-        Err(TypeMismatch::new(self.to_string(), "Option".to_owned()))
+
+    fn into_optional(self) -> Option<Optional<Self::Lang>> {
+        None
     }
     /// Turn `Self` into [`List`]
-    /// # Errors
-    /// returns an error if `Self` is a different Type
-    fn into_list(self) -> Result<List<Self::Lang>, TypeMismatch> {
-        Err(TypeMismatch::new(self.to_string(), "List".to_owned()))
+
+    fn into_list(self) -> Option<List<Self::Lang>> {
+        None
     }
     /// Turn `Self` into [`Reference`]
-    /// # Errors
-    /// returns an error if `Self` is a different Type
-    fn into_ref(self) -> Result<Reference<Self::Lang>, TypeMismatch> {
-        Err(TypeMismatch::new(self.to_string(), "Reference".to_owned()))
+
+    fn into_ref(self) -> Option<Reference<Self::Lang>> {
+        None
     }
     /// Turn `Self` into [`Source`]
-    /// # Errors
-    /// returns an error if `Self` is a different Type
-    fn into_source(self) -> Result<Source<Self::Lang>, TypeMismatch> {
-        Err(TypeMismatch::new(self.to_string(), "Source".to_owned()))
+
+    fn into_source(self) -> Option<Source<Self::Lang>> {
+        None
     }
     /// Turn `Self` into [`Sink`]
-    /// # Errors
-    /// returns an error if `Self` is a different Type
-    fn into_sink(self) -> Result<Sink<Self::Lang>, TypeMismatch> {
-        Err(TypeMismatch::new(self.to_string(), "Sink".to_owned()))
+
+    fn into_sink(self) -> Option<Sink<Self::Lang>> {
+        None
     }
     /// Turn `Self` into [`Exists`]
-    /// # Errors
-    /// returns an error if `Self` is a different Type
-    fn into_exists(self) -> Result<Exists<Self::Lang>, TypeMismatch> {
-        Err(TypeMismatch::new(
-            self.to_string(),
-            "Existential".to_owned(),
-        ))
+
+    fn into_exists(self) -> Option<Exists<Self::Lang>> {
+        None
     }
     /// Turn `Self` into [`ExistsBounded`]
-    /// # Errors
-    /// returns an error if `Self` is a different Type
-    fn into_exists_bounded(self) -> Result<ExistsBounded<Self::Lang>, TypeMismatch> {
-        Err(TypeMismatch::new(
-            self.to_string(),
-            "Existential".to_owned(),
-        ))
+
+    fn into_exists_bounded(self) -> Option<ExistsBounded<Self::Lang>> {
+        None
     }
     /// Turn `Self` into [`Mu`]
-    /// # Errors
-    /// returns an error if `Self` is a different Type
-    fn into_mu(self) -> Result<Mu<Self::Lang>, TypeMismatch> {
-        Err(TypeMismatch::new(self.to_string(), "Mu".to_owned()))
+
+    fn into_mu(self) -> Option<Mu<Self::Lang>> {
+        None
     }
     /// Turn `Self` into [`OpLambda`]
-    /// # Errors
-    /// returns an error if `Self` is a different Type
-    fn into_oplambda(self) -> Result<OpLambda<Self::Lang>, TypeMismatch> {
-        Err(TypeMismatch::new(self.to_string(), "OpLambda".to_owned()))
+
+    fn into_oplambda(self) -> Option<OpLambda<Self::Lang>> {
+        None
     }
     /// Turn `Self` into [`OpLambdaSub`]
-    /// # Errors
-    /// returns an error if `Self` is a different Type
-    fn into_oplambdasub(self) -> Result<OpLambdaSub<Self::Lang>, TypeMismatch> {
-        Err(TypeMismatch::new(self.to_string(), "OpLambda".to_owned()))
+
+    fn into_oplambdasub(self) -> Option<OpLambdaSub<Self::Lang>> {
+        None
     }
     /// Turn `Self` into [`OpApp`]
-    /// # Errors
-    /// returns an error if `Self` is a different Type
-    fn into_opapp(self) -> Result<OpApp<Self::Lang>, TypeMismatch> {
-        Err(TypeMismatch::new(self.to_string(), "OpLambda".to_owned()))
+
+    fn into_opapp(self) -> Option<OpApp<Self::Lang>> {
+        None
     }
     /// Turn `Self` into [`Nat`]
-    /// # Errors
-    /// returns an error if `Self` is a different Type
-    fn into_nat(self) -> Result<Nat<Self::Lang>, TypeMismatch> {
-        Err(TypeMismatch::new(self.to_string(), "Nat".to_owned()))
+
+    fn into_nat(self) -> Option<Nat<Self::Lang>> {
+        None
     }
 
     /// Turn `Self` into [`Bool`]
-    /// # Errors
-    /// returns an error if `Self` is a different Type
-    fn into_bool(self) -> Result<Bool<Self::Lang>, TypeMismatch> {
-        Err(TypeMismatch::new(self.to_string(), "Bool".to_owned()))
+
+    fn into_bool(self) -> Option<Bool<Self::Lang>> {
+        None
     }
     /// Turn `Self` into [`Unit`]
-    /// # Errors
-    /// returns an error if `Self` is a different Type
-    fn into_unit(self) -> Result<Unit<Self::Lang>, TypeMismatch> {
-        Err(TypeMismatch::new(self.to_string(), "Unit".to_owned()))
+
+    fn into_unit(self) -> Option<Unit<Self::Lang>> {
+        None
     }
 
     /// Turn `Self` into [`Top`]
-    /// # Errors
-    /// returns an error if `Self` is a different Type
-    fn into_top(self) -> Result<Top<Self::Lang>, TypeMismatch> {
-        Err(TypeMismatch::new(self.to_string(), "Top".to_owned()))
+
+    fn into_top(self) -> Option<Top<Self::Lang>> {
+        None
     }
 
     /// Turn `Self` into [`Bot`]
-    /// # Errors
-    /// returns an error if `Self` is a different Type
-    fn into_bot(self) -> Result<Bot<Self::Lang>, TypeMismatch> {
-        Err(TypeMismatch::new(self.to_string(), "Bot".to_owned()))
+
+    fn into_bot(self) -> Option<Bot<Self::Lang>> {
+        None
     }
 }

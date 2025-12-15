@@ -1,5 +1,4 @@
 use super::{UntypedArithmetic, terms::Term};
-use errors::ValueMismatch;
 use macros::{FromVariants, GrammarDescribe, IntoTerm, LangDisplay, LatexFmt, Spanned};
 use syntax::values::{False, Num, True, Value as ValueTrait, ValueGroup};
 
@@ -28,27 +27,27 @@ impl ValueTrait for Value {
 }
 
 impl ValueGroup for Value {
-    fn into_true(self) -> Result<True<UntypedArithmetic>, ValueMismatch> {
+    fn into_true(self) -> Option<True<UntypedArithmetic>> {
         if let Self::True(tru) = self {
-            Ok(tru)
+            Some(tru)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "True".to_owned()))
+            None
         }
     }
 
-    fn into_false(self) -> Result<False<UntypedArithmetic>, ValueMismatch> {
+    fn into_false(self) -> Option<False<UntypedArithmetic>> {
         if let Self::False(fls) = self {
-            Ok(fls)
+            Some(fls)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "False".to_owned()))
+            None
         }
     }
 
-    fn into_num(self) -> Result<Num<UntypedArithmetic>, ValueMismatch> {
+    fn into_num(self) -> Option<Num<UntypedArithmetic>> {
         if let Self::Num(num) = self {
-            Ok(num)
+            Some(num)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "Number".to_owned()))
+            None
         }
     }
 }

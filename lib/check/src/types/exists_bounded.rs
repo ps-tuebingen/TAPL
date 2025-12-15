@@ -1,6 +1,6 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
 use derivations::{Derivation, KindingDerivation, NormalizingDerivation, SubtypeDerivation};
-use errors::{NameMismatch, check_error::CheckError};
+use errors::{NameMismatch, TypeMismatch, check_error::CheckError};
 use grammar::DerivationRule;
 use std::collections::HashSet;
 use std::rc::Rc;
@@ -24,7 +24,7 @@ where
         mut env: Environment<Self::Lang>,
     ) -> Result<Derivation<Self::Lang>, CheckError> {
         let features = Lang::features();
-        if let Ok(top) = sup.clone().into_top() {
+        if let Some(top) = sup.clone().into_top() {
             return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind, vec![]).into());
         }
 
@@ -44,8 +44,18 @@ where
             self_norm = Rc::unwrap_or_clone(self.sup_ty.clone());
         }
 
-        let other_exists = sup_norm.into_exists_bounded()?;
-        other_exists.sup_ty.check_equal(&self_norm)?;
+        let other_exists = sup_norm
+            .clone()
+            .into_exists_bounded()
+            .ok_or(TypeMismatch::new(
+                sup_norm.to_string(),
+                "Bounded existential Type".to_string(),
+            ))?;
+        if *other_exists.sup_ty != self_norm {
+            return Err(
+                TypeMismatch::new(other_exists.sup_ty.to_string(), self_norm.to_string()).into(),
+            );
+        }
         if self.var != other_exists.var {
             return Err(NameMismatch::new(&other_exists.var, &self.var).into());
         }

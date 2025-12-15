@@ -1,6 +1,6 @@
 use crate::Subtypecheck;
 use derivations::{Derivation, SubtypeDerivation};
-use errors::{UndefinedLabel, check_error::CheckError};
+use errors::{TypeMismatch, UndefinedLabel, check_error::CheckError};
 use grammar::DerivationRule;
 use std::collections::HashSet;
 use syntax::{
@@ -22,11 +22,14 @@ where
         sup: &<Lang as Language>::Type,
         env: Environment<Self::Lang>,
     ) -> Result<Derivation<Self::Lang>, CheckError> {
-        if let Ok(top) = sup.clone().into_top() {
+        if let Some(top) = sup.clone().into_top() {
             return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind, vec![]).into());
         }
 
-        let sup_var = sup.clone().into_variant()?;
+        let sup_var = sup.clone().into_variant().ok_or(TypeMismatch::new(
+            sup.to_string(),
+            "Variant Type".to_string(),
+        ))?;
         let mut inner_res = vec![];
         for (lb, ty) in &sup_var.variants {
             let self_ty = self

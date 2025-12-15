@@ -1,6 +1,6 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
 use derivations::{Derivation, KindingDerivation, NormalizingDerivation, SubtypeDerivation};
-use errors::check_error::CheckError;
+use errors::{KindMismatch, TypeMismatch, check_error::CheckError};
 use grammar::{
     DerivationRule,
     symbols::{SpecialChar, Symbol},
@@ -28,12 +28,17 @@ where
         sup: &<Lang as Language>::Type,
         mut env: Environment<Self::Lang>,
     ) -> Result<Derivation<Self::Lang>, CheckError> {
-        if let Ok(top) = sup.clone().into_top() {
+        if let Some(top) = sup.clone().into_top() {
             return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind, vec![]).into());
         }
 
-        let sup_op = sup.clone().into_oplambda()?;
-        sup_op.annot.check_equal(&self.annot)?;
+        let sup_op = sup.clone().into_oplambda().ok_or(TypeMismatch::new(
+            sup.to_string(),
+            "Operator Abstraciton".to_string(),
+        ))?;
+        if sup_op.annot != self.annot {
+            return Err(KindMismatch::new(sup_op.annot.to_string(), self.annot.to_string()).into());
+        }
         env.add_tyvar_kind(self.var.clone(), self.annot.clone());
 
         let body_res = self.body.check_subtype(

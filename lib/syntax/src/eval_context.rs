@@ -1,5 +1,4 @@
 use crate::{Location, Name, language::Language, program::Program};
-use errors::{FreeVariable, UndefinedLocation};
 use std::collections::HashMap;
 
 /// Context during evaluation
@@ -59,13 +58,8 @@ where
     }
 
     /// Look up a definition in the context
-    /// # Errors
-    /// Returns an error if the name was not found
-    pub fn get_name(&self, n: &Name) -> Result<Lang::Term, FreeVariable> {
-        self.defs
-            .get(n)
-            .cloned()
-            .ok_or_else(|| FreeVariable::new(n))
+    pub fn get_name(&self, n: &Name) -> Option<Lang::Term> {
+        self.defs.get(n).cloned()
     }
 
     /// Insert a new location into `self`
@@ -74,13 +68,8 @@ where
     }
 
     /// Look up a location in the store
-    /// # Errors
-    /// Returns an error if the location was not present
-    pub fn get_location(&self, loc: Location) -> Result<Lang::Value, UndefinedLocation> {
-        self.locs
-            .get(&loc)
-            .cloned()
-            .ok_or_else(|| UndefinedLocation::new(loc))
+    pub fn get_location(&self, loc: Location) -> Option<Lang::Value> {
+        self.locs.get(&loc).cloned()
     }
 }
 

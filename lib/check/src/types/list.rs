@@ -1,6 +1,6 @@
 use crate::Subtypecheck;
 use derivations::{Derivation, SubtypeDerivation};
-use errors::check_error::CheckError;
+use errors::{TypeMismatch, check_error::CheckError};
 use grammar::{
     DerivationRule,
     symbols::{Keyword, Symbol},
@@ -25,11 +25,14 @@ where
         sup: &<Lang as Language>::Type,
         env: Environment<Self::Lang>,
     ) -> Result<Derivation<Self::Lang>, CheckError> {
-        if let Ok(top) = sup.clone().into_top() {
+        if let Some(top) = sup.clone().into_top() {
             return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind, vec![]).into());
         }
 
-        let sup_list = sup.clone().into_list()?;
+        let sup_list = sup
+            .clone()
+            .into_list()
+            .ok_or(TypeMismatch::new(sup.to_string(), "List".to_string()))?;
         let sup_res = self.ty.check_subtype(&(*sup_list.ty), env.clone())?;
         Ok(SubtypeDerivation::list(env, self.clone(), sup.clone(), sup_res).into())
     }

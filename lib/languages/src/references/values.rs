@@ -1,5 +1,4 @@
 use super::{References, terms::Term};
-use errors::ValueMismatch;
 use macros::{FromVariants, GrammarDescribe, IntoTerm, LangDisplay, LatexFmt, Spanned};
 use syntax::values::{False, Lambda, Loc, Num, True, Unit, Value as ValueTrait, ValueGroup};
 
@@ -31,43 +30,43 @@ impl ValueTrait for Value {
 }
 
 impl ValueGroup for Value {
-    fn into_lambda(self) -> Result<Lambda<References>, ValueMismatch> {
+    fn into_lambda(self) -> Option<Lambda<References>> {
         if let Self::Lambda(lam) = self {
-            Ok(lam)
+            Some(lam)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "Lambda".to_owned()))
+            None
         }
     }
 
-    fn into_num(self) -> Result<Num<References>, ValueMismatch> {
+    fn into_num(self) -> Option<Num<References>> {
         if let Self::Num(num) = self {
-            Ok(num)
+            Some(num)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "Number".to_owned()))
+            None
         }
     }
 
-    fn into_loc(self) -> Result<Loc<References>, ValueMismatch> {
+    fn into_loc(self) -> Option<Loc<References>> {
         if let Self::Loc(loc) = self {
-            Ok(loc)
+            Some(loc)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "Location".to_owned()))
+            None
         }
     }
 
-    fn into_true(self) -> Result<True<References>, ValueMismatch> {
+    fn into_true(self) -> Option<True<References>> {
         if let Self::True(tru) = self {
-            Ok(tru)
+            Some(tru)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "True".to_owned()))
+            None
         }
     }
 
-    fn into_false(self) -> Result<False<References>, ValueMismatch> {
+    fn into_false(self) -> Option<False<References>> {
         if let Self::False(fls) = self {
-            Ok(fls)
+            Some(fls)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "False".to_owned()))
+            None
         }
     }
 }

@@ -1,5 +1,5 @@
 use crate::Eval;
-use errors::eval_error::EvalError;
+use errors::{ValueMismatch, eval_error::EvalError};
 use grammar::{
     DerivationRule,
     symbols::{Keyword, Symbol},
@@ -24,7 +24,10 @@ where
     fn eval(self, env: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         let term_res = self.term.eval(env)?;
         let term_val = term_res.val();
-        let term_fold = term_val.clone().into_fold()?;
+        let term_fold = term_val.clone().into_fold().ok_or(ValueMismatch::new(
+            term_val.to_string(),
+            "Fold Value".to_string(),
+        ))?;
 
         let last_step = EvalStep::unfoldfold(
             Self::new(self.ty.clone(), term_val, self.span),

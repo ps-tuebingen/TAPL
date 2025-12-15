@@ -1,6 +1,6 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
 use derivations::{Derivation, KindingDerivation, NormalizingDerivation, SubtypeDerivation};
-use errors::check_error::CheckError;
+use errors::{FreeTypeVariable, TypeMismatch, check_error::CheckError};
 use grammar::DerivationRule;
 use std::collections::HashSet;
 use syntax::{
@@ -24,7 +24,9 @@ where
         let features = Lang::features();
         let mut premises = vec![];
 
-        let ty_super = env.get_tyvar_super(&self.v)?;
+        let ty_super = env
+            .get_tyvar_super(&self.v)
+            .ok_or(FreeTypeVariable::new(&self.v))?;
 
         let sup_norm;
         if features.normalizing() {
@@ -35,16 +37,18 @@ where
             sup_norm = sup.clone();
         }
 
-        if let Ok(top) = sup_norm.clone().into_top() {
+        if let Some(top) = sup_norm.clone().into_top() {
             return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind, premises).into());
         }
 
-        if let Ok(v) = sup_norm.clone().into_variable()
+        if let Some(v) = sup_norm.clone().into_variable()
             && v.v == self.v
         {
             return Ok(SubtypeDerivation::refl(env, self.clone(), premises).into());
         }
-        ty_super.check_equal(&sup_norm)?;
+        if ty_super != sup_norm {
+            return Err(TypeMismatch::new(ty_super.to_string(), sup_norm.to_string()).into());
+        }
         Ok(SubtypeDerivation::refl(env, ty_super, premises).into())
     }
 
@@ -60,7 +64,9 @@ where
 {
     type Lang = Lang;
     fn check_kind(&self, env: Environment<Self::Lang>) -> Result<Derivation<Lang>, CheckError> {
-        let knd = env.get_tyvar_kind(&self.v)?;
+        let knd = env
+            .get_tyvar_kind(&self.v)
+            .ok_or(FreeTypeVariable::new(&self.v))?;
         Ok(KindingDerivation::var(&self.v, knd).into())
     }
 
@@ -76,7 +82,7 @@ where
 {
     type Lang = Lang;
     fn normalize(self, env: Environment<Self::Lang>) -> Derivation<Self::Lang> {
-        NormalizingDerivation::empty(env.get_tyvar_super(&self.v).unwrap_or_else(|_| self.into()))
+        NormalizingDerivation::empty(env.get_tyvar_super(&self.v).unwrap_or_else(|| self.into()))
             .into()
     }
 

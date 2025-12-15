@@ -1,5 +1,4 @@
 use super::{FOmegaSub, terms::Term};
-use errors::ValueMismatch;
 use macros::{FromVariants, GrammarDescribe, IntoTerm, LangDisplay, LatexFmt, Spanned};
 use syntax::values::{Lambda, LambdaSub, Num, Pack, Record, Value as ValueTrait, ValueGroup};
 
@@ -30,43 +29,43 @@ impl ValueTrait for Value {
 }
 
 impl ValueGroup for Value {
-    fn into_lambda(self) -> Result<Lambda<FOmegaSub>, ValueMismatch> {
+    fn into_lambda(self) -> Option<Lambda<FOmegaSub>> {
         if let Self::Lambda(lam) = self {
-            Ok(lam)
+            Some(lam)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "Lambda".to_owned()))
+            None
         }
     }
 
-    fn into_lambdasub(self) -> Result<LambdaSub<FOmegaSub>, ValueMismatch> {
+    fn into_lambdasub(self) -> Option<LambdaSub<FOmegaSub>> {
         if let Self::LambdaSub(lam) = self {
-            Ok(lam)
+            Some(lam)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "LambdaSub".to_owned()))
+            None
         }
     }
 
-    fn into_pack(self) -> Result<Pack<FOmegaSub>, ValueMismatch> {
+    fn into_pack(self) -> Option<Pack<FOmegaSub>> {
         if let Self::Pack(pack) = self {
-            Ok(pack)
+            Some(pack)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "Package".to_owned()))
+            None
         }
     }
 
-    fn into_record(self) -> Result<Record<FOmegaSub>, ValueMismatch> {
+    fn into_record(self) -> Option<Record<FOmegaSub>> {
         if let Self::Record(rec) = self {
-            Ok(rec)
+            Some(rec)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "Record".to_owned()))
+            None
         }
     }
 
-    fn into_num(self) -> Result<Num<FOmegaSub>, ValueMismatch> {
+    fn into_num(self) -> Option<Num<FOmegaSub>> {
         if let Self::Num(num) = self {
-            Ok(num)
+            Some(num)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "Number".to_owned()))
+            None
         }
     }
 }

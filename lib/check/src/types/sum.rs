@@ -1,6 +1,6 @@
 use crate::Kindcheck;
 use derivations::{Derivation, KindingDerivation};
-use errors::check_error::CheckError;
+use errors::{KindMismatch, check_error::CheckError};
 use grammar::DerivationRule;
 use std::collections::HashSet;
 use syntax::{env::Environment, language::Language, types::Sum};
@@ -16,7 +16,10 @@ where
         let left_res = self.left.check_kind(env.clone())?.into_kind()?;
         let right_res = self.right.check_kind(env)?.into_kind()?;
         let right_kind = right_res.ret_kind();
-        left_res.ret_kind().check_equal(&right_kind)?;
+        let left_kind = left_res.ret_kind();
+        if left_kind != right_kind {
+            return Err(KindMismatch::new(left_kind.to_string(), right_kind.to_string()).into());
+        }
         Ok(KindingDerivation::sum(self.clone(), right_kind, left_res, right_res).into())
     }
 

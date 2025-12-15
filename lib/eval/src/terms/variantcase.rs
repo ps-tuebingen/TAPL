@@ -1,5 +1,5 @@
 use crate::Eval;
-use errors::{UndefinedLabel, eval_error::EvalError};
+use errors::{UndefinedLabel, ValueMismatch, eval_error::EvalError};
 use grammar::{
     DerivationRule,
     symbols::{Keyword, SpecialChar, Symbol},
@@ -23,7 +23,10 @@ where
         let bound_res = self.bound_term.eval(env)?;
         let bound_val = bound_res.val();
 
-        let var_val = bound_val.clone().into_variant()?;
+        let var_val = bound_val.clone().into_variant().ok_or(ValueMismatch::new(
+            bound_val.to_string(),
+            "Variant Value".to_string(),
+        ))?;
         let matching = self
             .patterns
             .clone()

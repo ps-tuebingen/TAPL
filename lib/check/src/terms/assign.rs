@@ -1,6 +1,6 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
-use errors::check_error::CheckError;
+use errors::{KindMismatch, TypeMismatch, check_error::CheckError};
 use grammar::DerivationRule;
 use std::collections::HashSet;
 use syntax::{
@@ -40,10 +40,17 @@ where
 
         if features.kinded() {
             let lhs_res = lhs_norm.check_kind(env.clone())?.into_kind()?;
-            lhs_res.ret_kind().into_star()?;
+            let lhs_knd = lhs_res.ret_kind();
+            lhs_knd.clone().into_star().ok_or(KindMismatch::new(
+                lhs_knd.to_string(),
+                "Star Kind".to_string(),
+            ))?;
             premises.push(lhs_res.into());
         }
-        let lhs_ref = lhs_norm.into_ref()?;
+        let lhs_ref = lhs_norm.clone().into_ref().ok_or(TypeMismatch::new(
+            lhs_norm.to_string(),
+            "Reference Type".to_string(),
+        ))?;
 
         let rhs_res = self.rhs.check(env.clone())?;
         let rhs_ty = rhs_res.ret_ty();
@@ -58,10 +65,17 @@ where
         }
         if features.kinded() {
             let rhs_res = rhs_norm.check_kind(env.clone())?.into_kind()?;
-            rhs_res.ret_kind().into_star()?;
+            let rhs_knd = rhs_res.ret_kind();
+            rhs_knd.clone().into_star().ok_or(KindMismatch::new(
+                rhs_knd.to_string(),
+                "Star Kind".to_string(),
+            ))?;
             premises.push(rhs_res.into());
         }
-        lhs_ref.ty.check_equal(&rhs_norm)?;
+
+        if *lhs_ref.ty != rhs_norm {
+            return Err(TypeMismatch::new(lhs_ref.to_string(), rhs_norm.to_string()).into());
+        }
 
         let conc = TypingConclusion::new(env, self.clone(), UnitTy::<Lang>::new());
         let deriv = TypingDerivation::assign(conc, premises);

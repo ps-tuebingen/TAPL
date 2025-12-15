@@ -1,6 +1,6 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
 use derivations::{Derivation, KindingDerivation, NormalizingDerivation, SubtypeDerivation};
-use errors::{UndefinedLabel, check_error::CheckError};
+use errors::{TypeMismatch, UndefinedLabel, check_error::CheckError};
 use grammar::{DerivationRule, symbols::Symbol};
 use std::collections::{HashMap, HashSet};
 use syntax::{
@@ -23,7 +23,7 @@ where
         env: Environment<Self::Lang>,
     ) -> Result<Derivation<Self::Lang>, CheckError> {
         let features = Lang::features();
-        if let Ok(top) = sup.clone().into_top() {
+        if let Some(top) = sup.clone().into_top() {
             return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind, vec![]).into());
         }
 
@@ -38,7 +38,10 @@ where
             sup_norm = sup.clone();
         }
 
-        let sup_rec = sup_norm.into_record()?;
+        let sup_rec = sup_norm.clone().into_record().ok_or(TypeMismatch::new(
+            sup_norm.to_string(),
+            "Record Type".to_string(),
+        ))?;
         for (lb, ty) in &sup_rec.records {
             let sub_ty = self
                 .records

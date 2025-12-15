@@ -1,5 +1,5 @@
 use crate::Eval;
-use errors::eval_error::EvalError;
+use errors::{ValueMismatch, eval_error::EvalError};
 use grammar::{
     DerivationRule,
     symbols::{Keyword, SpecialChar, Symbol},
@@ -26,7 +26,10 @@ where
     fn eval(self, env: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         let term_res = self.term.eval(env)?;
         let term_val = term_res.val();
-        let num = term_val.into_num()?;
+        let num = term_val.clone().into_num().ok_or(ValueMismatch::new(
+            term_val.to_string(),
+            "Number".to_string(),
+        ))?;
         let last_step = EvalStep::succ(num.num, self.span);
         let mut steps = term_res.congruence(&move |t| Self::new(t, self.span).into());
         steps.push(last_step);

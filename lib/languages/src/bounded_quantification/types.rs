@@ -1,5 +1,4 @@
 use super::BoundedQuantification;
-use errors::TypeMismatch;
 use macros::{
     FromVariants, GrammarDescribe, LangDisplay, LatexFmt, NoKinds, NoNorm, SubstType, Subtypecheck,
 };
@@ -34,61 +33,58 @@ impl syntax::types::Type for Type {}
 
 impl TypeGroup for Type {
     type Lang = BoundedQuantification;
-    fn into_variable(self) -> Result<TypeVariable<BoundedQuantification>, TypeMismatch> {
+    fn into_variable(self) -> Option<TypeVariable<BoundedQuantification>> {
         if let Self::Var(var) = self {
-            Ok(var)
+            Some(var)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Variable".to_owned()))
+            None
         }
     }
-    fn into_top(self) -> Result<Top<BoundedQuantification>, TypeMismatch> {
+    fn into_top(self) -> Option<Top<BoundedQuantification>> {
         if let Self::Top(top) = self {
-            Ok(top)
+            Some(top)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Top".to_owned()))
+            None
         }
     }
 
-    fn into_nat(self) -> Result<Nat<BoundedQuantification>, TypeMismatch> {
+    fn into_nat(self) -> Option<Nat<BoundedQuantification>> {
         if let Self::Nat(n) = self {
-            Ok(n)
+            Some(n)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Nat".to_owned()))
+            None
         }
     }
 
-    fn into_fun(self) -> Result<Fun<BoundedQuantification>, TypeMismatch> {
+    fn into_fun(self) -> Option<Fun<BoundedQuantification>> {
         if let Self::Fun(fun) = self {
-            Ok(fun)
+            Some(fun)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Function".to_owned()))
+            None
         }
     }
 
-    fn into_forall_bounded(self) -> Result<ForallBounded<BoundedQuantification>, TypeMismatch> {
+    fn into_forall_bounded(self) -> Option<ForallBounded<BoundedQuantification>> {
         if let Self::Forall(forall) = self {
-            Ok(forall)
+            Some(forall)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Universal".to_owned()))
+            None
         }
     }
 
-    fn into_exists_bounded(self) -> Result<ExistsBounded<BoundedQuantification>, TypeMismatch> {
+    fn into_exists_bounded(self) -> Option<ExistsBounded<BoundedQuantification>> {
         if let Self::Exists(ex) = self {
-            Ok(ex)
+            Some(ex)
         } else {
-            Err(TypeMismatch::new(
-                self.to_string(),
-                "Existential".to_owned(),
-            ))
+            None
         }
     }
 
-    fn into_record(self) -> Result<Record<BoundedQuantification>, TypeMismatch> {
+    fn into_record(self) -> Option<Record<BoundedQuantification>> {
         if let Self::Record(rec) = self {
-            Ok(rec)
+            Some(rec)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Record".to_owned()))
+            None
         }
     }
 }

@@ -1,6 +1,6 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
-use errors::{IndexOutOfBounds, check_error::CheckError};
+use errors::{IndexOutOfBounds, KindMismatch, TypeMismatch, check_error::CheckError};
 use grammar::{
     DerivationRule,
     symbols::{SpecialChar, Symbol},
@@ -37,11 +37,18 @@ where
 
         if features.kinded() {
             let term_res = term_norm.check_kind(env.clone())?.into_kind()?;
-            term_res.ret_kind().into_star()?;
+            let term_knd = term_res.ret_kind();
+            term_knd.clone().into_star().ok_or(KindMismatch::new(
+                term_knd.to_string(),
+                "Star Kind".to_string(),
+            ))?;
             premises.push(term_res.into());
         }
 
-        let tup_ty = term_norm.into_tuple()?;
+        let tup_ty = term_norm.clone().into_tuple().ok_or(TypeMismatch::new(
+            term_norm.to_string(),
+            "Tuple Type".to_string(),
+        ))?;
         let tup = tup_ty
             .tys
             .get(self.index)

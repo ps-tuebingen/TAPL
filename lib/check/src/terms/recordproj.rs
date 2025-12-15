@@ -1,6 +1,6 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
-use errors::{UndefinedLabel, check_error::CheckError};
+use errors::{FreeTypeVariable, TypeMismatch, UndefinedLabel, check_error::CheckError};
 use grammar::{
     DerivationRule,
     symbols::{SpecialChar, Symbol},
@@ -40,9 +40,9 @@ where
         }
 
         let rec_type = match ty_norm.clone().into_variable() {
-            Ok(v) => env.get_tyvar_super(&v.v)?,
-            Err(_) => ty_norm,
-        };
+            Some(v) => env.get_tyvar_super(&v.v).ok_or(FreeTypeVariable::new(&v.v)),
+            None => Ok(ty_norm),
+        }?;
 
         let term_rec_norm;
         if features.normalizing() {
@@ -53,7 +53,13 @@ where
             term_rec_norm = rec_type;
         }
 
-        let rec_ty = term_rec_norm.into_record()?;
+        let rec_ty = term_rec_norm
+            .clone()
+            .into_record()
+            .ok_or(TypeMismatch::new(
+                term_rec_norm.to_string(),
+                "Record Type".to_string(),
+            ))?;
         let ty = rec_ty
             .records
             .get(&self.label)

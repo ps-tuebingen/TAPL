@@ -1,5 +1,4 @@
 use super::TypedArithmetic;
-use errors::TypeMismatch;
 use macros::{
     FromVariants, GrammarDescribe, LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes, SubstType,
 };
@@ -29,19 +28,19 @@ impl TypeTrait for Type {}
 
 impl TypeGroup for Type {
     type Lang = TypedArithmetic;
-    fn into_nat(self) -> Result<Nat<TypedArithmetic>, TypeMismatch> {
+    fn into_nat(self) -> Option<Nat<TypedArithmetic>> {
         if let Self::Nat(nat) = self {
-            Ok(nat)
+            Some(nat)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Nat".to_owned()))
+            None
         }
     }
 
-    fn into_bool(self) -> Result<Bool<TypedArithmetic>, TypeMismatch> {
+    fn into_bool(self) -> Option<Bool<TypedArithmetic>> {
         if let Self::Bool(b) = self {
-            Ok(b)
+            Some(b)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Bool".to_owned()))
+            None
         }
     }
 }

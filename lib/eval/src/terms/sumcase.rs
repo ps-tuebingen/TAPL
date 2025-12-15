@@ -26,7 +26,7 @@ where
         let bound_res = self.bound_term.eval(env)?;
         let bound_val = bound_res.val();
 
-        let (res_steps, res_val) = if let Ok(left_val) = bound_val.clone().into_left() {
+        let (res_steps, res_val) = if let Some(left_val) = bound_val.clone().into_left() {
             let left_subst = self
                 .left_term
                 .clone()
@@ -47,7 +47,7 @@ where
             let mut left_steps = left_res.steps;
             left_steps.insert(0, next_step);
             (left_steps, left_var)
-        } else if let Ok(right_val) = bound_val.clone().into_right() {
+        } else if let Some(right_val) = bound_val.clone().into_right() {
             let right_subst = self
                 .right_term
                 .clone()

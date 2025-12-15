@@ -1,6 +1,6 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
-use errors::check_error::CheckError;
+use errors::{KindMismatch, TypeMismatch, check_error::CheckError};
 use grammar::DerivationRule;
 use std::collections::HashSet;
 use syntax::{env::Environment, language::Language, terms::If, types::TypeGroup};
@@ -34,11 +34,18 @@ where
 
         if features.kinded() {
             let if_res = if_norm.check_kind(env.clone())?.into_kind()?;
-            if_res.ret_kind().into_star()?;
+            let if_knd = if_res.ret_kind();
+            if_knd.clone().into_star().ok_or(KindMismatch::new(
+                if_knd.to_string(),
+                "Star Kind".to_string(),
+            ))?;
             premises.push(if_res.into());
         }
 
-        if_norm.into_bool()?;
+        if_norm
+            .clone()
+            .into_bool()
+            .ok_or(TypeMismatch::new(if_norm.to_string(), "Bool".to_string()))?;
 
         let then_res = self.then_term.check(env.clone())?;
         let then_ty = then_res.ret_ty();
@@ -69,12 +76,18 @@ where
         if features.kinded() {
             let then_res = then_norm.check_kind(env.clone())?.into_kind()?;
             let else_res = else_norm.check_kind(env.clone())?.into_kind()?;
-            then_res.ret_kind().check_equal(&else_res.ret_kind())?;
+            let then_knd = then_res.ret_kind();
+            let else_knd = else_res.ret_kind();
+            if then_knd != else_knd {
+                return Err(KindMismatch::new(then_knd.to_string(), else_knd.to_string()).into());
+            }
             premises.push(then_res.into());
             premises.push(else_res.into());
         }
 
-        then_norm.check_equal(&else_norm)?;
+        if then_norm != else_norm {
+            return Err(TypeMismatch::new(then_norm.to_string(), else_norm.to_string()).into());
+        }
 
         let conc = TypingConclusion::new(env, self.clone(), then_norm);
         let deriv = TypingDerivation::ift(conc, premises);

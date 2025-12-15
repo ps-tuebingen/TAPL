@@ -1,6 +1,6 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
-use errors::check_error::CheckError;
+use errors::{KindMismatch, TypeMismatch, check_error::CheckError};
 use grammar::DerivationRule;
 use std::collections::HashSet;
 use syntax::{env::Environment, language::Language, terms::Try, types::TypeGroup};
@@ -45,12 +45,20 @@ where
             handler_norm = handler_ty;
         }
 
-        ty_norm.check_equal(&handler_norm)?;
+        if ty_norm != handler_norm {
+            return Err(TypeMismatch::new(ty_norm.to_string(), handler_norm.to_string()).into());
+        }
 
         if features.kinded() {
             let term_res = ty_norm.check_kind(env.clone())?.into_kind()?;
             let handler_res = handler_norm.check_kind(env.clone())?.into_kind()?;
-            term_res.ret_kind().check_equal(&handler_res.ret_kind())?;
+            let term_knd = term_res.ret_kind();
+            let handler_knd = handler_res.ret_kind();
+            if term_knd != handler_knd {
+                return Err(
+                    KindMismatch::new(term_knd.to_string(), handler_knd.to_string()).into(),
+                );
+            }
             premises.push(term_res.into());
             premises.push(handler_res.into());
         }

@@ -1,6 +1,6 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
-use errors::check_error::CheckError;
+use errors::{KindMismatch, TypeMismatch, check_error::CheckError};
 use grammar::{
     DerivationRule,
     symbols::{Keyword, SpecialChar, Symbol},
@@ -38,11 +38,18 @@ where
             ty_norm = self.ty.clone();
         }
 
-        let mu_ty = ty_norm.into_mu()?;
+        let mu_ty = ty_norm.clone().into_mu().ok_or(TypeMismatch::new(
+            ty_norm.to_string(),
+            "Mu Type".to_string(),
+        ))?;
         env.add_tyvar_kind(mu_ty.var.clone(), Kind::Star);
         if features.kinded() {
             let mu_res = mu_ty.ty.check_kind(env.clone())?.into_kind()?;
-            mu_res.ret_kind().into_star()?;
+            let mu_knd = mu_res.ret_kind();
+            mu_knd.clone().into_star().ok_or(KindMismatch::new(
+                mu_knd.to_string(),
+                "Star Kind".to_string(),
+            ))?;
             premises.push(mu_res.into());
         }
 
@@ -65,10 +72,16 @@ where
 
         if features.kinded() {
             let term_res = term_norm.check_kind(env.clone())?.into_kind()?;
-            term_res.ret_kind().into_star()?;
+            let term_knd = term_res.ret_kind();
+            term_knd.clone().into_star().ok_or(KindMismatch::new(
+                term_knd.to_string(),
+                "Star Kind".to_string(),
+            ))?;
             premises.push(term_res.into());
         }
-        term_norm.check_equal(&mu_subst)?;
+        if term_norm != *mu_subst {
+            return Err(TypeMismatch::new(term_norm.to_string(), mu_subst.to_string()).into());
+        }
 
         let conc = TypingConclusion::new(env, self.clone(), self.ty.clone());
         let deriv = TypingDerivation::fold(conc, premises);

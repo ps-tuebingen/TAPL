@@ -1,6 +1,6 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
-use errors::check_error::CheckError;
+use errors::{KindMismatch, TypeMismatch, check_error::CheckError};
 use grammar::DerivationRule;
 use std::collections::HashSet;
 use syntax::{
@@ -46,11 +46,17 @@ where
             hd_norm = hd_ty;
         }
 
-        hd_norm.check_equal(&annot_norm)?;
+        if hd_norm != annot_norm {
+            return Err(TypeMismatch::new(hd_norm.to_string(), annot_norm.to_string()).into());
+        }
 
         if features.kinded() {
             let hd_res = hd_norm.check_kind(env.clone())?.into_kind()?;
-            hd_res.ret_kind().into_star()?;
+            let hd_knd = hd_res.ret_kind();
+            hd_knd.clone().into_star().ok_or(KindMismatch::new(
+                hd_knd.to_string(),
+                "Star Kind".to_string(),
+            ))?;
             premises.push(hd_res.into());
         }
 
@@ -69,12 +75,18 @@ where
 
         if features.kinded() {
             let tl_res = tail_ty_norm.check_kind(env.clone())?.into_kind()?;
-            tl_res.ret_kind().into_star()?;
+            let tl_knd = tl_res.ret_kind();
+            tl_knd.clone().into_star().ok_or(KindMismatch::new(
+                tl_knd.to_string(),
+                "Star Kind".to_string(),
+            ))?;
             premises.push(tl_res.into());
         }
 
         let list_ty: Lang::Type = List::new(annot_norm).into();
-        tail_ty_norm.check_equal(&list_ty)?;
+        if tail_ty_norm != list_ty {
+            return Err(TypeMismatch::new(tail_ty_norm.to_string(), list_ty.to_string()).into());
+        }
 
         let conc = TypingConclusion::new(env, self.clone(), list_ty);
         let deriv = TypingDerivation::cons(conc, premises);

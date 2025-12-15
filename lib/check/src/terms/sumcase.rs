@@ -1,6 +1,6 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
-use errors::check_error::CheckError;
+use errors::{KindMismatch, TypeMismatch, check_error::CheckError};
 use grammar::DerivationRule;
 use std::{collections::HashSet, rc::Rc};
 use syntax::{env::Environment, language::Language, terms::SumCase, types::TypeGroup};
@@ -34,11 +34,18 @@ where
 
         if features.kinded() {
             let bound_res = bound_norm.check_kind(env.clone())?.into_kind()?;
-            bound_res.ret_kind().into_star()?;
+            let bound_knd = bound_res.ret_kind();
+            bound_knd.clone().into_star().ok_or(KindMismatch::new(
+                bound_knd.to_string(),
+                "Star Kind".to_string(),
+            ))?;
             premises.push(bound_res.into());
         }
 
-        let bound_sum = bound_norm.into_sum()?;
+        let bound_sum = bound_norm.clone().into_sum().ok_or(TypeMismatch::new(
+            bound_norm.to_string(),
+            "Sum Type".to_string(),
+        ))?;
 
         let mut left_env = env.clone();
         left_env.add_var(self.left_var.clone(), Rc::unwrap_or_clone(bound_sum.left));
@@ -72,12 +79,18 @@ where
         if features.kinded() {
             let left_res = left_norm.check_kind(left_env)?.into_kind()?;
             let right_res = right_norm.check_kind(env.clone())?.into_kind()?;
-            left_res.ret_kind().check_equal(&right_res.ret_kind())?;
+            let left_knd = left_res.ret_kind();
+            let right_knd = right_res.ret_kind();
+            if left_knd != right_knd {
+                return Err(KindMismatch::new(left_knd.to_string(), right_knd.to_string()).into());
+            }
             premises.push(left_res.into());
             premises.push(right_res.into());
         }
 
-        left_norm.check_equal(&right_norm)?;
+        if left_norm != right_norm {
+            return Err(TypeMismatch::new(left_norm.to_string(), right_norm.to_string()).into());
+        }
 
         let conc = TypingConclusion::new(env.clone(), self.clone(), right_norm);
         let deriv = TypingDerivation::sumcase(conc, premises);

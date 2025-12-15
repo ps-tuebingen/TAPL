@@ -1,5 +1,4 @@
 use super::{Subtypes, terms::Term};
-use errors::ValueMismatch;
 use macros::{FromVariants, GrammarDescribe, IntoTerm, LangDisplay, LatexFmt, Spanned};
 use syntax::values::{
     Cons, False, Lambda, Loc, Nil, Num, Record, True, Unit, Value as ValueTrait, ValueGroup,
@@ -38,75 +37,75 @@ impl ValueTrait for Value {
 }
 
 impl ValueGroup for Value {
-    fn into_lambda(self) -> Result<Lambda<Subtypes>, ValueMismatch> {
+    fn into_lambda(self) -> Option<Lambda<Subtypes>> {
         if let Self::Lambda(lam) = self {
-            Ok(lam)
+            Some(lam)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "Lambda".to_owned()))
+            None
         }
     }
 
-    fn into_record(self) -> Result<Record<Subtypes>, ValueMismatch> {
+    fn into_record(self) -> Option<Record<Subtypes>> {
         if let Self::Record(rec) = self {
-            Ok(rec)
+            Some(rec)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "Record".to_owned()))
+            None
         }
     }
 
-    fn into_variant(self) -> Result<Variant<Subtypes>, ValueMismatch> {
+    fn into_variant(self) -> Option<Variant<Subtypes>> {
         if let Self::Variant(var) = self {
-            Ok(var)
+            Some(var)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "Variant".to_owned()))
+            None
         }
     }
 
-    fn into_nil(self) -> Result<Nil<Subtypes>, ValueMismatch> {
+    fn into_nil(self) -> Option<Nil<Subtypes>> {
         if let Self::Nil(nil) = self {
-            Ok(nil)
+            Some(nil)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "Nil".to_owned()))
+            None
         }
     }
 
-    fn into_cons(self) -> Result<Cons<Subtypes>, ValueMismatch> {
+    fn into_cons(self) -> Option<Cons<Subtypes>> {
         if let Self::Cons(cons) = self {
-            Ok(cons)
+            Some(cons)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "Cons".to_owned()))
+            None
         }
     }
 
-    fn into_loc(self) -> Result<Loc<Subtypes>, ValueMismatch> {
+    fn into_loc(self) -> Option<Loc<Subtypes>> {
         if let Self::Loc(loc) = self {
-            Ok(loc)
+            Some(loc)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "Location".to_owned()))
+            None
         }
     }
 
-    fn into_num(self) -> Result<Num<Subtypes>, ValueMismatch> {
+    fn into_num(self) -> Option<Num<Subtypes>> {
         if let Self::Num(num) = self {
-            Ok(num)
+            Some(num)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "Number".to_owned()))
+            None
         }
     }
 
-    fn into_true(self) -> Result<True<Subtypes>, ValueMismatch> {
+    fn into_true(self) -> Option<True<Subtypes>> {
         if let Self::True(tru) = self {
-            Ok(tru)
+            Some(tru)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "True".to_owned()))
+            None
         }
     }
 
-    fn into_false(self) -> Result<False<Subtypes>, ValueMismatch> {
+    fn into_false(self) -> Option<False<Subtypes>> {
         if let Self::False(fls) = self {
-            Ok(fls)
+            Some(fls)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "False".to_owned()))
+            None
         }
     }
 }

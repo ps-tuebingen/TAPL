@@ -1,5 +1,4 @@
 use super::{Recursive, terms::Term};
-use errors::ValueMismatch;
 use macros::{FromVariants, GrammarDescribe, IntoTerm, LangDisplay, LatexFmt, Spanned};
 use syntax::values::{
     False, Fold, Lambda, Num, Pair, Record, True, Unit, Value as ValueTrait, ValueGroup, Variant,
@@ -36,67 +35,67 @@ impl ValueTrait for Value {
 }
 
 impl ValueGroup for Value {
-    fn into_true(self) -> Result<True<Recursive>, ValueMismatch> {
+    fn into_true(self) -> Option<True<Recursive>> {
         if let Self::True(tru) = self {
-            Ok(tru)
+            Some(tru)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "True".to_owned()))
+            None
         }
     }
 
-    fn into_false(self) -> Result<False<Recursive>, ValueMismatch> {
+    fn into_false(self) -> Option<False<Recursive>> {
         if let Self::False(fls) = self {
-            Ok(fls)
+            Some(fls)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "False".to_owned()))
+            None
         }
     }
 
-    fn into_num(self) -> Result<Num<Recursive>, ValueMismatch> {
+    fn into_num(self) -> Option<Num<Recursive>> {
         if let Self::Num(num) = self {
-            Ok(num)
+            Some(num)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "Number".to_owned()))
+            None
         }
     }
 
-    fn into_lambda(self) -> Result<Lambda<Recursive>, ValueMismatch> {
+    fn into_lambda(self) -> Option<Lambda<Recursive>> {
         if let Self::Lambda(lam) = self {
-            Ok(lam)
+            Some(lam)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "Lambda".to_owned()))
+            None
         }
     }
 
-    fn into_fold(self) -> Result<Fold<Recursive>, ValueMismatch> {
+    fn into_fold(self) -> Option<Fold<Recursive>> {
         if let Self::Fold(fld) = self {
-            Ok(fld)
+            Some(fld)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "Fold".to_owned()))
+            None
         }
     }
 
-    fn into_pair(self) -> Result<Pair<Recursive>, ValueMismatch> {
+    fn into_pair(self) -> Option<Pair<Recursive>> {
         if let Self::Pair(pair) = self {
-            Ok(pair)
+            Some(pair)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "Pair".to_owned()))
+            None
         }
     }
 
-    fn into_record(self) -> Result<Record<Recursive>, ValueMismatch> {
+    fn into_record(self) -> Option<Record<Recursive>> {
         if let Self::Record(rec) = self {
-            Ok(rec)
+            Some(rec)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "Record".to_owned()))
+            None
         }
     }
 
-    fn into_variant(self) -> Result<Variant<Recursive>, ValueMismatch> {
+    fn into_variant(self) -> Option<Variant<Recursive>> {
         if let Self::Variant(var) = self {
-            Ok(var)
+            Some(var)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "Variant".to_owned()))
+            None
         }
     }
 }

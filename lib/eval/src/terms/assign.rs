@@ -1,5 +1,5 @@
 use crate::Eval;
-use errors::eval_error::EvalError;
+use errors::{ValueMismatch, eval_error::EvalError};
 use grammar::{
     DerivationRule,
     symbols::{Keyword, SpecialChar, Symbol},
@@ -28,7 +28,10 @@ where
         let lhs_res = self.lhs.clone().eval(env)?;
         let lhs_val = lhs_res.val();
         let lhs_t: Lang::Term = lhs_val.clone().into();
-        let lhs_loc = lhs_val.into_loc()?;
+        let lhs_loc = lhs_val.clone().into_loc().ok_or(ValueMismatch::new(
+            lhs_val.to_string(),
+            "Location Value".to_string(),
+        ))?;
 
         let rhs_res = self.rhs.clone().eval(env)?;
         let rhs_val = rhs_res.val();

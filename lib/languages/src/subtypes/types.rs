@@ -1,5 +1,4 @@
 use super::Subtypes;
-use errors::TypeMismatch;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use macros::{FromVariants, LangDisplay, LatexFmt, NoKinds, NoNorm, SubstType, Subtypecheck};
 use syntax::types::{
@@ -40,98 +39,98 @@ impl TypeTrait for Type {}
 
 impl TypeGroup for Type {
     type Lang = Subtypes;
-    fn into_unit(self) -> Result<Unit<Subtypes>, TypeMismatch> {
+    fn into_unit(self) -> Option<Unit<Subtypes>> {
         if let Self::Unit(u) = self {
-            Ok(u)
+            Some(u)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Unit".to_owned()))
+            None
         }
     }
-    fn into_top(self) -> Result<Top<Subtypes>, TypeMismatch> {
+    fn into_top(self) -> Option<Top<Subtypes>> {
         if let Self::Top(top) = self {
-            Ok(top)
+            Some(top)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Top".to_owned()))
+            None
         }
     }
 
-    fn into_bot(self) -> Result<Bot<Subtypes>, TypeMismatch> {
+    fn into_bot(self) -> Option<Bot<Subtypes>> {
         if let Self::Bot(bot) = self {
-            Ok(bot)
+            Some(bot)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Bot".to_owned()))
+            None
         }
     }
 
-    fn into_fun(self) -> Result<Fun<Subtypes>, TypeMismatch> {
+    fn into_fun(self) -> Option<Fun<Subtypes>> {
         if let Self::Fun(fun) = self {
-            Ok(fun)
+            Some(fun)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Function".to_owned()))
+            None
         }
     }
 
-    fn into_record(self) -> Result<Record<Subtypes>, TypeMismatch> {
+    fn into_record(self) -> Option<Record<Subtypes>> {
         if let Self::Record(rec) = self {
-            Ok(rec)
+            Some(rec)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Record".to_owned()))
+            None
         }
     }
 
-    fn into_variant(self) -> Result<Variant<Subtypes>, TypeMismatch> {
+    fn into_variant(self) -> Option<Variant<Subtypes>> {
         if let Self::Variant(var) = self {
-            Ok(var)
+            Some(var)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Variant".to_owned()))
+            None
         }
     }
 
-    fn into_list(self) -> Result<List<Subtypes>, TypeMismatch> {
+    fn into_list(self) -> Option<List<Subtypes>> {
         if let Self::List(list) = self {
-            Ok(list)
+            Some(list)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "List".to_owned()))
+            None
         }
     }
 
-    fn into_ref(self) -> Result<Reference<Subtypes>, TypeMismatch> {
+    fn into_ref(self) -> Option<Reference<Subtypes>> {
         if let Self::Ref(reft) = self {
-            Ok(reft)
+            Some(reft)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Reference".to_owned()))
+            None
         }
     }
 
-    fn into_source(self) -> Result<Source<Subtypes>, TypeMismatch> {
+    fn into_source(self) -> Option<Source<Subtypes>> {
         if let Self::Source(src) = self {
-            Ok(src)
+            Some(src)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Source".to_owned()))
+            None
         }
     }
 
-    fn into_sink(self) -> Result<Sink<Subtypes>, TypeMismatch> {
+    fn into_sink(self) -> Option<Sink<Subtypes>> {
         if let Self::Sink(sink) = self {
-            Ok(sink)
+            Some(sink)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Sink".to_owned()))
+            None
         }
     }
 
-    fn into_nat(self) -> Result<Nat<Subtypes>, TypeMismatch> {
+    fn into_nat(self) -> Option<Nat<Subtypes>> {
         if let Self::Nat(nat) = self {
-            Ok(nat)
+            Some(nat)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Nat".to_owned()))
+            None
         }
     }
 
-    fn into_bool(self) -> Result<Bool<Subtypes>, TypeMismatch> {
+    fn into_bool(self) -> Option<Bool<Subtypes>> {
         if let Self::Bool(b) = self {
-            Ok(b)
+            Some(b)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Bool".to_owned()))
+            None
         }
     }
 }

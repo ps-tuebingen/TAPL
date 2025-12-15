@@ -1,6 +1,6 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
-use errors::{EmptyCase, TypeMismatch, UndefinedLabel, check_error::CheckError};
+use errors::{EmptyCase, KindMismatch, TypeMismatch, UndefinedLabel, check_error::CheckError};
 use grammar::DerivationRule;
 use std::collections::HashSet;
 use syntax::{env::Environment, language::Language, terms::VariantCase, types::TypeGroup};
@@ -30,11 +30,18 @@ where
 
         if features.kinded() {
             let bound_res = bound_norm.check_kind(env.clone())?.into_kind()?;
-            bound_res.ret_kind().into_star()?;
+            let bound_knd = bound_res.ret_kind();
+            bound_knd.clone().into_star().ok_or(KindMismatch::new(
+                bound_knd.to_string(),
+                "Star Kind".to_string(),
+            ))?;
             premises.push(bound_res.into());
         }
 
-        let bound_var = bound_norm.into_variant()?;
+        let bound_var = bound_norm.clone().into_variant().ok_or(TypeMismatch::new(
+            bound_norm.to_string(),
+            "Variant Type".to_string(),
+        ))?;
         let mut rhs_tys = vec![];
         let mut rhs_knd = None;
 
@@ -72,14 +79,16 @@ where
 
             if features.kinded() {
                 let rhs_res = rhs_norm.check_kind(env.clone())?.into_kind()?;
+                let res_knd = rhs_res.ret_kind();
 
                 match rhs_knd {
                     None => {
-                        rhs_knd = Some(rhs_res.ret_kind());
+                        rhs_knd = Some(res_knd);
                     }
-                    Some(ref rhs) => {
-                        rhs_res.ret_kind().check_equal(rhs)?;
+                    Some(ref rhs) if *rhs != res_knd => {
+                        return Err(KindMismatch::new(rhs.to_string(), res_knd.to_string()).into());
                     }
+                    _ => (),
                 }
                 premises.push(rhs_res.into());
             }
@@ -91,7 +100,7 @@ where
         }
 
         let rhs_fst = rhs_tys.remove(0);
-        if let Some(ty) = rhs_tys.iter().find(|ty| rhs_fst.check_equal(ty).is_err()) {
+        if let Some(ty) = rhs_tys.iter().find(|ty| rhs_fst != **ty) {
             return Err(TypeMismatch::new(ty.to_string(), rhs_fst.to_string()).into());
         }
 

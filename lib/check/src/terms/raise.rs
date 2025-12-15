@@ -1,6 +1,6 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
-use errors::check_error::CheckError;
+use errors::{KindMismatch, TypeMismatch, check_error::CheckError};
 use grammar::{
     DerivationRule,
     symbols::{Keyword, Symbol},
@@ -48,13 +48,19 @@ where
             let ex_res = ex_norm.check_kind(env.clone())?.into_kind()?;
             let cont_res = self.cont_ty.check_kind(env.clone())?;
             let err_res = err_norm.check_kind(env.clone())?.into_kind()?;
-            ex_res.ret_kind().check_equal(&err_res.ret_kind())?;
+            let ex_knd = ex_res.ret_kind();
+            let err_knd = err_res.ret_kind();
+            if ex_knd != err_knd {
+                return Err(KindMismatch::new(ex_knd.to_string(), err_knd.to_string()).into());
+            }
             premises.push(ex_res.into());
             premises.push(cont_res);
             premises.push(err_res.into());
         }
 
-        ex_norm.check_equal(&err_norm)?;
+        if ex_norm != err_norm {
+            return Err(TypeMismatch::new(ex_norm.to_string(), err_norm.to_string()).into());
+        }
         let conc = TypingConclusion::new(env, self.clone(), cont_norm);
         let deriv = TypingDerivation::raise(conc, premises);
         Ok(deriv.into())

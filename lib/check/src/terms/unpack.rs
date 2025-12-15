@@ -31,7 +31,7 @@ where
             bound_norm = bound_ty;
         }
 
-        if let Ok(bound_exists) = bound_norm.clone().into_exists() {
+        if let Some(bound_exists) = bound_norm.clone().into_exists() {
             if self.ty_name != bound_exists.var {
                 return Err(NameMismatch::new(&bound_exists.var, &self.ty_name).into());
             }
@@ -54,7 +54,7 @@ where
             let conc = TypingConclusion::new(env, self.clone(), in_norm);
             let deriv = TypingDerivation::unpack(conc, premises);
             Ok(deriv.into())
-        } else if let Ok(bound_bound) = bound_norm.clone().into_exists_bounded() {
+        } else if let Some(bound_bound) = bound_norm.clone().into_exists_bounded() {
             if self.ty_name != bound_bound.var {
                 return Err(NameMismatch::new(&bound_bound.var, &self.ty_name).into());
             }

@@ -1,5 +1,4 @@
 use super::{Stlc, terms::Term};
-use errors::ValueMismatch;
 use macros::{FromVariants, GrammarDescribe, IntoTerm, LangDisplay, LatexFmt, Spanned};
 use syntax::values::{
     Cons, False, Lambda, Left, Nil, Nothing, Num, Pair, Record, Right, Something, True, Tuple,
@@ -43,115 +42,115 @@ impl ValueTrait for Value {
 }
 
 impl ValueGroup for Value {
-    fn into_lambda(self) -> Result<Lambda<Stlc>, ValueMismatch> {
+    fn into_lambda(self) -> Option<Lambda<Stlc>> {
         if let Self::Lambda(lam) = self {
-            Ok(lam)
+            Some(lam)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "Lambda".to_owned()))
+            None
         }
     }
 
-    fn into_true(self) -> Result<True<Stlc>, ValueMismatch> {
+    fn into_true(self) -> Option<True<Stlc>> {
         if let Self::True(tru) = self {
-            Ok(tru)
+            Some(tru)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "True".to_owned()))
+            None
         }
     }
 
-    fn into_false(self) -> Result<False<Stlc>, ValueMismatch> {
+    fn into_false(self) -> Option<False<Stlc>> {
         if let Self::False(fls) = self {
-            Ok(fls)
+            Some(fls)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "False".to_owned()))
+            None
         }
     }
 
-    fn into_num(self) -> Result<Num<Stlc>, ValueMismatch> {
+    fn into_num(self) -> Option<Num<Stlc>> {
         if let Self::Num(num) = self {
-            Ok(num)
+            Some(num)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "Number".to_owned()))
+            None
         }
     }
 
-    fn into_pair(self) -> Result<Pair<Stlc>, ValueMismatch> {
+    fn into_pair(self) -> Option<Pair<Stlc>> {
         if let Self::Pair(pair) = self {
-            Ok(pair)
+            Some(pair)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "Pair".to_owned()))
+            None
         }
     }
 
-    fn into_tuple(self) -> Result<Tuple<Stlc>, ValueMismatch> {
+    fn into_tuple(self) -> Option<Tuple<Stlc>> {
         if let Self::Tuple(tup) = self {
-            Ok(tup)
+            Some(tup)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "Tuple".to_owned()))
+            None
         }
     }
 
-    fn into_record(self) -> Result<Record<Stlc>, ValueMismatch> {
+    fn into_record(self) -> Option<Record<Stlc>> {
         if let Self::Record(rec) = self {
-            Ok(rec)
+            Some(rec)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "Record".to_owned()))
+            None
         }
     }
 
-    fn into_left(self) -> Result<Left<Stlc>, ValueMismatch> {
+    fn into_left(self) -> Option<Left<Stlc>> {
         if let Self::Left(lft) = self {
-            Ok(lft)
+            Some(lft)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "Left".to_owned()))
+            None
         }
     }
 
-    fn into_right(self) -> Result<Right<Stlc>, ValueMismatch> {
+    fn into_right(self) -> Option<Right<Stlc>> {
         if let Self::Right(right) = self {
-            Ok(right)
+            Some(right)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "Right".to_owned()))
+            None
         }
     }
 
-    fn into_variant(self) -> Result<Variant<Stlc>, ValueMismatch> {
+    fn into_variant(self) -> Option<Variant<Stlc>> {
         if let Self::Variant(var) = self {
-            Ok(var)
+            Some(var)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "Variant".to_owned()))
+            None
         }
     }
 
-    fn into_nothing(self) -> Result<Nothing<Stlc>, ValueMismatch> {
+    fn into_nothing(self) -> Option<Nothing<Stlc>> {
         if let Self::Nothing(not) = self {
-            Ok(not)
+            Some(not)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "Nothing".to_owned()))
+            None
         }
     }
 
-    fn into_something(self) -> Result<Something<Stlc>, ValueMismatch> {
+    fn into_something(self) -> Option<Something<Stlc>> {
         if let Self::Something(somet) = self {
-            Ok(somet)
+            Some(somet)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "Something".to_owned()))
+            None
         }
     }
 
-    fn into_nil(self) -> Result<Nil<Stlc>, ValueMismatch> {
+    fn into_nil(self) -> Option<Nil<Stlc>> {
         if let Self::Nil(nil) = self {
-            Ok(nil)
+            Some(nil)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "Nil".to_owned()))
+            None
         }
     }
 
-    fn into_cons(self) -> Result<Cons<Stlc>, ValueMismatch> {
+    fn into_cons(self) -> Option<Cons<Stlc>> {
         if let Self::Cons(cons) = self {
-            Ok(cons)
+            Some(cons)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "Cons".to_owned()))
+            None
         }
     }
 }

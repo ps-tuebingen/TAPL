@@ -1,7 +1,7 @@
 use crate::{Kindcheck, Normalize, Subtypecheck, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
 use errors::TypeMismatch;
-use errors::check_error::CheckError;
+use errors::{KindMismatch, check_error::CheckError};
 use grammar::DerivationRule;
 use std::{collections::HashSet, rc::Rc};
 use syntax::{
@@ -33,7 +33,7 @@ where
             outer_norm = self.outer_ty.clone();
         }
 
-        if let Ok(outer_exists) = outer_norm.clone().into_exists() {
+        if let Some(outer_exists) = outer_norm.clone().into_exists() {
             env.add_tyvar_kind(outer_exists.var.clone(), outer_exists.kind.clone());
             let term_res = self.term.check(env.clone())?;
             let term_ty = term_res.ret_ty();
@@ -52,8 +52,21 @@ where
                 let term_res = ty_norm.check_kind(env.clone())?.into_kind()?;
                 let outer_res = outer_exists.ty.check_kind(env.clone())?.into_kind()?;
                 let inner_res = self.inner_ty.check_kind(env.clone())?.into_kind()?;
-                term_res.ret_kind().check_equal(&outer_res.ret_kind())?;
-                inner_res.ret_kind().check_equal(&outer_exists.kind)?;
+                let term_knd = term_res.ret_kind();
+                let outer_knd = outer_res.ret_kind();
+                if term_knd != outer_knd {
+                    return Err(
+                        KindMismatch::new(term_knd.to_string(), outer_knd.to_string()).into(),
+                    );
+                }
+                let inner_knd = inner_res.ret_kind();
+                if inner_knd != outer_exists.kind {
+                    return Err(KindMismatch::new(
+                        inner_knd.to_string(),
+                        outer_exists.kind.to_string(),
+                    )
+                    .into());
+                }
                 premises.push(term_res.into());
                 premises.push(outer_res.into());
                 premises.push(inner_res.into());
@@ -73,12 +86,16 @@ where
                 outer_subst_norm = outer_subst;
             }
 
-            outer_subst_norm.check_equal(&ty_norm)?;
+            if outer_subst_norm != ty_norm {
+                return Err(
+                    TypeMismatch::new(outer_subst_norm.to_string(), ty_norm.to_string()).into(),
+                );
+            }
 
             let conc = TypingConclusion::new(env, self.clone(), self.outer_ty.clone());
             let deriv = TypingDerivation::pack(conc, premises);
             Ok(deriv.into())
-        } else if let Ok(outer_bound) = outer_norm.clone().into_exists_bounded() {
+        } else if let Some(outer_bound) = outer_norm.clone().into_exists_bounded() {
             let sup_norm;
             if features.normalizing() {
                 let sup_norm_deriv = outer_bound.sup_ty.clone().normalize(env.clone());
@@ -106,7 +123,13 @@ where
             if features.kinded() {
                 let term_res = term_ty.check_kind(env.clone())?.into_kind()?;
                 let outer_res = outer_bound.ty.check_kind(env.clone())?.into_kind()?;
-                term_res.ret_kind().check_equal(&outer_res.ret_kind())?;
+                let term_knd = term_res.ret_kind();
+                let outer_knd = outer_res.ret_kind();
+                if term_knd != outer_knd {
+                    return Err(
+                        KindMismatch::new(term_knd.to_string(), outer_knd.to_string()).into(),
+                    );
+                }
                 premises.push(term_res.into());
                 premises.push(outer_res.into());
             }

@@ -1,5 +1,4 @@
 use super::LambdaOmega;
-use errors::TypeMismatch;
 use macros::{
     FromVariants, GrammarDescribe, Kindcheck, LangDisplay, LatexFmt, NoNorm, NoSubtypes, SubstType,
 };
@@ -39,67 +38,67 @@ impl TypeTrait for Type {}
 
 impl TypeGroup for Type {
     type Lang = LambdaOmega;
-    fn into_variable(self) -> Result<TypeVariable<LambdaOmega>, TypeMismatch> {
+    fn into_variable(self) -> Option<TypeVariable<LambdaOmega>> {
         if let Self::Var(v) = self {
-            Ok(v)
+            Some(v)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Variable".to_owned()))
+            None
         }
     }
 
-    fn into_unit(self) -> Result<Unit<LambdaOmega>, TypeMismatch> {
+    fn into_unit(self) -> Option<Unit<LambdaOmega>> {
         if let Self::Unit(u) = self {
-            Ok(u)
+            Some(u)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Unit".to_owned()))
+            None
         }
     }
 
-    fn into_nat(self) -> Result<Nat<LambdaOmega>, TypeMismatch> {
+    fn into_nat(self) -> Option<Nat<LambdaOmega>> {
         if let Self::Nat(nat) = self {
-            Ok(nat)
+            Some(nat)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Nat".to_owned()))
+            None
         }
     }
 
-    fn into_bool(self) -> Result<Bool<LambdaOmega>, TypeMismatch> {
+    fn into_bool(self) -> Option<Bool<LambdaOmega>> {
         if let Self::Bool(b) = self {
-            Ok(b)
+            Some(b)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Bool".to_owned()))
+            None
         }
     }
 
-    fn into_oplambda(self) -> Result<OpLambda<LambdaOmega>, TypeMismatch> {
+    fn into_oplambda(self) -> Option<OpLambda<LambdaOmega>> {
         if let Self::OpLambda(lam) = self {
-            Ok(lam)
+            Some(lam)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "OpLambda".to_owned()))
+            None
         }
     }
 
-    fn into_opapp(self) -> Result<OpApp<LambdaOmega>, TypeMismatch> {
+    fn into_opapp(self) -> Option<OpApp<LambdaOmega>> {
         if let Self::OpApp(app) = self {
-            Ok(app)
+            Some(app)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "OpApp".to_owned()))
+            None
         }
     }
 
-    fn into_fun(self) -> Result<Fun<LambdaOmega>, TypeMismatch> {
+    fn into_fun(self) -> Option<Fun<LambdaOmega>> {
         if let Self::Fun(fun) = self {
-            Ok(fun)
+            Some(fun)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Function".to_owned()))
+            None
         }
     }
 
-    fn into_forall(self) -> Result<Forall<LambdaOmega>, TypeMismatch> {
+    fn into_forall(self) -> Option<Forall<LambdaOmega>> {
         if let Self::Forall(forall) = self {
-            Ok(forall)
+            Some(forall)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Universal".to_owned()))
+            None
         }
     }
 }

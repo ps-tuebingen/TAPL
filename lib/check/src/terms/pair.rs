@@ -1,6 +1,6 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
-use errors::check_error::CheckError;
+use errors::{KindMismatch, check_error::CheckError};
 use grammar::DerivationRule;
 use std::collections::HashSet;
 use syntax::{env::Environment, language::Language, terms::Pair, types::Product};
@@ -48,7 +48,11 @@ where
         if features.kinded() {
             let fst_res = fst_norm.check_kind(env.clone())?.into_kind()?;
             let snd_res = snd_norm.check_kind(env.clone())?.into_kind()?;
-            fst_res.ret_kind().check_equal(&snd_res.ret_kind())?;
+            let fst_knd = fst_res.ret_kind();
+            let snd_knd = snd_res.ret_kind();
+            if fst_knd != snd_knd {
+                return Err(KindMismatch::new(fst_knd.to_string(), snd_knd.to_string()).into());
+            }
             premises.push(fst_res.into());
             premises.push(snd_res.into());
         }

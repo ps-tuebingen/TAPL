@@ -1,6 +1,6 @@
 use crate::{Kindcheck, Normalize, Subtypecheck, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
-use errors::check_error::CheckError;
+use errors::{KindMismatch, TypeMismatch, check_error::CheckError};
 use grammar::DerivationRule;
 use std::{collections::HashSet, rc::Rc};
 use syntax::{
@@ -42,11 +42,17 @@ where
 
         if features.kinded() {
             let knd_res = fun_norm.check_kind(env.clone())?.into_kind()?;
-            knd_res.ret_kind().into_star()?;
+            let knd = knd_res.ret_kind();
+            knd.clone()
+                .into_star()
+                .ok_or(KindMismatch::new(knd.to_string(), "Star Kind".to_string()))?;
             premises.push(knd_res.into());
         }
 
-        let fun: Fun<Lang> = fun_norm.into_fun()?;
+        let fun: Fun<Lang> = fun_norm.clone().into_fun().ok_or(TypeMismatch::new(
+            fun_norm.to_string(),
+            "Function Type".to_string(),
+        ))?;
         let arg_res = self.arg.check(env.clone())?;
         let arg_ty = arg_res.ret_ty();
         premises.push(arg_res);
@@ -62,7 +68,10 @@ where
 
         if features.kinded() {
             let knd_res = arg_norm.check_kind(env.clone())?.into_kind()?;
-            knd_res.ret_kind().into_star()?;
+            let knd = knd_res.ret_kind();
+            knd.clone()
+                .into_star()
+                .ok_or(KindMismatch::new(knd.to_string(), "Star Kind".to_string()))?;
             premises.push(knd_res.into());
         }
 

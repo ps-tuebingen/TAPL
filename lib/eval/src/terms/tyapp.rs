@@ -22,7 +22,7 @@ where
     fn eval(self, env: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         let fun_res = self.fun.eval(env)?;
         let fun_val = fun_res.val();
-        let (res_steps, res_val) = if let Ok(tylam) = fun_val.clone().into_tylambda() {
+        let (res_steps, res_val) = if let Some(tylam) = fun_val.clone().into_tylambda() {
             let term_subst = tylam.term.subst_type(&tylam.var, &self.arg);
             let next_step = EvalStep::tyappabs(
                 Self::new(fun_val, self.arg.clone(), self.span),
@@ -33,7 +33,7 @@ where
             let mut steps = term_res.steps;
             steps.push(next_step);
             (steps, term_val)
-        } else if let Ok(lamsub) = fun_val.clone().into_lambdasub() {
+        } else if let Some(lamsub) = fun_val.clone().into_lambdasub() {
             let term_subst = lamsub.term.subst_type(&lamsub.var, &self.arg);
             let next_step = EvalStep::tyappabs_sub(
                 Self::new(fun_val, self.arg.clone(), self.span),

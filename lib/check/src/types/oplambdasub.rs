@@ -1,6 +1,6 @@
 use crate::{Kindcheck, Normalize, Subtypecheck};
 use derivations::{Derivation, KindingDerivation, NormalizingDerivation, SubtypeDerivation};
-use errors::check_error::CheckError;
+use errors::{TypeMismatch, check_error::CheckError};
 use grammar::{
     DerivationRule,
     symbols::{SpecialChar, Symbol},
@@ -29,7 +29,7 @@ where
         mut env: Environment<Self::Lang>,
     ) -> Result<Derivation<Self::Lang>, CheckError> {
         let features = Lang::features();
-        if let Ok(top) = sup.clone().into_top() {
+        if let Some(top) = sup.clone().into_top() {
             return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind, vec![]).into());
         }
         let mut premises = vec![];
@@ -48,8 +48,16 @@ where
             self_sup_norm = Rc::unwrap_or_clone(self.sup.clone());
         }
 
-        let sup_op = sup_norm.into_oplambdasub()?;
-        sup_op.sup.check_equal(&self_sup_norm)?;
+        let sup_op = sup_norm
+            .clone()
+            .into_oplambdasub()
+            .ok_or(TypeMismatch::new(
+                sup_norm.to_string(),
+                "Bounded Operator Abstraction".to_string(),
+            ))?;
+        if *sup_op.sup != sup_norm {
+            return Err(TypeMismatch::new(sup_op.sup.to_string(), sup_norm.to_string()).into());
+        }
         env.add_tyvar_super(self.var.clone(), self_sup_norm);
 
         let body_res = self.body.check_subtype(

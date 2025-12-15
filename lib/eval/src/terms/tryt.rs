@@ -24,7 +24,7 @@ where
     fn eval(self, env: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         let term_res = self.term.eval(env)?;
         let term_val = term_res.val();
-        let (res_steps, res_val) = if term_val.clone().into_exception().is_ok() {
+        let (res_steps, res_val) = if term_val.clone().into_exception().is_some() {
             let next_step = EvalStep::try_catch(
                 Self::new(
                     term_val,

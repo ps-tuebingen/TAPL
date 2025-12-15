@@ -1,6 +1,6 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
-use errors::check_error::CheckError;
+use errors::{KindMismatch, TypeMismatch, check_error::CheckError};
 use grammar::DerivationRule;
 use std::{collections::HashSet, rc::Rc};
 use syntax::{
@@ -45,13 +45,22 @@ where
         if features.kinded() {
             let ty_res = ty_norm.check_kind(env.clone())?.into_kind()?;
             let term_res = term_ty_norm.check_kind(env.clone())?.into_kind()?;
-            term_res.ret_kind().check_equal(&ty_res.ret_kind())?;
+            let term_knd = term_res.ret_kind();
+            let ty_knd = ty_res.ret_kind();
+            if term_knd != ty_knd {
+                return Err(KindMismatch::new(term_knd.to_string(), ty_knd.to_string()).into());
+            }
             premises.push(ty_res.into());
             premises.push(term_res.into());
         }
 
-        ty_norm.check_equal(&term_ty_norm)?;
-        let mu_ty = term_ty_norm.clone().into_mu()?;
+        if ty_norm != term_ty_norm {
+            return Err(TypeMismatch::new(ty_norm.to_string(), term_ty_norm.to_string()).into());
+        }
+        let mu_ty = term_ty_norm.clone().into_mu().ok_or(TypeMismatch::new(
+            term_ty_norm.to_string(),
+            "Mu Type".to_string(),
+        ))?;
         let ty = mu_ty.ty.subst_type(&mu_ty.var, &term_ty_norm);
         let conc = TypingConclusion::new(env, self.clone(), Rc::unwrap_or_clone(ty));
         let deriv = TypingDerivation::unfold(conc, premises);

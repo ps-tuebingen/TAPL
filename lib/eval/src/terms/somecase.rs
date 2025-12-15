@@ -26,7 +26,7 @@ where
         let bound_res = self.bound_term.eval(env)?;
         let bound_val = bound_res.val();
 
-        let (res_steps, res_val) = if let Ok(some_val) = bound_val.clone().into_something() {
+        let (res_steps, res_val) = if let Some(some_val) = bound_val.clone().into_something() {
             let some_subst = self
                 .some_term
                 .clone()
@@ -46,7 +46,7 @@ where
             let mut some_steps = some_res.steps;
             some_steps.insert(0, next_step);
             (some_steps, some_val)
-        } else if bound_val.clone().into_nothing().is_ok() {
+        } else if bound_val.clone().into_nothing().is_some() {
             let next_step = EvalStep::somecase_none(
                 Self::new(
                     bound_val,

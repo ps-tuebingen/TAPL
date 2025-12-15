@@ -1,5 +1,4 @@
 use super::Exceptions;
-use errors::TypeMismatch;
 use macros::{
     FromVariants, GrammarDescribe, LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes, SubstType,
 };
@@ -31,34 +30,34 @@ impl TypeTrait for Type {}
 
 impl TypeGroup for Type {
     type Lang = Exceptions;
-    fn into_unit(self) -> Result<Unit<Exceptions>, TypeMismatch> {
+    fn into_unit(self) -> Option<Unit<Exceptions>> {
         if let Self::Unit(u) = self {
-            Ok(u)
+            Some(u)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Unit".to_owned()))
+            None
         }
     }
-    fn into_nat(self) -> Result<Nat<Exceptions>, TypeMismatch> {
+    fn into_nat(self) -> Option<Nat<Exceptions>> {
         if let Self::Nat(n) = self {
-            Ok(n)
+            Some(n)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Nat".to_owned()))
+            None
         }
     }
 
-    fn into_bool(self) -> Result<Bool<Exceptions>, TypeMismatch> {
+    fn into_bool(self) -> Option<Bool<Exceptions>> {
         if let Self::Bool(b) = self {
-            Ok(b)
+            Some(b)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Bool".to_owned()))
+            None
         }
     }
 
-    fn into_fun(self) -> Result<Fun<Exceptions>, TypeMismatch> {
+    fn into_fun(self) -> Option<Fun<Exceptions>> {
         if let Self::Fun(fun) = self {
-            Ok(fun)
+            Some(fun)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Function".to_owned()))
+            None
         }
     }
 }

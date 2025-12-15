@@ -1,6 +1,6 @@
 use crate::{Kindcheck, Normalize, Subtypecheck, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
-use errors::{TypeMismatch, check_error::CheckError};
+use errors::{KindMismatch, TypeMismatch, check_error::CheckError};
 use grammar::DerivationRule;
 use std::{collections::HashSet, rc::Rc};
 use syntax::{
@@ -41,10 +41,15 @@ where
             arg_norm = self.arg.clone();
         }
 
-        if let Ok(forall) = fun_norm.clone().into_forall() {
+        if let Some(forall) = fun_norm.clone().into_forall() {
             if features.kinded() {
                 let arg_res = arg_norm.check_kind(env.clone())?.into_kind()?;
-                forall.kind.check_equal(&arg_res.ret_kind())?;
+                let arg_knd = arg_res.ret_kind();
+                if forall.kind != arg_knd {
+                    return Err(
+                        KindMismatch::new(forall.kind.to_string(), arg_knd.to_string()).into(),
+                    );
+                }
                 premises.push(arg_res.into());
             }
 
@@ -52,11 +57,15 @@ where
             let conc = TypingConclusion::new(env, self.clone(), Rc::unwrap_or_clone(ty));
             let deriv = TypingDerivation::tyapp(conc, premises);
             Ok(deriv.into())
-        } else if let Ok(forall) = fun_norm.clone().into_forall_bounded() {
+        } else if let Some(forall) = fun_norm.clone().into_forall_bounded() {
             if features.kinded() {
                 let arg_res = arg_norm.check_kind(env.clone())?.into_kind()?;
                 let sup_res = forall.sup_ty.check_kind(env.clone())?.into_kind()?;
-                sup_res.ret_kind().check_equal(&arg_res.ret_kind())?;
+                let sup_knd = sup_res.ret_kind();
+                let arg_knd = arg_res.ret_kind();
+                if sup_knd != arg_knd {
+                    return Err(KindMismatch::new(sup_knd.to_string(), arg_knd.to_string()).into());
+                }
             }
             arg_norm.check_subtype(&forall.sup_ty, env.clone())?;
             let ty = forall.ty.subst_type(&forall.var, &arg_norm);

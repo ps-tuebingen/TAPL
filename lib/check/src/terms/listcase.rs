@@ -1,6 +1,6 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
-use errors::check_error::CheckError;
+use errors::{KindMismatch, TypeMismatch, check_error::CheckError};
 use grammar::DerivationRule;
 use std::{collections::HashSet, rc::Rc};
 use syntax::{env::Environment, language::Language, terms::ListCase, types::TypeGroup};
@@ -34,11 +34,18 @@ where
 
         if features.kinded() {
             let bound_res = bound_norm.check_kind(env.clone())?.into_kind()?;
-            bound_res.ret_kind().into_star()?;
+            let bound_knd = bound_res.ret_kind();
+            bound_knd.clone().into_star().ok_or(KindMismatch::new(
+                bound_knd.to_string(),
+                "Star Kind".to_string(),
+            ))?;
             premises.push(bound_res.into());
         }
 
-        let bound_list = bound_norm.clone().into_list()?;
+        let bound_list = bound_norm.clone().into_list().ok_or(TypeMismatch::new(
+            bound_norm.to_string(),
+            "List Type".to_string(),
+        ))?;
 
         let nil_res = self.nil_rhs.check(env.clone())?;
         let nil_ty = nil_res.ret_ty();
@@ -71,12 +78,18 @@ where
         if features.kinded() {
             let nil_res = nil_norm.check_kind(env.clone())?.into_kind()?;
             let cons_res = cons_norm.check_kind(env.clone())?.into_kind()?;
-            nil_res.ret_kind().check_equal(&cons_res.ret_kind())?;
+            let nil_knd = nil_res.ret_kind();
+            let cons_knd = cons_res.ret_kind();
+            if nil_knd != cons_knd {
+                return Err(KindMismatch::new(nil_knd.to_string(), cons_knd.to_string()).into());
+            }
             premises.push(nil_res.into());
             premises.push(cons_res.into());
         }
 
-        nil_norm.check_equal(&cons_norm)?;
+        if nil_norm != cons_norm {
+            return Err(TypeMismatch::new(nil_norm.to_string(), cons_norm.to_string()).into());
+        }
         let conc = TypingConclusion::new(env.clone(), self.clone(), cons_norm);
         let deriv = TypingDerivation::listcase(conc, premises);
         Ok(deriv.into())

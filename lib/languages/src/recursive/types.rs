@@ -1,5 +1,4 @@
 use super::Recursive;
-use errors::TypeMismatch;
 use macros::{
     FromVariants, GrammarDescribe, LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes, SubstType,
 };
@@ -38,66 +37,66 @@ impl TypeTrait for Type {}
 
 impl TypeGroup for Type {
     type Lang = Recursive;
-    fn into_unit(self) -> Result<Unit<Recursive>, TypeMismatch> {
+    fn into_unit(self) -> Option<Unit<Recursive>> {
         if let Self::Unit(u) = self {
-            Ok(u)
+            Some(u)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Unit".to_owned()))
+            None
         }
     }
-    fn into_fun(self) -> Result<Fun<Recursive>, TypeMismatch> {
+    fn into_fun(self) -> Option<Fun<Recursive>> {
         if let Self::Fun(fun) = self {
-            Ok(fun)
+            Some(fun)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Function".to_owned()))
+            None
         }
     }
 
-    fn into_mu(self) -> Result<Mu<Recursive>, TypeMismatch> {
+    fn into_mu(self) -> Option<Mu<Recursive>> {
         if let Self::Mu(mu) = self {
-            Ok(mu)
+            Some(mu)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Mu".to_owned()))
+            None
         }
     }
 
-    fn into_variant(self) -> Result<Variant<Recursive>, TypeMismatch> {
+    fn into_variant(self) -> Option<Variant<Recursive>> {
         if let Self::Variant(var) = self {
-            Ok(var)
+            Some(var)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Variant".to_owned()))
+            None
         }
     }
 
-    fn into_product(self) -> Result<Product<Recursive>, TypeMismatch> {
+    fn into_product(self) -> Option<Product<Recursive>> {
         if let Self::Product(prod) = self {
-            Ok(prod)
+            Some(prod)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Product".to_owned()))
+            None
         }
     }
 
-    fn into_nat(self) -> Result<Nat<Recursive>, TypeMismatch> {
+    fn into_nat(self) -> Option<Nat<Recursive>> {
         if let Self::Nat(nat) = self {
-            Ok(nat)
+            Some(nat)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Nat".to_owned()))
+            None
         }
     }
 
-    fn into_bool(self) -> Result<Bool<Recursive>, TypeMismatch> {
+    fn into_bool(self) -> Option<Bool<Recursive>> {
         if let Self::Bool(b) = self {
-            Ok(b)
+            Some(b)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Bool".to_owned()))
+            None
         }
     }
 
-    fn into_record(self) -> Result<Record<Recursive>, TypeMismatch> {
+    fn into_record(self) -> Option<Record<Recursive>> {
         if let Self::Record(rec) = self {
-            Ok(rec)
+            Some(rec)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Record".to_owned()))
+            None
         }
     }
 }

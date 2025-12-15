@@ -1,6 +1,6 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
-use errors::check_error::CheckError;
+use errors::{KindMismatch, TypeMismatch, check_error::CheckError};
 use grammar::DerivationRule;
 use std::collections::HashSet;
 use syntax::{
@@ -53,12 +53,21 @@ where
         if features.kinded() {
             let t_res = t_norm.check_kind(env.clone())?.into_kind()?;
             let handler_res = handler_norm.check_kind(env.clone())?.into_kind()?;
-            t_res.ret_kind().check_equal(&handler_res.ret_kind())?;
+            let t_knd = t_res.ret_kind();
+            let handler_knd = handler_res.ret_kind();
+            if t_knd != handler_knd {
+                return Err(KindMismatch::new(t_knd.to_string(), handler_knd.to_string()).into());
+            }
             premises.push(t_res.into());
             premises.push(handler_res.into());
         }
-        let fun: Fun<Lang> = handler_norm.into_fun()?;
-        fun.to.check_equal(&t_norm)?;
+        let fun: Fun<Lang> = handler_norm.clone().into_fun().ok_or(TypeMismatch::new(
+            handler_norm.to_string(),
+            "Function Type".to_string(),
+        ))?;
+        if *fun.to != t_norm {
+            return Err(TypeMismatch::new(fun.to.to_string(), t_norm.to_string()).into());
+        }
 
         let conc = TypingConclusion::new(env, self.clone(), t_norm);
         let deriv = TypingDerivation::try_val(conc, premises);

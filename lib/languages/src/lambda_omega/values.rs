@@ -1,5 +1,4 @@
 use super::{LambdaOmega, terms::Term};
-use errors::ValueMismatch;
 use macros::{FromVariants, GrammarDescribe, IntoTerm, LangDisplay, LatexFmt, Spanned};
 use syntax::values::{False, Lambda, Num, True, TyLambda, Unit, Value as ValueTrait, ValueGroup};
 
@@ -31,43 +30,43 @@ impl ValueTrait for Value {
 }
 
 impl ValueGroup for Value {
-    fn into_true(self) -> Result<True<LambdaOmega>, ValueMismatch> {
+    fn into_true(self) -> Option<True<LambdaOmega>> {
         if let Self::True(tru) = self {
-            Ok(tru)
+            Some(tru)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "True".to_owned()))
+            None
         }
     }
 
-    fn into_false(self) -> Result<False<LambdaOmega>, ValueMismatch> {
+    fn into_false(self) -> Option<False<LambdaOmega>> {
         if let Self::False(fls) = self {
-            Ok(fls)
+            Some(fls)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "False".to_owned()))
+            None
         }
     }
 
-    fn into_num(self) -> Result<Num<LambdaOmega>, ValueMismatch> {
+    fn into_num(self) -> Option<Num<LambdaOmega>> {
         if let Self::Num(num) = self {
-            Ok(num)
+            Some(num)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "Number".to_owned()))
+            None
         }
     }
 
-    fn into_lambda(self) -> Result<Lambda<LambdaOmega>, ValueMismatch> {
+    fn into_lambda(self) -> Option<Lambda<LambdaOmega>> {
         if let Self::Lambda(lam) = self {
-            Ok(lam)
+            Some(lam)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "Lambda".to_owned()))
+            None
         }
     }
 
-    fn into_tylambda(self) -> Result<TyLambda<LambdaOmega>, ValueMismatch> {
+    fn into_tylambda(self) -> Option<TyLambda<LambdaOmega>> {
         if let Self::TyLambda(lam) = self {
-            Ok(lam)
+            Some(lam)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "TyLambda".to_owned()))
+            None
         }
     }
 }

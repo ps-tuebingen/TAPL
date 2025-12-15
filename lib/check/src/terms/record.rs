@@ -1,6 +1,6 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
-use errors::check_error::CheckError;
+use errors::{KindMismatch, check_error::CheckError};
 use grammar::DerivationRule;
 use std::collections::{HashMap, HashSet};
 use syntax::{env::Environment, language::Language, terms::Record, types::Record as RecordTy};
@@ -37,13 +37,15 @@ where
 
             if features.kinded() {
                 let ty_res = ty_norm.check_kind(env.clone())?.into_kind()?;
+                let ty_knd = ty_res.ret_kind();
                 match rec_knd {
                     None => {
-                        rec_knd = Some(ty_res.ret_kind());
+                        rec_knd = Some(ty_knd);
                     }
-                    Some(ref knd) => {
-                        knd.check_equal(&ty_res.ret_kind())?;
+                    Some(ref knd) if *knd != ty_knd => {
+                        return Err(KindMismatch::new(knd.to_string(), ty_knd.to_string()).into());
                     }
+                    _ => (),
                 }
                 premises.push(ty_res.into());
             }

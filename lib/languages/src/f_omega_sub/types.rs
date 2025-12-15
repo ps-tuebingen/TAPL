@@ -1,5 +1,4 @@
 use super::FOmegaSub;
-use errors::TypeMismatch;
 use macros::{
     FromVariants, GrammarDescribe, Kindcheck, LangDisplay, LatexFmt, Normalize, SubstType,
     Subtypecheck,
@@ -40,77 +39,74 @@ impl TypeTrait for Type {}
 
 impl TypeGroup for Type {
     type Lang = FOmegaSub;
-    fn into_variable(self) -> Result<TypeVariable<FOmegaSub>, TypeMismatch> {
+    fn into_variable(self) -> Option<TypeVariable<FOmegaSub>> {
         if let Self::Var(var) = self {
-            Ok(var)
+            Some(var)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Variable".to_owned()))
+            None
         }
     }
-    fn into_top(self) -> Result<Top<FOmegaSub>, TypeMismatch> {
+    fn into_top(self) -> Option<Top<FOmegaSub>> {
         if let Self::Top(top) = self {
-            Ok(top)
+            Some(top)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Top".to_owned()))
+            None
         }
     }
 
-    fn into_fun(self) -> Result<Fun<FOmegaSub>, TypeMismatch> {
+    fn into_fun(self) -> Option<Fun<FOmegaSub>> {
         if let Self::Fun(fun) = self {
-            Ok(fun)
+            Some(fun)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Function".to_owned()))
+            None
         }
     }
 
-    fn into_forall_bounded(self) -> Result<ForallBounded<FOmegaSub>, TypeMismatch> {
+    fn into_forall_bounded(self) -> Option<ForallBounded<FOmegaSub>> {
         if let Self::Forall(forall) = self {
-            Ok(forall)
+            Some(forall)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Universal".to_owned()))
+            None
         }
     }
 
-    fn into_oplambdasub(self) -> Result<OpLambdaSub<FOmegaSub>, TypeMismatch> {
+    fn into_oplambdasub(self) -> Option<OpLambdaSub<FOmegaSub>> {
         if let Self::OpLambdaSub(lam) = self {
-            Ok(lam)
+            Some(lam)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "OpLambda".to_owned()))
+            None
         }
     }
 
-    fn into_opapp(self) -> Result<OpApp<FOmegaSub>, TypeMismatch> {
+    fn into_opapp(self) -> Option<OpApp<FOmegaSub>> {
         if let Self::OpApp(app) = self {
-            Ok(app)
+            Some(app)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "OpApp".to_owned()))
+            None
         }
     }
 
-    fn into_exists_bounded(self) -> Result<ExistsBounded<FOmegaSub>, TypeMismatch> {
+    fn into_exists_bounded(self) -> Option<ExistsBounded<FOmegaSub>> {
         if let Self::Exists(ex) = self {
-            Ok(ex)
+            Some(ex)
         } else {
-            Err(TypeMismatch::new(
-                self.to_string(),
-                "Existential".to_owned(),
-            ))
+            None
         }
     }
 
-    fn into_record(self) -> Result<Record<FOmegaSub>, TypeMismatch> {
+    fn into_record(self) -> Option<Record<FOmegaSub>> {
         if let Self::Record(rec) = self {
-            Ok(rec)
+            Some(rec)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Record".to_owned()))
+            None
         }
     }
 
-    fn into_nat(self) -> Result<Nat<FOmegaSub>, TypeMismatch> {
+    fn into_nat(self) -> Option<Nat<FOmegaSub>> {
         if let Self::Nat(nat) = self {
-            Ok(nat)
+            Some(nat)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Nat".to_owned()))
+            None
         }
     }
 }

@@ -1,5 +1,4 @@
 use super::{SystemF, terms::Term};
-use errors::ValueMismatch;
 use macros::{FromVariants, GrammarDescribe, IntoTerm, LangDisplay, LatexFmt, Spanned};
 use syntax::values::{Lambda, TyLambda, Value as ValueTrait, ValueGroup};
 
@@ -27,19 +26,19 @@ impl ValueTrait for Value {
 }
 
 impl ValueGroup for Value {
-    fn into_lambda(self) -> Result<Lambda<SystemF>, ValueMismatch> {
+    fn into_lambda(self) -> Option<Lambda<SystemF>> {
         if let Self::Lambda(lam) = self {
-            Ok(lam)
+            Some(lam)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "Lambda".to_owned()))
+            None
         }
     }
 
-    fn into_tylambda(self) -> Result<TyLambda<SystemF>, ValueMismatch> {
+    fn into_tylambda(self) -> Option<TyLambda<SystemF>> {
         if let Self::TyLambda(lam) = self {
-            Ok(lam)
+            Some(lam)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "TyLambda".to_owned()))
+            None
         }
     }
 }

@@ -1,5 +1,4 @@
 use super::{FOmega, terms::Term};
-use errors::ValueMismatch;
 use macros::{FromVariants, GrammarDescribe, IntoTerm, LangDisplay, LatexFmt, Spanned};
 use syntax::values::{
     False, Lambda, Num, Pack, Record, True, TyLambda, Unit, Value as ValueTrait, ValueGroup,
@@ -35,56 +34,56 @@ impl ValueTrait for Value {
 }
 
 impl ValueGroup for Value {
-    fn into_lambda(self) -> Result<Lambda<FOmega>, ValueMismatch> {
+    fn into_lambda(self) -> Option<Lambda<FOmega>> {
         if let Self::Lambda(lam) = self {
-            Ok(lam)
+            Some(lam)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "Lambda".to_owned()))
+            None
         }
     }
 
-    fn into_tylambda(self) -> Result<TyLambda<FOmega>, ValueMismatch> {
+    fn into_tylambda(self) -> Option<TyLambda<FOmega>> {
         if let Self::TyLambda(lam) = self {
-            Ok(lam)
+            Some(lam)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "TyLambda".to_owned()))
+            None
         }
     }
 
-    fn into_pack(self) -> Result<Pack<FOmega>, ValueMismatch> {
+    fn into_pack(self) -> Option<Pack<FOmega>> {
         if let Self::Pack(pack) = self {
-            Ok(pack)
+            Some(pack)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "Package".to_owned()))
+            None
         }
     }
-    fn into_record(self) -> Result<Record<FOmega>, ValueMismatch> {
+    fn into_record(self) -> Option<Record<FOmega>> {
         if let Self::Record(rec) = self {
-            Ok(rec)
+            Some(rec)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "Record".to_owned()))
+            None
         }
     }
 
-    fn into_true(self) -> Result<True<FOmega>, ValueMismatch> {
+    fn into_true(self) -> Option<True<FOmega>> {
         if let Self::True(tru) = self {
-            Ok(tru)
+            Some(tru)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "True".to_owned()))
+            None
         }
     }
-    fn into_false(self) -> Result<False<FOmega>, ValueMismatch> {
+    fn into_false(self) -> Option<False<FOmega>> {
         if let Self::False(fls) = self {
-            Ok(fls)
+            Some(fls)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "False".to_owned()))
+            None
         }
     }
-    fn into_num(self) -> Result<Num<FOmega>, ValueMismatch> {
+    fn into_num(self) -> Option<Num<FOmega>> {
         if let Self::Num(num) = self {
-            Ok(num)
+            Some(num)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "Number".to_owned()))
+            None
         }
     }
 }

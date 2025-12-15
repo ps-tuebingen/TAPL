@@ -1,6 +1,6 @@
 use crate::Subtypecheck;
 use derivations::{Derivation, SubtypeDerivation};
-use errors::check_error::CheckError;
+use errors::{TypeMismatch, check_error::CheckError};
 use grammar::{
     DerivationRule,
     symbols::{Keyword, Symbol},
@@ -27,18 +27,21 @@ where
         sup: &<Lang as Language>::Type,
         env: Environment<Self::Lang>,
     ) -> Result<Derivation<Self::Lang>, CheckError> {
-        if let Ok(top) = sup.clone().into_top() {
+        if let Some(top) = sup.clone().into_top() {
             return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind, vec![]).into());
         }
 
-        if let Ok(src) = sup.clone().into_source() {
+        if let Some(src) = sup.clone().into_source() {
             let src_res = self.ty.check_subtype(&(*src.ty), env.clone())?;
             Ok(SubtypeDerivation::ref_source(env, self.clone(), src, src_res).into())
-        } else if let Ok(sink) = sup.clone().into_sink() {
+        } else if let Some(sink) = sup.clone().into_sink() {
             let sink_res = sink.ty.check_subtype(&(*sink.ty), env.clone())?;
             Ok(SubtypeDerivation::ref_sink(env, self.clone(), sink, sink_res).into())
         } else {
-            let sup_ref = sup.clone().into_ref()?;
+            let sup_ref = sup.clone().into_ref().ok_or(TypeMismatch::new(
+                sup.to_string(),
+                "Reference Type".to_string(),
+            ))?;
             sup_ref.ty.check_subtype(&(*self.ty), env.clone())?;
             let inner_res = self.ty.check_subtype(&(*sup_ref.ty), env.clone())?;
             Ok(SubtypeDerivation::ref_ref(env, self.clone(), sup_ref, inner_res).into())

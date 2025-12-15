@@ -1,6 +1,6 @@
 use crate::{Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
-use errors::check_error::CheckError;
+use errors::{TypeMismatch, check_error::CheckError};
 use grammar::{
     DerivationRule,
     symbols::{Keyword, Symbol},
@@ -40,7 +40,10 @@ where
             inner_norm = inner_ty;
         }
 
-        let nat = inner_norm.into_nat()?;
+        let nat = inner_norm
+            .clone()
+            .into_nat()
+            .ok_or(TypeMismatch::new(inner_norm.to_string(), "Nat".to_string()))?;
         let conc = TypingConclusion::new(env, self.clone(), nat);
         let deriv = TypingDerivation::pred(conc, premises);
         Ok(deriv.into())

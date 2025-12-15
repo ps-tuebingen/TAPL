@@ -1,5 +1,4 @@
 use super::{Exceptions, terms::Term};
-use errors::ValueMismatch;
 use macros::{FromVariants, GrammarDescribe, IntoTerm, LangDisplay, LatexFmt, Spanned};
 use syntax::values::{
     Exception, False, Lambda, Num, Raise, True, Unit, Value as ValueTrait, ValueGroup,
@@ -34,51 +33,51 @@ impl ValueTrait for Value {
 }
 
 impl ValueGroup for Value {
-    fn into_true(self) -> Result<True<Exceptions>, ValueMismatch> {
+    fn into_true(self) -> Option<True<Exceptions>> {
         if let Self::True(tru) = self {
-            Ok(tru)
+            Some(tru)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "True".to_owned()))
+            None
         }
     }
 
-    fn into_false(self) -> Result<False<Exceptions>, ValueMismatch> {
+    fn into_false(self) -> Option<False<Exceptions>> {
         if let Self::False(fls) = self {
-            Ok(fls)
+            Some(fls)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "False".to_owned()))
+            None
         }
     }
 
-    fn into_exception(self) -> Result<Exception<Exceptions>, ValueMismatch> {
+    fn into_exception(self) -> Option<Exception<Exceptions>> {
         if let Self::Exception(ex) = self {
-            Ok(ex)
+            Some(ex)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "Exception".to_owned()))
+            None
         }
     }
 
-    fn into_lambda(self) -> Result<Lambda<Exceptions>, ValueMismatch> {
+    fn into_lambda(self) -> Option<Lambda<Exceptions>> {
         if let Self::Lambda(lam) = self {
-            Ok(lam)
+            Some(lam)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "Lambda".to_owned()))
+            None
         }
     }
 
-    fn into_raise(self) -> Result<Raise<Exceptions>, ValueMismatch> {
+    fn into_raise(self) -> Option<Raise<Exceptions>> {
         if let Self::Raise(raise) = self {
-            Ok(raise)
+            Some(raise)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "Raise".to_owned()))
+            None
         }
     }
 
-    fn into_num(self) -> Result<Num<Exceptions>, ValueMismatch> {
+    fn into_num(self) -> Option<Num<Exceptions>> {
         if let Self::Num(num) = self {
-            Ok(num)
+            Some(num)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "Number".to_owned()))
+            None
         }
     }
 }

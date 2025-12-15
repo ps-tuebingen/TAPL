@@ -1,5 +1,4 @@
 use super::{Existential, terms::Term};
-use errors::ValueMismatch;
 use macros::{FromVariants, GrammarDescribe, IntoTerm, LangDisplay, LatexFmt, Spanned};
 use syntax::values::{
     False, Lambda, Num, Pack, Record, True, Unit, Value as ValueTrait, ValueGroup,
@@ -34,51 +33,51 @@ impl ValueTrait for Value {
 }
 
 impl ValueGroup for Value {
-    fn into_lambda(self) -> Result<Lambda<Existential>, ValueMismatch> {
+    fn into_lambda(self) -> Option<Lambda<Existential>> {
         if let Self::Lambda(lam) = self {
-            Ok(lam)
+            Some(lam)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "Lambda".to_owned()))
+            None
         }
     }
 
-    fn into_pack(self) -> Result<Pack<Existential>, ValueMismatch> {
+    fn into_pack(self) -> Option<Pack<Existential>> {
         if let Self::Pack(pack) = self {
-            Ok(pack)
+            Some(pack)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "Package".to_owned()))
+            None
         }
     }
 
-    fn into_num(self) -> Result<Num<Existential>, ValueMismatch> {
+    fn into_num(self) -> Option<Num<Existential>> {
         if let Self::Num(num) = self {
-            Ok(num)
+            Some(num)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "Number".to_owned()))
+            None
         }
     }
 
-    fn into_record(self) -> Result<Record<Existential>, ValueMismatch> {
+    fn into_record(self) -> Option<Record<Existential>> {
         if let Self::Record(rec) = self {
-            Ok(rec)
+            Some(rec)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "Record".to_owned()))
+            None
         }
     }
 
-    fn into_true(self) -> Result<True<Existential>, ValueMismatch> {
+    fn into_true(self) -> Option<True<Existential>> {
         if let Self::True(tru) = self {
-            Ok(tru)
+            Some(tru)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "True".to_owned()))
+            None
         }
     }
 
-    fn into_false(self) -> Result<False<Existential>, ValueMismatch> {
+    fn into_false(self) -> Option<False<Existential>> {
         if let Self::False(fls) = self {
-            Ok(fls)
+            Some(fls)
         } else {
-            Err(ValueMismatch::new(self.to_string(), "False".to_owned()))
+            None
         }
     }
 }

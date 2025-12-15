@@ -1,5 +1,4 @@
 use super::SystemF;
-use errors::TypeMismatch;
 use macros::{
     FromVariants, GrammarDescribe, LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes, SubstType,
 };
@@ -30,19 +29,19 @@ impl TypeTrait for Type {}
 
 impl TypeGroup for Type {
     type Lang = SystemF;
-    fn into_fun(self) -> Result<Fun<Self::Lang>, TypeMismatch> {
+    fn into_fun(self) -> Option<Fun<Self::Lang>> {
         if let Self::Fun(fun) = self {
-            Ok(fun)
+            Some(fun)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Function".to_owned()))
+            None
         }
     }
 
-    fn into_forall(self) -> Result<Forall<Self::Lang>, TypeMismatch> {
+    fn into_forall(self) -> Option<Forall<Self::Lang>> {
         if let Self::Forall(forall) = self {
-            Ok(forall)
+            Some(forall)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Universal".to_owned()))
+            None
         }
     }
 }

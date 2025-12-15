@@ -1,6 +1,6 @@
 use crate::Typecheck;
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
-use errors::check_error::CheckError;
+use errors::{FreeVariable, check_error::CheckError};
 use grammar::{DerivationRule, Symbol};
 use std::collections::HashSet;
 use syntax::{env::Environment, language::Language, terms::Variable};
@@ -14,7 +14,7 @@ where
     type Lang = Lang;
 
     fn check(&self, env: Environment<Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
-        let ty = env.get_var(&self.var)?;
+        let ty = env.get_var(&self.var).ok_or(FreeVariable::new(&self.var))?;
         let conc = TypingConclusion::new(env, self.clone(), ty);
         let deriv = TypingDerivation::var(conc);
         Ok(deriv.into())

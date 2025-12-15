@@ -1,6 +1,6 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
-use errors::check_error::CheckError;
+use errors::{KindMismatch, check_error::CheckError};
 use grammar::DerivationRule;
 use std::collections::HashSet;
 use syntax::{env::Environment, language::Language, terms::TyLambda, types::Forall};
@@ -36,7 +36,10 @@ where
 
         if features.kinded() {
             let term_res = ty_norm.check_kind(env.clone())?.into_kind()?;
-            self.annot.check_equal(&term_res.ret_kind())?;
+            let term_knd = term_res.ret_kind();
+            if self.annot != term_knd {
+                return Err(KindMismatch::new(self.annot.to_string(), term_knd.to_string()).into());
+            }
             premises.push(term_res.into());
         }
 

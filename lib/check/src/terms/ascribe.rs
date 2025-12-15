@@ -1,6 +1,6 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
-use errors::check_error::CheckError;
+use errors::{KindMismatch, TypeMismatch, check_error::CheckError};
 use grammar::{DerivationRule, symbols::Symbol};
 use std::collections::HashSet;
 use syntax::{env::Environment, language::Language, terms::Ascribe, types::TypeGroup};
@@ -39,12 +39,20 @@ where
         if features.kinded() {
             let ty_norm_res = ty_norm.check_kind(env.clone())?.into_kind()?;
             let ty_res = self.ty.check_kind(env.clone())?.into_kind()?;
-            ty_norm_res.ret_kind().check_equal(&ty_res.ret_kind())?;
+            let ty_norm_kind = ty_norm_res.ret_kind();
+            let ty_kind = ty_res.ret_kind();
+            if ty_kind != ty_norm_kind {
+                return Err(
+                    KindMismatch::new(ty_kind.to_string(), ty_norm_kind.to_string()).into(),
+                );
+            }
             premises.push(ty_norm_res.into());
             premises.push(ty_res.into());
         }
 
-        asc_norm.check_equal(&ty_norm)?;
+        if asc_norm != ty_norm {
+            return Err(TypeMismatch::new(asc_norm.to_string(), ty_norm.to_string()).into());
+        }
 
         let conc = TypingConclusion::new(env, self.clone(), self.ty.clone());
         let deriv = TypingDerivation::ascribe(conc, premises);

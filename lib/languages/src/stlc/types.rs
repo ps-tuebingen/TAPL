@@ -1,5 +1,4 @@
 use super::Stlc;
-use errors::TypeMismatch;
 use macros::{
     FromVariants, GrammarDescribe, LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes, SubstType,
 };
@@ -41,91 +40,91 @@ impl TypeTrait for Type {}
 
 impl TypeGroup for Type {
     type Lang = Stlc;
-    fn into_unit(self) -> Result<Unit<Stlc>, TypeMismatch> {
+    fn into_unit(self) -> Option<Unit<Stlc>> {
         if let Self::Unit(u) = self {
-            Ok(u)
+            Some(u)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Unit".to_owned()))
+            None
         }
     }
 
-    fn into_fun(self) -> Result<Fun<Stlc>, TypeMismatch> {
+    fn into_fun(self) -> Option<Fun<Stlc>> {
         if let Self::Fun(fun) = self {
-            Ok(fun)
+            Some(fun)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Function".to_owned()))
+            None
         }
     }
 
-    fn into_bool(self) -> Result<Bool<Stlc>, TypeMismatch> {
+    fn into_bool(self) -> Option<Bool<Stlc>> {
         if let Self::Bool(b) = self {
-            Ok(b)
+            Some(b)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Bool".to_owned()))
+            None
         }
     }
 
-    fn into_nat(self) -> Result<Nat<Stlc>, TypeMismatch> {
+    fn into_nat(self) -> Option<Nat<Stlc>> {
         if let Self::Nat(n) = self {
-            Ok(n)
+            Some(n)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Nat".to_owned()))
+            None
         }
     }
 
-    fn into_product(self) -> Result<Product<Stlc>, TypeMismatch> {
+    fn into_product(self) -> Option<Product<Stlc>> {
         if let Self::Prod(prod) = self {
-            Ok(prod)
+            Some(prod)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Product".to_owned()))
+            None
         }
     }
 
-    fn into_tuple(self) -> Result<Tuple<Stlc>, TypeMismatch> {
+    fn into_tuple(self) -> Option<Tuple<Stlc>> {
         if let Self::Tup(tup) = self {
-            Ok(tup)
+            Some(tup)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Tuple".to_owned()))
+            None
         }
     }
 
-    fn into_record(self) -> Result<Record<Stlc>, TypeMismatch> {
+    fn into_record(self) -> Option<Record<Stlc>> {
         if let Self::Record(rec) = self {
-            Ok(rec)
+            Some(rec)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Record".to_owned()))
+            None
         }
     }
 
-    fn into_sum(self) -> Result<Sum<Stlc>, TypeMismatch> {
+    fn into_sum(self) -> Option<Sum<Stlc>> {
         if let Self::Sum(sum) = self {
-            Ok(sum)
+            Some(sum)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Sum".to_owned()))
+            None
         }
     }
 
-    fn into_variant(self) -> Result<Variant<Stlc>, TypeMismatch> {
+    fn into_variant(self) -> Option<Variant<Stlc>> {
         if let Self::Variant(var) = self {
-            Ok(var)
+            Some(var)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Variant".to_owned()))
+            None
         }
     }
 
-    fn into_optional(self) -> Result<Optional<Stlc>, TypeMismatch> {
+    fn into_optional(self) -> Option<Optional<Stlc>> {
         if let Self::Optional(opt) = self {
-            Ok(opt)
+            Some(opt)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "Option".to_owned()))
+            None
         }
     }
 
-    fn into_list(self) -> Result<List<Stlc>, TypeMismatch> {
+    fn into_list(self) -> Option<List<Stlc>> {
         if let Self::List(list) = self {
-            Ok(list)
+            Some(list)
         } else {
-            Err(TypeMismatch::new(self.to_string(), "List".to_owned()))
+            None
         }
     }
 }

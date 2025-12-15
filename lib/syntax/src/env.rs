@@ -1,5 +1,4 @@
 use crate::{Location, Name, TypeVar, Var, kinds::Kind, language::Language};
-use errors::{FreeTypeVariable, FreeVariable, UndefinedLocation};
 use std::collections::HashMap;
 use std::fmt;
 
@@ -48,15 +47,12 @@ where
     }
 
     /// Look up the type of a variable
-    /// # Errors
-    /// returns an error if the variable was not found
-    pub fn get_var(&self, v: &Var) -> Result<Lang::Type, FreeVariable> {
+    pub fn get_var(&self, v: &Var) -> Option<Lang::Type> {
         let mut res = self.var_bindings.get(v);
         if res.is_none() {
             res = self.definitions.get(v);
         }
-
-        res.map_or_else(|| Err(FreeVariable::new(v)), |ty| Ok(ty.clone()))
+        res.cloned()
     }
 
     /// Add a kinded type variable to `self`
@@ -65,13 +61,8 @@ where
     }
 
     /// Look up the kind of a type variable
-    /// # Errors
-    /// Returns an error if the type variable was not found
-    pub fn get_tyvar_kind(&self, v: &TypeVar) -> Result<Kind, FreeTypeVariable> {
-        self.tyvar_bindings
-            .get(v)
-            .cloned()
-            .ok_or_else(|| FreeTypeVariable::new(v))
+    pub fn get_tyvar_kind(&self, v: &TypeVar) -> Option<Kind> {
+        self.tyvar_bindings.get(v).cloned()
     }
 
     /// Add a bounded type variable to `self`
@@ -80,13 +71,8 @@ where
     }
 
     /// Get the supertype of a type variable
-    /// # Errors
-    /// returns an error if the type variable was not found
-    pub fn get_tyvar_super(&self, v: &TypeVar) -> Result<Lang::Type, FreeTypeVariable> {
-        self.tyvar_super
-            .get(v)
-            .cloned()
-            .ok_or_else(|| FreeTypeVariable::new(v))
+    pub fn get_tyvar_super(&self, v: &TypeVar) -> Option<Lang::Type> {
+        self.tyvar_super.get(v).cloned()
     }
 
     /// Add a location to `self`
@@ -95,13 +81,8 @@ where
     }
 
     /// Get the type of a location
-    /// # Errors
-    /// returns an error if the location was not found
-    pub fn get_loc(&self, l: &Location) -> Result<Lang::Type, UndefinedLocation> {
-        self.location_bindings
-            .get(l)
-            .cloned()
-            .ok_or_else(|| UndefinedLocation::new(*l))
+    pub fn get_loc(&self, l: &Location) -> Option<Lang::Type> {
+        self.location_bindings.get(l).cloned()
     }
 }
 

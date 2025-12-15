@@ -19,7 +19,7 @@ where
     fn eval(self, env: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         let cond_res = self.if_cond.eval(env)?;
         let cond_val = cond_res.val();
-        let (next_step, branch_res) = if cond_val.clone().into_true().is_ok() {
+        let (next_step, branch_res) = if cond_val.clone().into_true().is_some() {
             (
                 EvalStep::if_true(
                     Self::new(
@@ -32,7 +32,7 @@ where
                 ),
                 self.then_term.clone().eval(env)?,
             )
-        } else if cond_val.clone().into_false().is_ok() {
+        } else if cond_val.clone().into_false().is_some() {
             (
                 EvalStep::if_false(
                     Self::new(

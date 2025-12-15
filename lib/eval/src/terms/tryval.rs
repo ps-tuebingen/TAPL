@@ -27,7 +27,7 @@ where
     fn eval(self, env: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         let term_res = self.term.eval(env)?;
         let term_val = term_res.val();
-        let (res_steps, res_val) = if let Ok(raise) = term_val.clone().into_raise() {
+        let (res_steps, res_val) = if let Some(raise) = term_val.clone().into_raise() {
             let raise_term: Lang::Term = (*raise.val).into();
             let next_term = App::new(Rc::unwrap_or_clone(self.handler.clone()), raise_term).into();
             let next_step = EvalStep::tryval_catch(

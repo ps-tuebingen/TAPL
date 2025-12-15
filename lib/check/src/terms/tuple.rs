@@ -1,6 +1,6 @@
 use crate::{Kindcheck, Normalize, Typecheck};
 use derivations::{Derivation, TypingConclusion, TypingDerivation};
-use errors::check_error::CheckError;
+use errors::{KindMismatch, check_error::CheckError};
 use grammar::DerivationRule;
 use std::collections::HashSet;
 use syntax::{env::Environment, language::Language, terms::Tuple, types::Tuple as TupleTy};
@@ -38,13 +38,15 @@ where
 
             if features.kinded() {
                 let ty_derivation = t_norm.check_kind(env.clone())?.into_kind()?;
+                let ty_knd = ty_derivation.ret_kind();
                 match knd {
                     None => {
-                        knd = Some(ty_derivation.ret_kind());
+                        knd = Some(ty_knd);
                     }
-                    Some(ref knd) => {
-                        ty_derivation.ret_kind().check_equal(knd)?;
+                    Some(ref knd) if *knd != ty_knd => {
+                        return Err(KindMismatch::new(ty_knd.to_string(), knd.to_string()).into());
                     }
+                    _ => (),
                 }
                 premises.push(ty_derivation.into());
             }
