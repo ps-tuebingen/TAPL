@@ -1,24 +1,45 @@
 use super::Value;
-use crate::{language::Language, terms::Nothing as NothingT};
+use crate::{
+    language::Language,
+    span::{Span, Spanned},
+    terms::Nothing as NothingT,
+};
 use std::fmt;
 
+/// Nothing value
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Nothing<Lang>
 where
     Lang: Language,
 {
+    /// Annotated type
     pub ty: Lang::Type,
+    /// Source location
+    pub span: Span,
 }
 
 impl<Lang> Nothing<Lang>
 where
     Lang: Language,
 {
-    pub fn new<Ty>(ty: Ty) -> Self
+    /// Create a new nothing value with given type and span
+    pub fn new<Ty>(ty: Ty, span: Span) -> Self
     where
         Ty: Into<Lang::Type>,
     {
-        Self { ty: ty.into() }
+        Self {
+            ty: ty.into(),
+            span,
+        }
+    }
+}
+
+impl<Lang> Spanned for Nothing<Lang>
+where
+    Lang: Language,
+{
+    fn span(&self) -> Span {
+        self.span
     }
 }
 
@@ -36,7 +57,7 @@ where
     Lang: Language,
 {
     fn from(not: Nothing<Lang>) -> Self {
-        Self::new(not.ty)
+        Self::new(not.ty, not.span)
     }
 }
 

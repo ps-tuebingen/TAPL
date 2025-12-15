@@ -3,25 +3,34 @@ use crate::{
     TypeVar, Var,
     kinds::Kind,
     language::Language,
+    span::{Span, Spanned},
     subst::{SubstTerm, SubstType},
 };
 use std::{fmt, rc::Rc};
 
+/// Term representing a type abstraction
+/// `\X::K.t`
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct TyLambda<Lang>
 where
     Lang: Language,
 {
+    /// Bound type variable
     pub var: TypeVar,
+    /// Annotated kind
     pub annot: Kind,
+    /// Body term
     pub term: Rc<Lang::Term>,
+    /// Source location
+    pub span: Span,
 }
 
 impl<Lang> TyLambda<Lang>
 where
     Lang: Language,
 {
-    pub fn new<T1>(v: &str, knd: Kind, t: T1) -> Self
+    /// Create a new tylambda with given type variable, kind annotation, body and span
+    pub fn new<T1>(v: &str, knd: Kind, t: T1, span: Span) -> Self
     where
         T1: Into<Lang::Term>,
     {
@@ -29,7 +38,17 @@ where
             var: v.into(),
             annot: knd,
             term: Rc::new(t.into()),
+            span,
         }
+    }
+}
+
+impl<Lang> Spanned for TyLambda<Lang>
+where
+    Lang: Language,
+{
+    fn span(&self) -> Span {
+        self.span
     }
 }
 
@@ -41,12 +60,9 @@ where
 {
     type Target = Self;
     type Lang = Lang;
-    fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
-        Self {
-            var: self.var,
-            annot: self.annot,
-            term: self.term.subst(v, t),
-        }
+    fn subst(mut self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
+        self.term = self.term.subst(v, t);
+        self
     }
 }
 
@@ -56,16 +72,11 @@ where
 {
     type Target = Self;
     type Lang = Lang;
-    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
-        if *v == self.var {
-            self
-        } else {
-            Self {
-                var: self.var,
-                annot: self.annot,
-                term: self.term.subst_type(v, ty),
-            }
+    fn subst_type(mut self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
+        if *v != self.var {
+            self.term = self.term.subst_type(v, ty);
         }
+        self
     }
 }
 

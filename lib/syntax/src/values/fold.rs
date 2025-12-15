@@ -1,21 +1,31 @@
 use super::Value;
-use crate::{language::Language, terms::Fold as FoldT};
+use crate::{
+    language::Language,
+    span::{Span, Spanned},
+    terms::Fold as FoldT,
+};
 use std::fmt;
 
+/// Fold value
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Fold<Lang>
 where
     Lang: Language,
 {
+    /// folded type
     pub ty: Lang::Type,
+    /// inner value
     pub val: Box<Lang::Value>,
+    /// source location
+    pub span: Span,
 }
 
 impl<Lang> Fold<Lang>
 where
     Lang: Language,
 {
-    pub fn new<Ty1, V1>(ty: Ty1, v: V1) -> Self
+    /// Create a new fold value with given type, inner value and span
+    pub fn new<Ty1, V1>(ty: Ty1, v: V1, span: Span) -> Self
     where
         Ty1: Into<Lang::Type>,
         V1: Into<Lang::Value>,
@@ -23,7 +33,17 @@ where
         Self {
             ty: ty.into(),
             val: Box::new(v.into()),
+            span,
         }
+    }
+}
+
+impl<Lang> Spanned for Fold<Lang>
+where
+    Lang: Language,
+{
+    fn span(&self) -> Span {
+        self.span
     }
 }
 
@@ -41,7 +61,7 @@ where
     Lang: Language,
 {
     fn from(fld: Fold<Lang>) -> Self {
-        Self::new(*fld.val, fld.ty)
+        Self::new(*fld.val, fld.ty, fld.span)
     }
 }
 

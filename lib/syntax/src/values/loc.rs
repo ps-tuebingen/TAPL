@@ -1,13 +1,22 @@
 use super::Value;
-use crate::{language::Language, terms::Loc as LocT};
+use crate::{
+    language::Language,
+    span::{Span, Spanned},
+    terms::Loc as LocT,
+};
 use std::{fmt, marker::PhantomData};
 
+/// Location value
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Loc<Lang>
 where
     Lang: Language,
 {
+    /// Memory Location
     pub loc: usize,
+    /// Source location
+    pub span: Span,
+    /// Save the type parameter
     phantom: PhantomData<Lang>,
 }
 
@@ -15,11 +24,23 @@ impl<Lang> Loc<Lang>
 where
     Lang: Language,
 {
-    #[must_use] pub const fn new(loc: usize) -> Self {
+    /// Create a new location value from a given location and span
+    #[must_use]
+    pub const fn new(loc: usize, span: Span) -> Self {
         Self {
             loc,
+            span,
             phantom: PhantomData,
         }
+    }
+}
+
+impl<Lang> Spanned for Loc<Lang>
+where
+    Lang: Language,
+{
+    fn span(&self) -> Span {
+        self.span
     }
 }
 
@@ -37,7 +58,7 @@ where
     Lang: Language,
 {
     fn from(loc: Loc<Lang>) -> Self {
-        Self::new(loc.loc)
+        Self::new(loc.loc, loc.span)
     }
 }
 

@@ -2,15 +2,20 @@ use super::Term;
 use crate::{
     TypeVar, Var,
     language::Language,
+    span::{Span, Spanned},
     subst::{SubstTerm, SubstType},
 };
 use std::{fmt, marker::PhantomData};
 
+/// Term representing `true`
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct True<Lang>
 where
     Lang: Language,
 {
+    /// Source location
+    pub span: Span,
+    /// Save the type parameter
     phantom: PhantomData<Lang>,
 }
 
@@ -18,19 +23,22 @@ impl<Lang> True<Lang>
 where
     Lang: Language,
 {
-    #[must_use] pub const fn new() -> Self {
+    /// Create a new true with given span
+    #[must_use]
+    pub const fn new(span: Span) -> Self {
         Self {
             phantom: PhantomData,
+            span,
         }
     }
 }
 
-impl<Lang> Default for True<Lang>
+impl<Lang> Spanned for True<Lang>
 where
     Lang: Language,
 {
-    fn default() -> Self {
-        Self::new()
+    fn span(&self) -> Span {
+        self.span
     }
 }
 

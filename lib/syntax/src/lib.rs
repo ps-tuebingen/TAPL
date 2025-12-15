@@ -4,6 +4,7 @@ pub mod eval_context;
 pub mod kinds;
 pub mod language;
 pub mod program;
+pub mod span;
 pub mod subst;
 pub mod terms;
 pub mod types;

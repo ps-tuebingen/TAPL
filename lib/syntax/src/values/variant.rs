@@ -1,22 +1,34 @@
 use super::Value;
-use crate::{Label, language::Language, terms::Variant as VariantT};
+use crate::{
+    Label,
+    language::Language,
+    span::{Span, Spanned},
+    terms::Variant as VariantT,
+};
 use std::fmt;
 
+/// Variant value
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Variant<Lang>
 where
     Lang: Language,
 {
+    /// Variant label
     pub label: Label,
+    /// Inner value
     pub val: Box<Lang::Value>,
+    /// annotated type
     ty: Lang::Type,
+    /// Source location
+    pub span: Span,
 }
 
 impl<Lang> Variant<Lang>
 where
     Lang: Language,
 {
-    pub fn new<V, Ty>(lb: &str, val: V, ty: Ty) -> Self
+    /// Create a new variant value from a given label, value, type and span
+    pub fn new<V, Ty>(lb: &str, val: V, ty: Ty, span: Span) -> Self
     where
         V: Into<Lang::Value>,
         Ty: Into<Lang::Type>,
@@ -25,7 +37,17 @@ where
             label: lb.to_owned(),
             val: Box::new(val.into()),
             ty: ty.into(),
+            span,
         }
+    }
+}
+
+impl<Lang> Spanned for Variant<Lang>
+where
+    Lang: Language,
+{
+    fn span(&self) -> Span {
+        self.span
     }
 }
 
@@ -43,7 +65,7 @@ where
     Lang: Language,
 {
     fn from(var: Variant<Lang>) -> Self {
-        Self::new(&var.label, *var.val, var.ty)
+        Self::new(&var.label, *var.val, var.ty, var.span)
     }
 }
 

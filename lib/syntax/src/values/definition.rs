@@ -1,4 +1,4 @@
-use crate::{definition::Definition, language::Language};
+use crate::{definition::Definition, language::Language, span::Span};
 use std::fmt;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -9,6 +9,7 @@ where
     name: String,
     annot: Lang::Type,
     body: Lang::Value,
+    span: Span,
 }
 
 impl<Lang> From<DefinitionValue<Lang>> for Definition<Lang>
@@ -20,6 +21,7 @@ where
             name: def.name,
             annot: def.annot,
             body: def.body.into(),
+            span: def.span,
         }
     }
 }

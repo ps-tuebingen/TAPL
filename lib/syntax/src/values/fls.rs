@@ -1,12 +1,20 @@
 use super::Value;
-use crate::{language::Language, terms::False as FalseT};
+use crate::{
+    language::Language,
+    span::{Span, Spanned},
+    terms::False as FalseT,
+};
 use std::{fmt, marker::PhantomData};
 
+/// False Value
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct False<Lang>
 where
     Lang: Language,
 {
+    /// Source location
+    span: Span,
+    /// Save the type parameter
     phantom: PhantomData<Lang>,
 }
 
@@ -14,19 +22,22 @@ impl<Lang> False<Lang>
 where
     Lang: Language,
 {
-    #[must_use] pub const fn new() -> Self {
+    /// Create a false value with given span
+    #[must_use]
+    pub const fn new(span: Span) -> Self {
         Self {
+            span,
             phantom: PhantomData,
         }
     }
 }
 
-impl<Lang> Default for False<Lang>
+impl<Lang> Spanned for False<Lang>
 where
     Lang: Language,
 {
-    fn default() -> Self {
-        Self::new()
+    fn span(&self) -> Span {
+        self.span
     }
 }
 
@@ -43,8 +54,8 @@ impl<Lang> From<False<Lang>> for FalseT<Lang>
 where
     Lang: Language,
 {
-    fn from(_: False<Lang>) -> Self {
-        Self::new()
+    fn from(fls: False<Lang>) -> Self {
+        Self::new(fls.span)
     }
 }
 

@@ -2,24 +2,31 @@ use super::Term;
 use crate::{
     TypeVar, Var,
     language::Language,
+    span::{Span, Spanned},
     subst::{SubstTerm, SubstType},
 };
 use std::{fmt, rc::Rc};
 
+/// Term representing a right injection into a sum
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Right<Lang>
 where
     Lang: Language,
 {
+    /// Term to inject
     pub right_term: Rc<Lang::Term>,
+    /// Annotated sum type
     pub ty: Lang::Type,
+    /// Source location
+    pub span: Span,
 }
 
 impl<Lang> Right<Lang>
 where
     Lang: Language,
 {
-    pub fn new<T1, Ty1>(right_t: T1, ty: Ty1) -> Self
+    /// Create a new right with given term, type and span
+    pub fn new<T1, Ty1>(right_t: T1, ty: Ty1, span: Span) -> Self
     where
         T1: Into<Lang::Term>,
         Ty1: Into<Lang::Type>,
@@ -27,7 +34,17 @@ where
         Self {
             right_term: Rc::new(right_t.into()),
             ty: ty.into(),
+            span,
         }
+    }
+}
+
+impl<Lang> Spanned for Right<Lang>
+where
+    Lang: Language,
+{
+    fn span(&self) -> Span {
+        self.span
     }
 }
 
@@ -39,11 +56,9 @@ where
 {
     type Target = Self;
     type Lang = Lang;
-    fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
-        Self {
-            right_term: self.right_term.subst(v, t),
-            ty: self.ty,
-        }
+    fn subst(mut self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
+        self.right_term = self.right_term.subst(v, t);
+        self
     }
 }
 
@@ -53,11 +68,10 @@ where
 {
     type Target = Self;
     type Lang = Lang;
-    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
-        Self {
-            right_term: self.right_term.subst_type(v, ty),
-            ty: self.ty.subst_type(v, ty),
-        }
+    fn subst_type(mut self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
+        self.right_term = self.right_term.subst_type(v, ty);
+        self.ty = self.ty.subst_type(v, ty);
+        self
     }
 }
 

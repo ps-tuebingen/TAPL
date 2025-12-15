@@ -2,16 +2,22 @@ use super::Term;
 use crate::{
     TypeVar, Var,
     language::Language,
+    span::{Span, Spanned},
     subst::{SubstTerm, SubstType},
 };
 use std::{fmt, marker::PhantomData};
 
+/// Term representing a number
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Num<Lang>
 where
     Lang: Language,
 {
+    /// Number
     pub num: i64,
+    /// Source location
+    pub span: Span,
+    /// Save the type parameter
     phantom: PhantomData<Lang>,
 }
 
@@ -19,11 +25,23 @@ impl<Lang> Num<Lang>
 where
     Lang: Language,
 {
-    #[must_use] pub const fn new(num: i64) -> Self {
+    #[must_use]
+    /// Create a new Num with given number and span
+    pub const fn new(num: i64, span: Span) -> Self {
         Self {
             num,
+            span,
             phantom: PhantomData,
         }
+    }
+}
+
+impl<Lang> Spanned for Num<Lang>
+where
+    Lang: Language,
+{
+    fn span(&self) -> Span {
+        self.span
     }
 }
 

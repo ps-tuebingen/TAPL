@@ -2,35 +2,43 @@ use super::Term;
 use crate::{
     TypeVar, Var,
     language::Language,
+    span::{Span, Spanned},
     subst::{SubstTerm, SubstType},
 };
 use std::{fmt, marker::PhantomData};
 
+/// Term representing `false`
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct False<Lang>
 where
     Lang: Language,
 {
+    /// saves the type parameter
     phantom: PhantomData<Lang>,
+    /// Source location
+    span: Span,
 }
 
 impl<Lang> False<Lang>
 where
     Lang: Language,
 {
-    #[must_use] pub const fn new() -> Self {
+    #[must_use]
+    /// Create a new `false` with given source location
+    pub const fn new(span: Span) -> Self {
         Self {
             phantom: PhantomData,
+            span,
         }
     }
 }
 
-impl<Lang> Default for False<Lang>
+impl<Lang> Spanned for False<Lang>
 where
     Lang: Language,
 {
-    fn default() -> Self {
-        Self::new()
+    fn span(&self) -> Span {
+        self.span
     }
 }
 
@@ -54,9 +62,7 @@ where
     type Target = Self;
     type Lang = Lang;
     fn subst_type(self, _: &TypeVar, _: &<Lang as Language>::Type) -> Self::Target {
-        Self {
-            phantom: PhantomData,
-        }
+        self
     }
 }
 

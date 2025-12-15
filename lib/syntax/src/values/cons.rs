@@ -1,21 +1,33 @@
-use crate::{language::Language, terms::Cons as ConsT, values::Value};
+use crate::{
+    language::Language,
+    span::{Span, Spanned},
+    terms::Cons as ConsT,
+    values::Value,
+};
 use std::fmt;
 
+/// List Value
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Cons<Lang>
 where
     Lang: Language,
 {
+    /// List head
     pub head: Box<Lang::Value>,
+    /// List tail
     pub tail: Box<Lang::Value>,
+    /// Type annotation
     pub ty: Lang::Type,
+    /// Source location
+    pub span: Span,
 }
 
 impl<Lang> Cons<Lang>
 where
     Lang: Language,
 {
-    pub fn new<V1, V2, Typ>(hd: V1, tl: V2, ty: Typ) -> Self
+    /// Create a new cons value with given head, tail, type and span
+    pub fn new<V1, V2, Typ>(hd: V1, tl: V2, ty: Typ, span: Span) -> Self
     where
         V1: Into<Lang::Value>,
         V2: Into<Lang::Value>,
@@ -25,7 +37,17 @@ where
             head: Box::new(hd.into()),
             tail: Box::new(tl.into()),
             ty: ty.into(),
+            span,
         }
+    }
+}
+
+impl<Lang> Spanned for Cons<Lang>
+where
+    Lang: Language,
+{
+    fn span(&self) -> Span {
+        self.span
     }
 }
 
@@ -43,7 +65,7 @@ where
     Lang: Language,
 {
     fn from(c: Cons<Lang>) -> Self {
-        Self::new(*c.head, *c.tail, c.ty)
+        Self::new(*c.head, *c.tail, c.ty, c.span)
     }
 }
 

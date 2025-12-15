@@ -1,13 +1,22 @@
 use super::Value;
-use crate::{language::Language, terms::Exception as ExceptionT};
+use crate::{
+    language::Language,
+    span::{Span, Spanned},
+    terms::Exception as ExceptionT,
+};
 use std::{fmt, marker::PhantomData};
 
+/// Exception value
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Exception<Lang>
 where
     Lang: Language,
 {
+    /// Annotated type
     pub ty: Lang::Type,
+    /// Source location
+    pub span: Span,
+    /// Save the type parameter
     phantom: PhantomData<Lang::Term>,
 }
 
@@ -15,14 +24,25 @@ impl<Lang> Exception<Lang>
 where
     Lang: Language,
 {
-    pub fn new<Ty1>(ty: Ty1) -> Self
+    /// Create a new Exception value with given type and span
+    pub fn new<Ty1>(ty: Ty1, span: Span) -> Self
     where
         Ty1: Into<Lang::Type>,
     {
         Self {
             ty: ty.into(),
+            span,
             phantom: PhantomData,
         }
+    }
+}
+
+impl<Lang> Spanned for Exception<Lang>
+where
+    Lang: Language,
+{
+    fn span(&self) -> Span {
+        self.span
     }
 }
 
@@ -40,7 +60,7 @@ where
     Lang: Language,
 {
     fn from(ex: Exception<Lang>) -> Self {
-        Self::new(ex.ty)
+        Self::new(ex.ty, ex.span)
     }
 }
 

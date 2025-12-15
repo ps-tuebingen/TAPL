@@ -2,27 +2,45 @@ use super::Term;
 use crate::{
     TypeVar, Var,
     language::Language,
+    span::{Span, Spanned},
     subst::{SubstTerm, SubstType},
 };
 use std::fmt;
 
+/// Term representing an empty list
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Nil<Lang>
 where
     Lang: Language,
 {
+    /// Annotated type
     pub ty: Lang::Type,
+    /// Source location
+    pub span: Span,
 }
 
 impl<Lang> Nil<Lang>
 where
     Lang: Language,
 {
-    pub fn new<Typ>(ty: Typ) -> Self
+    /// Create a new nil with given type and span
+    pub fn new<Typ>(ty: Typ, span: Span) -> Self
     where
         Typ: Into<Lang::Type>,
     {
-        Self { ty: ty.into() }
+        Self {
+            ty: ty.into(),
+            span,
+        }
+    }
+}
+
+impl<Lang> Spanned for Nil<Lang>
+where
+    Lang: Language,
+{
+    fn span(&self) -> Span {
+        self.span
     }
 }
 
@@ -45,10 +63,9 @@ where
 {
     type Target = Self;
     type Lang = Lang;
-    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
-        Self {
-            ty: self.ty.subst_type(v, ty),
-        }
+    fn subst_type(mut self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
+        self.ty = self.ty.subst_type(v, ty);
+        self
     }
 }
 

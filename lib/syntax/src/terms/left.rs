@@ -2,24 +2,31 @@ use super::Term;
 use crate::{
     TypeVar, Var,
     language::Language,
+    span::{Span, Spanned},
     subst::{SubstTerm, SubstType},
 };
 use std::{fmt, rc::Rc};
 
+/// Term representing left injection into a sum
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Left<Lang>
 where
     Lang: Language,
 {
+    /// inner term
     pub left_term: Rc<Lang::Term>,
+    /// annotated sum type
     pub ty: Lang::Type,
+    /// Source location
+    pub span: Span,
 }
 
 impl<Lang> Left<Lang>
 where
     Lang: Language,
 {
-    pub fn new<L, Typ>(left_t: L, ty: Typ) -> Self
+    /// Create a new left term with given term, type and span
+    pub fn new<L, Typ>(left_t: L, ty: Typ, span: Span) -> Self
     where
         L: Into<Lang::Term>,
         Typ: Into<Lang::Type>,
@@ -27,7 +34,17 @@ where
         Self {
             left_term: Rc::new(left_t.into()),
             ty: ty.into(),
+            span,
         }
+    }
+}
+
+impl<Lang> Spanned for Left<Lang>
+where
+    Lang: Language,
+{
+    fn span(&self) -> Span {
+        self.span
     }
 }
 
@@ -43,6 +60,7 @@ where
         Self {
             left_term: self.left_term.subst(v, t),
             ty: self.ty,
+            span: self.span,
         }
     }
 }
@@ -57,6 +75,7 @@ where
         Self {
             left_term: self.left_term.subst_type(v, ty),
             ty: self.ty.subst_type(v, ty),
+            span: self.span,
         }
     }
 }

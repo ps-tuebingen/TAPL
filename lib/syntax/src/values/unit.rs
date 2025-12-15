@@ -1,12 +1,20 @@
 use super::Value;
-use crate::{language::Language, terms::Unit as UnitT};
+use crate::{
+    language::Language,
+    span::{Span, Spanned},
+    terms::Unit as UnitT,
+};
 use std::{fmt, marker::PhantomData};
 
+/// Unit value
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Unit<Lang>
 where
     Lang: Language,
 {
+    /// Source location
+    pub span: Span,
+    /// Save the type parameter
     phantom: PhantomData<Lang>,
 }
 
@@ -14,19 +22,22 @@ impl<Lang> Unit<Lang>
 where
     Lang: Language,
 {
-    #[must_use] pub const fn new() -> Self {
+    /// Create a new unit value from a given span
+    #[must_use]
+    pub const fn new(span: Span) -> Self {
         Self {
             phantom: PhantomData,
+            span,
         }
     }
 }
 
-impl<Lang> Default for Unit<Lang>
+impl<Lang> Spanned for Unit<Lang>
 where
     Lang: Language,
 {
-    fn default() -> Self {
-        Self::new()
+    fn span(&self) -> Span {
+        self.span
     }
 }
 
@@ -43,8 +54,8 @@ impl<Lang> From<Unit<Lang>> for UnitT<Lang>
 where
     Lang: Language,
 {
-    fn from(_: Unit<Lang>) -> Self {
-        Self::new()
+    fn from(u: Unit<Lang>) -> Self {
+        Self::new(u.span)
     }
 }
 

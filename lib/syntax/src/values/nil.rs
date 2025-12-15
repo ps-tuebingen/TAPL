@@ -1,24 +1,45 @@
 use super::Value;
-use crate::{language::Language, terms::Nil as NilT};
+use crate::{
+    language::Language,
+    span::{Span, Spanned},
+    terms::Nil as NilT,
+};
 use std::fmt;
 
+/// Empty list value
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Nil<Lang>
 where
     Lang: Language,
 {
+    /// Annotated type
     pub ty: Lang::Type,
+    /// Source location
+    pub span: Span,
 }
 
 impl<Lang> Nil<Lang>
 where
     Lang: Language,
 {
-    pub fn new<Ty>(ty: Ty) -> Self
+    /// Create a new Nil value with given type and span
+    pub fn new<Ty>(ty: Ty, span: Span) -> Self
     where
         Ty: Into<Lang::Type>,
     {
-        Self { ty: ty.into() }
+        Self {
+            ty: ty.into(),
+            span,
+        }
+    }
+}
+
+impl<Lang> Spanned for Nil<Lang>
+where
+    Lang: Language,
+{
+    fn span(&self) -> Span {
+        self.span
     }
 }
 
@@ -36,7 +57,7 @@ where
     Lang: Language,
 {
     fn from(nil: Nil<Lang>) -> Self {
-        Self::new(nil.ty)
+        Self::new(nil.ty, nil.span)
     }
 }
 

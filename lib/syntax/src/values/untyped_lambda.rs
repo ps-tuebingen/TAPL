@@ -1,28 +1,49 @@
 use super::Value;
-use crate::{Var, language::Language, terms::UntypedLambda as UntypedLambdaT};
+use crate::{
+    Var,
+    language::Language,
+    span::{Span, Spanned},
+    terms::UntypedLambda as UntypedLambdaT,
+};
 use std::fmt;
 
+/// Untyped lambda value
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct UntypedLambda<Lang>
 where
     Lang: Language,
 {
+    /// bound variable
     pub var: Var,
+    /// body term
     pub body: Lang::Term,
+    /// Source location
+    pub span: Span,
 }
 
 impl<Lang> UntypedLambda<Lang>
 where
     Lang: Language,
 {
-    pub fn new<T1>(v: &str, bd: T1) -> Self
+    /// Create a new untyped lambda value from bound variable, body and span
+    pub fn new<T1>(v: &str, bd: T1, span: Span) -> Self
     where
         T1: Into<Lang::Term>,
     {
         Self {
             var: v.to_owned(),
             body: bd.into(),
+            span,
         }
+    }
+}
+
+impl<Lang> Spanned for UntypedLambda<Lang>
+where
+    Lang: Language,
+{
+    fn span(&self) -> Span {
+        self.span
     }
 }
 
@@ -40,7 +61,7 @@ where
     Lang: Language,
 {
     fn from(lam: UntypedLambda<Lang>) -> Self {
-        Self::new(&lam.var, lam.body)
+        Self::new(&lam.var, lam.body, lam.span)
     }
 }
 

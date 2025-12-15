@@ -1,21 +1,31 @@
 use super::Value;
-use crate::{language::Language, terms::Right as RightT};
+use crate::{
+    language::Language,
+    span::{Span, Spanned},
+    terms::Right as RightT,
+};
 use std::fmt;
 
+/// Right injection value
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Right<Lang>
 where
     Lang: Language,
 {
+    /// Right value
     pub right_val: Box<Lang::Value>,
+    /// Annotated type
     pub ty: Lang::Type,
+    /// Source location
+    pub span: Span,
 }
 
 impl<Lang> Right<Lang>
 where
     Lang: Language,
 {
-    pub fn new<V1, Ty1>(val: V1, ty: Ty1) -> Self
+    /// Create a new right value with given inner value, type and span
+    pub fn new<V1, Ty1>(val: V1, ty: Ty1, span: Span) -> Self
     where
         V1: Into<Lang::Value>,
         Ty1: Into<Lang::Type>,
@@ -23,7 +33,17 @@ where
         Self {
             right_val: Box::new(val.into()),
             ty: ty.into(),
+            span,
         }
+    }
+}
+
+impl<Lang> Spanned for Right<Lang>
+where
+    Lang: Language,
+{
+    fn span(&self) -> Span {
+        self.span
     }
 }
 
@@ -41,7 +61,7 @@ where
     Lang: Language,
 {
     fn from(right: Right<Lang>) -> Self {
-        Self::new(*right.right_val, right.ty)
+        Self::new(*right.right_val, right.ty, right.span)
     }
 }
 

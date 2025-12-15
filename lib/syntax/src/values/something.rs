@@ -1,26 +1,45 @@
 use super::Value;
-use crate::{language::Language, terms::Something as SomethingT};
+use crate::{
+    language::Language,
+    span::{Span, Spanned},
+    terms::Something as SomethingT,
+};
 use std::fmt;
 
+/// Something value
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Something<Lang>
 where
     Lang: Language,
 {
+    /// Inner value
     pub val: Box<Lang::Value>,
+    /// Source location
+    pub span: Span,
 }
 
 impl<Lang> Something<Lang>
 where
     Lang: Language,
 {
-    pub fn new<V1>(v: V1) -> Self
+    /// Create a new Something value with given inner value and span
+    pub fn new<V1>(v: V1, span: Span) -> Self
     where
         V1: Into<Lang::Value>,
     {
         Self {
             val: Box::new(v.into()),
+            span,
         }
+    }
+}
+
+impl<Lang> Spanned for Something<Lang>
+where
+    Lang: Language,
+{
+    fn span(&self) -> Span {
+        self.span
     }
 }
 
@@ -38,7 +57,7 @@ where
     Lang: Language,
 {
     fn from(something: Something<Lang>) -> Self {
-        Self::new(*something.val)
+        Self::new(*something.val, something.span)
     }
 }
 

@@ -2,24 +2,31 @@ use super::Term;
 use crate::{
     TypeVar, Var,
     language::Language,
+    span::{Span, Spanned},
     subst::{SubstTerm, SubstType},
 };
 use std::{fmt, rc::Rc};
 
+/// Term representing getting the tail of a list
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Tail<Lang>
 where
     Lang: Language,
 {
+    /// The list term
     pub term: Rc<Lang::Term>,
+    /// Annotated type
     pub ty: Lang::Type,
+    /// Source Location
+    pub span: Span,
 }
 
 impl<Lang> Tail<Lang>
 where
     Lang: Language,
 {
-    pub fn new<T1, Ty1>(t: T1, ty: Ty1) -> Self
+    /// Create a new tail term from inner term, type and span
+    pub fn new<T1, Ty1>(t: T1, ty: Ty1, span: Span) -> Self
     where
         T1: Into<Lang::Term>,
         Ty1: Into<Lang::Type>,
@@ -27,7 +34,17 @@ where
         Self {
             term: Rc::new(t.into()),
             ty: ty.into(),
+            span,
         }
+    }
+}
+
+impl<Lang> Spanned for Tail<Lang>
+where
+    Lang: Language,
+{
+    fn span(&self) -> Span {
+        self.span
     }
 }
 
@@ -39,11 +56,9 @@ where
 {
     type Target = Self;
     type Lang = Lang;
-    fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
-        Self {
-            term: self.term.subst(v, t),
-            ty: self.ty,
-        }
+    fn subst(mut self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
+        self.term = self.term.subst(v, t);
+        self
     }
 }
 
@@ -53,11 +68,10 @@ where
 {
     type Target = Self;
     type Lang = Lang;
-    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
-        Self {
-            term: self.term.subst_type(v, ty),
-            ty: self.ty.subst_type(v, ty),
-        }
+    fn subst_type(mut self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
+        self.term = self.term.subst_type(v, ty);
+        self.ty = self.ty.subst_type(v, ty);
+        self
     }
 }
 

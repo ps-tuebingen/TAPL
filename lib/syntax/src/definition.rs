@@ -1,4 +1,4 @@
-use crate::{Name, language::Language, terms::Term};
+use crate::{Name, language::Language, span::Span};
 use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -9,13 +9,14 @@ where
     pub name: Name,
     pub annot: Lang::Type,
     pub body: Lang::Term,
+    pub span: Span,
 }
 
 impl<Lang> Definition<Lang>
 where
     Lang: Language,
 {
-    pub fn new<T, Ty>(name: &str, annot: Ty, body: T) -> Self
+    pub fn new<T, Ty>(name: &str, annot: Ty, body: T, span: Span) -> Self
     where
         T: Into<Lang::Term>,
         Ty: Into<Lang::Type>,
@@ -24,6 +25,7 @@ where
             name: name.to_owned(),
             annot: annot.into(),
             body: body.into(),
+            span,
         }
     }
 }
@@ -36,5 +38,3 @@ where
         write!(f, "def {}::{}:={};", self.name, self.annot, self.body)
     }
 }
-
-impl<Lang> Term for Definition<Lang> where Lang: Language {}

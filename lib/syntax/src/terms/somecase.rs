@@ -2,26 +2,35 @@ use super::Term;
 use crate::{
     TypeVar, Var,
     language::Language,
+    span::{Span, Spanned},
     subst::{SubstTerm, SubstType},
 };
 use std::{fmt, rc::Rc};
 
+/// Term representing a case on an option
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct SomeCase<Lang>
 where
     Lang: Language,
 {
+    /// Term to match against
     pub bound_term: Rc<Lang::Term>,
+    /// None case
     pub none_term: Rc<Lang::Term>,
+    /// Bound variable for Some case
     pub some_var: Var,
+    /// Some case (with [`Self::some_var`] in scope)
     pub some_term: Rc<Lang::Term>,
+    /// Source location
+    pub span: Span,
 }
 
 impl<Lang> SomeCase<Lang>
 where
     Lang: Language,
 {
-    pub fn new<T1, T2, T3>(bound: T1, none: T2, v: &str, some: T3) -> Self
+    /// Create a new some case with bound term, none rhs, bound some variable, some rhs and span
+    pub fn new<T1, T2, T3>(bound: T1, none: T2, v: &str, some: T3, span: Span) -> Self
     where
         T1: Into<Lang::Term>,
         T2: Into<Lang::Term>,
@@ -32,7 +41,17 @@ where
             none_term: Rc::new(none.into()),
             some_var: v.to_owned(),
             some_term: Rc::new(some.into()),
+            span,
         }
+    }
+}
+
+impl<Lang> Spanned for SomeCase<Lang>
+where
+    Lang: Language,
+{
+    fn span(&self) -> Span {
+        self.span
     }
 }
 
@@ -44,22 +63,13 @@ where
 {
     type Target = Self;
     type Lang = Lang;
-    fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
-        if *v == self.some_var {
-            Self {
-                bound_term: self.bound_term.subst(v, t),
-                none_term: self.none_term.subst(v, t),
-                some_var: self.some_var,
-                some_term: self.some_term,
-            }
-        } else {
-            Self {
-                bound_term: self.bound_term.subst(v, t),
-                none_term: self.none_term.subst(v, t),
-                some_var: self.some_var,
-                some_term: self.some_term.subst(v, t),
-            }
+    fn subst(mut self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
+        self.bound_term = self.bound_term.subst(v, t);
+        self.none_term = self.none_term.subst(v, t);
+        if *v != self.some_var {
+            self.some_term = self.some_term.subst(v, t);
         }
+        self
     }
 }
 
@@ -69,13 +79,11 @@ where
 {
     type Target = Self;
     type Lang = Lang;
-    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
-        Self {
-            bound_term: self.bound_term.subst_type(v, ty),
-            none_term: self.none_term.subst_type(v, ty),
-            some_var: self.some_var,
-            some_term: self.some_term.subst_type(v, ty),
-        }
+    fn subst_type(mut self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
+        self.bound_term = self.bound_term.subst_type(v, ty);
+        self.none_term = self.none_term.subst_type(v, ty);
+        self.some_term = self.some_term.subst_type(v, ty);
+        self
     }
 }
 

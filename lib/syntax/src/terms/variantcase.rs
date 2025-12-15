@@ -2,30 +2,38 @@ use super::Term;
 use crate::{
     Label, TypeVar, Var,
     language::Language,
+    span::{Span, Spanned},
     subst::{SubstTerm, SubstType},
 };
 use std::{fmt, rc::Rc};
 
+/// Term representing a case on variant types
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct VariantCase<Lang>
 where
     Lang: Language,
 {
+    /// The bound term
     pub bound_term: Rc<Lang::Term>,
+    /// match patterns
     pub patterns: Vec<VariantPattern<Lang>>,
+    /// Source location
+    pub span: Span,
 }
 
 impl<Lang> VariantCase<Lang>
 where
     Lang: Language,
 {
-    pub fn new<T1>(bound: T1, pts: Vec<VariantPattern<Lang>>) -> Self
+    /// Create a new variant case with given bound term, patterns and source location
+    pub fn new<T1>(bound: T1, pts: Vec<VariantPattern<Lang>>, span: Span) -> Self
     where
         T1: Into<Lang::Term>,
     {
         Self {
             bound_term: Rc::new(bound.into()),
             patterns: pts,
+            span,
         }
     }
 }
@@ -38,13 +46,14 @@ where
     pub label: Label,
     pub bound_var: Var,
     pub rhs: Rc<Lang::Term>,
+    pub span: Span,
 }
 
 impl<Lang> VariantPattern<Lang>
 where
     Lang: Language,
 {
-    pub fn new<T1>(lb: &str, bound: &str, rhs: T1) -> Self
+    pub fn new<T1>(lb: &str, bound: &str, rhs: T1, span: Span) -> Self
     where
         T1: Into<Lang::Term>,
     {
@@ -52,7 +61,17 @@ where
             label: lb.to_owned(),
             bound_var: bound.to_owned(),
             rhs: Rc::new(rhs.into()),
+            span,
         }
+    }
+}
+
+impl<Lang> Spanned for VariantCase<Lang>
+where
+    Lang: Language,
+{
+    fn span(&self) -> Span {
+        self.span
     }
 }
 
@@ -64,11 +83,10 @@ where
 {
     type Target = Self;
     type Lang = Lang;
-    fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
-        Self {
-            bound_term: self.bound_term.subst(v, t),
-            patterns: self.patterns.into_iter().map(|pt| pt.subst(v, t)).collect(),
-        }
+    fn subst(mut self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
+        self.bound_term = self.bound_term.subst(v, t);
+        self.patterns = self.patterns.into_iter().map(|pt| pt.subst(v, t)).collect();
+        self
     }
 }
 
@@ -78,15 +96,14 @@ where
 {
     type Target = Self;
     type Lang = Lang;
-    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
-        Self {
-            bound_term: self.bound_term.subst_type(v, ty),
-            patterns: self
-                .patterns
-                .into_iter()
-                .map(|pt| pt.subst_type(v, ty))
-                .collect(),
-        }
+    fn subst_type(mut self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
+        self.bound_term = self.bound_term.subst_type(v, ty);
+        self.patterns = self
+            .patterns
+            .into_iter()
+            .map(|pt| pt.subst_type(v, ty))
+            .collect();
+        self
     }
 }
 
@@ -96,16 +113,11 @@ where
 {
     type Target = Self;
     type Lang = Lang;
-    fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
-        if *v == self.bound_var {
-            self
-        } else {
-            Self {
-                label: self.label,
-                bound_var: self.bound_var,
-                rhs: self.rhs.subst(v, t),
-            }
+    fn subst(mut self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
+        if *v != self.bound_var {
+            self.rhs = self.rhs.subst(v, t);
         }
+        self
     }
 }
 
@@ -115,12 +127,9 @@ where
 {
     type Target = Self;
     type Lang = Lang;
-    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
-        Self {
-            label: self.label,
-            bound_var: self.bound_var,
-            rhs: self.rhs.subst_type(v, ty),
-        }
+    fn subst_type(mut self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
+        self.rhs = self.rhs.subst_type(v, ty);
+        self
     }
 }
 

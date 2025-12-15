@@ -2,24 +2,32 @@ use super::Term;
 use crate::{
     TypeVar, Var,
     language::Language,
+    span::{Span, Spanned},
     subst::{SubstTerm, SubstType},
 };
 use std::{fmt, rc::Rc};
 
+/// Term representing try-raise
+/// used with [`crate::terms::raise::Raise`]
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct TryWithVal<Lang>
 where
     Lang: Language,
 {
+    /// Term that might raise an exception
     pub term: Rc<Lang::Term>,
+    /// Exception handler
     pub handler: Rc<Lang::Term>,
+    /// Source location
+    pub span: Span,
 }
 
 impl<Lang> TryWithVal<Lang>
 where
     Lang: Language,
 {
-    pub fn new<T1, T2>(t: T1, h: T2) -> Self
+    /// Create a new tryval with given inner term, handler and span
+    pub fn new<T1, T2>(t: T1, h: T2, span: Span) -> Self
     where
         T1: Into<Lang::Term>,
         T2: Into<Lang::Term>,
@@ -27,7 +35,17 @@ where
         Self {
             term: Rc::new(t.into()),
             handler: Rc::new(h.into()),
+            span,
         }
+    }
+}
+
+impl<Lang> Spanned for TryWithVal<Lang>
+where
+    Lang: Language,
+{
+    fn span(&self) -> Span {
+        self.span
     }
 }
 
@@ -39,11 +57,10 @@ where
 {
     type Target = Self;
     type Lang = Lang;
-    fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
-        Self {
-            term: self.term.subst(v, t),
-            handler: self.handler.subst(v, t),
-        }
+    fn subst(mut self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
+        self.term = self.term.subst(v, t);
+        self.handler = self.handler.subst(v, t);
+        self
     }
 }
 
@@ -53,11 +70,10 @@ where
 {
     type Target = Self;
     type Lang = Lang;
-    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
-        Self {
-            term: self.term.subst_type(v, ty),
-            handler: self.handler.subst_type(v, ty),
-        }
+    fn subst_type(mut self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
+        self.term = self.term.subst_type(v, ty);
+        self.handler = self.handler.subst_type(v, ty);
+        self
     }
 }
 

@@ -1,22 +1,34 @@
 use super::Value;
-use crate::{Var, language::Language, terms::Lambda as LambdaT};
+use crate::{
+    Var,
+    language::Language,
+    span::{Span, Spanned},
+    terms::Lambda as LambdaT,
+};
 use std::fmt;
 
+/// Lambda value
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Lambda<Lang>
 where
     Lang: Language,
 {
+    /// bound variable
     pub var: Var,
+    /// Type annotation
     pub annot: Lang::Type,
+    /// Body term
     pub body: Lang::Term,
+    /// Source location
+    pub span: Span,
 }
 
 impl<Lang> Lambda<Lang>
 where
     Lang: Language,
 {
-    pub fn new<Ty, T>(v: &str, ty: Ty, bd: T) -> Self
+    /// Create a new lambda value with given variable, type, body and span
+    pub fn new<Ty, T>(v: &str, ty: Ty, bd: T, span: Span) -> Self
     where
         T: Into<Lang::Term>,
         Ty: Into<Lang::Type>,
@@ -26,7 +38,17 @@ where
             var: v.to_owned(),
             annot: ty.into(),
             body: bd.into(),
+            span,
         }
+    }
+}
+
+impl<Lang> Spanned for Lambda<Lang>
+where
+    Lang: Language,
+{
+    fn span(&self) -> Span {
+        self.span
     }
 }
 
@@ -44,7 +66,7 @@ where
     Lang: Language,
 {
     fn from(lam: Lambda<Lang>) -> Self {
-        Self::new(&lam.var, lam.annot, lam.body)
+        Self::new(&lam.var, lam.annot, lam.body, lam.span)
     }
 }
 

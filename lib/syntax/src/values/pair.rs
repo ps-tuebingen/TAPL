@@ -1,21 +1,31 @@
 use super::Value;
-use crate::{language::Language, terms::Pair as PairT};
+use crate::{
+    language::Language,
+    span::{Span, Spanned},
+    terms::Pair as PairT,
+};
 use std::fmt;
 
+/// Pair value
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Pair<Lang>
 where
     Lang: Language,
 {
+    /// first value
     pub fst: Box<Lang::Value>,
+    /// second value
     pub snd: Box<Lang::Value>,
+    /// Source location
+    pub span: Span,
 }
 
 impl<Lang> Pair<Lang>
 where
     Lang: Language,
 {
-    pub fn new<V1, V2>(fst: V1, snd: V2) -> Self
+    /// Create a new pair value from first and second value and span
+    pub fn new<V1, V2>(fst: V1, snd: V2, span: Span) -> Self
     where
         V1: Into<Lang::Value>,
         V2: Into<Lang::Value>,
@@ -23,7 +33,17 @@ where
         Self {
             fst: Box::new(fst.into()),
             snd: Box::new(snd.into()),
+            span,
         }
+    }
+}
+
+impl<Lang> Spanned for Pair<Lang>
+where
+    Lang: Language,
+{
+    fn span(&self) -> Span {
+        self.span
     }
 }
 
@@ -41,7 +61,7 @@ where
     Lang: Language,
 {
     fn from(p: Pair<Lang>) -> Self {
-        Self::new(*p.fst, *p.snd)
+        Self::new(*p.fst, *p.snd, p.span)
     }
 }
 

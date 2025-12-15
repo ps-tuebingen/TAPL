@@ -2,25 +2,34 @@ use super::Term;
 use crate::{
     TypeVar, Var,
     language::Language,
+    span::{Span, Spanned},
     subst::{SubstTerm, SubstType},
 };
 use std::{fmt, rc::Rc};
 
+/// Term representing a lambda abstraction
+/// `\x:ty.t`
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Lambda<Lang>
 where
     Lang: Language,
 {
+    /// Bound variable
     pub var: Var,
+    /// Type annotation for the variable
     pub annot: Lang::Type,
+    /// Body term
     pub body: Rc<Lang::Term>,
+    /// Source location
+    pub span: Span,
 }
 
 impl<Lang> Lambda<Lang>
 where
     Lang: Language,
 {
-    pub fn new<T, Ty>(v: &str, ty: Ty, t: T) -> Self
+    /// Create a new lambda term with bound variable, type, body and span
+    pub fn new<T, Ty>(v: &str, ty: Ty, t: T, span: Span) -> Self
     where
         T: Into<Lang::Term>,
         Ty: Into<Lang::Type>,
@@ -29,7 +38,17 @@ where
             var: v.to_owned(),
             annot: ty.into(),
             body: Rc::new(t.into()),
+            span,
         }
+    }
+}
+
+impl<Lang> Spanned for Lambda<Lang>
+where
+    Lang: Language,
+{
+    fn span(&self) -> Span {
+        self.span
     }
 }
 
@@ -51,6 +70,7 @@ where
                 var: self.var,
                 annot: self.annot,
                 body: self.body.subst(v, t),
+                span: self.span,
             }
         }
     }
@@ -67,6 +87,7 @@ where
             var: self.var,
             annot: self.annot.subst_type(v, ty),
             body: self.body.subst_type(v, ty),
+            span: self.span,
         }
     }
 }

@@ -73,12 +73,9 @@ where
     type Target = Self;
     type Lang = Lang;
 
-    fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
-        Self {
-            name: self.name,
-            annot: self.annot,
-            body: self.body.subst(v, t),
-        }
+    fn subst(mut self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
+        self.body = self.body.subst(v, t);
+        self
     }
 }
 
@@ -108,12 +105,10 @@ where
     type Target = Self;
     type Lang = Lang;
 
-    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
-        Self {
-            name: self.name,
-            annot: self.annot.subst_type(v, ty),
-            body: self.body.subst_type(v, ty),
-        }
+    fn subst_type(mut self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
+        self.annot = self.annot.subst_type(v, ty);
+        self.body = self.body.subst_type(v, ty);
+        self
     }
 }
 

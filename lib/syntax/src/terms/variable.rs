@@ -2,16 +2,22 @@ use super::Term;
 use crate::{
     TypeVar, Var,
     language::Language,
+    span::{Span, Spanned},
     subst::{SubstTerm, SubstType},
 };
 use std::{fmt, marker::PhantomData};
 
+/// Term representing a variable
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Variable<Lang>
 where
     Lang: Language,
 {
+    /// The variable
     pub var: Var,
+    /// Source location
+    pub span: Span,
+    /// Save the type parameter
     phantom: PhantomData<Lang>,
 }
 
@@ -19,11 +25,23 @@ impl<Lang> Variable<Lang>
 where
     Lang: Language,
 {
-    #[must_use] pub fn new(v: &str) -> Self {
+    /// Create a new Variable with given variable and span
+    #[must_use]
+    pub fn new(v: &str, span: Span) -> Self {
         Self {
             var: v.to_owned(),
+            span,
             phantom: PhantomData,
         }
+    }
+}
+
+impl<Lang> Spanned for Variable<Lang>
+where
+    Lang: Language,
+{
+    fn span(&self) -> Span {
+        self.span
     }
 }
 

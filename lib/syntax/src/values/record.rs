@@ -1,26 +1,47 @@
 use super::Value;
-use crate::{Label, language::Language, terms::Record as RecordT};
+use crate::{
+    Label,
+    language::Language,
+    span::{Span, Spanned},
+    terms::Record as RecordT,
+};
 use std::{collections::HashMap, fmt};
 
+/// Record value
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Record<Lang>
 where
     Lang: Language,
 {
+    /// Labeled values
     pub records: HashMap<Label, Lang::Value>,
+    /// Source location
+    pub span: Span,
 }
 
 impl<Lang> Record<Lang>
 where
     Lang: Language,
 {
-    #[must_use] pub fn new<V1>(recs: HashMap<Label, V1>) -> Self
+    /// Create a new record value with given labeled values and source location
+    #[must_use]
+    pub fn new<V1>(recs: HashMap<Label, V1>, span: Span) -> Self
     where
         V1: Into<Lang::Value>,
     {
         Self {
             records: recs.into_iter().map(|(lb, t)| (lb, t.into())).collect(),
+            span,
         }
+    }
+}
+
+impl<Lang> Spanned for Record<Lang>
+where
+    Lang: Language,
+{
+    fn span(&self) -> Span {
+        self.span
     }
 }
 
@@ -38,7 +59,7 @@ where
     Lang: Language,
 {
     fn from(rec: Record<Lang>) -> Self {
-        Self::new(rec.records)
+        Self::new(rec.records, rec.span)
     }
 }
 

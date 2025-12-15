@@ -2,31 +2,48 @@ use super::Term;
 use crate::{
     Label, TypeVar, Var,
     language::Language,
+    span::{Span, Spanned},
     subst::{SubstTerm, SubstType},
 };
 use std::{fmt, rc::Rc};
 
+/// Term representing a record projection
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct RecordProj<Lang>
 where
     Lang: Language,
 {
+    /// term to project
     pub record: Rc<Lang::Term>,
+    /// Label to project onto
     pub label: Label,
+    /// Source location
+    pub span: Span,
 }
 
 impl<Lang> RecordProj<Lang>
 where
     Lang: Language,
 {
-    pub fn new<T1>(t: T1, lb: &str) -> Self
+    /// Create a new record projection from given term, label and span
+    pub fn new<T1>(t: T1, lb: &str, span: Span) -> Self
     where
         T1: Into<Lang::Term>,
     {
         Self {
             record: Rc::new(t.into()),
             label: lb.to_owned(),
+            span,
         }
+    }
+}
+
+impl<Lang> Spanned for RecordProj<Lang>
+where
+    Lang: Language,
+{
+    fn span(&self) -> Span {
+        self.span
     }
 }
 
@@ -38,11 +55,9 @@ where
 {
     type Target = Self;
     type Lang = Lang;
-    fn subst(self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
-        Self {
-            record: self.record.subst(v, t),
-            label: self.label,
-        }
+    fn subst(mut self, v: &Var, t: &<Lang as Language>::Term) -> Self::Target {
+        self.record = self.record.subst(v, t);
+        self
     }
 }
 
@@ -52,11 +67,9 @@ where
 {
     type Target = Self;
     type Lang = Lang;
-    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
-        Self {
-            record: self.record.subst_type(v, ty),
-            label: self.label,
-        }
+    fn subst_type(mut self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
+        self.record = self.record.subst_type(v, ty);
+        self
     }
 }
 

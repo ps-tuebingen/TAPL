@@ -1,26 +1,45 @@
 use super::Value;
-use crate::{language::Language, terms::Tuple as TupleT};
+use crate::{
+    language::Language,
+    span::{Span, Spanned},
+    terms::Tuple as TupleT,
+};
 use std::fmt;
 
+/// Tuple value
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Tuple<Lang>
 where
     Lang: Language,
 {
+    /// Inner values
     pub vals: Vec<Lang::Value>,
+    /// Source locations
+    pub span: Span,
 }
 
 impl<Lang> Tuple<Lang>
 where
     Lang: Language,
 {
-    pub fn new<V1>(vals: Vec<V1>) -> Self
+    /// Create a new tuple value with given inner values and span
+    pub fn new<V1>(vals: Vec<V1>, span: Span) -> Self
     where
         V1: Into<Lang::Value>,
     {
         Self {
             vals: vals.into_iter().map(std::convert::Into::into).collect(),
+            span,
         }
+    }
+}
+
+impl<Lang> Spanned for Tuple<Lang>
+where
+    Lang: Language,
+{
+    fn span(&self) -> Span {
+        self.span
     }
 }
 
@@ -38,7 +57,7 @@ where
     Lang: Language,
 {
     fn from(tup: Tuple<Lang>) -> Self {
-        Self::new(tup.vals)
+        Self::new(tup.vals, tup.span)
     }
 }
 
@@ -47,7 +66,11 @@ where
     Lang: Language,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let mut ts: Vec<String> = self.vals.iter().map(std::string::ToString::to_string).collect();
+        let mut ts: Vec<String> = self
+            .vals
+            .iter()
+            .map(std::string::ToString::to_string)
+            .collect();
         ts.sort();
         write!(f, "( {} )", ts.join(", "))
     }

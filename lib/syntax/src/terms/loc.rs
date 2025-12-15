@@ -1,17 +1,22 @@
 use super::Term;
 use crate::{
-    TypeVar, Var,
+    Location, TypeVar, Var,
     language::Language,
+    span::{Span, Spanned},
     subst::{SubstTerm, SubstType},
 };
 use std::{fmt, marker::PhantomData};
 
+/// Term representing a memory location
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Loc<Lang>
 where
     Lang: Language,
 {
-    pub loc: usize,
+    /// Memory location
+    pub loc: Location,
+    /// Source location
+    pub span: Span,
     phantom: PhantomData<Lang>,
 }
 
@@ -19,11 +24,23 @@ impl<Lang> Loc<Lang>
 where
     Lang: Language,
 {
-    #[must_use] pub const fn new(loc: usize) -> Self {
+    #[must_use]
+    /// Create a new Loc with location and span
+    pub const fn new(loc: usize, span: Span) -> Self {
         Self {
             loc,
+            span,
             phantom: PhantomData,
         }
+    }
+}
+
+impl<Lang> Spanned for Loc<Lang>
+where
+    Lang: Language,
+{
+    fn span(&self) -> Span {
+        self.span
     }
 }
 

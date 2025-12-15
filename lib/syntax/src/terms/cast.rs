@@ -2,24 +2,31 @@ use super::Term;
 use crate::{
     TypeVar, Var,
     language::Language,
+    span::{Span, Spanned},
     subst::{SubstTerm, SubstType},
 };
 use std::{fmt, rc::Rc};
 
+/// Term representing a cast `t as ty`
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Cast<Lang>
 where
     Lang: Language,
 {
+    /// The casted term
     pub term: Rc<Lang::Term>,
+    /// The type to cast to
     pub ty: Lang::Type,
+    /// The source location
+    pub span: Span,
 }
 
 impl<Lang> Cast<Lang>
 where
     Lang: Language,
 {
-    pub fn new<T1, Typ>(t: T1, ty: Typ) -> Self
+    /// Create a new cast from a given term, type and span
+    pub fn new<T1, Typ>(t: T1, ty: Typ, span: Span) -> Self
     where
         T1: Into<Lang::Term>,
         Typ: Into<Lang::Type>,
@@ -27,7 +34,17 @@ where
         Self {
             term: Rc::new(t.into()),
             ty: ty.into(),
+            span,
         }
+    }
+}
+
+impl<Lang> Spanned for Cast<Lang>
+where
+    Lang: Language,
+{
+    fn span(&self) -> Span {
+        self.span
     }
 }
 
@@ -43,6 +60,7 @@ where
         Self {
             term: self.term.subst(v, t),
             ty: self.ty,
+            span: self.span,
         }
     }
 }
@@ -57,6 +75,7 @@ where
         Self {
             term: self.term.subst_type(v, ty),
             ty: self.ty.subst_type(v, ty),
+            span: self.span,
         }
     }
 }

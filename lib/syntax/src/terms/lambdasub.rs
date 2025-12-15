@@ -2,26 +2,35 @@ use super::Term;
 use crate::{
     TypeVar, Var,
     language::Language,
+    span::{Span, Spanned},
     subst::{SubstTerm, SubstType},
     types::Top,
 };
 use std::{fmt, rc::Rc};
 
+/// Term representing a Type abstraction
+/// `\X<:ty.t`
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct LambdaSub<Lang>
 where
     Lang: Language,
 {
+    /// The bound Type variable
     pub var: TypeVar,
+    /// The supertype of the variable
     pub sup_ty: Lang::Type,
+    /// The body of the abstraction
     pub body: Rc<Lang::Term>,
+    /// Source location
+    pub span: Span,
 }
 
 impl<Lang> LambdaSub<Lang>
 where
     Lang: Language,
 {
-    pub fn new<Ty, T>(v: &str, sup: Ty, bod: T) -> Self
+    /// Create a new lambda sub term with given type variable, super type, body and span
+    pub fn new<Ty, T>(v: &str, sup: Ty, bod: T, span: Span) -> Self
     where
         Ty: Into<Lang::Type>,
         T: Into<Lang::Term>,
@@ -30,10 +39,13 @@ where
             var: v.to_owned(),
             sup_ty: sup.into(),
             body: Rc::new(bod.into()),
+            span,
         }
     }
 
-    pub fn new_unbounded<T>(v: &str, bod: T) -> Self
+    /// Create a new lambda sub term with given type variable, body and span
+    /// in this case the supertype will be [`Top`] with [`crate::kinds::Kind`] star
+    pub fn new_unbounded<T>(v: &str, bod: T, span: Span) -> Self
     where
         T: Into<Lang::Term>,
         Top<Lang>: Into<Lang::Type>,
@@ -42,7 +54,17 @@ where
             var: v.to_owned(),
             sup_ty: Top::new_star().into(),
             body: Rc::new(bod.into()),
+            span,
         }
+    }
+}
+
+impl<Lang> Spanned for LambdaSub<Lang>
+where
+    Lang: Language,
+{
+    fn span(&self) -> Span {
+        self.span
     }
 }
 
@@ -62,6 +84,7 @@ where
                 var: self.var,
                 sup_ty: self.sup_ty,
                 body: self.body.subst(v, t),
+                span: self.span,
             }
         }
     }
@@ -80,12 +103,14 @@ where
                 var: self.var,
                 sup_ty: sup_subst,
                 body: self.body,
+                span: self.span,
             }
         } else {
             Self {
                 var: self.var,
                 sup_ty: sup_subst,
                 body: self.body.subst_type(v, ty),
+                span: self.span,
             }
         }
     }
