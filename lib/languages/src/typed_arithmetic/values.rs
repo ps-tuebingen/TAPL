@@ -1,10 +1,19 @@
 use super::{TypedArithmetic, terms::Term};
 use errors::ValueMismatch;
-use macros::{FromVariants, GrammarDescribe, IntoTerm, LangDisplay, LatexFmt};
+use macros::{FromVariants, GrammarDescribe, IntoTerm, LangDisplay, LatexFmt, Spanned};
 use syntax::values::{False, Num, True, Value as ValueTrait, ValueGroup};
 
 #[derive(
-    IntoTerm, GrammarDescribe, FromVariants, LatexFmt, LangDisplay, Debug, Clone, PartialEq, Eq,
+    Spanned,
+    IntoTerm,
+    GrammarDescribe,
+    FromVariants,
+    LatexFmt,
+    LangDisplay,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
 )]
 #[Lang(TypedArithmetic)]
 pub enum Value {

@@ -1,6 +1,8 @@
 use super::{Stlc, terms::Term, types::Type};
 use errors::{UnexpectedRule, parse_error::ParserError};
-use parser::{GroupParse, Parse, Rule, pair_to_n_inner, terms::StringTerm, types::StringTy};
+use parser::{
+    GroupParse, Parse, Rule, pair_span, pair_to_n_inner, terms::StringTerm, types::StringTy,
+};
 use pest::iterators::Pair;
 use syntax::{
     terms::{
@@ -14,12 +16,13 @@ use syntax::{
 impl GroupParse for Term {
     const RULE: Rule = Rule::term;
     fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Self, ParserError> {
+        let span = pair_span(&p);
         match p.as_rule() {
             Rule::const_term => Ok(StringTerm::<Stlc>::new()
-                .with_true()
-                .with_false()
-                .with_zero()
-                .with_unit()
+                .with_true(span)
+                .with_false(span)
+                .with_zero(span)
+                .with_unit(span)
                 .from_pair(&p)?),
             Rule::variable => Ok(Variable::from_pair(p, ())?.into()),
             Rule::lambda_term => Ok(Lambda::from_pair(p, ())?.into()),

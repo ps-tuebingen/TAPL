@@ -1,10 +1,19 @@
 use super::{LambdaOmega, terms::Term};
 use errors::ValueMismatch;
-use macros::{FromVariants, GrammarDescribe, IntoTerm, LangDisplay, LatexFmt};
+use macros::{FromVariants, GrammarDescribe, IntoTerm, LangDisplay, LatexFmt, Spanned};
 use syntax::values::{False, Lambda, Num, True, TyLambda, Unit, Value as ValueTrait, ValueGroup};
 
 #[derive(
-    IntoTerm, GrammarDescribe, FromVariants, LatexFmt, LangDisplay, Clone, Debug, PartialEq, Eq,
+    Spanned,
+    IntoTerm,
+    GrammarDescribe,
+    FromVariants,
+    LatexFmt,
+    LangDisplay,
+    Clone,
+    Debug,
+    PartialEq,
+    Eq,
 )]
 #[Lang(LambdaOmega)]
 pub enum Value {

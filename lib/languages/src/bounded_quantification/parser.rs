@@ -1,7 +1,7 @@
 use super::{BoundedQuantification, terms::Term, types::Type};
 use errors::{UnexpectedRule, parse_error::ParserError};
 use parser::{
-    GroupParse, Parse, Rule, pair_to_n_inner,
+    GroupParse, Parse, Rule, pair_span, pair_to_n_inner,
     sugar::{ExistsUnbounded, ForallUnbounded, LambdaSubStar},
     types::StringTy,
 };
@@ -16,6 +16,7 @@ use syntax::{
 impl GroupParse for Term {
     const RULE: Rule = Rule::term;
     fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Self, ParserError> {
+        let span = pair_span(&p);
         match p.as_rule() {
             Rule::paren_term => Self::from_pair(pair_to_n_inner(p, vec!["Term"])?.remove(0), ()),
             Rule::lambda_term => Ok(Lambda::from_pair(p, ())?.into()),
@@ -29,7 +30,7 @@ impl GroupParse for Term {
             Rule::succ_term => Ok(Succ::from_pair(p, ())?.into()),
             Rule::pred_term => Ok(Pred::from_pair(p, ())?.into()),
             Rule::number => Ok(Num::from_pair(p, ())?.into()),
-            Rule::variable => Ok(Variable::new(p.as_str().trim()).into()),
+            Rule::variable => Ok(Variable::new(p.as_str().trim(), span).into()),
             r => Err(UnexpectedRule::new(&format!("{r:?}"), "Non Left-Recursive Term").into()),
         }
     }

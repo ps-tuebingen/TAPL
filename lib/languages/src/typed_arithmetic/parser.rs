@@ -1,6 +1,6 @@
 use super::{TypedArithmetic, terms::Term, types::Type};
 use errors::{UnexpectedRule, parse_error::ParserError};
-use parser::{GroupParse, Parse, Rule, terms::StringTerm, types::StringTy};
+use parser::{GroupParse, Parse, Rule, pair_span, terms::StringTerm, types::StringTy};
 use pest::iterators::Pair;
 use syntax::terms::{If, IsZero, Num, Pred, Succ};
 
@@ -8,11 +8,12 @@ impl GroupParse for Term {
     const RULE: Rule = Rule::term;
 
     fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Self, ParserError> {
+        let span = pair_span(&p);
         match p.as_rule() {
             Rule::const_term => Ok(StringTerm::<TypedArithmetic>::new()
-                .with_true()
-                .with_false()
-                .with_zero()
+                .with_true(span)
+                .with_false(span)
+                .with_zero(span)
                 .from_pair(&p)?),
             Rule::if_term => Ok(If::from_pair(p, ())?.into()),
             Rule::number => Ok(Num::from_pair(p, ())?.into()),

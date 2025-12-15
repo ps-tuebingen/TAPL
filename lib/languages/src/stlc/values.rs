@@ -1,13 +1,22 @@
 use super::{Stlc, terms::Term};
 use errors::ValueMismatch;
-use macros::{FromVariants, GrammarDescribe, IntoTerm, LangDisplay, LatexFmt};
+use macros::{FromVariants, GrammarDescribe, IntoTerm, LangDisplay, LatexFmt, Spanned};
 use syntax::values::{
     Cons, False, Lambda, Left, Nil, Nothing, Num, Pair, Record, Right, Something, True, Tuple,
     Unit, Value as ValueTrait, ValueGroup, Variant,
 };
 
 #[derive(
-    IntoTerm, GrammarDescribe, FromVariants, LatexFmt, LangDisplay, Debug, Clone, PartialEq, Eq,
+    Spanned,
+    IntoTerm,
+    GrammarDescribe,
+    FromVariants,
+    LatexFmt,
+    LangDisplay,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
 )]
 #[Lang(Stlc)]
 pub enum Value {

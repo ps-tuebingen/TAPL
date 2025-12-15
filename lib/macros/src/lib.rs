@@ -7,6 +7,7 @@ mod format;
 mod from;
 mod grammar;
 pub(crate) mod literals;
+mod span;
 mod subst;
 pub(crate) mod utils;
 use check::{
@@ -19,6 +20,7 @@ use eval::generate_eval;
 use format::{generate_display, generate_latexfmt};
 use from::{generate_from_variants, generate_into_term};
 use grammar::generate_grammar_describe;
+use span::generate_spanned;
 use subst::{generate_subst_term, generate_subst_type};
 
 /// Derive `Typecheck` for Terms
@@ -136,4 +138,11 @@ pub fn derive_from_variants(input: TokenStream) -> TokenStream {
 #[proc_macro_derive(IntoTerm, attributes(Lang))]
 pub fn derive_into_term(input: TokenStream) -> TokenStream {
     generate_into_term(input)
+}
+
+/// Derive [`syntax::span::Spanned`] for enum types
+/// Requires that each enum variant has implemented `Spanned`
+#[proc_macro_derive(Spanned)]
+pub fn derive_spanned(input: TokenStream) -> TokenStream {
+    generate_spanned(input)
 }

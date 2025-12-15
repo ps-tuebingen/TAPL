@@ -1,7 +1,8 @@
 use super::{References, terms::Term, types::Type};
 use errors::{UnexpectedRule, parse_error::ParserError};
 use parser::{
-    GroupParse, Parse, Rule, pair_to_n_inner, sugar::Sequence, terms::StringTerm, types::StringTy,
+    GroupParse, Parse, Rule, pair_span, pair_to_n_inner, sugar::Sequence, terms::StringTerm,
+    types::StringTy,
 };
 use pest::iterators::Pair;
 use syntax::{
@@ -12,11 +13,12 @@ use syntax::{
 impl GroupParse for Term {
     const RULE: Rule = Rule::term;
     fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Self, ParserError> {
+        let span = pair_span(&p);
         match p.as_rule() {
             Rule::const_term => Ok(StringTerm::<References>::new()
-                .with_unit()
-                .with_true()
-                .with_false()
+                .with_unit(span)
+                .with_true(span)
+                .with_false(span)
                 .from_pair(&p)?),
             Rule::variable => Ok(Variable::from_pair(p, ())?.into()),
             Rule::number => Ok(Num::from_pair(p, ())?.into()),

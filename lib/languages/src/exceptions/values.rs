@@ -1,12 +1,21 @@
 use super::{Exceptions, terms::Term};
 use errors::ValueMismatch;
-use macros::{FromVariants, GrammarDescribe, IntoTerm, LangDisplay, LatexFmt};
+use macros::{FromVariants, GrammarDescribe, IntoTerm, LangDisplay, LatexFmt, Spanned};
 use syntax::values::{
     Exception, False, Lambda, Num, Raise, True, Unit, Value as ValueTrait, ValueGroup,
 };
 
 #[derive(
-    IntoTerm, GrammarDescribe, LatexFmt, FromVariants, LangDisplay, Debug, Clone, PartialEq, Eq,
+    Spanned,
+    IntoTerm,
+    GrammarDescribe,
+    LatexFmt,
+    FromVariants,
+    LangDisplay,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
 )]
 #[Lang(Exceptions)]
 pub enum Value {

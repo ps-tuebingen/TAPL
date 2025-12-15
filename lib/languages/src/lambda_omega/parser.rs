@@ -1,7 +1,7 @@
 use super::{LambdaOmega, terms::Term, types::Type};
 use errors::{UnexpectedRule, parse_error::ParserError};
 use parser::{
-    GroupParse, Parse, Rule, pair_to_n_inner, sugar::ForallUnbounded, terms::StringTerm,
+    GroupParse, Parse, Rule, pair_span, pair_to_n_inner, sugar::ForallUnbounded, terms::StringTerm,
     types::StringTy,
 };
 use pest::iterators::Pair;
@@ -14,11 +14,12 @@ impl GroupParse for Term {
     const RULE: Rule = Rule::term;
 
     fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Self, ParserError> {
+        let span = pair_span(&p);
         match p.as_rule() {
             Rule::const_term => Ok(StringTerm::<LambdaOmega>::new()
-                .with_unit()
-                .with_true()
-                .with_false()
+                .with_unit(span)
+                .with_true(span)
+                .with_false(span)
                 .from_pair(&p)?),
             Rule::lambda_term => Ok(Lambda::from_pair(p, ())?.into()),
             Rule::ty_lambda_kinded_term => Ok(TyLambda::from_pair(p, ())?.into()),

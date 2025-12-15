@@ -1,10 +1,19 @@
 use super::{BoundedQuantification, terms::Term};
 use errors::ValueMismatch;
-use macros::{FromVariants, GrammarDescribe, IntoTerm, LangDisplay, LatexFmt};
+use macros::{FromVariants, GrammarDescribe, IntoTerm, LangDisplay, LatexFmt, Spanned};
 use syntax::values::{Lambda, LambdaSub, Num, Pack, Record, Value as ValueTrait, ValueGroup};
 
 #[derive(
-    IntoTerm, GrammarDescribe, LatexFmt, FromVariants, LangDisplay, Debug, Clone, PartialEq, Eq,
+    Spanned,
+    IntoTerm,
+    GrammarDescribe,
+    LatexFmt,
+    FromVariants,
+    LangDisplay,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
 )]
 #[Lang(BoundedQuantification)]
 pub enum Value {

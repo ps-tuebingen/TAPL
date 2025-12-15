@@ -1,12 +1,21 @@
 use super::{Recursive, terms::Term};
 use errors::ValueMismatch;
-use macros::{FromVariants, GrammarDescribe, IntoTerm, LangDisplay, LatexFmt};
+use macros::{FromVariants, GrammarDescribe, IntoTerm, LangDisplay, LatexFmt, Spanned};
 use syntax::values::{
     False, Fold, Lambda, Num, Pair, Record, True, Unit, Value as ValueTrait, ValueGroup, Variant,
 };
 
 #[derive(
-    IntoTerm, GrammarDescribe, FromVariants, LatexFmt, LangDisplay, Debug, Clone, PartialEq, Eq,
+    Spanned,
+    IntoTerm,
+    GrammarDescribe,
+    FromVariants,
+    LatexFmt,
+    LangDisplay,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
 )]
 #[Lang(Recursive)]
 pub enum Value {

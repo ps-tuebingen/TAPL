@@ -1,6 +1,8 @@
 use super::{Exceptions, terms::Term, types::Type};
 use errors::{UnexpectedRule, parse_error::ParserError};
-use parser::{GroupParse, Parse, Rule, pair_to_n_inner, terms::StringTerm, types::StringTy};
+use parser::{
+    GroupParse, Parse, Rule, pair_span, pair_to_n_inner, terms::StringTerm, types::StringTy,
+};
 use pest::iterators::Pair;
 use syntax::{
     terms::{
@@ -13,14 +15,15 @@ impl GroupParse for Term {
     const RULE: Rule = Rule::term;
 
     fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Self, ParserError> {
+        let span = pair_span(&p);
         match p.as_rule() {
             Rule::const_term => Ok(StringTerm::<Exceptions>::new()
-                .with_unit()
-                .with_true()
-                .with_false()
+                .with_unit(span)
+                .with_true(span)
+                .with_false(span)
                 .from_pair(&p)?),
             Rule::number => Ok(Num::from_pair(p, ())?.into()),
-            Rule::variable => Ok(Variable::new(p.as_str().trim()).into()),
+            Rule::variable => Ok(Variable::new(p.as_str().trim(), span).into()),
             Rule::lambda_term => Ok(Lambda::from_pair(p, ())?.into()),
             Rule::succ_term => Ok(Succ::from_pair(p, ())?.into()),
             Rule::pred_term => Ok(Pred::from_pair(p, ())?.into()),

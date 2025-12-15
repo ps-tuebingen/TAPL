@@ -1,6 +1,7 @@
 use super::Exceptions;
 use macros::{
-    Eval, FromVariants, GrammarDescribe, LangDisplay, LatexFmt, SubstTerm, SubstType, Typecheck,
+    Eval, FromVariants, GrammarDescribe, LangDisplay, LatexFmt, Spanned, SubstTerm, SubstType,
+    Typecheck,
 };
 use syntax::terms::{
     App, Exception, False, If, IsZero, Lambda, Num, Pred, Raise, Succ, True, Try, TryWithVal, Unit,
@@ -8,6 +9,7 @@ use syntax::terms::{
 };
 
 #[derive(
+    Spanned,
     FromVariants,
     SubstType,
     SubstTerm,

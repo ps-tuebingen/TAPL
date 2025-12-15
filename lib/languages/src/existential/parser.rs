@@ -1,7 +1,7 @@
 use super::{Existential, terms::Term, types::Type};
 use errors::{UnexpectedRule, UnknownKeyword, parse_error::ParserError};
 use parser::{
-    GroupParse, Parse, Rule, pair_to_n_inner, sugar::ExistsUnbounded, terms::StringTerm,
+    GroupParse, Parse, Rule, pair_span, pair_to_n_inner, sugar::ExistsUnbounded, terms::StringTerm,
     types::StringTy,
 };
 use pest::iterators::Pair;
@@ -16,12 +16,13 @@ impl GroupParse for Term {
     const RULE: Rule = Rule::term;
 
     fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Self, ParserError> {
+        let span = pair_span(&p);
         match p.as_rule() {
             Rule::const_term => Ok(StringTerm::<Existential>::new()
-                .with_unit()
-                .with_zero()
-                .with_true()
-                .with_false()
+                .with_unit(span)
+                .with_zero(span)
+                .with_true(span)
+                .with_false(span)
                 .from_pair(&p)?),
             Rule::paren_term => Self::from_pair(pair_to_n_inner(p, vec!["Term"])?.remove(0), ()),
             Rule::lambda_term => Ok(Lambda::from_pair(p, ())?.into()),
@@ -39,9 +40,9 @@ impl GroupParse for Term {
                     .trim()
                     .parse::<i64>()
                     .map_err(|_| UnknownKeyword::new(p.as_str()))?;
-                Ok(Num::new(num).into())
+                Ok(Num::new(num, span).into())
             }
-            Rule::variable => Ok(Variable::new(p.as_str().trim()).into()),
+            Rule::variable => Ok(Variable::new(p.as_str().trim(), span).into()),
             _ => Err(
                 UnexpectedRule::new(&format!("{:?}", p.as_rule()), "Non Left-Recursive Term")
                     .into(),

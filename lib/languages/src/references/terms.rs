@@ -1,6 +1,7 @@
 use super::References;
 use macros::{
-    Eval, FromVariants, GrammarDescribe, LangDisplay, LatexFmt, SubstTerm, SubstType, Typecheck,
+    Eval, FromVariants, GrammarDescribe, LangDisplay, LatexFmt, Spanned, SubstTerm, SubstType,
+    Typecheck,
 };
 use syntax::terms::{
     App, Assign, Deref, False, Fix, If, IsZero, Lambda, Let, Loc, Num, Pred, Ref, Succ, True, Unit,
@@ -8,6 +9,7 @@ use syntax::terms::{
 };
 
 #[derive(
+    Spanned,
     FromVariants,
     SubstType,
     SubstTerm,

@@ -1,12 +1,14 @@
 use super::BoundedQuantification;
 use macros::{
-    Eval, FromVariants, GrammarDescribe, LangDisplay, LatexFmt, SubstTerm, SubstType, Typecheck,
+    Eval, FromVariants, GrammarDescribe, LangDisplay, LatexFmt, Spanned, SubstTerm, SubstType,
+    Typecheck,
 };
 use syntax::terms::{
     App, Lambda, LambdaSub, Num, Pack, Pred, Record, RecordProj, Succ, TyApp, Unpack, Variable,
 };
 
 #[derive(
+    Spanned,
     FromVariants,
     SubstType,
     SubstTerm,

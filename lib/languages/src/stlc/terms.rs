@@ -1,6 +1,7 @@
 use super::Stlc;
 use macros::{
-    Eval, FromVariants, GrammarDescribe, LangDisplay, LatexFmt, SubstTerm, SubstType, Typecheck,
+    Eval, FromVariants, GrammarDescribe, LangDisplay, LatexFmt, Spanned, SubstTerm, SubstType,
+    Typecheck,
 };
 use syntax::terms::{
     App, Ascribe, Cons, False, Fix, Fst, Head, If, IsNil, IsZero, Lambda, Left, Let, Nil, Nothing,
@@ -9,6 +10,7 @@ use syntax::terms::{
 };
 
 #[derive(
+    Spanned,
     FromVariants,
     SubstType,
     SubstTerm,

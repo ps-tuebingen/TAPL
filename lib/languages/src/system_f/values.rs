@@ -1,10 +1,19 @@
 use super::{SystemF, terms::Term};
 use errors::ValueMismatch;
-use macros::{FromVariants, GrammarDescribe, IntoTerm, LangDisplay, LatexFmt};
+use macros::{FromVariants, GrammarDescribe, IntoTerm, LangDisplay, LatexFmt, Spanned};
 use syntax::values::{Lambda, TyLambda, Value as ValueTrait, ValueGroup};
 
 #[derive(
-    IntoTerm, GrammarDescribe, FromVariants, LatexFmt, LangDisplay, Debug, PartialEq, Eq, Clone,
+    Spanned,
+    IntoTerm,
+    GrammarDescribe,
+    FromVariants,
+    LatexFmt,
+    LangDisplay,
+    Debug,
+    PartialEq,
+    Eq,
+    Clone,
 )]
 #[Lang(SystemF)]
 pub enum Value {

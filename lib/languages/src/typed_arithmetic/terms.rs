@@ -1,10 +1,12 @@
 use super::TypedArithmetic;
 use macros::{
-    Eval, FromVariants, GrammarDescribe, LangDisplay, LatexFmt, SubstTerm, SubstType, Typecheck,
+    Eval, FromVariants, GrammarDescribe, LangDisplay, LatexFmt, Spanned, SubstTerm, SubstType,
+    Typecheck,
 };
 use syntax::terms::{False, If, IsZero, Num, Pred, Succ, True};
 
 #[derive(
+    Spanned,
     FromVariants,
     SubstType,
     SubstTerm,

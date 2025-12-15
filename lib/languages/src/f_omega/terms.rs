@@ -1,6 +1,7 @@
 use super::FOmega;
 use macros::{
-    Eval, FromVariants, GrammarDescribe, LangDisplay, LatexFmt, SubstTerm, SubstType, Typecheck,
+    Eval, FromVariants, GrammarDescribe, LangDisplay, LatexFmt, Spanned, SubstTerm, SubstType,
+    Typecheck,
 };
 use syntax::terms::{
     App, False, Fix, If, IsZero, Lambda, Num, Pack, Pred, Record, RecordProj, Succ, True, TyApp,
@@ -8,6 +9,7 @@ use syntax::terms::{
 };
 
 #[derive(
+    Spanned,
     FromVariants,
     SubstType,
     SubstTerm,

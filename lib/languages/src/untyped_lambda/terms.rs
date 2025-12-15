@@ -3,7 +3,9 @@ use check::Typecheck;
 use derivations::Derivation;
 use errors::{NoTyping, check_error::CheckError};
 use grammar::DerivationRule;
-use macros::{Eval, FromVariants, GrammarDescribe, LangDisplay, LatexFmt, SubstTerm, SubstType};
+use macros::{
+    Eval, FromVariants, GrammarDescribe, LangDisplay, LatexFmt, Spanned, SubstTerm, SubstType,
+};
 use std::collections::HashSet;
 use syntax::{
     env::Environment,
@@ -12,6 +14,7 @@ use syntax::{
 };
 
 #[derive(
+    Spanned,
     FromVariants,
     SubstType,
     SubstTerm,
