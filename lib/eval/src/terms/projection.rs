@@ -24,10 +24,10 @@ where
     fn eval(self, env: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         let term_res = self.term.eval(env)?;
         let term_val = term_res.val();
-        let tup_val = term_val.clone().into_tuple().ok_or(ValueMismatch::new(
-            term_val.to_string(),
-            "Tuple Value".to_string(),
-        ))?;
+        let tup_val = term_val
+            .clone()
+            .into_tuple()
+            .ok_or_else(|| ValueMismatch::new(term_val.to_string(), "Tuple Value".to_string()))?;
         let val = tup_val
             .vals
             .get(self.index)

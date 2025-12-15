@@ -14,7 +14,9 @@ where
     type Lang = Lang;
 
     fn check(&self, env: Environment<Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
-        let ty = env.get_var(&self.var).ok_or(FreeVariable::new(&self.var))?;
+        let ty = env
+            .get_var(&self.var)
+            .ok_or_else(|| FreeVariable::new(&self.var))?;
         let conc = TypingConclusion::new(env, self.clone(), ty);
         let deriv = TypingDerivation::var(conc);
         Ok(deriv.into())

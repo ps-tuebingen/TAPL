@@ -42,7 +42,7 @@ where
 
         sup.clone()
             .into_unit()
-            .ok_or(TypeMismatch::new(sup.to_string(), "Unit Type".to_string()))?;
+            .ok_or_else(|| TypeMismatch::new(sup.to_string(), "Unit Type".to_string()))?;
         Ok(SubtypeDerivation::refl(env, self.clone(), vec![]).into())
     }
 

@@ -20,7 +20,7 @@ where
     fn eval(self, ctx: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         let body = ctx
             .get_name(&self.var)
-            .ok_or(FreeVariable::new(&self.var))?;
+            .ok_or_else(|| FreeVariable::new(&self.var))?;
         let mut term_res = body.clone().eval(ctx)?;
         term_res
             .steps

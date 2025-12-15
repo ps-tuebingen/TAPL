@@ -45,10 +45,10 @@ where
             sum_norm = self.ty.clone();
         }
 
-        let sum_ty = sum_norm.clone().into_sum().ok_or(TypeMismatch::new(
-            sum_norm.to_string(),
-            "Sum Type".to_string(),
-        ))?;
+        let sum_ty = sum_norm
+            .clone()
+            .into_sum()
+            .ok_or_else(|| TypeMismatch::new(sum_norm.to_string(), "Sum Type".to_string()))?;
         if *sum_ty.right != right_norm {
             return Err(TypeMismatch::new(sum_ty.right.to_string(), right_norm.to_string()).into());
         }

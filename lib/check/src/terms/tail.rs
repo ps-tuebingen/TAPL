@@ -37,17 +37,17 @@ where
         if features.kinded() {
             let ty_res = ty_norm.check_kind(env.clone())?.into_kind()?;
             let ty_knd = ty_res.ret_kind();
-            ty_knd.clone().into_star().ok_or(KindMismatch::new(
-                ty_knd.to_string(),
-                "Star Kind".to_string(),
-            ))?;
+            ty_knd
+                .clone()
+                .into_star()
+                .ok_or_else(|| KindMismatch::new(ty_knd.to_string(), "Star Kind".to_string()))?;
             premises.push(ty_res.into());
         }
 
-        let list_ty = ty_norm.clone().into_list().ok_or(TypeMismatch::new(
-            ty_norm.to_string(),
-            "List Type".to_string(),
-        ))?;
+        let list_ty = ty_norm
+            .clone()
+            .into_list()
+            .ok_or_else(|| TypeMismatch::new(ty_norm.to_string(), "List Type".to_string()))?;
         let conc = TypingConclusion::new(env, self.clone(), Rc::unwrap_or_clone(list_ty.ty));
         let deriv = TypingDerivation::tail(conc, premises);
         Ok(deriv.into())

@@ -32,10 +32,9 @@ where
             return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind, vec![]).into());
         }
 
-        let sup_op = sup.clone().into_oplambda().ok_or(TypeMismatch::new(
-            sup.to_string(),
-            "Operator Abstraciton".to_string(),
-        ))?;
+        let sup_op = sup.clone().into_oplambda().ok_or_else(|| {
+            TypeMismatch::new(sup.to_string(), "Operator Abstraciton".to_string())
+        })?;
         if sup_op.annot != self.annot {
             return Err(KindMismatch::new(sup_op.annot.to_string(), self.annot.to_string()).into());
         }

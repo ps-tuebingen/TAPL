@@ -18,11 +18,13 @@ impl Kind {
     }
 
     /// Convert `self` to [`Kind::Star`]
+    #[must_use]
     pub fn into_star(self) -> Option<Self> {
         if self == Self::Star { Some(self) } else { None }
     }
 
     /// Convert `self` into [`Kind::Arrow`]
+    #[must_use]
     pub fn into_arrow(self) -> Option<(Self, Self)> {
         if let Self::Arrow(from, to) = self {
             Some((Rc::unwrap_or_clone(from), Rc::unwrap_or_clone(to)))

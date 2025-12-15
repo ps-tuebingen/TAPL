@@ -27,10 +27,10 @@ where
             return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind, vec![]).into());
         }
 
-        let sup_fun = sup.clone().into_fun().ok_or(TypeMismatch::new(
-            sup.to_string(),
-            "Function Type".to_string(),
-        ))?;
+        let sup_fun = sup
+            .clone()
+            .into_fun()
+            .ok_or_else(|| TypeMismatch::new(sup.to_string(), "Function Type".to_string()))?;
         let from_res = sup_fun.from.check_subtype(&(*self.from), env.clone())?;
         let to_res = self.to.check_subtype(&(*sup_fun.to), env.clone())?;
         Ok(SubtypeDerivation::fun(env, self.clone(), sup.clone(), from_res, to_res).into())

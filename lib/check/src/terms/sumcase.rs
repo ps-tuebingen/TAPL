@@ -35,17 +35,17 @@ where
         if features.kinded() {
             let bound_res = bound_norm.check_kind(env.clone())?.into_kind()?;
             let bound_knd = bound_res.ret_kind();
-            bound_knd.clone().into_star().ok_or(KindMismatch::new(
-                bound_knd.to_string(),
-                "Star Kind".to_string(),
-            ))?;
+            bound_knd
+                .clone()
+                .into_star()
+                .ok_or_else(|| KindMismatch::new(bound_knd.to_string(), "Star Kind".to_string()))?;
             premises.push(bound_res.into());
         }
 
-        let bound_sum = bound_norm.clone().into_sum().ok_or(TypeMismatch::new(
-            bound_norm.to_string(),
-            "Sum Type".to_string(),
-        ))?;
+        let bound_sum = bound_norm
+            .clone()
+            .into_sum()
+            .ok_or_else(|| TypeMismatch::new(bound_norm.to_string(), "Sum Type".to_string()))?;
 
         let mut left_env = env.clone();
         left_env.add_var(self.left_var.clone(), Rc::unwrap_or_clone(bound_sum.left));

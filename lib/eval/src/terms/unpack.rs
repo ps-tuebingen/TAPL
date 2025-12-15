@@ -26,10 +26,10 @@ where
     fn eval(self, env: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         let term_res = self.bound_term.eval(env)?;
         let term_val = term_res.val();
-        let pack_val = term_val.clone().into_pack().ok_or(ValueMismatch::new(
-            term_val.to_string(),
-            "Pack Value".to_string(),
-        ))?;
+        let pack_val = term_val
+            .clone()
+            .into_pack()
+            .ok_or_else(|| ValueMismatch::new(term_val.to_string(), "Pack Value".to_string()))?;
         let in_subst = self
             .in_term
             .clone()

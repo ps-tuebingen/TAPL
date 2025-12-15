@@ -27,7 +27,7 @@ where
 
         sup.clone()
             .into_nat()
-            .ok_or(TypeMismatch::new(sup.to_string(), "Nat".to_string()))?;
+            .ok_or_else(|| TypeMismatch::new(sup.to_string(), "Nat".to_string()))?;
         Ok(SubtypeDerivation::refl(env, self.clone(), vec![]).into())
     }
 

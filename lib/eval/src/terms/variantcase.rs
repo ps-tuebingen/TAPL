@@ -23,10 +23,9 @@ where
         let bound_res = self.bound_term.eval(env)?;
         let bound_val = bound_res.val();
 
-        let var_val = bound_val.clone().into_variant().ok_or(ValueMismatch::new(
-            bound_val.to_string(),
-            "Variant Value".to_string(),
-        ))?;
+        let var_val = bound_val.clone().into_variant().ok_or_else(|| {
+            ValueMismatch::new(bound_val.to_string(), "Variant Value".to_string())
+        })?;
         let matching = self
             .patterns
             .clone()

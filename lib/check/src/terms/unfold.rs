@@ -57,10 +57,10 @@ where
         if ty_norm != term_ty_norm {
             return Err(TypeMismatch::new(ty_norm.to_string(), term_ty_norm.to_string()).into());
         }
-        let mu_ty = term_ty_norm.clone().into_mu().ok_or(TypeMismatch::new(
-            term_ty_norm.to_string(),
-            "Mu Type".to_string(),
-        ))?;
+        let mu_ty = term_ty_norm
+            .clone()
+            .into_mu()
+            .ok_or_else(|| TypeMismatch::new(term_ty_norm.to_string(), "Mu Type".to_string()))?;
         let ty = mu_ty.ty.subst_type(&mu_ty.var, &term_ty_norm);
         let conc = TypingConclusion::new(env, self.clone(), Rc::unwrap_or_clone(ty));
         let deriv = TypingDerivation::unfold(conc, premises);

@@ -31,17 +31,17 @@ where
         if features.kinded() {
             let bound_res = bound_norm.check_kind(env.clone())?.into_kind()?;
             let bound_knd = bound_res.ret_kind();
-            bound_knd.clone().into_star().ok_or(KindMismatch::new(
-                bound_knd.to_string(),
-                "Star Kind".to_string(),
-            ))?;
+            bound_knd
+                .clone()
+                .into_star()
+                .ok_or_else(|| KindMismatch::new(bound_knd.to_string(), "Star Kind".to_string()))?;
             premises.push(bound_res.into());
         }
 
-        let bound_var = bound_norm.clone().into_variant().ok_or(TypeMismatch::new(
-            bound_norm.to_string(),
-            "Variant Type".to_string(),
-        ))?;
+        let bound_var = bound_norm
+            .clone()
+            .into_variant()
+            .ok_or_else(|| TypeMismatch::new(bound_norm.to_string(), "Variant Type".to_string()))?;
         let mut rhs_tys = vec![];
         let mut rhs_knd = None;
 
@@ -79,14 +79,16 @@ where
 
             if features.kinded() {
                 let rhs_res = rhs_norm.check_kind(env.clone())?.into_kind()?;
-                let res_knd = rhs_res.ret_kind();
+                let curr_rhs_knd = rhs_res.ret_kind();
 
                 match rhs_knd {
                     None => {
-                        rhs_knd = Some(res_knd);
+                        rhs_knd = Some(curr_rhs_knd);
                     }
-                    Some(ref rhs) if *rhs != res_knd => {
-                        return Err(KindMismatch::new(rhs.to_string(), res_knd.to_string()).into());
+                    Some(ref rhs) if *rhs != curr_rhs_knd => {
+                        return Err(
+                            KindMismatch::new(rhs.to_string(), curr_rhs_knd.to_string()).into()
+                        );
                     }
                     _ => (),
                 }

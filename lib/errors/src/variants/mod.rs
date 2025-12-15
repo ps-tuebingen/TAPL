@@ -18,7 +18,6 @@ pub mod no_kinding;
 pub mod no_subtyping;
 pub mod no_typing;
 pub mod not_a_subtype;
-pub mod not_implemented;
 pub mod remaining_input;
 pub mod set_attribute;
 pub mod toml;

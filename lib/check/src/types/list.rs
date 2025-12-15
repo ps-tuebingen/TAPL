@@ -32,7 +32,7 @@ where
         let sup_list = sup
             .clone()
             .into_list()
-            .ok_or(TypeMismatch::new(sup.to_string(), "List".to_string()))?;
+            .ok_or_else(|| TypeMismatch::new(sup.to_string(), "List".to_string()))?;
         let sup_res = self.ty.check_subtype(&(*sup_list.ty), env.clone())?;
         Ok(SubtypeDerivation::list(env, self.clone(), sup.clone(), sup_res).into())
     }

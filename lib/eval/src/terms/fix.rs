@@ -26,10 +26,10 @@ where
     fn eval(self, env: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         let term_res = self.term.clone().eval(env)?;
         let term_val = term_res.val();
-        let lam_val = term_val.clone().into_lambda().ok_or(ValueMismatch::new(
-            term_val.to_string(),
-            "Lambda Value".to_string(),
-        ))?;
+        let lam_val = term_val
+            .clone()
+            .into_lambda()
+            .ok_or_else(|| ValueMismatch::new(term_val.to_string(), "Lambda Value".to_string()))?;
 
         let mut steps = term_res.congruence(&move |t| Self::new(t, self.span).into());
 

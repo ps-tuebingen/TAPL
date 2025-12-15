@@ -61,10 +61,9 @@ where
             premises.push(t_res.into());
             premises.push(handler_res.into());
         }
-        let fun: Fun<Lang> = handler_norm.clone().into_fun().ok_or(TypeMismatch::new(
-            handler_norm.to_string(),
-            "Function Type".to_string(),
-        ))?;
+        let fun: Fun<Lang> = handler_norm.clone().into_fun().ok_or_else(|| {
+            TypeMismatch::new(handler_norm.to_string(), "Function Type".to_string())
+        })?;
         if *fun.to != t_norm {
             return Err(TypeMismatch::new(fun.to.to_string(), t_norm.to_string()).into());
         }

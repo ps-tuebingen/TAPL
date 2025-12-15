@@ -26,10 +26,10 @@ where
             return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind, vec![]).into());
         }
 
-        let sup_var = sup.clone().into_variant().ok_or(TypeMismatch::new(
-            sup.to_string(),
-            "Variant Type".to_string(),
-        ))?;
+        let sup_var = sup
+            .clone()
+            .into_variant()
+            .ok_or_else(|| TypeMismatch::new(sup.to_string(), "Variant Type".to_string()))?;
         let mut inner_res = vec![];
         for (lb, ty) in &sup_var.variants {
             let self_ty = self

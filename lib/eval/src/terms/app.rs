@@ -25,10 +25,9 @@ where
     fn eval(self, env: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         let fun_res = self.fun.clone().eval(env)?;
         let fun_val = fun_res.val();
-        let lam = fun_val.clone().into_lambda().ok_or(ValueMismatch::new(
-            fun_val.to_string(),
-            "Lambda Abstraction".to_string(),
-        ))?;
+        let lam = fun_val.clone().into_lambda().ok_or_else(|| {
+            ValueMismatch::new(fun_val.to_string(), "Lambda Abstraction".to_string())
+        })?;
 
         let arg_res = self.arg.clone().eval(env)?;
         let arg_val: Lang::Value = arg_res.val();

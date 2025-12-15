@@ -32,7 +32,7 @@ where
         let sup_sink = sup
             .clone()
             .into_sink()
-            .ok_or(TypeMismatch::new(sup.to_string(), "Sink Type".to_string()))?;
+            .ok_or_else(|| TypeMismatch::new(sup.to_string(), "Sink Type".to_string()))?;
         let sup_res = sup_sink.ty.check_subtype(&(*self.ty), env.clone())?;
         Ok(SubtypeDerivation::sink(env, self.clone(), sup_sink, sup_res).into())
     }

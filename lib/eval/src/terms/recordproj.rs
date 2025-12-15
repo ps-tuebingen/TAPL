@@ -24,10 +24,10 @@ where
     fn eval(self, env: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         let term_res = self.record.eval(env)?;
         let term_val = term_res.val();
-        let rec_val = term_val.clone().into_record().ok_or(ValueMismatch::new(
-            term_val.to_string(),
-            "Record Value".to_string(),
-        ))?;
+        let rec_val = term_val
+            .clone()
+            .into_record()
+            .ok_or_else(|| ValueMismatch::new(term_val.to_string(), "Record Value".to_string()))?;
         let val = rec_val
             .records
             .get(&self.label)

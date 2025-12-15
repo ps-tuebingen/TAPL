@@ -38,10 +38,10 @@ where
             sup_norm = sup.clone();
         }
 
-        let sup_rec = sup_norm.clone().into_record().ok_or(TypeMismatch::new(
-            sup_norm.to_string(),
-            "Record Type".to_string(),
-        ))?;
+        let sup_rec = sup_norm
+            .clone()
+            .into_record()
+            .ok_or_else(|| TypeMismatch::new(sup_norm.to_string(), "Record Type".to_string()))?;
         for (lb, ty) in &sup_rec.records {
             let sub_ty = self
                 .records

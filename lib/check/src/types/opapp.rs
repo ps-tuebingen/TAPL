@@ -26,10 +26,9 @@ where
         if let Some(top) = sup.clone().into_top() {
             return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind, vec![]).into());
         }
-        let sup_op = sup.clone().into_opapp().ok_or(TypeMismatch::new(
-            sup.to_string(),
-            "Operator Application".to_string(),
-        ))?;
+        let sup_op = sup.clone().into_opapp().ok_or_else(|| {
+            TypeMismatch::new(sup.to_string(), "Operator Application".to_string())
+        })?;
         let fun_res = self.fun.check_subtype(&sup_op.fun, env.clone())?;
         if self.arg != sup_op.arg {
             return Err(TypeMismatch::new(self.arg.to_string(), sup_op.arg.to_string()).into());
@@ -61,10 +60,10 @@ where
     fn check_kind(&self, env: Environment<Self::Lang>) -> Result<Derivation<Lang>, CheckError> {
         let fun_res = self.fun.check_kind(env.clone())?.into_kind()?;
         let fun_kind = fun_res.ret_kind();
-        let (fun_from, fun_to) = fun_kind.clone().into_arrow().ok_or(KindMismatch::new(
-            fun_kind.to_string(),
-            "Arrow Kind".to_string(),
-        ))?;
+        let (fun_from, fun_to) = fun_kind
+            .clone()
+            .into_arrow()
+            .ok_or_else(|| KindMismatch::new(fun_kind.to_string(), "Arrow Kind".to_string()))?;
         let arg_res = self.arg.check_kind(env)?.into_kind()?;
         let arg_kind = arg_res.ret_kind();
         if fun_from != arg_kind {

@@ -29,10 +29,10 @@ where
             return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind, vec![]).into());
         }
 
-        let sup_src = sup.clone().into_source().ok_or(TypeMismatch::new(
-            sup.to_string(),
-            "Source Type".to_string(),
-        ))?;
+        let sup_src = sup
+            .clone()
+            .into_source()
+            .ok_or_else(|| TypeMismatch::new(sup.to_string(), "Source Type".to_string()))?;
         let inner_res = self.ty.check_subtype(&(*sup_src.ty), env.clone())?;
         Ok(SubtypeDerivation::source(env, self.clone(), sup_src, inner_res).into())
     }

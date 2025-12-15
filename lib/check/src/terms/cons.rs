@@ -53,10 +53,10 @@ where
         if features.kinded() {
             let hd_res = hd_norm.check_kind(env.clone())?.into_kind()?;
             let hd_knd = hd_res.ret_kind();
-            hd_knd.clone().into_star().ok_or(KindMismatch::new(
-                hd_knd.to_string(),
-                "Star Kind".to_string(),
-            ))?;
+            hd_knd
+                .clone()
+                .into_star()
+                .ok_or_else(|| KindMismatch::new(hd_knd.to_string(), "Star Kind".to_string()))?;
             premises.push(hd_res.into());
         }
 
@@ -76,10 +76,10 @@ where
         if features.kinded() {
             let tl_res = tail_ty_norm.check_kind(env.clone())?.into_kind()?;
             let tl_knd = tl_res.ret_kind();
-            tl_knd.clone().into_star().ok_or(KindMismatch::new(
-                tl_knd.to_string(),
-                "Star Kind".to_string(),
-            ))?;
+            tl_knd
+                .clone()
+                .into_star()
+                .ok_or_else(|| KindMismatch::new(tl_knd.to_string(), "Star Kind".to_string()))?;
             premises.push(tl_res.into());
         }
 

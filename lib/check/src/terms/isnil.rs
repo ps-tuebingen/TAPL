@@ -44,16 +44,16 @@ where
         if features.kinded() {
             let term_res = term_norm.check_kind(env.clone())?.into_kind()?;
             let term_knd = term_res.ret_kind();
-            term_knd.clone().into_star().ok_or(KindMismatch::new(
-                term_knd.to_string(),
-                "Star Kind".to_string(),
-            ))?;
+            term_knd
+                .clone()
+                .into_star()
+                .ok_or_else(|| KindMismatch::new(term_knd.to_string(), "Star Kind".to_string()))?;
             premises.push(term_res.into());
         }
-        term_norm.clone().into_list().ok_or(TypeMismatch::new(
-            term_norm.to_string(),
-            "List Type".to_string(),
-        ))?;
+        term_norm
+            .clone()
+            .into_list()
+            .ok_or_else(|| TypeMismatch::new(term_norm.to_string(), "List Type".to_string()))?;
 
         let conc = TypingConclusion::new(env, self.clone(), Bool::new());
         let deriv = TypingDerivation::isnil(conc, premises);

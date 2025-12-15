@@ -15,94 +15,91 @@ where
     Self: Value + Into<<Self::Lang as Language>::Term>,
 {
     /// Turn `Self` into [`Lambda`]
-
     fn into_lambda(self) -> Option<Lambda<Self::Lang>> {
         None
     }
-    /// Turn `Self` into [`TyLambda`]
 
+    /// Turn `Self` into [`TyLambda`]
     fn into_tylambda(self) -> Option<TyLambda<Self::Lang>> {
         None
     }
-    /// Turn `Self` into [`LambdaSub`]
 
+    /// Turn `Self` into [`LambdaSub`]
     fn into_lambdasub(self) -> Option<LambdaSub<Self::Lang>> {
         None
     }
-    /// Turn `Self` into [`Pair`]
 
+    /// Turn `Self` into [`Pair`]
     fn into_pair(self) -> Option<Pair<Self::Lang>> {
         None
     }
 
     /// Turn `Self` into [`Record`]
-
     fn into_record(self) -> Option<Record<Self::Lang>> {
         None
     }
-    /// Turn `Self` into [`Tuple`]
 
+    /// Turn `Self` into [`Tuple`]
     fn into_tuple(self) -> Option<Tuple<Self::Lang>> {
         None
     }
-    /// Turn `Self` into [`Left`]
 
+    /// Turn `Self` into [`Left`]
     fn into_left(self) -> Option<Left<Self::Lang>> {
         None
     }
 
     /// Turn `Self` into [`Right`]
-
     fn into_right(self) -> Option<Right<Self::Lang>> {
         None
     }
-    /// Turn `Self` into [`Variant`]
 
+    /// Turn `Self` into [`Variant`]
     fn into_variant(self) -> Option<Variant<Self::Lang>> {
         None
     }
-    /// Turn `Self` into [`Nothing`]
 
+    /// Turn `Self` into [`Nothing`]
     fn into_nothing(self) -> Option<Nothing<Self::Lang>> {
         None
     }
-    /// Turn `Self` into [`Something`]
 
+    /// Turn `Self` into [`Something`]
     fn into_something(self) -> Option<Something<Self::Lang>> {
         None
     }
-    /// Turn `Self` into [`Nil`]
 
+    /// Turn `Self` into [`Nil`]
     fn into_nil(self) -> Option<Nil<Self::Lang>> {
         None
     }
-    /// Turn `Self` into [`Cons`]
 
+    /// Turn `Self` into [`Cons`]
     fn into_cons(self) -> Option<Cons<Self::Lang>> {
         None
     }
-    /// Turn `Self` into [`Loc`]
 
+    /// Turn `Self` into [`Loc`]
     fn into_loc(self) -> Option<Loc<Self::Lang>> {
         None
     }
-    /// Turn `Self` into [`Raise`]
 
+    /// Turn `Self` into [`Raise`]
     fn into_raise(self) -> Option<Raise<Self::Lang>> {
         None
     }
-    /// Turn `Self` into [`Exception`]
 
+    /// Turn `Self` into [`Exception`]
     fn into_exception(self) -> Option<Exception<Self::Lang>> {
         None
     }
-    /// Turn `Self` into [`Fold`]
 
+    /// Turn `Self` into [`Fold`]
     fn into_fold(self) -> Option<Fold<Self::Lang>> {
         None
     }
-    /// Turn `Self` into [`Pack`]
 
+    /// Turn `Self` into [`Pack`]
     fn into_pack(self) -> Option<Pack<Self::Lang>> {
         None
     }

@@ -1,5 +1,7 @@
 use crate::{GroupParse, Parse, Rule, pair_to_n_inner};
-use errors::{MissingInput, UndefinedMain, UnexpectedRule, parse_error::ParserError};
+use errors::{
+    DuplicateDefinition, MissingInput, UndefinedMain, UnexpectedRule, parse_error::ParserError,
+};
 use pest::iterators::Pair;
 use syntax::{definition::Definition, language::Language, program::Program};
 
@@ -29,6 +31,9 @@ where
             match def_rule.as_rule() {
                 Rule::top_level_def => {
                     let def = Definition::<Lang>::from_pair(def_rule, ())?;
+                    if defs.iter().any(|df| df.name == def.name) {
+                        return Err(DuplicateDefinition::new(&def.name).into());
+                    }
                     defs.push(def);
                 }
                 Rule::main_def => {

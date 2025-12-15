@@ -45,10 +45,10 @@ where
             ty_norm = self.ty.clone();
         }
 
-        let sum_ty = ty_norm.clone().into_sum().ok_or(TypeMismatch::new(
-            ty_norm.to_string(),
-            "Sum Type".to_string(),
-        ))?;
+        let sum_ty = ty_norm
+            .clone()
+            .into_sum()
+            .ok_or_else(|| TypeMismatch::new(ty_norm.to_string(), "Sum Type".to_string()))?;
         if features.kinded() {
             let left_res = left_norm.check_kind(env.clone())?.into_kind()?;
             let sum_res = sum_ty.check_kind(env.clone())?.into_kind()?;

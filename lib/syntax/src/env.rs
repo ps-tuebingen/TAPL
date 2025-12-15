@@ -47,6 +47,7 @@ where
     }
 
     /// Look up the type of a variable
+    #[must_use]
     pub fn get_var(&self, v: &Var) -> Option<Lang::Type> {
         let mut res = self.var_bindings.get(v);
         if res.is_none() {
@@ -61,6 +62,7 @@ where
     }
 
     /// Look up the kind of a type variable
+    #[must_use]
     pub fn get_tyvar_kind(&self, v: &TypeVar) -> Option<Kind> {
         self.tyvar_bindings.get(v).cloned()
     }
@@ -71,6 +73,7 @@ where
     }
 
     /// Get the supertype of a type variable
+    #[must_use]
     pub fn get_tyvar_super(&self, v: &TypeVar) -> Option<Lang::Type> {
         self.tyvar_super.get(v).cloned()
     }
@@ -81,6 +84,7 @@ where
     }
 
     /// Get the type of a location
+    #[must_use]
     pub fn get_loc(&self, l: &Location) -> Option<Lang::Type> {
         self.location_bindings.get(l).cloned()
     }

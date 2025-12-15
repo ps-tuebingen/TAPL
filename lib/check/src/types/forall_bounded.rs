@@ -32,10 +32,9 @@ where
             return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind, vec![]).into());
         }
 
-        let other_forall = sup.clone().into_forall_bounded().ok_or(TypeMismatch::new(
-            sup.to_string(),
-            "Bounded universal type".to_string(),
-        ))?;
+        let other_forall = sup.clone().into_forall_bounded().ok_or_else(|| {
+            TypeMismatch::new(sup.to_string(), "Bounded universal type".to_string())
+        })?;
 
         if self.var != other_forall.var {
             return Err(NameMismatch::new(&other_forall.var, &self.var).into());

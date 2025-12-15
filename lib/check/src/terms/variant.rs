@@ -47,10 +47,10 @@ where
             term_ty_norm = term_ty;
         }
 
-        let var_ty = ty_norm.clone().into_variant().ok_or(TypeMismatch::new(
-            ty_norm.to_string(),
-            "Variant Type".to_string(),
-        ))?;
+        let var_ty = ty_norm
+            .clone()
+            .into_variant()
+            .ok_or_else(|| TypeMismatch::new(ty_norm.to_string(), "Variant Type".to_string()))?;
         let lb_ty = var_ty
             .variants
             .get(&self.label)

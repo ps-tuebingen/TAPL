@@ -45,14 +45,14 @@ where
             let knd = knd_res.ret_kind();
             knd.clone()
                 .into_star()
-                .ok_or(KindMismatch::new(knd.to_string(), "Star Kind".to_string()))?;
+                .ok_or_else(|| KindMismatch::new(knd.to_string(), "Star Kind".to_string()))?;
             premises.push(knd_res.into());
         }
 
-        let fun: Fun<Lang> = fun_norm.clone().into_fun().ok_or(TypeMismatch::new(
-            fun_norm.to_string(),
-            "Function Type".to_string(),
-        ))?;
+        let fun: Fun<Lang> = fun_norm
+            .clone()
+            .into_fun()
+            .ok_or_else(|| TypeMismatch::new(fun_norm.to_string(), "Function Type".to_string()))?;
         let arg_res = self.arg.check(env.clone())?;
         let arg_ty = arg_res.ret_ty();
         premises.push(arg_res);
@@ -71,7 +71,7 @@ where
             let knd = knd_res.ret_kind();
             knd.clone()
                 .into_star()
-                .ok_or(KindMismatch::new(knd.to_string(), "Star Kind".to_string()))?;
+                .ok_or_else(|| KindMismatch::new(knd.to_string(), "Star Kind".to_string()))?;
             premises.push(knd_res.into());
         }
 

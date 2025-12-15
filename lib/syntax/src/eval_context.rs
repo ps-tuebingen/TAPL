@@ -58,6 +58,7 @@ where
     }
 
     /// Look up a definition in the context
+    #[must_use]
     pub fn get_name(&self, n: &Name) -> Option<Lang::Term> {
         self.defs.get(n).cloned()
     }
@@ -68,6 +69,7 @@ where
     }
 
     /// Look up a location in the store
+    #[must_use]
     pub fn get_location(&self, loc: Location) -> Option<Lang::Value> {
         self.locs.get(&loc).cloned()
     }

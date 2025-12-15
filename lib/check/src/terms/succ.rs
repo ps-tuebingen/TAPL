@@ -44,17 +44,17 @@ where
         if features.kinded() {
             let inner_res = inner_norm.check_kind(env.clone())?.into_kind()?;
             let inner_knd = inner_res.ret_kind();
-            inner_knd.clone().into_star().ok_or(KindMismatch::new(
-                inner_knd.to_string(),
-                "Star Kind".to_string(),
-            ))?;
+            inner_knd
+                .clone()
+                .into_star()
+                .ok_or_else(|| KindMismatch::new(inner_knd.to_string(), "Star Kind".to_string()))?;
             premises.push(inner_res.into());
         }
 
         let nat = inner_norm
             .clone()
             .into_nat()
-            .ok_or(TypeMismatch::new(inner_norm.to_string(), "Nat".to_string()))?;
+            .ok_or_else(|| TypeMismatch::new(inner_norm.to_string(), "Nat".to_string()))?;
 
         let conc = TypingConclusion::new(env, self.clone(), nat);
         let deriv = TypingDerivation::succ(conc, premises);

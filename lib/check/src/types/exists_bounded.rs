@@ -44,13 +44,9 @@ where
             self_norm = Rc::unwrap_or_clone(self.sup_ty.clone());
         }
 
-        let other_exists = sup_norm
-            .clone()
-            .into_exists_bounded()
-            .ok_or(TypeMismatch::new(
-                sup_norm.to_string(),
-                "Bounded existential Type".to_string(),
-            ))?;
+        let other_exists = sup_norm.clone().into_exists_bounded().ok_or_else(|| {
+            TypeMismatch::new(sup_norm.to_string(), "Bounded existential Type".to_string())
+        })?;
         if *other_exists.sup_ty != self_norm {
             return Err(
                 TypeMismatch::new(other_exists.sup_ty.to_string(), self_norm.to_string()).into(),

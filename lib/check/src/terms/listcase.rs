@@ -35,17 +35,17 @@ where
         if features.kinded() {
             let bound_res = bound_norm.check_kind(env.clone())?.into_kind()?;
             let bound_knd = bound_res.ret_kind();
-            bound_knd.clone().into_star().ok_or(KindMismatch::new(
-                bound_knd.to_string(),
-                "Star Kind".to_string(),
-            ))?;
+            bound_knd
+                .clone()
+                .into_star()
+                .ok_or_else(|| KindMismatch::new(bound_knd.to_string(), "Star Kind".to_string()))?;
             premises.push(bound_res.into());
         }
 
-        let bound_list = bound_norm.clone().into_list().ok_or(TypeMismatch::new(
-            bound_norm.to_string(),
-            "List Type".to_string(),
-        ))?;
+        let bound_list = bound_norm
+            .clone()
+            .into_list()
+            .ok_or_else(|| TypeMismatch::new(bound_norm.to_string(), "List Type".to_string()))?;
 
         let nil_res = self.nil_rhs.check(env.clone())?;
         let nil_ty = nil_res.ret_ty();

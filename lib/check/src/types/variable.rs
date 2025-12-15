@@ -26,7 +26,7 @@ where
 
         let ty_super = env
             .get_tyvar_super(&self.v)
-            .ok_or(FreeTypeVariable::new(&self.v))?;
+            .ok_or_else(|| FreeTypeVariable::new(&self.v))?;
 
         let sup_norm;
         if features.normalizing() {
@@ -66,7 +66,7 @@ where
     fn check_kind(&self, env: Environment<Self::Lang>) -> Result<Derivation<Lang>, CheckError> {
         let knd = env
             .get_tyvar_kind(&self.v)
-            .ok_or(FreeTypeVariable::new(&self.v))?;
+            .ok_or_else(|| FreeTypeVariable::new(&self.v))?;
         Ok(KindingDerivation::var(&self.v, knd).into())
     }
 
