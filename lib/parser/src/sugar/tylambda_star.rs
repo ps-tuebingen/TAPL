@@ -1,7 +1,7 @@
-use crate::{GroupParse, Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, Parse, Rule, pair_span, pair_to_n_inner};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
-use syntax::{kinds::Kind, language::Language, terms::TyLambda};
+use syntax::{kinds::Kind, language::Language, span::Span, terms::TyLambda};
 
 pub struct TyLambdaStar<Lang>
 where
@@ -11,6 +11,7 @@ where
 {
     var: String,
     term: Lang::Term,
+    span: Span,
 }
 
 impl<Lang> TyLambdaStar<Lang>
@@ -35,11 +36,12 @@ where
     const RULE: Rule = Rule::ty_lambda_star_term;
 
     fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
+        let span = pair_span(&p);
         let mut inner = pair_to_n_inner(p, vec!["Type Variable", "Type Abstraction Body"])?;
         let var = inner.remove(0).as_str().trim().to_owned();
         let term_rule = inner.remove(0);
         let term = Lang::Term::from_pair(term_rule, ())?;
-        Ok(Self { var, term })
+        Ok(Self { var, term, span })
     }
 }
 
@@ -50,6 +52,6 @@ where
     Lang::Type: GroupParse,
 {
     fn from(ts: TyLambdaStar<Lang>) -> Self {
-        Self::new(&ts.var, Kind::Star, ts.term)
+        Self::new(&ts.var, Kind::Star, ts.term, ts.span)
     }
 }

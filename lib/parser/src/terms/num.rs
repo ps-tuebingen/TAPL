@@ -1,4 +1,4 @@
-use crate::{GroupParse, Parse, Rule};
+use crate::{GroupParse, Parse, Rule, pair_span};
 use errors::{UnknownKeyword, parse_error::ParserError};
 use pest::iterators::Pair;
 use syntax::{language::Language, terms::Num};
@@ -14,9 +14,10 @@ where
     const RULE: Rule = Rule::number;
 
     fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
+        let span = pair_span(&p);
         let num = p.as_str().trim().parse::<i64>().map_err(|_| {
             <UnknownKeyword as Into<ParserError>>::into(UnknownKeyword::new(p.as_str()))
         })?;
-        Ok(Self::new(num))
+        Ok(Self::new(num, span))
     }
 }

@@ -9,6 +9,7 @@ mod untyped;
 use errors::{MissingInput, RemainingInput, parse_error::ParserError};
 use pest::{Parser, iterators::Pair};
 use pest_derive::Parser;
+use syntax::span::{Position, Span};
 
 #[derive(Parser)]
 #[grammar = "../../parser/src/grammar.pest"]
@@ -122,4 +123,21 @@ pub fn pair_to_n_inner<'a>(
         return Err(RemainingInput::new(&format!("{n:?}")).into());
     }
     Ok(pairs)
+}
+
+/// Get the [`syntax::span::Span`] from a rule
+pub fn pair_span(p: &Pair<'_, Rule>) -> Span {
+    let span = p.as_span();
+    let (start_line, start_col) = span.start_pos().line_col();
+    let (end_line, end_col) = span.end_pos().line_col();
+    Span {
+        start: Position {
+            line: start_line as u64,
+            char: start_col as u64,
+        },
+        end: Position {
+            line: end_line as u64,
+            char: end_col as u64,
+        },
+    }
 }

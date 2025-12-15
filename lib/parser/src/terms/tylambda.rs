@@ -1,4 +1,4 @@
-use crate::{GroupParse, Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, Parse, Rule, pair_span, pair_to_n_inner};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
 use syntax::{kinds::Kind, language::Language, terms::TyLambda};
@@ -14,6 +14,7 @@ where
     const RULE: Rule = Rule::ty_lambda_kinded_term;
 
     fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
+        let span = pair_span(&p);
         let mut inner = pair_to_n_inner(
             p,
             vec!["TyLambda Variable", "TyLambda Kind", "TyLambda Term"],
@@ -23,6 +24,6 @@ where
         let kind = Kind::from_pair(kind_rule, ())?;
         let term_rule = inner.remove(0);
         let term = Lang::Term::from_pair(term_rule, ())?;
-        Ok(Self::new(var, kind, term))
+        Ok(Self::new(var, kind, term, span))
     }
 }

@@ -1,4 +1,4 @@
-use crate::{GroupParse, Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, Parse, Rule, pair_span, pair_to_n_inner};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
 use syntax::{language::Language, terms::Head};
@@ -14,6 +14,7 @@ where
     const RULE: Rule = Rule::head_term;
 
     fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
+        let span = pair_span(&p);
         let mut inner = pair_to_n_inner(p, vec!["Head Type", "Head Argument"])?;
 
         let ty_rule = inner.remove(0);
@@ -22,6 +23,6 @@ where
         let term_pair = inner.remove(0);
         let term = Lang::Term::from_pair(term_pair, ())?;
 
-        Ok(Self::new(term, ty))
+        Ok(Self::new(term, ty, span))
     }
 }

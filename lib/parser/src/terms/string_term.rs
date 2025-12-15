@@ -3,6 +3,7 @@ use errors::{UnknownKeyword, parse_error::ParserError};
 use pest::iterators::Pair;
 use syntax::{
     language::Language,
+    span::Span,
     terms::{False, Num, True, Unit},
 };
 
@@ -44,12 +45,12 @@ where
 
     /// Add [`Unit`] to `Self`
     #[must_use]
-    pub fn with_unit(self) -> Self
+    pub fn with_unit(self, span: Span) -> Self
     where
         Unit<Lang>: Into<Lang::Term>,
     {
         Self {
-            unit: Some(Unit::new().into()),
+            unit: Some(Unit::new(span).into()),
             zero: self.zero,
             fls: self.fls,
             tru: self.tru,
@@ -58,13 +59,13 @@ where
 
     /// Add [`Num`](0) to `Self`
     #[must_use]
-    pub fn with_zero(self) -> Self
+    pub fn with_zero(self, span: Span) -> Self
     where
         Num<Lang>: Into<Lang::Term>,
     {
         Self {
             unit: self.unit,
-            zero: Some(Num::new(0).into()),
+            zero: Some(Num::new(0, span).into()),
             fls: self.fls,
             tru: self.tru,
         }
@@ -72,21 +73,21 @@ where
 
     /// Add [`False`] to `Self`
     #[must_use]
-    pub fn with_false(self) -> Self
+    pub fn with_false(self, span: Span) -> Self
     where
         False<Lang>: Into<Lang::Term>,
     {
         Self {
             unit: self.unit,
             zero: self.zero,
-            fls: Some(False::new().into()),
+            fls: Some(False::new(span).into()),
             tru: self.tru,
         }
     }
 
     /// Add [`True`] to `Self`
     #[must_use]
-    pub fn with_true(self) -> Self
+    pub fn with_true(self, span: Span) -> Self
     where
         True<Lang>: Into<Lang::Term>,
     {
@@ -94,7 +95,7 @@ where
             unit: self.unit,
             zero: self.zero,
             fls: self.fls,
-            tru: Some(True::new().into()),
+            tru: Some(True::new(span).into()),
         }
     }
 

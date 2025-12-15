@@ -1,4 +1,4 @@
-use crate::{GroupParse, Parse, Rule};
+use crate::{GroupParse, Parse, Rule, pair_span};
 use errors::{MissingInput, parse_error::ParserError};
 use pest::iterators::Pair;
 use std::collections::HashMap;
@@ -15,6 +15,7 @@ where
     const RULE: Rule = Rule::record_term;
 
     fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
+        let span = pair_span(&p);
         let mut inner = p.into_inner();
         let mut recs = HashMap::new();
         while let Some(label_rule) = inner.next() {
@@ -25,6 +26,6 @@ where
             let term = Lang::Term::from_pair(term_rule, ())?;
             recs.insert(label, term);
         }
-        Ok(Self::new(recs))
+        Ok(Self::new(recs, span))
     }
 }

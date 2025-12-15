@@ -1,4 +1,4 @@
-use crate::{GroupParse, Parse, Rule};
+use crate::{GroupParse, Parse, Rule, pair_span};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
 use syntax::{language::Language, terms::Snd};
@@ -13,7 +13,8 @@ where
 
     const RULE: Rule = Rule::fst_term;
 
-    fn from_pair(_: Pair<'_, Rule>, t: Self::LeftRecArg) -> Result<Self, ParserError> {
-        Ok(Self::new(t))
+    fn from_pair(p: Pair<'_, Rule>, t: Self::LeftRecArg) -> Result<Self, ParserError> {
+        let span = pair_span(&p);
+        Ok(Self::new(t, span))
     }
 }

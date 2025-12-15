@@ -1,7 +1,7 @@
-use crate::{GroupParse, Parse, Rule};
+use crate::{GroupParse, Parse, Rule, pair_span};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
-use syntax::{language::Language, terms::Fst};
+use syntax::{language::Language, span::Spanned, terms::Fst};
 
 impl<Lang> Parse for Fst<Lang>
 where
@@ -13,7 +13,8 @@ where
 
     const RULE: Rule = Rule::fst_term;
 
-    fn from_pair(_: Pair<'_, Rule>, t: Self::LeftRecArg) -> Result<Self, ParserError> {
-        Ok(Self::new(t))
+    fn from_pair(p: Pair<'_, Rule>, t: Self::LeftRecArg) -> Result<Self, ParserError> {
+        let span = pair_span(&p).extend(&t.span());
+        Ok(Self::new(t, span))
     }
 }

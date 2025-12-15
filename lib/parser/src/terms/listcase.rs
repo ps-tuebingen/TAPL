@@ -1,4 +1,4 @@
-use crate::{GroupParse, Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, Parse, Rule, pair_span, pair_to_n_inner};
 use errors::{UnexpectedRule, parse_error::ParserError};
 use pest::iterators::Pair;
 use syntax::{language::Language, terms::ListCase};
@@ -14,6 +14,7 @@ where
     const RULE: Rule = Rule::listcase_term;
 
     fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
+        let span = pair_span(&p);
         let mut inner = pair_to_n_inner(
             p,
             vec![
@@ -49,6 +50,8 @@ where
         let tail_var = cons_inner.remove(0).as_str().trim();
         let cons_rhs = Lang::Term::from_pair(cons_inner.remove(0), ())?;
 
-        Ok(Self::new(bound_term, nil_rhs, head_var, tail_var, cons_rhs))
+        Ok(Self::new(
+            bound_term, nil_rhs, head_var, tail_var, cons_rhs, span,
+        ))
     }
 }

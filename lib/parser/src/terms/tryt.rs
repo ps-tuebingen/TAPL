@@ -1,4 +1,4 @@
-use crate::{GroupParse, Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, Parse, Rule, pair_span, pair_to_n_inner};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
 use syntax::{language::Language, terms::Try};
@@ -14,6 +14,7 @@ where
     const RULE: Rule = Rule::try_term;
 
     fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
+        let span = pair_span(&p);
         let mut inner = pair_to_n_inner(p, vec!["Try Term", "With Term"])?;
 
         let tryt_rule = inner.remove(0);
@@ -21,6 +22,6 @@ where
         let with_rule = inner.remove(0);
         let witht = Lang::Term::from_pair(with_rule, ())?;
 
-        Ok(Self::new(try_t, witht))
+        Ok(Self::new(try_t, witht, span))
     }
 }

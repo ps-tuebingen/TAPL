@@ -1,4 +1,4 @@
-use crate::{GroupParse, Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, Parse, Rule, pair_span, pair_to_n_inner};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
 use syntax::{language::Language, terms::RecordProj};
@@ -14,10 +14,11 @@ where
     const RULE: Rule = Rule::record_proj;
 
     fn from_pair(p: Pair<'_, Rule>, t: Self::LeftRecArg) -> Result<Self, ParserError> {
+        let span = pair_span(&p);
         let label = pair_to_n_inner(p, vec!["Projection Target"])?
             .remove(0)
             .as_str()
             .trim();
-        Ok(Self::new(t, label))
+        Ok(Self::new(t, label, span))
     }
 }

@@ -1,4 +1,4 @@
-use crate::{GroupParse, Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, Parse, Rule, pair_span, pair_to_n_inner};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
 use syntax::{language::Language, terms::Ref};
@@ -14,12 +14,13 @@ where
     const RULE: Rule = Rule::ref_term;
 
     fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
+        let span = pair_span(&p);
         let mut inner_rules = pair_to_n_inner(p, vec!["Ref Term"])?;
         let term_rule = inner_rules.remove(0);
         let term = Lang::Term::from_pair(
             pair_to_n_inner(term_rule, vec!["Ref Argument"])?.remove(0),
             (),
         )?;
-        Ok(Self::new(term))
+        Ok(Self::new(term, span))
     }
 }

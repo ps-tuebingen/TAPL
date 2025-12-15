@@ -1,4 +1,4 @@
-use crate::{GroupParse, Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, Parse, Rule, pair_span, pair_to_n_inner};
 use errors::{MissingInput, parse_error::ParserError};
 use pest::iterators::Pair;
 use syntax::{
@@ -17,6 +17,7 @@ where
     const RULE: Rule = Rule::variantcase_term;
 
     fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
+        let span = pair_span(&p);
         let mut inner = p.into_inner();
         let bound_rule = inner.next().ok_or_else(|| {
             <MissingInput as Into<ParserError>>::into(MissingInput::new("Case Bound Term"))
@@ -26,7 +27,7 @@ where
         for pattern_rule in inner {
             patterns.push(VariantPattern::<Lang>::from_pair(pattern_rule, ())?);
         }
-        Ok(Self::new(bound_term, patterns))
+        Ok(Self::new(bound_term, patterns, span))
     }
 }
 
@@ -41,6 +42,7 @@ where
     const RULE: Rule = Rule::variant_pattern;
 
     fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
+        let span = pair_span(&p);
         let mut inner = pair_to_n_inner(
             p,
             vec![
@@ -53,6 +55,6 @@ where
         let var = inner.remove(0).as_str().trim();
         let term_rule = inner.remove(0);
         let term = Lang::Term::from_pair(term_rule, ())?;
-        Ok(Self::new(label, var, term))
+        Ok(Self::new(label, var, term, span))
     }
 }

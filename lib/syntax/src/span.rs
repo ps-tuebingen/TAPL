@@ -2,18 +2,18 @@
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Position {
     /// Source Line
-    line: u64,
+    pub line: u64,
     /// Source Char / Column
-    char: u64,
+    pub char: u64,
 }
 
 /// A Source Span
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Span {
     /// Start position
-    start: Position,
+    pub start: Position,
     /// End position
-    end: Position,
+    pub end: Position,
 }
 
 impl Span {

@@ -1,4 +1,4 @@
-use crate::{GroupParse, Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, Parse, Rule, pair_span, pair_to_n_inner};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
 use syntax::{language::Language, terms::Cons};
@@ -14,6 +14,7 @@ where
     const RULE: Rule = Rule::cons_term;
 
     fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
+        let span = pair_span(&p);
         let mut inner = pair_to_n_inner(
             p,
             vec!["Cons Type", "First Const Argument", "Second Cons Argument"],
@@ -28,6 +29,6 @@ where
         let snd_pair = inner.remove(0);
         let snd = Lang::Term::from_pair(snd_pair, ())?;
 
-        Ok(Self::new(fst, snd, ty))
+        Ok(Self::new(fst, snd, ty, span))
     }
 }

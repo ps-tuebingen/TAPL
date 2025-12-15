@@ -1,4 +1,4 @@
-use crate::{GroupParse, Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, Parse, Rule, pair_span, pair_to_n_inner};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
 use syntax::{language::Language, terms::Variant};
@@ -14,6 +14,7 @@ where
     const RULE: Rule = Rule::variant_term;
 
     fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
+        let span = pair_span(&p);
         let mut inner = pair_to_n_inner(p, vec!["Variant Label", "Variant Term", "Variant Type"])?;
 
         let var_pair = inner.remove(0);
@@ -25,6 +26,6 @@ where
         let ty_pair = inner.remove(0);
         let variant_ty = Lang::Type::from_pair(ty_pair, ())?;
 
-        Ok(Self::new(var, variant_term, variant_ty))
+        Ok(Self::new(var, variant_term, variant_ty, span))
     }
 }

@@ -1,7 +1,7 @@
-use crate::{GroupParse, Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, Parse, Rule, pair_span, pair_to_n_inner};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
-use syntax::{language::Language, terms::LambdaSub, types::Top};
+use syntax::{language::Language, span::Span, terms::LambdaSub, types::Top};
 
 pub struct LambdaSubStar<Lang>
 where
@@ -11,6 +11,7 @@ where
 {
     var: String,
     body: Lang::Term,
+    span: Span,
 }
 
 impl<Lang> LambdaSubStar<Lang>
@@ -38,11 +39,12 @@ where
     const RULE: Rule = Rule::ty_lambda_star_term;
 
     fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
+        let span = pair_span(&p);
         let mut inner = pair_to_n_inner(p, vec!["Type Variable", "Type Abstraction Body"])?;
         let var = inner.remove(0).as_str().trim().to_owned();
         let body_rule = inner.remove(0);
         let body = Lang::Term::from_pair(body_rule, ())?;
-        Ok(Self { var, body })
+        Ok(Self { var, body, span })
     }
 }
 
@@ -54,6 +56,6 @@ where
     Top<Lang>: Into<Lang::Type>,
 {
     fn from(ls: LambdaSubStar<Lang>) -> Self {
-        Self::new_unbounded(&ls.var, ls.body)
+        Self::new_unbounded(&ls.var, ls.body, ls.span)
     }
 }

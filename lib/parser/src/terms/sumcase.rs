@@ -1,4 +1,4 @@
-use crate::{GroupParse, Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, Parse, Rule, pair_span, pair_to_n_inner};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
 use syntax::{language::Language, terms::SumCase};
@@ -13,6 +13,7 @@ where
     const RULE: Rule = Rule::sumcase_term;
 
     fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
+        let span = pair_span(&p);
         let mut inner = pair_to_n_inner(
             p,
             vec![
@@ -28,7 +29,7 @@ where
         let (left_var, right_var, left_term, right_term) =
             pairs_to_sum_patterns::<Lang>(fst_rule, snd_rule)?;
         Ok(Self::new(
-            bound_term, &left_var, left_term, &right_var, right_term,
+            bound_term, &left_var, left_term, &right_var, right_term, span,
         ))
     }
 }
@@ -50,6 +51,7 @@ where
     let left_var = left_inner.remove(0).as_str().to_owned();
     let term_rule = left_inner.remove(0);
     let left_term = Lang::Term::from_pair(term_rule, ())?;
+
     let mut right_inner = pair_to_n_inner(right_rule, vec!["Right Variable", "Right Term"])?;
     let right_var = right_inner.remove(0).as_str().to_owned();
     let term_rule = right_inner.remove(0);

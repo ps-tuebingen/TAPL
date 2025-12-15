@@ -1,4 +1,4 @@
-use crate::{GroupParse, Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, Parse, Rule, pair_span, pair_to_n_inner};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
 use syntax::{language::Language, terms::Something};
@@ -14,11 +14,12 @@ where
     const RULE: Rule = Rule::some_term;
 
     fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
+        let span = pair_span(&p);
         let arg_pair = pair_to_n_inner(p, vec!["Something Argument"])?.remove(0);
         let arg = Lang::Term::from_pair(
             pair_to_n_inner(arg_pair, vec!["Something Inner"])?.remove(0),
             (),
         )?;
-        Ok(Self::new(arg))
+        Ok(Self::new(arg, span))
     }
 }

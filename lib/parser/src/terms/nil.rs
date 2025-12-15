@@ -1,4 +1,4 @@
-use crate::{GroupParse, Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, Parse, Rule, pair_span, pair_to_n_inner};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
 use syntax::{language::Language, terms::Nil};
@@ -14,9 +14,10 @@ where
     const RULE: Rule = Rule::nil_term;
 
     fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
+        let span = pair_span(&p);
         let ty_pair = pair_to_n_inner(p, vec!["Nil Type"])?.remove(0);
         let ty = Lang::Type::from_pair(ty_pair, ())?;
 
-        Ok(Self::new(ty))
+        Ok(Self::new(ty, span))
     }
 }

@@ -1,4 +1,4 @@
-use crate::{GroupParse, Parse, Rule};
+use crate::{GroupParse, Parse, Rule, pair_span};
 use errors::{MissingInput, RemainingInput, parse_error::ParserError};
 use pest::iterators::Pair;
 use syntax::{language::Language, terms::Tail};
@@ -14,6 +14,7 @@ where
     const RULE: Rule = Rule::tail_term;
 
     fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
+        let span = pair_span(&p);
         let mut inner = p.into_inner();
         let ty_rule = inner.next().ok_or_else(|| MissingInput::new("Head Type"))?;
         let ty = Lang::Type::from_pair(ty_rule, ())?;
@@ -26,6 +27,6 @@ where
         if let Some(next) = inner.next() {
             return Err(RemainingInput::new(&format!("{:?}", next.as_rule())).into());
         }
-        Ok(Self::new(term, ty))
+        Ok(Self::new(term, ty, span))
     }
 }

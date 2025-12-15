@@ -1,4 +1,4 @@
-use crate::{GroupParse, Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, Parse, Rule, pair_span, pair_to_n_inner};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
 use syntax::{language::Language, terms::SomeCase};
@@ -13,6 +13,7 @@ where
     const RULE: Rule = Rule::somecase_term;
 
     fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
+        let span = pair_span(&p);
         let mut inner = pair_to_n_inner(
             p,
             vec!["Case Bound term", "Some/None Pattern", "Some/None Pattern"],
@@ -31,6 +32,6 @@ where
         let some_var = some_inner.remove(0).as_str().to_owned();
         let some_term_rule = some_inner.remove(0);
         let some_term = Lang::Term::from_pair(some_term_rule, ())?;
-        Ok(Self::new(bound_term, none_term, &some_var, some_term))
+        Ok(Self::new(bound_term, none_term, &some_var, some_term, span))
     }
 }

@@ -29,7 +29,7 @@ where
         Lambda<Lang>: Into<Lang::Term>,
         Unit<Lang>: Into<Lang::Type>,
     {
-        App::new(Lambda::new("_", Unit::new(), self.snd), self.fst).into()
+        App::seq(self.fst, self.snd).into()
     }
 }
 
