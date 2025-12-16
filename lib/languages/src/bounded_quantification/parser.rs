@@ -31,16 +31,21 @@ impl GroupParse for Term {
             Rule::pred_term => Ok(Pred::from_pair(p, ())?.into()),
             Rule::number => Ok(Num::from_pair(p, ())?.into()),
             Rule::variable => Ok(Variable::new(p.as_str().trim(), span).into()),
-            r => Err(UnexpectedRule::new(&format!("{r:?}"), "Non Left-Recursive Term").into()),
+            r => {
+                Err(UnexpectedRule::new(&format!("{r:?}"), "Non Left-Recursive Term", span).into())
+            }
         }
     }
 
     fn from_pair_leftrec(p: Pair<'_, Rule>, t: Self) -> Result<Self, ParserError> {
+        let span = pair_span(&p);
         match p.as_rule() {
             Rule::record_proj => Ok(RecordProj::from_pair(p, t)?.into()),
             Rule::tyapp => Ok(TyApp::from_pair(p, t)?.into()),
             Rule::term => Ok(App::from_pair(p, t)?.into()),
-            r => Err(UnexpectedRule::new(&format!("{r:?}"), "Type or Term Application").into()),
+            r => {
+                Err(UnexpectedRule::new(&format!("{r:?}"), "Type or Term Application", span).into())
+            }
         }
     }
 }
@@ -49,6 +54,7 @@ impl GroupParse for Type {
     const RULE: Rule = Rule::r#type;
 
     fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Self, ParserError> {
+        let span = pair_span(&p);
         match p.as_rule() {
             Rule::const_type => Ok(StringTy::<BoundedQuantification>::new()
                 .with_nat()
@@ -65,14 +71,17 @@ impl GroupParse for Type {
             Rule::record_type => Ok(RecordTy::from_pair(p, ())?.into()),
             Rule::paren_type => Self::from_pair(pair_to_n_inner(p, vec!["Type"])?.remove(0), ()),
             Rule::type_variable => Ok(TypeVariable::new(p.as_str().trim()).into()),
-            r => Err(UnexpectedRule::new(&format!("{r:?}"), "Non Left-Recursive Type").into()),
+            r => {
+                Err(UnexpectedRule::new(&format!("{r:?}"), "Non Left-Recursive Type", span).into())
+            }
         }
     }
 
     fn from_pair_leftrec(p: Pair<'_, Rule>, ty: Self) -> Result<Self, ParserError> {
+        let span = pair_span(&p);
         match p.as_rule() {
             Rule::fun_type => Ok(Fun::from_pair(p, ty)?.into()),
-            r => Err(UnexpectedRule::new(&format!("{r:?}"), "Function Type").into()),
+            r => Err(UnexpectedRule::new(&format!("{r:?}"), "Function Type", span).into()),
         }
     }
 }

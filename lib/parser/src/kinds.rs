@@ -1,4 +1,4 @@
-use crate::{Parse, Rule, pair_to_n_inner};
+use crate::{Parse, Rule, pair_span, pair_to_n_inner};
 use errors::{MissingInput, RemainingInput, UnexpectedRule, parse_error::ParserError};
 use pest::iterators::Pair;
 use std::rc::Rc;
@@ -28,10 +28,11 @@ impl Parse for Kind {
 }
 
 fn pair_to_prim_kind(p: Pair<'_, Rule>) -> Result<Kind, ParserError> {
+    let span = pair_span(&p);
     match p.as_rule() {
         Rule::star_kind => Ok(Kind::Star),
         Rule::paren_kind => Kind::from_pair(pair_to_n_inner(p, vec!["Kind"])?.remove(0), ()),
-        r => Err(UnexpectedRule::new(&format!("{r:?}"), "Kind").into()),
+        r => Err(UnexpectedRule::new(&format!("{r:?}"), "Kind", span).into()),
     }
 }
 

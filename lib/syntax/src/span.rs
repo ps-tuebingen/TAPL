@@ -1,3 +1,5 @@
+use std::fmt;
+
 /// A Source Position
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub struct Position {
@@ -32,4 +34,16 @@ impl Span {
 pub trait Spanned {
     /// Get the span of `self`
     fn span(&self) -> Span;
+}
+
+impl fmt::Display for Position {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "line: {}, col: {}", self.line, self.char)
+    }
+}
+
+impl fmt::Display for Span {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{} - {}", self.start, self.end)
+    }
 }

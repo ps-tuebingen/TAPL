@@ -1,13 +1,18 @@
 use std::fmt;
 
+/// Error setting html attribute
 #[derive(Debug)]
 pub struct SetAttribute {
+    /// Id of the element
     elem_id: String,
+    /// attribute being set
     attribute: String,
+    /// new value to set
     value: String,
 }
 
 impl SetAttribute {
+    /// Create a new error from id, attribute and value
     #[must_use]
     pub fn new(id: &str, attr: &str, val: &str) -> Self {
         Self {

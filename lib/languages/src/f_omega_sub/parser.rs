@@ -43,20 +43,27 @@ impl GroupParse for Term {
                 .with_zero(span)
                 .from_pair(&p)?),
             Rule::number => Ok(Num::from_pair(p, ())?.into()),
-            _ => Err(
-                UnexpectedRule::new(&format!("{:?}", p.as_rule()), "Non Left-Recursive Term")
-                    .into(),
-            ),
+            _ => Err(UnexpectedRule::new(
+                &format!("{:?}", p.as_rule(),),
+                "Non Left-Recursive Term",
+                span,
+            )
+            .into()),
         }
     }
+
     fn from_pair_leftrec(p: Pair<'_, Rule>, t: Self) -> Result<Self, ParserError> {
+        let span = pair_span(&p);
         match p.as_rule() {
             Rule::tyapp => Ok(TyApp::from_pair(p, t)?.into()),
             Rule::record_proj => Ok(RecordProj::from_pair(p, t)?.into()),
             Rule::term => Ok(App::from_pair(p, t)?.into()),
-            _ => Err(
-                UnexpectedRule::new(&format!("{:?}", p.as_rule()), "Left Recursive Term").into(),
-            ),
+            _ => Err(UnexpectedRule::new(
+                &format!("{:?}", p.as_rule(),),
+                "Left Recursive Term",
+                span,
+            )
+            .into()),
         }
     }
 }
@@ -64,6 +71,7 @@ impl GroupParse for Term {
 impl GroupParse for Type {
     const RULE: Rule = Rule::r#type;
     fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Self, ParserError> {
+        let span = pair_span(&p);
         match p.as_rule() {
             Rule::paren_type => Self::from_pair(pair_to_n_inner(p, vec!["Type"])?.remove(0), ()),
             Rule::const_type => Ok(StringTy::<FOmegaSub>::new().with_nat().from_pair(&p)?),
@@ -84,19 +92,26 @@ impl GroupParse for Type {
             Rule::exists_kinded_type => Ok(Exists::from_pair(p, ())?.to_exists_bounded().into()),
             Rule::record_type => Ok(RecordTy::from_pair(p, ())?.into()),
             Rule::type_variable => Ok(TypeVariable::from_pair(p, ())?.into()),
-            _ => Err(
-                UnexpectedRule::new(&format!("{:?}", p.as_rule()), "Non Left-Recursive Type")
-                    .into(),
-            ),
+            _ => Err(UnexpectedRule::new(
+                &format!("{:?}", p.as_rule()),
+                "Non Left-Recursive Type",
+                span,
+            )
+            .into()),
         }
     }
+
     fn from_pair_leftrec(p: Pair<'_, Rule>, ty: Self) -> Result<Self, ParserError> {
+        let span = pair_span(&p);
         match p.as_rule() {
             Rule::fun_type => Ok(Fun::from_pair(p, ty)?.into()),
             Rule::op_app_type => Ok(OpApp::from_pair(p, ty)?.into()),
-            _ => Err(
-                UnexpectedRule::new(&format!("{:?}", p.as_rule()), "Left Recursive Type").into(),
-            ),
+            _ => {
+                Err(
+                    UnexpectedRule::new(&format!("{:?}", p.as_rule()), "Left Recursive Type", span)
+                        .into(),
+                )
+            }
         }
     }
 }

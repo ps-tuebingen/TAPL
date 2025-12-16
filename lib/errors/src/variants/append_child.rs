@@ -1,12 +1,16 @@
 use std::fmt;
 
+/// Error during appending html child elements
 #[derive(Debug)]
 pub struct AppendChild {
+    /// Id of the parent
     parent_id: String,
+    /// Id of the child
     child_id: String,
 }
 
 impl AppendChild {
+    /// Create a new error from parent and child ids
     #[must_use]
     pub fn new(parent: &str, child: &str) -> Self {
         Self {

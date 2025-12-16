@@ -21,14 +21,22 @@ impl GroupParse for Term {
             Rule::succ_term => Ok(Succ::<UntypedArithmetic>::from_pair(p, ())?.into()),
             Rule::pred_term => Ok(Pred::<UntypedArithmetic>::from_pair(p, ())?.into()),
             Rule::iszero_term => Ok(IsZero::<UntypedArithmetic>::from_pair(p, ())?.into()),
-            _ => Err(
-                UnexpectedRule::new(&format!("{:?}", p.as_rule()), "Non Left-Recursive Term")
-                    .into(),
-            ),
+            _ => Err(UnexpectedRule::new(
+                &format!("{:?}", p.as_rule()),
+                "Non Left-Recursive Term",
+                span,
+            )
+            .into()),
         }
     }
 
     fn from_pair_leftrec(p: Pair<'_, Rule>, _: Self) -> Result<Self, ParserError> {
-        Err(UnexpectedRule::new(&format!("{:?}", p.as_rule()), "Non Left-Recursive Term").into())
+        let span = pair_span(&p);
+        Err(UnexpectedRule::new(
+            &format!("{:?}", p.as_rule()),
+            "Non Left-Recursive Term",
+            span,
+        )
+        .into())
     }
 }

@@ -34,6 +34,7 @@ where
                 return Err(UnexpectedRule::new(
                     &format!("{:?}", pair_nil_pt.as_rule()),
                     "List Patterns",
+                    span,
                 )
                 .into());
             }

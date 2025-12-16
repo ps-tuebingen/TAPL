@@ -1,12 +1,16 @@
 use std::fmt;
 
+/// Error during adding html event handler in
 #[derive(Debug)]
 pub struct AddEventHandler {
+    /// id of the element
     id: String,
+    /// tried event
     event: String,
 }
 
 impl AddEventHandler {
+    /// Create a new error from id and event
     #[must_use]
     pub fn new(id: &str, event: &str) -> Self {
         Self {

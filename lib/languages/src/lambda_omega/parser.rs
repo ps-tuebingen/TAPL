@@ -26,15 +26,18 @@ impl GroupParse for Term {
             Rule::paren_term => Self::from_pair(pair_to_n_inner(p, vec!["Term"])?.remove(0), ()),
             Rule::number => Ok(Num::from_pair(p, ())?.into()),
             Rule::variable => Ok(Variable::from_pair(p, ())?.into()),
-            r => Err(UnexpectedRule::new(&format!("{r:?}"), "Non Left-Recusrive Term").into()),
+            r => {
+                Err(UnexpectedRule::new(&format!("{r:?}"), "Non Left-Recusrive Term", span).into())
+            }
         }
     }
 
     fn from_pair_leftrec(p: Pair<'_, Rule>, t: Self) -> Result<Self, ParserError> {
+        let span = pair_span(&p);
         match p.as_rule() {
             Rule::tyapp => Ok(TyApp::from_pair(p, t)?.into()),
             Rule::term => Ok(App::from_pair(p, t)?.into()),
-            r => Err(UnexpectedRule::new(&format!("{r:?}"), "Application").into()),
+            r => Err(UnexpectedRule::new(&format!("{r:?}"), "Application", span).into()),
         }
     }
 }
@@ -42,6 +45,7 @@ impl GroupParse for Type {
     const RULE: Rule = Rule::r#type;
 
     fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Self, ParserError> {
+        let span = pair_span(&p);
         match p.as_rule() {
             Rule::const_type => Ok(StringTy::<LambdaOmega>::new()
                 .with_unit()
@@ -55,15 +59,18 @@ impl GroupParse for Type {
             Rule::op_lambda_type => Ok(OpLambda::from_pair(p, ())?.into()),
             Rule::paren_type => Self::from_pair(pair_to_n_inner(p, vec!["Type"])?.remove(0), ()),
             Rule::type_variable => Ok(TypeVariable::from_pair(p, ())?.into()),
-            r => Err(UnexpectedRule::new(&format!("{r:?}"), "Non Left-Recursive Type").into()),
+            r => {
+                Err(UnexpectedRule::new(&format!("{r:?}"), "Non Left-Recursive Type", span).into())
+            }
         }
     }
 
     fn from_pair_leftrec(p: Pair<'_, Rule>, ty: Self) -> Result<Self, ParserError> {
+        let span = pair_span(&p);
         match p.as_rule() {
             Rule::fun_type => Ok(Fun::from_pair(p, ty)?.into()),
             Rule::r#type => Ok(OpApp::from_pair(p, ty)?.into()),
-            r => Err(UnexpectedRule::new(&format!("{r:?}"), "Left Recursive Type").into()),
+            r => Err(UnexpectedRule::new(&format!("{r:?}"), "Left Recursive Type", span).into()),
         }
     }
 }

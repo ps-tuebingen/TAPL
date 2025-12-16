@@ -16,7 +16,7 @@ where
     fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
         let span = pair_span(&p);
         let num = p.as_str().trim().parse::<i64>().map_err(|_| {
-            <UnknownKeyword as Into<ParserError>>::into(UnknownKeyword::new(p.as_str()))
+            <UnknownKeyword as Into<ParserError>>::into(UnknownKeyword::new(p.as_str(), span))
         })?;
         Ok(Self::new(num, span))
     }

@@ -1,4 +1,4 @@
-use crate::{GroupParse, Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, Parse, Rule, pair_span, pair_to_n_inner};
 use errors::{
     DuplicateDefinition, MissingInput, UndefinedMain, UnexpectedRule, parse_error::ParserError,
 };
@@ -28,11 +28,12 @@ where
                 return Err(UndefinedMain.into());
             }
             let def_rule = pair_to_n_inner(n, vec!["Definition"])?.remove(0);
+            let span = pair_span(&def_rule);
             match def_rule.as_rule() {
                 Rule::top_level_def => {
                     let def = Definition::<Lang>::from_pair(def_rule, ())?;
                     if defs.iter().any(|df| df.name == def.name) {
-                        return Err(DuplicateDefinition::new(&def.name).into());
+                        return Err(DuplicateDefinition::new(&def.name, def.span).into());
                     }
                     defs.push(def);
                 }
@@ -46,6 +47,7 @@ where
                     return Err(UnexpectedRule::new(
                         &format!("{:?}", def_rule.as_rule()),
                         "Definition",
+                        span,
                     )
                     .into());
                 }

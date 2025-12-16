@@ -43,23 +43,27 @@ impl GroupParse for Term {
             Rule::let_term => Ok(Let::from_pair(p, ())?.into()),
             Rule::fix_term => Ok(Fix::from_pair(p, ())?.into()),
             Rule::paren_term => Self::from_pair(pair_to_n_inner(p, vec!["Term"])?.remove(0), ()),
-            r => Err(UnexpectedRule::new(&format!("{r:?}"), "Non Left-recursive term").into()),
+            r => {
+                Err(UnexpectedRule::new(&format!("{r:?}"), "Non Left-recursive term", span).into())
+            }
         }
     }
     fn from_pair_leftrec(p: Pair<'_, Rule>, t: Self) -> Result<Self, ParserError> {
+        let span = pair_span(&p);
         match p.as_rule() {
             Rule::record_proj => Ok(RecordProj::from_pair(p, t)?.into()),
             Rule::assign => Ok(Assign::from_pair(p, t)?.into()),
             Rule::sequence => Ok(Sequence::<Subtypes>::from_pair(p, t)?.to_term()),
             Rule::cast => Ok(Cast::from_pair(p, t)?.into()),
             Rule::term => Ok(App::from_pair(p, t)?.into()),
-            r => Err(UnexpectedRule::new(&format!("{r:?}"), "Left Recursive Term").into()),
+            r => Err(UnexpectedRule::new(&format!("{r:?}"), "Left Recursive Term", span).into()),
         }
     }
 }
 impl GroupParse for Type {
     const RULE: Rule = Rule::r#type;
     fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Self, ParserError> {
+        let span = pair_span(&p);
         match p.as_rule() {
             Rule::const_type => Ok(StringTy::<Subtypes>::new()
                 .with_bot()
@@ -79,14 +83,17 @@ impl GroupParse for Type {
             r => Err(UnexpectedRule::new(
                 &format!("{r:?}"),
                 &format!("Non Left-Recursive Type ({p:?})",),
+                span,
             )
             .into()),
         }
     }
+
     fn from_pair_leftrec(p: Pair<'_, Rule>, ty: Self) -> Result<Self, ParserError> {
+        let span = pair_span(&p);
         match p.as_rule() {
             Rule::fun_type => Ok(Fun::from_pair(p, ty)?.into()),
-            r => Err(UnexpectedRule::new(&format!("{r:?}"), "Left Recursive Type").into()),
+            r => Err(UnexpectedRule::new(&format!("{r:?}"), "Left Recursive Type", span).into()),
         }
     }
 }

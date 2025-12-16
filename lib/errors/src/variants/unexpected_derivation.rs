@@ -1,12 +1,16 @@
 use std::fmt;
 
+/// Got the wrong derivation ([`derivations::Derivation`])
 #[derive(Debug)]
 pub struct UnexpectedDerivation {
+    /// Found derivation (as string)
     found: String,
+    /// Expected derivation (as string)
     expected: String,
 }
 
 impl UnexpectedDerivation {
+    /// Create a new error from found and expected
     #[must_use]
     pub fn new(found: &str, expected: &str) -> Self {
         Self {

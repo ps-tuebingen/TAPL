@@ -1,4 +1,4 @@
-use crate::{GroupParse, Rule};
+use crate::{GroupParse, Rule, pair_span};
 use errors::{UnknownKeyword, parse_error::ParserError};
 use pest::iterators::Pair;
 use syntax::{
@@ -105,7 +105,8 @@ where
     /// returns an error if the pair does not correspond to a primitive term
     /// or if the term is not part of `Self`
     pub fn from_pair(self, p: &Pair<'_, Rule>) -> Result<Lang::Term, ParserError> {
-        let err = UnknownKeyword::new(p.as_str()).into();
+        let span = pair_span(&p);
+        let err = UnknownKeyword::new(p.as_str(), span).into();
         match p.as_str().to_lowercase().trim() {
             "unit" => self.unit.map_or_else(|| Err(err), Ok),
             "zero" => self.zero.map_or_else(|| Err(err), Ok),

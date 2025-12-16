@@ -1,11 +1,14 @@
 use std::fmt;
 
+/// Language has no kinds
 #[derive(Debug)]
 pub struct NoKinding {
+    /// Language (as string)
     lang: String,
 }
 
 impl NoKinding {
+    /// Create a new error from language
     #[must_use]
     pub fn new(lang: &str) -> Self {
         Self {

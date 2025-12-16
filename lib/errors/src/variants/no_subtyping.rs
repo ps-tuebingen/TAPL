@@ -1,11 +1,14 @@
 use std::fmt;
 
+/// Language has no subtypes
 #[derive(Debug)]
 pub struct NoSubtyping {
+    /// The Language
     lang: String,
 }
 
 impl NoSubtyping {
+    /// Create a new error from the language
     #[must_use]
     pub fn new(lang: &str) -> Self {
         Self {

@@ -1,11 +1,24 @@
 use std::fmt;
+use syntax::span::Span;
 
+/// Error when a match expression has no patterns
 #[derive(Debug)]
-pub struct EmptyCase;
+pub struct EmptyCase {
+    /// Source location
+    span: Span,
+}
+
+impl EmptyCase {
+    /// Create a new error from span
+    #[must_use]
+    pub fn new(span: Span) -> EmptyCase {
+        EmptyCase { span }
+    }
+}
 
 impl fmt::Display for EmptyCase {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Cannot have zero patterns in match")
+        write!(f, "Cannot have zero patterns in match (at {})", self.span)
     }
 }
 

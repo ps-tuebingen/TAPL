@@ -20,15 +20,23 @@ impl GroupParse for Term {
             Rule::succ_term => Ok(Succ::from_pair(p, ())?.into()),
             Rule::pred_term => Ok(Pred::from_pair(p, ())?.into()),
             Rule::iszero_term => Ok(IsZero::from_pair(p, ())?.into()),
-            _ => Err(
-                UnexpectedRule::new(&format!("{:?}", p.as_rule()), "Non Left-Recursive Term")
-                    .into(),
-            ),
+            _ => Err(UnexpectedRule::new(
+                &format!("{:?}", p.as_rule()),
+                "Non Left-Recursive Term",
+                span,
+            )
+            .into()),
         }
     }
 
     fn from_pair_leftrec(p: Pair<'_, Rule>, _: Self) -> Result<Self, ParserError> {
-        Err(UnexpectedRule::new(&format!("{:?}", p.as_rule()), "Non Left-Recursive Term").into())
+        let span = pair_span(&p);
+        Err(UnexpectedRule::new(
+            &format!("{:?}", p.as_rule()),
+            "Non Left-Recursive Term",
+            span,
+        )
+        .into())
     }
 }
 
@@ -36,19 +44,28 @@ impl GroupParse for Type {
     const RULE: Rule = Rule::r#type;
 
     fn from_pair_nonrec(p: Pair<'_, Rule>) -> Result<Self, ParserError> {
+        let span = pair_span(&p);
         match p.as_rule() {
             Rule::const_type => Ok(StringTy::<TypedArithmetic>::new()
                 .with_nat()
                 .with_bool()
                 .from_pair(&p)?),
-            _ => Err(
-                UnexpectedRule::new(&format!("{:?}", p.as_rule()), "Non Left-Recursive Type")
-                    .into(),
-            ),
+            _ => Err(UnexpectedRule::new(
+                &format!("{:?}", p.as_rule()),
+                "Non Left-Recursive Type",
+                span,
+            )
+            .into()),
         }
     }
 
     fn from_pair_leftrec(p: Pair<'_, Rule>, _: Self) -> Result<Self, ParserError> {
-        Err(UnexpectedRule::new(&format!("{:?}", p.as_rule()), "Non Left-Recursive Type").into())
+        let span = pair_span(&p);
+        Err(UnexpectedRule::new(
+            &format!("{:?}", p.as_rule()),
+            "Non Left-Recursive Type",
+            span,
+        )
+        .into())
     }
 }

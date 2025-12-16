@@ -1,12 +1,16 @@
 use std::fmt;
 
+/// Error getting html attribute
 #[derive(Debug)]
 pub struct GetAttribute {
+    /// id of the element
     element_id: String,
+    /// attribute being read
     attribute: String,
 }
 
 impl GetAttribute {
+    /// Create a new error from id and attribute
     #[must_use]
     pub fn new(id: &str, attr: &str) -> Self {
         Self {

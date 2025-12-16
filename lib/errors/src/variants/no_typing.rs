@@ -1,11 +1,14 @@
 use std::fmt;
 
+/// Language has no types
 #[derive(Debug)]
 pub struct NoTyping {
+    /// The Language
     lang: String,
 }
 
 impl NoTyping {
+    /// Create a new error from the language
     #[must_use]
     pub fn new(lang: &str) -> Self {
         Self {

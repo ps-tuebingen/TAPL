@@ -1,5 +1,6 @@
 use std::fmt;
 
+/// Program did not contain a main definition
 #[derive(Debug)]
 pub struct UndefinedMain;
 

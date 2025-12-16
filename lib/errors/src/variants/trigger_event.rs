@@ -1,11 +1,14 @@
 use std::fmt;
 
+/// Error trying to trigger html event
 #[derive(Debug)]
 pub struct TriggerEvent {
+    /// Event to trigger
     event: String,
 }
 
 impl TriggerEvent {
+    /// Create a new error from event name
     #[must_use]
     pub fn new(event: &str) -> Self {
         Self {

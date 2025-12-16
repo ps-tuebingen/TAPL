@@ -1,12 +1,17 @@
 use std::fmt;
 
+/// Error during file access
 #[derive(Debug)]
 pub struct FileAccess {
+    /// action that was tried
     tried: String,
+    /// Error message
     msg: String,
 }
 
 impl FileAccess {
+    /// Create a new error from tried action and error
+    /// usually [`std::io::Error`]
     pub fn new<T>(tried: &str, t: T) -> Self
     where
         T: fmt::Display,

@@ -17,7 +17,10 @@ where
         let span = pair_span(&p);
         let num_rule = pair_to_n_inner(p, vec!["Projection Index"])?.remove(0);
         let num = num_rule.as_str().trim().parse::<usize>().map_err(|_| {
-            <UnknownKeyword as Into<ParserError>>::into(UnknownKeyword::new(num_rule.as_str()))
+            <UnknownKeyword as Into<ParserError>>::into(UnknownKeyword::new(
+                num_rule.as_str(),
+                span,
+            ))
         })?;
         Ok(Self::new(t, num, span))
     }

@@ -1,12 +1,16 @@
 use std::fmt;
 
+/// Error during casting html elements
 #[derive(Debug)]
 pub struct CouldNotCast {
+    /// Id of the element
     id: String,
+    /// html tag to cast to
     target: String,
 }
 
 impl CouldNotCast {
+    /// Create a new error from element id and target tag
     #[must_use]
     pub fn new(id: &str, target: &str) -> Self {
         Self {

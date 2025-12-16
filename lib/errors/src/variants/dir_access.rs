@@ -1,12 +1,17 @@
 use std::fmt;
 
+/// Error accessing directory
 #[derive(Debug)]
 pub struct DirAccess {
+    /// tried action
     tried: String,
+    /// error message
     msg: String,
 }
 
 impl DirAccess {
+    /// Create a new error from a tried string and error
+    /// usually [`std::io::Error`]
     pub fn new<E>(tried: &str, err: E) -> Self
     where
         E: fmt::Display,
