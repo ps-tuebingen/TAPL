@@ -1,4 +1,4 @@
-use crate::{GroupParse, Parse, Rule};
+use crate::{GroupParse, Parse, Rule, pair_span};
 use errors::{MissingInput, parse_error::ParserError};
 use pest::iterators::Pair;
 use std::collections::HashMap;
@@ -14,6 +14,7 @@ where
     const RULE: Rule = Rule::variant_type;
 
     fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
+        let span = pair_span(&p);
         let mut inner = p.into_inner();
         let mut variants = HashMap::new();
         while let Some(label_rule) = inner.next() {
@@ -24,6 +25,6 @@ where
             let ty = Lang::Type::from_pair(ty_rule, ())?;
             variants.insert(label, ty);
         }
-        Ok(Self::new(variants))
+        Ok(Self::new(variants, span))
     }
 }

@@ -1,26 +1,46 @@
 use super::Type;
-use crate::{TypeVar, language::Language, subst::SubstType};
+use crate::{
+    TypeVar,
+    language::Language,
+    span::{Span, Spanned},
+    subst::SubstType,
+};
 use std::fmt;
 
+/// Tuple Type
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Tuple<Lang>
 where
     Lang: Language,
 {
+    /// Inner Types
     pub tys: Vec<Lang::Type>,
+    /// Source Location
+    pub span: Span,
 }
 
 impl<Lang> Tuple<Lang>
 where
     Lang: Language,
 {
-    pub fn new<Ty1>(tys: Vec<Ty1>) -> Self
+    /// Create new Tuple with given inner types and span
+    pub fn new<Ty1>(tys: Vec<Ty1>, span: Span) -> Self
     where
         Ty1: Into<Lang::Type>,
     {
         Self {
             tys: tys.into_iter().map(std::convert::Into::into).collect(),
+            span,
         }
+    }
+}
+
+impl<Lang> Spanned for Tuple<Lang>
+where
+    Lang: Language,
+{
+    fn span(&self) -> Span {
+        self.span
     }
 }
 
@@ -33,14 +53,13 @@ where
 {
     type Lang = Lang;
     type Target = Self;
-    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
-        Self {
-            tys: self
-                .tys
-                .into_iter()
-                .map(|ty1| ty1.subst_type(v, ty))
-                .collect(),
-        }
+    fn subst_type(mut self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
+        self.tys = self
+            .tys
+            .into_iter()
+            .map(|ty1| ty1.subst_type(v, ty))
+            .collect();
+        self
     }
 }
 

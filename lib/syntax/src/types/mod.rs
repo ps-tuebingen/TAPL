@@ -1,8 +1,9 @@
+use crate::span::Spanned;
 use std::fmt;
 
 pub trait Type
 where
-    Self: fmt::Display + fmt::Debug + Clone + PartialEq,
+    Self: fmt::Display + fmt::Debug + Clone + PartialEq + Spanned,
 {
 }
 

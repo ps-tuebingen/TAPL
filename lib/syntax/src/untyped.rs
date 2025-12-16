@@ -1,28 +1,44 @@
 use crate::{
     TypeVar,
     language::Language,
+    span::{Span, Spanned},
     subst::SubstType,
     types::{Bool, Fun, Nat, Type, TypeGroup},
 };
 use std::{fmt, marker::PhantomData};
 
+/// "Type" for unpyped languages
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Untyped<Lang>
 where
     Lang: Language,
 {
+    /// Save the type parameter
     phantom: PhantomData<Lang::Term>,
+    /// Source location
+    pub span: Span,
 }
 
 impl<Lang> Untyped<Lang>
 where
     Lang: Language,
 {
+    /// Create a new Untyped at given span
     #[must_use]
-    pub const fn new() -> Self {
+    pub const fn new(span: Span) -> Self {
         Self {
+            span,
             phantom: PhantomData,
         }
+    }
+}
+
+impl<Lang> Spanned for Untyped<Lang>
+where
+    Lang: Language,
+{
+    fn span(&self) -> Span {
+        self.span
     }
 }
 
@@ -55,21 +71,12 @@ where
     type Lang = Lang;
 }
 
-impl<Lang> Default for Untyped<Lang>
-where
-    Lang: Language,
-{
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
 impl<Lang> From<Fun<Lang>> for Untyped<Lang>
 where
     Lang: Language,
 {
-    fn from(_: Fun<Lang>) -> Self {
-        Self::new()
+    fn from(fun: Fun<Lang>) -> Self {
+        Self::new(fun.span)
     }
 }
 
@@ -77,8 +84,8 @@ impl<Lang> From<Bool<Lang>> for Untyped<Lang>
 where
     Lang: Language,
 {
-    fn from(_: Bool<Lang>) -> Self {
-        Self::new()
+    fn from(b: Bool<Lang>) -> Self {
+        Self::new(b.span)
     }
 }
 
@@ -86,7 +93,7 @@ impl<Lang> From<Nat<Lang>> for Untyped<Lang>
 where
     Lang: Language,
 {
-    fn from(_: Nat<Lang>) -> Self {
-        Self::new()
+    fn from(n: Nat<Lang>) -> Self {
+        Self::new(n.span)
     }
 }

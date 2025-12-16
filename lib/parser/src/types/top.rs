@@ -1,4 +1,4 @@
-use crate::{GroupParse, Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, Parse, Rule, pair_span, pair_to_n_inner};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
 use syntax::{
@@ -17,8 +17,9 @@ where
     const RULE: Rule = Rule::top_type;
 
     fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
+        let span = pair_span(&p);
         let kind_rule = pair_to_n_inner(p, vec!["Kind"])?.remove(0);
         let kind = Kind::from_pair(kind_rule, ())?;
-        Ok(Self::new(kind))
+        Ok(Self::new(kind, span))
     }
 }

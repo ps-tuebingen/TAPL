@@ -1,20 +1,28 @@
-use crate::{GroupParse, Parse, Rule, pair_to_n_inner};
+use crate::{GroupParse, Parse, Rule, pair_span, pair_to_n_inner};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
 use syntax::{
     kinds::Kind,
     language::Language,
+    span::Span,
     types::{OpLambda, OpLambdaSub, Top},
 };
 
+/// Helper struct for parsung unbounded operator abstractions
+/// This then constructs [`syntax::types::oplambda::OpLambda`] or
+/// [`syntax::types::oplambdasub::OpLambdaSub`] depending on `Lang`
 pub struct OpLambdaUnbounded<Lang>
 where
     Lang: Language,
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
 {
+    /// bound variable
     var: String,
+    /// inner type
     body: Lang::Type,
+    /// Source location
+    pub span: Span,
 }
 
 impl<Lang> OpLambdaUnbounded<Lang>
@@ -46,11 +54,12 @@ where
     const RULE: Rule = Rule::op_lambda_star_type;
 
     fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
+        let span = pair_span(&p);
         let mut inner = pair_to_n_inner(p, vec!["Type Variable", "Type Abstraction Body"])?;
         let var = inner.remove(0).as_str().trim().to_owned();
         let ty_rule = inner.remove(0);
         let body = Lang::Type::from_pair(ty_rule, ())?;
-        Ok(Self { var, body })
+        Ok(Self { var, body, span })
     }
 }
 
@@ -61,7 +70,7 @@ where
     Lang::Type: GroupParse,
 {
     fn from(ou: OpLambdaUnbounded<Lang>) -> Self {
-        Self::new(&ou.var, Kind::Star, ou.body)
+        Self::new(&ou.var, Kind::Star, ou.body, ou.span)
     }
 }
 
@@ -73,6 +82,6 @@ where
     Top<Lang>: Into<Lang::Type>,
 {
     fn from(ou: OpLambdaUnbounded<Lang>) -> Self {
-        Self::new(&ou.var, Top::new_star(), ou.body)
+        Self::new(&ou.var, Top::new_star(ou.span), ou.body, ou.span)
     }
 }

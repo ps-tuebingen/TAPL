@@ -1,12 +1,21 @@
 use super::Type;
-use crate::{TypeVar, language::Language, subst::SubstType};
+use crate::{
+    TypeVar,
+    language::Language,
+    span::{Span, Spanned},
+    subst::SubstType,
+};
 use std::{fmt, marker::PhantomData};
 
+/// Type of natural numbers
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Nat<Lang>
 where
     Lang: Language,
 {
+    /// Source location
+    pub span: Span,
+    /// Save the type parameter
     phantom: PhantomData<Lang>,
 }
 
@@ -14,20 +23,22 @@ impl<Lang> Nat<Lang>
 where
     Lang: Language,
 {
+    /// Create a new Nat from span
     #[must_use]
-    pub const fn new() -> Self {
+    pub const fn new(span: Span) -> Self {
         Self {
+            span,
             phantom: PhantomData,
         }
     }
 }
 
-impl<Lang> Default for Nat<Lang>
+impl<Lang> Spanned for Nat<Lang>
 where
     Lang: Language,
 {
-    fn default() -> Self {
-        Self::new()
+    fn span(&self) -> Span {
+        self.span
     }
 }
 

@@ -52,7 +52,7 @@ where
         let t2_span = t2.span();
         let span = t1_span.extend(&t2_span);
         Self {
-            fun: Rc::new(Lambda::new("_", UnitTy::new(), t2, t2_span).into()),
+            fun: Rc::new(Lambda::new("_", UnitTy::new(t1_span), t2, t2_span).into()),
             arg: Rc::new(t1.into()),
             span,
         }

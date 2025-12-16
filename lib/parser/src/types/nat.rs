@@ -15,7 +15,7 @@ where
 
     fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
         let span = pair_span(&p);
-        let nat = Self::new();
+        let nat = Self::new(span);
         let p_str = p.as_str().trim().to_lowercase();
         if p_str == nat.to_string().to_lowercase() {
             Ok(nat)

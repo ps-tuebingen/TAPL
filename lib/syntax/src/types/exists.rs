@@ -1,38 +1,53 @@
-use super::{ExistsBounded, Top, Type};
-use crate::{TypeVar, kinds::Kind, language::Language, subst::SubstType};
+use super::Type;
+use crate::{
+    TypeVar,
+    kinds::Kind,
+    language::Language,
+    span::{Span, Spanned},
+    subst::SubstType,
+};
 use std::{fmt, rc::Rc};
 
+/// Existential Type (unbounded)
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Exists<Lang>
 where
     Lang: Language,
 {
+    /// Bound variable
     pub var: TypeVar,
+    /// Kind of the type
     pub kind: Kind,
+    /// Inner type
     pub ty: Rc<Lang::Type>,
+    /// Source location
+    pub span: Span,
 }
 
 impl<Lang> Exists<Lang>
 where
     Lang: Language,
 {
-    pub fn new<Ty1>(v: &str, knd: Kind, ty: Ty1) -> Self
+    /// Create a new existential type from bound variable, kind, inner type and span
+    pub fn new<Ty1>(v: &str, knd: Kind, ty: Ty1, span: Span) -> Self
     where
         Ty1: Into<Lang::Type>,
     {
         Self {
             var: v.to_owned(),
             kind: knd,
+            span,
             ty: Rc::new(ty.into()),
         }
     }
+}
 
-    #[must_use]
-    pub fn to_exists_bounded(self) -> ExistsBounded<Lang>
-    where
-        Top<Lang>: Into<Lang::Type>,
-    {
-        ExistsBounded::new_unbounded(&self.var, self.kind, Rc::unwrap_or_clone(self.ty))
+impl<Lang> Spanned for Exists<Lang>
+where
+    Lang: Language,
+{
+    fn span(&self) -> Span {
+        self.span
     }
 }
 
@@ -45,16 +60,11 @@ where
     type Target = Self;
     type Lang = Lang;
 
-    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
-        if *v == self.var {
-            self
-        } else {
-            Self {
-                var: self.var,
-                kind: self.kind,
-                ty: self.ty.subst_type(v, ty),
-            }
+    fn subst_type(mut self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
+        if *v != self.var {
+            self.ty = self.ty.subst_type(v, ty);
         }
+        self
     }
 }
 

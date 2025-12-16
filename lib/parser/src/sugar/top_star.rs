@@ -1,15 +1,20 @@
-use crate::{GroupParse, Parse, Rule};
+use crate::{GroupParse, Parse, Rule, pair_span};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
 use std::marker::PhantomData;
-use syntax::{language::Language, types::Top};
+use syntax::{language::Language, span::Span, types::Top};
 
+/// Helper struct for parsing [`syntax::types::top::Top`]
+/// Allows writing `Top` instead of `Top[*]` in the source
 pub struct TopStar<Lang>
 where
     Lang: Language,
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
 {
+    /// Source Location
+    pub span: Span,
+    /// Save the type parameter
     phantom: PhantomData<Lang>,
 }
 
@@ -36,8 +41,10 @@ where
 
     const RULE: Rule = Rule::top_type_star;
 
-    fn from_pair(_: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
+    fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
+        let span = pair_span(&p);
         Ok(Self {
+            span,
             phantom: PhantomData,
         })
     }
@@ -49,7 +56,7 @@ where
     Lang::Term: GroupParse,
     Lang::Type: GroupParse,
 {
-    fn from(_: TopStar<Lang>) -> Self {
-        Self::new_star()
+    fn from(ts: TopStar<Lang>) -> Self {
+        Self::new_star(ts.span)
     }
 }

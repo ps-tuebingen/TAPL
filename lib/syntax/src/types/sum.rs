@@ -1,21 +1,32 @@
 use super::Type;
-use crate::{TypeVar, language::Language, subst::SubstType};
+use crate::{
+    TypeVar,
+    language::Language,
+    span::{Span, Spanned},
+    subst::SubstType,
+};
 use std::{fmt, rc::Rc};
 
+/// Sum type
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Sum<Lang>
 where
     Lang: Language,
 {
+    /// Left Type
     pub left: Rc<Lang::Type>,
+    /// Right Type
     pub right: Rc<Lang::Type>,
+    /// Source Location
+    pub span: Span,
 }
 
 impl<Lang> Sum<Lang>
 where
     Lang: Language,
 {
-    pub fn new<Ty1, Ty2>(l: Ty1, r: Ty2) -> Self
+    /// Create a new Sum with left and right types and span
+    pub fn new<Ty1, Ty2>(l: Ty1, r: Ty2, span: Span) -> Self
     where
         Ty1: Into<Lang::Type>,
         Ty2: Into<Lang::Type>,
@@ -23,7 +34,17 @@ where
         Self {
             left: Rc::new(l.into()),
             right: Rc::new(r.into()),
+            span,
         }
+    }
+}
+
+impl<Lang> Spanned for Sum<Lang>
+where
+    Lang: Language,
+{
+    fn span(&self) -> Span {
+        self.span
     }
 }
 
@@ -36,11 +57,10 @@ where
 {
     type Lang = Lang;
     type Target = Self;
-    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
-        Self {
-            left: self.left.subst_type(v, ty),
-            right: self.right.subst_type(v, ty),
-        }
+    fn subst_type(mut self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
+        self.left = self.left.subst_type(v, ty);
+        self.right = self.right.subst_type(v, ty);
+        self
     }
 }
 

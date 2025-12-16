@@ -1,36 +1,58 @@
 use super::Type;
-use crate::{Label, TypeVar, language::Language, subst::SubstType};
+use crate::{
+    Label, TypeVar,
+    language::Language,
+    span::{Span, Spanned},
+    subst::SubstType,
+};
 use std::{collections::HashMap, fmt};
 
+/// Variant Type
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Variant<Lang>
 where
     Lang: Language,
 {
+    /// Labeled variants
     pub variants: HashMap<Label, Lang::Type>,
+    /// Source Location
+    pub span: Span,
 }
 
 impl<Lang> Variant<Lang>
 where
     Lang: Language,
 {
+    /// Create a new variant type with given variants and span
     #[must_use]
-    pub fn new<Ty1>(vars: HashMap<Label, Ty1>) -> Self
+    pub fn new<Ty1>(vars: HashMap<Label, Ty1>, span: Span) -> Self
     where
         Ty1: Into<Lang::Type>,
     {
         Self {
             variants: vars.into_iter().map(|(lb, ty)| (lb, ty.into())).collect(),
+            span,
         }
     }
 
-    pub fn new_single<Ty1>(lb: &str, ty: Ty1) -> Self
+    /// Create a new variant type with given single label and type and given span
+    pub fn new_single<Ty1>(lb: &str, ty: Ty1, span: Span) -> Self
     where
         Ty1: Into<Lang::Type>,
     {
         Self {
             variants: HashMap::from([(lb.to_owned(), ty.into())]),
+            span,
         }
+    }
+}
+
+impl<Lang> Spanned for Variant<Lang>
+where
+    Lang: Language,
+{
+    fn span(&self) -> Span {
+        self.span
     }
 }
 
@@ -42,14 +64,13 @@ where
 {
     type Lang = Lang;
     type Target = Self;
-    fn subst_type(self, v: &TypeVar, ty: &<Self::Lang as Language>::Type) -> Self::Target {
-        Self {
-            variants: self
-                .variants
-                .into_iter()
-                .map(|(lb, ty1)| (lb, ty1.subst_type(v, ty)))
-                .collect(),
-        }
+    fn subst_type(mut self, v: &TypeVar, ty: &<Self::Lang as Language>::Type) -> Self::Target {
+        self.variants = self
+            .variants
+            .into_iter()
+            .map(|(lb, ty1)| (lb, ty1.subst_type(v, ty)))
+            .collect();
+        self
     }
 }
 

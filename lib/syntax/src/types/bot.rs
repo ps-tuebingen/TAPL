@@ -1,12 +1,24 @@
-use crate::{TypeVar, kinds::Kind, language::Language, subst::SubstType, types::Type};
+use crate::{
+    TypeVar,
+    kinds::Kind,
+    language::Language,
+    span::{Span, Spanned},
+    subst::SubstType,
+    types::Type,
+};
 use std::{fmt, marker::PhantomData};
 
+/// Bottom Type
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Bot<Lang>
 where
     Lang: Language,
 {
+    /// kind of the type
     pub kind: Kind,
+    /// Source location
+    pub span: Span,
+    /// Save the type parameter
     phantom: PhantomData<Lang>,
 }
 
@@ -14,21 +26,23 @@ impl<Lang> Bot<Lang>
 where
     Lang: Language,
 {
+    /// Create a new bottom type with kind star from span
     #[must_use]
-    pub const fn new() -> Self {
+    pub const fn new(span: Span) -> Self {
         Self {
             kind: Kind::Star,
+            span,
             phantom: PhantomData,
         }
     }
 }
 
-impl<Lang> Default for Bot<Lang>
+impl<Lang> Spanned for Bot<Lang>
 where
     Lang: Language,
 {
-    fn default() -> Self {
-        Self::new()
+    fn span(&self) -> Span {
+        self.span
     }
 }
 

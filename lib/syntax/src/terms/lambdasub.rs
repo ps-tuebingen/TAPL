@@ -52,7 +52,7 @@ where
     {
         Self {
             var: v.to_owned(),
-            sup_ty: Top::new_star().into(),
+            sup_ty: Top::new_star(span).into(),
             body: Rc::new(bod.into()),
             span,
         }

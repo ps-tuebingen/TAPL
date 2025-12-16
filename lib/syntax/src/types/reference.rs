@@ -1,26 +1,46 @@
 use super::Type;
-use crate::{TypeVar, language::Language, subst::SubstType};
+use crate::{
+    TypeVar,
+    language::Language,
+    span::{Span, Spanned},
+    subst::SubstType,
+};
 use std::{fmt, rc::Rc};
 
+/// Reference Type
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Reference<Lang>
 where
     Lang: Language,
 {
+    /// Inner type
     pub ty: Rc<Lang::Type>,
+    /// Source location
+    pub span: Span,
 }
 
 impl<Lang> Reference<Lang>
 where
     Lang: Language,
 {
-    pub fn new<Ty1>(ty: Ty1) -> Self
+    /// Create a new reference type from inner type and span
+    pub fn new<Ty1>(ty: Ty1, span: Span) -> Self
     where
         Ty1: Into<Lang::Type>,
     {
         Self {
             ty: Rc::new(ty.into()),
+            span,
         }
+    }
+}
+
+impl<Lang> Spanned for Reference<Lang>
+where
+    Lang: Language,
+{
+    fn span(&self) -> Span {
+        self.span
     }
 }
 
@@ -33,10 +53,9 @@ where
 {
     type Target = Self;
     type Lang = Lang;
-    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
-        Self {
-            ty: self.ty.subst_type(v, ty),
-        }
+    fn subst_type(mut self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
+        self.ty = self.ty.subst_type(v, ty);
+        self
     }
 }
 

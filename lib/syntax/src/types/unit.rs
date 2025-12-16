@@ -1,12 +1,21 @@
 use super::Type;
-use crate::{TypeVar, language::Language, subst::SubstType};
+use crate::{
+    TypeVar,
+    language::Language,
+    span::{Span, Spanned},
+    subst::SubstType,
+};
 use std::{fmt, marker::PhantomData};
 
+/// Unit Type
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Unit<Lang>
 where
     Lang: Language,
 {
+    /// Source Location
+    pub span: Span,
+    /// Save the type parameter
     phantom: PhantomData<Lang>,
 }
 
@@ -14,20 +23,22 @@ impl<Lang> Unit<Lang>
 where
     Lang: Language,
 {
+    /// Create a new Unit with given span
     #[must_use]
-    pub const fn new() -> Self {
+    pub const fn new(span: Span) -> Self {
         Self {
+            span,
             phantom: PhantomData,
         }
     }
 }
 
-impl<Lang> Default for Unit<Lang>
+impl<Lang> Spanned for Unit<Lang>
 where
     Lang: Language,
 {
-    fn default() -> Self {
-        Self::new()
+    fn span(&self) -> Span {
+        self.span
     }
 }
 

@@ -1,13 +1,23 @@
 use super::Type;
-use crate::{TypeVar, language::Language, subst::SubstType};
+use crate::{
+    TypeVar,
+    language::Language,
+    span::{Span, Spanned},
+    subst::SubstType,
+};
 use std::{fmt, marker::PhantomData};
 
+/// Type Variable
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct TypeVariable<Lang>
 where
     Lang: Language,
 {
+    /// The Variable
     pub v: TypeVar,
+    /// Source Location
+    pub span: Span,
+    /// Save the type  Parameter
     phantom: PhantomData<Lang>,
 }
 
@@ -15,12 +25,23 @@ impl<Lang> TypeVariable<Lang>
 where
     Lang: Language,
 {
+    /// Create a new Type variable with variable and span
     #[must_use]
-    pub fn new(v: &str) -> Self {
+    pub fn new(v: &str, span: Span) -> Self {
         Self {
             v: v.to_owned(),
+            span,
             phantom: PhantomData,
         }
+    }
+}
+
+impl<Lang> Spanned for TypeVariable<Lang>
+where
+    Lang: Language,
+{
+    fn span(&self) -> Span {
+        self.span
     }
 }
 

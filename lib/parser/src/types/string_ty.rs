@@ -3,6 +3,7 @@ use errors::{UnknownKeyword, parse_error::ParserError};
 use pest::iterators::Pair;
 use syntax::{
     language::Language,
+    span::Span,
     types::{Bool, Bot, Nat, Unit},
 };
 
@@ -41,51 +42,51 @@ where
         }
     }
 
-    /// Add [`Bot`] to allowed types
+    /// Add [`Bot`] to allowed types, with given span
     #[must_use]
-    pub fn with_bot(self) -> Self
+    pub fn with_bot(self, span: Span) -> Self
     where
         Bot<Lang>: Into<Lang::Type>,
     {
         Self {
-            bot: Some(Bot::new().into()),
+            bot: Some(Bot::new(span).into()),
             bool: self.bool,
             unit: self.unit,
             nat: self.nat,
         }
     }
 
-    /// add [`Nat`] to allowed types
+    /// add [`Nat`] to allowed types with given apsn
     #[must_use]
-    pub fn with_nat(self) -> Self
+    pub fn with_nat(self, span: Span) -> Self
     where
         Nat<Lang>: Into<Lang::Type>,
     {
         Self {
             bot: self.bot,
-            nat: Some(Nat::new().into()),
+            nat: Some(Nat::new(span).into()),
             bool: self.bool,
             unit: self.unit,
         }
     }
 
-    /// Add [`Bool`] to allowed types
+    /// Add [`Bool`] to allowed types, with given span
     #[must_use]
-    pub fn with_bool(self) -> Self
+    pub fn with_bool(self, span: Span) -> Self
     where
         Bool<Lang>: Into<Lang::Type>,
     {
         Self {
             bot: self.bot,
             nat: self.nat,
-            bool: Some(Bool::new().into()),
+            bool: Some(Bool::new(span).into()),
             unit: self.unit,
         }
     }
 
     /// Add [`Unit`] to allowed types
     #[must_use]
-    pub fn with_unit(self) -> Self
+    pub fn with_unit(self, span: Span) -> Self
     where
         Unit<Lang>: Into<Lang::Type>,
     {
@@ -93,7 +94,7 @@ where
             bot: self.bot,
             nat: self.nat,
             bool: self.bool,
-            unit: Some(Unit::new().into()),
+            unit: Some(Unit::new(span).into()),
         }
     }
 

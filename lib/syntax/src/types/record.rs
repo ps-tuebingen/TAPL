@@ -1,28 +1,48 @@
 use super::Type;
-use crate::{Label, TypeVar, language::Language, subst::SubstType};
+use crate::{
+    Label, TypeVar,
+    language::Language,
+    span::{Span, Spanned},
+    subst::SubstType,
+};
 use std::collections::HashMap;
 use std::fmt;
 
+/// Record type
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Record<Lang>
 where
     Lang: Language,
 {
+    /// Labeled inner types
     pub records: HashMap<Label, Lang::Type>,
+    /// Source location
+    pub span: Span,
 }
 
 impl<Lang> Record<Lang>
 where
     Lang: Language,
 {
+    /// Create a new record type from records and span
     #[must_use]
-    pub fn new<Ty1>(recs: HashMap<Label, Ty1>) -> Self
+    pub fn new<Ty1>(recs: HashMap<Label, Ty1>, span: Span) -> Self
     where
         Ty1: Into<Lang::Type>,
     {
         Self {
             records: recs.into_iter().map(|(lb, ty)| (lb, ty.into())).collect(),
+            span,
         }
+    }
+}
+
+impl<Lang> Spanned for Record<Lang>
+where
+    Lang: Language,
+{
+    fn span(&self) -> Span {
+        self.span
     }
 }
 
@@ -35,14 +55,13 @@ where
 {
     type Target = Self;
     type Lang = Lang;
-    fn subst_type(self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
-        Self {
-            records: self
-                .records
-                .into_iter()
-                .map(|(lb, ty1)| (lb, ty1.subst_type(v, ty)))
-                .collect(),
-        }
+    fn subst_type(mut self, v: &TypeVar, ty: &<Lang as Language>::Type) -> Self::Target {
+        self.records = self
+            .records
+            .into_iter()
+            .map(|(lb, ty1)| (lb, ty1.subst_type(v, ty)))
+            .collect();
+        self
     }
 }
 

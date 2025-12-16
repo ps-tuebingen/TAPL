@@ -1,4 +1,4 @@
-use crate::{GroupParse, Parse, Rule};
+use crate::{GroupParse, Parse, Rule, pair_span};
 use errors::parse_error::ParserError;
 use pest::iterators::Pair;
 use syntax::{language::Language, types::Tuple};
@@ -14,11 +14,12 @@ where
     const RULE: Rule = Rule::tuple_type;
 
     fn from_pair(p: Pair<'_, Rule>, (): Self::LeftRecArg) -> Result<Self, ParserError> {
+        let span = pair_span(&p);
         let mut tys = vec![];
         for inner_pair in p.into_inner() {
             let inner_ty = Lang::Type::from_pair(inner_pair, ())?;
             tys.push(inner_ty);
         }
-        Ok(Self::new(tys))
+        Ok(Self::new(tys, span))
     }
 }
