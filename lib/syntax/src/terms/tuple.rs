@@ -5,10 +5,11 @@ use crate::{
     span::{Span, Spanned},
     subst::{SubstTerm, SubstType},
 };
+use macros::EqNoSpan;
 use std::fmt;
 
 /// Term representing a tuple
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, EqNoSpan)]
 pub struct Tuple<Lang>
 where
     Lang: Language,

@@ -5,10 +5,11 @@ use crate::{
     span::{Span, Spanned},
     subst::{SubstTerm, SubstType},
 };
+use macros::EqNoSpan;
 use std::{fmt, rc::Rc};
 
 /// Term representing the predecessor of a number
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, EqNoSpan)]
 pub struct Pred<Lang>
 where
     Lang: Language,

@@ -5,10 +5,11 @@ use crate::{
     span::{Span, Spanned},
     terms::LambdaSub as LambdaSubT,
 };
+use macros::EqNoSpan;
 use std::fmt;
 
 /// Bounded Type abstraction value
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, EqNoSpan, Clone)]
 pub struct LambdaSub<Lang>
 where
     Lang: Language,

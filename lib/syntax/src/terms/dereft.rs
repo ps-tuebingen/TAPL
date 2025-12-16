@@ -5,10 +5,11 @@ use crate::{
     span::{Span, Spanned},
     subst::{SubstTerm, SubstType},
 };
+use macros::EqNoSpan;
 use std::{fmt, rc::Rc};
 
 /// Term representing a memory dereference
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, EqNoSpan)]
 pub struct Deref<Lang>
 where
     Lang: Language,

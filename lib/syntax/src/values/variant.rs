@@ -5,10 +5,11 @@ use crate::{
     span::{Span, Spanned},
     terms::Variant as VariantT,
 };
+use macros::EqNoSpan;
 use std::fmt;
 
 /// Variant value
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, EqNoSpan, Clone)]
 pub struct Variant<Lang>
 where
     Lang: Language,

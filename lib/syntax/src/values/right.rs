@@ -4,10 +4,11 @@ use crate::{
     span::{Span, Spanned},
     terms::Right as RightT,
 };
+use macros::EqNoSpan;
 use std::fmt;
 
 /// Right injection value
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, EqNoSpan, Clone)]
 pub struct Right<Lang>
 where
     Lang: Language,

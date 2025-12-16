@@ -2,6 +2,7 @@ extern crate proc_macro;
 use proc_macro::TokenStream;
 
 mod check;
+mod eq;
 mod eval;
 mod format;
 mod from;
@@ -10,12 +11,14 @@ pub(crate) mod literals;
 mod span;
 mod subst;
 pub(crate) mod utils;
+
 use check::{
     kindcheck::{generate_kindcheck, generate_no_kindcheck},
     normalize::{generate_no_normalize, generate_normalize},
     subtypecheck::{generate_no_subtypecheck, generate_subtypecheck},
     typecheck::generate_typecheck,
 };
+use eq::generate_eq_no_span;
 use eval::generate_eval;
 use format::{generate_display, generate_latexfmt};
 use from::{generate_from_variants, generate_into_term};
@@ -145,4 +148,9 @@ pub fn derive_into_term(input: TokenStream) -> TokenStream {
 #[proc_macro_derive(Spanned)]
 pub fn derive_spanned(input: TokenStream) -> TokenStream {
     generate_spanned(input)
+}
+
+#[proc_macro_derive(EqNoSpan)]
+pub fn derive_eq_no_span(input: TokenStream) -> TokenStream {
+    generate_eq_no_span(input)
 }

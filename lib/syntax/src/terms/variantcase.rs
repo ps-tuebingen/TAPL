@@ -5,10 +5,11 @@ use crate::{
     span::{Span, Spanned},
     subst::{SubstTerm, SubstType},
 };
+use macros::EqNoSpan;
 use std::{fmt, rc::Rc};
 
 /// Term representing a case on variant types
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, EqNoSpan)]
 pub struct VariantCase<Lang>
 where
     Lang: Language,
@@ -38,7 +39,7 @@ where
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, EqNoSpan)]
 pub struct VariantPattern<Lang>
 where
     Lang: Language,

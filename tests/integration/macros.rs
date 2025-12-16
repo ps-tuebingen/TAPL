@@ -54,7 +54,18 @@ enum DummyType {
     Bool(Bool<DummyLang>),
     Top(Top<DummyLang>),
 }
-#[derive(Spanned, IntoTerm, GrammarDescribe, FromVariants, LatexFmt, LangDisplay, Clone, Debug)]
+#[derive(
+    Spanned,
+    IntoTerm,
+    GrammarDescribe,
+    FromVariants,
+    LatexFmt,
+    LangDisplay,
+    Clone,
+    Debug,
+    PartialEq,
+    Eq,
+)]
 #[Lang(DummyLang)]
 enum DummyValue {
     Num(NumVal<DummyLang>),

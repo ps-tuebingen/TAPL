@@ -6,10 +6,11 @@ use crate::{
     subst::{SubstTerm, SubstType},
     types::Unit as UnitTy,
 };
+use macros::EqNoSpan;
 use std::{fmt, rc::Rc};
 
 /// Term representing an application `t1 t2`
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, EqNoSpan)]
 pub struct App<Lang>
 where
     Lang: Language,

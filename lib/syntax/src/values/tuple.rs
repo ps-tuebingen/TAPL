@@ -4,10 +4,11 @@ use crate::{
     span::{Span, Spanned},
     terms::Tuple as TupleT,
 };
+use macros::EqNoSpan;
 use std::fmt;
 
 /// Tuple value
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, EqNoSpan, Clone)]
 pub struct Tuple<Lang>
 where
     Lang: Language,

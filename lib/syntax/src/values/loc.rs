@@ -4,10 +4,11 @@ use crate::{
     span::{Span, Spanned},
     terms::Loc as LocT,
 };
+use macros::EqNoSpan;
 use std::{fmt, marker::PhantomData};
 
 /// Location value
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, EqNoSpan, Clone)]
 pub struct Loc<Lang>
 where
     Lang: Language,

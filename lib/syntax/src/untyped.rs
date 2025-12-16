@@ -5,10 +5,11 @@ use crate::{
     subst::SubstType,
     types::{Bool, Fun, Nat, Type, TypeGroup},
 };
+use macros::EqNoSpan;
 use std::{fmt, marker::PhantomData};
 
 /// "Type" for unpyped languages
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, EqNoSpan)]
 pub struct Untyped<Lang>
 where
     Lang: Language,

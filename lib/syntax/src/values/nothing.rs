@@ -4,10 +4,11 @@ use crate::{
     span::{Span, Spanned},
     terms::Nothing as NothingT,
 };
+use macros::EqNoSpan;
 use std::fmt;
 
 /// Nothing value
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, EqNoSpan, Clone)]
 pub struct Nothing<Lang>
 where
     Lang: Language,

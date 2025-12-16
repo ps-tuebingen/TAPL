@@ -6,10 +6,11 @@ use crate::{
     span::{Span, Spanned},
     subst::SubstType,
 };
+use macros::EqNoSpan;
 use std::{fmt, marker::PhantomData};
 
 /// Top Type
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, EqNoSpan)]
 pub struct Top<Lang>
 where
     Lang: Language,

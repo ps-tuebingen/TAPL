@@ -6,10 +6,11 @@ use crate::{
     span::{Span, Spanned},
     subst::SubstType,
 };
+use macros::EqNoSpan;
 use std::{fmt, rc::Rc};
 
 /// Existential Type (unbounded)
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, EqNoSpan)]
 pub struct Exists<Lang>
 where
     Lang: Language,

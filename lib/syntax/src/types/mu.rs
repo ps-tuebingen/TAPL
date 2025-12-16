@@ -5,10 +5,11 @@ use crate::{
     span::{Span, Spanned},
     subst::SubstType,
 };
+use macros::EqNoSpan;
 use std::{fmt, rc::Rc};
 
 /// Recursive type
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, EqNoSpan)]
 pub struct Mu<Lang>
 where
     Lang: Language,

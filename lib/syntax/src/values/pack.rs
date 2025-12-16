@@ -4,10 +4,11 @@ use crate::{
     span::{Span, Spanned},
     terms::Pack as PackT,
 };
+use macros::EqNoSpan;
 use std::fmt;
 
 /// Pack Value
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, EqNoSpan, Clone)]
 pub struct Pack<Lang>
 where
     Lang: Language,

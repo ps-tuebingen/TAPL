@@ -4,10 +4,11 @@ use crate::{
     terms::Cons as ConsT,
     values::Value,
 };
+use macros::EqNoSpan;
 use std::fmt;
 
 /// List Value
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, EqNoSpan, Clone)]
 pub struct Cons<Lang>
 where
     Lang: Language,

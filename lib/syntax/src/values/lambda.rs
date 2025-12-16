@@ -5,10 +5,11 @@ use crate::{
     span::{Span, Spanned},
     terms::Lambda as LambdaT,
 };
+use macros::EqNoSpan;
 use std::fmt;
 
 /// Lambda value
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, EqNoSpan, Clone)]
 pub struct Lambda<Lang>
 where
     Lang: Language,

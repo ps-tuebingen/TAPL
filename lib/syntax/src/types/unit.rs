@@ -5,10 +5,11 @@ use crate::{
     span::{Span, Spanned},
     subst::SubstType,
 };
+use macros::EqNoSpan;
 use std::{fmt, marker::PhantomData};
 
 /// Unit Type
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, EqNoSpan)]
 pub struct Unit<Lang>
 where
     Lang: Language,

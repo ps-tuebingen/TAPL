@@ -6,10 +6,11 @@ use crate::{
     span::{Span, Spanned},
     subst::SubstType,
 };
+use macros::EqNoSpan;
 use std::{fmt, rc::Rc};
 
 /// Universal type (unbounded)
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, EqNoSpan)]
 pub struct Forall<Lang>
 where
     Lang: Language,

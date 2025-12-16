@@ -5,10 +5,11 @@ use crate::{
     span::{Span, Spanned},
     terms::Record as RecordT,
 };
+use macros::EqNoSpan;
 use std::{collections::HashMap, fmt};
 
 /// Record value
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, EqNoSpan, Clone)]
 pub struct Record<Lang>
 where
     Lang: Language,

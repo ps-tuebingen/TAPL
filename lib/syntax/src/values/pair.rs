@@ -4,10 +4,11 @@ use crate::{
     span::{Span, Spanned},
     terms::Pair as PairT,
 };
+use macros::EqNoSpan;
 use std::fmt;
 
 /// Pair value
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, EqNoSpan, Clone)]
 pub struct Pair<Lang>
 where
     Lang: Language,

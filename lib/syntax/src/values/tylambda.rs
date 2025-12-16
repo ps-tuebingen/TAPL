@@ -6,10 +6,11 @@ use crate::{
     span::{Span, Spanned},
     terms::TyLambda as TyLambdaT,
 };
+use macros::EqNoSpan;
 use std::fmt;
 
 /// Type abstraction value
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, EqNoSpan, Clone)]
 pub struct TyLambda<Lang>
 where
     Lang: Language,

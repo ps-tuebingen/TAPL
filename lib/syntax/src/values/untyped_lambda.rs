@@ -5,10 +5,11 @@ use crate::{
     span::{Span, Spanned},
     terms::UntypedLambda as UntypedLambdaT,
 };
+use macros::EqNoSpan;
 use std::fmt;
 
 /// Untyped lambda value
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, EqNoSpan, Clone)]
 pub struct UntypedLambda<Lang>
 where
     Lang: Language,

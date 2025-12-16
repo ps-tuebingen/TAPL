@@ -26,6 +26,30 @@ pub fn get_enum_variants(data: &Data) -> Vec<Variant> {
     enum_data.variants.iter().cloned().collect()
 }
 
+/// Get fields for a struct type with named fields
+/// panics if a different type is provided
+pub fn get_struct_fields(data: &Data) -> Vec<(proc_macro2::Ident, Type)> {
+    let field_data = match data {
+        Data::Struct(data) => &data.fields,
+        Data::Union(_) => panic!("Cannot get struct fields for unions"),
+        Data::Enum(_) => panic!("Cannot get struct fields for enums"),
+    };
+    let struct_fields = match field_data {
+        Fields::Named(named) => &named.named,
+        Fields::Unnamed(_) => panic!("Unnamed fields are not supported"),
+        Fields::Unit => panic!("Unit fields are not supported"),
+    };
+    struct_fields
+        .iter()
+        .map(|field| {
+            (
+                field.ident.clone().expect("Struct field has no name"),
+                field.ty.clone(),
+            )
+        })
+        .collect()
+}
+
 /// Get the type name inside an enum variant
 /// this assumes the variant has the form `Name(Type<Type2>)`
 /// returns `Type`

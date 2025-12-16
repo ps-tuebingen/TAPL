@@ -4,10 +4,11 @@ use crate::{
     span::{Span, Spanned},
     terms::Raise as RaiseT,
 };
+use macros::EqNoSpan;
 use std::fmt;
 
 /// Raise value
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, EqNoSpan, Clone)]
 pub struct Raise<Lang>
 where
     Lang: Language,

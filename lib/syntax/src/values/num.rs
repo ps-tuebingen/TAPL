@@ -4,10 +4,11 @@ use crate::{
     span::{Span, Spanned},
     terms::Num as NumT,
 };
+use macros::EqNoSpan;
 use std::{fmt, marker::PhantomData};
 
 /// Number value
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, EqNoSpan, Clone)]
 pub struct Num<Lang>
 where
     Lang: Language,

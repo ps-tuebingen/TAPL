@@ -1,7 +1,8 @@
+use macros::EqNoSpan;
 use std::fmt;
 
 /// A Source Position
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+#[derive(Debug, Clone, Copy, EqNoSpan, Default)]
 pub struct Position {
     /// Source Line
     pub line: u64,
@@ -10,7 +11,7 @@ pub struct Position {
 }
 
 /// A Source Span
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+#[derive(Debug, Clone, Copy, EqNoSpan, Default)]
 pub struct Span {
     /// Start position
     pub start: Position,
