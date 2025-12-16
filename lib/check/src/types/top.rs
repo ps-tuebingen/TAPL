@@ -21,9 +21,12 @@ where
         env: Environment<Self::Lang>,
     ) -> Result<Derivation<Self::Lang>, CheckError> {
         if let Some(top) = sup.clone().into_top() {
-            Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind, vec![]).into())
+            Ok(
+                SubtypeDerivation::sub_top(env, self.clone(), top.kind, self.span, Vec::new())
+                    .into(),
+            )
         } else {
-            Err(NotASubtype::new(self.clone(), sup.clone()).into())
+            Err(NotASubtype::new(self.clone(), sup.clone(), self.span).into())
         }
     }
 

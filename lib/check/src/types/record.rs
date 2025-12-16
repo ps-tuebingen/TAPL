@@ -24,7 +24,14 @@ where
     ) -> Result<Derivation<Self::Lang>, CheckError> {
         let features = Lang::features();
         if let Some(top) = sup.clone().into_top() {
-            return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind, vec![]).into());
+            return Ok(SubtypeDerivation::sub_top(
+                env,
+                self.clone(),
+                top.kind,
+                self.span,
+                Vec::new(),
+            )
+            .into());
         }
 
         let mut premises = vec![];
@@ -38,15 +45,14 @@ where
             sup_norm = sup.clone();
         }
 
-        let sup_rec = sup_norm
-            .clone()
-            .into_record()
-            .ok_or_else(|| TypeMismatch::new(sup_norm.to_string(), "Record Type".to_string()))?;
+        let sup_rec = sup_norm.clone().into_record().ok_or_else(|| {
+            TypeMismatch::new(sup_norm.to_string(), "Record Type".to_string(), self.span)
+        })?;
         for (lb, ty) in &sup_rec.records {
             let sub_ty = self
                 .records
                 .get(lb)
-                .ok_or_else(|| UndefinedLabel::new(lb))?;
+                .ok_or_else(|| UndefinedLabel::new(lb, self.span))?;
             premises.push(sub_ty.check_subtype(ty, env.clone())?);
         }
         Ok(SubtypeDerivation::record(env, self.clone(), sup.clone(), premises).into())
@@ -93,7 +99,10 @@ where
             recs_norm.insert(lb.clone(), ty_norm.ret_ty());
             premises.push(ty_norm);
         }
-        let self_norm = Self { records: recs_norm };
+        let self_norm = Self {
+            records: recs_norm,
+            span: self.span,
+        };
         NormalizingDerivation::cong(self, self_norm, premises).into()
     }
 

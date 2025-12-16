@@ -54,7 +54,7 @@ where
         let conc = TypingConclusion::new(
             env,
             self.clone(),
-            ForallBounded::new(&self.var, self.sup_ty.clone(), term_norm).into(),
+            ForallBounded::new(&self.var, self.sup_ty.clone(), term_norm, self.span).into(),
         );
         let deriv = TypingDerivation::lambdasub(conc, premises);
         Ok(deriv.into())

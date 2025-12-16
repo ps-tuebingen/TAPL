@@ -21,7 +21,7 @@ where
 
         let loc_ty = env
             .get_loc(&self.loc)
-            .ok_or_else(|| UndefinedLocation::new(self.loc))?;
+            .ok_or_else(|| UndefinedLocation::new(self.loc, self.span))?;
         let loc_norm;
         if features.normalizing() {
             let loc_norm_deriv = loc_ty.normalize(env.clone());
@@ -34,14 +34,13 @@ where
         if features.kinded() {
             let loc_res = loc_norm.check_kind(env.clone())?.into_kind()?;
             let loc_knd = loc_res.ret_kind();
-            loc_knd
-                .clone()
-                .into_star()
-                .ok_or_else(|| KindMismatch::new(loc_knd.to_string(), "Star Kind".to_string()))?;
+            loc_knd.clone().into_star().ok_or_else(|| {
+                KindMismatch::new(loc_knd.to_string(), "Star Kind".to_string(), self.span)
+            })?;
             premises.push(loc_res.into());
         }
 
-        let conc = TypingConclusion::new(env, self.clone(), Reference::new(loc_norm));
+        let conc = TypingConclusion::new(env, self.clone(), Reference::new(loc_norm, self.span));
         let deriv = TypingDerivation::loc(conc, premises);
         Ok(deriv.into())
     }

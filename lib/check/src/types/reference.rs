@@ -28,7 +28,14 @@ where
         env: Environment<Self::Lang>,
     ) -> Result<Derivation<Self::Lang>, CheckError> {
         if let Some(top) = sup.clone().into_top() {
-            return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind, vec![]).into());
+            return Ok(SubtypeDerivation::sub_top(
+                env,
+                self.clone(),
+                top.kind,
+                self.span,
+                Vec::new(),
+            )
+            .into());
         }
 
         if let Some(src) = sup.clone().into_source() {
@@ -38,10 +45,9 @@ where
             let sink_res = sink.ty.check_subtype(&(*sink.ty), env.clone())?;
             Ok(SubtypeDerivation::ref_sink(env, self.clone(), sink, sink_res).into())
         } else {
-            let sup_ref = sup
-                .clone()
-                .into_ref()
-                .ok_or_else(|| TypeMismatch::new(sup.to_string(), "Reference Type".to_string()))?;
+            let sup_ref = sup.clone().into_ref().ok_or_else(|| {
+                TypeMismatch::new(sup.to_string(), "Reference Type".to_string(), self.span)
+            })?;
             sup_ref.ty.check_subtype(&(*self.ty), env.clone())?;
             let inner_res = self.ty.check_subtype(&(*sup_ref.ty), env.clone())?;
             Ok(SubtypeDerivation::ref_ref(env, self.clone(), sup_ref, inner_res).into())

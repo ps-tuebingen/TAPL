@@ -37,12 +37,19 @@ where
         env: Environment<Self::Lang>,
     ) -> Result<Derivation<Self::Lang>, CheckError> {
         if let Some(top) = sup.clone().into_top() {
-            return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind, vec![]).into());
+            return Ok(SubtypeDerivation::sub_top(
+                env,
+                self.clone(),
+                top.kind,
+                self.span,
+                Vec::new(),
+            )
+            .into());
         }
 
-        sup.clone()
-            .into_unit()
-            .ok_or_else(|| TypeMismatch::new(sup.to_string(), "Unit Type".to_string()))?;
+        sup.clone().into_unit().ok_or_else(|| {
+            TypeMismatch::new(sup.to_string(), "Unit Type".to_string(), self.span)
+        })?;
         Ok(SubtypeDerivation::refl(env, self.clone(), vec![]).into())
     }
 

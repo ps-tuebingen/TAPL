@@ -46,9 +46,12 @@ where
                 self.else_term.clone().eval(env)?,
             )
         } else {
-            return Err(
-                ValueMismatch::new(cond_val.to_string(), "Boolean Value".to_owned()).into(),
-            );
+            return Err(ValueMismatch::new(
+                cond_val.to_string(),
+                "Boolean Value".to_owned(),
+                self.span,
+            )
+            .into());
         };
         let branch_val = branch_res.val();
 

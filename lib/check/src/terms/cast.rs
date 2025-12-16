@@ -44,7 +44,9 @@ where
             let term_knd = term_res.ret_kind();
             let ty_knd = ty_res.ret_kind();
             if term_knd != ty_knd {
-                return Err(KindMismatch::new(term_knd.to_string(), ty_knd.to_string()).into());
+                return Err(
+                    KindMismatch::new(term_knd.to_string(), ty_knd.to_string(), self.span).into(),
+                );
             }
             premises.push(term_res.into());
             premises.push(ty_res.into());

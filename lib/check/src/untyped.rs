@@ -27,7 +27,7 @@ where
 {
     type Lang = Lang;
     fn normalize(self, _: Environment<Lang>) -> Derivation<Self::Lang> {
-        NormalizingDerivation::empty(Self::new()).into()
+        NormalizingDerivation::empty(Self::new(self.span)).into()
     }
 
     fn rules() -> HashSet<DerivationRule> {

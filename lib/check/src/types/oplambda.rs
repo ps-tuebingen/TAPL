@@ -29,21 +29,38 @@ where
         mut env: Environment<Self::Lang>,
     ) -> Result<Derivation<Self::Lang>, CheckError> {
         if let Some(top) = sup.clone().into_top() {
-            return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind, vec![]).into());
+            return Ok(SubtypeDerivation::sub_top(
+                env,
+                self.clone(),
+                top.kind,
+                self.span,
+                Vec::new(),
+            )
+            .into());
         }
 
         let sup_op = sup.clone().into_oplambda().ok_or_else(|| {
-            TypeMismatch::new(sup.to_string(), "Operator Abstraciton".to_string())
+            TypeMismatch::new(
+                sup.to_string(),
+                "Operator Abstraciton".to_string(),
+                self.span,
+            )
         })?;
         if sup_op.annot != self.annot {
-            return Err(KindMismatch::new(sup_op.annot.to_string(), self.annot.to_string()).into());
+            return Err(KindMismatch::new(
+                sup_op.annot.to_string(),
+                self.annot.to_string(),
+                self.span,
+            )
+            .into());
         }
         env.add_tyvar_kind(self.var.clone(), self.annot.clone());
 
         let body_res = self.body.check_subtype(
-            &sup_op
-                .body
-                .subst_type(&sup_op.var, &(TypeVariable::new(&self.var).into())),
+            &sup_op.body.subst_type(
+                &sup_op.var,
+                &(TypeVariable::new(&self.var, self.span).into()),
+            ),
             env.clone(),
         )?;
         Ok(SubtypeDerivation::op_lambda(env, self.clone(), sup.clone(), body_res).into())
@@ -87,6 +104,7 @@ where
             var: self.var.clone(),
             annot: self.annot.clone(),
             body: Rc::new(body_norm.ret_ty()),
+            span: self.span,
         };
         NormalizingDerivation::cong(self, self_norm, vec![body_norm]).into()
     }

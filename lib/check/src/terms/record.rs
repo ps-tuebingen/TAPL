@@ -43,7 +43,12 @@ where
                         rec_knd = Some(ty_knd);
                     }
                     Some(ref knd) if *knd != ty_knd => {
-                        return Err(KindMismatch::new(knd.to_string(), ty_knd.to_string()).into());
+                        return Err(KindMismatch::new(
+                            knd.to_string(),
+                            ty_knd.to_string(),
+                            self.span,
+                        )
+                        .into());
                     }
                     _ => (),
                 }
@@ -53,7 +58,7 @@ where
             recs.insert(lb.clone(), ty_norm);
         }
 
-        let conc = TypingConclusion::new(env, self.clone(), RecordTy::<Lang>::new(recs));
+        let conc = TypingConclusion::new(env, self.clone(), RecordTy::<Lang>::new(recs, self.span));
         let deriv = TypingDerivation::record(conc, premises);
         Ok(deriv.into())
     }

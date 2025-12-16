@@ -40,10 +40,9 @@ where
             inner_norm = inner_ty;
         }
 
-        let nat = inner_norm
-            .clone()
-            .into_nat()
-            .ok_or_else(|| TypeMismatch::new(inner_norm.to_string(), "Nat".to_string()))?;
+        let nat = inner_norm.clone().into_nat().ok_or_else(|| {
+            TypeMismatch::new(inner_norm.to_string(), "Nat".to_string(), self.span)
+        })?;
         let conc = TypingConclusion::new(env, self.clone(), nat);
         let deriv = TypingDerivation::pred(conc, premises);
         Ok(deriv.into())

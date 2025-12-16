@@ -31,7 +31,7 @@ where
         let num = val
             .clone()
             .into_num()
-            .ok_or_else(|| ValueMismatch::new(val.to_string(), "Number".to_string()))?;
+            .ok_or_else(|| ValueMismatch::new(val.to_string(), "Number".to_string(), self.span))?;
         let mut steps = inner_res.congruence(&move |t| Self::new(t, self.span).into());
         if num.num == 0 {
             steps.push(EvalStep::iszero_true(Self::new(val, self.span)));

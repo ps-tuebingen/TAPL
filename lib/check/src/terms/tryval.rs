@@ -56,16 +56,27 @@ where
             let t_knd = t_res.ret_kind();
             let handler_knd = handler_res.ret_kind();
             if t_knd != handler_knd {
-                return Err(KindMismatch::new(t_knd.to_string(), handler_knd.to_string()).into());
+                return Err(KindMismatch::new(
+                    t_knd.to_string(),
+                    handler_knd.to_string(),
+                    self.span,
+                )
+                .into());
             }
             premises.push(t_res.into());
             premises.push(handler_res.into());
         }
         let fun: Fun<Lang> = handler_norm.clone().into_fun().ok_or_else(|| {
-            TypeMismatch::new(handler_norm.to_string(), "Function Type".to_string())
+            TypeMismatch::new(
+                handler_norm.to_string(),
+                "Function Type".to_string(),
+                self.span,
+            )
         })?;
         if *fun.to != t_norm {
-            return Err(TypeMismatch::new(fun.to.to_string(), t_norm.to_string()).into());
+            return Err(
+                TypeMismatch::new(fun.to.to_string(), t_norm.to_string(), self.span).into(),
+            );
         }
 
         let conc = TypingConclusion::new(env, self.clone(), t_norm);

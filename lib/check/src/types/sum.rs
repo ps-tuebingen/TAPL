@@ -18,7 +18,12 @@ where
         let right_kind = right_res.ret_kind();
         let left_kind = left_res.ret_kind();
         if left_kind != right_kind {
-            return Err(KindMismatch::new(left_kind.to_string(), right_kind.to_string()).into());
+            return Err(KindMismatch::new(
+                left_kind.to_string(),
+                right_kind.to_string(),
+                self.span,
+            )
+            .into());
         }
         Ok(KindingDerivation::sum(self.clone(), right_kind, left_res, right_res).into())
     }

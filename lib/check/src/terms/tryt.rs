@@ -46,7 +46,12 @@ where
         }
 
         if ty_norm != handler_norm {
-            return Err(TypeMismatch::new(ty_norm.to_string(), handler_norm.to_string()).into());
+            return Err(TypeMismatch::new(
+                ty_norm.to_string(),
+                handler_norm.to_string(),
+                self.span,
+            )
+            .into());
         }
 
         if features.kinded() {
@@ -55,9 +60,12 @@ where
             let term_knd = term_res.ret_kind();
             let handler_knd = handler_res.ret_kind();
             if term_knd != handler_knd {
-                return Err(
-                    KindMismatch::new(term_knd.to_string(), handler_knd.to_string()).into(),
-                );
+                return Err(KindMismatch::new(
+                    term_knd.to_string(),
+                    handler_knd.to_string(),
+                    self.span,
+                )
+                .into());
             }
             premises.push(term_res.into());
             premises.push(handler_res.into());

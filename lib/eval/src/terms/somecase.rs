@@ -63,7 +63,12 @@ where
             none_steps.insert(0, next_step);
             (none_steps, none_val)
         } else {
-            return Err(ValueMismatch::new(bound_val.to_string(), "Option Term".to_owned()).into());
+            return Err(ValueMismatch::new(
+                bound_val.to_string(),
+                "Option Term".to_owned(),
+                self.span,
+            )
+            .into());
         };
 
         let mut steps = bound_res.congruence(&move |t| {

@@ -47,8 +47,8 @@ impl GroupParse for Type {
         let span = pair_span(&p);
         match p.as_rule() {
             Rule::const_type => Ok(StringTy::<TypedArithmetic>::new()
-                .with_nat()
-                .with_bool()
+                .with_nat(span)
+                .with_bool(span)
                 .from_pair(&p)?),
             _ => Err(UnexpectedRule::new(
                 &format!("{:?}", p.as_rule()),

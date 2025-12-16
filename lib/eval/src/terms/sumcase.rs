@@ -69,7 +69,12 @@ where
             right_steps.insert(0, next_step);
             (right_steps, right_val)
         } else {
-            return Err(ValueMismatch::new(bound_val.to_string(), "Sum Term".to_owned()).into());
+            return Err(ValueMismatch::new(
+                bound_val.to_string(),
+                "Sum Term".to_owned(),
+                self.span,
+            )
+            .into());
         };
 
         let mut steps = bound_res.congruence(&move |t| {

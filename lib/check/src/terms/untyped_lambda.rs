@@ -21,7 +21,7 @@ where
         Ok(TypingDerivation::untyped_lambda(TypingConclusion::new(
             env,
             self.clone(),
-            Untyped::new().into(),
+            Untyped::new(self.span).into(),
         ))
         .into())
     }

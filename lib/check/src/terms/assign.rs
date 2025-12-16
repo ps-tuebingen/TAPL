@@ -41,16 +41,18 @@ where
         if features.kinded() {
             let lhs_res = lhs_norm.check_kind(env.clone())?.into_kind()?;
             let lhs_knd = lhs_res.ret_kind();
-            lhs_knd
-                .clone()
-                .into_star()
-                .ok_or_else(|| KindMismatch::new(lhs_knd.to_string(), "Star Kind".to_string()))?;
+            lhs_knd.clone().into_star().ok_or_else(|| {
+                KindMismatch::new(lhs_knd.to_string(), "Star Kind".to_string(), self.span)
+            })?;
             premises.push(lhs_res.into());
         }
-        let lhs_ref = lhs_norm
-            .clone()
-            .into_ref()
-            .ok_or_else(|| TypeMismatch::new(lhs_norm.to_string(), "Reference Type".to_string()))?;
+        let lhs_ref = lhs_norm.clone().into_ref().ok_or_else(|| {
+            TypeMismatch::new(
+                lhs_norm.to_string(),
+                "Reference Type".to_string(),
+                self.span,
+            )
+        })?;
 
         let rhs_res = self.rhs.check(env.clone())?;
         let rhs_ty = rhs_res.ret_ty();
@@ -66,18 +68,19 @@ where
         if features.kinded() {
             let rhs_res = rhs_norm.check_kind(env.clone())?.into_kind()?;
             let rhs_knd = rhs_res.ret_kind();
-            rhs_knd
-                .clone()
-                .into_star()
-                .ok_or_else(|| KindMismatch::new(rhs_knd.to_string(), "Star Kind".to_string()))?;
+            rhs_knd.clone().into_star().ok_or_else(|| {
+                KindMismatch::new(rhs_knd.to_string(), "Star Kind".to_string(), self.span)
+            })?;
             premises.push(rhs_res.into());
         }
 
         if *lhs_ref.ty != rhs_norm {
-            return Err(TypeMismatch::new(lhs_ref.to_string(), rhs_norm.to_string()).into());
+            return Err(
+                TypeMismatch::new(lhs_ref.to_string(), rhs_norm.to_string(), self.span).into(),
+            );
         }
 
-        let conc = TypingConclusion::new(env, self.clone(), UnitTy::<Lang>::new());
+        let conc = TypingConclusion::new(env, self.clone(), UnitTy::<Lang>::new(self.span));
         let deriv = TypingDerivation::assign(conc, premises);
         Ok(deriv.into())
     }

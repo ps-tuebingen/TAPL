@@ -44,7 +44,12 @@ where
                         knd = Some(ty_knd);
                     }
                     Some(ref knd) if *knd != ty_knd => {
-                        return Err(KindMismatch::new(ty_knd.to_string(), knd.to_string()).into());
+                        return Err(KindMismatch::new(
+                            ty_knd.to_string(),
+                            knd.to_string(),
+                            self.span,
+                        )
+                        .into());
                     }
                     _ => (),
                 }
@@ -53,7 +58,7 @@ where
             tys.push(t_norm);
         }
 
-        let conc = TypingConclusion::new(env, self.clone(), TupleTy::<Lang>::new(tys));
+        let conc = TypingConclusion::new(env, self.clone(), TupleTy::<Lang>::new(tys, self.span));
         let deriv = TypingDerivation::tuple(conc, premises);
         Ok(deriv.into())
     }

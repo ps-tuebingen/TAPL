@@ -73,9 +73,9 @@ impl GroupParse for Type {
         let span = pair_span(&p);
         match p.as_rule() {
             Rule::const_type => Ok(StringTy::<FOmega>::new()
-                .with_bool()
-                .with_unit()
-                .with_nat()
+                .with_bool(span)
+                .with_unit(span)
+                .with_nat(span)
                 .from_pair(&p)?),
             Rule::paren_type => Self::from_pair(pair_to_n_inner(p, vec!["Type"])?.remove(0), ()),
             Rule::forall_kinded_type => Ok(Forall::from_pair(p, ())?.into()),

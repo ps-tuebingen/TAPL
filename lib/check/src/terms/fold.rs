@@ -38,18 +38,16 @@ where
             ty_norm = self.ty.clone();
         }
 
-        let mu_ty = ty_norm
-            .clone()
-            .into_mu()
-            .ok_or_else(|| TypeMismatch::new(ty_norm.to_string(), "Mu Type".to_string()))?;
+        let mu_ty = ty_norm.clone().into_mu().ok_or_else(|| {
+            TypeMismatch::new(ty_norm.to_string(), "Mu Type".to_string(), self.span)
+        })?;
         env.add_tyvar_kind(mu_ty.var.clone(), Kind::Star);
         if features.kinded() {
             let mu_res = mu_ty.ty.check_kind(env.clone())?.into_kind()?;
             let mu_knd = mu_res.ret_kind();
-            mu_knd
-                .clone()
-                .into_star()
-                .ok_or_else(|| KindMismatch::new(mu_knd.to_string(), "Star Kind".to_string()))?;
+            mu_knd.clone().into_star().ok_or_else(|| {
+                KindMismatch::new(mu_knd.to_string(), "Star Kind".to_string(), self.span)
+            })?;
             premises.push(mu_res.into());
         }
 
@@ -73,14 +71,15 @@ where
         if features.kinded() {
             let term_res = term_norm.check_kind(env.clone())?.into_kind()?;
             let term_knd = term_res.ret_kind();
-            term_knd
-                .clone()
-                .into_star()
-                .ok_or_else(|| KindMismatch::new(term_knd.to_string(), "Star Kind".to_string()))?;
+            term_knd.clone().into_star().ok_or_else(|| {
+                KindMismatch::new(term_knd.to_string(), "Star Kind".to_string(), self.span)
+            })?;
             premises.push(term_res.into());
         }
         if term_norm != *mu_subst {
-            return Err(TypeMismatch::new(term_norm.to_string(), mu_subst.to_string()).into());
+            return Err(
+                TypeMismatch::new(term_norm.to_string(), mu_subst.to_string(), self.span).into(),
+            );
         }
 
         let conc = TypingConclusion::new(env, self.clone(), self.ty.clone());

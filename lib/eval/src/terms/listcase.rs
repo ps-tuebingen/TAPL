@@ -63,7 +63,9 @@ where
             steps.insert(0, next_step);
             (steps, cons_val)
         } else {
-            return Err(ValueMismatch::new(bound_val.to_string(), "List".to_owned()).into());
+            return Err(
+                ValueMismatch::new(bound_val.to_string(), "List".to_owned(), self.span).into(),
+            );
         };
 
         let mut steps = bound_res.congruence(&move |t| {

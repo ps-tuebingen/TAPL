@@ -33,7 +33,7 @@ where
 
         if let Some(bound_exists) = bound_norm.clone().into_exists() {
             if self.ty_name != bound_exists.var {
-                return Err(NameMismatch::new(&bound_exists.var, &self.ty_name).into());
+                return Err(NameMismatch::new(&bound_exists.var, &self.ty_name, self.span).into());
             }
             env.add_tyvar_kind(bound_exists.var, bound_exists.kind);
             env.add_var(self.term_name.clone(), Rc::unwrap_or_clone(bound_exists.ty));
@@ -56,7 +56,7 @@ where
             Ok(deriv.into())
         } else if let Some(bound_bound) = bound_norm.clone().into_exists_bounded() {
             if self.ty_name != bound_bound.var {
-                return Err(NameMismatch::new(&bound_bound.var, &self.ty_name).into());
+                return Err(NameMismatch::new(&bound_bound.var, &self.ty_name, self.span).into());
             }
 
             if features.kinded() {
@@ -85,7 +85,12 @@ where
             let deriv = TypingDerivation::unpack_bounded(conc, premises);
             Ok(deriv.into())
         } else {
-            Err(TypeMismatch::new(bound_norm.to_string(), "Existential Type".to_owned()).into())
+            Err(TypeMismatch::new(
+                bound_norm.to_string(),
+                "Existential Type".to_owned(),
+                self.span,
+            )
+            .into())
         }
     }
 

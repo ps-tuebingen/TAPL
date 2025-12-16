@@ -1,6 +1,6 @@
 use crate::{Derivation, conclusion::KindingConclusion, rules::KindingRule};
 use std::fmt;
-use syntax::{kinds::Kind, language::Language, types::TypeVariable};
+use syntax::{kinds::Kind, language::Language, span::Span, types::TypeVariable};
 
 #[derive(Debug)]
 pub struct KindingDerivation<Lang>
@@ -196,13 +196,14 @@ where
         }
     }
 
+    // Create a new kinding derivation for a variable with given variable, kind and span
     #[must_use]
-    pub fn var(var: &str, knd: Kind) -> Self
+    pub fn var(var: &str, knd: Kind, span: Span) -> Self
     where
         TypeVariable<Lang>: Into<Lang::Type>,
     {
         Self {
-            conc: KindingConclusion::new(TypeVariable::new(var), knd),
+            conc: KindingConclusion::new(TypeVariable::new(var, span), knd),
             label: KindingRule::Var,
             premises: vec![],
         }

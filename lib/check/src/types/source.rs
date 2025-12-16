@@ -26,13 +26,19 @@ where
         env: Environment<Self::Lang>,
     ) -> Result<Derivation<Self::Lang>, CheckError> {
         if let Some(top) = sup.clone().into_top() {
-            return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind, vec![]).into());
+            return Ok(SubtypeDerivation::sub_top(
+                env,
+                self.clone(),
+                top.kind,
+                self.span,
+                Vec::new(),
+            )
+            .into());
         }
 
-        let sup_src = sup
-            .clone()
-            .into_source()
-            .ok_or_else(|| TypeMismatch::new(sup.to_string(), "Source Type".to_string()))?;
+        let sup_src = sup.clone().into_source().ok_or_else(|| {
+            TypeMismatch::new(sup.to_string(), "Source Type".to_string(), self.span)
+        })?;
         let inner_res = self.ty.check_subtype(&(*sup_src.ty), env.clone())?;
         Ok(SubtypeDerivation::source(env, self.clone(), sup_src, inner_res).into())
     }

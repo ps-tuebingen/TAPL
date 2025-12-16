@@ -26,7 +26,11 @@ where
         let fun_res = self.fun.clone().eval(env)?;
         let fun_val = fun_res.val();
         let lam = fun_val.clone().into_lambda().ok_or_else(|| {
-            ValueMismatch::new(fun_val.to_string(), "Lambda Abstraction".to_string())
+            ValueMismatch::new(
+                fun_val.to_string(),
+                "Lambda Abstraction".to_string(),
+                self.span,
+            )
         })?;
 
         let arg_res = self.arg.clone().eval(env)?;

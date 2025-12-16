@@ -44,6 +44,7 @@ where
             var: self.var.clone(),
             kind: self.kind.clone(),
             ty: Rc::new(ty_norm.ret_ty()),
+            span: self.span,
         };
         NormalizingDerivation::cong(self, self_norm, vec![ty_norm]).into()
     }

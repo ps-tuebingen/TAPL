@@ -1,12 +1,14 @@
 use super::Existential;
 use macros::{
-    FromVariants, GrammarDescribe, LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes, SubstType,
+    FromVariants, GrammarDescribe, LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes, Spanned,
+    SubstType,
 };
 use syntax::types::{
     Bool, Exists, Fun, Nat, Record, Type as TypeTrait, TypeGroup, TypeVariable, Unit,
 };
 
 #[derive(
+    Spanned,
     GrammarDescribe,
     FromVariants,
     SubstType,

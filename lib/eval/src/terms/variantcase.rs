@@ -24,14 +24,18 @@ where
         let bound_val = bound_res.val();
 
         let var_val = bound_val.clone().into_variant().ok_or_else(|| {
-            ValueMismatch::new(bound_val.to_string(), "Variant Value".to_string())
+            ValueMismatch::new(
+                bound_val.to_string(),
+                "Variant Value".to_string(),
+                self.span,
+            )
         })?;
         let matching = self
             .patterns
             .clone()
             .into_iter()
             .find(|pt| *pt.label == var_val.label)
-            .ok_or_else(|| UndefinedLabel::new(&var_val.label))?;
+            .ok_or_else(|| UndefinedLabel::new(&var_val.label, self.span))?;
         let rhs_subst = matching
             .rhs
             .subst(&matching.bound_var, &((*var_val.val).into()));

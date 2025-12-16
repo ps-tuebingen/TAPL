@@ -48,9 +48,9 @@ impl GroupParse for Type {
         let span = pair_span(&p);
         match p.as_rule() {
             Rule::const_type => Ok(StringTy::<LambdaOmega>::new()
-                .with_unit()
-                .with_nat()
-                .with_bool()
+                .with_unit(span)
+                .with_nat(span)
+                .with_bool(span)
                 .from_pair(&p)?),
             Rule::forall_unbounded_type => {
                 Ok(ForallUnbounded::from_pair(p, ())?.to_forall_kinded().into())

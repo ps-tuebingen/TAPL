@@ -7,10 +7,10 @@ use std::{collections::HashSet, rc::Rc};
 use syntax::{
     env::Environment,
     language::Language,
+    span::Spanned,
     subst::SubstType,
     terms::Pack,
-    types::TypeGroup,
-    types::{Exists, ExistsBounded},
+    types::{Exists, ExistsBounded, TypeGroup},
 };
 
 impl<Lang> Typecheck for Pack<Lang>
@@ -43,7 +43,12 @@ where
         } else if let Some(outer_bound) = outer_norm.clone().into_exists_bounded() {
             check_exists_bound(self, outer_bound, premises, env)
         } else {
-            Err(TypeMismatch::new(outer_norm.to_string(), "Existential Type".to_owned()).into())
+            Err(TypeMismatch::new(
+                outer_norm.to_string(),
+                "Existential Type".to_owned(),
+                self.span,
+            )
+            .into())
         }
     }
 
@@ -87,13 +92,18 @@ where
         let term_knd = term_res.ret_kind();
         let outer_knd = outer_res.ret_kind();
         if term_knd != outer_knd {
-            return Err(KindMismatch::new(term_knd.to_string(), outer_knd.to_string()).into());
+            return Err(
+                KindMismatch::new(term_knd.to_string(), outer_knd.to_string(), pack.span).into(),
+            );
         }
         let inner_knd = inner_res.ret_kind();
         if inner_knd != outer_exists.kind {
-            return Err(
-                KindMismatch::new(inner_knd.to_string(), outer_exists.kind.to_string()).into(),
-            );
+            return Err(KindMismatch::new(
+                inner_knd.to_string(),
+                outer_exists.kind.to_string(),
+                pack.span,
+            )
+            .into());
         }
         premises.push(term_res.into());
         premises.push(outer_res.into());
@@ -115,7 +125,12 @@ where
     }
 
     if outer_subst_norm != ty_norm {
-        return Err(TypeMismatch::new(outer_subst_norm.to_string(), ty_norm.to_string()).into());
+        return Err(TypeMismatch::new(
+            outer_subst_norm.to_string(),
+            ty_norm.to_string(),
+            outer_subst_norm.span(),
+        )
+        .into());
     }
 
     let conc = TypingConclusion::new(env, pack.clone(), pack.outer_ty.clone());
@@ -166,7 +181,9 @@ where
         let term_knd = term_res.ret_kind();
         let outer_knd = outer_res.ret_kind();
         if term_knd != outer_knd {
-            return Err(KindMismatch::new(term_knd.to_string(), outer_knd.to_string()).into());
+            return Err(
+                KindMismatch::new(term_knd.to_string(), outer_knd.to_string(), pack.span).into(),
+            );
         }
         premises.push(term_res.into());
         premises.push(outer_res.into());

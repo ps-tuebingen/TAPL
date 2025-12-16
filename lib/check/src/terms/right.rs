@@ -45,12 +45,16 @@ where
             sum_norm = self.ty.clone();
         }
 
-        let sum_ty = sum_norm
-            .clone()
-            .into_sum()
-            .ok_or_else(|| TypeMismatch::new(sum_norm.to_string(), "Sum Type".to_string()))?;
+        let sum_ty = sum_norm.clone().into_sum().ok_or_else(|| {
+            TypeMismatch::new(sum_norm.to_string(), "Sum Type".to_string(), self.span)
+        })?;
         if *sum_ty.right != right_norm {
-            return Err(TypeMismatch::new(sum_ty.right.to_string(), right_norm.to_string()).into());
+            return Err(TypeMismatch::new(
+                sum_ty.right.to_string(),
+                right_norm.to_string(),
+                self.span,
+            )
+            .into());
         }
 
         if features.kinded() {
@@ -59,7 +63,12 @@ where
             let right_knd = right_res.ret_kind();
             let sum_knd = sum_res.ret_kind();
             if right_knd != sum_knd {
-                return Err(KindMismatch::new(sum_knd.to_string(), right_knd.to_string()).into());
+                return Err(KindMismatch::new(
+                    sum_knd.to_string(),
+                    right_knd.to_string(),
+                    self.span,
+                )
+                .into());
             }
             premises.push(right_res.into());
             premises.push(sum_res.into());

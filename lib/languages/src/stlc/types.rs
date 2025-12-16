@@ -1,6 +1,7 @@
 use super::Stlc;
 use macros::{
-    FromVariants, GrammarDescribe, LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes, SubstType,
+    FromVariants, GrammarDescribe, LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes, Spanned,
+    SubstType,
 };
 use syntax::types::{
     Bool, Fun, List, Nat, Optional, Product, Record, Sum, Tuple, Type as TypeTrait, TypeGroup,
@@ -8,6 +9,7 @@ use syntax::types::{
 };
 
 #[derive(
+    Spanned,
     GrammarDescribe,
     FromVariants,
     SubstType,

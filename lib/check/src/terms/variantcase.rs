@@ -31,17 +31,19 @@ where
         if features.kinded() {
             let bound_res = bound_norm.check_kind(env.clone())?.into_kind()?;
             let bound_knd = bound_res.ret_kind();
-            bound_knd
-                .clone()
-                .into_star()
-                .ok_or_else(|| KindMismatch::new(bound_knd.to_string(), "Star Kind".to_string()))?;
+            bound_knd.clone().into_star().ok_or_else(|| {
+                KindMismatch::new(bound_knd.to_string(), "Star Kind".to_string(), self.span)
+            })?;
             premises.push(bound_res.into());
         }
 
-        let bound_var = bound_norm
-            .clone()
-            .into_variant()
-            .ok_or_else(|| TypeMismatch::new(bound_norm.to_string(), "Variant Type".to_string()))?;
+        let bound_var = bound_norm.clone().into_variant().ok_or_else(|| {
+            TypeMismatch::new(
+                bound_norm.to_string(),
+                "Variant Type".to_string(),
+                self.span,
+            )
+        })?;
         let mut rhs_tys = vec![];
         let mut rhs_knd = None;
 
@@ -50,7 +52,7 @@ where
                 .variants
                 .get(&pt.label)
                 .cloned()
-                .ok_or_else(|| UndefinedLabel::new(&pt.label))?;
+                .ok_or_else(|| UndefinedLabel::new(&pt.label, self.span))?;
             let var_norm;
             if features.normalizing() {
                 let var_norm_deriv = var_ty.normalize(env.clone());
@@ -86,9 +88,12 @@ where
                         rhs_knd = Some(curr_rhs_knd);
                     }
                     Some(ref rhs) if *rhs != curr_rhs_knd => {
-                        return Err(
-                            KindMismatch::new(rhs.to_string(), curr_rhs_knd.to_string()).into()
-                        );
+                        return Err(KindMismatch::new(
+                            rhs.to_string(),
+                            curr_rhs_knd.to_string(),
+                            self.span,
+                        )
+                        .into());
                     }
                     _ => (),
                 }
@@ -98,12 +103,12 @@ where
         }
 
         if rhs_tys.is_empty() {
-            return Err(EmptyCase.into());
+            return Err(EmptyCase::new(self.span).into());
         }
 
         let rhs_fst = rhs_tys.remove(0);
         if let Some(ty) = rhs_tys.iter().find(|ty| rhs_fst != **ty) {
-            return Err(TypeMismatch::new(ty.to_string(), rhs_fst.to_string()).into());
+            return Err(TypeMismatch::new(ty.to_string(), rhs_fst.to_string(), self.span).into());
         }
 
         let conc = TypingConclusion::new(env, self.clone(), rhs_fst);

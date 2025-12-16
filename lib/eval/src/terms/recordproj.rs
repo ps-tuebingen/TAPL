@@ -24,15 +24,14 @@ where
     fn eval(self, env: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         let term_res = self.record.eval(env)?;
         let term_val = term_res.val();
-        let rec_val = term_val
-            .clone()
-            .into_record()
-            .ok_or_else(|| ValueMismatch::new(term_val.to_string(), "Record Value".to_string()))?;
+        let rec_val = term_val.clone().into_record().ok_or_else(|| {
+            ValueMismatch::new(term_val.to_string(), "Record Value".to_string(), self.span)
+        })?;
         let val = rec_val
             .records
             .get(&self.label)
             .cloned()
-            .ok_or_else(|| UndefinedLabel::new(&self.label))?;
+            .ok_or_else(|| UndefinedLabel::new(&self.label, self.span))?;
 
         let last_step =
             EvalStep::recordproj(Self::new(val.clone(), &self.label, self.span), val.clone());

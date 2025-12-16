@@ -25,7 +25,14 @@ where
     ) -> Result<Derivation<Self::Lang>, CheckError> {
         let features = Lang::features();
         if let Some(top) = sup.clone().into_top() {
-            return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind, vec![]).into());
+            return Ok(SubtypeDerivation::sub_top(
+                env,
+                self.clone(),
+                top.kind,
+                self.span,
+                Vec::new(),
+            )
+            .into());
         }
 
         let mut premises = vec![];
@@ -45,15 +52,22 @@ where
         }
 
         let other_exists = sup_norm.clone().into_exists_bounded().ok_or_else(|| {
-            TypeMismatch::new(sup_norm.to_string(), "Bounded existential Type".to_string())
+            TypeMismatch::new(
+                sup_norm.to_string(),
+                "Bounded existential Type".to_string(),
+                self.span,
+            )
         })?;
         if *other_exists.sup_ty != self_norm {
-            return Err(
-                TypeMismatch::new(other_exists.sup_ty.to_string(), self_norm.to_string()).into(),
-            );
+            return Err(TypeMismatch::new(
+                other_exists.sup_ty.to_string(),
+                self_norm.to_string(),
+                self.span,
+            )
+            .into());
         }
         if self.var != other_exists.var {
-            return Err(NameMismatch::new(&other_exists.var, &self.var).into());
+            return Err(NameMismatch::new(&other_exists.var, &self.var, self.span).into());
         }
         let old_env = env.clone();
         env.add_tyvar_super(other_exists.var, Rc::unwrap_or_clone(self.sup_ty.clone()));

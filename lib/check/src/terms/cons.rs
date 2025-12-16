@@ -6,6 +6,7 @@ use std::collections::HashSet;
 use syntax::{
     env::Environment,
     language::Language,
+    span::Spanned,
     terms::Cons,
     types::{List, TypeGroup},
 };
@@ -47,16 +48,17 @@ where
         }
 
         if hd_norm != annot_norm {
-            return Err(TypeMismatch::new(hd_norm.to_string(), annot_norm.to_string()).into());
+            return Err(
+                TypeMismatch::new(hd_norm.to_string(), annot_norm.to_string(), self.span).into(),
+            );
         }
 
         if features.kinded() {
             let hd_res = hd_norm.check_kind(env.clone())?.into_kind()?;
             let hd_knd = hd_res.ret_kind();
-            hd_knd
-                .clone()
-                .into_star()
-                .ok_or_else(|| KindMismatch::new(hd_knd.to_string(), "Star Kind".to_string()))?;
+            hd_knd.clone().into_star().ok_or_else(|| {
+                KindMismatch::new(hd_knd.to_string(), "Star Kind".to_string(), self.span)
+            })?;
             premises.push(hd_res.into());
         }
 
@@ -76,16 +78,20 @@ where
         if features.kinded() {
             let tl_res = tail_ty_norm.check_kind(env.clone())?.into_kind()?;
             let tl_knd = tl_res.ret_kind();
-            tl_knd
-                .clone()
-                .into_star()
-                .ok_or_else(|| KindMismatch::new(tl_knd.to_string(), "Star Kind".to_string()))?;
+            tl_knd.clone().into_star().ok_or_else(|| {
+                KindMismatch::new(tl_knd.to_string(), "Star Kind".to_string(), self.span)
+            })?;
             premises.push(tl_res.into());
         }
 
-        let list_ty: Lang::Type = List::new(annot_norm).into();
+        let list_ty: Lang::Type = List::new(annot_norm, self.ty.span()).into();
         if tail_ty_norm != list_ty {
-            return Err(TypeMismatch::new(tail_ty_norm.to_string(), list_ty.to_string()).into());
+            return Err(TypeMismatch::new(
+                tail_ty_norm.to_string(),
+                list_ty.to_string(),
+                self.span,
+            )
+            .into());
         }
 
         let conc = TypingConclusion::new(env, self.clone(), list_ty);

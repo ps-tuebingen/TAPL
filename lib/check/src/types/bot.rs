@@ -16,7 +16,7 @@ where
         sup: &<Lang as Language>::Type,
         env: Environment<Self::Lang>,
     ) -> Result<Derivation<Self::Lang>, CheckError> {
-        Ok(SubtypeDerivation::sup_bot(env, sup.clone()).into())
+        Ok(SubtypeDerivation::sup_bot(env, sup.clone(), self.span).into())
     }
 
     fn rules() -> HashSet<DerivationRule> {

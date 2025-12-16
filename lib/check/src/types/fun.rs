@@ -24,13 +24,19 @@ where
         env: Environment<Self::Lang>,
     ) -> Result<Derivation<Self::Lang>, CheckError> {
         if let Some(top) = sup.clone().into_top() {
-            return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind, vec![]).into());
+            return Ok(SubtypeDerivation::sub_top(
+                env,
+                self.clone(),
+                top.kind,
+                self.span,
+                Vec::new(),
+            )
+            .into());
         }
 
-        let sup_fun = sup
-            .clone()
-            .into_fun()
-            .ok_or_else(|| TypeMismatch::new(sup.to_string(), "Function Type".to_string()))?;
+        let sup_fun = sup.clone().into_fun().ok_or_else(|| {
+            TypeMismatch::new(sup.to_string(), "Function Type".to_string(), self.span)
+        })?;
         let from_res = sup_fun.from.check_subtype(&(*self.from), env.clone())?;
         let to_res = self.to.check_subtype(&(*sup_fun.to), env.clone())?;
         Ok(SubtypeDerivation::fun(env, self.clone(), sup.clone(), from_res, to_res).into())
@@ -52,13 +58,20 @@ where
         let from_res = self.from.check_kind(env.clone())?.into_kind()?;
         let from_kind = from_res.ret_kind();
         if from_kind != Kind::Star {
-            return Err(KindMismatch::new(from_kind.to_string(), Kind::Star.to_string()).into());
+            return Err(KindMismatch::new(
+                from_kind.to_string(),
+                Kind::Star.to_string(),
+                self.span,
+            )
+            .into());
         }
 
         let to_res = self.to.check_kind(env)?.into_kind()?;
         let to_kind = to_res.ret_kind();
         if to_kind != Kind::Star {
-            return Err(KindMismatch::new(to_kind.to_string(), Kind::Star.to_string()).into());
+            return Err(
+                KindMismatch::new(to_kind.to_string(), Kind::Star.to_string(), self.span).into(),
+            );
         }
         Ok(KindingDerivation::fun(self.clone(), from_res, to_res).into())
     }
@@ -81,6 +94,7 @@ where
         let self_norm = Self {
             from: Rc::new(from_norm.ret_ty()),
             to: Rc::new(to_norm.ret_ty()),
+            span: self.span,
         };
         NormalizingDerivation::cong(self, self_norm, vec![from_norm, to_norm]).into()
     }

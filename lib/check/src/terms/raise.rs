@@ -51,7 +51,9 @@ where
             let ex_knd = ex_res.ret_kind();
             let err_knd = err_res.ret_kind();
             if ex_knd != err_knd {
-                return Err(KindMismatch::new(ex_knd.to_string(), err_knd.to_string()).into());
+                return Err(
+                    KindMismatch::new(ex_knd.to_string(), err_knd.to_string(), self.span).into(),
+                );
             }
             premises.push(ex_res.into());
             premises.push(cont_res);
@@ -59,7 +61,9 @@ where
         }
 
         if ex_norm != err_norm {
-            return Err(TypeMismatch::new(ex_norm.to_string(), err_norm.to_string()).into());
+            return Err(
+                TypeMismatch::new(ex_norm.to_string(), err_norm.to_string(), self.span).into(),
+            );
         }
         let conc = TypingConclusion::new(env, self.clone(), cont_norm);
         let deriv = TypingDerivation::raise(conc, premises);

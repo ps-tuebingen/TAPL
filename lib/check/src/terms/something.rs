@@ -38,12 +38,11 @@ where
         if features.kinded() {
             let ty_res = ty_norm.check_kind(env.clone())?.into_kind()?;
             let ty_knd = ty_res.ret_kind();
-            ty_knd
-                .clone()
-                .into_star()
-                .ok_or_else(|| KindMismatch::new(ty_knd.to_string(), "Star Kind".to_string()))?;
+            ty_knd.clone().into_star().ok_or_else(|| {
+                KindMismatch::new(ty_knd.to_string(), "Star Kind".to_string(), self.span)
+            })?;
         }
-        let conc = TypingConclusion::new(env, self.clone(), Optional::new(ty_norm));
+        let conc = TypingConclusion::new(env, self.clone(), Optional::new(ty_norm, self.span));
         let deriv = TypingDerivation::something(conc, premises);
         Ok(deriv.into())
     }

@@ -29,15 +29,26 @@ where
         let features = Lang::features();
         let mut premises = vec![];
         if let Some(top) = sup.clone().into_top() {
-            return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind, vec![]).into());
+            return Ok(SubtypeDerivation::sub_top(
+                env,
+                self.clone(),
+                top.kind,
+                self.span,
+                Vec::new(),
+            )
+            .into());
         }
 
         let other_forall = sup.clone().into_forall_bounded().ok_or_else(|| {
-            TypeMismatch::new(sup.to_string(), "Bounded universal type".to_string())
+            TypeMismatch::new(
+                sup.to_string(),
+                "Bounded universal type".to_string(),
+                self.span,
+            )
         })?;
 
         if self.var != other_forall.var {
-            return Err(NameMismatch::new(&other_forall.var, &self.var).into());
+            return Err(NameMismatch::new(&other_forall.var, &self.var, self.span).into());
         }
 
         let other_sup_norm;
@@ -111,6 +122,7 @@ where
             var: self.var.clone(),
             sup_ty: self.sup_ty.clone(),
             ty: Rc::new(ty_norm.ret_ty()),
+            span: self.span,
         };
         NormalizingDerivation::cong(self, self_norm, vec![ty_norm]).into()
     }

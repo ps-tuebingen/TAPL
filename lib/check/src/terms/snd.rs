@@ -39,10 +39,9 @@ where
             premises.push(ty_norm.check_kind(env.clone())?);
         }
 
-        let prod_ty = ty_norm
-            .clone()
-            .into_product()
-            .ok_or_else(|| TypeMismatch::new(ty_norm.to_string(), "Product Type".to_string()))?;
+        let prod_ty = ty_norm.clone().into_product().ok_or_else(|| {
+            TypeMismatch::new(ty_norm.to_string(), "Product Type".to_string(), self.span)
+        })?;
         let conc = TypingConclusion::new(env, self.clone(), Rc::unwrap_or_clone(prod_ty.snd));
         let deriv = TypingDerivation::snd(conc, premises);
         Ok(deriv.into())

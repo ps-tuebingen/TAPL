@@ -45,9 +45,12 @@ where
             steps.push(next_step);
             (steps, term_val)
         } else {
-            return Err(
-                ValueMismatch::new(fun_val.to_string(), "LambdaSub Term".to_owned()).into(),
-            );
+            return Err(ValueMismatch::new(
+                fun_val.to_string(),
+                "LambdaSub Term".to_owned(),
+                self.span,
+            )
+            .into());
         };
 
         let mut steps =

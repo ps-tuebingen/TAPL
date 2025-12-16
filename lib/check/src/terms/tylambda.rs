@@ -38,12 +38,17 @@ where
             let term_res = ty_norm.check_kind(env.clone())?.into_kind()?;
             let term_knd = term_res.ret_kind();
             if self.annot != term_knd {
-                return Err(KindMismatch::new(self.annot.to_string(), term_knd.to_string()).into());
+                return Err(KindMismatch::new(
+                    self.annot.to_string(),
+                    term_knd.to_string(),
+                    self.span,
+                )
+                .into());
             }
             premises.push(term_res.into());
         }
 
-        let ty = Forall::new(&self.var, self.annot.clone(), ty_norm);
+        let ty = Forall::new(&self.var, self.annot.clone(), ty_norm, self.span);
         let conc = TypingConclusion::new(env, self.clone(), ty);
         let deriv = TypingDerivation::tylambda(conc, premises);
         Ok(deriv.into())

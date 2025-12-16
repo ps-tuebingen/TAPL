@@ -42,7 +42,7 @@ where
         let rec_type = match ty_norm.clone().into_variable() {
             Some(v) => env
                 .get_tyvar_super(&v.v)
-                .ok_or_else(|| FreeTypeVariable::new(&v.v)),
+                .ok_or_else(|| FreeTypeVariable::new(&v.v, self.span)),
             None => Ok(ty_norm),
         }?;
 
@@ -56,12 +56,16 @@ where
         }
 
         let rec_ty = term_rec_norm.clone().into_record().ok_or_else(|| {
-            TypeMismatch::new(term_rec_norm.to_string(), "Record Type".to_string())
+            TypeMismatch::new(
+                term_rec_norm.to_string(),
+                "Record Type".to_string(),
+                self.span,
+            )
         })?;
         let ty = rec_ty
             .records
             .get(&self.label)
-            .ok_or_else(|| UndefinedLabel::new(&self.label))
+            .ok_or_else(|| UndefinedLabel::new(&self.label, self.span))
             .cloned()?;
 
         let conc = TypingConclusion::new(env, self.clone(), ty);

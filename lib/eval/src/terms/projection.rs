@@ -24,15 +24,14 @@ where
     fn eval(self, env: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         let term_res = self.term.eval(env)?;
         let term_val = term_res.val();
-        let tup_val = term_val
-            .clone()
-            .into_tuple()
-            .ok_or_else(|| ValueMismatch::new(term_val.to_string(), "Tuple Value".to_string()))?;
+        let tup_val = term_val.clone().into_tuple().ok_or_else(|| {
+            ValueMismatch::new(term_val.to_string(), "Tuple Value".to_string(), self.span)
+        })?;
         let val = tup_val
             .vals
             .get(self.index)
             .cloned()
-            .ok_or_else(|| IndexOutOfBounds::new(self.index, tup_val.vals.len()))?;
+            .ok_or_else(|| IndexOutOfBounds::new(self.index, tup_val.vals.len(), self.span))?;
 
         let mut steps = term_res.congruence(&move |t| Self::new(t, self.index, self.span).into());
         let last_step =

@@ -38,21 +38,19 @@ where
         if features.kinded() {
             let term_res = term_norm.check_kind(env.clone())?.into_kind()?;
             let term_knd = term_res.ret_kind();
-            term_knd
-                .clone()
-                .into_star()
-                .ok_or_else(|| KindMismatch::new(term_knd.to_string(), "Star Kind".to_string()))?;
+            term_knd.clone().into_star().ok_or_else(|| {
+                KindMismatch::new(term_knd.to_string(), "Star Kind".to_string(), self.span)
+            })?;
             premises.push(term_res.into());
         }
 
-        let tup_ty = term_norm
-            .clone()
-            .into_tuple()
-            .ok_or_else(|| TypeMismatch::new(term_norm.to_string(), "Tuple Type".to_string()))?;
+        let tup_ty = term_norm.clone().into_tuple().ok_or_else(|| {
+            TypeMismatch::new(term_norm.to_string(), "Tuple Type".to_string(), self.span)
+        })?;
         let tup = tup_ty
             .tys
             .get(self.index)
-            .ok_or_else(|| IndexOutOfBounds::new(self.index, tup_ty.tys.len()))
+            .ok_or_else(|| IndexOutOfBounds::new(self.index, tup_ty.tys.len(), self.span))
             .cloned()?;
         let conc = TypingConclusion::new(env, self.clone(), tup);
         let deriv = TypingDerivation::projection(conc, premises);

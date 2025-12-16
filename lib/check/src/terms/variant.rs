@@ -47,15 +47,14 @@ where
             term_ty_norm = term_ty;
         }
 
-        let var_ty = ty_norm
-            .clone()
-            .into_variant()
-            .ok_or_else(|| TypeMismatch::new(ty_norm.to_string(), "Variant Type".to_string()))?;
+        let var_ty = ty_norm.clone().into_variant().ok_or_else(|| {
+            TypeMismatch::new(ty_norm.to_string(), "Variant Type".to_string(), self.span)
+        })?;
         let lb_ty = var_ty
             .variants
             .get(&self.label)
             .cloned()
-            .ok_or_else(|| UndefinedLabel::new(&self.label))?;
+            .ok_or_else(|| UndefinedLabel::new(&self.label, self.span))?;
 
         if features.kinded() {
             let term_res = term_ty_norm.check_kind(env.clone())?.into_kind()?;
@@ -63,13 +62,17 @@ where
             let lb_knd = lb_res.ret_kind();
             let term_knd = term_res.ret_kind();
             if lb_knd != term_knd {
-                return Err(KindMismatch::new(lb_knd.to_string(), term_knd.to_string()).into());
+                return Err(
+                    KindMismatch::new(lb_knd.to_string(), term_knd.to_string(), self.span).into(),
+                );
             }
             premises.push(term_res.into());
             premises.push(lb_res.into());
         }
         if lb_ty != term_ty_norm {
-            return Err(TypeMismatch::new(lb_ty.to_string(), term_ty_norm.to_string()).into());
+            return Err(
+                TypeMismatch::new(lb_ty.to_string(), term_ty_norm.to_string(), self.span).into(),
+            );
         }
 
         let conc = TypingConclusion::new(env, self.clone(), ty_norm);

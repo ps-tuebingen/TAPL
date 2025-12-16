@@ -1,12 +1,15 @@
 use super::Subtypes;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
-use macros::{FromVariants, LangDisplay, LatexFmt, NoKinds, NoNorm, SubstType, Subtypecheck};
+use macros::{
+    FromVariants, LangDisplay, LatexFmt, NoKinds, NoNorm, Spanned, SubstType, Subtypecheck,
+};
 use syntax::types::{
     Bool, Bot, Fun, List, Nat, Record, Reference, Sink, Source, Top, Type as TypeTrait, TypeGroup,
     Unit, Variant,
 };
 
 #[derive(
+    Spanned,
     FromVariants,
     SubstType,
     LatexFmt,

@@ -35,7 +35,9 @@ where
             let last_step = EvalStep::isnil_false(self.ty.clone(), self.span);
             (last_step, False::new(self.span).into())
         } else {
-            return Err(ValueMismatch::new(term_val.to_string(), "List".to_owned()).into());
+            return Err(
+                ValueMismatch::new(term_val.to_string(), "List".to_owned(), self.span).into(),
+            );
         };
         let mut steps =
             term_res.congruence(&move |t| Self::new(t, self.ty.clone(), self.span).into());

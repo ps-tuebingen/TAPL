@@ -15,7 +15,9 @@ where
         let body_res = self.body.check(env)?;
         let body_ty = body_res.ret_ty();
         if self.annot != body_ty {
-            return Err(TypeMismatch::new(self.annot.to_string(), body_ty.to_string()).into());
+            return Err(
+                TypeMismatch::new(self.annot.to_string(), body_ty.to_string(), self.span).into(),
+            );
         }
         Ok(DefinitionDerivation::new(&self.name, body_res.into_ty()?).into())
     }

@@ -45,23 +45,32 @@ where
             ty_norm = self.ty.clone();
         }
 
-        let sum_ty = ty_norm
-            .clone()
-            .into_sum()
-            .ok_or_else(|| TypeMismatch::new(ty_norm.to_string(), "Sum Type".to_string()))?;
+        let sum_ty = ty_norm.clone().into_sum().ok_or_else(|| {
+            TypeMismatch::new(ty_norm.to_string(), "Sum Type".to_string(), self.span)
+        })?;
         if features.kinded() {
             let left_res = left_norm.check_kind(env.clone())?.into_kind()?;
             let sum_res = sum_ty.check_kind(env.clone())?.into_kind()?;
             let left_knd = left_res.ret_kind();
             let sum_knd = sum_res.ret_kind();
             if left_knd != sum_knd {
-                return Err(KindMismatch::new(left_knd.to_string(), sum_knd.to_string()).into());
+                return Err(KindMismatch::new(
+                    left_knd.to_string(),
+                    sum_knd.to_string(),
+                    self.span,
+                )
+                .into());
             }
             premises.push(left_res.into());
             premises.push(sum_res.into());
         }
         if *sum_ty.left != left_norm {
-            return Err(TypeMismatch::new(sum_ty.left.to_string(), left_norm.to_string()).into());
+            return Err(TypeMismatch::new(
+                sum_ty.left.to_string(),
+                left_norm.to_string(),
+                self.span,
+            )
+            .into());
         }
 
         let conc = TypingConclusion::new(env, self.clone(), self.ty.clone());

@@ -30,7 +30,14 @@ where
     ) -> Result<Derivation<Self::Lang>, CheckError> {
         let features = Lang::features();
         if let Some(top) = sup.clone().into_top() {
-            return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind, vec![]).into());
+            return Ok(SubtypeDerivation::sub_top(
+                env,
+                self.clone(),
+                top.kind,
+                self.span,
+                Vec::new(),
+            )
+            .into());
         }
         let mut premises = vec![];
 
@@ -52,17 +59,21 @@ where
             TypeMismatch::new(
                 sup_norm.to_string(),
                 "Bounded Operator Abstraction".to_string(),
+                self.span,
             )
         })?;
         if *sup_op.sup != sup_norm {
-            return Err(TypeMismatch::new(sup_op.sup.to_string(), sup_norm.to_string()).into());
+            return Err(
+                TypeMismatch::new(sup_op.sup.to_string(), sup_norm.to_string(), self.span).into(),
+            );
         }
         env.add_tyvar_super(self.var.clone(), self_sup_norm);
 
         let body_res = self.body.check_subtype(
-            &sup_op
-                .body
-                .subst_type(&sup_op.var, &(TypeVariable::new(&self.var).into())),
+            &sup_op.body.subst_type(
+                &sup_op.var,
+                &(TypeVariable::new(&self.var, self.span).into()),
+            ),
             env.clone(),
         )?;
         premises.push(body_res);
@@ -107,6 +118,7 @@ where
             var: self.var.clone(),
             sup: self.sup.clone(),
             body: Rc::new(body_norm.ret_ty()),
+            span: self.span,
         };
         NormalizingDerivation::cong(self, self_norm, vec![body_norm]).into()
     }

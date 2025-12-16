@@ -1,10 +1,12 @@
 use super::TypedArithmetic;
 use macros::{
-    FromVariants, GrammarDescribe, LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes, SubstType,
+    FromVariants, GrammarDescribe, LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes, Spanned,
+    SubstType,
 };
 use syntax::types::{Bool, Nat, Type as TypeTrait, TypeGroup};
 
 #[derive(
+    Spanned,
     GrammarDescribe,
     FromVariants,
     SubstType,

@@ -49,7 +49,7 @@ where
         let conc = TypingConclusion::new(
             env.clone(),
             self.clone(),
-            Fun::new(self.annot.clone(), body_norm).into(),
+            Fun::new(self.annot.clone(), body_norm, self.span).into(),
         );
         let deriv = TypingDerivation::lambda(conc, premises);
 

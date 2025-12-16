@@ -1,10 +1,12 @@
 use super::SystemF;
 use macros::{
-    FromVariants, GrammarDescribe, LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes, SubstType,
+    FromVariants, GrammarDescribe, LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes, Spanned,
+    SubstType,
 };
 use syntax::types::{Forall, Fun, Type as TypeTrait, TypeGroup, TypeVariable};
 
 #[derive(
+    Spanned,
     GrammarDescribe,
     FromVariants,
     SubstType,

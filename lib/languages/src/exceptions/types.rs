@@ -1,10 +1,12 @@
 use super::Exceptions;
 use macros::{
-    FromVariants, GrammarDescribe, LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes, SubstType,
+    FromVariants, GrammarDescribe, LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes, Spanned,
+    SubstType,
 };
 use syntax::types::{Bool, Fun, Nat, Type as TypeTrait, TypeGroup, Unit};
 
 #[derive(
+    Spanned,
     GrammarDescribe,
     FromVariants,
     SubstType,

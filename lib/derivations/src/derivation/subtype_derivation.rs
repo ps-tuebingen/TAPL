@@ -4,6 +4,7 @@ use syntax::{
     env::Environment,
     kinds::Kind,
     language::Language,
+    span::Span,
     types::{Bot, OpApp, Top},
 };
 
@@ -29,6 +30,7 @@ where
         env: Environment<Lang>,
         sub_ty: Ty1,
         top_knd: Kind,
+        top_span: Span,
         premises: Vec<Derivation<Lang>>,
     ) -> Self
     where
@@ -36,7 +38,7 @@ where
         Top<Lang>: Into<Lang::Type>,
     {
         Self {
-            conc: SubtypeConclusion::new(env, sub_ty, Top::new(top_knd)),
+            conc: SubtypeConclusion::new(env, sub_ty, Top::new(top_knd, top_span)),
             label: SubtypeRule::Top,
             premises,
         }
@@ -53,13 +55,13 @@ where
         }
     }
 
-    pub fn sup_bot<Ty1>(env: Environment<Lang>, sup: Ty1) -> Self
+    pub fn sup_bot<Ty1>(env: Environment<Lang>, sup: Ty1, bot_span: Span) -> Self
     where
         Ty1: Into<Lang::Type>,
         Bot<Lang>: Into<Lang::Type>,
     {
         Self {
-            conc: SubtypeConclusion::new(env, sup, Bot::new()),
+            conc: SubtypeConclusion::new(env, sup, Bot::new(bot_span)),
             label: SubtypeRule::Bot,
             premises: vec![],
         }
@@ -139,6 +141,8 @@ where
         sub_fun: Ty1,
         super_fun: Ty2,
         arg: Ty3,
+        fst_span: Span,
+        snd_span: Span,
         fun_deriv: Derivation<Lang>,
     ) -> Self
     where
@@ -150,8 +154,8 @@ where
         Self {
             conc: SubtypeConclusion::new(
                 env,
-                OpApp::new(sub_fun, arg.clone()),
-                OpApp::new(super_fun, arg),
+                OpApp::new(sub_fun, arg.clone(), fst_span),
+                OpApp::new(super_fun, arg, snd_span),
             ),
             label: SubtypeRule::App,
             premises: vec![fun_deriv],

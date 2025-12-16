@@ -25,10 +25,9 @@ where
     fn eval(self, env: &mut EvalContext<Lang>) -> Result<EvalTrace<Lang>, EvalError> {
         let term_res = self.term.eval(env)?;
         let term_val = term_res.val();
-        let cons_val = term_val
-            .clone()
-            .into_cons()
-            .ok_or_else(|| ValueMismatch::new(term_val.to_string(), "Cons Value".to_string()))?;
+        let cons_val = term_val.clone().into_cons().ok_or_else(|| {
+            ValueMismatch::new(term_val.to_string(), "Cons Value".to_string(), self.span)
+        })?;
 
         let last_step = EvalStep::head(
             Self::new(term_val, self.ty.clone(), self.span),

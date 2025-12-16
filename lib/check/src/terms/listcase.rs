@@ -35,17 +35,15 @@ where
         if features.kinded() {
             let bound_res = bound_norm.check_kind(env.clone())?.into_kind()?;
             let bound_knd = bound_res.ret_kind();
-            bound_knd
-                .clone()
-                .into_star()
-                .ok_or_else(|| KindMismatch::new(bound_knd.to_string(), "Star Kind".to_string()))?;
+            bound_knd.clone().into_star().ok_or_else(|| {
+                KindMismatch::new(bound_knd.to_string(), "Star Kind".to_string(), self.span)
+            })?;
             premises.push(bound_res.into());
         }
 
-        let bound_list = bound_norm
-            .clone()
-            .into_list()
-            .ok_or_else(|| TypeMismatch::new(bound_norm.to_string(), "List Type".to_string()))?;
+        let bound_list = bound_norm.clone().into_list().ok_or_else(|| {
+            TypeMismatch::new(bound_norm.to_string(), "List Type".to_string(), self.span)
+        })?;
 
         let nil_res = self.nil_rhs.check(env.clone())?;
         let nil_ty = nil_res.ret_ty();
@@ -81,14 +79,21 @@ where
             let nil_knd = nil_res.ret_kind();
             let cons_knd = cons_res.ret_kind();
             if nil_knd != cons_knd {
-                return Err(KindMismatch::new(nil_knd.to_string(), cons_knd.to_string()).into());
+                return Err(KindMismatch::new(
+                    nil_knd.to_string(),
+                    cons_knd.to_string(),
+                    self.span,
+                )
+                .into());
             }
             premises.push(nil_res.into());
             premises.push(cons_res.into());
         }
 
         if nil_norm != cons_norm {
-            return Err(TypeMismatch::new(nil_norm.to_string(), cons_norm.to_string()).into());
+            return Err(
+                TypeMismatch::new(nil_norm.to_string(), cons_norm.to_string(), self.span).into(),
+            );
         }
         let conc = TypingConclusion::new(env.clone(), self.clone(), cons_norm);
         let deriv = TypingDerivation::listcase(conc, premises);

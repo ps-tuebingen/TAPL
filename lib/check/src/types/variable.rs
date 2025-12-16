@@ -26,7 +26,7 @@ where
 
         let ty_super = env
             .get_tyvar_super(&self.v)
-            .ok_or_else(|| FreeTypeVariable::new(&self.v))?;
+            .ok_or_else(|| FreeTypeVariable::new(&self.v, self.span))?;
 
         let sup_norm;
         if features.normalizing() {
@@ -38,7 +38,14 @@ where
         }
 
         if let Some(top) = sup_norm.clone().into_top() {
-            return Ok(SubtypeDerivation::sub_top(env, self.clone(), top.kind, premises).into());
+            return Ok(SubtypeDerivation::sub_top(
+                env,
+                self.clone(),
+                top.kind,
+                self.span,
+                premises,
+            )
+            .into());
         }
 
         if let Some(v) = sup_norm.clone().into_variable()
@@ -47,7 +54,9 @@ where
             return Ok(SubtypeDerivation::refl(env, self.clone(), premises).into());
         }
         if ty_super != sup_norm {
-            return Err(TypeMismatch::new(ty_super.to_string(), sup_norm.to_string()).into());
+            return Err(
+                TypeMismatch::new(ty_super.to_string(), sup_norm.to_string(), self.span).into(),
+            );
         }
         Ok(SubtypeDerivation::refl(env, ty_super, premises).into())
     }
@@ -66,8 +75,8 @@ where
     fn check_kind(&self, env: Environment<Self::Lang>) -> Result<Derivation<Lang>, CheckError> {
         let knd = env
             .get_tyvar_kind(&self.v)
-            .ok_or_else(|| FreeTypeVariable::new(&self.v))?;
-        Ok(KindingDerivation::var(&self.v, knd).into())
+            .ok_or_else(|| FreeTypeVariable::new(&self.v, self.span))?;
+        Ok(KindingDerivation::var(&self.v, knd, self.span).into())
     }
 
     fn rules() -> HashSet<DerivationRule> {

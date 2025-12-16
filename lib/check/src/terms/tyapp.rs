@@ -46,9 +46,12 @@ where
                 let arg_res = arg_norm.check_kind(env.clone())?.into_kind()?;
                 let arg_knd = arg_res.ret_kind();
                 if forall.kind != arg_knd {
-                    return Err(
-                        KindMismatch::new(forall.kind.to_string(), arg_knd.to_string()).into(),
-                    );
+                    return Err(KindMismatch::new(
+                        forall.kind.to_string(),
+                        arg_knd.to_string(),
+                        self.span,
+                    )
+                    .into());
                 }
                 premises.push(arg_res.into());
             }
@@ -64,7 +67,12 @@ where
                 let sup_knd = sup_res.ret_kind();
                 let arg_knd = arg_res.ret_kind();
                 if sup_knd != arg_knd {
-                    return Err(KindMismatch::new(sup_knd.to_string(), arg_knd.to_string()).into());
+                    return Err(KindMismatch::new(
+                        sup_knd.to_string(),
+                        arg_knd.to_string(),
+                        self.span,
+                    )
+                    .into());
                 }
             }
             arg_norm.check_subtype(&forall.sup_ty, env.clone())?;
@@ -73,7 +81,10 @@ where
             let deriv = TypingDerivation::tyapp_bounded(conc, premises);
             Ok(deriv.into())
         } else {
-            Err(TypeMismatch::new(fun_norm.to_string(), "Universal Type".to_owned()).into())
+            Err(
+                TypeMismatch::new(fun_norm.to_string(), "Universal Type".to_owned(), self.span)
+                    .into(),
+            )
         }
     }
 

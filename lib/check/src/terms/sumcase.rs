@@ -35,17 +35,15 @@ where
         if features.kinded() {
             let bound_res = bound_norm.check_kind(env.clone())?.into_kind()?;
             let bound_knd = bound_res.ret_kind();
-            bound_knd
-                .clone()
-                .into_star()
-                .ok_or_else(|| KindMismatch::new(bound_knd.to_string(), "Star Kind".to_string()))?;
+            bound_knd.clone().into_star().ok_or_else(|| {
+                KindMismatch::new(bound_knd.to_string(), "Star Kind".to_string(), self.span)
+            })?;
             premises.push(bound_res.into());
         }
 
-        let bound_sum = bound_norm
-            .clone()
-            .into_sum()
-            .ok_or_else(|| TypeMismatch::new(bound_norm.to_string(), "Sum Type".to_string()))?;
+        let bound_sum = bound_norm.clone().into_sum().ok_or_else(|| {
+            TypeMismatch::new(bound_norm.to_string(), "Sum Type".to_string(), self.span)
+        })?;
 
         let mut left_env = env.clone();
         left_env.add_var(self.left_var.clone(), Rc::unwrap_or_clone(bound_sum.left));
@@ -82,14 +80,24 @@ where
             let left_knd = left_res.ret_kind();
             let right_knd = right_res.ret_kind();
             if left_knd != right_knd {
-                return Err(KindMismatch::new(left_knd.to_string(), right_knd.to_string()).into());
+                return Err(KindMismatch::new(
+                    left_knd.to_string(),
+                    right_knd.to_string(),
+                    self.span,
+                )
+                .into());
             }
             premises.push(left_res.into());
             premises.push(right_res.into());
         }
 
         if left_norm != right_norm {
-            return Err(TypeMismatch::new(left_norm.to_string(), right_norm.to_string()).into());
+            return Err(TypeMismatch::new(
+                left_norm.to_string(),
+                right_norm.to_string(),
+                self.span,
+            )
+            .into());
         }
 
         let conc = TypingConclusion::new(env.clone(), self.clone(), right_norm);

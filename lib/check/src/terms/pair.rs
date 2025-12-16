@@ -51,13 +51,19 @@ where
             let fst_knd = fst_res.ret_kind();
             let snd_knd = snd_res.ret_kind();
             if fst_knd != snd_knd {
-                return Err(KindMismatch::new(fst_knd.to_string(), snd_knd.to_string()).into());
+                return Err(
+                    KindMismatch::new(fst_knd.to_string(), snd_knd.to_string(), self.span).into(),
+                );
             }
             premises.push(fst_res.into());
             premises.push(snd_res.into());
         }
 
-        let conc = TypingConclusion::new(env, self.clone(), Product::new(fst_norm, snd_norm));
+        let conc = TypingConclusion::new(
+            env,
+            self.clone(),
+            Product::new(fst_norm, snd_norm, self.span),
+        );
         let deriv = TypingDerivation::pair(conc, premises);
         Ok(deriv.into())
     }

@@ -57,9 +57,9 @@ impl GroupParse for Type {
         let span = pair_span(&p);
         match p.as_rule() {
             Rule::const_type => Ok(StringTy::<BoundedQuantification>::new()
-                .with_nat()
+                .with_nat(span)
                 .from_pair(&p)?),
-            Rule::top_type_star | Rule::top_type => Ok(Top::new_star().into()),
+            Rule::top_type_star | Rule::top_type => Ok(Top::new_star(span).into()),
             Rule::forall_bounded_type => Ok(ForallBounded::from_pair(p, ())?.into()),
             Rule::forall_unbounded_type => Ok(ForallUnbounded::from_pair(p, ())?
                 .to_forall_bounded()
@@ -70,7 +70,7 @@ impl GroupParse for Type {
             Rule::exists_bounded_type => Ok(ExistsBounded::from_pair(p, ())?.into()),
             Rule::record_type => Ok(RecordTy::from_pair(p, ())?.into()),
             Rule::paren_type => Self::from_pair(pair_to_n_inner(p, vec!["Type"])?.remove(0), ()),
-            Rule::type_variable => Ok(TypeVariable::new(p.as_str().trim()).into()),
+            Rule::type_variable => Ok(TypeVariable::new(p.as_str().trim(), span).into()),
             r => {
                 Err(UnexpectedRule::new(&format!("{r:?}"), "Non Left-Recursive Type", span).into())
             }

@@ -55,9 +55,9 @@ impl GroupParse for Type {
         let span = pair_span(&p);
         match p.as_rule() {
             Rule::const_type => Ok(StringTy::<References>::new()
-                .with_unit()
-                .with_nat()
-                .with_bool()
+                .with_unit(span)
+                .with_nat(span)
+                .with_bool(span)
                 .from_pair(&p)?),
             Rule::ref_type => Ok(RefTy::from_pair(p, ())?.into()),
             Rule::paren_type => Self::from_pair(pair_to_n_inner(p, vec!["Type"])?.remove(0), ()),

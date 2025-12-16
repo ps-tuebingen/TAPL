@@ -66,9 +66,9 @@ impl GroupParse for Type {
         let span = pair_span(&p);
         match p.as_rule() {
             Rule::const_type => Ok(StringTy::<Recursive>::new()
-                .with_unit()
-                .with_nat()
-                .with_bool()
+                .with_unit(span)
+                .with_nat(span)
+                .with_bool(span)
                 .from_pair(&p)?),
             Rule::mu_type => Ok(Mu::from_pair(p, ())?.into()),
             Rule::prod_type => Ok(Product::from_pair(p, ())?.into()),

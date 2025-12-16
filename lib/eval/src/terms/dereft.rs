@@ -25,12 +25,16 @@ where
         let term_res = self.term.eval(env)?;
         let term_val = term_res.val();
         let loc_val = term_val.clone().into_loc().ok_or_else(|| {
-            ValueMismatch::new(term_val.to_string(), "Location Value".to_string())
+            ValueMismatch::new(
+                term_val.to_string(),
+                "Location Value".to_string(),
+                self.span,
+            )
         })?;
 
         let loc_val = env
             .get_location(loc_val.loc)
-            .ok_or_else(|| UndefinedLocation::new(loc_val.loc))?;
+            .ok_or_else(|| UndefinedLocation::new(loc_val.loc, self.span))?;
         let last_step = EvalStep::deref(term_val, loc_val.clone(), self.span);
         let mut steps = term_res.congruence(&move |t| Self::new(t, self.span).into());
         steps.push(last_step);

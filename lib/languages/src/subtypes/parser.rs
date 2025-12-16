@@ -66,10 +66,10 @@ impl GroupParse for Type {
         let span = pair_span(&p);
         match p.as_rule() {
             Rule::const_type => Ok(StringTy::<Subtypes>::new()
-                .with_bot()
-                .with_nat()
-                .with_unit()
-                .with_bool()
+                .with_bot(span)
+                .with_nat(span)
+                .with_unit(span)
+                .with_bool(span)
                 .from_pair(&p)?),
             Rule::top_type_star => Ok(TopStar::from_pair(p, ())?.to_top().into()),
             Rule::top_type => Ok(Top::from_pair(p, ())?.into()),

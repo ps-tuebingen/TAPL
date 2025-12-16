@@ -43,16 +43,15 @@ where
         if features.kinded() {
             let knd_res = fun_norm.check_kind(env.clone())?.into_kind()?;
             let knd = knd_res.ret_kind();
-            knd.clone()
-                .into_star()
-                .ok_or_else(|| KindMismatch::new(knd.to_string(), "Star Kind".to_string()))?;
+            knd.clone().into_star().ok_or_else(|| {
+                KindMismatch::new(knd.to_string(), "Star Kind".to_string(), self.span)
+            })?;
             premises.push(knd_res.into());
         }
 
-        let fun: Fun<Lang> = fun_norm
-            .clone()
-            .into_fun()
-            .ok_or_else(|| TypeMismatch::new(fun_norm.to_string(), "Function Type".to_string()))?;
+        let fun: Fun<Lang> = fun_norm.clone().into_fun().ok_or_else(|| {
+            TypeMismatch::new(fun_norm.to_string(), "Function Type".to_string(), self.span)
+        })?;
         let arg_res = self.arg.check(env.clone())?;
         let arg_ty = arg_res.ret_ty();
         premises.push(arg_res);
@@ -69,9 +68,9 @@ where
         if features.kinded() {
             let knd_res = arg_norm.check_kind(env.clone())?.into_kind()?;
             let knd = knd_res.ret_kind();
-            knd.clone()
-                .into_star()
-                .ok_or_else(|| KindMismatch::new(knd.to_string(), "Star Kind".to_string()))?;
+            knd.clone().into_star().ok_or_else(|| {
+                KindMismatch::new(knd.to_string(), "Star Kind".to_string(), self.span)
+            })?;
             premises.push(knd_res.into());
         }
 

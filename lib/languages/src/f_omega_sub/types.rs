@@ -1,6 +1,6 @@
 use super::FOmegaSub;
 use macros::{
-    FromVariants, GrammarDescribe, Kindcheck, LangDisplay, LatexFmt, Normalize, SubstType,
+    FromVariants, GrammarDescribe, Kindcheck, LangDisplay, LatexFmt, Normalize, Spanned, SubstType,
     Subtypecheck,
 };
 use syntax::types::{
@@ -9,6 +9,7 @@ use syntax::types::{
 };
 
 #[derive(
+    Spanned,
     GrammarDescribe,
     FromVariants,
     SubstType,

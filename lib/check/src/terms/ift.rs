@@ -35,17 +35,16 @@ where
         if features.kinded() {
             let if_res = if_norm.check_kind(env.clone())?.into_kind()?;
             let if_knd = if_res.ret_kind();
-            if_knd
-                .clone()
-                .into_star()
-                .ok_or_else(|| KindMismatch::new(if_knd.to_string(), "Star Kind".to_string()))?;
+            if_knd.clone().into_star().ok_or_else(|| {
+                KindMismatch::new(if_knd.to_string(), "Star Kind".to_string(), self.span)
+            })?;
             premises.push(if_res.into());
         }
 
         if_norm
             .clone()
             .into_bool()
-            .ok_or_else(|| TypeMismatch::new(if_norm.to_string(), "Bool".to_string()))?;
+            .ok_or_else(|| TypeMismatch::new(if_norm.to_string(), "Bool".to_string(), self.span))?;
 
         let then_res = self.then_term.check(env.clone())?;
         let then_ty = then_res.ret_ty();
@@ -79,14 +78,21 @@ where
             let then_knd = then_res.ret_kind();
             let else_knd = else_res.ret_kind();
             if then_knd != else_knd {
-                return Err(KindMismatch::new(then_knd.to_string(), else_knd.to_string()).into());
+                return Err(KindMismatch::new(
+                    then_knd.to_string(),
+                    else_knd.to_string(),
+                    self.span,
+                )
+                .into());
             }
             premises.push(then_res.into());
             premises.push(else_res.into());
         }
 
         if then_norm != else_norm {
-            return Err(TypeMismatch::new(then_norm.to_string(), else_norm.to_string()).into());
+            return Err(
+                TypeMismatch::new(then_norm.to_string(), else_norm.to_string(), self.span).into(),
+            );
         }
 
         let conc = TypingConclusion::new(env, self.clone(), then_norm);
