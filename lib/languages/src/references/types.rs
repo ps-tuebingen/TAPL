@@ -89,14 +89,14 @@ mod check_tests {
         let term: Term = App::new(
             Lambda::new(
                 "x",
-                Reference::new(UnitTy::new()),
+                Reference::new(UnitTy::new(Span::default()), Span::default()),
                 Deref::new(Variable::new("x", Span::default()), Span::default()),
                 Span::default(),
             ),
             App::new(
                 Lambda::new(
                     "y",
-                    UnitTy::new(),
+                    UnitTy::new(Span::default()),
                     Ref::new(Variable::new("y", Span::default()), Span::default()),
                     Span::default(),
                 ),
@@ -105,7 +105,7 @@ mod check_tests {
         )
         .into();
         let result = term.check(Default::default()).unwrap();
-        let expected = UnitTy::new().into();
+        let expected = UnitTy::new(Span::default()).into();
         assert_eq!(result.ret_ty(), expected)
     }
 
@@ -114,7 +114,7 @@ mod check_tests {
         let term: Term = App::new(
             Lambda::new(
                 "x",
-                Reference::new(UnitTy::new()),
+                Reference::new(UnitTy::new(Span::default()), Span::default()),
                 Assign::new(
                     Variable::new("x", Span::default()),
                     Deref::new(Variable::new("x", Span::default()), Span::default()),
@@ -125,7 +125,7 @@ mod check_tests {
         )
         .into();
         let result = term.check(Default::default()).unwrap();
-        let expected = UnitTy::new().into();
+        let expected = UnitTy::new(Span::default()).into();
         assert_eq!(result.ret_ty(), expected)
     }
 
@@ -137,7 +137,7 @@ mod check_tests {
                 App::new(
                     Lambda::new(
                         "x",
-                        UnitTy::new(),
+                        UnitTy::new(Span::default()),
                         Variable::new("x", Span::default()),
                         Span::default(),
                     ),
@@ -159,7 +159,7 @@ mod check_tests {
                 App::new(
                     Lambda::new(
                         "x",
-                        UnitTy::new(),
+                        UnitTy::new(Span::default()),
                         Variable::new("x", Span::default()),
                         Span::default(),
                     ),
@@ -170,9 +170,9 @@ mod check_tests {
         )
         .into();
         let mut env = Environment::default();
-        env.add_loc(0, UnitTy::new().into());
+        env.add_loc(0, UnitTy::new(Span::default()).into());
         let result = term.check(env).unwrap();
-        let expected = UnitTy::new().into();
+        let expected = UnitTy::new(Span::default()).into();
         assert_eq!(result.ret_ty(), expected)
     }
 }

@@ -63,7 +63,7 @@ mod term_tests {
             Ref::new(Unit::new(Span::default()), Span::default()),
             Lambda::new(
                 "x",
-                UnitTy::new(),
+                UnitTy::new(Span::default()),
                 App::new(
                     Variable::new("y", Span::default()),
                     Variable::new("x", Span::default()),
@@ -79,7 +79,7 @@ mod term_tests {
             App::new(
                 Lambda::new(
                     "x",
-                    UnitTy::new(),
+                    UnitTy::new(Span::default()),
                     Num::new(0, Span::default()),
                     Span::default(),
                 ),
@@ -102,7 +102,7 @@ mod term_tests {
             Ref::new(Unit::new(Span::default()), Span::default()),
             Lambda::new(
                 "x",
-                UnitTy::new(),
+                UnitTy::new(Span::default()),
                 App::new(
                     Ref::new(Unit::new(Span::default()), Span::default()),
                     Variable::new("x", Span::default()),
@@ -126,7 +126,7 @@ mod term_tests {
             App::new(
                 Lambda::new(
                     "x",
-                    UnitTy::new(),
+                    UnitTy::new(Span::default()),
                     Num::new(0, Span::default()),
                     Span::default(),
                 ),
@@ -143,14 +143,14 @@ mod term_tests {
         let term: Term = App::new(
             Lambda::new(
                 "x",
-                Reference::new(UnitTy::new()),
+                Reference::new(UnitTy::new(Span::default()), Span::default()),
                 Deref::new(Variable::new("x", Span::default()), Span::default()),
                 Span::default(),
             ),
             App::new(
                 Lambda::new(
                     "y",
-                    UnitTy::new(),
+                    UnitTy::new(Span::default()),
                     Ref::new(Variable::new("y", Span::default()), Span::default()),
                     Span::default(),
                 ),
@@ -168,7 +168,7 @@ mod term_tests {
         let term: Term = App::new(
             Lambda::new(
                 "x",
-                Reference::new(UnitTy::new()),
+                Reference::new(UnitTy::new(Span::default()), Span::default()),
                 Assign::new(
                     Variable::new("x", Span::default()),
                     Deref::new(Variable::new("x", Span::default()), Span::default()),
@@ -191,7 +191,7 @@ mod term_tests {
                 App::new(
                     Lambda::new(
                         "x",
-                        UnitTy::new(),
+                        UnitTy::new(Span::default()),
                         Variable::new("x", Span::default()),
                         Span::default(),
                     ),

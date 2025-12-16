@@ -55,7 +55,7 @@ pub mod term_tests {
             App::<Exceptions>::new(
                 Lambda::<Exceptions>::new(
                     "x",
-                    UnitTy::new(),
+                    UnitTy::new(Span::default()),
                     Variable::<Exceptions>::new("x", Span::default()),
                     Span::default(),
                 ),
@@ -71,13 +71,13 @@ pub mod term_tests {
         TryWithVal::<Exceptions>::new(
             Raise::<Exceptions>::new(
                 Unit::<Exceptions>::new(Span::default()),
-                UnitTy::new(),
-                UnitTy::new(),
+                UnitTy::new(Span::default()),
+                UnitTy::new(Span::default()),
                 Span::default(),
             ),
             Lambda::<Exceptions>::new(
                 "x",
-                UnitTy::new(),
+                UnitTy::new(Span::default()),
                 Unit::new(Span::default()),
                 Span::default(),
             ),

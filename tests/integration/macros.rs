@@ -35,6 +35,7 @@ enum DummyTerm {
 }
 
 #[derive(
+    Spanned,
     GrammarDescribe,
     FromVariants,
     SubstType,
