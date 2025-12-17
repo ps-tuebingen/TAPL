@@ -1,4 +1,4 @@
-use super::Type;
+use super::{OpLambdaSub, Top, Type};
 use crate::{
     TypeVar,
     kinds::Kind,
@@ -40,6 +40,15 @@ where
             body: Rc::new(ty.into()),
             span,
         }
+    }
+
+    /// Convert `Self` to [`OpLambdaSub`] with supertype [`Top`]
+    #[must_use]
+    pub fn to_oplambda_unbounded(self) -> OpLambdaSub<Lang>
+    where
+        Top<Lang>: Into<Lang::Type>,
+    {
+        OpLambdaSub::new_unbounded(&self.var, self.annot, Top::new_star(self.span), self.span)
     }
 }
 

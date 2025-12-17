@@ -1,4 +1,4 @@
-use super::Type;
+use super::{ExistsBounded, Top, Type};
 use crate::{
     TypeVar,
     kinds::Kind,
@@ -40,6 +40,20 @@ where
             span,
             ty: Rc::new(ty.into()),
         }
+    }
+
+    /// Convert `Self` to [`ExistsBounded`] with bound [`Top`]
+    #[must_use]
+    pub fn to_exists_bounded(self) -> ExistsBounded<Lang>
+    where
+        Top<Lang>: Into<Lang::Type>,
+    {
+        ExistsBounded::new(
+            &self.var,
+            Top::new_star(self.span),
+            Rc::unwrap_or_clone(self.ty),
+            self.span,
+        )
     }
 }
 

@@ -13,8 +13,8 @@ use syntax::{
         Variable,
     },
     types::{
-        ExistsBounded, ForallBounded, Fun, OpApp, OpLambdaSub, Record as RecordTy, Top,
-        TypeVariable,
+        Exists, ExistsBounded, ForallBounded, Fun, OpApp, OpLambda, OpLambdaSub,
+        Record as RecordTy, Top, TypeVariable,
     },
 };
 
@@ -77,7 +77,7 @@ impl GroupParse for Type {
             Rule::forall_unbounded_type => Ok(ForallUnbounded::from_pair(p, ())?
                 .to_forall_bounded()
                 .into()),
-            Rule::op_lambda_type => Ok(OpLambdaSub::from_pair(p, ())?.into()),
+            Rule::op_lambda_type => Ok(OpLambda::from_pair(p, ())?.to_oplambda_unbounded().into()),
             Rule::op_lambda_star_type => Ok(OpLambdaUnbounded::from_pair(p, ())?
                 .to_oplambda_sub()
                 .into()),
@@ -86,9 +86,7 @@ impl GroupParse for Type {
             Rule::exists_unbounded_type => Ok(ExistsUnbounded::from_pair(p, ())?
                 .to_exists_bounded()
                 .into()),
-            Rule::exists_kinded_type => Ok(ExistsUnbounded::from_pair(p, ())?
-                .to_exists_bounded()
-                .into()),
+            Rule::exists_kinded_type => Ok(Exists::from_pair(p, ())?.to_exists_bounded().into()),
             Rule::record_type => Ok(RecordTy::from_pair(p, ())?.into()),
             Rule::type_variable => Ok(TypeVariable::from_pair(p, ())?.into()),
             _ => Err(UnexpectedRule::new(
