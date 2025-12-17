@@ -11,8 +11,8 @@ pub struct EmptyCase {
 impl EmptyCase {
     /// Create a new error from span
     #[must_use]
-    pub fn new(span: Span) -> EmptyCase {
-        EmptyCase { span }
+    pub const fn new(span: Span) -> Self {
+        Self { span }
     }
 }
 

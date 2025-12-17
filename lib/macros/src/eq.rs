@@ -21,14 +21,17 @@ pub fn generate_eq_no_span(input: TokenStream) -> TokenStream {
             }
             _ => true,
         })
-        .map(|(field, ty)| match ty {
-            Type::Path(path) => match path.path.segments.last() {
-                Some(seg) if seg.ident == "Box" || seg.ident == "Rc" => {
-                    quote! { *self.#field == *other.#field }
+        .map(|(field, ty)| {
+            if let Type::Path(path) = ty {
+                match path.path.segments.last() {
+                    Some(seg) if seg.ident == "Box" || seg.ident == "Rc" => {
+                        quote! { *self.#field == *other.#field }
+                    }
+                    _ => quote! { self.#field == other.#field },
                 }
-                _ => quote! { self.#field == other.#field },
-            },
-            _ => quote! { self.#field == other.#field},
+            } else {
+                quote! { self.#field == other.#field}
+            }
         });
 
     quote! {

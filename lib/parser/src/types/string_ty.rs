@@ -104,7 +104,7 @@ where
     /// returns an error if the parsed value does not correspond to a primitive type
     /// or when `self` does not allow this type
     pub fn from_pair(self, p: &Pair<'_, Rule>) -> Result<Lang::Type, ParserError> {
-        let span = pair_span(&p);
+        let span = pair_span(p);
         let err = UnknownKeyword::new(p.as_str(), span).into();
         match p.as_str().to_lowercase().trim() {
             "bot" => self.bot.map_or_else(|| Err(err), Ok),
