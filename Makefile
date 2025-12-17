@@ -4,8 +4,13 @@ prepare:
 
 .PHONY: web
 web: prepare
+	rm web/wasm -rf 
+	mkdir web/wasm
+	mkdir web/wasm/index
 	wasm-pack build apps/web/index --target web --out-dir ../../../web/wasm/index
+	mkdir web/wasm/index/check
 	wasm-pack build apps/web/check --target web --out-dir ../../../web/wasm/check
+	mkdir web/wasm/index/eval
 	wasm-pack build apps/web/eval --target web --out-dir ../../../web/wasm/eval
 
 .PHONY: test 

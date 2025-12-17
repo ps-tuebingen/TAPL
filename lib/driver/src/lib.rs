@@ -1,11 +1,12 @@
 use check::Typecheck;
 use derivations::Derivation;
-use errors::{FileAccess, NoTyping, driver_error::DriverError};
+use errors::{FileAccess, driver_error::DriverError};
 use eval::{Eval, eval_main};
 use grammar::LanguageDescribe;
 use languages::{
     AllLanguages, BoundedQuantification, Exceptions, Existential, FOmega, FOmegaSub, LambdaOmega,
-    Recursive, References, Stlc, Subtypes, SystemF, TypedArithmetic,
+    Recursive, References, Stlc, Subtypes, SystemF, TypedArithmetic, UntypedArithmetic,
+    UntypedLambda,
 };
 use latex::LatexFmt;
 use parser::{GroupParse, Parse};
@@ -237,6 +238,10 @@ pub fn dispatch_run(
     input: String,
 ) -> Result<String, DriverError> {
     match lang {
+        AllLanguages::UntypedArithmetic => {
+            driver.run_format::<UntypedArithmetic>(method, cmd, input)
+        }
+        AllLanguages::UntypedLambda => driver.run_format::<UntypedLambda>(method, cmd, input),
         AllLanguages::TypedArithmetic => driver.run_format::<TypedArithmetic>(method, cmd, input),
         AllLanguages::Stlc => driver.run_format::<Stlc>(method, cmd, input),
         AllLanguages::Exceptions => driver.run_format::<Exceptions>(method, cmd, input),
@@ -251,6 +256,5 @@ pub fn dispatch_run(
         AllLanguages::LambdaOmega => driver.run_format::<LambdaOmega>(method, cmd, input),
         AllLanguages::FOmega => driver.run_format::<FOmega>(method, cmd, input),
         AllLanguages::FOmegaSub => driver.run_format::<FOmegaSub>(method, cmd, input),
-        _ => Err(NoTyping::new(&lang.to_string()).into()),
     }
 }
