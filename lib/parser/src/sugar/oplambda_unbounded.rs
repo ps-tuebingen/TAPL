@@ -59,6 +59,7 @@ where
         let var = inner.remove(0).as_str().trim().to_owned();
         let ty_rule = inner.remove(0);
         let body = Lang::Type::from_pair(ty_rule, ())?;
+        println!("parsed oplambda unbounded {var} {body}");
         Ok(Self { var, body, span })
     }
 }
@@ -82,6 +83,11 @@ where
     Top<Lang>: Into<Lang::Type>,
 {
     fn from(ou: OpLambdaUnbounded<Lang>) -> Self {
+        println!(
+            "creating oplambdasub from unbounded: {}.{}",
+            ou.var, ou.body
+        );
+
         Self::new(&ou.var, Top::new_star(ou.span), ou.body, ou.span)
     }
 }

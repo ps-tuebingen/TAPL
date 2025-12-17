@@ -77,7 +77,11 @@ impl GroupParse for Type {
             Rule::forall_unbounded_type => Ok(ForallUnbounded::from_pair(p, ())?
                 .to_forall_bounded()
                 .into()),
-            Rule::op_lambda_type => Ok(OpLambda::from_pair(p, ())?.to_oplambda_unbounded().into()),
+            Rule::op_lambda_type => {
+                let lam = OpLambda::from_pair(p, ())?;
+                let unb = lam.to_oplambda_unbounded();
+                Ok(unb.into())
+            }
             Rule::op_lambda_star_type => Ok(OpLambdaUnbounded::from_pair(p, ())?
                 .to_oplambda_sub()
                 .into()),
@@ -86,7 +90,13 @@ impl GroupParse for Type {
             Rule::exists_unbounded_type => Ok(ExistsUnbounded::from_pair(p, ())?
                 .to_exists_bounded()
                 .into()),
-            Rule::exists_kinded_type => Ok(Exists::from_pair(p, ())?.to_exists_bounded().into()),
+            Rule::exists_kinded_type => {
+                let ex = Exists::from_pair(p, ())?;
+                println!("parsed exists {ex}");
+                let res = ex.to_exists_bounded();
+                println!("to exists bounded: {res}");
+                Ok(res.into())
+            }
             Rule::record_type => Ok(RecordTy::from_pair(p, ())?.into()),
             Rule::type_variable => Ok(TypeVariable::from_pair(p, ())?.into()),
             _ => Err(UnexpectedRule::new(

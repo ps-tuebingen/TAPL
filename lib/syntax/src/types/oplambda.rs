@@ -48,7 +48,12 @@ where
     where
         Top<Lang>: Into<Lang::Type>,
     {
-        OpLambdaSub::new_unbounded(&self.var, self.annot, Top::new_star(self.span), self.span)
+        OpLambdaSub::new_unbounded(
+            &self.var,
+            self.annot,
+            Rc::unwrap_or_clone(self.body),
+            self.span,
+        )
     }
 }
 
