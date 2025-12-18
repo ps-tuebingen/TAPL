@@ -1,13 +1,14 @@
 use super::Type;
 use crate::{
     TypeVar,
+    free_vars::FreeTypeVars,
     kinds::Kind,
     language::Language,
     span::{Span, Spanned},
     subst::SubstType,
 };
 use macros::EqNoSpan;
-use std::{fmt, rc::Rc};
+use std::{collections::HashSet, fmt, rc::Rc};
 
 /// Universal type (unbounded)
 #[derive(Clone, Debug, EqNoSpan)]
@@ -49,6 +50,19 @@ where
 {
     fn span(&self) -> Span {
         self.span
+    }
+}
+
+impl<Lang> FreeTypeVars for Forall<Lang>
+where
+    Lang: Language,
+{
+    fn free_type_vars(&self, vars: &mut HashSet<TypeVar>) {
+        let contained = vars.contains(&self.var);
+        self.ty.free_type_vars(vars);
+        if !contained {
+            vars.remove(&self.var);
+        }
     }
 }
 

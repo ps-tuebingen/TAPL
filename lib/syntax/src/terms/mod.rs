@@ -1,7 +1,13 @@
-use crate::span::Spanned;
+use crate::{
+    free_vars::{FreeTypeVars, FreeVars},
+    span::Spanned,
+};
 use std::fmt;
 
-pub trait Term: fmt::Display + fmt::Debug + Clone + PartialEq + Eq + Spanned {}
+pub trait Term:
+    fmt::Display + fmt::Debug + Clone + PartialEq + Eq + Spanned + FreeVars + FreeTypeVars
+{
+}
 
 pub mod app;
 pub mod ascribe;

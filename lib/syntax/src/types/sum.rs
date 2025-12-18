@@ -1,12 +1,13 @@
 use super::Type;
 use crate::{
     TypeVar,
+    free_vars::FreeTypeVars,
     language::Language,
     span::{Span, Spanned},
     subst::SubstType,
 };
 use macros::EqNoSpan;
-use std::{fmt, rc::Rc};
+use std::{collections::HashSet, fmt, rc::Rc};
 
 /// Sum type
 #[derive(Clone, Debug, EqNoSpan)]
@@ -46,6 +47,16 @@ where
 {
     fn span(&self) -> Span {
         self.span
+    }
+}
+
+impl<Lang> FreeTypeVars for Sum<Lang>
+where
+    Lang: Language,
+{
+    fn free_type_vars(&self, vars: &mut HashSet<TypeVar>) {
+        self.left.free_type_vars(vars);
+        self.right.free_type_vars(vars);
     }
 }
 

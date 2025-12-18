@@ -1,12 +1,13 @@
 use super::Term;
 use crate::{
     TypeVar, Var,
+    free_vars::{FreeTypeVars, FreeVars},
     language::Language,
     span::{Span, Spanned},
     subst::{SubstTerm, SubstType},
 };
 use macros::EqNoSpan;
-use std::{fmt, rc::Rc};
+use std::{collections::HashSet, fmt, rc::Rc};
 
 /// Term representing try-raise
 /// used with [`crate::terms::raise::Raise`]
@@ -47,6 +48,26 @@ where
 {
     fn span(&self) -> Span {
         self.span
+    }
+}
+
+impl<Lang> FreeVars for TryWithVal<Lang>
+where
+    Lang: Language,
+{
+    fn free_vars(&self, vars: &mut HashSet<Var>) {
+        self.term.free_vars(vars);
+        self.handler.free_vars(vars);
+    }
+}
+
+impl<Lang> FreeTypeVars for TryWithVal<Lang>
+where
+    Lang: Language,
+{
+    fn free_type_vars(&self, vars: &mut HashSet<TypeVar>) {
+        self.term.free_type_vars(vars);
+        self.handler.free_type_vars(vars);
     }
 }
 

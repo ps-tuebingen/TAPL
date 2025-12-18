@@ -1,12 +1,13 @@
 use super::Type;
 use crate::{
     Label, TypeVar,
+    free_vars::FreeTypeVars,
     language::Language,
     span::{Span, Spanned},
     subst::SubstType,
 };
 use macros::EqNoSpan;
-use std::{collections::HashMap, fmt};
+use std::{collections::HashMap, collections::HashSet, fmt};
 
 /// Variant Type
 #[derive(Clone, Debug, EqNoSpan)]
@@ -54,6 +55,17 @@ where
 {
     fn span(&self) -> Span {
         self.span
+    }
+}
+
+impl<Lang> FreeTypeVars for Variant<Lang>
+where
+    Lang: Language,
+{
+    fn free_type_vars(&self, vars: &mut HashSet<TypeVar>) {
+        for ty in self.variants.values() {
+            ty.free_type_vars(vars);
+        }
     }
 }
 

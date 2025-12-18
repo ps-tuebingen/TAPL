@@ -1,12 +1,13 @@
 use super::Term;
 use crate::{
     TypeVar, Var,
+    free_vars::{FreeTypeVars, FreeVars},
     language::Language,
     span::{Span, Spanned},
     subst::{SubstTerm, SubstType},
 };
 use macros::EqNoSpan;
-use std::{fmt, rc::Rc};
+use std::{collections::HashSet, fmt, rc::Rc};
 
 /// Term representing an if expression
 #[derive(Clone, Debug, EqNoSpan)]
@@ -50,6 +51,28 @@ where
 {
     fn span(&self) -> Span {
         self.span
+    }
+}
+
+impl<Lang> FreeVars for If<Lang>
+where
+    Lang: Language,
+{
+    fn free_vars(&self, vars: &mut HashSet<Var>) {
+        self.if_cond.free_vars(vars);
+        self.then_term.free_vars(vars);
+        self.else_term.free_vars(vars);
+    }
+}
+
+impl<Lang> FreeTypeVars for If<Lang>
+where
+    Lang: Language,
+{
+    fn free_type_vars(&self, vars: &mut HashSet<TypeVar>) {
+        self.if_cond.free_type_vars(vars);
+        self.then_term.free_type_vars(vars);
+        self.else_term.free_type_vars(vars);
     }
 }
 

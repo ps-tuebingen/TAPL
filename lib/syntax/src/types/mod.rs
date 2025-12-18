@@ -1,9 +1,9 @@
-use crate::span::Spanned;
+use crate::{free_vars::FreeTypeVars, span::Spanned};
 use std::fmt;
 
 pub trait Type
 where
-    Self: fmt::Display + fmt::Debug + Clone + PartialEq + Eq + Spanned,
+    Self: fmt::Display + fmt::Debug + Clone + PartialEq + Eq + Spanned + FreeTypeVars,
 {
 }
 

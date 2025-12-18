@@ -1,12 +1,13 @@
 use super::Term;
 use crate::{
     TypeVar, Var,
+    free_vars::{FreeTypeVars, FreeVars},
     language::Language,
     span::{Span, Spanned},
     subst::{SubstTerm, SubstType},
 };
 use macros::EqNoSpan;
-use std::{fmt, rc::Rc};
+use std::{collections::HashSet, fmt, rc::Rc};
 
 /// Term representing a memory assignment
 #[derive(Clone, Debug, EqNoSpan)]
@@ -47,6 +48,26 @@ where
 {
     fn span(&self) -> Span {
         self.span
+    }
+}
+
+impl<Lang> FreeVars for Assign<Lang>
+where
+    Lang: Language,
+{
+    fn free_vars(&self, vars: &mut HashSet<Var>) {
+        self.lhs.free_vars(vars);
+        self.rhs.free_vars(vars);
+    }
+}
+
+impl<Lang> FreeTypeVars for Assign<Lang>
+where
+    Lang: Language,
+{
+    fn free_type_vars(&self, vars: &mut HashSet<TypeVar>) {
+        self.lhs.free_type_vars(vars);
+        self.rhs.free_type_vars(vars);
     }
 }
 

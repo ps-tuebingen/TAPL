@@ -1,12 +1,16 @@
 use super::Term;
 use crate::{
     Label, TypeVar, Var,
+    free_vars::{FreeTypeVars, FreeVars},
     language::Language,
     span::{Span, Spanned},
     subst::{SubstTerm, SubstType},
 };
 use macros::EqNoSpan;
-use std::{collections::HashMap, fmt};
+use std::{
+    collections::{HashMap, HashSet},
+    fmt,
+};
 
 /// Term representing a record
 #[derive(Clone, Debug, EqNoSpan)]
@@ -43,6 +47,28 @@ where
 {
     fn span(&self) -> Span {
         self.span
+    }
+}
+
+impl<Lang> FreeVars for Record<Lang>
+where
+    Lang: Language,
+{
+    fn free_vars(&self, vars: &mut HashSet<Var>) {
+        for t in self.records.values() {
+            t.free_vars(vars);
+        }
+    }
+}
+
+impl<Lang> FreeTypeVars for Record<Lang>
+where
+    Lang: Language,
+{
+    fn free_type_vars(&self, vars: &mut HashSet<TypeVar>) {
+        for t in self.records.values() {
+            t.free_type_vars(vars)
+        }
     }
 }
 

@@ -1,12 +1,13 @@
 use super::Term;
 use crate::{
     TypeVar, Var,
+    free_vars::{FreeTypeVars, FreeVars},
     language::Language,
     span::{Span, Spanned},
     subst::{SubstTerm, SubstType},
 };
 use macros::EqNoSpan;
-use std::{fmt, rc::Rc};
+use std::{collections::HashSet, fmt, rc::Rc};
 
 /// Term representing a case for a sum type
 #[derive(Clone, Debug, EqNoSpan)]
@@ -64,6 +65,37 @@ where
 {
     fn span(&self) -> Span {
         self.span
+    }
+}
+
+impl<Lang> FreeVars for SumCase<Lang>
+where
+    Lang: Language,
+{
+    fn free_vars(&self, vars: &mut HashSet<Var>) {
+        let contained_left = vars.contains(&self.left_var);
+        let contained_right = vars.contains(&self.right_var);
+
+        self.left_term.free_vars(vars);
+        if !contained_left {
+            vars.remove(&self.left_var);
+        }
+        self.right_term.free_vars(vars);
+        if !contained_right {
+            vars.remove(&self.right_var);
+        }
+        self.bound_term.free_vars(vars);
+    }
+}
+
+impl<Lang> FreeTypeVars for SumCase<Lang>
+where
+    Lang: Language,
+{
+    fn free_type_vars(&self, vars: &mut HashSet<TypeVar>) {
+        self.left_term.free_type_vars(vars);
+        self.right_term.free_type_vars(vars);
+        self.bound_term.free_type_vars(vars);
     }
 }
 

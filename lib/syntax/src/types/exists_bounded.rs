@@ -1,13 +1,14 @@
 use super::{Top, Type};
 use crate::{
     TypeVar,
+    free_vars::FreeTypeVars,
     kinds::Kind,
     language::Language,
     span::{Span, Spanned},
     subst::SubstType,
 };
 use macros::EqNoSpan;
-use std::{fmt, rc::Rc};
+use std::{collections::HashSet, fmt, rc::Rc};
 
 /// Bounded existential type
 #[derive(Clone, Debug, EqNoSpan)]
@@ -65,6 +66,20 @@ where
 {
     fn span(&self) -> Span {
         self.span
+    }
+}
+
+impl<Lang> FreeTypeVars for ExistsBounded<Lang>
+where
+    Lang: Language,
+{
+    fn free_type_vars(&self, vars: &mut HashSet<TypeVar>) {
+        self.sup_ty.free_type_vars(vars);
+        let contained = vars.contains(&self.var);
+        self.ty.free_type_vars(vars);
+        if !contained {
+            vars.remove(&self.var);
+        }
     }
 }
 

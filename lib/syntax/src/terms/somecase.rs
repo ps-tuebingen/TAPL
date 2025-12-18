@@ -1,12 +1,13 @@
 use super::Term;
 use crate::{
     TypeVar, Var,
+    free_vars::{FreeTypeVars, FreeVars},
     language::Language,
     span::{Span, Spanned},
     subst::{SubstTerm, SubstType},
 };
 use macros::EqNoSpan;
-use std::{fmt, rc::Rc};
+use std::{collections::HashSet, fmt, rc::Rc};
 
 /// Term representing a case on an option
 #[derive(Clone, Debug, EqNoSpan)]
@@ -53,6 +54,32 @@ where
 {
     fn span(&self) -> Span {
         self.span
+    }
+}
+
+impl<Lang> FreeVars for SomeCase<Lang>
+where
+    Lang: Language,
+{
+    fn free_vars(&self, vars: &mut HashSet<Var>) {
+        let contained = vars.contains(&self.some_var);
+        self.some_term.free_vars(vars);
+        if !contained {
+            vars.remove(&self.some_var);
+        }
+        self.none_term.free_vars(vars);
+        self.bound_term.free_vars(vars);
+    }
+}
+
+impl<Lang> FreeTypeVars for SomeCase<Lang>
+where
+    Lang: Language,
+{
+    fn free_type_vars(&self, vars: &mut HashSet<TypeVar>) {
+        self.some_term.free_type_vars(vars);
+        self.none_term.free_type_vars(vars);
+        self.bound_term.free_type_vars(vars);
     }
 }
 

@@ -1,12 +1,13 @@
 use super::Type;
 use crate::{
     TypeVar,
+    free_vars::FreeTypeVars,
     language::Language,
     span::{Span, Spanned},
     subst::SubstType,
 };
 use macros::EqNoSpan;
-use std::{fmt, marker::PhantomData};
+use std::{collections::HashSet, fmt, marker::PhantomData};
 
 /// Type of natural numbers
 #[derive(Clone, Debug, EqNoSpan)]
@@ -40,6 +41,15 @@ where
 {
     fn span(&self) -> Span {
         self.span
+    }
+}
+
+impl<Lang> FreeTypeVars for Nat<Lang>
+where
+    Lang: Language,
+{
+    fn free_type_vars(&self, _: &mut HashSet<TypeVar>) {
+        ()
     }
 }
 

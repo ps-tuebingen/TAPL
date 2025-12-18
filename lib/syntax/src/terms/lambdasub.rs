@@ -1,13 +1,14 @@
 use super::Term;
 use crate::{
     TypeVar, Var,
+    free_vars::{FreeTypeVars, FreeVars},
     language::Language,
     span::{Span, Spanned},
     subst::{SubstTerm, SubstType},
     types::Top,
 };
 use macros::EqNoSpan;
-use std::{fmt, rc::Rc};
+use std::{collections::HashSet, fmt, rc::Rc};
 
 /// Term representing a Type abstraction
 /// `\X<:ty.t`
@@ -66,6 +67,29 @@ where
 {
     fn span(&self) -> Span {
         self.span
+    }
+}
+
+impl<Lang> FreeVars for LambdaSub<Lang>
+where
+    Lang: Language,
+{
+    fn free_vars(&self, vars: &mut HashSet<Var>) {
+        self.body.free_vars(vars);
+    }
+}
+
+impl<Lang> FreeTypeVars for LambdaSub<Lang>
+where
+    Lang: Language,
+{
+    fn free_type_vars(&self, vars: &mut HashSet<TypeVar>) {
+        let contained = vars.contains(&self.var);
+        self.body.free_type_vars(vars);
+        if !contained {
+            vars.remove(&self.var);
+        }
+        self.sup_ty.free_type_vars(vars);
     }
 }
 

@@ -1,12 +1,13 @@
 use super::Term;
 use crate::{
     Label, TypeVar, Var,
+    free_vars::{FreeTypeVars, FreeVars},
     language::Language,
     span::{Span, Spanned},
     subst::{SubstTerm, SubstType},
 };
 use macros::EqNoSpan;
-use std::{fmt, rc::Rc};
+use std::{collections::HashSet, fmt, rc::Rc};
 
 /// Term representing a case on variant types
 #[derive(Clone, Debug, EqNoSpan)]
@@ -73,6 +74,52 @@ where
 {
     fn span(&self) -> Span {
         self.span
+    }
+}
+
+impl<Lang> FreeVars for VariantCase<Lang>
+where
+    Lang: Language,
+{
+    fn free_vars(&self, vars: &mut HashSet<Var>) {
+        self.bound_term.free_vars(vars);
+        for pt in self.patterns.iter() {
+            pt.free_vars(vars);
+        }
+    }
+}
+
+impl<Lang> FreeVars for VariantPattern<Lang>
+where
+    Lang: Language,
+{
+    fn free_vars(&self, vars: &mut HashSet<Var>) {
+        let contained = vars.contains(&self.bound_var);
+        self.rhs.free_vars(vars);
+        if !contained {
+            vars.remove(&self.bound_var);
+        }
+    }
+}
+
+impl<Lang> FreeTypeVars for VariantCase<Lang>
+where
+    Lang: Language,
+{
+    fn free_type_vars(&self, vars: &mut HashSet<Var>) {
+        self.bound_term.free_type_vars(vars);
+        for pt in self.patterns.iter() {
+            pt.free_type_vars(vars);
+        }
+    }
+}
+
+impl<Lang> FreeTypeVars for VariantPattern<Lang>
+where
+    Lang: Language,
+{
+    fn free_type_vars(&self, vars: &mut HashSet<TypeVar>) {
+        self.rhs.free_type_vars(vars);
     }
 }
 

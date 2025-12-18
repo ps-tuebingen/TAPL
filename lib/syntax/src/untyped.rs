@@ -1,12 +1,13 @@
 use crate::{
     TypeVar,
+    free_vars::FreeTypeVars,
     language::Language,
     span::{Span, Spanned},
     subst::SubstType,
     types::{Bool, Fun, Nat, Type, TypeGroup},
 };
 use macros::EqNoSpan;
-use std::{fmt, marker::PhantomData};
+use std::{collections::HashSet, fmt, marker::PhantomData};
 
 /// "Type" for unpyped languages
 #[derive(Clone, Copy, Debug, EqNoSpan)]
@@ -42,7 +43,14 @@ where
         self.span
     }
 }
-
+impl<Lang> FreeTypeVars for Untyped<Lang>
+where
+    Lang: Language,
+{
+    fn free_type_vars(&self, _: &mut HashSet<TypeVar>) {
+        ()
+    }
+}
 impl<Lang> Type for Untyped<Lang> where Lang: Language {}
 
 impl<Lang> fmt::Display for Untyped<Lang>

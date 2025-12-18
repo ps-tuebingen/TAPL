@@ -1,12 +1,13 @@
 use super::Type;
 use crate::{
     TypeVar,
+    free_vars::FreeTypeVars,
     language::Language,
     span::{Span, Spanned},
     subst::SubstType,
 };
 use macros::EqNoSpan;
-use std::fmt;
+use std::{collections::HashSet, fmt};
 
 /// Tuple Type
 #[derive(Clone, Debug, EqNoSpan)]
@@ -42,6 +43,17 @@ where
 {
     fn span(&self) -> Span {
         self.span
+    }
+}
+
+impl<Lang> FreeTypeVars for Tuple<Lang>
+where
+    Lang: Language,
+{
+    fn free_type_vars(&self, vars: &mut HashSet<TypeVar>) {
+        for ty in self.tys.iter() {
+            ty.free_type_vars(vars);
+        }
     }
 }
 

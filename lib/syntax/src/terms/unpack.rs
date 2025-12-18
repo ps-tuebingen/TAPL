@@ -1,13 +1,13 @@
 use super::Term;
 use crate::{
     TypeVar, Var,
+    free_vars::{FreeTypeVars, FreeVars},
     language::Language,
     span::{Span, Spanned},
     subst::{SubstTerm, SubstType},
 };
 use macros::EqNoSpan;
-
-use std::{fmt, rc::Rc};
+use std::{collections::HashSet, fmt, rc::Rc};
 
 /// Term representing unpacking an existential pack
 #[derive(Clone, Debug, EqNoSpan)]
@@ -53,6 +53,35 @@ where
 {
     fn span(&self) -> Span {
         self.span
+    }
+}
+
+impl<Lang> FreeVars for Unpack<Lang>
+where
+    Lang: Language,
+{
+    fn free_vars(&self, vars: &mut HashSet<Var>) {
+        let contained = vars.contains(&self.term_name);
+
+        self.in_term.free_vars(vars);
+        if !contained {
+            vars.remove(&self.term_name);
+        }
+        self.bound_term.free_vars(vars);
+    }
+}
+
+impl<Lang> FreeTypeVars for Unpack<Lang>
+where
+    Lang: Language,
+{
+    fn free_type_vars(&self, vars: &mut HashSet<TypeVar>) {
+        let contained = vars.contains(&self.ty_name);
+        self.in_term.free_type_vars(vars);
+        if !contained {
+            vars.remove(&self.ty_name);
+        }
+        self.bound_term.free_vars(vars);
     }
 }
 

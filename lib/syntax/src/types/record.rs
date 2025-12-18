@@ -1,13 +1,16 @@
 use super::Type;
 use crate::{
     Label, TypeVar,
+    free_vars::FreeTypeVars,
     language::Language,
     span::{Span, Spanned},
     subst::SubstType,
 };
 use macros::EqNoSpan;
-use std::collections::HashMap;
-use std::fmt;
+use std::{
+    collections::{HashMap, HashSet},
+    fmt,
+};
 
 /// Record type
 #[derive(Clone, Debug, EqNoSpan)]
@@ -44,6 +47,17 @@ where
 {
     fn span(&self) -> Span {
         self.span
+    }
+}
+
+impl<Lang> FreeTypeVars for Record<Lang>
+where
+    Lang: Language,
+{
+    fn free_type_vars(&self, vars: &mut HashSet<TypeVar>) {
+        for rec in self.records.values() {
+            rec.free_type_vars(vars);
+        }
     }
 }
 

@@ -1,12 +1,13 @@
 use super::Term;
 use crate::{
     TypeVar, Var,
+    free_vars::{FreeTypeVars, FreeVars},
     language::Language,
     span::{Span, Spanned},
     subst::{SubstTerm, SubstType},
 };
 use macros::EqNoSpan;
-use std::{fmt, marker::PhantomData};
+use std::{collections::HashSet, fmt, marker::PhantomData};
 
 /// Term representing a unit term
 #[derive(Clone, Debug, EqNoSpan)]
@@ -40,6 +41,24 @@ where
 {
     fn span(&self) -> Span {
         self.span
+    }
+}
+
+impl<Lang> FreeVars for Unit<Lang>
+where
+    Lang: Language,
+{
+    fn free_vars(&self, _: &mut HashSet<Var>) {
+        ()
+    }
+}
+
+impl<Lang> FreeTypeVars for Unit<Lang>
+where
+    Lang: Language,
+{
+    fn free_type_vars(&self, _: &mut HashSet<TypeVar>) {
+        ()
     }
 }
 

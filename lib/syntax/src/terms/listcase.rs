@@ -1,12 +1,13 @@
 use super::Term;
 use crate::{
     TypeVar, Var,
+    free_vars::{FreeTypeVars, FreeVars},
     language::Language,
     span::{Span, Spanned},
     subst::{SubstTerm, SubstType},
 };
 use macros::EqNoSpan;
-use std::{fmt, rc::Rc};
+use std::{collections::HashSet, fmt, rc::Rc};
 
 /// Term representing a list case
 /// `case t1 of { Nil => t2, Cons(x,xs) => t3 }`
@@ -58,6 +59,36 @@ where
 {
     fn span(&self) -> Span {
         self.span
+    }
+}
+
+impl<Lang> FreeVars for ListCase<Lang>
+where
+    Lang: Language,
+{
+    fn free_vars(&self, vars: &mut HashSet<Var>) {
+        let contained_fst = vars.contains(&self.cons_fst);
+        let contained_rst = vars.contains(&self.cons_rst);
+        self.cons_rhs.free_vars(vars);
+        if !contained_fst {
+            vars.remove(&self.cons_fst);
+        }
+        if !contained_rst {
+            vars.remove(&self.cons_rst);
+        }
+        self.nil_rhs.free_vars(vars);
+        self.bound_term.free_vars(vars);
+    }
+}
+
+impl<Lang> FreeTypeVars for ListCase<Lang>
+where
+    Lang: Language,
+{
+    fn free_type_vars(&self, vars: &mut HashSet<TypeVar>) {
+        self.cons_rhs.free_type_vars(vars);
+        self.nil_rhs.free_type_vars(vars);
+        self.bound_term.free_type_vars(vars);
     }
 }
 

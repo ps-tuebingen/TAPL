@@ -1,5 +1,6 @@
 use crate::{
     TypeVar,
+    free_vars::FreeTypeVars,
     kinds::Kind,
     language::Language,
     span::{Span, Spanned},
@@ -7,7 +8,7 @@ use crate::{
     types::Type,
 };
 use macros::EqNoSpan;
-use std::{fmt, marker::PhantomData};
+use std::{collections::HashSet, fmt, marker::PhantomData};
 
 /// Bottom Type
 #[derive(Debug, Clone, EqNoSpan)]
@@ -44,6 +45,15 @@ where
 {
     fn span(&self) -> Span {
         self.span
+    }
+}
+
+impl<Lang> FreeTypeVars for Bot<Lang>
+where
+    Lang: Language,
+{
+    fn free_type_vars(&self, _: &mut HashSet<TypeVar>) {
+        ()
     }
 }
 
