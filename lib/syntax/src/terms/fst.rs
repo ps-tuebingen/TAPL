@@ -5,11 +5,11 @@ use crate::{
     span::{Span, Spanned},
     subst::{SubstTerm, SubstType},
 };
-use macros::EqNoSpan;
+use macros::{EqNoSpan, HashNoSpan};
 use std::{fmt, rc::Rc};
 
 /// Term representing getting the first term of a pair
-#[derive(Clone, Debug, EqNoSpan)]
+#[derive(HashNoSpan, Clone, Debug, EqNoSpan)]
 pub struct Fst<Lang>
 where
     Lang: Language,

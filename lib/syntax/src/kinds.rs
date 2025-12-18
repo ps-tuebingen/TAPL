@@ -1,7 +1,7 @@
 use std::{fmt, rc::Rc};
 
 /// Kinds
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum Kind {
     /// The star kind
     Star,

@@ -7,6 +7,7 @@ mod eval;
 mod format;
 mod from;
 mod grammar;
+mod hash;
 pub(crate) mod literals;
 mod span;
 mod subst;
@@ -23,6 +24,7 @@ use eval::generate_eval;
 use format::{generate_display, generate_latexfmt};
 use from::{generate_from_variants, generate_into_term};
 use grammar::generate_grammar_describe;
+use hash::generate_hash_no_span;
 use span::generate_spanned;
 use subst::{generate_subst_term, generate_subst_type};
 
@@ -150,7 +152,15 @@ pub fn derive_spanned(input: TokenStream) -> TokenStream {
     generate_spanned(input)
 }
 
+/// Derive [`std::cmp::PartialEq`] for structs
+/// ignores the [`syntax::span::Span`] field
+/// only works for structs with only named fields
 #[proc_macro_derive(EqNoSpan)]
 pub fn derive_eq_no_span(input: TokenStream) -> TokenStream {
     generate_eq_no_span(input)
+}
+
+#[proc_macro_derive(HashNoSpan)]
+pub fn derive_hash_no_span(input: TokenStream) -> TokenStream {
+    generate_hash_no_span(input)
 }

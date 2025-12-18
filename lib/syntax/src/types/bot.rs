@@ -6,11 +6,11 @@ use crate::{
     subst::SubstType,
     types::Type,
 };
-use macros::EqNoSpan;
+use macros::{EqNoSpan, HashNoSpan};
 use std::{fmt, marker::PhantomData};
 
 /// Bottom Type
-#[derive(Debug, Clone, EqNoSpan)]
+#[derive(HashNoSpan, Debug, Clone, EqNoSpan)]
 pub struct Bot<Lang>
 where
     Lang: Language,

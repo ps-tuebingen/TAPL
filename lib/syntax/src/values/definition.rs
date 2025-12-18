@@ -1,8 +1,8 @@
 use crate::{definition::Definition, language::Language, span::Span};
-use macros::EqNoSpan;
+use macros::{EqNoSpan, HashNoSpan};
 use std::fmt;
 
-#[derive(Debug, EqNoSpan, Clone)]
+#[derive(HashNoSpan, Debug, EqNoSpan, Clone)]
 pub struct DefinitionValue<Lang>
 where
     Lang: Language,

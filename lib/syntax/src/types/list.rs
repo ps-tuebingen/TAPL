@@ -5,11 +5,11 @@ use crate::{
     span::{Span, Spanned},
     subst::SubstType,
 };
-use macros::EqNoSpan;
+use macros::{EqNoSpan, HashNoSpan};
 use std::{fmt, rc::Rc};
 
 /// List type
-#[derive(Clone, Debug, EqNoSpan)]
+#[derive(HashNoSpan, Clone, Debug, EqNoSpan)]
 pub struct List<Lang>
 where
     Lang: Language,

@@ -6,12 +6,12 @@ use crate::{
     span::{Span, Spanned},
     subst::{SubstTerm, SubstType},
 };
-use macros::EqNoSpan;
+use macros::{EqNoSpan, HashNoSpan};
 use std::{fmt, rc::Rc};
 
 /// Term representing a type abstraction
 /// `\X::K.t`
-#[derive(Clone, Debug, EqNoSpan)]
+#[derive(HashNoSpan, Clone, Debug, EqNoSpan)]
 pub struct TyLambda<Lang>
 where
     Lang: Language,

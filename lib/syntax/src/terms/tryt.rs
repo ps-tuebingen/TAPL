@@ -5,12 +5,12 @@ use crate::{
     span::{Span, Spanned},
     subst::{SubstTerm, SubstType},
 };
-use macros::EqNoSpan;
+use macros::{EqNoSpan, HashNoSpan};
 use std::{fmt, rc::Rc};
 
 /// Term representing try-with
 /// used with [`crate::terms::exception::Exception`]
-#[derive(Clone, Debug, EqNoSpan)]
+#[derive(HashNoSpan, Clone, Debug, EqNoSpan)]
 pub struct Try<Lang>
 where
     Lang: Language,

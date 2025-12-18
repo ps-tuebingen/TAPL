@@ -4,11 +4,11 @@ use crate::{
     span::{Span, Spanned},
     terms::Something as SomethingT,
 };
-use macros::EqNoSpan;
+use macros::{EqNoSpan, HashNoSpan};
 use std::fmt;
 
 /// Something value
-#[derive(Debug, EqNoSpan, Clone)]
+#[derive(HashNoSpan, Debug, EqNoSpan, Clone)]
 pub struct Something<Lang>
 where
     Lang: Language,

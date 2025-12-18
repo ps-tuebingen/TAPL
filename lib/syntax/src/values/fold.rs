@@ -4,11 +4,11 @@ use crate::{
     span::{Span, Spanned},
     terms::Fold as FoldT,
 };
-use macros::EqNoSpan;
+use macros::{EqNoSpan, HashNoSpan};
 use std::fmt;
 
 /// Fold value
-#[derive(Debug, EqNoSpan, Clone)]
+#[derive(HashNoSpan, Debug, EqNoSpan, Clone)]
 pub struct Fold<Lang>
 where
     Lang: Language,

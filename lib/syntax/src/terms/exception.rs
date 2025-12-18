@@ -5,13 +5,13 @@ use crate::{
     span::{Span, Spanned},
     subst::{SubstTerm, SubstType},
 };
-use macros::EqNoSpan;
+use macros::{EqNoSpan, HashNoSpan};
 use std::fmt;
 
 /// Term representing an exception/error
 /// without value
 /// used with [`crate::terms::tryt::Try`]
-#[derive(Clone, Debug, EqNoSpan)]
+#[derive(HashNoSpan, Clone, Debug, EqNoSpan)]
 pub struct Exception<Lang>
 where
     Lang: Language,

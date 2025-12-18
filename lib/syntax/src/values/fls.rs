@@ -4,11 +4,11 @@ use crate::{
     span::{Span, Spanned},
     terms::False as FalseT,
 };
-use macros::EqNoSpan;
+use macros::{EqNoSpan, HashNoSpan};
 use std::{fmt, marker::PhantomData};
 
 /// False Value
-#[derive(Debug, EqNoSpan, Clone)]
+#[derive(HashNoSpan, Debug, EqNoSpan, Clone)]
 pub struct False<Lang>
 where
     Lang: Language,
