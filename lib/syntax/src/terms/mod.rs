@@ -1,7 +1,7 @@
 use crate::span::Spanned;
 use std::fmt;
 
-pub trait Term: fmt::Display + fmt::Debug + Clone + PartialEq + Spanned {}
+pub trait Term: fmt::Display + fmt::Debug + Clone + PartialEq + Eq + Spanned {}
 
 pub mod app;
 pub mod ascribe;

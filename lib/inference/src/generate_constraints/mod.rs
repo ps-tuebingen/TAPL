@@ -5,6 +5,8 @@ pub use constraints::Constraint;
 
 mod definition;
 mod program;
+mod terms;
+mod types;
 
 pub trait GenerateConstraints {
     type Lang: Language;

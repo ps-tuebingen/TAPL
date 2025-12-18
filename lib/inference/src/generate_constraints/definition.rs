@@ -1,5 +1,4 @@
 use super::{Constraint, GenerateConstraints};
-use std::collections::HashSet;
 use syntax::{definition::Definition, language::Language};
 
 impl<Lang> GenerateConstraints for Definition<Lang>

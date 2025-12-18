@@ -1,6 +1,6 @@
 use syntax::language::Language;
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Constraint<Lang>
 where
     Lang: Language,
@@ -9,7 +9,7 @@ where
     Subtyping(SubtypeConstraint<Lang>),
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct EqualityConstraint<Lang>
 where
     Lang: Language,
@@ -18,7 +18,7 @@ where
     pub right: Lang::Type,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SubtypeConstraint<Lang>
 where
     Lang: Language,

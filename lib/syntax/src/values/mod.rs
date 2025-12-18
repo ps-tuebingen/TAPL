@@ -3,7 +3,7 @@ use std::fmt;
 
 pub trait Value
 where
-    Self: PartialEq + Clone + fmt::Display + fmt::Debug + Spanned,
+    Self: PartialEq + Eq + Clone + fmt::Display + fmt::Debug + Spanned,
 {
     type Lang: Language;
     type Term: Term + Into<<Self::Lang as Language>::Term> + From<Self>;

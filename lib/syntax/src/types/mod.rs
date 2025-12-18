@@ -3,7 +3,7 @@ use std::fmt;
 
 pub trait Type
 where
-    Self: fmt::Display + fmt::Debug + Clone + PartialEq + Spanned,
+    Self: fmt::Display + fmt::Debug + Clone + PartialEq + Eq + Spanned,
 {
 }
 
