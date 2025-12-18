@@ -1,11 +1,13 @@
 use super::SystemF;
 use macros::{
-    Eval, FromVariants, GrammarDescribe, LangDisplay, LatexFmt, Spanned, SubstTerm, SubstType,
-    Typecheck,
+    Eval, FreeTypeVars, FreeVars, FromVariants, GrammarDescribe, LangDisplay, LatexFmt, Spanned,
+    SubstTerm, SubstType, Typecheck,
 };
 use syntax::terms::{App, Lambda, TyApp, TyLambda, Variable};
 
 #[derive(
+    FreeVars,
+    FreeTypeVars,
     Spanned,
     FromVariants,
     SubstType,

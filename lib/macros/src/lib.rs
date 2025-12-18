@@ -5,6 +5,7 @@ mod check;
 mod eq;
 mod eval;
 mod format;
+mod free_vars;
 mod from;
 mod grammar;
 pub(crate) mod literals;
@@ -21,6 +22,7 @@ use check::{
 use eq::generate_eq_no_span;
 use eval::generate_eval;
 use format::{generate_display, generate_latexfmt};
+use free_vars::{generate_free_type_vars, generate_free_vars};
 use from::{generate_from_variants, generate_into_term};
 use grammar::generate_grammar_describe;
 use span::generate_spanned;
@@ -150,7 +152,19 @@ pub fn derive_spanned(input: TokenStream) -> TokenStream {
     generate_spanned(input)
 }
 
+/// Derive [`std::cmp::PartialEq`] and [`std::cmp::Eq`] for structs ignoring [`syntax::span::Span`] fields
+/// requires all struct fields to be named and have both implemented
 #[proc_macro_derive(EqNoSpan)]
 pub fn derive_eq_no_span(input: TokenStream) -> TokenStream {
     generate_eq_no_span(input)
+}
+
+#[proc_macro_derive(FreeVars)]
+pub fn derive_free_vars(input: TokenStream) -> TokenStream {
+    generate_free_vars(input)
+}
+
+#[proc_macro_derive(FreeTypeVars)]
+pub fn derive_free_type_vars(input: TokenStream) -> TokenStream {
+    generate_free_type_vars(input)
 }

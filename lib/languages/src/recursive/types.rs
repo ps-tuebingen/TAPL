@@ -1,13 +1,14 @@
 use super::Recursive;
 use macros::{
-    FromVariants, GrammarDescribe, LangDisplay, LatexFmt, NoKinds, NoNorm, NoSubtypes, Spanned,
-    SubstType,
+    FreeTypeVars, FromVariants, GrammarDescribe, LangDisplay, LatexFmt, NoKinds, NoNorm,
+    NoSubtypes, Spanned, SubstType,
 };
 use syntax::types::{
     Bool, Fun, Mu, Nat, Product, Record, Type as TypeTrait, TypeGroup, TypeVariable, Unit, Variant,
 };
 
 #[derive(
+    FreeTypeVars,
     Spanned,
     GrammarDescribe,
     FromVariants,

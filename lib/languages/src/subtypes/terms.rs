@@ -1,7 +1,7 @@
 use super::Subtypes;
 use macros::{
-    Eval, FromVariants, GrammarDescribe, LangDisplay, LatexFmt, Spanned, SubstTerm, SubstType,
-    Typecheck,
+    Eval, FreeTypeVars, FreeVars, FromVariants, GrammarDescribe, LangDisplay, LatexFmt, Spanned,
+    SubstTerm, SubstType, Typecheck,
 };
 use syntax::terms::{
     App, Assign, Cast, Cons, Deref, False, Fix, If, Lambda, Let, ListCase, Loc, Nil, Num, Pred,
@@ -9,6 +9,8 @@ use syntax::terms::{
 };
 
 #[derive(
+    FreeVars,
+    FreeTypeVars,
     Spanned,
     FromVariants,
     SubstType,

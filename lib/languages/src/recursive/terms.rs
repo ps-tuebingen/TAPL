@@ -1,7 +1,7 @@
 use super::Recursive;
 use macros::{
-    Eval, FromVariants, GrammarDescribe, LangDisplay, LatexFmt, Spanned, SubstTerm, SubstType,
-    Typecheck,
+    Eval, FreeTypeVars, FreeVars, FromVariants, GrammarDescribe, LangDisplay, LatexFmt, Spanned,
+    SubstTerm, SubstType, Typecheck,
 };
 use syntax::terms::{
     App, False, Fix, Fold, Fst, If, IsZero, Lambda, Let, Num, Pair, Pred, Record, RecordProj, Snd,
@@ -9,6 +9,8 @@ use syntax::terms::{
 };
 
 #[derive(
+    FreeVars,
+    FreeTypeVars,
     Spanned,
     FromVariants,
     SubstType,

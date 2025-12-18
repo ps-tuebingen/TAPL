@@ -1,11 +1,13 @@
 use super::LambdaOmega;
 use macros::{
-    Eval, FromVariants, GrammarDescribe, LangDisplay, LatexFmt, Spanned, SubstTerm, SubstType,
-    Typecheck,
+    Eval, FreeTypeVars, FreeVars, FromVariants, GrammarDescribe, LangDisplay, LatexFmt, Spanned,
+    SubstTerm, SubstType, Typecheck,
 };
 use syntax::terms::{App, False, Lambda, Num, True, TyApp, TyLambda, Unit, Variable};
 
 #[derive(
+    FreeVars,
+    FreeTypeVars,
     Spanned,
     FromVariants,
     SubstType,

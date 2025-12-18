@@ -1,7 +1,7 @@
 use super::FOmegaSub;
 use macros::{
-    FromVariants, GrammarDescribe, Kindcheck, LangDisplay, LatexFmt, Normalize, Spanned, SubstType,
-    Subtypecheck,
+    FreeTypeVars, FromVariants, GrammarDescribe, Kindcheck, LangDisplay, LatexFmt, Normalize,
+    Spanned, SubstType, Subtypecheck,
 };
 use syntax::types::{
     ExistsBounded, ForallBounded, Fun, Nat, OpApp, OpLambdaSub, Record, Top, Type as TypeTrait,
@@ -9,6 +9,7 @@ use syntax::types::{
 };
 
 #[derive(
+    FreeTypeVars,
     Spanned,
     GrammarDescribe,
     FromVariants,

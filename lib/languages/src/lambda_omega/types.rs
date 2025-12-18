@@ -1,7 +1,7 @@
 use super::LambdaOmega;
 use macros::{
-    FromVariants, GrammarDescribe, Kindcheck, LangDisplay, LatexFmt, NoNorm, NoSubtypes, Spanned,
-    SubstType,
+    FreeTypeVars, FromVariants, GrammarDescribe, Kindcheck, LangDisplay, LatexFmt, NoNorm,
+    NoSubtypes, Spanned, SubstType,
 };
 use syntax::types::{
     Bool, Forall, Fun, Nat, OpApp, OpLambda, Type as TypeTrait, TypeGroup, TypeVariable, Unit,
@@ -10,6 +10,7 @@ use syntax::types::{
 pub type TypeVar = String;
 
 #[derive(
+    FreeTypeVars,
     Spanned,
     GrammarDescribe,
     FromVariants,
