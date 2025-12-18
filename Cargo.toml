@@ -10,6 +10,7 @@ members = [
     "lib/parser",
     "lib/eval",
     "lib/check",
+    "lib/inference",
     "lib/errors",
     "lib/languages",
     "lib/derivations",
