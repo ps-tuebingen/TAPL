@@ -1,9 +1,9 @@
 use crate::{language::Language, span::Spanned, terms::Term};
-use std::{fmt, hash::Hash};
+use std::fmt;
 
 pub trait Value
 where
-    Self: PartialEq + Eq + Hash + Clone + fmt::Display + fmt::Debug + Spanned,
+    Self: PartialEq + Clone + fmt::Display + fmt::Debug + Spanned,
 {
     type Lang: Language;
     type Term: Term + Into<<Self::Lang as Language>::Term> + From<Self>;

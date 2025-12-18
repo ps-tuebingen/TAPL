@@ -5,11 +5,11 @@ use crate::{
     span::{Span, Spanned},
     subst::{SubstTerm, SubstType},
 };
-use macros::{EqNoSpan, HashNoSpan};
+use macros::EqNoSpan;
 use std::{fmt, rc::Rc};
 
 /// Term representing access to the second term of a pair
-#[derive(HashNoSpan, Clone, Debug, EqNoSpan)]
+#[derive(Clone, Debug, EqNoSpan)]
 pub struct Snd<Lang>
 where
     Lang: Language,

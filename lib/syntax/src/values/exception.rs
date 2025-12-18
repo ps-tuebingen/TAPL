@@ -4,11 +4,11 @@ use crate::{
     span::{Span, Spanned},
     terms::Exception as ExceptionT,
 };
-use macros::{EqNoSpan, HashNoSpan};
+use macros::EqNoSpan;
 use std::{fmt, marker::PhantomData};
 
 /// Exception value
-#[derive(HashNoSpan, Debug, EqNoSpan, Clone)]
+#[derive(Debug, EqNoSpan, Clone)]
 pub struct Exception<Lang>
 where
     Lang: Language,

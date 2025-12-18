@@ -5,11 +5,11 @@ use crate::{
     span::{Span, Spanned},
     subst::{SubstTerm, SubstType},
 };
-use macros::{EqNoSpan, HashNoSpan};
+use macros::EqNoSpan;
 use std::{fmt, rc::Rc};
 
 /// Term representing calling `iszero` on a number
-#[derive(HashNoSpan, Clone, Debug, EqNoSpan)]
+#[derive(Clone, Debug, EqNoSpan)]
 pub struct IsZero<Lang>
 where
     Lang: Language,

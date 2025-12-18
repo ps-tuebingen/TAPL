@@ -5,12 +5,12 @@ use crate::{
     span::{Span, Spanned},
     subst::{SubstTerm, SubstType},
 };
-use macros::{EqNoSpan, HashNoSpan};
+use macros::EqNoSpan;
 use std::{fmt, rc::Rc};
 
 /// Term representing a type application
 /// `t [ty]`
-#[derive(HashNoSpan, Clone, Debug, EqNoSpan)]
+#[derive(Clone, Debug, EqNoSpan)]
 pub struct TyApp<Lang>
 where
     Lang: Language,

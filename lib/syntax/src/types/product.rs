@@ -5,11 +5,11 @@ use crate::{
     span::{Span, Spanned},
     subst::SubstType,
 };
-use macros::{EqNoSpan, HashNoSpan};
+use macros::EqNoSpan;
 use std::{fmt, rc::Rc};
 
 /// Product type
-#[derive(HashNoSpan, Clone, Debug, EqNoSpan)]
+#[derive(Clone, Debug, EqNoSpan)]
 pub struct Product<Lang>
 where
     Lang: Language,

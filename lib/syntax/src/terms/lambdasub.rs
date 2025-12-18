@@ -6,12 +6,12 @@ use crate::{
     subst::{SubstTerm, SubstType},
     types::Top,
 };
-use macros::{EqNoSpan, HashNoSpan};
+use macros::EqNoSpan;
 use std::{fmt, rc::Rc};
 
 /// Term representing a Type abstraction
 /// `\X<:ty.t`
-#[derive(HashNoSpan, Clone, Debug, EqNoSpan)]
+#[derive(Clone, Debug, EqNoSpan)]
 pub struct LambdaSub<Lang>
 where
     Lang: Language,

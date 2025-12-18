@@ -5,11 +5,11 @@ use crate::{
     span::{Span, Spanned},
     subst::{SubstTerm, SubstType},
 };
-use macros::{EqNoSpan, HashNoSpan};
+use macros::EqNoSpan;
 use std::fmt;
 
 /// Term representing an empty list
-#[derive(HashNoSpan, Clone, Debug, EqNoSpan)]
+#[derive(Clone, Debug, EqNoSpan)]
 pub struct Nil<Lang>
 where
     Lang: Language,

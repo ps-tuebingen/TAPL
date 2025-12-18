@@ -36,13 +36,13 @@ pub fn generate_eq_no_span(input: TokenStream) -> TokenStream {
 
     quote! {
         #[automatically_derived]
-        impl #impl_generics ::std::cmp::PartialEq for #ident #type_generics #where_clause{
+        impl #impl_generics PartialEq for #ident #type_generics #where_clause{
             fn eq(&self,other:&Self) -> bool{
                 #(#fields_eq)&&*
             }
         }
 
-        impl #impl_generics ::std::cmp::Eq for #ident #type_generics #where_clause {}
+        impl #impl_generics Eq for #ident #type_generics #where_clause {}
 
     }
     .into()

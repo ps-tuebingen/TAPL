@@ -5,11 +5,11 @@ use crate::{
     span::{Span, Spanned},
     subst::{SubstTerm, SubstType},
 };
-use macros::{EqNoSpan, HashNoSpan};
+use macros::EqNoSpan;
 use std::{fmt, marker::PhantomData};
 
 /// Term representing a unit term
-#[derive(HashNoSpan, Clone, Debug, EqNoSpan)]
+#[derive(Clone, Debug, EqNoSpan)]
 pub struct Unit<Lang>
 where
     Lang: Language,

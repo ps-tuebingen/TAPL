@@ -4,11 +4,11 @@ use crate::{
     span::{Span, Spanned},
     terms::Nil as NilT,
 };
-use macros::{EqNoSpan, HashNoSpan};
+use macros::EqNoSpan;
 use std::fmt;
 
 /// Empty list value
-#[derive(HashNoSpan, Debug, EqNoSpan, Clone)]
+#[derive(Debug, EqNoSpan, Clone)]
 pub struct Nil<Lang>
 where
     Lang: Language,

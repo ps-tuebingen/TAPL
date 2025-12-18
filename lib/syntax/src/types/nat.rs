@@ -5,11 +5,11 @@ use crate::{
     span::{Span, Spanned},
     subst::SubstType,
 };
-use macros::{EqNoSpan, HashNoSpan};
+use macros::EqNoSpan;
 use std::{fmt, marker::PhantomData};
 
 /// Type of natural numbers
-#[derive(HashNoSpan, Clone, Debug, EqNoSpan)]
+#[derive(Clone, Debug, EqNoSpan)]
 pub struct Nat<Lang>
 where
     Lang: Language,

@@ -4,11 +4,11 @@ use crate::{
     span::{Span, Spanned},
     terms::Left as LeftT,
 };
-use macros::{EqNoSpan, HashNoSpan};
+use macros::EqNoSpan;
 use std::fmt;
 
 /// Left Injection value
-#[derive(HashNoSpan, Debug, EqNoSpan, Clone)]
+#[derive(Debug, EqNoSpan, Clone)]
 pub struct Left<Lang>
 where
     Lang: Language,

@@ -5,11 +5,11 @@ use crate::{
     span::{Span, Spanned},
     subst::SubstType,
 };
-use macros::{EqNoSpan, HashNoSpan};
+use macros::EqNoSpan;
 use std::{fmt, marker::PhantomData};
 
 /// Type Variable
-#[derive(HashNoSpan, Clone, Debug, EqNoSpan)]
+#[derive(Clone, Debug, EqNoSpan)]
 pub struct TypeVariable<Lang>
 where
     Lang: Language,

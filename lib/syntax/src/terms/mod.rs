@@ -1,7 +1,7 @@
 use crate::span::Spanned;
-use std::{fmt, hash::Hash};
+use std::fmt;
 
-pub trait Term: fmt::Display + fmt::Debug + Clone + PartialEq + Eq + Hash + Spanned {}
+pub trait Term: fmt::Display + fmt::Debug + Clone + PartialEq + Spanned {}
 
 pub mod app;
 pub mod ascribe;
