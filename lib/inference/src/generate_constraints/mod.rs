@@ -1,7 +1,7 @@
 use std::collections::{HashMap, HashSet};
 use syntax::{Location, TypeVar, Var, free_vars::FreeTypeVars, language::Language};
 
-mod constraints;
+pub mod constraints;
 pub use constraints::Constraint;
 
 mod definition;
