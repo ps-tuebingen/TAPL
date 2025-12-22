@@ -1,4 +1,9 @@
-use super::{Constraint, GenState, GenerateConstraints, constraints::EqualityConstraint};
+use super::{
+    Constraint, GenState, GenerateConstraints,
+    constraints::{
+        EqualityConstraint, IndexConstraint, RecordConstraint, SubtypeConstraint, VariantConstraint,
+    },
+};
 
 mod app;
 mod ascribe;

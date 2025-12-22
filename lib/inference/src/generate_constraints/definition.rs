@@ -1,4 +1,4 @@
-use super::{ GenerateConstraints,GenState};
+use super::{GenState, GenerateConstraints};
 use syntax::{definition::Definition, language::Language};
 
 impl<Lang> GenerateConstraints for Definition<Lang>
@@ -8,8 +8,8 @@ where
     Lang::Type: GenerateConstraints<Lang = Lang>,
 {
     type Lang = Lang;
-    type Target = ()
-    fn generate_constraints(&self,state:&mut GenState<Self::Lang>) -> Self::Target {
+    type Target = ();
+    fn generate_constraints(&self, state: &mut GenState<Self::Lang>) -> Self::Target {
         self.annot.generate_constraints(state);
         self.body.generate_constraints(state);
         ()
