@@ -58,4 +58,18 @@ where
         }
         Ok(())
     }
+
+    fn solve_index(
+        mut self,
+        ind: usize,
+        ind_ty: Lang::Type,
+        state: &mut SolveState<Lang>,
+    ) -> Result<(), InferenceError> {
+        if self.tys.len() < ind {
+            return Err(IndexOutOfBounds::new(ind, self.tys.len(), self.span).into());
+        }
+        let self_ty = self.tys.remove(ind);
+        state.add_constraint(EqualityConstraint::new(self_ty, ind_ty));
+        Ok(())
+    }
 }

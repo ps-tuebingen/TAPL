@@ -83,9 +83,9 @@ pub trait SolveConstraint: Type {
 
     fn solve_index(
         self,
-        _: usize,
-        _: <Self::Lang as Language>::Type,
-        _: &mut SolveState<Self::Lang>,
+        _ind: usize,
+        _ind_ty: <Self::Lang as Language>::Type,
+        _state: &mut SolveState<Self::Lang>,
     ) -> Result<(), InferenceError> {
         Err(TypeMismatch::new(self.to_string(), "Tuple Type".to_string(), self.span()).into())
     }

@@ -2,6 +2,7 @@ use super::{SolveConstraint, SolveState};
 use crate::constraints::{EqualityConstraint, SubtypeConstraint};
 use errors::{TypeMismatch, UndefinedLabel, inference_error::InferenceError};
 use syntax::{
+    Label,
     language::Language,
     span::Spanned,
     types::{Record, TypeGroup},
@@ -46,6 +47,20 @@ where
             let sup_ty = sup_record.records.remove(&lb).ok_or(err)?;
             state.add_constraint(SubtypeConstraint::new(ty, sup_ty));
         }
+        Ok(())
+    }
+
+    fn solve_record(
+        mut self,
+        lb: Label,
+        lb_ty: <Self::Lang as Language>::Type,
+        state: &mut SolveState<Self::Lang>,
+    ) -> Result<(), InferenceError> {
+        let self_ty = self
+            .records
+            .remove(&lb)
+            .ok_or(UndefinedLabel::new(&lb, self.span))?;
+        state.add_constraint(EqualityConstraint::new(lb_ty, self_ty));
         Ok(())
     }
 }

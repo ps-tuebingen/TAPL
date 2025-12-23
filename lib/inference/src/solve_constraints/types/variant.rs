@@ -2,6 +2,7 @@ use super::{SolveConstraint, SolveState};
 use crate::constraints::{EqualityConstraint, SubtypeConstraint};
 use errors::{TypeMismatch, UndefinedLabel, inference_error::InferenceError};
 use syntax::{
+    Label,
     language::Language,
     span::Spanned,
     types::{TypeGroup, Variant},
@@ -49,5 +50,20 @@ where
             state.add_constraint(SubtypeConstraint::new(self_ty, ty));
         }
         Ok(())
+    }
+
+    fn solve_variant(
+        mut self,
+        label: Label,
+        label_ty: Lang::Type,
+        state: &mut SolveState<Lang>,
+    ) -> Result<(), InferenceError> {
+        match self.variants.remove(&label) {
+            None => Err(UndefinedLabel::new(&label, self.span).into()),
+            Some(ty) => {
+                state.add_constraint(EqualityConstraint::new(ty, label_ty));
+                Ok(())
+            }
+        }
     }
 }
