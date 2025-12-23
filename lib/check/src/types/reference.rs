@@ -42,7 +42,7 @@ where
             let src_res = self.ty.check_subtype(&(*src.ty), env.clone())?;
             Ok(SubtypeDerivation::ref_source(env, self.clone(), src, src_res).into())
         } else if let Some(sink) = sup.clone().into_sink() {
-            let sink_res = sink.ty.check_subtype(&(*sink.ty), env.clone())?;
+            let sink_res = sink.ty.check_subtype(&(*self.ty), env.clone())?;
             Ok(SubtypeDerivation::ref_sink(env, self.clone(), sink, sink_res).into())
         } else {
             let sup_ref = sup.clone().into_ref().ok_or_else(|| {

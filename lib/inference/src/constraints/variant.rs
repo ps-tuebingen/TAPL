@@ -2,16 +2,16 @@ use super::Constraint;
 use syntax::{Label, language::Language};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct RecordConstraint<Lang>
+pub struct VariantConstraint<Lang>
 where
     Lang: Language,
 {
-    ty: Lang::Type,
-    label: Label,
-    label_ty: Lang::Type,
+    pub ty: Lang::Type,
+    pub label: Label,
+    pub label_ty: Lang::Type,
 }
 
-impl<Lang> RecordConstraint<Lang>
+impl<Lang> VariantConstraint<Lang>
 where
     Lang: Language,
 {
@@ -28,11 +28,11 @@ where
     }
 }
 
-impl<Lang> From<RecordConstraint<Lang>> for Constraint<Lang>
+impl<Lang> From<VariantConstraint<Lang>> for Constraint<Lang>
 where
     Lang: Language,
 {
-    fn from(rec: RecordConstraint<Lang>) -> Self {
-        Self::Record(rec)
+    fn from(v: VariantConstraint<Lang>) -> Self {
+        Self::Variant(v)
     }
 }

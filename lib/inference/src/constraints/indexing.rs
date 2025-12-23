@@ -6,9 +6,9 @@ pub struct IndexConstraint<Lang>
 where
     Lang: Language,
 {
-    ty: Lang::Type,
-    ind: usize,
-    ind_ty: Lang::Type,
+    pub ty: Lang::Type,
+    pub ind: usize,
+    pub ind_ty: Lang::Type,
 }
 
 impl<Lang> IndexConstraint<Lang>

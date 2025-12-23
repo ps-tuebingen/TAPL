@@ -1,8 +1,6 @@
+use crate::constraints::Constraint;
 use std::collections::{HashMap, HashSet};
 use syntax::{Location, TypeVar, Var, free_vars::FreeTypeVars, language::Language};
-
-pub mod constraints;
-pub use constraints::Constraint;
 
 mod definition;
 mod program;

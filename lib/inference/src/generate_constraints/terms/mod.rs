@@ -1,8 +1,6 @@
-use super::{
-    Constraint, GenState, GenerateConstraints,
-    constraints::{
-        EqualityConstraint, IndexConstraint, RecordConstraint, SubtypeConstraint, VariantConstraint,
-    },
+use super::{GenState, GenerateConstraints};
+use crate::constraints::{
+    EqualityConstraint, IndexConstraint, RecordConstraint, SubtypeConstraint, VariantConstraint,
 };
 
 mod app;
