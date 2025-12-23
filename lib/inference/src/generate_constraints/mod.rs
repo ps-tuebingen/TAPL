@@ -6,6 +6,7 @@ mod definition;
 mod program;
 mod terms;
 mod types;
+pub use program::generate_constraints_program;
 
 pub struct GenState<Lang>
 where

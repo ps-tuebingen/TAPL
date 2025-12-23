@@ -1,7 +1,7 @@
 use crate::constraints::Constraint;
 use errors::{TypeMismatch, inference_error::InferenceError};
 use std::collections::HashMap;
-use syntax::{Label, Name, TypeVar, language::Language, types::Type};
+use syntax::{Label, Name, TypeVar, language::Language, program::Program, types::Type};
 
 mod kinding;
 mod types;
@@ -15,7 +15,7 @@ pub struct VarSubst<Lang>
 where
     Lang: Language,
 {
-    ty_vars: HashMap<TypeVar, Lang::Type>,
+    pub ty_vars: HashMap<TypeVar, Lang::Type>,
 }
 
 pub fn solve_constraints<Lang>(

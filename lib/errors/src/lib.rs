@@ -49,6 +49,7 @@ pub use variants::no_subtyping::NoSubtyping;
 pub use variants::no_typing::NoTyping;
 pub use variants::undefined_language::UndefinedLanguage;
 
+pub use variants::definition_not_found::DefinitionNotFound;
 /// Common errors
 pub use variants::free_variable::FreeVariable;
 pub use variants::index_out_of_bounds::IndexOutOfBounds;

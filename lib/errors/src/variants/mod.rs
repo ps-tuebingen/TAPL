@@ -2,6 +2,7 @@ pub mod add_event_handler;
 pub mod append_child;
 pub mod could_not_cast;
 pub mod create_element;
+pub mod definition_not_found;
 pub mod dir_access;
 pub mod duplicate_definition;
 pub mod element_not_found;
