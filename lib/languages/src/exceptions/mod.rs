@@ -27,6 +27,10 @@ impl Language for Exceptions {
     fn features() -> LanguageFeatures {
         LanguageFeatures::new().with_eval().with_typed()
     }
+
+    fn id() -> &'static str {
+        "exceptions"
+    }
 }
 
 impl LanguageDescribe for Exceptions {
@@ -51,6 +55,6 @@ impl LanguageDescribe for Exceptions {
 
 impl fmt::Display for Exceptions {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        f.write_str("exceptions")
+        f.write_str(Self::id())
     }
 }

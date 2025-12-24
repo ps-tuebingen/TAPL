@@ -32,6 +32,10 @@ impl Language for FOmegaSub {
             .with_subtyped()
             .with_normalizing()
     }
+
+    fn id() -> &'static str {
+        "f-omega-sub"
+    }
 }
 
 impl LanguageDescribe for FOmegaSub {
@@ -56,6 +60,6 @@ impl LanguageDescribe for FOmegaSub {
 
 impl fmt::Display for FOmegaSub {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        f.write_str("f-omega-sub")
+        f.write_str(Self::id())
     }
 }

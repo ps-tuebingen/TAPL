@@ -27,6 +27,10 @@ impl Language for Existential {
     fn features() -> LanguageFeatures {
         LanguageFeatures::new().with_eval().with_typed()
     }
+
+    fn id() -> &'static str {
+        "existential"
+    }
 }
 
 impl LanguageDescribe for Existential {
@@ -51,6 +55,6 @@ impl LanguageDescribe for Existential {
 
 impl fmt::Display for Existential {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        f.write_str("existential")
+        f.write_str(Self::id())
     }
 }

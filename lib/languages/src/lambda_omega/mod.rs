@@ -30,6 +30,10 @@ impl Language for LambdaOmega {
             .with_typed()
             .with_kinded()
     }
+
+    fn id() -> &'static str {
+        "lambda-omega"
+    }
 }
 
 impl LanguageDescribe for LambdaOmega {
@@ -54,6 +58,6 @@ impl LanguageDescribe for LambdaOmega {
 
 impl fmt::Display for LambdaOmega {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        f.write_str("lambda-omega")
+        f.write_str(Self::id())
     }
 }

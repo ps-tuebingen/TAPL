@@ -1,7 +1,10 @@
-use crate::stlc::Stlc;
+use crate::{
+    BoundedQuantification, Exceptions, Existential, FOmega, FOmegaSub, LambdaOmega, Recursive,
+    References, Stlc, Subtypes, SystemF, TypedArithmetic, UntypedArithmetic, UntypedLambda,
+};
 use check::Typecheck;
 use derivations::Derivation;
-use errors::{FileAccess, language_error::LanguageError};
+use errors::{FileAccess, UndefinedLanguage, language_error::LanguageError};
 use eval::{Eval, eval_main};
 use parser::{GroupParse, Parse};
 use std::{
@@ -25,6 +28,7 @@ pub struct SourceLocation {
     def_name: Name,
 }
 
+#[derive(Clone)]
 pub struct Dispatcher<Lang>
 where
     Lang: Language,
@@ -114,6 +118,7 @@ where
 
 pub trait DispatchLanguage {
     fn run_command(&mut self, cmd: Command, source: PathBuf) -> Box<dyn Any>;
+    fn is_lang(&self, lang: &str) -> bool;
 }
 
 impl<Lang> DispatchLanguage for Dispatcher<Lang>
@@ -123,23 +128,42 @@ where
     Lang::Type: GroupParse,
 {
     fn run_command(&mut self, cmd: Command, source: PathBuf) -> Box<dyn Any> {
-        match cmd {
-            Command::Parse => match self.parsed.get(&source) {
-                None => {
-                    let parsed = Program::<Lang>::parse("".to_string()).unwrap();
-                    self.parsed.insert(source, parsed.clone());
-                    Box::new(parsed) as Box<dyn Any>
-                }
-                Some(res) => Box::new(res.clone()) as Box<dyn Any>,
-            },
-            _ => todo!(),
-        }
+        todo!()
+    }
+
+    fn is_lang(&self, lang: &str) -> bool {
+        lang.trim() == Lang::id()
     }
 }
 
-fn create_dispatcher(lang_str: &str) -> Box<dyn DispatchLanguage> {
-    match lang_str {
-        "Stlc" => Box::new(Dispatcher::<Stlc>::new()) as Box<dyn DispatchLanguage>,
-        _ => todo!(),
+pub fn create_dispatcher(lang: &str) -> Result<Box<dyn DispatchLanguage>, LanguageError> {
+    match lang.to_lowercase().trim() {
+        "untyped-arithmetic" => {
+            Ok(Box::new(Dispatcher::<UntypedArithmetic>::new()) as Box<dyn DispatchLanguage>)
+        }
+        "untyped-lambda" => {
+            Ok(Box::new(Dispatcher::<UntypedLambda>::new()) as Box<dyn DispatchLanguage>)
+        }
+        "typed-arithmetic" => {
+            Ok(Box::new(Dispatcher::<TypedArithmetic>::new()) as Box<dyn DispatchLanguage>)
+        }
+        "stlc" => Ok(Box::new(Dispatcher::<Stlc>::new()) as Box<dyn DispatchLanguage>),
+        "references" => Ok(Box::new(Dispatcher::<References>::new()) as Box<dyn DispatchLanguage>),
+        "exceptions" => Ok(Box::new(Dispatcher::<Exceptions>::new()) as Box<dyn DispatchLanguage>),
+        "subtypes" => Ok(Box::new(Dispatcher::<Subtypes>::new()) as Box<dyn DispatchLanguage>),
+        "recursive" => Ok(Box::new(Dispatcher::<Recursive>::new()) as Box<dyn DispatchLanguage>),
+        "existential" => {
+            Ok(Box::new(Dispatcher::<Existential>::new()) as Box<dyn DispatchLanguage>)
+        }
+        "system-f" => Ok(Box::new(Dispatcher::<SystemF>::new()) as Box<dyn DispatchLanguage>),
+        "bounded-quantification" => {
+            Ok(Box::new(Dispatcher::<BoundedQuantification>::new()) as Box<dyn DispatchLanguage>)
+        }
+        "lambda-omega" => {
+            Ok(Box::new(Dispatcher::<LambdaOmega>::new()) as Box<dyn DispatchLanguage>)
+        }
+        "f-omega" => Ok(Box::new(Dispatcher::<FOmega>::new()) as Box<dyn DispatchLanguage>),
+        "f-omega-sub" => Ok(Box::new(Dispatcher::<FOmegaSub>::new()) as Box<dyn DispatchLanguage>),
+        _ => Err(UndefinedLanguage::new(lang).into()),
     }
 }

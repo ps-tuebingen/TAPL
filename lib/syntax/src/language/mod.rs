@@ -25,5 +25,9 @@ pub trait Language: fmt::Display + fmt::Debug + Clone + PartialEq {
     /// Describe the language as a string
     fn describe(&self) -> &str;
 
+    /// Get the language id as a string
+    fn id() -> &'static str;
+
+    /// Get the language features
     fn features() -> LanguageFeatures;
 }

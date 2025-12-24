@@ -30,6 +30,10 @@ impl Language for Subtypes {
             .with_typed()
             .with_subtyped()
     }
+
+    fn id() -> &'static str {
+        "subtypes"
+    }
 }
 
 impl LanguageDescribe for Subtypes {
@@ -54,6 +58,6 @@ impl LanguageDescribe for Subtypes {
 
 impl fmt::Display for Subtypes {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        f.write_str("subtypes")
+        f.write_str(Self::id())
     }
 }

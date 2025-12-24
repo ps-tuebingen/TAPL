@@ -27,6 +27,10 @@ impl Language for Recursive {
     fn features() -> LanguageFeatures {
         LanguageFeatures::new().with_typed().with_eval()
     }
+
+    fn id() -> &'static str {
+        "recursive"
+    }
 }
 
 impl LanguageDescribe for Recursive {
@@ -51,6 +55,6 @@ impl LanguageDescribe for Recursive {
 
 impl fmt::Display for Recursive {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        f.write_str("recursive")
+        f.write_str(Self::id())
     }
 }

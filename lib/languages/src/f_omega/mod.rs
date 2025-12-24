@@ -23,12 +23,17 @@ impl Language for FOmega {
     fn describe(&self) -> &'static str {
         "Higher Kinded System F"
     }
+
     fn features() -> LanguageFeatures {
         LanguageFeatures::new()
             .with_eval()
             .with_typed()
             .with_kinded()
             .with_normalizing()
+    }
+
+    fn id() -> &'static str {
+        "f-omega"
     }
 }
 
@@ -54,6 +59,6 @@ impl LanguageDescribe for FOmega {
 
 impl fmt::Display for FOmega {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        f.write_str("f-omega")
+        f.write_str(Self::id())
     }
 }

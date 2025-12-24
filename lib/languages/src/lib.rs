@@ -13,9 +13,6 @@ pub mod typed_arithmetic;
 pub mod untyped_arithmetic;
 pub mod untyped_lambda;
 
-pub mod all_languages;
-pub use all_languages::AllLanguages;
-
 pub mod language_dispatcher;
 
 use syntax::language::Language;

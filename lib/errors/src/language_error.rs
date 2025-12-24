@@ -1,4 +1,7 @@
-use crate::{FileAccess, check_error::CheckError, eval_error::EvalError, parse_error::ParserError};
+use crate::{
+    FileAccess, UndefinedLanguage, check_error::CheckError, eval_error::EvalError,
+    parse_error::ParserError,
+};
 use std::fmt;
 
 #[derive(Debug)]
@@ -7,6 +10,7 @@ pub enum LanguageError {
     Eval(EvalError),
     Check(CheckError),
     FileAccess(FileAccess),
+    UndefinedLanguage(UndefinedLanguage),
 }
 
 impl fmt::Display for LanguageError {
@@ -16,6 +20,7 @@ impl fmt::Display for LanguageError {
             Self::Eval(err) => err.fmt(f),
             Self::Check(err) => err.fmt(f),
             Self::FileAccess(fa) => fa.fmt(f),
+            Self::UndefinedLanguage(ua) => ua.fmt(f),
         }
     }
 }
@@ -43,5 +48,11 @@ impl From<EvalError> for LanguageError {
 impl From<CheckError> for LanguageError {
     fn from(err: CheckError) -> Self {
         Self::Check(err)
+    }
+}
+
+impl From<UndefinedLanguage> for LanguageError {
+    fn from(err: UndefinedLanguage) -> Self {
+        Self::UndefinedLanguage(err)
     }
 }

@@ -4,9 +4,9 @@ use errors::{FileAccess, driver_error::DriverError};
 use eval::{Eval, eval_main};
 use grammar::LanguageDescribe;
 use languages::{
-    AllLanguages, BoundedQuantification, Exceptions, Existential, FOmega, FOmegaSub, LambdaOmega,
-    Recursive, References, Stlc, Subtypes, SystemF, TypedArithmetic, UntypedArithmetic,
-    UntypedLambda,
+    BoundedQuantification, Exceptions, Existential, FOmega, FOmegaSub, LambdaOmega, Recursive,
+    References, Stlc, Subtypes, SystemF, TypedArithmetic, UntypedArithmetic, UntypedLambda,
+    language_dispatcher::{DispatchLanguage, create_dispatcher},
 };
 use latex::LatexFmt;
 use parser::{GroupParse, Parse};
@@ -22,10 +22,26 @@ mod formattable;
 use cli::{Args, Command};
 use format::FormatMethod;
 
-#[derive(Clone)]
-pub struct Driver;
+pub struct Driver {
+    dispatchers: Vec<Box<dyn DispatchLanguage>>,
+}
 
 impl Driver {
+    fn get_dispacher(&mut self, lang: &str) -> &mut Box<dyn DispatchLanguage> {
+        match self
+            .dispatchers
+            .iter_mut()
+            .find(|dispatcher| dispatcher.is_lang(lang))
+        {
+            Some(disp) => disp,
+            None => {
+                let mut dispatcher = create_dispatcher(lang);
+                self.dispatchers.push(dispatcher);
+                &mut dispatcher
+            }
+        }
+    }
+
     /// Parse command line arguments and run the given command
     /// # Errors
     /// Returns an error if arguments are malformed or there is an error running the command

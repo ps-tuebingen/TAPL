@@ -24,6 +24,10 @@ impl Language for UntypedLambda {
     fn features() -> LanguageFeatures {
         LanguageFeatures::new().with_eval()
     }
+
+    fn id() -> &'static str {
+        "untyped-lambda"
+    }
 }
 
 impl LanguageDescribe for UntypedLambda {
@@ -48,6 +52,6 @@ impl LanguageDescribe for UntypedLambda {
 
 impl fmt::Display for UntypedLambda {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        f.write_str("untyped-lambda")
+        f.write_str(Self::id())
     }
 }

@@ -26,6 +26,10 @@ impl Language for TypedArithmetic {
     fn features() -> LanguageFeatures {
         LanguageFeatures::new().with_eval().with_typed()
     }
+
+    fn id() -> &'static str {
+        "typed-arithmetic"
+    }
 }
 
 impl LanguageDescribe for TypedArithmetic {
@@ -50,6 +54,6 @@ impl LanguageDescribe for TypedArithmetic {
 
 impl fmt::Display for TypedArithmetic {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        f.write_str("typed-arithmetic")
+        f.write_str(Self::id())
     }
 }

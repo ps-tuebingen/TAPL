@@ -27,6 +27,10 @@ impl Language for References {
     fn features() -> LanguageFeatures {
         LanguageFeatures::new().with_eval().with_typed()
     }
+
+    fn id() -> &'static str {
+        "references"
+    }
 }
 
 impl LanguageDescribe for References {
@@ -51,6 +55,6 @@ impl LanguageDescribe for References {
 
 impl fmt::Display for References {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        f.write_str("references")
+        f.write_str(Self::id())
     }
 }
