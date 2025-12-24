@@ -27,17 +27,19 @@ pub struct Driver {
 }
 
 impl Driver {
-    fn get_dispacher(&mut self, lang: &str) -> &mut Box<dyn DispatchLanguage> {
-        match self
+    fn get_dispacher(&mut self, lang: &str) -> Result<&mut Box<dyn DispatchLanguage>, DriverError> {
+        let disp_ind = self
             .dispatchers
             .iter_mut()
-            .find(|dispatcher| dispatcher.is_lang(lang))
-        {
-            Some(disp) => disp,
+            .position(|dispatcher| dispatcher.is_lang(lang));
+
+        match disp_ind {
+            Some(ind) => Ok(&mut self.dispatchers[ind]),
             None => {
-                let mut dispatcher = create_dispatcher(lang);
+                let dispatcher = create_dispatcher(lang)?;
+                let last_ind = self.dispatchers.len();
                 self.dispatchers.push(dispatcher);
-                &mut dispatcher
+                Ok(&mut self.dispatchers[last_ind])
             }
         }
     }
@@ -91,7 +93,7 @@ impl Driver {
     pub fn run_lang(
         &self,
         input: String,
-        lang: &AllLanguages,
+        lang: &str,
         cmd: &Command,
         method: &FormatMethod,
     ) -> Result<String, String> {
@@ -105,7 +107,7 @@ impl Driver {
     pub fn run_all_lang(
         &self,
         input: String,
-        lang: &AllLanguages,
+        lang: &str,
         method: &FormatMethod,
     ) -> (
         Option<String>,
@@ -240,37 +242,5 @@ impl Driver {
         file.write_all(res.as_bytes())
             .map_err(|err| FileAccess::new("write to file", err))?;
         Ok(())
-    }
-}
-
-/// run a command with a given formatmethod and command for a specific language
-/// # Errors
-/// returns an error if any of the steps in the command returns an error
-pub fn dispatch_run(
-    lang: &AllLanguages,
-    driver: &Driver,
-    method: &FormatMethod,
-    cmd: &Command,
-    input: String,
-) -> Result<String, DriverError> {
-    match lang {
-        AllLanguages::UntypedArithmetic => {
-            driver.run_format::<UntypedArithmetic>(method, cmd, input)
-        }
-        AllLanguages::UntypedLambda => driver.run_format::<UntypedLambda>(method, cmd, input),
-        AllLanguages::TypedArithmetic => driver.run_format::<TypedArithmetic>(method, cmd, input),
-        AllLanguages::Stlc => driver.run_format::<Stlc>(method, cmd, input),
-        AllLanguages::Exceptions => driver.run_format::<Exceptions>(method, cmd, input),
-        AllLanguages::References => driver.run_format::<References>(method, cmd, input),
-        AllLanguages::Existential => driver.run_format::<Existential>(method, cmd, input),
-        AllLanguages::Recursive => driver.run_format::<Recursive>(method, cmd, input),
-        AllLanguages::Subtypes => driver.run_format::<Subtypes>(method, cmd, input),
-        AllLanguages::SystemF => driver.run_format::<SystemF>(method, cmd, input),
-        AllLanguages::BoundedQuantification => {
-            driver.run_format::<BoundedQuantification>(method, cmd, input)
-        }
-        AllLanguages::LambdaOmega => driver.run_format::<LambdaOmega>(method, cmd, input),
-        AllLanguages::FOmega => driver.run_format::<FOmega>(method, cmd, input),
-        AllLanguages::FOmegaSub => driver.run_format::<FOmegaSub>(method, cmd, input),
     }
 }

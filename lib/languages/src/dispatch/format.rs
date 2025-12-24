@@ -1,6 +1,5 @@
-use crate::formattable::Formattable;
 use errors::driver_error::DriverError;
-use latex::LatexConfig;
+use latex::{LatexConfig, LatexFmt};
 use std::{fmt, str::FromStr};
 
 #[derive(Default, Debug, Clone, Copy, PartialEq, Eq)]
@@ -17,7 +16,7 @@ pub enum FormatMethod {
 impl FormatMethod {
     pub fn format<T>(&self, t: &T) -> String
     where
-        T: Formattable,
+        T: fmt::Display + fmt::Debug + LatexFmt,
     {
         match self {
             Self::Simple => t.to_string(),

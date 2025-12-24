@@ -1,32 +1,17 @@
-use crate::{
-    BoundedQuantification, Exceptions, Existential, FOmega, FOmegaSub, LambdaOmega, Recursive,
-    References, Stlc, Subtypes, SystemF, TypedArithmetic, UntypedArithmetic, UntypedLambda,
-};
+use super::format::FormatMethod;
 use check::Typecheck;
 use derivations::Derivation;
-use errors::{FileAccess, UndefinedLanguage, language_error::LanguageError};
+use errors::{FileAccess, language_error::LanguageError};
 use eval::{Eval, eval_main};
+use latex::LatexFmt;
 use parser::{GroupParse, Parse};
 use std::{
-    any::Any,
     collections::HashMap,
     fs::read_to_string,
     path::{Path, PathBuf},
 };
-use syntax::{Name, language::Language, program::Program};
+use syntax::{language::Language, program::Program};
 use trace::EvalTrace;
-
-pub enum Command {
-    Parse,
-    Evaluate,
-    Check,
-    Grammar,
-}
-
-pub struct SourceLocation {
-    path: PathBuf,
-    def_name: Name,
-}
 
 #[derive(Clone)]
 pub struct Dispatcher<Lang>
@@ -114,56 +99,44 @@ where
             }
         }
     }
-}
 
-pub trait DispatchLanguage {
-    fn run_command(&mut self, cmd: Command, source: PathBuf) -> Box<dyn Any>;
-    fn is_lang(&self, lang: &str) -> bool;
-}
-
-impl<Lang> DispatchLanguage for Dispatcher<Lang>
-where
-    Lang: Language + 'static,
-    Lang::Term: GroupParse,
-    Lang::Type: GroupParse,
-{
-    fn run_command(&mut self, cmd: Command, source: PathBuf) -> Box<dyn Any> {
-        todo!()
+    pub fn format_parsed(
+        &mut self,
+        source_path: &Path,
+        method: FormatMethod,
+    ) -> Result<String, LanguageError>
+    where
+        Lang::Term: GroupParse + LatexFmt,
+        Lang::Type: GroupParse + LatexFmt,
+    {
+        let parsed = self.parsed(source_path)?;
+        Ok(method.format(&parsed))
     }
 
-    fn is_lang(&self, lang: &str) -> bool {
-        lang.trim() == Lang::id()
+    pub fn format_checked(
+        &mut self,
+        source_path: &Path,
+        method: FormatMethod,
+    ) -> Result<String, LanguageError>
+    where
+        Lang::Term: GroupParse + Typecheck<Lang = Lang> + LatexFmt,
+        Lang::Type: GroupParse + LatexFmt,
+    {
+        let checked = self.checked(source_path)?;
+        Ok(method.format(&checked))
     }
-}
 
-pub fn create_dispatcher(lang: &str) -> Result<Box<dyn DispatchLanguage>, LanguageError> {
-    match lang.to_lowercase().trim() {
-        "untyped-arithmetic" => {
-            Ok(Box::new(Dispatcher::<UntypedArithmetic>::new()) as Box<dyn DispatchLanguage>)
-        }
-        "untyped-lambda" => {
-            Ok(Box::new(Dispatcher::<UntypedLambda>::new()) as Box<dyn DispatchLanguage>)
-        }
-        "typed-arithmetic" => {
-            Ok(Box::new(Dispatcher::<TypedArithmetic>::new()) as Box<dyn DispatchLanguage>)
-        }
-        "stlc" => Ok(Box::new(Dispatcher::<Stlc>::new()) as Box<dyn DispatchLanguage>),
-        "references" => Ok(Box::new(Dispatcher::<References>::new()) as Box<dyn DispatchLanguage>),
-        "exceptions" => Ok(Box::new(Dispatcher::<Exceptions>::new()) as Box<dyn DispatchLanguage>),
-        "subtypes" => Ok(Box::new(Dispatcher::<Subtypes>::new()) as Box<dyn DispatchLanguage>),
-        "recursive" => Ok(Box::new(Dispatcher::<Recursive>::new()) as Box<dyn DispatchLanguage>),
-        "existential" => {
-            Ok(Box::new(Dispatcher::<Existential>::new()) as Box<dyn DispatchLanguage>)
-        }
-        "system-f" => Ok(Box::new(Dispatcher::<SystemF>::new()) as Box<dyn DispatchLanguage>),
-        "bounded-quantification" => {
-            Ok(Box::new(Dispatcher::<BoundedQuantification>::new()) as Box<dyn DispatchLanguage>)
-        }
-        "lambda-omega" => {
-            Ok(Box::new(Dispatcher::<LambdaOmega>::new()) as Box<dyn DispatchLanguage>)
-        }
-        "f-omega" => Ok(Box::new(Dispatcher::<FOmega>::new()) as Box<dyn DispatchLanguage>),
-        "f-omega-sub" => Ok(Box::new(Dispatcher::<FOmegaSub>::new()) as Box<dyn DispatchLanguage>),
-        _ => Err(UndefinedLanguage::new(lang).into()),
+    pub fn format_evaluated(
+        &mut self,
+        source_path: &Path,
+        method: FormatMethod,
+    ) -> Result<String, LanguageError>
+    where
+        Lang::Term: GroupParse + Eval<Lang = Lang> + LatexFmt,
+        Lang::Type: GroupParse,
+        Lang::Value: LatexFmt,
+    {
+        let evaluated = self.evaluated(source_path)?;
+        Ok(method.format(&evaluated))
     }
 }

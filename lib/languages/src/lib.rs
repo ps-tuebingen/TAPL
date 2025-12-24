@@ -13,7 +13,7 @@ pub mod typed_arithmetic;
 pub mod untyped_arithmetic;
 pub mod untyped_lambda;
 
-pub mod language_dispatcher;
+pub mod dispatch;
 
 use syntax::language::Language;
 

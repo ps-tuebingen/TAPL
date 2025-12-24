@@ -1,6 +1,6 @@
 use crate::{
     FileAccess, NoTyping, UndefinedLanguage, check_error::CheckError, eval_error::EvalError,
-    parse_error::ParserError,
+    language_error::LanguageError, parse_error::ParserError,
 };
 use std::fmt;
 
@@ -15,6 +15,7 @@ pub enum DriverError {
     UndefinedCommand(String),
     EmptyInput,
     NoTyping(NoTyping),
+    Language(LanguageError),
 }
 
 impl fmt::Display for DriverError {
@@ -31,6 +32,7 @@ impl fmt::Display for DriverError {
             Self::EmptyInput => f.write_str("No source provided, use --input or --file"),
             Self::FileAccess(fa) => fa.fmt(f),
             Self::NoTyping(nt) => nt.fmt(f),
+            Self::Language(err) => err.fmt(f),
         }
     }
 }
@@ -68,5 +70,10 @@ impl From<UndefinedLanguage> for DriverError {
 impl From<NoTyping> for DriverError {
     fn from(err: NoTyping) -> Self {
         Self::NoTyping(err)
+    }
+}
+impl From<LanguageError> for DriverError {
+    fn from(err: LanguageError) -> Self {
+        Self::Language(err)
     }
 }
