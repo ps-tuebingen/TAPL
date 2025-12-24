@@ -3,6 +3,7 @@ use check::Typecheck;
 use derivations::Derivation;
 use errors::{FileAccess, language_error::LanguageError};
 use eval::{Eval, eval_main};
+use grammar::{LanguageDescribe, LanguageGrammar};
 use latex::LatexFmt;
 use parser::{GroupParse, Parse};
 use std::{
@@ -22,6 +23,7 @@ where
     parsed: HashMap<PathBuf, Program<Lang>>,
     checked: HashMap<PathBuf, Derivation<Lang>>,
     evaluated: HashMap<PathBuf, EvalTrace<Lang>>,
+    grammar: Option<LanguageGrammar>,
 }
 
 impl<Lang> Dispatcher<Lang>
@@ -34,6 +36,7 @@ where
             parsed: HashMap::new(),
             checked: HashMap::new(),
             evaluated: HashMap::new(),
+            grammar: None,
         }
     }
 
@@ -138,5 +141,19 @@ where
     {
         let evaluated = self.evaluated(source_path)?;
         Ok(method.format(&evaluated))
+    }
+
+    pub fn format_grammar(&mut self, source_path: &Path, method: FormatMethod) -> String
+    where
+        Lang: LanguageDescribe,
+    {
+        if let Some(gram) = &self.grammar {
+            method.format(gram)
+        } else {
+            let grammar = Lang::grammars();
+            let res = method.format(&grammar);
+            self.grammar = Some(grammar);
+            res
+        }
     }
 }

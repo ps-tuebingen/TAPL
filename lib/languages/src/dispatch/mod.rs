@@ -5,6 +5,7 @@ use crate::{
 use check::Typecheck;
 use errors::{UndefinedLanguage, language_error::LanguageError};
 use eval::Eval;
+use grammar::LanguageDescribe;
 use latex::LatexFmt;
 use parser::GroupParse;
 use std::path::PathBuf;
@@ -29,7 +30,7 @@ pub trait DispatchLanguage {
 
 impl<Lang> DispatchLanguage for Dispatcher<Lang>
 where
-    Lang: Language + 'static,
+    Lang: Language + LanguageDescribe + 'static,
     Lang::Term: GroupParse + LatexFmt + Typecheck<Lang = Lang> + Eval<Lang = Lang>,
     Lang::Type: GroupParse + LatexFmt,
     Lang::Value: LatexFmt,
@@ -44,7 +45,7 @@ where
             Command::Parse => self.format_parsed(&source_path, method),
             Command::Evaluate => self.format_evaluated(&source_path, method),
             Command::Check => self.format_checked(&source_path, method),
-            Command::Grammar => todo!(),
+            Command::Grammar => Ok(self.format_grammar(&source_path, method)),
         }
     }
 
