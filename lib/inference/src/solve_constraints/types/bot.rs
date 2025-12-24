@@ -19,7 +19,7 @@ where
     ) -> Result<(), InferenceError> {
         let err = TypeMismatch::new(rhs.to_string(), "Bottom Type".to_string(), rhs.span());
         let rhs_bot = rhs.into_bot().ok_or(err)?;
-        state.add_constraint(KindConstraint::new(rhs_bot.kind, self.kind));
+        state.add_constraint(KindConstraint::new(rhs_bot.kind, self.kind, self.span));
         Ok(())
     }
 

@@ -25,7 +25,7 @@ where
             Rc::unwrap_or_clone(self.ty),
             Rc::unwrap_or_clone(rhs_list.ty),
         ));
-        todo!()
+        Ok(())
     }
 
     fn solve_subtyping(

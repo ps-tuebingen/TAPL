@@ -1,5 +1,5 @@
 use super::Constraint;
-use syntax::{kinds::Kind, language::Language};
+use syntax::{kinds::Kind, language::Language, span::Span};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum KindOrVar {
@@ -9,12 +9,13 @@ pub enum KindOrVar {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct KindConstraint {
-    left: KindOrVar,
-    right: KindOrVar,
+    pub left: KindOrVar,
+    pub right: KindOrVar,
+    pub span: Span,
 }
 
 impl KindConstraint {
-    pub fn new<K1, K2>(left: K1, right: K2) -> Self
+    pub fn new<K1, K2>(left: K1, right: K2, span: Span) -> Self
     where
         K1: Into<KindOrVar>,
         K2: Into<KindOrVar>,
@@ -22,6 +23,7 @@ impl KindConstraint {
         Self {
             left: left.into(),
             right: right.into(),
+            span,
         }
     }
 }

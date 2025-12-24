@@ -1,4 +1,4 @@
-use crate::{DefinitionNotFound, IndexOutOfBounds, TypeMismatch, UndefinedLabel};
+use crate::{DefinitionNotFound, IndexOutOfBounds, KindMismatch, TypeMismatch, UndefinedLabel};
 use std::fmt;
 
 #[derive(Debug)]
@@ -7,6 +7,7 @@ pub enum InferenceError {
     UndefinedLabel(UndefinedLabel),
     IndexOutOfBounds(IndexOutOfBounds),
     DefinitionNotFound(DefinitionNotFound),
+    KindMismatch(KindMismatch),
 }
 
 impl fmt::Display for InferenceError {
@@ -16,6 +17,7 @@ impl fmt::Display for InferenceError {
             Self::UndefinedLabel(ul) => ul.fmt(f),
             Self::IndexOutOfBounds(ioob) => ioob.fmt(f),
             Self::DefinitionNotFound(dnf) => dnf.fmt(f),
+            Self::KindMismatch(km) => km.fmt(f),
         }
     }
 }
@@ -43,5 +45,11 @@ impl From<IndexOutOfBounds> for InferenceError {
 impl From<DefinitionNotFound> for InferenceError {
     fn from(dnf: DefinitionNotFound) -> Self {
         Self::DefinitionNotFound(dnf)
+    }
+}
+
+impl From<KindMismatch> for InferenceError {
+    fn from(km: KindMismatch) -> Self {
+        Self::KindMismatch(km)
     }
 }

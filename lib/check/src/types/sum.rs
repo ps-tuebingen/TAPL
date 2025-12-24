@@ -1,7 +1,7 @@
 use crate::Kindcheck;
 use derivations::{Derivation, KindingDerivation};
 use errors::{KindMismatch, check_error::CheckError};
-use grammar::DerivationRule;
+use grammar::{DerivationRule, Symbol, symbols::SpecialChar};
 use std::collections::HashSet;
 use syntax::{env::Environment, language::Language, types::Sum};
 
@@ -29,6 +29,13 @@ where
     }
 
     fn rules() -> HashSet<DerivationRule> {
-        todo!()
+        HashSet::from([
+            DerivationRule::norm_cong(|sym| {
+                Symbol::paren(vec![sym, SpecialChar::Plus.into(), Symbol::Type])
+            }),
+            DerivationRule::norm_cong(|sym| {
+                Symbol::paren(vec![Symbol::Type, SpecialChar::Plus.into(), sym])
+            }),
+        ])
     }
 }

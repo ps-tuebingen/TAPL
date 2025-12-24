@@ -1,7 +1,7 @@
 use crate::constraints::Constraint;
 use errors::{TypeMismatch, inference_error::InferenceError};
 use std::collections::HashMap;
-use syntax::{Label, Name, TypeVar, language::Language, program::Program, types::Type};
+use syntax::{Label, Name, TypeVar, language::Language, types::Type};
 
 mod kinding;
 mod types;
@@ -59,7 +59,7 @@ where
     match constraint {
         Constraint::Equality(eq) => eq.left.solve_equality(eq.right, state),
         Constraint::Subtyping(sub) => sub.sub_type.solve_subtyping(sub.super_type, state),
-        Constraint::Kinding(knd) => Ok(solve_kinding(knd, state)),
+        Constraint::Kinding(knd) => solve_kinding(knd, state),
         Constraint::Indexing(ind) => ind.ty.solve_index(ind.ind, ind.ind_ty, state),
         Constraint::Record(rec) => rec.ty.solve_record(rec.label, rec.label_ty, state),
         Constraint::Variant(var) => var.ty.solve_variant(var.label, var.label_ty, state),

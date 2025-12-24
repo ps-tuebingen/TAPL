@@ -2,7 +2,7 @@ pub mod constraints;
 mod generate_constraints;
 mod solve_constraints;
 
-use errors::{DefinitionNotFound, UndefinedMain, inference_error::InferenceError};
+use errors::{DefinitionNotFound, inference_error::InferenceError};
 use generate_constraints::{GenerateConstraints, generate_constraints_program};
 use solve_constraints::{SolveConstraint, solve_constraints};
 use syntax::{language::Language, program::Program, subst::SubstType};

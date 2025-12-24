@@ -1,6 +1,6 @@
 use crate::constraints::Constraint;
 use std::collections::{HashMap, VecDeque};
-use syntax::{TypeVar, language::Language};
+use syntax::{TypeVar, kinds::Kind, language::Language};
 
 pub struct SolveState<Lang>
 where
@@ -9,6 +9,7 @@ where
     remaining_constraints: VecDeque<Constraint<Lang>>,
     pub var_tys: HashMap<TypeVar, Lang::Type>,
     pub tyvar_super: HashMap<TypeVar, Lang::Type>,
+    pub kind_vars: HashMap<String, Kind>,
 }
 
 impl<Lang> SolveState<Lang>
@@ -20,6 +21,7 @@ where
             remaining_constraints: constraints.into_iter().collect(),
             var_tys: HashMap::new(),
             tyvar_super: HashMap::new(),
+            kind_vars: HashMap::new(),
         }
     }
 
