@@ -8,7 +8,10 @@ use eval::Eval;
 use grammar::LanguageDescribe;
 use latex::LatexFmt;
 use parser::GroupParse;
-use std::path::PathBuf;
+use std::{
+    collections::HashMap,
+    path::{Path, PathBuf},
+};
 use syntax::language::Language;
 
 mod command;
@@ -16,7 +19,7 @@ mod dispatcher;
 mod format;
 pub use command::Command;
 use dispatcher::Dispatcher;
-use format::FormatMethod;
+pub use format::FormatMethod;
 
 #[derive(Clone, PartialEq, Eq, Hash)]
 pub enum Source {
@@ -31,7 +34,21 @@ pub trait DispatchLanguage {
         cmd: Command,
         method: FormatMethod,
     ) -> Result<String, LanguageError>;
+
     fn is_lang(&self, lang: &str) -> bool;
+
+    fn run_all(
+        &mut self,
+        source: Source,
+        method: FormatMethod,
+    ) -> Result<HashMap<Command, String>, LanguageError> {
+        let mut results = HashMap::new();
+        for cmd in Command::all() {
+            let cmd_res = self.run_format(source.clone(), cmd, method)?;
+            results.insert(cmd, cmd_res);
+        }
+        Ok(results)
+    }
 }
 
 impl<Lang> DispatchLanguage for Dispatcher<Lang>
@@ -89,5 +106,17 @@ pub fn create_dispatcher(lang: &str) -> Result<Box<dyn DispatchLanguage>, Langua
         "f-omega" => Ok(Box::new(Dispatcher::<FOmega>::new()) as Box<dyn DispatchLanguage>),
         "f-omega-sub" => Ok(Box::new(Dispatcher::<FOmegaSub>::new()) as Box<dyn DispatchLanguage>),
         _ => Err(UndefinedLanguage::new(lang).into()),
+    }
+}
+
+impl From<&str> for Source {
+    fn from(s: &str) -> Self {
+        Self::Str(s.to_string())
+    }
+}
+
+impl From<&Path> for Source {
+    fn from(p: &Path) -> Self {
+        Self::Path(p.to_path_buf())
     }
 }

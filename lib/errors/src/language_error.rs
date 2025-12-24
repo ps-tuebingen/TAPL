@@ -11,6 +11,7 @@ pub enum LanguageError {
     Check(CheckError),
     FileAccess(FileAccess),
     UndefinedLanguage(UndefinedLanguage),
+    UndefinedCommand(String),
 }
 
 impl fmt::Display for LanguageError {
@@ -21,6 +22,7 @@ impl fmt::Display for LanguageError {
             Self::Check(err) => err.fmt(f),
             Self::FileAccess(fa) => fa.fmt(f),
             Self::UndefinedLanguage(ua) => ua.fmt(f),
+            Self::UndefinedCommand(cmd) => write!(f, "{cmd} is not a valid command"),
         }
     }
 }

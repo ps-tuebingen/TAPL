@@ -12,7 +12,6 @@ pub enum DriverError {
     FileAccess(FileAccess),
     UndefinedLanguage(UndefinedLanguage),
     UndefinedFormatMethod(String),
-    UndefinedCommand(String),
     EmptyInput,
     NoTyping(NoTyping),
     Language(LanguageError),
@@ -28,7 +27,6 @@ impl fmt::Display for DriverError {
             Self::UndefinedFormatMethod(method) => {
                 write!(f, "Undefined Format Method {method}")
             }
-            Self::UndefinedCommand(cmd) => write!(f, "{cmd} is not a valid command"),
             Self::EmptyInput => f.write_str("No source provided, use --input or --file"),
             Self::FileAccess(fa) => fa.fmt(f),
             Self::NoTyping(nt) => nt.fmt(f),

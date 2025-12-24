@@ -1,28 +1,27 @@
-use check::Typecheck;
-use derivations::Derivation;
 use errors::{FileAccess, driver_error::DriverError};
-use eval::{Eval, eval_main};
-use grammar::LanguageDescribe;
-use languages::{
-    dispatch::{DispatchLanguage, create_dispatcher},
-};
-use latex::LatexFmt;
-use parser::{GroupParse, Parse};
-use syntax::{language::Language, program::Program};
-use trace::EvalTrace;
+use languages::dispatch::{DispatchLanguage, create_dispatcher};
 
 use std::{fs::File, io::Write, path::PathBuf};
 
 pub mod cli;
 
-use cli::{Args, Command};
+use cli::Args;
 
 pub struct Driver {
     dispatchers: Vec<Box<dyn DispatchLanguage>>,
 }
 
 impl Driver {
-    fn get_dispatcher(&mut self, lang: &str) -> Result<&mut Box<dyn DispatchLanguage>, DriverError> {
+    pub fn new() -> Driver {
+        Driver {
+            dispatchers: Vec::new(),
+        }
+    }
+
+    fn get_dispatcher(
+        &mut self,
+        lang: &str,
+    ) -> Result<&mut Box<dyn DispatchLanguage>, DriverError> {
         let disp_ind = self
             .dispatchers
             .iter_mut()
@@ -44,14 +43,9 @@ impl Driver {
     /// Returns an error if arguments are malformed or there is an error running the command
     pub fn run_cli(&mut self) -> Result<(), DriverError> {
         let args = <Args as clap::Parser>::parse();
-        let input = if matches!(args.cmd, Command::Grammar) {
-            String::new()
-        } else {
-            args.source.get_source()?
-        };
+        let source = args.source.get_source()?;
         let dispatcher = self.get_dispatcher(&args.lang)?;
-        dispatcher.
-        let res = dispatch_run(&args.lang, self, &args.method(), &args.cmd, input)?;
+        let res = dispatcher.run_format(source, args.cmd, args.method())?;
         args.out_file.map_or_else(
             || {
                 println!("{res}");
@@ -59,175 +53,6 @@ impl Driver {
             },
             |out| self.write_to_file(&res, out),
         )
-    }
-
-    /// Run a given command on an input and given language, then format the result
-    /// # Errors
-    /// Returns an error if the ran command returns an error
-    pub fn run_format<L>(
-        &self,
-        method: &FormatMethod,
-        cmd: &Command,
-        input: String,
-    ) -> Result<String, DriverError>
-    where
-        L: Language + LanguageDescribe,
-        L::Term: GroupParse + LatexFmt + Typecheck<Lang = L> + Eval<Lang = L>,
-        L::Type: GroupParse + LatexFmt,
-        L::Value: LatexFmt,
-    {
-        match cmd {
-            Command::Parse => self.parse_format::<L>(input, method),
-            Command::Check => self.check_format::<L>(input, method),
-            Command::Evaluate => self.eval_format::<L>(input, method),
-            Command::Grammar => Ok(self.grammar_format::<L>(method)),
-        }
-    }
-
-    /// Run a given command on an input and given language
-    /// # Errors
-    /// returns an error if the command returns an error
-    pub fn run_lang(
-        &self,
-        input: String,
-        lang: &str,
-        cmd: &Command,
-        method: &FormatMethod,
-    ) -> Result<String, String> {
-        dispatch_run(lang, self, method, cmd, input).map_err(|err| err.to_string())
-    }
-
-    /// Runs parsing, checking and evaluating for a given input and language
-    /// # Errors
-    /// returns an error if any of the steps return an error
-    #[must_use]
-    pub fn run_all_lang(
-        &self,
-        input: String,
-        lang: &str,
-        method: &FormatMethod,
-    ) -> (
-        Option<String>,
-        Option<String>,
-        Option<String>,
-        Option<String>,
-    ) {
-        let parse_res = match dispatch_run(lang, self, method, &Command::Parse, input.clone()) {
-            Ok(p) => p,
-            Err(err) => return (None, None, None, Some(err.to_string())),
-        };
-        let check_res = match dispatch_run(lang, self, method, &Command::Check, input.clone()) {
-            Ok(ty) => ty,
-            Err(err) => return (None, None, None, Some(err.to_string())),
-        };
-
-        let eval_res = match dispatch_run(lang, self, method, &Command::Check, input) {
-            Ok(v) => v,
-            Err(err) => return (None, None, None, Some(err.to_string())),
-        };
-        (Some(parse_res), Some(check_res), Some(eval_res), None)
-    }
-
-    /// Parses an input for a given language
-    /// # Errors
-    /// Returns an error if parsing returns an error
-    pub fn parse<L>(&self, input: String) -> Result<Program<L>, DriverError>
-    where
-        L: Language,
-        L::Term: GroupParse,
-        L::Type: GroupParse,
-    {
-        let parsed = <Program<L>>::parse(input)?;
-        Ok(parsed)
-    }
-
-    /// Parses an input for a given language and formats it with a given method
-    /// # Errors
-    /// Returns an error if parsing returns an error
-    pub fn parse_format<L>(
-        &self,
-        input: String,
-        method: &FormatMethod,
-    ) -> Result<String, DriverError>
-    where
-        L: Language,
-        L::Term: GroupParse + LatexFmt,
-        L::Type: GroupParse + LatexFmt,
-    {
-        let parsed = self.parse::<L>(input)?;
-        Ok(method.format(&parsed))
-    }
-
-    /// Checks a given input for a given language
-    /// # Errors
-    /// Returns an error if either parsing or checking returns an error
-    pub fn check<L>(&self, input: String) -> Result<Derivation<L>, DriverError>
-    where
-        L: Language,
-        L::Term: GroupParse + Typecheck<Lang = L>,
-        L::Type: GroupParse,
-    {
-        let parsed = self.parse::<L>(input)?;
-        let checked = parsed.check_start()?;
-        Ok(checked)
-    }
-
-    /// Checks a given input for a given language and formats it with a given message
-    /// # Errors
-    /// Returns an error if parsing or checking returns an error
-    pub fn check_format<L>(
-        &self,
-        input: String,
-        method: &FormatMethod,
-    ) -> Result<String, DriverError>
-    where
-        L: Language,
-        L::Term: GroupParse + Typecheck<Lang = L> + LatexFmt,
-        L::Type: GroupParse + LatexFmt,
-    {
-        let checked = self.check::<L>(input)?;
-        Ok(method.format(&checked))
-    }
-
-    /// Evaluates a given input for a given language
-    /// # Errors
-    /// Returns an error if either parsing or evaluating returns an error
-    pub fn eval<L>(&self, input: String) -> Result<EvalTrace<L>, DriverError>
-    where
-        L: Language,
-        L::Term: GroupParse + Eval<Lang = L>,
-        L::Type: GroupParse,
-    {
-        let parsed = self.parse::<L>(input)?;
-        let evaled = eval_main(parsed)?;
-        Ok(evaled)
-    }
-
-    /// Evalutate and format an input for a given language with given method
-    /// # Errors
-    /// Returns an error if either parsing or evaluating returns an error
-    pub fn eval_format<L>(
-        &self,
-        input: String,
-        method: &FormatMethod,
-    ) -> Result<String, DriverError>
-    where
-        L: Language,
-        L::Term: GroupParse + Eval<Lang = L> + LatexFmt,
-        L::Type: GroupParse,
-        L::Value: LatexFmt,
-    {
-        let evaled = self.eval::<L>(input)?;
-        Ok(method.format(&evaled))
-    }
-
-    /// Format grammar for a given language with a given method
-    #[must_use]
-    pub fn grammar_format<L>(&self, method: &FormatMethod) -> String
-    where
-        L: LanguageDescribe,
-    {
-        method.format(&L::grammars())
     }
 
     /// Write a formatted result to a given file
@@ -239,5 +64,11 @@ impl Driver {
         file.write_all(res.as_bytes())
             .map_err(|err| FileAccess::new("write to file", err))?;
         Ok(())
+    }
+}
+
+impl Default for Driver {
+    fn default() -> Self {
+        Self::new()
     }
 }
