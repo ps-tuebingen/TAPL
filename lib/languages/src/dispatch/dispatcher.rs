@@ -1,4 +1,4 @@
-use super::format::FormatMethod;
+use super::{Source, format::FormatMethod};
 use check::Typecheck;
 use derivations::Derivation;
 use errors::{FileAccess, language_error::LanguageError};
@@ -6,11 +6,7 @@ use eval::{Eval, eval_main};
 use grammar::{LanguageDescribe, LanguageGrammar};
 use latex::LatexFmt;
 use parser::{GroupParse, Parse};
-use std::{
-    collections::HashMap,
-    fs::read_to_string,
-    path::{Path, PathBuf},
-};
+use std::{collections::HashMap, fs::read_to_string, path::PathBuf};
 use syntax::{language::Language, program::Program};
 use trace::EvalTrace;
 
@@ -20,9 +16,9 @@ where
     Lang: Language,
 {
     sources: HashMap<PathBuf, String>,
-    parsed: HashMap<PathBuf, Program<Lang>>,
-    checked: HashMap<PathBuf, Derivation<Lang>>,
-    evaluated: HashMap<PathBuf, EvalTrace<Lang>>,
+    parsed: HashMap<Source, Program<Lang>>,
+    checked: HashMap<Source, Derivation<Lang>>,
+    evaluated: HashMap<Source, EvalTrace<Lang>>,
     grammar: Option<LanguageGrammar>,
 }
 
@@ -40,7 +36,11 @@ where
         }
     }
 
-    pub fn source(&mut self, source_path: &Path) -> Result<String, LanguageError> {
+    pub fn source(&mut self, source: Source) -> Result<String, LanguageError> {
+        let source_path = match source {
+            Source::Str(s) => return Ok(s),
+            Source::Path(p) => p,
+        };
         let source_buf = source_path.to_path_buf();
         match self.sources.get(&source_buf) {
             Some(src) => Ok(src.clone()),
@@ -53,51 +53,49 @@ where
         }
     }
 
-    pub fn parsed(&mut self, source_path: &Path) -> Result<Program<Lang>, LanguageError>
+    pub fn parsed(&mut self, source: Source) -> Result<Program<Lang>, LanguageError>
     where
         Lang::Term: GroupParse,
         Lang::Type: GroupParse,
     {
-        match self.parsed.get(source_path) {
+        match self.parsed.get(&source) {
             Some(p) => Ok(p.clone()),
             None => {
-                let source = self.source(source_path)?;
-                let prog = Program::<Lang>::parse(source)?;
-                self.parsed.insert(source_path.to_path_buf(), prog.clone());
+                let source_str = self.source(source.clone())?;
+                let prog = Program::<Lang>::parse(source_str)?;
+                self.parsed.insert(source, prog.clone());
                 Ok(prog)
             }
         }
     }
 
-    pub fn evaluated(&mut self, source_path: &Path) -> Result<EvalTrace<Lang>, LanguageError>
+    pub fn evaluated(&mut self, source: Source) -> Result<EvalTrace<Lang>, LanguageError>
     where
         Lang::Term: GroupParse + Eval<Lang = Lang>,
         Lang::Type: GroupParse,
     {
-        let source_buf = source_path.to_path_buf();
-        match self.evaluated.get(&source_buf) {
+        match self.evaluated.get(&source) {
             Some(trace) => Ok(trace.clone()),
             None => {
-                let parsed = self.parsed(source_path)?;
+                let parsed = self.parsed(source.clone())?;
                 let evaled = eval_main(parsed)?;
-                self.evaluated.insert(source_buf, evaled.clone());
+                self.evaluated.insert(source, evaled.clone());
                 Ok(evaled)
             }
         }
     }
 
-    pub fn checked(&mut self, source_path: &Path) -> Result<Derivation<Lang>, LanguageError>
+    pub fn checked(&mut self, source: Source) -> Result<Derivation<Lang>, LanguageError>
     where
         Lang::Term: GroupParse + Typecheck<Lang = Lang>,
         Lang::Type: GroupParse,
     {
-        let source_buf = source_path.to_path_buf();
-        match self.checked.get(&source_buf) {
+        match self.checked.get(&source) {
             Some(checked) => Ok(checked.clone()),
             None => {
-                let parsed = self.parsed(source_path)?;
+                let parsed = self.parsed(source.clone())?;
                 let checked = parsed.check_start()?;
-                self.checked.insert(source_buf, checked.clone());
+                self.checked.insert(source, checked.clone());
                 Ok(checked)
             }
         }
@@ -105,33 +103,33 @@ where
 
     pub fn format_parsed(
         &mut self,
-        source_path: &Path,
+        source: Source,
         method: FormatMethod,
     ) -> Result<String, LanguageError>
     where
         Lang::Term: GroupParse + LatexFmt,
         Lang::Type: GroupParse + LatexFmt,
     {
-        let parsed = self.parsed(source_path)?;
+        let parsed = self.parsed(source)?;
         Ok(method.format(&parsed))
     }
 
     pub fn format_checked(
         &mut self,
-        source_path: &Path,
+        source: Source,
         method: FormatMethod,
     ) -> Result<String, LanguageError>
     where
         Lang::Term: GroupParse + Typecheck<Lang = Lang> + LatexFmt,
         Lang::Type: GroupParse + LatexFmt,
     {
-        let checked = self.checked(source_path)?;
+        let checked = self.checked(source)?;
         Ok(method.format(&checked))
     }
 
     pub fn format_evaluated(
         &mut self,
-        source_path: &Path,
+        source: Source,
         method: FormatMethod,
     ) -> Result<String, LanguageError>
     where
@@ -139,11 +137,11 @@ where
         Lang::Type: GroupParse,
         Lang::Value: LatexFmt,
     {
-        let evaluated = self.evaluated(source_path)?;
+        let evaluated = self.evaluated(source)?;
         Ok(method.format(&evaluated))
     }
 
-    pub fn format_grammar(&mut self, source_path: &Path, method: FormatMethod) -> String
+    pub fn format_grammar(&mut self, method: FormatMethod) -> String
     where
         Lang: LanguageDescribe,
     {

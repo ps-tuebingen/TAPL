@@ -18,11 +18,17 @@ pub use command::Command;
 use dispatcher::Dispatcher;
 use format::FormatMethod;
 
+#[derive(Clone, PartialEq, Eq, Hash)]
+pub enum Source {
+    Path(PathBuf),
+    Str(String),
+}
+
 pub trait DispatchLanguage {
     fn run_format(
         &mut self,
+        source: Source,
         cmd: Command,
-        source_path: PathBuf,
         method: FormatMethod,
     ) -> Result<String, LanguageError>;
     fn is_lang(&self, lang: &str) -> bool;
@@ -37,15 +43,15 @@ where
 {
     fn run_format(
         &mut self,
+        source: Source,
         cmd: Command,
-        source_path: PathBuf,
         method: FormatMethod,
     ) -> Result<String, LanguageError> {
         match cmd {
-            Command::Parse => self.format_parsed(&source_path, method),
-            Command::Evaluate => self.format_evaluated(&source_path, method),
-            Command::Check => self.format_checked(&source_path, method),
-            Command::Grammar => Ok(self.format_grammar(&source_path, method)),
+            Command::Parse => self.format_parsed(source, method),
+            Command::Evaluate => self.format_evaluated(source, method),
+            Command::Check => self.format_checked(source, method),
+            Command::Grammar => Ok(self.format_grammar(method)),
         }
     }
 

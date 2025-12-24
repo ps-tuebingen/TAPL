@@ -4,9 +4,7 @@ use errors::{FileAccess, driver_error::DriverError};
 use eval::{Eval, eval_main};
 use grammar::LanguageDescribe;
 use languages::{
-    BoundedQuantification, Exceptions, Existential, FOmega, FOmegaSub, LambdaOmega, Recursive,
-    References, Stlc, Subtypes, SystemF, TypedArithmetic, UntypedArithmetic, UntypedLambda,
-    language_dispatcher::{DispatchLanguage, create_dispatcher},
+    dispatch::{DispatchLanguage, create_dispatcher},
 };
 use latex::LatexFmt;
 use parser::{GroupParse, Parse};
@@ -16,18 +14,15 @@ use trace::EvalTrace;
 use std::{fs::File, io::Write, path::PathBuf};
 
 pub mod cli;
-pub mod format;
-mod formattable;
 
 use cli::{Args, Command};
-use format::FormatMethod;
 
 pub struct Driver {
     dispatchers: Vec<Box<dyn DispatchLanguage>>,
 }
 
 impl Driver {
-    fn get_dispacher(&mut self, lang: &str) -> Result<&mut Box<dyn DispatchLanguage>, DriverError> {
+    fn get_dispatcher(&mut self, lang: &str) -> Result<&mut Box<dyn DispatchLanguage>, DriverError> {
         let disp_ind = self
             .dispatchers
             .iter_mut()
@@ -47,13 +42,15 @@ impl Driver {
     /// Parse command line arguments and run the given command
     /// # Errors
     /// Returns an error if arguments are malformed or there is an error running the command
-    pub fn run_cli(&self) -> Result<(), DriverError> {
+    pub fn run_cli(&mut self) -> Result<(), DriverError> {
         let args = <Args as clap::Parser>::parse();
         let input = if matches!(args.cmd, Command::Grammar) {
             String::new()
         } else {
             args.source.get_source()?
         };
+        let dispatcher = self.get_dispatcher(&args.lang)?;
+        dispatcher.
         let res = dispatch_run(&args.lang, self, &args.method(), &args.cmd, input)?;
         args.out_file.map_or_else(
             || {
