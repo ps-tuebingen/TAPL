@@ -6,7 +6,7 @@ pub mod step;
 
 pub use step::EvalStep;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct EvalTrace<Lang>
 where
     Lang: Language,

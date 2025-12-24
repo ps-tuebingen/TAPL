@@ -15,7 +15,7 @@ pub use derivation::{
 };
 pub use rules::{SubtypeRule, TypingRule};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Derivation<Lang>
 where
     Lang: Language,

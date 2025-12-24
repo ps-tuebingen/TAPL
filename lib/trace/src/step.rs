@@ -10,7 +10,7 @@ use syntax::{
 };
 
 /// Step in an evaluation of a term in a given language
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct EvalStep<Lang>
 where
     Lang: Language,

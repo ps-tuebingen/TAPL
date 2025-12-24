@@ -2,7 +2,7 @@ use crate::{DefinitionDerivation, TypingDerivation};
 use std::{collections::HashMap, fmt};
 use syntax::language::Language;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct ProgramDerivation<Lang>
 where
     Lang: Language,
