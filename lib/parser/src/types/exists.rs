@@ -26,7 +26,6 @@ where
         let kind = Kind::from_pair(kind_rule, ())?;
         let ty_rule = inner.remove(0);
         let inner_ty = Lang::Type::from_pair(ty_rule, ())?;
-        println!("parsed exists {var}:{kind}.{inner_ty}");
         Ok(Self::new(var, kind, inner_ty, span))
     }
 }

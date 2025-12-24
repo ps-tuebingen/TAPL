@@ -27,7 +27,6 @@ where
         let kind = Kind::from_pair(kind_rule, ())?;
         let body_rule = inner.remove(0);
         let body = Lang::Type::from_pair(body_rule, ())?;
-        println!("parsed oplambda {var}:{kind}.{body}");
         Ok(Self::new(var, kind, body, span))
     }
 }
