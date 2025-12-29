@@ -10,13 +10,10 @@ pub enum Command {
 }
 
 impl Command {
-    pub const fn all() -> [Command; 4] {
-        [
-            Command::Parse,
-            Command::Evaluate,
-            Command::Check,
-            Command::Grammar,
-        ]
+    /// Array of all commands
+    #[must_use]
+    pub const fn all() -> [Self; 4] {
+        [Self::Parse, Self::Evaluate, Self::Check, Self::Grammar]
     }
 }
 

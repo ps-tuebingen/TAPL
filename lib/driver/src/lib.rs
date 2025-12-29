@@ -12,8 +12,10 @@ pub struct Driver {
 }
 
 impl Driver {
-    pub fn new() -> Driver {
-        Driver {
+    /// Create a new driver with no defined dispatchers
+    #[must_use]
+    pub fn new() -> Self {
+        Self {
             dispatchers: Vec::new(),
         }
     }
@@ -27,15 +29,13 @@ impl Driver {
             .iter_mut()
             .position(|dispatcher| dispatcher.is_lang(lang));
 
-        match disp_ind {
-            Some(ind) => Ok(&mut self.dispatchers[ind]),
-            None => {
-                let dispatcher = create_dispatcher(lang)?;
-                let last_ind = self.dispatchers.len();
-                self.dispatchers.push(dispatcher);
-                Ok(&mut self.dispatchers[last_ind])
-            }
+        if let Some(ind) = disp_ind {
+            return Ok(&mut self.dispatchers[ind]);
         }
+        let dispatcher = create_dispatcher(lang)?;
+        let last_ind = self.dispatchers.len();
+        self.dispatchers.push(dispatcher);
+        Ok(&mut self.dispatchers[last_ind])
     }
 
     /// Parse command line arguments and run the given command
@@ -55,6 +55,9 @@ impl Driver {
         )
     }
 
+    /// Run a given command for a language and format method with given source
+    /// # Errors
+    /// Returns an error if running the command returns an error
     pub fn run_command(
         &mut self,
         source: Source,
@@ -65,7 +68,7 @@ impl Driver {
         let dispatcher = self.get_dispatcher(lang)?;
         dispatcher
             .run_format(source, cmd, method)
-            .map_err(|err| err.into())
+            .map_err(std::convert::Into::into)
     }
 
     /// Write a formatted result to a given file

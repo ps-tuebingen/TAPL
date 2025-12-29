@@ -41,16 +41,14 @@ where
             Source::Str(s) => return Ok(s),
             Source::Path(p) => p,
         };
-        let source_buf = source_path.to_path_buf();
-        match self.sources.get(&source_buf) {
-            Some(src) => Ok(src.clone()),
-            None => {
-                let source_contents =
-                    read_to_string(source_path).map_err(|err| FileAccess::new("Load file", err))?;
-                self.sources.insert(source_buf, source_contents.clone());
-                Ok(source_contents)
-            }
+        if let Some(src) = self.sources.get(&source_path) {
+            return Ok(src.clone());
         }
+
+        let source_contents =
+            read_to_string(&source_path).map_err(|err| FileAccess::new("Load file", err))?;
+        self.sources.insert(source_path, source_contents.clone());
+        Ok(source_contents)
     }
 
     pub fn parsed(&mut self, source: Source) -> Result<Program<Lang>, LanguageError>
@@ -58,15 +56,14 @@ where
         Lang::Term: GroupParse,
         Lang::Type: GroupParse,
     {
-        match self.parsed.get(&source) {
-            Some(p) => Ok(p.clone()),
-            None => {
-                let source_str = self.source(source.clone())?;
-                let prog = Program::<Lang>::parse(source_str)?;
-                self.parsed.insert(source, prog.clone());
-                Ok(prog)
-            }
+        if let Some(p) = self.parsed.get(&source) {
+            return Ok(p.clone());
         }
+
+        let source_str = self.source(source.clone())?;
+        let prog = Program::<Lang>::parse(source_str)?;
+        self.parsed.insert(source, prog.clone());
+        Ok(prog)
     }
 
     pub fn evaluated(&mut self, source: Source) -> Result<EvalTrace<Lang>, LanguageError>
@@ -74,15 +71,13 @@ where
         Lang::Term: GroupParse + Eval<Lang = Lang>,
         Lang::Type: GroupParse,
     {
-        match self.evaluated.get(&source) {
-            Some(trace) => Ok(trace.clone()),
-            None => {
-                let parsed = self.parsed(source.clone())?;
-                let evaled = eval_main(parsed)?;
-                self.evaluated.insert(source, evaled.clone());
-                Ok(evaled)
-            }
+        if let Some(tr) = self.evaluated.get(&source) {
+            return Ok(tr.clone());
         }
+        let parsed = self.parsed(source.clone())?;
+        let evaled = eval_main(parsed)?;
+        self.evaluated.insert(source, evaled.clone());
+        Ok(evaled)
     }
 
     pub fn checked(&mut self, source: Source) -> Result<Derivation<Lang>, LanguageError>
@@ -90,15 +85,14 @@ where
         Lang::Term: GroupParse + Typecheck<Lang = Lang>,
         Lang::Type: GroupParse,
     {
-        match self.checked.get(&source) {
-            Some(checked) => Ok(checked.clone()),
-            None => {
-                let parsed = self.parsed(source.clone())?;
-                let checked = parsed.check_start()?;
-                self.checked.insert(source, checked.clone());
-                Ok(checked)
-            }
+        if let Some(ch) = self.checked.get(&source) {
+            return Ok(ch.clone());
         }
+
+        let parsed = self.parsed(source.clone())?;
+        let checked = parsed.check_start()?;
+        self.checked.insert(source, checked.clone());
+        Ok(checked)
     }
 
     pub fn format_parsed(

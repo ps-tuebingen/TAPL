@@ -28,6 +28,9 @@ pub enum Source {
 }
 
 pub trait DispatchLanguage {
+    /// Run a given command with method and source
+    /// # Errors
+    /// returns an error if there was an error while running the command
     fn run_format(
         &mut self,
         source: Source,
@@ -43,6 +46,9 @@ pub trait DispatchLanguage {
 
     fn describe(&self) -> &str;
 
+    /// Run all possible commands with given source and format method
+    /// # Errors
+    /// Returns an error if any one of the commands returns an error
     fn run_all(
         &mut self,
         source: Source,
@@ -95,6 +101,9 @@ where
     }
 }
 
+/// Create a new dispatcher from a given language as a string
+/// # Errors
+/// Returns an error if the language could not be parsed
 pub fn create_dispatcher(lang: &str) -> Result<Box<dyn DispatchLanguage>, LanguageError> {
     match lang.to_lowercase().trim() {
         "untyped-arithmetic" => {
