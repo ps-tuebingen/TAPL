@@ -89,12 +89,16 @@ impl Language for DummyLang {
     type Type = DummyType;
     type Value = DummyValue;
 
-    fn describe(&self) -> &str {
+    fn describe() -> &'static str {
         "dummy lang"
     }
 
     fn features() -> LanguageFeatures {
         LanguageFeatures::default()
+    }
+
+    fn id() -> &'static str {
+        "dummy"
     }
 }
 

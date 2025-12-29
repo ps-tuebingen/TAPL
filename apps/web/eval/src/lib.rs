@@ -1,6 +1,7 @@
-use driver::{Driver, cli::Command, format::FormatMethod};
+use driver::Driver;
 use errors::{AddEventHandler, web_error::WebError};
-use std::rc::Rc;
+use languages::dispatch::{Command, FormatMethod};
+use std::{cell::RefCell, rc::Rc};
 use wasm_bindgen::{
     closure::Closure,
     prelude::{JsCast, wasm_bindgen},
@@ -16,7 +17,7 @@ struct CheckContext {
     example_select: ExampleSelect,
     source_area: SourceArea,
     run_button: HtmlButtonElement,
-    driver: Driver,
+    driver: RefCell<Driver>,
     eval_out: Rc<CollapsableElement<HtmlDivElement>>,
     error_out: Rc<CollapsableElement<HtmlDivElement>>,
 }
@@ -34,7 +35,7 @@ impl CheckContext {
         let eval_out = CollapsableElement::new(&document, "eval_collapse", "eval_out")?;
         let error_out = CollapsableElement::new(&document, "error_collapse", "error_out")?;
         let run_button = get_by_id("run_button", &document)?;
-        let driver = Driver;
+        let driver = RefCell::new(Driver::new());
         let slf = Rc::new(CheckContext {
             language_select,
             example_select,
@@ -106,11 +107,11 @@ impl CheckContext {
     fn eval_source(&self) -> Result<(), WebError> {
         let source = self.source_area.get_contents();
         let lang = WEB_LANGUAGES[self.language_select.selected()];
-        match self.driver.run_lang(
-            source,
+        match self.driver.borrow_mut().run_command(
+            source.into(),
             &lang,
-            &Command::Evaluate,
-            &FormatMethod::LatexFracStripped,
+            Command::Evaluate,
+            FormatMethod::LatexFracStripped,
         ) {
             Ok(ty) => {
                 self.eval_out.set_contents(&ty)?;

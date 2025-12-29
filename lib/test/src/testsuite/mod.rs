@@ -124,7 +124,7 @@ pub trait TestSuite: Language {
         <Self as Language>::Value: LatexFmt,
         Self: LanguageDescribe,
     {
-        println!("Running Test Suite {}", self.describe());
+        println!("Running Test Suite {}", Self::describe());
 
         let mut num_fails = 0;
         print!("\t");

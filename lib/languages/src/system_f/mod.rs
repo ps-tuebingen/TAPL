@@ -20,7 +20,7 @@ impl Language for SystemF {
     type Type = Type;
     type Value = Value;
 
-    fn describe(&self) -> &'static str {
+    fn describe() -> &'static str {
         "System F"
     }
 

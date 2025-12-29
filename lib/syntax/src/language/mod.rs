@@ -23,9 +23,10 @@ pub trait Language: fmt::Display + fmt::Debug + Clone + PartialEq {
     type Value: ValueGroup<Lang = Self> + Into<Self::Term> + Spanned;
 
     /// Describe the language as a string
-    fn describe(&self) -> &str;
+    fn describe() -> &'static str;
 
     /// Get the language id as a string
+    /// Used in converting to/from strings
     fn id() -> &'static str;
 
     /// Get the language features

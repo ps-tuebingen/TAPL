@@ -20,7 +20,7 @@ impl Language for FOmega {
     type Type = Type;
     type Value = Value;
 
-    fn describe(&self) -> &'static str {
+    fn describe() -> &'static str {
         "Higher Kinded System F"
     }
 

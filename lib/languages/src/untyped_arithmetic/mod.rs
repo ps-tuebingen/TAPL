@@ -17,7 +17,7 @@ impl Language for UntypedArithmetic {
     type Type = Untyped<Self>;
     type Value = Value;
 
-    fn describe(&self) -> &'static str {
+    fn describe() -> &'static str {
         "Untyped Arithmetic Expressions"
     }
 

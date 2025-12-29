@@ -1,5 +1,5 @@
 use errors::{FileAccess, driver_error::DriverError};
-use languages::dispatch::{DispatchLanguage, create_dispatcher};
+use languages::dispatch::{Command, DispatchLanguage, FormatMethod, Source, create_dispatcher};
 
 use std::{fs::File, io::Write, path::PathBuf};
 
@@ -53,6 +53,19 @@ impl Driver {
             },
             |out| self.write_to_file(&res, out),
         )
+    }
+
+    pub fn run_command(
+        &mut self,
+        source: Source,
+        lang: &str,
+        cmd: Command,
+        method: FormatMethod,
+    ) -> Result<String, DriverError> {
+        let dispatcher = self.get_dispatcher(lang)?;
+        dispatcher
+            .run_format(source, cmd, method)
+            .map_err(|err| err.into())
     }
 
     /// Write a formatted result to a given file

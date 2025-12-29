@@ -1,6 +1,6 @@
 use crate::{
     AddEventHandler, AppendChild, CouldNotCast, CreateElement, ElementNotFound, GetAttribute,
-    SetAttribute, TriggerEvent, UndefinedExample, UndefinedLanguage,
+    SetAttribute, TriggerEvent, UndefinedExample, UndefinedLanguage, language_error::LanguageError,
 };
 use std::fmt;
 
@@ -16,6 +16,7 @@ pub enum WebError {
     UndefinedExample(UndefinedExample),
     UndefinedLanguage(UndefinedLanguage),
     TriggerEvent(TriggerEvent),
+    Language(LanguageError),
     Window,
     Document,
 }
@@ -35,6 +36,7 @@ impl fmt::Display for WebError {
             Self::TriggerEvent(te) => te.fmt(f),
             Self::Window => write!(f, "Could not get window element"),
             Self::Document => write!(f, "Could not get html document"),
+            Self::Language(err) => err.fmt(f),
         }
     }
 }
@@ -98,5 +100,10 @@ impl From<UndefinedExample> for WebError {
 impl From<TriggerEvent> for WebError {
     fn from(err: TriggerEvent) -> Self {
         Self::TriggerEvent(err)
+    }
+}
+impl From<LanguageError> for WebError {
+    fn from(err: LanguageError) -> Self {
+        Self::Language(err)
     }
 }

@@ -12,7 +12,7 @@ use std::{
     collections::HashMap,
     path::{Path, PathBuf},
 };
-use syntax::language::Language;
+use syntax::language::{Language, LanguageFeatures};
 
 mod command;
 mod dispatcher;
@@ -36,6 +36,12 @@ pub trait DispatchLanguage {
     ) -> Result<String, LanguageError>;
 
     fn is_lang(&self, lang: &str) -> bool;
+
+    fn features(&self) -> LanguageFeatures;
+
+    fn id(&self) -> &str;
+
+    fn describe(&self) -> &str;
 
     fn run_all(
         &mut self,
@@ -75,6 +81,18 @@ where
     fn is_lang(&self, lang: &str) -> bool {
         lang.trim() == Lang::id()
     }
+
+    fn features(&self) -> LanguageFeatures {
+        Lang::features()
+    }
+
+    fn id(&self) -> &str {
+        Lang::id()
+    }
+
+    fn describe(&self) -> &str {
+        Lang::describe()
+    }
 }
 
 pub fn create_dispatcher(lang: &str) -> Result<Box<dyn DispatchLanguage>, LanguageError> {
@@ -112,6 +130,12 @@ pub fn create_dispatcher(lang: &str) -> Result<Box<dyn DispatchLanguage>, Langua
 impl From<&str> for Source {
     fn from(s: &str) -> Self {
         Self::Str(s.to_string())
+    }
+}
+
+impl From<String> for Source {
+    fn from(s: String) -> Self {
+        Self::Str(s)
     }
 }
 

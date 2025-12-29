@@ -19,7 +19,7 @@ impl Language for TypedArithmetic {
     type Term = Term;
     type Type = Type;
     type Value = Value;
-    fn describe(&self) -> &'static str {
+    fn describe() -> &'static str {
         "Typed Arithmetic Expressions"
     }
 

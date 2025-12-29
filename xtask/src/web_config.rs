@@ -1,5 +1,5 @@
 use errors::{FileAccess, build_error::BuildError};
-use languages::AllLanguages;
+use languages::dispatch::{DispatchLanguage, create_dispatcher};
 use std::{
     fs::{File, read_to_string},
     io::Write,
@@ -21,42 +21,50 @@ pub fn load_web_config() -> Result<(), BuildError> {
     Ok(())
 }
 
-fn parse_conf(contents: String) -> Result<Vec<AllLanguages>, BuildError> {
+fn parse_conf(contents: String) -> Result<Vec<Box<dyn DispatchLanguage>>, BuildError> {
     let mut langs = vec![];
     for line in contents.lines() {
-        if line.starts_with("#") {
+        if line.starts_with("#")
+            || langs
+                .iter()
+                .any(|disp: &Box<dyn DispatchLanguage>| disp.is_lang(line.trim()))
+        {
             continue;
         }
-        let lang = line.trim().parse::<AllLanguages>()?;
-        langs.push(lang);
+        let disp = create_dispatcher(line.trim())?;
+        langs.push(disp);
     }
     Ok(langs)
 }
 
-fn langs_out(langs: &[AllLanguages]) -> String {
+fn langs_out(langs: &[Box<dyn DispatchLanguage>]) -> String {
+    let mut names = Vec::with_capacity(langs.len());
+    let mut num_typed = 0;
+    let mut names_typed = Vec::with_capacity(langs.len());
+
+    for disp in langs {
+        let features = disp.features();
+        let lang_id = format!("\"{}\"", disp.id());
+        names.push(lang_id.clone());
+        if features.typed() {
+            num_typed += 1;
+            names_typed.push(lang_id);
+        }
+    }
+
     format!(
         "//Automatically generated file, run `cargo run -p xtask` to regenerate\n
-use languages::AllLanguages;
-pub const WEB_LANGUAGES: [AllLanguages;{}] = [
+pub const WEB_LANGUAGES: [&str;{}] = [
 \t{}
 ];
 
-pub const WEB_LANGUAGES_TYPED: [AllLanguages;{}] = [
+pub const WEB_LANGUAGES_TYPED: [&str;{}] = [
 \t{}
 ];
         ",
         langs.len(),
-        langs
-            .iter()
-            .map(|lang| format!("AllLanguages::{}", lang.name()))
-            .collect::<Vec<_>>()
-            .join(",\n\t"),
-        langs.iter().filter(|lang| lang.is_typed()).count(),
-        langs
-            .iter()
-            .filter(|lang| lang.is_typed())
-            .map(|lang| format!("AllLanguages::{}", lang.name()))
-            .collect::<Vec<_>>()
-            .join(",\n\t")
+        names.join(",\n\t"),
+        num_typed,
+        names_typed.join(",\n\t")
     )
 }
