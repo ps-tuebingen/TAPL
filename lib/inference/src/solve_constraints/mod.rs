@@ -1,4 +1,4 @@
-use crate::constraints::Constraint;
+use crate::{constraints::Constraint, generate_constraints::DefConstraints};
 use errors::{TypeMismatch, inference_error::InferenceError};
 use std::collections::HashMap;
 use syntax::{Label, Name, TypeVar, language::Language, types::Type};
@@ -11,40 +11,42 @@ mod state;
 use kinding::solve_kinding;
 use state::SolveState;
 
-pub struct VarSubst<Lang>
+pub struct DefSubst<Lang>
 where
     Lang: Language,
 {
+    pub name: Name,
     pub ty_vars: HashMap<TypeVar, Lang::Type>,
+    pub ty_no_subst: Lang::Type,
 }
 
 pub fn solve_constraints<Lang>(
-    constraints: HashMap<Name, Vec<Constraint<Lang>>>,
-) -> Result<HashMap<Name, VarSubst<Lang>>, InferenceError>
+    constraints: Vec<DefConstraints<Lang>>,
+) -> Result<Vec<DefSubst<Lang>>, InferenceError>
 where
     Lang: Language,
     Lang::Type: SolveConstraint<Lang = Lang>,
 {
-    let mut res_map = HashMap::new();
-    for (def_name, def_constraints) in constraints {
-        let def_res = solve_def(def_constraints)?;
-        res_map.insert(def_name, def_res);
+    let mut substitutions = Vec::with_capacity(constraints.len());
+    for constrs in constraints {
+        substitutions.push(solve_def(constrs)?);
     }
-    Ok(res_map)
+    Ok(substitutions)
 }
 
-fn solve_def<Lang>(def_constraints: Vec<Constraint<Lang>>) -> Result<VarSubst<Lang>, InferenceError>
+fn solve_def<Lang>(def_constraints: DefConstraints<Lang>) -> Result<DefSubst<Lang>, InferenceError>
 where
     Lang: Language,
     Lang::Type: SolveConstraint<Lang = Lang>,
 {
-    let mut state = SolveState::new(def_constraints);
+    let mut state = SolveState::new(def_constraints.constraints);
     while let Some(constraint) = state.next_constraint() {
         solve_constraint(constraint, &mut state)?;
     }
-
-    Ok(VarSubst {
+    Ok(DefSubst {
+        name: def_constraints.name,
         ty_vars: state.var_tys,
+        ty_no_subst: def_constraints.ret_ty,
     })
 }
 

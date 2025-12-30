@@ -1,17 +1,21 @@
-use super::{GenState, GenerateConstraints};
-use syntax::{definition::Definition, language::Language};
+use super::{DefConstraints, GenState, GenerateConstraints};
+use std::collections::HashSet;
+use syntax::{definition::Definition, free_vars::FreeTypeVars, language::Language};
 
-impl<Lang> GenerateConstraints for Definition<Lang>
+pub fn generate_constraints_def<Lang>(def: &Definition<Lang>) -> DefConstraints<Lang>
 where
     Lang: Language,
-    Lang::Term: GenerateConstraints<Lang = Lang>,
-    Lang::Type: GenerateConstraints<Lang = Lang>,
+    Lang::Term: FreeTypeVars + GenerateConstraints<Lang = Lang, Target = Lang::Type>,
+    Lang::Type: FreeTypeVars,
 {
-    type Lang = Lang;
-    type Target = ();
-    fn generate_constraints(&self, state: &mut GenState<Self::Lang>) -> Self::Target {
-        self.annot.generate_constraints(state);
-        self.body.generate_constraints(state);
-        ()
+    let mut used = HashSet::new();
+    def.body.free_type_vars(&mut used);
+    def.annot.free_type_vars(&mut used);
+    let mut state = GenState::new(used);
+    let body_ty = def.body.generate_constraints(&mut state);
+    DefConstraints {
+        name: def.name.clone(),
+        constraints: state.constraints,
+        ret_ty: body_ty,
     }
 }

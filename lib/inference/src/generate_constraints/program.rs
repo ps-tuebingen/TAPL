@@ -1,26 +1,26 @@
-use super::{Constraint, GenState, GenerateConstraints};
-use std::{collections::HashMap, mem::replace};
-use syntax::{Name, language::Language, program::Program};
+use super::{DefConstraints, GenState, GenerateConstraints, definition::generate_constraints_def};
+use std::collections::HashSet;
+use syntax::{free_vars::FreeTypeVars, language::Language, program::Program};
 
-pub fn generate_constraints_program<Lang>(
-    prog: &Program<Lang>,
-) -> HashMap<Name, Vec<Constraint<Lang>>>
+pub fn generate_constraints_program<Lang>(prog: &Program<Lang>) -> Vec<DefConstraints<Lang>>
 where
     Lang: Language,
-    Lang::Term: GenerateConstraints<Lang = Lang>,
+    Lang::Term: GenerateConstraints<Lang = Lang, Target = Lang::Type>,
     Lang::Type: GenerateConstraints<Lang = Lang>,
 {
-    let mut constraint_map = HashMap::new();
-    let mut state = GenState::new(&prog.main);
-    prog.main.generate_constraints(&mut state);
-    let constraints = replace(&mut state.constraints, Vec::new());
-    constraint_map.insert("main".to_string(), constraints);
+    let mut constraints = Vec::with_capacity(prog.definitions.len() + 1);
 
+    let mut used = HashSet::new();
+    prog.main.free_type_vars(&mut used);
+    let mut main_state = GenState::new(used);
+    let main_ty = prog.main.generate_constraints(&mut main_state);
+    constraints.push(DefConstraints {
+        name: "main".to_string(),
+        constraints: main_state.constraints,
+        ret_ty: main_ty,
+    });
     for def in prog.definitions.iter() {
-        state = GenState::new(&def.body);
-        def.generate_constraints(&mut state);
-        let constraints = replace(&mut state.constraints, Vec::new());
-        constraint_map.insert(def.name.clone(), constraints);
+        constraints.push(generate_constraints_def(def));
     }
-    constraint_map
+    constraints
 }
