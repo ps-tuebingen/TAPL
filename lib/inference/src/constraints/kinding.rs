@@ -40,6 +40,12 @@ impl From<&str> for KindOrVar {
     }
 }
 
+impl From<String> for KindOrVar {
+    fn from(s: String) -> Self {
+        Self::Var(s)
+    }
+}
+
 impl<Lang> From<KindConstraint> for Constraint<Lang>
 where
     Lang: Language,

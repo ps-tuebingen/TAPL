@@ -1,3 +1,4 @@
+use super::{GenState, GenerateConstraints};
 mod bool;
 mod bot;
 mod exists;
