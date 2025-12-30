@@ -29,6 +29,7 @@ impl Language for Subtypes {
             .with_eval()
             .with_typed()
             .with_subtyped()
+            .with_inferring()
     }
 
     fn id() -> &'static str {

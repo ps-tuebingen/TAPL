@@ -22,7 +22,7 @@ impl Language for UntypedArithmetic {
     }
 
     fn features() -> LanguageFeatures {
-        LanguageFeatures::new().with_eval()
+        LanguageFeatures::new().with_eval().with_inferring()
     }
 
     fn id() -> &'static str {

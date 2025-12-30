@@ -29,6 +29,7 @@ impl Language for LambdaOmega {
             .with_eval()
             .with_typed()
             .with_kinded()
+            .with_inferring()
     }
 
     fn id() -> &'static str {

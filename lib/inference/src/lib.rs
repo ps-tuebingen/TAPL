@@ -19,7 +19,7 @@ where
     pub def_tys: HashMap<Name, Lang::Type>,
 }
 
-pub fn infer_types<Lang>(prog: Program<Lang>) -> Result<ProgTypes<Lang>, InferenceError>
+pub fn infer_types<Lang>(prog: &Program<Lang>) -> Result<ProgTypes<Lang>, InferenceError>
 where
     Lang: Language,
     Lang::Term: GenerateConstraints<Lang = Lang, Target = Lang::Type>,

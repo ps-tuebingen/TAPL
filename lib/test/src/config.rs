@@ -22,6 +22,8 @@ pub const KEY_TRACE: &str = "trace";
 pub const KEY_GRAMMAR: &str = "grammar";
 /// key for parsing tests used in the `exclusions` map
 pub const KEY_PARSE: &str = "parse";
+/// key for inference tests used in the `exclusions` map
+pub const KEY_INFER: &str = "infer";
 
 /// configuration for a single test in `examples/`
 /// Parsed from the correspongding .toml file for each example
@@ -64,6 +66,10 @@ impl TestConfig {
         }
         if !features.evaluating() {
             self.exclusions.insert(KEY_EVAL.to_owned(), true);
+        }
+
+        if !features.inferring() {
+            self.exclusions.insert(KEY_INFER.to_owned(), true);
         }
     }
 
@@ -157,6 +163,11 @@ impl TestConfig {
         matches!(self.exclusions.get(KEY_PARSE), None | Some(false))
     }
 
+    /// Does this test include inference
+    pub fn include_inference(&self) -> bool {
+        matches!(self.exclusions.get(KEY_INFER), None | Some(false))
+    }
+
     /// The number of tests that are set for this test
     pub fn num_tests(&self) -> usize {
         let inclusions = [
@@ -167,6 +178,7 @@ impl TestConfig {
             self.include_frac(),
             self.include_eval(),
             self.include_trace(),
+            self.include_inference(),
         ];
         inclusions.iter().filter(|inc| **inc).count()
     }

@@ -31,6 +31,7 @@ impl Language for FOmegaSub {
             .with_kinded()
             .with_subtyped()
             .with_normalizing()
+            .with_inferring()
     }
 
     fn id() -> &'static str {

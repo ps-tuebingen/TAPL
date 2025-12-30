@@ -3,8 +3,8 @@ use super::{
     setup,
     test_result::TestResult,
     tests::{
-        CheckTest, EvalTest, LatexTestBuss, LatexTestFrac, LatexTestGrammar, LatexTestTrace,
-        ParseTest, ReparseTest, Test,
+        CheckTest, EvalTest, InferenceTest, LatexTestBuss, LatexTestFrac, LatexTestGrammar,
+        LatexTestTrace, ParseTest, ReparseTest, Test,
     },
 };
 use check::Typecheck;
@@ -12,6 +12,7 @@ use clap::Parser;
 use errors::test_error::TestError;
 use eval::Eval;
 use grammar::LanguageDescribe;
+use inference::{GenerateConstraints, SolveConstraint};
 use latex::LatexFmt;
 use parser::GroupParse;
 use std::path::PathBuf;
@@ -69,6 +70,22 @@ pub trait TestSuite: Language {
         num_fails
     }
 
+    fn run_inference_tests(conf: &TestConfig, parse_res: &Program<Self>) -> usize
+    where
+        <Self as Language>::Term:
+            GenerateConstraints<Lang = Self, Target = <Self as Language>::Type>,
+        <Self as Language>::Type: GenerateConstraints<Lang = Self> + SolveConstraint<Lang = Self>,
+    {
+        if matches!(
+            InferenceTest::<Self>::run_report(conf, parse_res.clone()),
+            TestResult::Fail(_)
+        ) {
+            1
+        } else {
+            0
+        }
+    }
+
     fn run_eval_tests(conf: &TestConfig, parse_res: &Program<Self>) -> usize
     where
         <Self as Language>::Term: Eval<Lang = Self> + LatexFmt,
@@ -91,9 +108,13 @@ pub trait TestSuite: Language {
 
     fn run_conf(conf: &TestConfig) -> usize
     where
-        <Self as Language>::Term:
-            GroupParse + Typecheck<Lang = Self> + Eval<Lang = Self> + LatexFmt,
-        <Self as Language>::Type: GroupParse + LatexFmt,
+        <Self as Language>::Term: GroupParse
+            + Typecheck<Lang = Self>
+            + Eval<Lang = Self>
+            + LatexFmt
+            + GenerateConstraints<Lang = Self, Target = <Self as Language>::Type>,
+        <Self as Language>::Type:
+            GroupParse + LatexFmt + GenerateConstraints<Lang = Self> + SolveConstraint<Lang = Self>,
         <Self as Language>::Value: LatexFmt,
         Self: LanguageDescribe,
     {
@@ -113,14 +134,19 @@ pub trait TestSuite: Language {
         };
         num_fails += Self::run_check_tests(conf, &parse_res);
         num_fails += Self::run_eval_tests(conf, &parse_res);
+        num_fails += Self::run_inference_tests(conf, &parse_res);
         num_fails
     }
 
     fn run_all(&self, args: &Args) -> Result<usize, TestError>
     where
-        <Self as Language>::Term:
-            GroupParse + Typecheck<Lang = Self> + Eval<Lang = Self> + LatexFmt,
-        <Self as Language>::Type: GroupParse + LatexFmt,
+        <Self as Language>::Term: GroupParse
+            + Typecheck<Lang = Self>
+            + Eval<Lang = Self>
+            + LatexFmt
+            + GenerateConstraints<Lang = Self, Target = <Self as Language>::Type>,
+        <Self as Language>::Type:
+            GroupParse + LatexFmt + GenerateConstraints<Lang = Self> + SolveConstraint<Lang = Self>,
         <Self as Language>::Value: LatexFmt,
         Self: LanguageDescribe,
     {
@@ -159,9 +185,13 @@ pub trait TestSuite: Language {
 
     fn run_report(&self) -> Result<(), TestError>
     where
-        <Self as Language>::Term:
-            GroupParse + Typecheck<Lang = Self> + Eval<Lang = Self> + LatexFmt,
-        <Self as Language>::Type: GroupParse + LatexFmt,
+        <Self as Language>::Term: GroupParse
+            + Typecheck<Lang = Self>
+            + Eval<Lang = Self>
+            + LatexFmt
+            + GenerateConstraints<Lang = Self, Target = <Self as Language>::Type>,
+        <Self as Language>::Type:
+            GroupParse + LatexFmt + GenerateConstraints<Lang = Self> + SolveConstraint<Lang = Self>,
         <Self as Language>::Value: LatexFmt,
         Self: LanguageDescribe,
     {

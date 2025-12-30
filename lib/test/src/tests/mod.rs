@@ -2,6 +2,7 @@ use super::{config::TestConfig, test_result::TestResult};
 
 pub mod check_test;
 pub mod eval_test;
+pub mod inference_test;
 pub mod latex_buss_test;
 pub mod latex_frac_test;
 pub mod latex_grammar_test;
@@ -11,6 +12,7 @@ pub mod reparse_test;
 
 pub use check_test::CheckTest;
 pub use eval_test::EvalTest;
+pub use inference_test::InferenceTest;
 pub use latex_buss_test::LatexTestBuss;
 pub use latex_frac_test::LatexTestFrac;
 pub use latex_grammar_test::LatexTestGrammar;

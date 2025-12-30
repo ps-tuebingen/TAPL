@@ -25,7 +25,10 @@ impl Language for Recursive {
     }
 
     fn features() -> LanguageFeatures {
-        LanguageFeatures::new().with_typed().with_eval()
+        LanguageFeatures::new()
+            .with_typed()
+            .with_eval()
+            .with_inferring()
     }
 
     fn id() -> &'static str {

@@ -7,6 +7,7 @@ pub enum LanguageFeature {
     Kinded,
     Normalizing,
     Evaluating,
+    Inferring,
 }
 
 pub struct LanguageFeatures {
@@ -85,6 +86,19 @@ impl LanguageFeatures {
     #[must_use]
     pub fn normalizing(&self) -> bool {
         self.features.contains(&LanguageFeature::Normalizing)
+    }
+
+    /// Add [`LanguageFeature::Inferring`] to `Self`
+    #[must_use]
+    pub fn with_inferring(mut self) -> Self {
+        self.features.insert(LanguageFeature::Inferring);
+        self
+    }
+
+    // Does `Self` contain [`LanguageFeature::Inferring`]
+    #[must_use]
+    pub fn inferring(&self) -> bool {
+        self.features.contains(&LanguageFeature::Inferring)
     }
 }
 

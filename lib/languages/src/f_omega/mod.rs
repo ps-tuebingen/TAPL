@@ -30,6 +30,7 @@ impl Language for FOmega {
             .with_typed()
             .with_kinded()
             .with_normalizing()
+            .with_inferring()
     }
 
     fn id() -> &'static str {

@@ -167,7 +167,7 @@ where
         }
 
         let parsed = self.parsed(source.clone())?;
-        let inferred = infer_types(parsed)?;
+        let inferred = infer_types(&parsed)?;
         self.inferred.insert(source, inferred.clone());
         Ok(method.format(&inferred))
     }

@@ -25,7 +25,10 @@ impl Language for References {
     }
 
     fn features() -> LanguageFeatures {
-        LanguageFeatures::new().with_eval().with_typed()
+        LanguageFeatures::new()
+            .with_eval()
+            .with_typed()
+            .with_inferring()
     }
 
     fn id() -> &'static str {
