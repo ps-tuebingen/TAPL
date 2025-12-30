@@ -17,12 +17,16 @@ impl Language for UntypedArithmetic {
     type Type = Untyped<Self>;
     type Value = Value;
 
-    fn describe(&self) -> &'static str {
+    fn describe() -> &'static str {
         "Untyped Arithmetic Expressions"
     }
 
     fn features() -> LanguageFeatures {
         LanguageFeatures::new().with_eval()
+    }
+
+    fn id() -> &'static str {
+        "untyped-arithmetic"
     }
 }
 
@@ -48,7 +52,7 @@ impl LanguageDescribe for UntypedArithmetic {
 
 impl fmt::Display for UntypedArithmetic {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        f.write_str("untyped-arithmetic")
+        f.write_str(Self::id())
     }
 }
 

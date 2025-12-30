@@ -2,10 +2,15 @@ use crate::{
     get_by_id,
     web_langs::{WEB_LANGUAGES, WEB_LANGUAGES_TYPED},
 };
-use errors::{AddEventHandler, AppendChild, CouldNotCast, CreateElement, web_error::WebError};
+use errors::{
+    AddEventHandler, AppendChild, CouldNotCast, CreateElement, language_error::LanguageError,
+    web_error::WebError,
+};
+use languages::dispatch::{DispatchLanguage, create_dispatcher};
 use wasm_bindgen::{closure::Closure, prelude::JsCast};
 use web_sys::{Document, HtmlOptionElement, HtmlSelectElement};
 
+#[derive(Clone)]
 pub struct LanguageSelect {
     document: Document,
     id: String,
@@ -26,16 +31,20 @@ impl LanguageSelect {
     }
 
     fn setup_languages(&self, typed: bool) -> Result<(), WebError> {
-        let langs = if typed {
-            WEB_LANGUAGES_TYPED.to_vec()
+        let lang_ids = if typed {
+            WEB_LANGUAGES_TYPED.as_slice()
         } else {
-            WEB_LANGUAGES.to_vec()
+            WEB_LANGUAGES.as_slice()
         };
+        let langs = lang_ids
+            .iter()
+            .map(|lang| create_dispatcher(lang))
+            .collect::<Result<Vec<Box<dyn DispatchLanguage>>, LanguageError>>()?;
         for lang in langs {
-            if typed && lang.to_string().to_lowercase().contains("untyped") {
+            if typed && lang.id().to_lowercase().contains("untyped") {
                 continue;
             }
-            let child_id = lang.to_string();
+            let child_id = lang.id();
             let lang_option = self
                 .document
                 .create_element("option")

@@ -20,12 +20,16 @@ impl Language for SystemF {
     type Type = Type;
     type Value = Value;
 
-    fn describe(&self) -> &'static str {
+    fn describe() -> &'static str {
         "System F"
     }
 
     fn features() -> LanguageFeatures {
         LanguageFeatures::new().with_eval().with_typed()
+    }
+
+    fn id() -> &'static str {
+        "system-f"
     }
 }
 
@@ -51,6 +55,6 @@ impl LanguageDescribe for SystemF {
 
 impl fmt::Display for SystemF {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        f.write_str("system-f")
+        f.write_str(Self::id())
     }
 }

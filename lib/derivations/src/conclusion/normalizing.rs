@@ -1,7 +1,7 @@
 use std::fmt;
 use syntax::language::Language;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct NormalizingConclusion<Lang>
 where
     Lang: Language,

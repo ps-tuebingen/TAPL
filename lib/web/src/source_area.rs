@@ -2,6 +2,7 @@ use crate::get_by_id;
 use errors::web_error::WebError;
 use web_sys::{Document, HtmlTextAreaElement};
 
+#[derive(Clone)]
 pub struct SourceArea {
     element: HtmlTextAreaElement,
 }

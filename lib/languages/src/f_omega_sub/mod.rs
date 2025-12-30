@@ -20,7 +20,7 @@ impl Language for FOmegaSub {
     type Type = Type;
     type Value = Value;
 
-    fn describe(&self) -> &'static str {
+    fn describe() -> &'static str {
         "Higher Kinded System F with Subtyping"
     }
 
@@ -31,6 +31,10 @@ impl Language for FOmegaSub {
             .with_kinded()
             .with_subtyped()
             .with_normalizing()
+    }
+
+    fn id() -> &'static str {
+        "f-omega-sub"
     }
 }
 
@@ -56,6 +60,6 @@ impl LanguageDescribe for FOmegaSub {
 
 impl fmt::Display for FOmegaSub {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        f.write_str("f-omega-sub")
+        f.write_str(Self::id())
     }
 }

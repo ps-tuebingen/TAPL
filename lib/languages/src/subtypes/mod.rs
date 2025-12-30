@@ -20,7 +20,7 @@ impl Language for Subtypes {
     type Type = Type;
     type Value = Value;
 
-    fn describe(&self) -> &'static str {
+    fn describe() -> &'static str {
         "STLC with Subtyping"
     }
 
@@ -29,6 +29,10 @@ impl Language for Subtypes {
             .with_eval()
             .with_typed()
             .with_subtyped()
+    }
+
+    fn id() -> &'static str {
+        "subtypes"
     }
 }
 
@@ -54,6 +58,6 @@ impl LanguageDescribe for Subtypes {
 
 impl fmt::Display for Subtypes {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        f.write_str("subtypes")
+        f.write_str(Self::id())
     }
 }

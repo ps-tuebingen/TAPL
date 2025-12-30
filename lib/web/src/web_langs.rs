@@ -1,13 +1,16 @@
 //Automatically generated file, run `cargo run -p xtask` to regenerate
 
-use languages::AllLanguages;
-pub const WEB_LANGUAGES: [AllLanguages;3] = [
-	AllLanguages::UntypedArithmetic,
-	AllLanguages::UntypedLambda,
-	AllLanguages::TypedArithmetic
+pub const WEB_LANGUAGES: [&str;5] = [
+	"untyped-arithmetic",
+	"untyped-lambda",
+	"typed-arithmetic",
+	"stlc",
+	"exceptions"
 ];
 
-pub const WEB_LANGUAGES_TYPED: [AllLanguages;1] = [
-	AllLanguages::TypedArithmetic
+pub const WEB_LANGUAGES_TYPED: [&str;3] = [
+	"typed-arithmetic",
+	"stlc",
+	"exceptions"
 ];
         

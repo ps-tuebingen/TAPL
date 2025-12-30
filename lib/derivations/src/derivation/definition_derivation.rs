@@ -2,7 +2,7 @@ use super::TypingDerivation;
 use std::fmt;
 use syntax::language::Language;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct DefinitionDerivation<Lang>
 where
     Lang: Language,

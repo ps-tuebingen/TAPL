@@ -20,7 +20,7 @@ impl Language for LambdaOmega {
     type Type = Type;
     type Value = Value;
 
-    fn describe(&self) -> &'static str {
+    fn describe() -> &'static str {
         "STLC with Higher Kinded Types"
     }
 
@@ -29,6 +29,10 @@ impl Language for LambdaOmega {
             .with_eval()
             .with_typed()
             .with_kinded()
+    }
+
+    fn id() -> &'static str {
+        "lambda-omega"
     }
 }
 
@@ -54,6 +58,6 @@ impl LanguageDescribe for LambdaOmega {
 
 impl fmt::Display for LambdaOmega {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        f.write_str("lambda-omega")
+        f.write_str(Self::id())
     }
 }

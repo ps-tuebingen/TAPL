@@ -1,7 +1,7 @@
 use std::fmt;
 use syntax::{kinds::Kind, language::Language};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct KindingConclusion<Lang>
 where
     Lang: Language,

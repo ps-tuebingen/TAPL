@@ -2,7 +2,7 @@ use crate::{Derivation, conclusion::NormalizingConclusion, rules::NormalizingRul
 use std::fmt;
 use syntax::language::Language;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct NormalizingDerivation<Lang>
 where
     Lang: Language,

@@ -2,7 +2,7 @@ use crate::symbols::Symbol;
 use std::fmt;
 
 /// A rule used in [`crate::Grammar`]
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct GrammarRule {
     /// The symbol defining the rule
     pub symbol: Symbol,

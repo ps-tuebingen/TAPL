@@ -20,12 +20,16 @@ impl Language for References {
     type Type = Type;
     type Value = Value;
 
-    fn describe(&self) -> &'static str {
+    fn describe() -> &'static str {
         "STLC with Referencs"
     }
 
     fn features() -> LanguageFeatures {
         LanguageFeatures::new().with_eval().with_typed()
+    }
+
+    fn id() -> &'static str {
+        "references"
     }
 }
 
@@ -51,6 +55,6 @@ impl LanguageDescribe for References {
 
 impl fmt::Display for References {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        f.write_str("references")
+        f.write_str(Self::id())
     }
 }

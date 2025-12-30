@@ -17,12 +17,16 @@ impl Language for UntypedLambda {
     type Type = Untyped<Self>;
     type Value = Value;
 
-    fn describe(&self) -> &'static str {
+    fn describe() -> &'static str {
         "Untyped Lambda Calculus"
     }
 
     fn features() -> LanguageFeatures {
         LanguageFeatures::new().with_eval()
+    }
+
+    fn id() -> &'static str {
+        "untyped-lambda"
     }
 }
 
@@ -48,6 +52,6 @@ impl LanguageDescribe for UntypedLambda {
 
 impl fmt::Display for UntypedLambda {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        f.write_str("untyped-lambda")
+        f.write_str(Self::id())
     }
 }

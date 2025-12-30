@@ -20,7 +20,7 @@ impl Language for BoundedQuantification {
     type Type = Type;
     type Value = Value;
 
-    fn describe(&self) -> &'static str {
+    fn describe() -> &'static str {
         "System F with Bounded Quantification"
     }
 
@@ -29,6 +29,10 @@ impl Language for BoundedQuantification {
             .with_eval()
             .with_typed()
             .with_subtyped()
+    }
+
+    fn id() -> &'static str {
+        "bounded-quantification"
     }
 }
 
@@ -42,6 +46,7 @@ impl LanguageDescribe for BoundedQuantification {
             eval: <Term as ::eval::Eval>::rules(),
         }
     }
+
     fn grammars() -> LanguageGrammar {
         LanguageGrammar {
             term_grammar: Term::grammar(),
@@ -54,6 +59,6 @@ impl LanguageDescribe for BoundedQuantification {
 
 impl fmt::Display for BoundedQuantification {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        f.write_str("bounded-quantification")
+        f.write_str(Self::id())
     }
 }

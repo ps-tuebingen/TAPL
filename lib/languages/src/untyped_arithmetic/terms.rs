@@ -49,7 +49,7 @@ impl Typecheck for Term {
         &self,
         _: Environment<UntypedArithmetic>,
     ) -> Result<Derivation<UntypedArithmetic>, CheckError> {
-        Err(NoTyping::new(UntypedArithmetic.describe()).into())
+        Err(NoTyping::new(UntypedArithmetic::describe()).into())
     }
 
     fn rules() -> HashSet<DerivationRule> {

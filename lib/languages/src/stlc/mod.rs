@@ -20,12 +20,16 @@ impl Language for Stlc {
     type Type = Type;
     type Value = Value;
 
-    fn describe(&self) -> &'static str {
+    fn describe() -> &'static str {
         "Simply-Typed Lambda Calculus"
     }
 
     fn features() -> LanguageFeatures {
         LanguageFeatures::new().with_eval().with_typed()
+    }
+
+    fn id() -> &'static str {
+        "stlc"
     }
 }
 
@@ -51,6 +55,6 @@ impl LanguageDescribe for Stlc {
 
 impl fmt::Display for Stlc {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        f.write_str("stlc")
+        f.write_str(Self::id())
     }
 }

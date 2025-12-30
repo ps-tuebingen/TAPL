@@ -28,7 +28,7 @@ pub trait GrammarRuleDescribe {
     fn rule() -> GrammarRule;
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct LanguageRules {
     pub typing: HashSet<DerivationRule>,
     pub subtyping: HashSet<DerivationRule>,
@@ -37,7 +37,7 @@ pub struct LanguageRules {
     pub eval: HashSet<DerivationRule>,
 }
 /// Grammar of a language
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct LanguageGrammar {
     /// The grammar of terms
     pub term_grammar: Grammar,

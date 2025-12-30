@@ -43,7 +43,7 @@ impl Typecheck for Term {
     type Lang = UntypedLambda;
 
     fn check(&self, _: Environment<Self::Lang>) -> Result<Derivation<Self::Lang>, CheckError> {
-        Err(NoTyping::new(UntypedLambda.describe()).into())
+        Err(NoTyping::new(UntypedLambda::describe()).into())
     }
 
     fn rules() -> HashSet<DerivationRule> {

@@ -3,7 +3,7 @@ use std::fmt;
 
 /// Describes the grammar of terms/types/etc
 /// In the form `t::= r1 | r2 | ...`
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Grammar {
     /// The symbol for this defintion (e.g. `t` for terms)
     pub symbol: Symbol,

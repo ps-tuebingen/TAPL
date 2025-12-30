@@ -20,12 +20,16 @@ impl Language for Recursive {
     type Type = Type;
     type Value = Value;
 
-    fn describe(&self) -> &'static str {
+    fn describe() -> &'static str {
         "STLC with Recursive Types"
     }
 
     fn features() -> LanguageFeatures {
         LanguageFeatures::new().with_typed().with_eval()
+    }
+
+    fn id() -> &'static str {
+        "recursive"
     }
 }
 
@@ -51,6 +55,6 @@ impl LanguageDescribe for Recursive {
 
 impl fmt::Display for Recursive {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        f.write_str("recursive")
+        f.write_str(Self::id())
     }
 }

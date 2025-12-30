@@ -2,7 +2,7 @@ use crate::{Derivation, TypingConclusion, TypingRule};
 use std::fmt;
 use syntax::language::Language;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct TypingDerivation<Lang>
 where
     Lang: Language,

@@ -8,7 +8,7 @@ use syntax::{
     types::{Bot, OpApp, Top},
 };
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct SubtypeDerivation<Lang>
 where
     Lang: Language,

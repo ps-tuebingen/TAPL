@@ -1,7 +1,7 @@
 use std::fmt;
 use syntax::{env::Environment, language::Language};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct TypingConclusion<Lang>
 where
     Lang: Language,
