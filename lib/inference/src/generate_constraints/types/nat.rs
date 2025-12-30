@@ -1,4 +1,5 @@
 use super::{GenState, GenerateConstraints};
+use crate::constraints::KindOrVar;
 use syntax::{kinds::Kind, language::Language, types::Nat};
 
 impl<Lang> GenerateConstraints for Nat<Lang>
@@ -6,9 +7,9 @@ where
     Lang: Language,
 {
     type Lang = Lang;
-    type Target = Kind;
+    type Target = KindOrVar;
 
     fn generate_constraints(&self, _: &mut GenState<Lang>) -> Self::Target {
-        Kind::Star
+        Kind::Star.into()
     }
 }

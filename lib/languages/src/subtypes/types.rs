@@ -6,7 +6,7 @@ use macros::{
 };
 use syntax::types::{
     Bool, Bot, Fun, List, Nat, Record, Reference, Sink, Source, Top, Type as TypeTrait, TypeGroup,
-    Unit, Variant,
+    TypeVariable, Unit, Variant,
 };
 
 #[derive(
@@ -28,6 +28,7 @@ use syntax::types::{
 )]
 #[Lang(Subtypes)]
 pub enum Type {
+    Variable(TypeVariable<Subtypes>),
     Top(Top<Subtypes>),
     Bot(Bot<Subtypes>),
     Fun(Fun<Subtypes>),

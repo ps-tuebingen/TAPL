@@ -10,7 +10,7 @@ mod untyped;
 mod state;
 
 use kinding::solve_kinding;
-use state::SolveState;
+pub use state::SolveState;
 
 pub struct DefSubst<Lang>
 where

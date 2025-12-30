@@ -1,20 +1,20 @@
 use super::{GenState, GenerateConstraints};
-use crate::constraints::KindConstraint;
+use crate::constraints::{KindConstraint, KindOrVar};
 use syntax::{kinds::Kind, language::Language, types::Record};
 
 impl<Lang> GenerateConstraints for Record<Lang>
 where
     Lang: Language,
-    Lang::Type: GenerateConstraints<Lang = Lang, Target = Kind>,
+    Lang::Type: GenerateConstraints<Lang = Lang, Target = KindOrVar>,
 {
     type Lang = Lang;
-    type Target = Kind;
+    type Target = KindOrVar;
 
     fn generate_constraints(&self, state: &mut GenState<Lang>) -> Self::Target {
         for (_, ty) in &self.records {
             let ty_kind = ty.generate_constraints(state);
             state.add_constraint(KindConstraint::new(ty_kind, Kind::Star, self.span));
         }
-        Kind::Star
+        Kind::Star.into()
     }
 }

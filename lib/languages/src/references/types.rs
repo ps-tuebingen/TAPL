@@ -3,7 +3,7 @@ use macros::{
     FreeTypeVars, FromVariants, GenerateConstraintsType, GrammarDescribe, LangDisplay, LatexFmt,
     NoKinds, NoNorm, NoSubtypes, SolveConstraint, Spanned, SubstType,
 };
-use syntax::types::{Bool, Fun, Nat, Reference, Type as TypeTrait, TypeGroup, Unit};
+use syntax::types::{Bool, Fun, Nat, Reference, Type as TypeTrait, TypeGroup, TypeVariable, Unit};
 
 #[derive(
     SolveConstraint,
@@ -25,6 +25,7 @@ use syntax::types::{Bool, Fun, Nat, Reference, Type as TypeTrait, TypeGroup, Uni
 )]
 #[Lang(References)]
 pub enum Type {
+    Variable(TypeVariable<References>),
     Unit(Unit<References>),
     Nat(Nat<References>),
     Bool(Bool<References>),

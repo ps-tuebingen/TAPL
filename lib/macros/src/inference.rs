@@ -32,11 +32,14 @@ pub fn generate_generate_constraints(
 }
 
 pub fn generate_generate_constraints_term(input: TokenStream) -> TokenStream {
-    generate_generate_constraints(input, quote! {Self::Lang::Type})
+    generate_generate_constraints(
+        input,
+        quote! {<Self::Lang as syntax::language::Language>::Type},
+    )
 }
 
 pub fn generate_generate_constraints_type(input: TokenStream) -> TokenStream {
-    generate_generate_constraints(input, quote! {()})
+    generate_generate_constraints(input, quote! {inference::constraints::KindOrVar})
 }
 
 pub fn generate_solve_constraint(input: TokenStream) -> TokenStream {
@@ -60,12 +63,12 @@ pub fn generate_solve_constraint(input: TokenStream) -> TokenStream {
 
     let rec_variants = map_variants(&variants, |var| {
         let ident = &var.ident;
-        quote! {Self::#ident(inner) => inner.solve_record(label,label_yy,state), }
+        quote! {Self::#ident(inner) => inner.solve_record(label,label_ty,state), }
     });
 
     let variant_variants = map_variants(&variants, |var| {
         let ident = &var.ident;
-        quote! {Self::#ident(inner) => inner.solve_variant(label,label_yy,state), }
+        quote! {Self::#ident(inner) => inner.solve_variant(label,label_ty,state), }
     });
 
     let output = quote! {
@@ -97,7 +100,7 @@ pub fn generate_solve_constraint(input: TokenStream) -> TokenStream {
                 ind:usize,
                 ind_ty:<Self::Lang as syntax::language::Language>::Type,
                 state:&mut inference::SolveState<Self::Lang>
-            )-> Result<(),errors::inference_error::InferenceError {
+            )-> Result<(),errors::inference_error::InferenceError> {
                 match self{
                     #(#ind_variants)*
                 }

@@ -1,7 +1,7 @@
 use super::SystemF;
 use macros::{
-    Eval, FreeTypeVars, FreeVars, FromVariants, GenerateConstraintsTerm, GenerateConstrintsTerm,
-    GrammarDescribe, LangDisplay, LatexFmt, Spanned, SubstTerm, SubstType, Typecheck,
+    Eval, FreeTypeVars, FreeVars, FromVariants, GenerateConstraintsTerm, GrammarDescribe,
+    LangDisplay, LatexFmt, Spanned, SubstTerm, SubstType, Typecheck,
 };
 use syntax::terms::{App, Lambda, TyApp, TyLambda, Variable};
 

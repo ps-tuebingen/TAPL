@@ -5,7 +5,7 @@ use macros::{
 };
 use syntax::types::{
     Bool, Fun, List, Nat, Optional, Product, Record, Sum, Tuple, Type as TypeTrait, TypeGroup,
-    Unit, Variant,
+    TypeVariable, Unit, Variant,
 };
 
 #[derive(
@@ -28,6 +28,7 @@ use syntax::types::{
 )]
 #[Lang(Stlc)]
 pub enum Type {
+    Variable(TypeVariable<Stlc>),
     Unit(Unit<Stlc>),
     Fun(Fun<Stlc>),
     Bool(Bool<Stlc>),

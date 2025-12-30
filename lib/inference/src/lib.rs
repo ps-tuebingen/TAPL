@@ -5,8 +5,8 @@ mod solve_constraints;
 use errors::{UndefinedMain, inference_error::InferenceError};
 use generate_constraints::generate_constraints_program;
 pub use generate_constraints::{GenState, GenerateConstraints};
-pub use solve_constraints::SolveConstraint;
 use solve_constraints::solve_constraints;
+pub use solve_constraints::{SolveConstraint, SolveState};
 use std::{collections::HashMap, fmt};
 use syntax::{Name, language::Language, program::Program, subst::SubstType};
 

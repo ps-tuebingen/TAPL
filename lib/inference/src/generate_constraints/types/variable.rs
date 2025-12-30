@@ -2,11 +2,10 @@ use super::{GenState, GenerateConstraints};
 use crate::constraints::KindOrVar;
 use syntax::{language::Language, types::TypeVariable};
 
-impl<Lang, K> GenerateConstraints for TypeVariable<Lang>
+impl<Lang> GenerateConstraints for TypeVariable<Lang>
 where
     Lang: Language,
-    Lang::Type: GenerateConstraints<Lang = Lang, Target = K>,
-    K: Into<KindOrVar>,
+    Lang::Type: GenerateConstraints<Lang = Lang, Target = KindOrVar>,
 {
     type Lang = Lang;
     type Target = KindOrVar;
