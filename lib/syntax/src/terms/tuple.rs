@@ -51,7 +51,7 @@ where
     Lang: Language,
 {
     fn free_vars(&self, vars: &mut HashSet<Var>) {
-        for t in self.terms.iter() {
+        for t in &self.terms {
             t.free_vars(vars);
         }
     }
@@ -62,7 +62,7 @@ where
     Lang: Language,
 {
     fn free_type_vars(&self, vars: &mut HashSet<TypeVar>) {
-        for t in self.terms.iter() {
+        for t in &self.terms {
             t.free_type_vars(vars);
         }
     }

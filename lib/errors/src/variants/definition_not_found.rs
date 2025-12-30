@@ -9,6 +9,7 @@ pub struct DefinitionNotFound {
 
 impl DefinitionNotFound {
     /// Create a new error for a given name
+    #[must_use]
     pub fn new(name: &str) -> Self {
         Self {
             name: name.to_string(),

@@ -52,9 +52,7 @@ impl<Lang> FreeVars for Exception<Lang>
 where
     Lang: Language,
 {
-    fn free_vars(&self, _: &mut HashSet<Var>) {
-        ()
-    }
+    fn free_vars(&self, _: &mut HashSet<Var>) {}
 }
 
 impl<Lang> FreeTypeVars for Exception<Lang>

@@ -54,7 +54,7 @@ where
     Lang: Language,
 {
     fn free_vars(&self, vars: &mut HashSet<Var>) {
-        self.record.free_vars(vars)
+        self.record.free_vars(vars);
     }
 }
 

@@ -51,7 +51,7 @@ where
     Lang: Language,
 {
     fn free_type_vars(&self, vars: &mut HashSet<TypeVar>) {
-        for ty in self.tys.iter() {
+        for ty in &self.tys {
             ty.free_type_vars(vars);
         }
     }

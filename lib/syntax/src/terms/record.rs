@@ -67,7 +67,7 @@ where
 {
     fn free_type_vars(&self, vars: &mut HashSet<TypeVar>) {
         for t in self.records.values() {
-            t.free_type_vars(vars)
+            t.free_type_vars(vars);
         }
     }
 }

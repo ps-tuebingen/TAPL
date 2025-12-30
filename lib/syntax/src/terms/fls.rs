@@ -48,18 +48,14 @@ impl<Lang> FreeVars for False<Lang>
 where
     Lang: Language,
 {
-    fn free_vars(&self, _: &mut HashSet<Var>) {
-        ()
-    }
+    fn free_vars(&self, _: &mut HashSet<Var>) {}
 }
 
 impl<Lang> FreeTypeVars for False<Lang>
 where
     Lang: Language,
 {
-    fn free_type_vars(&self, _: &mut HashSet<TypeVar>) {
-        ()
-    }
+    fn free_type_vars(&self, _: &mut HashSet<TypeVar>) {}
 }
 
 impl<Lang> Term for False<Lang> where Lang: Language {}

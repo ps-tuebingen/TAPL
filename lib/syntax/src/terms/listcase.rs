@@ -67,13 +67,13 @@ where
     Lang: Language,
 {
     fn free_vars(&self, vars: &mut HashSet<Var>) {
-        let contained_fst = vars.contains(&self.cons_fst);
-        let contained_rst = vars.contains(&self.cons_rst);
+        let contained_head = vars.contains(&self.cons_fst);
+        let contained_tail = vars.contains(&self.cons_rst);
         self.cons_rhs.free_vars(vars);
-        if !contained_fst {
+        if !contained_head {
             vars.remove(&self.cons_fst);
         }
-        if !contained_rst {
+        if !contained_tail {
             vars.remove(&self.cons_rst);
         }
         self.nil_rhs.free_vars(vars);

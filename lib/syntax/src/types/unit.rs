@@ -48,9 +48,7 @@ impl<Lang> FreeTypeVars for Unit<Lang>
 where
     Lang: Language,
 {
-    fn free_type_vars(&self, _: &mut HashSet<TypeVar>) {
-        ()
-    }
+    fn free_type_vars(&self, _: &mut HashSet<TypeVar>) {}
 }
 
 impl<Lang> Type for Unit<Lang> where Lang: Language {}

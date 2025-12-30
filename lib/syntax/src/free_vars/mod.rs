@@ -14,7 +14,7 @@ where
     T: FreeTypeVars,
 {
     fn free_type_vars(&self, vars: &mut HashSet<TypeVar>) {
-        for t in self.iter() {
+        for t in *self {
             t.free_type_vars(vars);
         }
     }
@@ -25,6 +25,6 @@ where
     T: FreeTypeVars,
 {
     fn free_type_vars(&self, vars: &mut HashSet<TypeVar>) {
-        self.as_ref().free_type_vars(vars)
+        self.as_ref().free_type_vars(vars);
     }
 }

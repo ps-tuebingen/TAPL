@@ -55,7 +55,7 @@ where
     Lang: Language,
 {
     fn free_vars(&self, vars: &mut HashSet<Var>) {
-        self.left_term.free_vars(vars)
+        self.left_term.free_vars(vars);
     }
 }
 

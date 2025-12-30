@@ -83,7 +83,7 @@ where
 {
     fn free_vars(&self, vars: &mut HashSet<Var>) {
         self.bound_term.free_vars(vars);
-        for pt in self.patterns.iter() {
+        for pt in &self.patterns {
             pt.free_vars(vars);
         }
     }
@@ -108,7 +108,7 @@ where
 {
     fn free_type_vars(&self, vars: &mut HashSet<Var>) {
         self.bound_term.free_type_vars(vars);
-        for pt in self.patterns.iter() {
+        for pt in &self.patterns {
             pt.free_type_vars(vars);
         }
     }

@@ -50,9 +50,7 @@ impl<Lang> FreeVars for Nothing<Lang>
 where
     Lang: Language,
 {
-    fn free_vars(&self, _: &mut HashSet<Var>) {
-        ()
-    }
+    fn free_vars(&self, _: &mut HashSet<Var>) {}
 }
 
 impl<Lang> FreeTypeVars for Nothing<Lang>
@@ -60,7 +58,7 @@ where
     Lang: Language,
 {
     fn free_type_vars(&self, vars: &mut HashSet<TypeVar>) {
-        self.ty.free_type_vars(vars)
+        self.ty.free_type_vars(vars);
     }
 }
 
