@@ -1,13 +1,14 @@
 use super::FOmegaSub;
 use macros::{
-    Eval, FreeTypeVars, FreeVars, FromVariants, GrammarDescribe, LangDisplay, LatexFmt, Spanned,
-    SubstTerm, SubstType, Typecheck,
+    Eval, FreeTypeVars, FreeVars, FromVariants, GenerateConstraintsTerm, GrammarDescribe,
+    LangDisplay, LatexFmt, Spanned, SubstTerm, SubstType, Typecheck,
 };
 use syntax::terms::{
     App, Lambda, LambdaSub, Let, Num, Pack, Pred, Record, RecordProj, Succ, TyApp, Unpack, Variable,
 };
 
 #[derive(
+    GenerateConstraintsTerm,
     FreeVars,
     FreeTypeVars,
     Spanned,

@@ -1,11 +1,13 @@
 use super::BoundedQuantification;
 use macros::{
-    FreeTypeVars, FromVariants, GrammarDescribe, LangDisplay, LatexFmt, NoKinds, NoNorm, Spanned,
-    SubstType, Subtypecheck,
+    FreeTypeVars, FromVariants, GenerateConstraintsType, GrammarDescribe, LangDisplay, LatexFmt,
+    NoKinds, NoNorm, SolveConstraint, Spanned, SubstType, Subtypecheck,
 };
 use syntax::types::{ExistsBounded, ForallBounded, Fun, Nat, Record, Top, TypeGroup, TypeVariable};
 
 #[derive(
+    SolveConstraint,
+    GenerateConstraintsType,
     FreeTypeVars,
     Spanned,
     GrammarDescribe,

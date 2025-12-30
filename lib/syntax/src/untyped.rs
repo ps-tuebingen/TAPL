@@ -4,7 +4,7 @@ use crate::{
     language::Language,
     span::{Span, Spanned},
     subst::SubstType,
-    types::{Bool, Fun, Nat, Type, TypeGroup},
+    types::{Bool, Fun, Nat, Type, TypeGroup, TypeVariable},
 };
 use macros::EqNoSpan;
 use std::{collections::HashSet, fmt, marker::PhantomData};
@@ -102,5 +102,14 @@ where
 {
     fn from(n: Nat<Lang>) -> Self {
         Self::new(n.span)
+    }
+}
+
+impl<Lang> From<TypeVariable<Lang>> for Untyped<Lang>
+where
+    Lang: Language,
+{
+    fn from(v: TypeVariable<Lang>) -> Self {
+        Self::new(v.span)
     }
 }

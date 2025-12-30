@@ -6,6 +6,7 @@ pub enum Command {
     Parse,
     Evaluate,
     Check,
+    Infer,
     Grammar,
 }
 
@@ -25,6 +26,7 @@ impl FromStr for Command {
             "eval" | "evaluate" => Ok(Self::Evaluate),
             "check" | "typecheck" => Ok(Self::Check),
             "grammar" => Ok(Self::Grammar),
+            "infer" => Ok(Self::Infer),
             _ => Err(LanguageError::UndefinedCommand(s.to_string())),
         }
     }
@@ -37,6 +39,7 @@ impl fmt::Display for Command {
             Self::Evaluate => f.write_str("evaluate"),
             Self::Check => f.write_str("check"),
             Self::Grammar => f.write_str("grammar"),
+            Self::Infer => f.write_str("infer"),
         }
     }
 }

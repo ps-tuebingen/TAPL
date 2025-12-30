@@ -1,7 +1,7 @@
 use super::FOmega;
 use macros::{
-    FreeTypeVars, FromVariants, GrammarDescribe, Kindcheck, LangDisplay, LatexFmt, NoSubtypes,
-    Normalize, Spanned, SubstType,
+    FreeTypeVars, FromVariants, GenerateConstraintsType, GrammarDescribe, Kindcheck, LangDisplay,
+    LatexFmt, NoSubtypes, Normalize, SolveConstraint, Spanned, SubstType,
 };
 use syntax::types::{
     Bool, Exists, Forall, Fun, Nat, OpApp, OpLambda, Record, Type as TypeTrait, TypeGroup,
@@ -9,6 +9,8 @@ use syntax::types::{
 };
 
 #[derive(
+    SolveConstraint,
+    GenerateConstraintsType,
     FreeTypeVars,
     Spanned,
     GrammarDescribe,

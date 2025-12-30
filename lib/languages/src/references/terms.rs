@@ -1,7 +1,7 @@
 use super::References;
 use macros::{
-    Eval, FreeTypeVars, FreeVars, FromVariants, GrammarDescribe, LangDisplay, LatexFmt, Spanned,
-    SubstTerm, SubstType, Typecheck,
+    Eval, FreeTypeVars, FreeVars, FromVariants, GenerateConstraintsTerm, GrammarDescribe,
+    LangDisplay, LatexFmt, Spanned, SubstTerm, SubstType, Typecheck,
 };
 use syntax::terms::{
     App, Assign, Deref, False, Fix, If, IsZero, Lambda, Let, Loc, Num, Pred, Ref, Succ, True, Unit,
@@ -9,6 +9,7 @@ use syntax::terms::{
 };
 
 #[derive(
+    GenerateConstraintsTerm,
     FreeVars,
     FreeTypeVars,
     Spanned,

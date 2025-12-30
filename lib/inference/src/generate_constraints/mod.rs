@@ -6,8 +6,9 @@ mod program;
 mod state;
 mod terms;
 mod types;
+mod untyped;
 pub use program::generate_constraints_program;
-use state::GenState;
+pub use state::GenState;
 
 pub struct DefConstraints<Lang>
 where

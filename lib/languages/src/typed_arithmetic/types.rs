@@ -1,11 +1,13 @@
 use super::TypedArithmetic;
 use macros::{
-    FreeTypeVars, FromVariants, GrammarDescribe, LangDisplay, LatexFmt, NoKinds, NoNorm,
-    NoSubtypes, Spanned, SubstType,
+    FreeTypeVars, FromVariants, GenerateConstraintsType, GrammarDescribe, LangDisplay, LatexFmt,
+    NoKinds, NoNorm, NoSubtypes, SolveConstraint, Spanned, SubstType,
 };
 use syntax::types::{Bool, Nat, Type as TypeTrait, TypeGroup};
 
 #[derive(
+    SolveConstraint,
+    GenerateConstraintsType,
     FreeTypeVars,
     Spanned,
     GrammarDescribe,

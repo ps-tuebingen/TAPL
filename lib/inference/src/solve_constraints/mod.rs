@@ -5,6 +5,7 @@ use syntax::{Label, Name, TypeVar, language::Language, types::Type};
 
 mod kinding;
 mod types;
+mod untyped;
 
 mod state;
 

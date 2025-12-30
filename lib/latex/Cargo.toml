@@ -8,3 +8,4 @@ syntax={path="../syntax"}
 derivations={path="../derivations"}
 trace={path="../trace"}
 grammar={path="../grammar"}
+inference = {path="../inference"}

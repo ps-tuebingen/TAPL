@@ -8,6 +8,7 @@ mod format;
 mod free_vars;
 mod from;
 mod grammar;
+mod inference;
 pub(crate) mod literals;
 mod span;
 mod subst;
@@ -25,6 +26,10 @@ use format::{generate_display, generate_latexfmt};
 use free_vars::{generate_free_type_vars, generate_free_vars};
 use from::{generate_from_variants, generate_into_term};
 use grammar::generate_grammar_describe;
+use inference::{
+    generate_generate_constraints_term, generate_generate_constraints_type,
+    generate_solve_constraint,
+};
 use span::generate_spanned;
 use subst::{generate_subst_term, generate_subst_type};
 
@@ -159,12 +164,35 @@ pub fn derive_eq_no_span(input: TokenStream) -> TokenStream {
     generate_eq_no_span(input)
 }
 
+/// Derive [`syntax::free_vars::FreeVars`] for enum types
+/// requires all variants to implement FreeVars and calls that implementation
 #[proc_macro_derive(FreeVars)]
 pub fn derive_free_vars(input: TokenStream) -> TokenStream {
     generate_free_vars(input)
 }
 
+/// Derive [`syntax::free_vars::FreeTypeVars`] for enum types
+/// requires all variants to implement FreeTypeVars and calls that implementation
 #[proc_macro_derive(FreeTypeVars)]
 pub fn derive_free_type_vars(input: TokenStream) -> TokenStream {
     generate_free_type_vars(input)
+}
+
+/// Derive [`inference::GenerateConstraints`] for enum types of terms
+/// requires all variants to implement GenerateConstraints and calls that implementation
+#[proc_macro_derive(GenerateConstraintsTerm, attributes(Lang))]
+pub fn derive_generate_constraints_term(input: TokenStream) -> TokenStream {
+    generate_generate_constraints_term(input)
+}
+
+/// Derive [`inference::GenerateConstraints`] for enum types of types
+/// requires all variants to implement GenerateConstraints and calls that implementation
+#[proc_macro_derive(GenerateConstraintsType, attributes(Lang))]
+pub fn derive_generate_constraints_type(input: TokenStream) -> TokenStream {
+    generate_generate_constraints_type(input)
+}
+
+#[proc_macro_derive(SolveConstraint, attributes(Lang))]
+pub fn derive_solve_constraint(input: TokenStream) -> TokenStream {
+    generate_solve_constraint(input)
 }

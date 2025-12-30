@@ -1,8 +1,8 @@
 use super::Subtypes;
 use grammar::{Grammar, GrammarDescribe, GrammarRuleDescribe};
 use macros::{
-    FreeTypeVars, FromVariants, LangDisplay, LatexFmt, NoKinds, NoNorm, Spanned, SubstType,
-    Subtypecheck,
+    FreeTypeVars, FromVariants, GenerateConstraintsType, LangDisplay, LatexFmt, NoKinds, NoNorm,
+    SolveConstraint, Spanned, SubstType, Subtypecheck,
 };
 use syntax::types::{
     Bool, Bot, Fun, List, Nat, Record, Reference, Sink, Source, Top, Type as TypeTrait, TypeGroup,
@@ -10,6 +10,8 @@ use syntax::types::{
 };
 
 #[derive(
+    SolveConstraint,
+    GenerateConstraintsType,
     FreeTypeVars,
     Spanned,
     FromVariants,

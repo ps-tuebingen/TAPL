@@ -4,6 +4,7 @@ use derivations::Derivation;
 use errors::{FileAccess, language_error::LanguageError};
 use eval::{Eval, eval_main};
 use grammar::{LanguageDescribe, LanguageGrammar};
+use inference::{GenerateConstraints, ProgTypes, SolveConstraint, infer_types};
 use latex::LatexFmt;
 use parser::{GroupParse, Parse};
 use std::{collections::HashMap, fs::read_to_string, path::PathBuf};
@@ -19,6 +20,7 @@ where
     parsed: HashMap<Source, Program<Lang>>,
     checked: HashMap<Source, Derivation<Lang>>,
     evaluated: HashMap<Source, EvalTrace<Lang>>,
+    inferred: HashMap<Source, ProgTypes<Lang>>,
     grammar: Option<LanguageGrammar>,
 }
 
@@ -33,6 +35,7 @@ where
             checked: HashMap::new(),
             evaluated: HashMap::new(),
             grammar: None,
+            inferred: HashMap::new(),
         }
     }
 
@@ -147,5 +150,25 @@ where
             self.grammar = Some(grammar);
             res
         }
+    }
+
+    pub fn format_infer(
+        &mut self,
+        source: Source,
+        method: FormatMethod,
+    ) -> Result<String, LanguageError>
+    where
+        Lang::Term: GroupParse + GenerateConstraints<Lang = Lang, Target = Lang::Type>,
+        Lang::Type:
+            GroupParse + LatexFmt + GenerateConstraints<Lang = Lang> + SolveConstraint<Lang = Lang>,
+    {
+        if let Some(inferred) = self.inferred.get(&source) {
+            return Ok(method.format(inferred));
+        }
+
+        let parsed = self.parsed(source.clone())?;
+        let inferred = infer_types(parsed)?;
+        self.inferred.insert(source, inferred.clone());
+        Ok(method.format(&inferred))
     }
 }

@@ -6,6 +6,7 @@ use check::Typecheck;
 use errors::{UndefinedLanguage, language_error::LanguageError};
 use eval::Eval;
 use grammar::LanguageDescribe;
+use inference::{GenerateConstraints, SolveConstraint};
 use latex::LatexFmt;
 use parser::GroupParse;
 use std::{
@@ -66,8 +67,13 @@ pub trait DispatchLanguage {
 impl<Lang> DispatchLanguage for Dispatcher<Lang>
 where
     Lang: Language + LanguageDescribe + 'static,
-    Lang::Term: GroupParse + LatexFmt + Typecheck<Lang = Lang> + Eval<Lang = Lang>,
-    Lang::Type: GroupParse + LatexFmt,
+    Lang::Term: GroupParse
+        + LatexFmt
+        + Typecheck<Lang = Lang>
+        + Eval<Lang = Lang>
+        + GenerateConstraints<Lang = Lang, Target = Lang::Type>,
+    Lang::Type:
+        GroupParse + LatexFmt + GenerateConstraints<Lang = Lang> + SolveConstraint<Lang = Lang>,
     Lang::Value: LatexFmt,
 {
     fn run_format(
@@ -81,6 +87,7 @@ where
             Command::Evaluate => self.format_evaluated(source, method),
             Command::Check => self.format_checked(source, method),
             Command::Grammar => Ok(self.format_grammar(method)),
+            Command::Infer => self.format_infer(source, method),
         }
     }
 

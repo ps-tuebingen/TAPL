@@ -1,7 +1,7 @@
 use super::Stlc;
 use macros::{
-    FreeTypeVars, FromVariants, GrammarDescribe, LangDisplay, LatexFmt, NoKinds, NoNorm,
-    NoSubtypes, Spanned, SubstType,
+    FreeTypeVars, FromVariants, GenerateConstraintsType, GrammarDescribe, LangDisplay, LatexFmt,
+    NoKinds, NoNorm, NoSubtypes, SolveConstraint, Spanned, SubstType,
 };
 use syntax::types::{
     Bool, Fun, List, Nat, Optional, Product, Record, Sum, Tuple, Type as TypeTrait, TypeGroup,
@@ -9,6 +9,8 @@ use syntax::types::{
 };
 
 #[derive(
+    SolveConstraint,
+    GenerateConstraintsType,
     FreeTypeVars,
     Spanned,
     GrammarDescribe,

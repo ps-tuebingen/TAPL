@@ -1,6 +1,6 @@
 use crate::{
     FileAccess, UndefinedLanguage, check_error::CheckError, eval_error::EvalError,
-    parse_error::ParserError,
+    inference_error::InferenceError, parse_error::ParserError,
 };
 use std::fmt;
 
@@ -9,6 +9,7 @@ pub enum LanguageError {
     Parse(ParserError),
     Eval(EvalError),
     Check(CheckError),
+    Inference(InferenceError),
     FileAccess(FileAccess),
     UndefinedLanguage(UndefinedLanguage),
     UndefinedCommand(String),
@@ -23,6 +24,7 @@ impl fmt::Display for LanguageError {
             Self::FileAccess(fa) => fa.fmt(f),
             Self::UndefinedLanguage(ua) => ua.fmt(f),
             Self::UndefinedCommand(cmd) => write!(f, "{cmd} is not a valid command"),
+            Self::Inference(err) => err.fmt(f),
         }
     }
 }
@@ -56,5 +58,11 @@ impl From<CheckError> for LanguageError {
 impl From<UndefinedLanguage> for LanguageError {
     fn from(err: UndefinedLanguage) -> Self {
         Self::UndefinedLanguage(err)
+    }
+}
+
+impl From<InferenceError> for LanguageError {
+    fn from(err: InferenceError) -> Self {
+        Self::Inference(err)
     }
 }

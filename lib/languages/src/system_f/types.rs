@@ -1,11 +1,13 @@
 use super::SystemF;
 use macros::{
-    FreeTypeVars, FromVariants, GrammarDescribe, LangDisplay, LatexFmt, NoKinds, NoNorm,
-    NoSubtypes, Spanned, SubstType,
+    FreeTypeVars, FromVariants, GenerateConstraintsType, GrammarDescribe, LangDisplay, LatexFmt,
+    NoKinds, NoNorm, NoSubtypes, SolveConstraint, Spanned, SubstType,
 };
 use syntax::types::{Forall, Fun, Type as TypeTrait, TypeGroup, TypeVariable};
 
 #[derive(
+    SolveConstraint,
+    GenerateConstraintsType,
     FreeTypeVars,
     Spanned,
     GrammarDescribe,

@@ -4,8 +4,8 @@ use derivations::Derivation;
 use errors::{NoTyping, check_error::CheckError};
 use grammar::DerivationRule;
 use macros::{
-    Eval, FreeTypeVars, FreeVars, FromVariants, GrammarDescribe, LangDisplay, LatexFmt, Spanned,
-    SubstTerm, SubstType,
+    Eval, FreeTypeVars, FreeVars, FromVariants, GenerateConstraintsTerm, GrammarDescribe,
+    LangDisplay, LatexFmt, Spanned, SubstTerm, SubstType,
 };
 use std::collections::HashSet;
 use syntax::{
@@ -15,6 +15,7 @@ use syntax::{
 };
 
 #[derive(
+    GenerateConstraintsTerm,
     FreeTypeVars,
     FreeVars,
     Spanned,
