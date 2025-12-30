@@ -1,6 +1,6 @@
 use macros::{
-    Eval, FromVariants, GrammarDescribe, IntoTerm, Kindcheck, LangDisplay, LatexFmt, Normalize,
-    Spanned, SubstTerm, SubstType, Subtypecheck, Typecheck,
+    Eval, FreeTypeVars, FreeVars, FromVariants, GrammarDescribe, IntoTerm, Kindcheck, LangDisplay,
+    LatexFmt, Normalize, Spanned, SubstTerm, SubstType, Subtypecheck, Typecheck,
 };
 use std::fmt;
 use syntax::{
@@ -14,6 +14,8 @@ use syntax::{
 struct DummyLang;
 
 #[derive(
+    FreeVars,
+    FreeTypeVars,
     FromVariants,
     SubstType,
     SubstTerm,
@@ -25,6 +27,7 @@ struct DummyLang;
     Debug,
     Clone,
     PartialEq,
+    Eq,
     Spanned,
 )]
 #[Lang(DummyLang)]
@@ -36,6 +39,7 @@ enum DummyTerm {
 
 #[derive(
     Spanned,
+    FreeTypeVars,
     GrammarDescribe,
     FromVariants,
     SubstType,
@@ -47,6 +51,7 @@ enum DummyTerm {
     Debug,
     Clone,
     PartialEq,
+    Eq,
 )]
 #[Lang(DummyLang)]
 enum DummyType {
