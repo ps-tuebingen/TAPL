@@ -1,5 +1,6 @@
 use crate::constraints::Constraint;
-use syntax::{Name, language::Language};
+use std::collections::HashSet;
+use syntax::{Name, TypeVar, language::Language};
 
 mod definition;
 mod program;
@@ -17,6 +18,7 @@ where
     pub name: Name,
     pub constraints: Vec<Constraint<Lang>>,
     pub ret_ty: Lang::Type,
+    pub used_type_vars: HashSet<TypeVar>,
 }
 
 pub trait GenerateConstraints {

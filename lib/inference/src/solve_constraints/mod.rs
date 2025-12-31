@@ -40,7 +40,7 @@ where
     Lang: Language,
     Lang::Type: SolveConstraint<Lang = Lang>,
 {
-    let mut state = SolveState::new(def_constraints.constraints);
+    let mut state = SolveState::new(def_constraints.constraints, def_constraints.used_type_vars);
     while let Some(constraint) = state.next_constraint() {
         solve_constraint(constraint, &mut state)?;
     }

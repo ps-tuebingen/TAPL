@@ -11,6 +11,7 @@ where
     let mut constraints = Vec::with_capacity(prog.definitions.len() + 1);
 
     let mut used = HashSet::new();
+    println!("generating constraints for main");
     prog.main.free_type_vars(&mut used);
     let mut main_state = GenState::new(used);
     let main_ty = prog.main.generate_constraints(&mut main_state);
@@ -18,8 +19,10 @@ where
         name: "main".to_string(),
         constraints: main_state.constraints,
         ret_ty: main_ty,
+        used_type_vars: main_state.used_type_vars,
     });
     for def in prog.definitions.iter() {
+        println!("generating constraints for {}", def.name);
         constraints.push(generate_constraints_def(def));
     }
     constraints

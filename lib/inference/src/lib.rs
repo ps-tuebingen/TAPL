@@ -26,6 +26,13 @@ where
     Lang::Type: GenerateConstraints<Lang = Lang> + SolveConstraint<Lang = Lang>,
 {
     let constraints = generate_constraints_program(&prog);
+    println!(
+        "generated constraints:\n{:?}",
+        constraints
+            .iter()
+            .map(|c| &c.constraints)
+            .collect::<Vec<_>>()
+    );
     let substs = solve_constraints(constraints)?;
 
     let mut tys = HashMap::new();

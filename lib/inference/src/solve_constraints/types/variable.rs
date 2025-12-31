@@ -1,7 +1,9 @@
 use super::{SolveConstraint, SolveState};
-use crate::constraints::{EqualityConstraint, SubtypeConstraint};
+use crate::constraints::{
+    EqualityConstraint, IndexConstraint, RecordConstraint, SubtypeConstraint, VariantConstraint,
+};
 use errors::inference_error::InferenceError;
-use syntax::{language::Language, types::TypeVariable};
+use syntax::{Label, language::Language, types::TypeVariable};
 
 impl<Lang> SolveConstraint for TypeVariable<Lang>
 where
@@ -36,5 +38,50 @@ where
             Some(ty) => state.add_constraint(SubtypeConstraint::new(ty.clone(), sup)),
         }
         Ok(())
+    }
+
+    fn solve_index(
+        self,
+        ind: usize,
+        ind_ty: <Self::Lang as Language>::Type,
+        state: &mut SolveState<Self::Lang>,
+    ) -> Result<(), InferenceError> {
+        match state.var_tys.get(&self.v) {
+            None => Ok(()),
+            Some(ty) => {
+                state.add_constraint(IndexConstraint::new(ty.clone(), ind, ind_ty));
+                Ok(())
+            }
+        }
+    }
+
+    fn solve_record(
+        self,
+        lb: Label,
+        label_ty: <Self::Lang as Language>::Type,
+        state: &mut SolveState<Self::Lang>,
+    ) -> Result<(), InferenceError> {
+        match state.var_tys.get(&self.v) {
+            None => Ok(()),
+            Some(ty) => {
+                state.add_constraint(RecordConstraint::new(ty.clone(), &lb, label_ty));
+                Ok(())
+            }
+        }
+    }
+
+    fn solve_variant(
+        self,
+        lb: Label,
+        label_ty: <Self::Lang as Language>::Type,
+        state: &mut SolveState<Self::Lang>,
+    ) -> Result<(), InferenceError> {
+        match state.var_tys.get(&self.v) {
+            None => Ok(()),
+            Some(ty) => {
+                state.add_constraint(VariantConstraint::new(ty.clone(), &lb, label_ty));
+                Ok(())
+            }
+        }
     }
 }

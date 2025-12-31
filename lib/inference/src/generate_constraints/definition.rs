@@ -17,5 +17,6 @@ where
         name: def.name.clone(),
         constraints: state.constraints,
         ret_ty: body_ty,
+        used_type_vars: state.used_type_vars,
     }
 }

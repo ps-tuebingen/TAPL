@@ -1,16 +1,17 @@
 use super::{SolveConstraint, SolveState};
-use crate::constraints::{EqualityConstraint, SubtypeConstraint};
+use crate::constraints::{EqualityConstraint, RecordConstraint, SubtypeConstraint};
 use errors::{TypeMismatch, UndefinedLabel, inference_error::InferenceError};
 use syntax::{
     Label,
     language::Language,
     span::Spanned,
-    types::{Record, TypeGroup},
+    types::{Record, TypeGroup, TypeVariable},
 };
 
 impl<Lang> SolveConstraint for Record<Lang>
 where
     Lang: Language,
+    TypeVariable<Lang>: Into<Lang::Type>,
     Lang::Type: TypeGroup<Lang = Lang>,
 {
     type Lang = Lang;
@@ -19,6 +20,13 @@ where
         rhs: Lang::Type,
         state: &mut SolveState<Lang>,
     ) -> Result<(), InferenceError> {
+        if let Some(v) = rhs.clone().into_variable() {
+            for (lb, ty) in self.records {
+                state.add_constraint(RecordConstraint::new(v.clone(), &lb, ty));
+            }
+            return Ok(());
+        }
+
         let err = TypeMismatch::new(rhs.to_string(), "Record Type".to_string(), rhs.span());
         let mut rhs_record = rhs.into_record().ok_or(err)?;
         for (lb, ty) in self.records {
@@ -40,6 +48,17 @@ where
         if sup.clone().into_top().is_some() {
             return Ok(());
         }
+        if let Some(v) = sup.clone().into_variable() {
+            for (lb, ty) in self.records {
+                let sup_var = state.fresh_type_var();
+                let ty_span = ty.span();
+                let sup_ty = TypeVariable::new(&sup_var, ty_span);
+                state.add_constraint(SubtypeConstraint::new(ty, sup_ty.clone()));
+                state.add_constraint(RecordConstraint::new(v.clone(), &lb, sup_ty));
+            }
+            return Ok(());
+        }
+
         let err = TypeMismatch::new(sup.to_string(), "Record Type".to_string(), sup.span());
         let mut sup_record = sup.into_record().ok_or(err)?;
         for (lb, ty) in self.records {
