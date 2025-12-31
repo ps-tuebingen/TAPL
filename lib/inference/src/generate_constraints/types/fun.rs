@@ -15,6 +15,6 @@ where
         let to_kind = self.to.generate_constraints(state);
         state.add_constraint(KindConstraint::new(from_kind, Kind::Star, self.span));
         state.add_constraint(KindConstraint::new(to_kind, Kind::Star, self.span));
-        Kind::Star.into()
+        Kind::Star
     }
 }

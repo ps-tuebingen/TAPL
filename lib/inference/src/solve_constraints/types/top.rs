@@ -17,7 +17,7 @@ where
         _: &mut SolveState<Lang>,
     ) -> Result<(), InferenceError> {
         let err = TypeMismatch::new(rhs.to_string(), "Top".to_string(), rhs.span());
-        rhs.into_top().map(|_| ()).ok_or(err.into())
+        rhs.into_top().map(|_| ()).ok_or_else(|| err.into())
     }
 
     fn solve_subtyping(
@@ -26,6 +26,6 @@ where
         _: &mut SolveState<Lang>,
     ) -> Result<(), InferenceError> {
         let err = TypeMismatch::new(sup.to_string(), "Top".to_string(), sup.span());
-        sup.into_top().map(|_| ()).ok_or(err.into())
+        sup.into_top().map(|_| ()).ok_or_else(|| err.into())
     }
 }

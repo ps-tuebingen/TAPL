@@ -16,6 +16,9 @@ use kinding::solve_kinding;
 pub use state::SolveState;
 pub use subst::{DefSubst, ProgSubst};
 
+/// Solve a set of program constraints
+/// # Errors
+/// Returns an error if a constraint could not be satisfied
 pub fn solve_constraints<Lang>(
     constraints: ProgramConstraints<Lang>,
 ) -> Result<ProgSubst<Lang>, InferenceError>
@@ -68,21 +71,32 @@ where
     }
 }
 
+/// Solve Typing Constraints for a given type
 pub trait SolveConstraint: Type {
+    /// Language this type belongs to
     type Lang: Language;
 
+    /// Solve equality Constraint
+    /// # Errors
+    /// Returns an error if equality could not be satisfied
     fn solve_equality(
         self,
         rhs: <Self::Lang as Language>::Type,
         state: &mut SolveState<Self::Lang>,
     ) -> Result<(), InferenceError>;
 
+    /// Solve subtyping constraint
+    /// # Errors
+    /// Returns an error if subtyping could not be satisfied
     fn solve_subtyping(
         self,
         sup: <Self::Lang as Language>::Type,
         state: &mut SolveState<Self::Lang>,
     ) -> Result<(), InferenceError>;
 
+    /// Solve indexing constraint
+    /// # Errors
+    /// Returns an error if `Self` is not a tuple
     fn solve_index(
         self,
         _ind: usize,
@@ -92,6 +106,9 @@ pub trait SolveConstraint: Type {
         Err(TypeMismatch::new(self.to_string(), "Tuple Type".to_string(), self.span()).into())
     }
 
+    /// Solve record constraint
+    /// # Errors
+    /// Returns an error if `Self` is not a record type
     fn solve_record(
         self,
         _: Label,
@@ -101,6 +118,9 @@ pub trait SolveConstraint: Type {
         Err(TypeMismatch::new(self.to_string(), "Record Type".to_string(), self.span()).into())
     }
 
+    /// Solve a variant constraint
+    /// # Errors
+    /// Returns an error if `Self` is not a variant type
     fn solve_variant(
         self,
         _: Label,

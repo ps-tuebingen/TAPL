@@ -2,12 +2,15 @@ use super::Constraint;
 use std::fmt;
 use syntax::language::Language;
 
+/// Equality Constraint between types
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct EqualityConstraint<Lang>
 where
     Lang: Language,
 {
+    /// Left Type
     pub left: Lang::Type,
+    /// Right Type
     pub right: Lang::Type,
 }
 
@@ -15,7 +18,8 @@ impl<Lang> EqualityConstraint<Lang>
 where
     Lang: Language,
 {
-    pub fn new<Ty1, Ty2>(ty1: Ty1, ty2: Ty2) -> EqualityConstraint<Lang>
+    /// Create a new equality constraint from two given types
+    pub fn new<Ty1, Ty2>(ty1: Ty1, ty2: Ty2) -> Self
     where
         Ty1: Into<Lang::Type>,
         Ty2: Into<Lang::Type>,

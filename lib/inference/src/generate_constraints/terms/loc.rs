@@ -10,12 +10,11 @@ where
     type Target = Lang::Type;
 
     fn generate_constraints(&self, state: &mut GenState<Lang>) -> Self::Target {
-        match state.loc_types.get(&self.loc) {
-            Some(ty) => ty.clone(),
-            None => {
-                let ty_var = state.fresh_type_var();
-                TypeVariable::new(&ty_var, self.span).into()
-            }
+        if let Some(ty) = state.loc_types.get(&self.loc) {
+            return ty.clone();
         }
+
+        let ty_var = state.fresh_type_var();
+        TypeVariable::new(&ty_var, self.span).into()
     }
 }

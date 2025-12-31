@@ -19,7 +19,7 @@ where
             conf.include_envs = false;
             let ty_str = ty.to_latex(conf);
             conf.include_envs = false;
-            def_strs.push(format!("{}:{}", name_str, ty_str))
+            def_strs.push(format!("{name_str}:{ty_str}"));
         }
         format!(
             "{env_start}{}\\main:{}{env_end}",

@@ -18,22 +18,22 @@ where
     fn generate_constraints(&self, state: &mut GenState<Lang>) -> Self::Target {
         let bound_ty = self.bound_term.generate_constraints(state);
         let mut variants = Vec::with_capacity(self.patterns.len());
-        let mut res_ty = None;
-        for pt in self.patterns.iter() {
+        let mut result_ty = None;
+        for pt in &self.patterns {
             let rhs_ty = pt.generate_constraints(state);
-            match res_ty {
-                None => res_ty = Some(rhs_ty.clone()),
+            match result_ty {
+                None => result_ty = Some(rhs_ty.clone()),
                 Some(ref ty) => {
                     state.add_constraint(EqualityConstraint::new(rhs_ty.clone(), ty.clone()));
                 }
-            };
+            }
 
             variants.push((pt.label.clone(), rhs_ty));
         }
 
         let var_ty = VariantTy::new(variants.into_iter().collect(), self.span);
         state.add_constraint(EqualityConstraint::new(var_ty, bound_ty));
-        res_ty.unwrap()
+        result_ty.unwrap()
     }
 }
 

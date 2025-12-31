@@ -1,5 +1,7 @@
 use crate::{config::TestConfig, test_result::TestResult, tests::Test};
-use inference::{GenerateConstraints, ProgTypes, SolveConstraint, infer_types};
+use inference::{
+    GenerateConstraints, SolveConstraint, generate_constraints_program, solve_constraints,
+};
 use syntax::{language::Language, program::Program};
 
 /// Tests type inferring a program
@@ -36,28 +38,23 @@ where
     Lang::Term: GenerateConstraints<Lang = Lang, Target = Lang::Type>,
     Lang::Type: GenerateConstraints<Lang = Lang> + SolveConstraint<Lang = Lang>,
 {
-    type Result = ProgTypes<Lang>;
+    type Result = Lang::Type;
     type Input = Program<Lang>;
 
     fn name(&self) -> String {
         format!("Inferring {}", self.name)
     }
 
-    fn run(&self) -> TestResult<ProgTypes<Lang>> {
-        let inferred = match infer_types(&self.prog) {
-            Ok(c) => c,
+    fn run(&self) -> TestResult<Self::Result> {
+        let constrs = generate_constraints_program(&self.prog);
+
+        let solved = match solve_constraints(constrs) {
+            Ok(s) => s,
             Err(err) => return TestResult::from_err(err),
         };
 
-        let checked_str = inferred.main_ty.to_string();
-        if checked_str == self.expected {
-            TestResult::Success(inferred)
-        } else {
-            TestResult::Fail(format!(
-                "Result!=Expected:\n\tresult:   {checked_str}\n\texpected: {}",
-                self.expected
-            ))
-        }
+        let applied = solved.apply();
+        TestResult::from_eq(applied.main_ty, &self.expected)
     }
 
     fn from_conf(conf: &TestConfig, prog: Self::Input) -> Option<Self> {

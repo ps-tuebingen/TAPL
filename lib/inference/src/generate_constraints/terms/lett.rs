@@ -10,7 +10,7 @@ where
     type Target = Lang::Type;
     fn generate_constraints(&self, state: &mut GenState<Lang>) -> Self::Target {
         let bound_ty = self.bound_term.generate_constraints(state);
-        state.add_var(&self.var, bound_ty.clone());
+        state.add_var(&self.var, bound_ty);
         self.in_term.generate_constraints(state)
     }
 }

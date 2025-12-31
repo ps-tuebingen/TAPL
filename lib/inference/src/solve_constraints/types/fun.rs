@@ -12,7 +12,7 @@ impl<Lang> SolveConstraint for Fun<Lang>
 where
     Lang: Language,
     TypeVariable<Lang>: Into<Lang::Type>,
-    Fun<Lang>: Into<Lang::Type>,
+    Self: Into<Lang::Type>,
     Lang::Type: TypeGroup<Lang = Lang>,
 {
     type Lang = Lang;
@@ -27,7 +27,7 @@ where
             let to_var = state.fresh_type_var();
             let to_ty = TypeVariable::new(&to_var, self.span);
             state.add_constraint(EqualityConstraint::new(
-                Fun::new(from_ty.clone(), to_ty.clone(), self.span),
+                Self::new(from_ty.clone(), to_ty.clone(), self.span),
                 v,
             ));
             state.add_constraint(EqualityConstraint::new(
@@ -74,7 +74,7 @@ where
                 to_ty.clone(),
             ));
             state.add_constraint(EqualityConstraint::new(
-                Fun::new(from_ty, to_ty, self.span),
+                Self::new(from_ty, to_ty, self.span),
                 v,
             ));
             return Ok(());

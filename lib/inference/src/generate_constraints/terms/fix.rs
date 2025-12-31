@@ -19,7 +19,7 @@ where
         let fun_var = state.fresh_type_var();
         let var_ty = TypeVariable::new(&fun_var, self.span);
         let fun_ty = Fun::new(var_ty.clone(), var_ty.clone(), self.span);
-        state.add_constraint(EqualityConstraint::new(fun_ty.clone(), term_ty));
+        state.add_constraint(EqualityConstraint::new(fun_ty, term_ty));
         var_ty.into()
     }
 }

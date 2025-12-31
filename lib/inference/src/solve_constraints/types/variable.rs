@@ -22,7 +22,7 @@ where
             Some(ty) => {
                 state.add_constraint(EqualityConstraint::new(ty.clone(), rhs));
             }
-        };
+        }
         Ok(())
     }
 

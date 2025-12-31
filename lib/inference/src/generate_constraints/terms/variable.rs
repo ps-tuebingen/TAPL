@@ -11,10 +11,9 @@ where
 
     fn generate_constraints(&self, state: &mut GenState<Lang>) -> Self::Target {
         if let Some(ty) = state.var_types.get(&self.var) {
-            ty.clone()
-        } else {
-            let ty_var = state.fresh_type_var();
-            TypeVariable::new(&ty_var, self.span).into()
+            return ty.clone();
         }
+        let ty_var = state.fresh_type_var();
+        TypeVariable::new(&ty_var, self.span).into()
     }
 }

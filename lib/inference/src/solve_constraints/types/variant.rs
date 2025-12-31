@@ -27,7 +27,7 @@ where
             state.add_constraint(EqualityConstraint::new(ty, rhs_ty));
         }
         if let Some(lb) = rhs_variant.variants.keys().next() {
-            return Err(UndefinedLabel::new(&lb, rhs_variant.span).into());
+            return Err(UndefinedLabel::new(lb, rhs_variant.span).into());
         }
         Ok(())
     }

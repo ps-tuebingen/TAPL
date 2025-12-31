@@ -50,12 +50,12 @@ impl LanguageSelect {
                 .create_element("option")
                 .map_err(|_| CreateElement::new("option"))?
                 .dyn_into::<HtmlOptionElement>()
-                .map_err(|_| CouldNotCast::new(&child_id, "option"))?;
-            lang_option.set_id(&child_id);
+                .map_err(|_| CouldNotCast::new(child_id, "option"))?;
+            lang_option.set_id(child_id);
             lang_option.set_inner_html(lang.describe());
             self.element
                 .append_child(&lang_option)
-                .map_err(|_| AppendChild::new(&self.id, &child_id))?;
+                .map_err(|_| AppendChild::new(&self.id, child_id))?;
         }
         Ok(())
     }

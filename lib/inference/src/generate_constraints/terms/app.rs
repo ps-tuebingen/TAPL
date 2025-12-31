@@ -19,11 +19,11 @@ where
 
         let fun_ty = self.fun.generate_constraints(state);
         let arg_ty = self.arg.generate_constraints(state);
-        let ty_var = state.fresh_type_var();
-        let to_var = TypeVariable::new(&ty_var, self.span);
+        let to_var = state.fresh_type_var();
+        let to_ty = TypeVariable::new(&to_var, self.span);
         let ty_var = state.fresh_type_var();
         let from_var = TypeVariable::new(&ty_var, self.span);
-        let fun_vars = Fun::new(from_var.clone(), to_var.clone(), self.span);
+        let fun_vars = Fun::new(from_var.clone(), to_ty.clone(), self.span);
 
         state.add_constraint(EqualityConstraint::new(fun_vars, fun_ty));
 
@@ -33,6 +33,6 @@ where
             state.add_constraint(EqualityConstraint::new(from_var, arg_ty));
         }
 
-        to_var.into()
+        to_ty.into()
     }
 }

@@ -78,7 +78,7 @@ where
         let self_ty = self
             .records
             .remove(&lb)
-            .ok_or(UndefinedLabel::new(&lb, self.span))?;
+            .ok_or_else(|| UndefinedLabel::new(&lb, self.span))?;
         state.add_constraint(EqualityConstraint::new(lb_ty, self_ty));
         Ok(())
     }

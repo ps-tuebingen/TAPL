@@ -5,7 +5,7 @@ use syn::{DeriveInput, parse_macro_input};
 
 pub fn generate_generate_constraints(
     input: TokenStream,
-    target: proc_macro2::TokenStream,
+    target: &proc_macro2::TokenStream,
 ) -> TokenStream {
     let derive_input: DeriveInput = parse_macro_input!(input);
     let ident = derive_input.ident;
@@ -34,12 +34,12 @@ pub fn generate_generate_constraints(
 pub fn generate_generate_constraints_term(input: TokenStream) -> TokenStream {
     generate_generate_constraints(
         input,
-        quote! {<Self::Lang as syntax::language::Language>::Type},
+        &quote! {<Self::Lang as syntax::language::Language>::Type},
     )
 }
 
 pub fn generate_generate_constraints_type(input: TokenStream) -> TokenStream {
-    generate_generate_constraints(input, quote! {syntax::kinds::Kind})
+    generate_generate_constraints(input, &quote! {syntax::kinds::Kind})
 }
 
 pub fn generate_solve_constraint(input: TokenStream) -> TokenStream {

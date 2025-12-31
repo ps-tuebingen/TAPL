@@ -12,7 +12,7 @@ where
 
     fn generate_constraints(&self, state: &mut GenState<Lang>) -> Self::Target {
         let mut tys = Vec::with_capacity(self.terms.len());
-        for t in self.terms.iter() {
+        for t in &self.terms {
             let ty = t.generate_constraints(state);
             tys.push(ty);
         }

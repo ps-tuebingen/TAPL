@@ -18,7 +18,7 @@ where
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "=== Generated Constraints ===")?;
         for (name, def_constr) in &self.def_constraints {
-            writeln!(f, "{}", name)?;
+            writeln!(f, "{name}")?;
             write!(f, "{def_constr}")?;
         }
 

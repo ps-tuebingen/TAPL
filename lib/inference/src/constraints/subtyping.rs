@@ -2,12 +2,15 @@ use super::Constraint;
 use std::fmt;
 use syntax::language::Language;
 
+/// Subtyping Constraint
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SubtypeConstraint<Lang>
 where
     Lang: Language,
 {
+    /// Subtype
     pub sub_type: Lang::Type,
+    /// Super Type
     pub super_type: Lang::Type,
 }
 
@@ -15,7 +18,7 @@ impl<Lang> SubtypeConstraint<Lang>
 where
     Lang: Language,
 {
-    pub fn new<Ty1, Ty2>(sub_ty: Ty1, super_ty: Ty2) -> SubtypeConstraint<Lang>
+    pub fn new<Ty1, Ty2>(sub_ty: Ty1, super_ty: Ty2) -> Self
     where
         Ty1: Into<Lang::Type>,
         Ty2: Into<Lang::Type>,

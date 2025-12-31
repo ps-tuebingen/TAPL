@@ -2,14 +2,21 @@ use crate::constraints::Constraint;
 use std::collections::{HashMap, HashSet, VecDeque};
 use syntax::{TypeVar, kinds::Kind, language::Language};
 
+/// State during constrint solving
+/// used in [`crate::SolveConstraint`]
 pub struct SolveState<Lang>
 where
     Lang: Language,
 {
+    /// Currently unsolved constraints
     remaining_constraints: VecDeque<Constraint<Lang>>,
+    /// Names of used type variables
     used_type_vars: HashSet<TypeVar>,
+    /// Types of type variables
     pub var_tys: HashMap<TypeVar, Lang::Type>,
+    /// Supertypes of type variables
     pub tyvar_super: HashMap<TypeVar, Lang::Type>,
+    /// Kinds of kind variables
     pub kind_vars: HashMap<String, Kind>,
 }
 
@@ -17,6 +24,8 @@ impl<Lang> SolveState<Lang>
 where
     Lang: Language,
 {
+    /// Create a new state from given constraints and used variables
+    #[must_use]
     pub fn new(constraints: Vec<Constraint<Lang>>, used: HashSet<TypeVar>) -> Self {
         Self {
             remaining_constraints: constraints.into_iter().collect(),

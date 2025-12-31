@@ -21,7 +21,7 @@ where
         used_type_vars: main_state.used_type_vars,
     };
 
-    for def in prog.definitions.iter() {
+    for def in &prog.definitions {
         def_constraints.insert(def.name.clone(), generate_constraints_def(def));
     }
     ProgramConstraints {

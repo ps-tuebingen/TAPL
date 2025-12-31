@@ -9,6 +9,6 @@ where
     type Target = Kind;
 
     fn generate_constraints(&self, _: &mut GenState<Lang>) -> Self::Target {
-        Kind::Star.into()
+        Kind::Star
     }
 }

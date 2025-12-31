@@ -13,7 +13,7 @@ where
 
     fn generate_constraints(&self, state: &mut GenState<Lang>) -> Self::Target {
         let mut records = HashMap::new();
-        for (lab, t) in self.records.iter() {
+        for (lab, t) in &self.records {
             let rec_ty = t.generate_constraints(state);
             records.insert(lab.clone(), rec_ty);
         }
