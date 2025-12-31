@@ -8,7 +8,7 @@ mod subtyping;
 mod variant;
 pub use equality::EqualityConstraint;
 pub use indexing::IndexConstraint;
-pub use kinding::{KindConstraint, KindOrVar};
+pub use kinding::KindConstraint;
 pub use record::RecordConstraint;
 pub use subtyping::SubtypeConstraint;
 pub use variant::VariantConstraint;

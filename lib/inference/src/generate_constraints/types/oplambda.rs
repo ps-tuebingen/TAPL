@@ -1,15 +1,16 @@
 use super::{GenState, GenerateConstraints};
-use crate::constraints::KindOrVar;
-use syntax::{language::Language, types::OpLambda};
+use syntax::{kinds::Kind, language::Language, types::OpLambda};
 
 impl<Lang> GenerateConstraints for OpLambda<Lang>
 where
     Lang: Language,
+    Lang::Type: GenerateConstraints<Lang = Lang, Target = Kind>,
 {
     type Lang = Lang;
-    type Target = KindOrVar;
+    type Target = Kind;
 
-    fn generate_constraints(&self, _: &mut GenState<Lang>) -> Self::Target {
-        todo!()
+    fn generate_constraints(&self, state: &mut GenState<Lang>) -> Self::Target {
+        let inner_kind = self.body.generate_constraints(state);
+        inner_kind.abs()
     }
 }

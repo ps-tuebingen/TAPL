@@ -8,9 +8,9 @@ where
 {
     pub constraints: Vec<Constraint<Lang>>,
     used_type_vars: HashSet<TypeVar>,
+    used_kind_vars: HashSet<String>,
     pub var_types: HashMap<Var, Lang::Type>,
     pub loc_types: HashMap<Location, Lang::Type>,
-    used_kind_vars: HashSet<String>,
 }
 
 impl<Lang> GenState<Lang>

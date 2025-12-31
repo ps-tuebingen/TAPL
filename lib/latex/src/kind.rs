@@ -4,6 +4,7 @@ use syntax::kinds::Kind;
 impl LatexFmt for Kind {
     fn to_latex(&self, _conf: &mut LatexConfig) -> String {
         match self {
+            Self::Var(v) => v.to_latex(_conf),
             Self::Star => "*".to_owned(),
             Self::Arrow(from, to) => {
                 format!(

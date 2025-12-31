@@ -1,7 +1,7 @@
 use super::SolveState;
-use crate::constraints::{KindConstraint, KindOrVar};
+use crate::constraints::KindConstraint;
 use errors::{KindMismatch, inference_error::InferenceError};
-use syntax::language::Language;
+use syntax::{kinds::Kind, language::Language};
 
 pub fn solve_kinding<Lang>(
     knd: KindConstraint,
@@ -11,37 +11,7 @@ where
     Lang: Language,
 {
     match (knd.left, knd.right) {
-        (KindOrVar::Kind(k1), KindOrVar::Kind(k2)) if k1 == k2 => Ok(()),
-        (KindOrVar::Kind(k1), KindOrVar::Kind(k2)) => {
-            Err(KindMismatch::new(k1.to_string(), k2.to_string(), knd.span).into())
-        }
-        (KindOrVar::Kind(k), KindOrVar::Var(v)) => match state.kind_vars.get(&v) {
-            None => {
-                state.kind_vars.insert(v, k);
-                Ok(())
-            }
-            Some(k2) => {
-                if k == *k2 {
-                    Ok(())
-                } else {
-                    Err(KindMismatch::new(k.to_string(), k2.to_string(), knd.span).into())
-                }
-            }
-        },
-        (KindOrVar::Var(v), KindOrVar::Kind(k)) => match state.kind_vars.get(&v) {
-            None => {
-                state.kind_vars.insert(v, k);
-                Ok(())
-            }
-            Some(k2) => {
-                if k == *k2 {
-                    Ok(())
-                } else {
-                    Err(KindMismatch::new(k.to_string(), k2.to_string(), knd.span).into())
-                }
-            }
-        },
-        (KindOrVar::Var(v1), KindOrVar::Var(v2)) => {
+        (Kind::Var(v1), Kind::Var(v2)) => {
             match (state.kind_vars.get(&v1), state.kind_vars.get(&v2)) {
                 (None, None) => {
                     state.add_constraint(KindConstraint::new(v1.as_str(), v2.as_str(), knd.span));
@@ -62,6 +32,39 @@ where
                         Err(KindMismatch::new(k1.to_string(), k2.to_string(), knd.span).into())
                     }
                 }
+            }
+        }
+        (left, Kind::Var(v)) => match state.kind_vars.get(&v) {
+            None => {
+                state.kind_vars.insert(v, left);
+                Ok(())
+            }
+            Some(k2) => {
+                if left == *k2 {
+                    Ok(())
+                } else {
+                    Err(KindMismatch::new(left.to_string(), k2.to_string(), knd.span).into())
+                }
+            }
+        },
+        (Kind::Var(v), right) => match state.kind_vars.get(&v) {
+            None => {
+                state.kind_vars.insert(v, right);
+                Ok(())
+            }
+            Some(k2) => {
+                if right == *k2 {
+                    Ok(())
+                } else {
+                    Err(KindMismatch::new(right.to_string(), k2.to_string(), knd.span).into())
+                }
+            }
+        },
+        (left, right) => {
+            if left == right {
+                Ok(())
+            } else {
+                Err(KindMismatch::new(left.to_string(), right.to_string(), knd.span).into())
             }
         }
     }

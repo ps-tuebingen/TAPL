@@ -1,14 +1,14 @@
 use super::{GenState, GenerateConstraints};
-use crate::constraints::{KindConstraint, KindOrVar};
+use crate::constraints::KindConstraint;
 use syntax::{kinds::Kind, language::Language, types::Fun};
 
 impl<Lang> GenerateConstraints for Fun<Lang>
 where
     Lang: Language,
-    Lang::Type: GenerateConstraints<Lang = Lang, Target = KindOrVar>,
+    Lang::Type: GenerateConstraints<Lang = Lang, Target = Kind>,
 {
     type Lang = Lang;
-    type Target = KindOrVar;
+    type Target = Kind;
 
     fn generate_constraints(&self, state: &mut GenState<Lang>) -> Self::Target {
         let from_kind = self.from.generate_constraints(state);

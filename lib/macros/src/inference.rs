@@ -39,7 +39,7 @@ pub fn generate_generate_constraints_term(input: TokenStream) -> TokenStream {
 }
 
 pub fn generate_generate_constraints_type(input: TokenStream) -> TokenStream {
-    generate_generate_constraints(input, quote! {inference::constraints::KindOrVar})
+    generate_generate_constraints(input, quote! {syntax::kinds::Kind})
 }
 
 pub fn generate_solve_constraint(input: TokenStream) -> TokenStream {
