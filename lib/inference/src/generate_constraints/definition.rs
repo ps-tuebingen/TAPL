@@ -1,4 +1,5 @@
-use super::{DefConstraints, GenState, GenerateConstraints};
+use super::{GenState, GenerateConstraints};
+use crate::constraints::DefConstraints;
 use std::collections::HashSet;
 use syntax::{definition::Definition, free_vars::FreeTypeVars, language::Language};
 
@@ -14,7 +15,6 @@ where
     let mut state = GenState::new(used);
     let body_ty = def.body.generate_constraints(&mut state);
     DefConstraints {
-        name: def.name.clone(),
         constraints: state.constraints,
         ret_ty: body_ty,
         used_type_vars: state.used_type_vars,

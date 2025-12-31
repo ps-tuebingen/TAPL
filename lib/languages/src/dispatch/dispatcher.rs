@@ -4,7 +4,10 @@ use derivations::Derivation;
 use errors::{FileAccess, language_error::LanguageError};
 use eval::{Eval, eval_main};
 use grammar::{LanguageDescribe, LanguageGrammar};
-use inference::{GenerateConstraints, ProgTypes, SolveConstraint, infer_types};
+use inference::{
+    GenerateConstraints, ProgSubst, ProgTypes, ProgramConstraints, SolveConstraint,
+    generate_constraints_program, solve_constraints,
+};
 use latex::LatexFmt;
 use parser::{GroupParse, Parse};
 use std::{collections::HashMap, fs::read_to_string, path::PathBuf};
@@ -20,6 +23,8 @@ where
     parsed: HashMap<Source, Program<Lang>>,
     checked: HashMap<Source, Derivation<Lang>>,
     evaluated: HashMap<Source, EvalTrace<Lang>>,
+    generated_constraints: HashMap<Source, ProgramConstraints<Lang>>,
+    solved_constraints: HashMap<Source, ProgSubst<Lang>>,
     inferred: HashMap<Source, ProgTypes<Lang>>,
     grammar: Option<LanguageGrammar>,
 }
@@ -35,6 +40,8 @@ where
             checked: HashMap::new(),
             evaluated: HashMap::new(),
             grammar: None,
+            generated_constraints: HashMap::new(),
+            solved_constraints: HashMap::new(),
             inferred: HashMap::new(),
         }
     }
@@ -98,6 +105,51 @@ where
         Ok(checked)
     }
 
+    pub fn generated(&mut self, source: Source) -> Result<ProgramConstraints<Lang>, LanguageError>
+    where
+        Lang::Term: GroupParse + GenerateConstraints<Lang = Lang, Target = Lang::Type>,
+        Lang::Type: GroupParse + GenerateConstraints<Lang = Lang>,
+    {
+        if let Some(g) = self.generated_constraints.get(&source) {
+            return Ok(g.clone());
+        }
+
+        let parsed = self.parsed(source.clone())?;
+        let generated = generate_constraints_program(&parsed);
+        self.generated_constraints.insert(source, generated.clone());
+        Ok(generated)
+    }
+
+    pub fn solved(&mut self, source: Source) -> Result<ProgSubst<Lang>, LanguageError>
+    where
+        Lang::Term: GroupParse + GenerateConstraints<Lang = Lang, Target = Lang::Type>,
+        Lang::Type: GroupParse + GenerateConstraints<Lang = Lang> + SolveConstraint<Lang = Lang>,
+    {
+        if let Some(solved) = self.solved_constraints.get(&source) {
+            return Ok(solved.clone());
+        }
+
+        let generated = self.generated(source.clone())?;
+        let solved = solve_constraints(generated)?;
+        self.solved_constraints.insert(source, solved.clone());
+        Ok(solved)
+    }
+
+    pub fn inferred(&mut self, source: Source) -> Result<ProgTypes<Lang>, LanguageError>
+    where
+        Lang::Term: GroupParse + GenerateConstraints<Lang = Lang, Target = Lang::Type>,
+        Lang::Type: GroupParse + GenerateConstraints<Lang = Lang> + SolveConstraint<Lang = Lang>,
+    {
+        if let Some(inferred) = self.inferred.get(&source) {
+            return Ok(inferred.clone());
+        }
+
+        let solved = self.solved(source.clone())?;
+        let inferred = ProgTypes::from_subst(solved);
+        self.inferred.insert(source, inferred.clone());
+        Ok(inferred)
+    }
+
     pub fn format_parsed(
         &mut self,
         source: Source,
@@ -152,7 +204,20 @@ where
         }
     }
 
-    pub fn format_infer(
+    pub fn format_generated(
+        &mut self,
+        source: Source,
+        method: FormatMethod,
+    ) -> Result<String, LanguageError>
+    where
+        Lang::Term: GroupParse + GenerateConstraints<Lang = Lang, Target = Lang::Type>,
+        Lang::Type: GroupParse + GenerateConstraints<Lang = Lang> + LatexFmt,
+    {
+        let generated = self.generated(source)?;
+        Ok(method.format(&generated))
+    }
+
+    pub fn format_solved(
         &mut self,
         source: Source,
         method: FormatMethod,
@@ -160,15 +225,23 @@ where
     where
         Lang::Term: GroupParse + GenerateConstraints<Lang = Lang, Target = Lang::Type>,
         Lang::Type:
-            GroupParse + LatexFmt + GenerateConstraints<Lang = Lang> + SolveConstraint<Lang = Lang>,
+            GroupParse + GenerateConstraints<Lang = Lang> + SolveConstraint<Lang = Lang> + LatexFmt,
     {
-        if let Some(inferred) = self.inferred.get(&source) {
-            return Ok(method.format(inferred));
-        }
+        let solved = self.solved(source)?;
+        Ok(method.format(&solved))
+    }
 
-        let parsed = self.parsed(source.clone())?;
-        let inferred = infer_types(&parsed)?;
-        self.inferred.insert(source, inferred.clone());
+    pub fn format_inferred(
+        &mut self,
+        source: Source,
+        method: FormatMethod,
+    ) -> Result<String, LanguageError>
+    where
+        Lang::Term: GroupParse + GenerateConstraints<Lang = Lang, Target = Lang::Type>,
+        Lang::Type:
+            GroupParse + GenerateConstraints<Lang = Lang> + SolveConstraint<Lang = Lang> + LatexFmt,
+    {
+        let inferred = self.inferred(source)?;
         Ok(method.format(&inferred))
     }
 }

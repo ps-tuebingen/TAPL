@@ -1,4 +1,5 @@
 use super::Constraint;
+use std::fmt;
 use syntax::language::Language;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -32,5 +33,14 @@ where
 {
     fn from(cns: EqualityConstraint<Lang>) -> Self {
         Self::Equality(cns)
+    }
+}
+
+impl<Lang> fmt::Display for EqualityConstraint<Lang>
+where
+    Lang: Language,
+{
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{} == {}", self.left, self.right)
     }
 }

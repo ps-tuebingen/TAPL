@@ -1,4 +1,5 @@
 use super::Constraint;
+use std::fmt;
 use syntax::language::Language;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -34,5 +35,14 @@ where
 {
     fn from(c: IndexConstraint<Lang>) -> Self {
         Self::Indexing(c)
+    }
+}
+
+impl<Lang> fmt::Display for IndexConstraint<Lang>
+where
+    Lang: Language,
+{
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}[{}] == {}", self.ty, self.ind, self.ind_ty)
     }
 }

@@ -1,4 +1,5 @@
 use super::Constraint;
+use std::fmt;
 use syntax::language::Language;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -32,5 +33,14 @@ where
 {
     fn from(cns: SubtypeConstraint<Lang>) -> Self {
         Self::Subtyping(cns)
+    }
+}
+
+impl<Lang> fmt::Display for SubtypeConstraint<Lang>
+where
+    Lang: Language,
+{
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{} <: {}", self.sub_type, self.super_type)
     }
 }

@@ -3,6 +3,7 @@ mod definition;
 mod derivations;
 mod env;
 mod grammar;
+mod inference;
 mod kind;
 mod program;
 mod terms;

@@ -1,38 +1,38 @@
-use crate::{constraints::Constraint, generate_constraints::DefConstraints};
+use crate::{
+    ProgramConstraints,
+    constraints::{Constraint, DefConstraints},
+};
 use errors::{TypeMismatch, inference_error::InferenceError};
 use std::collections::HashMap;
-use syntax::{Label, Name, TypeVar, language::Language, types::Type};
+use syntax::{Label, language::Language, types::Type};
 
 mod kinding;
+mod state;
+mod subst;
 mod types;
 mod untyped;
 
-mod state;
-
 use kinding::solve_kinding;
 pub use state::SolveState;
-
-pub struct DefSubst<Lang>
-where
-    Lang: Language,
-{
-    pub name: Name,
-    pub ty_vars: HashMap<TypeVar, Lang::Type>,
-    pub ty_no_subst: Lang::Type,
-}
+pub use subst::{DefSubst, ProgSubst};
 
 pub fn solve_constraints<Lang>(
-    constraints: Vec<DefConstraints<Lang>>,
-) -> Result<Vec<DefSubst<Lang>>, InferenceError>
+    constraints: ProgramConstraints<Lang>,
+) -> Result<ProgSubst<Lang>, InferenceError>
 where
     Lang: Language,
     Lang::Type: SolveConstraint<Lang = Lang>,
 {
-    let mut substitutions = Vec::with_capacity(constraints.len());
-    for constrs in constraints {
-        substitutions.push(solve_def(constrs)?);
+    let mut substitutions = HashMap::new();
+    for (name, constrs) in constraints.def_constraints {
+        let solved = solve_def(constrs)?;
+        substitutions.insert(name, solved);
     }
-    Ok(substitutions)
+    let main_subst = solve_def(constraints.main_constraints)?;
+    Ok(ProgSubst {
+        def_substs: substitutions,
+        main_subst,
+    })
 }
 
 fn solve_def<Lang>(def_constraints: DefConstraints<Lang>) -> Result<DefSubst<Lang>, InferenceError>
@@ -45,7 +45,6 @@ where
         solve_constraint(constraint, &mut state)?;
     }
     Ok(DefSubst {
-        name: def_constraints.name,
         ty_vars: state.var_tys,
         ty_no_subst: def_constraints.ret_ty,
     })

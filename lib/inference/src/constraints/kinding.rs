@@ -1,4 +1,5 @@
 use super::Constraint;
+use std::fmt;
 use syntax::{kinds::Kind, language::Language, span::Span};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -28,5 +29,11 @@ where
 {
     fn from(c: KindConstraint) -> Self {
         Constraint::Kinding(c)
+    }
+}
+
+impl fmt::Display for KindConstraint {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{} == {}", self.left, self.right)
     }
 }

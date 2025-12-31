@@ -87,7 +87,9 @@ where
             Command::Evaluate => self.format_evaluated(source, method),
             Command::Check => self.format_checked(source, method),
             Command::Grammar => Ok(self.format_grammar(method)),
-            Command::Infer => self.format_infer(source, method),
+            Command::GenerateConstraints => self.format_generated(source, method),
+            Command::SolveConstraints => self.format_solved(source, method),
+            Command::Infer => self.format_inferred(source, method),
         }
     }
 

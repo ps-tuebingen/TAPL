@@ -5,6 +5,7 @@ use std::path::{Path, PathBuf};
 
 #[derive(Parser)]
 pub struct Args {
+    #[clap(short, long)]
     pub lang: String,
     pub cmd: Command,
     pub out_method: Option<FormatMethod>,

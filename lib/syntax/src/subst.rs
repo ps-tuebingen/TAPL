@@ -11,6 +11,18 @@ pub trait SubstType {
     type Target;
     type Lang: Language;
     fn subst_type(self, v: &TypeVar, ty: &<Self::Lang as Language>::Type) -> Self::Target;
+
+    fn subst_sim(self, subst: &[(&TypeVar, &<Self::Lang as Language>::Type)]) -> Self::Target
+    where
+        Self: Into<Self::Target>,
+        Self::Target: SubstType<Target = Self::Target, Lang = Self::Lang>,
+    {
+        let mut target = self.into();
+        for (v, ty) in subst {
+            target = target.subst_type(v, ty);
+        }
+        target
+    }
 }
 
 impl<T> SubstTerm for Rc<T>

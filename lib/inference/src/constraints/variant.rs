@@ -1,4 +1,5 @@
 use super::Constraint;
+use std::fmt;
 use syntax::{Label, language::Language};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -34,5 +35,14 @@ where
 {
     fn from(v: VariantConstraint<Lang>) -> Self {
         Self::Variant(v)
+    }
+}
+
+impl<Lang> fmt::Display for VariantConstraint<Lang>
+where
+    Lang: Language,
+{
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{} == <{}:{},...>", self.ty, self.label, self.label_ty)
     }
 }

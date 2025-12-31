@@ -1,6 +1,4 @@
-use crate::constraints::Constraint;
-use std::collections::HashSet;
-use syntax::{Name, TypeVar, language::Language};
+use syntax::language::Language;
 
 mod definition;
 mod program;
@@ -10,16 +8,6 @@ mod types;
 mod untyped;
 pub use program::generate_constraints_program;
 pub use state::GenState;
-
-pub struct DefConstraints<Lang>
-where
-    Lang: Language,
-{
-    pub name: Name,
-    pub constraints: Vec<Constraint<Lang>>,
-    pub ret_ty: Lang::Type,
-    pub used_type_vars: HashSet<TypeVar>,
-}
 
 pub trait GenerateConstraints {
     type Lang: Language;
